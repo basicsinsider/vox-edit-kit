@@ -296,6 +296,32 @@ Vary every layout each time it's reused (different colour lead, orientation, den
 7. **Assembly + QA**: index.html mounts segments back to back with the single VO; lint; snapshot sheet of
    every scene midpoint; render; watch for sync, readability, repetition; fix; re-render.
 
+### 8.1 Sourcing playbook: archival photos, footage, newspapers, documents, B-roll
+**Rule:** free sources only — public domain, CC0, CC BY / CC BY-SA (credit on screen + in SOURCES.md). No logins,
+no paid stock, no watermarks, never BBC/Getty/AP. Match the narration exactly: right person, right place, right era.
+Search: `python3 tools/find_media.py commons|archive|archive-texts|files "<query>"` (prints licence + size + URL).
+
+| need | go to (in this order) | how |
+|---|---|---|
+| historical photos of people, places, buildings, events | Wikimedia Commons (huge PD set incl. Library of Congress, NARA, Smithsonian, Bain, Harris & Ewing, Detroit Publishing copies) → archive.org → NYPL Digital Collections → Smithsonian Open Access → Openverse (CC filter) | `find_media.py commons`; download with `tools/commons_thumb.sh "File name.jpg" out.jpg 1920` (widths 960/1280/1920/3840 work; originals and 2560 often fail with 429/400; sleep a few s between requests) |
+| archival film / B-roll footage | archive.org: Prelinger Archives, NARA/Universal Newsreels, Ford Motor Co. collection, California Revealed (`copl_*`), home movies collections | `find_media.py archive "<topic> 1930s"` → `find_media.py files <id>` → `curl -L -o x.mp4 https://archive.org/download/<id>/<file>`; make a contact sheet (`ffmpeg -vf fps=1/4,scale=320:-1,tile=8x8`) to find the best 6–20 s; trim with ffmpeg to h264 ≤1080p, 24 fps, no audio. YouTube/other public-domain uploads: `agent-reach youtube search` + its yt-dlp, only if clearly PD/CC |
+| old newspapers / front pages | archive.org (NYT and other scanned runs; search `archive-texts`), Chronicling America (LOC — often blocked from servers; try once), Commons | full-page scans ≥3000 px; record headline bounding boxes in SOURCES.md for the highlighter |
+| books, yearbooks, documents, charters, bulletins | archive.org texts (university yearbooks, bulletins, books like Terman 1916), HathiTrust (full view = PD) | grab the page image (`files <id>` → `.jp2`/`.jpg`/page PDF → render the page). Can't find it? make a **typeset recreation** in our fonts on paper texture — never fake signatures, seals or official marks |
+| period maps | USGS historical topo (PD), Library of Congress maps via Commons, David Rumsey only if CC BY (not BY-NC) | keep a `.json` with corner lon/lat → pixel formula next to each map |
+| modern photos of places/companies | Commons (check licence: many are CC BY-SA → on-screen credit) | |
+| logos | `npx hyperframes media-use resolve --type logo --entity "<Company>" --intent "<Company> logo" --project .` → `assets/logos/`; fallback Commons | |
+| cutouts, halftones, 2.5D layers | `npx hyperframes remove-background` (people; blur halftone prints first), `tools/halftone.py`, hand polygon masks (`tools/cut_layers.py`) | see §5 #17 and the 2.5D layer sets in the full edit |
+| textures | Texturelabs — §3.4 | |
+| sound | §7 (synthesized score + SFX, Kenney CC0) | |
+
+Every asset: look at it (Read the image / contact sheet) before using it; reject wrong subject, wrong era,
+watermarks, low resolution (<1600 px long side for full-frame). Log it in the folder's `SOURCES.md`: subject, URL,
+licence, author, date, dimensions (+ bboxes for documents). Mark it in `ASSETS_NEEDED.md` (✅ / 🔁 substitute / ❌).
+When nothing real exists, use the closest true substitute and say so, or a typographic/graphic treatment — never a
+blank and never an invented "archival" photo. Run several gatherers in parallel split by asset type (photos+logos+
+cutouts / documents+footage+props / maps+layers+icons) — `example-docs/ASSETS_NEEDED.md` shows the format.
+Known blocks: Wikimedia 429 under load (throttle, thumbnails), LOC/Chronicling America 403/503 from servers.
+
 ## 9. QA checklist
 - [ ] VO identical to source (same level; no processing). [ ] Every text cue within 0–120 ms before its word.
 - [ ] Only the three fonts. [ ] Palette only; West=vermilion/East=navy. [ ] ≤ 2 accents per frame.
@@ -306,6 +332,7 @@ Vary every layout each time it's reused (different colour lead, orientation, den
 - 2026-10-29 — v1: samples s01–s10; palette locked; markups (s11) added from the Vox markup reel; paper-
   aesthetic chart (s03) from the user's Pinterest refs; sound brief from the Vox marimba reel; sync audit tool;
   halftone tool; verified 12 trillion-dollar companies for the map.
+- 2026-10-30 — §8.1 sourcing playbook + tools/find_media.py (Commons/archive.org search).
 - 2026-10-30 — §3.4 added: how to fetch new Texturelabs textures (browser download or ask the user) + tools/prep_texture.py.
 - 2026-10-30 — §6 rewritten: worked example + still for every reference layout, and the method for new reference images (§6.1). Map/relief/old-map assets added to the repo.
 - 2026-10-30 — packaged as a GitHub repo (vox-edit-kit): setup.sh for Linux/macOS, portable .venv paths, expected/ previews of the 11 approved samples.
