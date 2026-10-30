@@ -23,6 +23,7 @@
     #s03-grid { position: absolute; left: 230px; top: 280px; width: 500px; height: 500px; }
     .s03-sq { position: absolute; width: 42px; height: 42px; background: var(--navy); }
     .s03-sq.w { background: var(--vermilion); }
+    .s03-sq.s03-ghost { background: rgba(24,34,47,0.09); }
     #s03-gridlab { position: absolute; left: 230px; top: 230px; font-size: 22px; color: var(--ink-soft); }
     #s03-legend { position: absolute; left: 230px; top: 800px; font-size: 22px; color: var(--ink); }
     #s03-legend i { display: inline-block; width: 18px; height: 18px; vertical-align: -2px; margin-right: 10px; }
@@ -98,9 +99,11 @@
       const d = document.createElement("div");
       d.className = "s03-sq" + (c * 10 + r >= 90 ? " w" : "");
       d.style.left = c * 50 + "px"; d.style.top = (9 - r) * 50 + "px";
-      grid.appendChild(d); sq.push(d);
+      const g = document.createElement("div");
+      g.className = "s03-sq s03-ghost"; g.style.left = d.style.left; g.style.top = d.style.top;
+      grid.appendChild(g); grid.appendChild(d); sq.push(d);
     }
-    tl.fromTo("#s03-gridlab, #s03-legend", { opacity: 0 }, { opacity: 1, duration: 0.3, immediateRender: true }, S(64.2));
+    tl.fromTo("#s03-gridlab, #s03-legend, .s03-ghost", { opacity: 0 }, { opacity: 1, duration: 0.3, immediateRender: true }, S(64.2));
     // squares fill at 12 fps in steps of 6–7 (whole columns of East first, then the West sliver)
     sq.forEach((d, i) => tl.fromTo(d, { scale: 0 }, { scale: 1, duration: 0.001, immediateRender: true }, S(64.15) + Math.floor(i / 7) / 12));
     tl.fromTo("#s03-box", { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, T(64.11));

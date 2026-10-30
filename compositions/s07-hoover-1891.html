@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8" /></head>
+<body>
+<template>
+  <style>
+    #root { position: absolute; inset: 0; overflow: hidden; background: var(--night); }
+    #s07-defs { position: absolute; width: 0; height: 0; }
+    #s07-weave { position: absolute; inset: -14px; }
+    #s07-wrap { position: absolute; inset: 0; }
+    #s07-bgcopy { position: absolute; left: -100px; top: -300px; width: 2120px; filter: url(#s07-tintd) blur(18px); opacity: 0.45; }
+    #s07-a { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; }
+    #s07-card { position: absolute; left: 200px; top: 110px; width: 580px; height: 860px; box-shadow: 0 30px 70px rgba(0,0,0,0.6); }
+    #s07-card .plate .img, #s07-card .plate .fringe { filter: url(#s07-tint); }
+    #s07-card .plate .fringe { filter: url(#s07-tint) blur(6px); }
+    #s07-b { position: absolute; left: 262.5px; top: 218.5px; width: 960px; height: 540px; overflow: hidden; opacity: 0; }
+    #s07-b img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 46% 58%; filter: url(#s07-tint); }
+    #s07-b .vignette { opacity: 0.8; }
+    #s07-txt { position: absolute; left: 960px; top: 360px; width: 860px; }
+    #s07-kick { font-size: 24px; color: #d9cdb9; }
+    #s07-first { font-size: 110px; line-height: 1.02; margin-top: 14px; color: var(--bone); white-space: nowrap; }
+    #s07-ever { font-size: 50px; color: #e8dccb; margin-top: 18px; }
+    #s07-found { position: absolute; left: 0; top: 330px; width: 1920px; text-align: center; font-size: 28px; color: #f0e6d4; }
+    #s07-1891 { position: absolute; left: 0; top: 380px; width: 1920px; text-align: center; font-size: 230px; line-height: 1; }
+    #s07-qshade { position: absolute; inset: 0; background: radial-gradient(ellipse 50% 40% at 50% 42%, rgba(14,12,10,0.55), rgba(14,12,10,0) 75%); opacity: 0; }
+  </style>
+  <div id="root" data-composition-id="s07" data-width="1920" data-height="1080">
+    <svg id="s07-defs"></svg>
+    <div id="s07-weave">
+      <div id="s07-wrap">
+        <div id="s07-a">
+          <img id="s07-bgcopy" src="assets/archival/hoover/hoover_young_1898.jpg" alt="" />
+          <div id="s07-card"><div class="plate"><img class="img" src="assets/archival/hoover/hoover_young_1898.jpg" alt="" /><img class="fringe" src="assets/archival/hoover/hoover_young_1898.jpg" alt="" /><div class="vignette"></div></div></div>
+        </div>
+        <div id="s07-b"><img src="assets/archival/hoover/stanford_main_quad_panorama_c1896.jpg" alt="" /><div class="vignette"></div></div>
+      </div>
+    </div>
+    <div id="s07-txt">
+      <div id="s07-kick" class="t-label halate">Herbert Hoover</div>
+      <div id="s07-first" class="t-display">The first class</div>
+      <div id="s07-ever" class="t-serif-i halate"><span>that </span><span>ever </span><span>existed </span><span>in </span><span>Stanford</span></div>
+    </div>
+    <div id="s07-qshade"></div>
+    <div id="s07-found" class="t-label halate">The university · founded in</div>
+    <div id="s07-1891" class="t-display halate yellow">1891</div>
+    <div id="s07-grain" class="tx tx-grain" style="background-image:url('assets/textures/grain_01_norm.jpg')"></div>
+    <div id="s07-dust" class="tx tx-dust" style="background-image:url('assets/textures/dust_01.jpg')"></div>
+    <div class="vignette"></div>
+    <audio id="s07-vo" src="vo10.mp3" data-start="0" data-duration="10.0" data-media-start="131.4" data-volume="1"></audio>
+  </div>
+  <script>
+  (function () {
+    const tl = gsap.timeline({ paused: true });
+    const T = (s) => +(s - 131.4).toFixed(3);
+    const S = T;
+    const $ = (id) => document.getElementById(id);
+    const defs = $("s07-defs");
+    FX.tintDefs(defs, "s07-tint", "#1e1a16", "#ece0c9");
+    FX.tintDefs(defs, "s07-tintd", "#0e0d0c", "#4a4136");
+    FX.grain($("s07-grain"), 81);
+    FX.dust($("s07-dust"), 83, 2);
+    FX.weave($("s07-weave"), { amp: 1.7, rot: 0.06, flicker: 0.055, seed: 85 });
+
+    // slow push on the portrait (physical photo being filmed)
+    tl.fromTo("#s07-card", { scale: 1.0, transformOrigin: "56% 38%" }, { scale: 1.05, duration: 5.9, ease: "none", immediateRender: true }, 0);
+    tl.fromTo("#s07-bgcopy", { x: 0 }, { x: -60, duration: 5.9, ease: "none" }, 0);
+
+    // text: "Hoover" / "the first class" (Vox fill) / "that ever existed in Stanford"
+    FX.text.rise(tl, [$("s07-kick")], T(131.80), { dur: 0.4, y: 8, blur: 6 });
+    FX.text.fill(tl, $("s07-first"), T(133.88), { per: 0.03, hold: 0.32, settle: 0.5, cool: "#f4eee2" });
+    [T(134.92), T(135.24), T(135.56), T(136.04), T(136.28)].forEach((c, i) =>
+      tl.fromTo($("s07-ever").children[i], { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, c));
+    tl.to("#s07-txt", { opacity: 0, x: -30, duration: 0.25, ease: "power2.in" }, S(137.05));
+
+    // "cutting the curve": portrait and quad share one expo.inOut zoom (12 fps); the cut lands at peak speed
+    gsap.set("#s07-wrap", { transformOrigin: "525px 437px" });
+    tl.set("#s07-b", { opacity: 0 }, 0);
+    const mid = FX.curveCut(tl, $("s07-wrap"), $("s07-a"), $("s07-b"), S(137.3), 1.0, { from: 1, to: 3.0 });
+    // after the cut the quad keeps drifting in (camera)
+    tl.to("#s07-wrap", { scale: 3.3, duration: 10.0 - (mid + 0.5), ease: "none" }, mid + 0.5);
+
+    // "founded in 1891" — label, then the yellow odometer
+    tl.fromTo("#s07-qshade", { opacity: 0 }, { opacity: 1, duration: 0.5 }, S(138.3));
+    FX.text.random(tl, $("s07-found"), T(138.44), { dur: 0.5, seed: 18 });
+    FX.text.odometer(tl, $("s07-1891"), T(139.24), { dur: 0.8, stagger: 0.07, seed: 91 });
+
+    FX.mount(tl, 10.0);
+    window.__timelines["s07"] = tl;
+  })();
+  </script>
+</template>
+</body>
+</html>

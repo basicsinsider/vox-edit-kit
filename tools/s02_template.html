@@ -47,8 +47,8 @@
             <feComposite in="SourceGraphic" in2="t" operator="in"/>
           </filter>
         </defs>
-        <path d="%%WEST%%" fill="#cf8a45" opacity="0.9" filter="url(#s02-burnA)"/>
-        <path d="%%EAST%%" fill="#3f7fb0" filter="url(#s02-burnB)"/>
+        <path d="%%WEST%%" fill="#e5482a" opacity="0.6" filter="url(#s02-burnA)"/>
+        <path d="%%EAST%%" fill="#a9c8de" opacity="0.8" filter="url(#s02-burnB)"/>
       </svg>
       <svg id="s02-lines" class="s02-svg" viewBox="0 0 6400 3200">
         <defs>
@@ -103,7 +103,8 @@
   <script>
   (function () {
     const tl = gsap.timeline({ paused: true });
-    const T = (s) => s - 32.9;
+    const T = (s) => s - 32.9;   // text cues (audited)
+    const S = T;                   // structural cues: camera, burns, pins, exits
     const $ = (id) => document.getElementById(id);
     const cam = (cx, cy, z) => ({ x: 960 - cx * z, y: 540 - cy * z, scale: z });
     FX.grain($("s02-grain"), 23);
@@ -112,7 +113,7 @@
     // camera: wide US -> drift -> push into Indianapolis
     gsap.set("#s02-cam", cam(3050, 1640, 0.335));
     tl.fromTo("#s02-cam", cam(3050, 1640, 0.335), Object.assign(cam(2950, 1600, 0.35), { duration: 8.4, ease: "none" }), 0);
-    tl.to("#s02-cam", Object.assign(cam(4184, 1223, 0.62), { duration: 1.6, ease: "power3.inOut" }), T(41.3));
+    tl.to("#s02-cam", Object.assign(cam(4184, 1223, 0.62), { duration: 0.95, ease: "power3.inOut" }), S(40.65));
 
     // foreground cloud fly-through reveals the map
     tl.fromTo("#s02-fg", { x: 0, opacity: 1, scale: 1.2 }, { x: -2600, opacity: 0, scale: 1.5, duration: 1.8, ease: "power2.in" }, 0);
@@ -121,12 +122,12 @@
     // "12 companies" — clusters drop in
     tl.fromTo("#s02-head", { opacity: 0 }, { opacity: 1, duration: 0.01 }, T(33.7));
     FX.text.count(tl, $("s02-head").querySelector(".n"), T(33.7), 0, 12, 0.6, (v) => String(Math.round(v)));
-    tl.fromTo(".s02-pin", { scale: 0, transformOrigin: "50% 50%" }, { scale: 1, duration: 0.35, stagger: 0.09, ease: "back.out(2.4)" }, T(33.8));
-    tl.fromTo(".s02-halo", { scale: 0.6, opacity: 0.7, transformOrigin: "50% 50%" }, { scale: 1.6, opacity: 0, duration: 1.2, stagger: 0.09, ease: "power2.out" }, T(33.8));
+    tl.fromTo(".s02-pin", { scale: 0, transformOrigin: "50% 50%" }, { scale: 1, duration: 0.35, stagger: 0.09, ease: "back.out(2.4)" }, S(33.8));
+    tl.fromTo(".s02-halo", { scale: 0.6, opacity: 0.7, transformOrigin: "50% 50%" }, { scale: 1.6, opacity: 0, duration: 1.2, stagger: 0.09, ease: "power2.out" }, S(33.8));
 
     // river draws on "Mississippi River"
-    tl.to("#s02-river, #s02-river-glow", { strokeDashoffset: 0, duration: 1.5, ease: FX.choppy("power2.inOut", 1.5, 12) }, T(37.0));
-    tl.fromTo("#s02-river-lab", { opacity: 0 }, { opacity: 1, duration: 0.5 }, T(37.8));
+    tl.to("#s02-river, #s02-river-glow", { strokeDashoffset: 0, duration: 1.5, ease: FX.choppy("power2.inOut", 1.5, 12) }, S(37.46));
+    tl.fromTo("#s02-river-lab", { opacity: 0 }, { opacity: 1, duration: 0.5 }, T(37.46));
 
     // burn-film reveal: west on "west", east on "east"
     const burn = (fill, c1, c2, t, d) => {
@@ -135,20 +136,20 @@
       tl.fromTo(s, { b: -12.5 }, { b: 1.2, duration: d, ease: FX.choppy("power1.inOut", d, 12), immediateRender: false,
         onUpdate: () => { $(fill).setAttribute("values", M(s.b)); $(c1).setAttribute("values", M(s.b + 2.2)); $(c2).setAttribute("values", M(s.b)); } }, t);
     };
-    burn("s02-bA", "s02-cA1", "s02-cA2", T(36.0), 1.9);
-    burn("s02-bB", "s02-cB1", "s02-cB2", T(40.2), 1.4);
-    tl.fromTo("#s02-wedge", { opacity: 0 }, { opacity: 1, duration: 0.6 }, T(37.4));
-    tl.fromTo("#s02-eedge", { opacity: 0 }, { opacity: 1, duration: 0.6 }, T(41.0));
-    tl.fromTo("#s02-west-lab", { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, T(36.9));
-    tl.fromTo("#s02-east-lab", { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, T(40.6));
-    tl.to("#s02-west-lab, #s02-east-lab, #s02-river-lab, #s02-head", { opacity: 0, duration: 0.4 }, T(41.3));
+    burn("s02-bA", "s02-cA1", "s02-cA2", S(36.0), 1.9);
+    burn("s02-bB", "s02-cB1", "s02-cB2", S(40.2), 1.4);
+    tl.fromTo("#s02-wedge", { opacity: 0 }, { opacity: 1, duration: 0.6 }, S(37.4));
+    tl.fromTo("#s02-eedge", { opacity: 0 }, { opacity: 1, duration: 0.6 }, S(41.0));
+    tl.fromTo("#s02-west-lab", { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, T(36.82));
+    tl.fromTo("#s02-east-lab", { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, T(40.50));
+    tl.to("#s02-west-lab, #s02-east-lab, #s02-river-lab, #s02-head", { opacity: 0, duration: 0.4 }, S(41.0));
 
     // Eli Lilly callout
-    tl.fromTo("#s02-indy-halo", { scale: 1, opacity: 0.8, transformOrigin: "50% 50%" }, { scale: 2.6, opacity: 0, duration: 0.9, repeat: 1, ease: "power2.out" }, T(41.5));
-    tl.fromTo("#s02-lead", { scaleX: 0 }, { scaleX: 1, duration: 0.3, ease: "power2.out" }, T(42.0));
-    tl.fromTo("#s02-card", { opacity: 0, x: -30 }, { opacity: 1, x: 0, duration: 0.45, ease: "power3.out" }, T(42.05));
-    FX.text.fill(tl, $("s02-card").querySelector(".name"), T(42.1), { per: 0.03, hold: 0.3, settle: 0.4, cool: "#f2cf3b" });
-    tl.fromTo("#s02-credit", { opacity: 0 }, { opacity: 1, duration: 0.3 }, T(42.05));
+    tl.fromTo("#s02-indy-halo", { scale: 1, opacity: 0.8, transformOrigin: "50% 50%" }, { scale: 2.6, opacity: 0, duration: 0.9, repeat: 1, ease: "power2.out" }, S(41.3));
+    tl.fromTo("#s02-lead", { scaleX: 0 }, { scaleX: 1, duration: 0.3, ease: "power2.out" }, S(41.4));
+    tl.fromTo("#s02-card", { opacity: 0, x: -30 }, { opacity: 1, x: 0, duration: 0.3, ease: "power3.out" }, S(41.4));
+    FX.text.fill(tl, $("s02-card").querySelector(".name"), T(41.46), { per: 0.03, hold: 0.3, settle: 0.4, cool: "#f2cf3b" });
+    tl.fromTo("#s02-credit", { opacity: 0 }, { opacity: 1, duration: 0.3 }, S(41.5));
 
     FX.mount(tl, 10.0);
     window.__timelines["s02"] = tl;
