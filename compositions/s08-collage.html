@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8" /></head>
+<body>
+<template>
+  <style>
+    #root { position: absolute; inset: 0; overflow: hidden; background: #ece3cf; }
+    #s08-paper { position: absolute; inset: 0; background-size: cover; mix-blend-mode: multiply; opacity: 0.6; }
+    #s08-board { position: absolute; inset: 0; transform-origin: 50% 50%; }
+    .s08-card { position: absolute; background: #f3ecdc; padding: 14px; filter: url(#s08-rough); box-shadow: 0 18px 40px rgba(35,48,58,0.28); }
+    .s08-card .ph { position: relative; width: 100%; height: 100%; overflow: hidden; }
+    .s08-card img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: url(#s08-tint) contrast(1.05); }
+    .s08-card .ht { position: absolute; inset: 0; background-size: 520px auto; mix-blend-mode: multiply; opacity: 0.55; }
+    #s08-terman { left: 150px; top: 120px; width: 560px; height: 600px; }
+    #s08-terman img { object-position: 45% 30%; }
+    #s08-stan { left: 800px; top: 150px; width: 960px; height: 520px; }
+    #s08-mit { left: 820px; top: 130px; width: 960px; height: 600px; }
+    .s08-tag { position: absolute; background: #23303a; color: #efe7d6; padding: 10px 18px 8px; font-size: 22px; }
+    #s08-tag-stan { left: 830px; top: 640px; }
+    #s08-tag-mit { left: 850px; top: 700px; }
+    #s08-tag-ter { left: 180px; top: 690px; }
+    #s08-year { position: absolute; left: 520px; top: 330px; font-size: 330px; color: #c0413a; line-height: 1; }
+    #s08-age { position: absolute; left: 560px; top: 640px; font-size: 40px; color: #23303a; }
+    #s08-east { position: absolute; left: 1330px; top: 40px; font-size: 96px; color: #c0413a; }
+    #s08-doc { position: absolute; left: 850px; top: 770px; font-size: 46px; color: #23303a; }
+    #s08-tl { position: absolute; left: 160px; top: 935px; width: 1600px; height: 80px; }
+    #s08-axis { position: absolute; left: 0; right: 0; top: 20px; height: 2px; background: #23303a; transform-origin: 0 50%; }
+    .s08-tick { position: absolute; top: 12px; width: 2px; height: 18px; background: #23303a; }
+    .s08-yr { position: absolute; top: 40px; font-size: 22px; color: #23303a; transform: translateX(-50%); }
+    #s08-dot { position: absolute; top: 9px; left: 0; width: 24px; height: 24px; margin-left: -12px; border-radius: 50%; background: #c0413a; }
+  </style>
+  <div id="root" data-composition-id="s08" data-width="1920" data-height="1080">
+    <svg id="s08-svg" width="0" height="0" style="position:absolute"></svg>
+    <div id="s08-board">
+      <div id="s08-stan" class="s08-card"><div class="ph"><img src="assets/archival/hoover/stanford_inner_quad_west_entrance_c1900.jpg" alt="" /><div class="ht" style="background-image:url('assets/textures/halftone_03.png')"></div></div></div>
+      <div id="s08-mit" class="s08-card"><div class="ph"><img src="assets/archival/collage/mit_aerial_1925.jpg" alt="" /><div class="ht" style="background-image:url('assets/textures/halftone_03.png')"></div></div></div>
+      <div id="s08-terman" class="s08-card"><div class="ph"><img src="assets/archival/collage/terman_frederick_1955.jpg" alt="" /><div class="ht" style="background-image:url('assets/textures/halftone_03.png')"></div></div></div>
+      <div id="s08-tag-ter" class="s08-tag t-label">Frederick Terman</div>
+      <div id="s08-tag-stan" class="s08-tag t-label">Stanford · the West</div>
+      <div id="s08-tag-mit" class="s08-tag t-label">MIT · Cambridge, Massachusetts</div>
+      <div id="s08-year" class="t-serif-i">1924</div>
+      <div id="s08-age" class="t-display">age 24</div>
+      <div id="s08-east" class="t-display">East →</div>
+      <div id="s08-doc" class="t-serif-i">for a doctorate in engineering</div>
+      <div id="s08-tl">
+        <div id="s08-axis"></div>
+        <div id="s08-ticks"></div>
+        <div id="s08-dot"></div>
+      </div>
+    </div>
+    <div id="s08-paper" style="background-image:url('assets/textures/paper_cream_01.jpg')"></div>
+    <div id="s08-grain" class="tx tx-grain" style="background-image:url('assets/textures/grain_02_norm.jpg'); opacity: 0.3"></div>
+    <audio id="s08-vo" src="vo10.mp3" data-start="0" data-duration="9.6" data-media-start="325.9" data-volume="1"></audio>
+  </div>
+  <script>
+  (function () {
+    const tl = gsap.timeline({ paused: true });
+    const T = (s) => s - 325.9;
+    const $ = (id) => document.getElementById(id);
+    const svg = $("s08-svg");
+    FX.tintDefs(svg, "s08-tint", "#23303a", "#efe7d6");
+    FX.roughDefs(svg, "s08-rough", { freq: 0.04, scale: 6 });
+    FX.grain($("s08-grain"), 81);
+    const C = (d, e) => FX.choppy(e || "power3.out", d, 12);
+
+    // timeline ticks 1900..1930
+    const X = (yr) => ((yr - 1898) / 34) * 1600;
+    const ticks = $("s08-ticks");
+    [1900, 1910, 1920, 1930].forEach((y) => {
+      ticks.insertAdjacentHTML("beforeend", `<div class="s08-tick" style="left:${X(y)}px"></div><div class="s08-yr t-label" style="left:${X(y)}px">${y}</div>`);
+    });
+
+    tl.fromTo("#s08-board", { scale: 1.0 }, { scale: 1.035, duration: 9.6, ease: "none" }, 0);
+    // opening collage: Terman + Stanford pinned down stop-motion style
+    tl.fromTo("#s08-terman", { y: 60, rotation: -9, opacity: 0 }, { y: 0, rotation: -3.5, opacity: 1, duration: 0.5, ease: C(0.5) }, 0.05);
+    tl.fromTo("#s08-tag-ter", { opacity: 0, x: -20 }, { opacity: 1, x: 0, duration: 0.3, ease: C(0.3) }, 0.4);
+    tl.fromTo("#s08-stan", { y: -60, rotation: 8, opacity: 0 }, { y: 0, rotation: 2.5, opacity: 1, duration: 0.5, ease: C(0.5) }, 0.25);
+    tl.fromTo("#s08-tag-stan", { opacity: 0, x: 20 }, { opacity: 1, x: 0, duration: 0.3, ease: C(0.3) }, 0.6);
+    tl.fromTo("#s08-axis", { scaleX: 0 }, { scaleX: 1, duration: 0.8, ease: C(0.8) }, 0.2);
+    tl.fromTo(".s08-tick, .s08-yr", { opacity: 0 }, { opacity: 1, duration: 0.01, stagger: 0.12 }, 0.4);
+    tl.fromTo("#s08-dot", { x: X(1900), scale: 0 }, { x: X(1900), scale: 1, duration: 0.3, ease: "back.out(3)" }, 0.6);
+
+    // "24 years old ... exactly in 1924"
+    tl.to("#s08-dot", { x: X(1924), duration: 2.0, ease: C(2.0, "power2.inOut") }, T(327.3));
+    tl.fromTo("#s08-age", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.3, ease: C(0.3) }, T(327.4));
+    tl.fromTo("#s08-year", { opacity: 0, scale: 1.25, rotation: -6 }, { opacity: 1, scale: 1, rotation: -3, duration: 0.35, ease: C(0.35, "back.out(2)") }, T(329.45));
+
+    // "goes east" — Stanford slides away, MIT pins on
+    tl.to("#s08-stan, #s08-tag-stan", { x: -200, y: 120, rotation: -6, opacity: 0, duration: 0.45, ease: C(0.45, "power2.in") }, T(331.0));
+    tl.fromTo("#s08-mit", { x: 260, rotation: 10, opacity: 0 }, { x: 0, rotation: -2, opacity: 1, duration: 0.5, ease: C(0.5) }, T(331.2));
+    tl.fromTo("#s08-east", { opacity: 0, x: -40 }, { opacity: 1, x: 0, duration: 0.35, ease: C(0.35) }, T(331.8));
+    tl.fromTo("#s08-tag-mit", { opacity: 0, x: 20 }, { opacity: 1, x: 0, duration: 0.3, ease: C(0.3) }, T(331.7));
+    tl.to("#s08-year, #s08-age", { opacity: 0.0, duration: 0.3 }, T(331.0));
+    tl.fromTo("#s08-doc", { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.4, ease: C(0.4) }, T(332.85));
+    tl.to("#s08-dot", { x: X(1925), duration: 0.6, ease: C(0.6) }, T(331.2));
+
+    FX.mount(tl, 9.6);
+    window.__timelines["s08"] = tl;
+  })();
+  </script>
+</template>
+</body>
+</html>

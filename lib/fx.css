@@ -1,0 +1,125 @@
+/* Shared look for every Taiwan-edit scene. Fonts: Cooper Hewitt, Haskoy, Crimson Pro only. */
+@font-face { font-family: "Haskoy"; src: url("../assets/fonts/Haskoy-Regular.otf"); font-weight: 400; }
+@font-face { font-family: "Haskoy"; src: url("../assets/fonts/Haskoy-Medium.otf"); font-weight: 500; }
+@font-face { font-family: "Haskoy"; src: url("../assets/fonts/Haskoy-SemiBold.otf"); font-weight: 600; }
+@font-face { font-family: "Haskoy"; src: url("../assets/fonts/Haskoy-Bold.otf"); font-weight: 700; }
+@font-face { font-family: "Haskoy"; src: url("../assets/fonts/Haskoy-ExtraBold.otf"); font-weight: 800; }
+@font-face { font-family: "Haskoy"; src: url("../assets/fonts/Haskoy-Italic.otf"); font-weight: 400; font-style: italic; }
+@font-face { font-family: "Cooper Hewitt"; src: url("../assets/fonts/CooperHewitt-Book.otf"); font-weight: 400; }
+@font-face { font-family: "Cooper Hewitt"; src: url("../assets/fonts/CooperHewitt-Medium.otf"); font-weight: 500; }
+@font-face { font-family: "Cooper Hewitt"; src: url("../assets/fonts/CooperHewitt-Semibold.otf"); font-weight: 600; }
+@font-face { font-family: "Cooper Hewitt"; src: url("../assets/fonts/CooperHewitt-Bold.otf"); font-weight: 700; }
+@font-face { font-family: "Cooper Hewitt"; src: url("../assets/fonts/CooperHewitt-Heavy.otf"); font-weight: 800; }
+@font-face { font-family: "Crimson Pro"; src: url("../assets/fonts/CrimsonPro-VariableFont_wght.ttf"); font-weight: 200 900; }
+@font-face { font-family: "Crimson Pro"; src: url("../assets/fonts/CrimsonPro-Italic-VariableFont_wght.ttf"); font-weight: 200 900; font-style: italic; }
+
+:root {
+  /* ===== Video palette: "Silicon Valley, 1891–1939" =====
+     60% neutral ground (paper OR night) · 30% ink + photo greys · 10% accent.
+     Max two accents in one frame. West = vermilion, East = navy, everywhere (maps, charts, labels).
+     Yellow is ONLY for the highlighter and the single key number of a scene. */
+  --paper: #efe7d5;        /* light ground (charts, collage, newsprint) */
+  --paper-2: #e4d9c3;      /* card / panel on paper */
+  --ink: #18222f;          /* text + rules on paper (never pure black) */
+  --ink-soft: #4b5563;
+  --night: #141312;        /* dark ground (cinematic / archival scenes) */
+  --bone: #f4eee2;         /* text on night (never pure white) */
+  --vermilion: #e5482a;    /* primary accent: emphasis, West, bars, pins */
+  --navy: #23415e;         /* secondary: East, water, cool fills */
+  --sky: #a9c8de;          /* light secondary (backgrounds, East light fill) */
+  --yellow: #f2d33b;       /* highlighter + one key number only */
+  --sepia-dark: #2a2622;   /* photo tint: blacks map here */
+  --sepia-light: #ede3cf;  /* photo tint: whites map here */
+  /* legacy aliases used by the first samples */
+  --ink-2: #1f1d1b; --ember: #ff6a3d; --west: #e5482a; --east: #23415e; --rust: #a8432f; --sage: #4f7d5c;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { margin: 0; width: 1920px; height: 1080px; overflow: hidden; background: var(--night); }
+body { font-family: "Haskoy", sans-serif; color: var(--bone); -webkit-font-smoothing: antialiased; }
+
+.full { position: absolute; inset: 0; width: 100%; height: 100%; }
+.cover { object-fit: cover; }
+.layer { position: absolute; inset: 0; }
+
+/* ---- Film-title typography: halation glow + softness (grain comes from the overlay) ---- */
+.halate {
+  color: var(--bone);
+  filter: blur(0.45px);
+  text-shadow:
+    0 0 1px rgba(255, 240, 220, 0.9),
+    0 0 6px rgba(255, 120, 70, 0.55),
+    0 0 18px rgba(255, 90, 50, 0.32),
+    0 0 42px rgba(255, 80, 40, 0.18);
+}
+.halate.yellow {
+  color: var(--yellow);
+  text-shadow:
+    0 0 1px rgba(255, 245, 190, 0.9),
+    0 0 7px rgba(255, 170, 40, 0.6),
+    0 0 20px rgba(255, 110, 30, 0.35),
+    0 0 46px rgba(255, 80, 20, 0.2);
+}
+.halate.cool {
+  text-shadow:
+    0 0 1px rgba(235, 245, 255, 0.9),
+    0 0 6px rgba(140, 190, 255, 0.45),
+    0 0 18px rgba(255, 110, 70, 0.22),
+    0 0 40px rgba(120, 160, 255, 0.15);
+}
+.halate.ink {
+  color: #1b1a18;
+  filter: blur(0.4px);
+  text-shadow: 0 0 1px rgba(27, 26, 24, 0.6), 0 0 8px rgba(160, 60, 30, 0.18);
+}
+
+.t-display { font-family: "Haskoy", sans-serif; font-weight: 800; letter-spacing: -0.02em; line-height: 0.92; }
+.t-serif { font-family: "Crimson Pro", serif; font-weight: 500; }
+.t-serif-i { font-family: "Crimson Pro", serif; font-style: italic; font-weight: 400; }
+.t-label { font-family: "Cooper Hewitt", sans-serif; font-weight: 600; text-transform: uppercase; letter-spacing: 0.18em; }
+
+.char, .word { display: inline-block; white-space: pre; }
+.reel { display: inline-block; overflow: hidden; vertical-align: bottom; position: relative; }
+.reel-strip { display: block; }
+.reel-strip > span { display: block; text-align: center; }
+
+/* ---- Texture overlays (Texturelabs). Keep subtle. ---- */
+.tx { position: absolute; inset: -40px; background-size: cover; background-position: center; pointer-events: none; }
+.tx-grain { mix-blend-mode: overlay; opacity: 0.38; background-size: 900px auto; background-repeat: repeat; }
+.tx-dust { mix-blend-mode: screen; opacity: 0.42; }
+.tx-paper { mix-blend-mode: multiply; opacity: 0.55; }
+.tx-overlay { mix-blend-mode: overlay; opacity: 0.35; }
+.tx-soft { mix-blend-mode: soft-light; opacity: 0.45; }
+.tx-halftone { mix-blend-mode: overlay; opacity: 0.3; background-size: 700px auto; background-repeat: repeat; }
+.vignette {
+  position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(ellipse 75% 70% at 50% 50%, rgba(0,0,0,0) 55%, rgba(8,6,4,0.55) 100%);
+}
+
+/* ---- Photo plate: fringe blur (soft edges, sharp centre) ---- */
+.plate { position: absolute; inset: 0; overflow: hidden; }
+.plate .img, .plate .fringe { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.plate .fringe {
+  filter: blur(7px);
+  -webkit-mask-image: radial-gradient(ellipse 60% 58% at 50% 46%, transparent 45%, #000 100%);
+          mask-image: radial-gradient(ellipse 60% 58% at 50% 46%, transparent 45%, #000 100%);
+}
+
+/* ---- Light streaks canvas ---- */
+.streaks { position: absolute; inset: 0; width: 100%; height: 100%; mix-blend-mode: screen; }
+
+/* ---- Shutter (iris) ---- */
+.iris { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+
+/* ---- Paper theme building blocks ---- */
+.paper-ground { position: absolute; inset: 0; background: var(--paper); }
+.paper-tex { position: absolute; inset: 0; background-size: cover; mix-blend-mode: multiply; opacity: 0.55; pointer-events: none; }
+.folds { position: absolute; inset: 0; pointer-events: none; opacity: 0.5;
+  background:
+    linear-gradient(90deg, transparent 49.85%, rgba(24,34,47,0.10) 50%, rgba(255,255,255,0.35) 50.15%, transparent 50.4%),
+    linear-gradient(0deg, transparent 49.8%, rgba(24,34,47,0.08) 50%, rgba(255,255,255,0.3) 50.2%, transparent 50.5%); }
+.label-box { display: inline-block; background: var(--ink); color: var(--paper); font-family: "Haskoy", sans-serif; font-weight: 800; padding: 0.06em 0.22em 0.02em; line-height: 1; }
+.hl { position: relative; display: inline-block; z-index: 0; }
+.hl::before { content: ""; position: absolute; left: -0.08em; right: -0.08em; top: 0.18em; bottom: 0.02em; background: var(--yellow);
+  z-index: -1; transform: scaleX(var(--hl, 1)); transform-origin: 0 50%; }
+.t-ink { color: var(--ink); }

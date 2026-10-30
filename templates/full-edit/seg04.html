@@ -1,0 +1,972 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8" /></head>
+<body>
+<template>
+  <style>
+    #root { position: absolute; inset: 0; overflow: hidden; background: var(--night); }
+    #root .scene { position: absolute; inset: 0; overflow: hidden; visibility: hidden; opacity: 0; }
+    #root .scene.paper { background: var(--paper); }
+    #root .scene.night { background: var(--night); }
+    .seg04-tex { position: absolute; inset: 0; pointer-events: none; }
+    .seg04-svg { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; pointer-events: none; }
+    /* collage cards (s08 style) */
+    .seg04-card { position: absolute; background: #f3ecdc; padding: 14px; filter: url(#seg04-rough); box-shadow: 0 18px 40px rgba(35,48,58,0.28); }
+    .seg04-card .ph { position: relative; width: 100%; height: 100%; overflow: hidden; }
+    .seg04-card .ph img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: url(#seg04-tint-ink) contrast(1.05); }
+    .seg04-card .ht { position: absolute; inset: 0; background-size: 520px auto; mix-blend-mode: multiply; opacity: 0.5; }
+    .seg04-tag { position: absolute; background: var(--ink); color: var(--paper); padding: 10px 18px 8px; font-size: 24px; }
+    /* R10 numbered pin (shared with SC085): Haskoy number on a coloured disc, bone ring */
+    .seg04-pin { position: absolute; width: 64px; height: 64px; margin: -32px 0 0 -32px; border-radius: 50%; border: 6px solid var(--bone);
+      color: var(--bone); font-size: 34px; line-height: 52px; text-align: center; box-shadow: 0 6px 14px rgba(0,0,0,0.35); }
+    .seg04-pin.navy { background: var(--navy); } .seg04-pin.verm { background: var(--vermilion); }
+    .seg04-maplab { position: absolute; font-size: 30px; padding: 8px 14px 6px; white-space: nowrap; }
+
+    /* ---------- SC048 born 1900 ---------- */
+    #seg04-sc048-wrap { position: absolute; inset: 0; }
+    #seg04-sc048-born { position: absolute; left: 0; right: 0; top: 262px; text-align: center; font-size: 32px; color: var(--ink-soft); }
+    #seg04-sc048-y1 { position: absolute; left: 560px; width: 800px; top: 320px; text-align: center; font-size: 300px; color: var(--ink); }
+    #seg04-sc048-y2 { position: absolute; left: 560px; width: 800px; top: 320px; text-align: center; font-size: 300px; color: var(--navy); opacity: 0; }
+    #seg04-sc048-lucky { position: absolute; left: 0; right: 0; top: 690px; text-align: center; font-size: 72px; color: var(--ink); }
+    #seg04-sc048-age { position: absolute; left: 0; right: 0; top: 168px; text-align: center; font-size: 40px; color: var(--ink); opacity: 0; }
+    #seg04-sc048-age .n { color: var(--vermilion); }
+
+    /* ---------- SC049 accomplished (Vox layered) ---------- */
+    #seg04-sc049-bgwrap { position: absolute; inset: -80px; }
+    .seg04-l49 { position: absolute; background-size: cover; background-position: center; }
+    #seg04-sc049-bg1 { inset: 0; filter: url(#seg04-tint-night) blur(2px); opacity: 0.85; }
+    #seg04-sc049-bg3 { left: -40px; top: 600px; width: 940px; height: 560px; filter: url(#seg04-tint-night); box-shadow: 30px -20px 80px rgba(0,0,0,0.55); background-position: center 40%; }
+    #seg04-sc049-bgtx { position: absolute; inset: 0; background-size: cover; mix-blend-mode: overlay; opacity: 0.5; }
+    #seg04-sc049-shade { position: absolute; inset: 0; background: radial-gradient(ellipse 65% 70% at 50% 60%, rgba(16,15,14,0.25), rgba(16,15,14,0.78)); }
+    #seg04-sc049-book { position: absolute; left: 1230px; top: 70px; width: 560px; height: 908px; background-size: 100% 100%; filter: sepia(0.25) brightness(0.8) contrast(1.05);
+      box-shadow: -30px 30px 80px rgba(0,0,0,0.6); }
+    #seg04-sc049-ter { position: absolute; left: 150px; top: 150px; height: 930px; filter: url(#seg04-tint-bone) drop-shadow(0 30px 50px rgba(0,0,0,0.6)); }
+    #seg04-sc049-word { position: absolute; left: 330px; width: 800px; top: 800px; text-align: center; font-size: 126px; white-space: nowrap; }
+
+    /* ---------- SC050 the 1916 book ---------- */
+    #seg04-sc050-cam { position: absolute; inset: 0; transform-origin: 480px 480px; }
+    #seg04-sc050-stage { position: absolute; inset: 0; perspective: 2400px; perspective-origin: 480px 500px; }
+    #seg04-sc050-book { position: absolute; left: 680px; top: 86px; width: 560px; height: 908px; transform-style: preserve-3d; }
+    .seg04-pg { position: absolute; inset: 0; background-size: 100% 100%; box-shadow: 0 24px 60px rgba(35,48,58,0.35); }
+    #seg04-sc050-chart { filter: sepia(0.15) contrast(1.04); }
+    #seg04-sc050-flip { position: absolute; inset: 0; transform-style: preserve-3d; transform-origin: 0 50%; }
+    #seg04-sc050-front { backface-visibility: hidden; filter: sepia(0.15) contrast(1.04); }
+    #seg04-sc050-back { background: #e8dcc2; transform: rotateY(180deg); backface-visibility: hidden; }
+    .seg04-pg .ht { position: absolute; inset: 0; background-size: 300px auto; mix-blend-mode: overlay; opacity: 0.35; }
+    .seg04-hl50 { position: absolute; background: var(--yellow); mix-blend-mode: multiply; transform-origin: 0 50%; filter: url(#seg04-roughhl); opacity: 0.9; }
+    #seg04-sc050-hl1 { left: 66px; top: 96px; width: 386px; height: 48px; }
+    #seg04-sc050-hl2 { left: 88px; top: 140px; width: 334px; height: 48px; }
+    #seg04-sc050-por { position: absolute; left: 1010px; top: 150px; width: 250px; height: 250px; border-radius: 50%; filter: drop-shadow(0 12px 22px rgba(35,48,58,0.3)); }
+    #seg04-sc050-ring { position: absolute; left: 1004px; top: 144px; width: 262px; height: 262px; border-radius: 50%; border: 4px solid var(--ink); }
+    #seg04-sc050-name { position: absolute; left: 1006px; top: 450px; font-size: 118px; color: var(--ink); white-space: nowrap; }
+    #seg04-sc050-role { position: absolute; left: 1012px; top: 572px; font-size: 58px; color: var(--ink); }
+    #seg04-sc050-inv { position: absolute; left: 1008px; top: 700px; font-size: 84px; color: var(--ink); white-space: nowrap; }
+
+    /* ---------- SC051 1950s portable TV ---------- */
+    #seg04-sc051-glow { position: absolute; left: -300px; top: -400px; width: 1600px; height: 1300px;
+      background: radial-gradient(ellipse at center, rgba(255,186,120,0.20), rgba(255,150,90,0.06) 45%, rgba(0,0,0,0) 70%); }
+    #seg04-sc051-wall { position: absolute; inset: 0; background: linear-gradient(180deg, #1a1714 0%, #121010 70%); }
+    #seg04-sc051-table { position: absolute; left: -100px; right: -100px; top: 905px; height: 300px; background: linear-gradient(180deg, #2a2019 0%, #1a130f 40%, #0d0a08 100%);
+      box-shadow: 0 -2px 0 rgba(255,210,170,0.12); }
+    #seg04-sc051-set { position: absolute; left: 150px; top: 60px; width: 980px; height: 930px; transform-origin: 50% 90%; }
+    #seg04-sc051-shadow { position: absolute; left: 30px; top: 870px; width: 920px; height: 70px; border-radius: 50%; background: rgba(0,0,0,0.7); filter: blur(22px); }
+    #seg04-sc051-screen { position: absolute; left: 252px; top: 222px; width: 506px; height: 398px; overflow: hidden; border-radius: 23% / 27%; background: #0b0b0b; }
+    #seg04-sc051-inner { position: absolute; inset: 0; transform-origin: 50% 50%; }
+    #seg04-sc051-vid { position: absolute; left: -70px; top: -60px; width: 646px; height: 518px; object-fit: cover; }
+    #seg04-sc051-glare { position: absolute; inset: 0; background: radial-gradient(ellipse 70% 60% at 32% 24%, rgba(255,255,255,0.16), rgba(255,255,255,0) 60%),
+      radial-gradient(ellipse 95% 90% at 50% 50%, rgba(0,0,0,0) 60%, rgba(0,0,0,0.6) 100%); }
+    #seg04-sc051-flash { position: absolute; inset: 0; background: #f4f1ea; opacity: 0; }
+    #seg04-sc051-tv { position: absolute; left: 0; top: 0; width: 980px; height: 930px; filter: brightness(0.82) contrast(1.05); }
+    #seg04-sc051-dad { position: absolute; left: 1200px; top: 360px; font-size: 68px; color: #e8dccb; white-space: nowrap; }
+    #seg04-sc051-inv { position: absolute; left: 1192px; top: 460px; font-size: 128px; white-space: nowrap; }
+
+    /* ---------- SC052 collage + timeline (s08) ---------- */
+    #seg04-sc052-board { position: absolute; inset: 0; transform-origin: 50% 50%; }
+    #seg04-sc052-ter { left: 170px; top: 110px; width: 440px; height: 620px; }
+    #seg04-sc052-ter .ph img { object-position: 50% 8%; }
+    #seg04-sc052-stan { left: 720px; top: 150px; width: 1000px; height: 560px; }
+    #seg04-sc052-stan .ph img { object-position: 50% 60%; }
+    #seg04-sc052-map { left: 720px; top: 150px; width: 1000px; height: 560px; }
+    #seg04-sc052-map .ph img { filter: grayscale(1) sepia(0.35) contrast(1.05); object-position: 50% 50%; }
+    #seg04-sc052-tagt { left: 150px; top: 84px; }
+    #seg04-sc052-tags { left: 1500px; top: 668px; }
+    #seg04-sc052-und { position: absolute; left: 1506px; top: 724px; font-size: 62px; color: var(--ink); }
+    #seg04-sc052-24 { position: absolute; left: 430px; top: 470px; font-size: 300px; color: var(--vermilion); }
+    #seg04-sc052-yo { position: absolute; left: 470px; top: 762px; font-size: 26px; color: var(--ink); }
+    #seg04-sc052-tl { position: absolute; left: 160px; top: 935px; width: 1600px; height: 80px; }
+    #seg04-sc052-axis { position: absolute; left: 0; right: 0; top: 20px; height: 2px; background: var(--ink); transform-origin: 0 50%; }
+    .seg04-tick { position: absolute; top: 12px; width: 2px; height: 18px; background: var(--ink); }
+    .seg04-yr { position: absolute; top: 40px; font-size: 22px; color: var(--ink); transform: translateX(-50%); }
+    #seg04-sc052-dot { position: absolute; top: 9px; left: 0; width: 24px; height: 24px; margin-left: -12px; border-radius: 50%; background: var(--vermilion); }
+    #seg04-sc052-1924 { position: absolute; top: 805px; width: 400px; margin-left: -200px; text-align: center; font-size: 116px; color: var(--ink); }
+
+    /* ---------- SC053 R10-A railroad map ---------- */
+    .seg04-mapstage { position: absolute; inset: 0; perspective: 2200px; perspective-origin: 960px 540px; }
+    .seg04-tilt { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 960px 540px; }
+    .seg04-mapcam { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
+    .seg04-mapcam > img { position: absolute; left: 0; top: 0; width: 100%; height: 100%; }
+    .seg04-mapcam .ht { position: absolute; inset: 0; background-size: 900px auto; mix-blend-mode: overlay; opacity: 0.32; }
+    .seg04-mapcam .pp { position: absolute; inset: 0; background-size: cover; mix-blend-mode: multiply; opacity: 0.45; }
+    .seg04-mapcam svg { position: absolute; left: 0; top: 0; overflow: visible; }
+    #seg04-sc053-cam { width: 3840px; height: 2827px; box-shadow: 0 40px 120px rgba(35,48,58,0.45); }
+    #seg04-sc053-cam > img { filter: sepia(0.35) saturate(0.55) contrast(1.05) brightness(1.02); }
+    #seg04-sc053-edge { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(239,231,213,0.55), rgba(239,231,213,0) 22%), radial-gradient(ellipse 80% 75% at 50% 55%, rgba(0,0,0,0) 60%, rgba(40,34,26,0.35)); }
+    .seg04-slip { position: absolute; left: 96px; top: 760px; padding: 22px 34px 26px; background: #f3ecdc; filter: url(#seg04-rough); box-shadow: 0 18px 40px rgba(35,48,58,0.35); }
+    .seg04-slip .a { font-size: 66px; color: var(--ink); line-height: 1.05; }
+    .seg04-slip .b { display: inline-block; margin-top: 10px; font-size: 28px; background: var(--ink); color: var(--paper); padding: 8px 14px 6px; }
+    .seg04-slip .c { font-size: 56px; color: var(--ink); margin-top: 6px; line-height: 1.05; }
+
+    /* ---------- SC054 MIT aerial ---------- */
+    #seg04-sc054-weave { position: absolute; inset: -16px; }
+    #seg04-sc054-plate { transform-origin: 661px 540px; }
+    #seg04-sc054-plate .img, #seg04-sc054-plate .fringe { filter: grayscale(1) contrast(1.08) brightness(0.86); }
+    #seg04-sc054-plate .fringe { filter: grayscale(1) contrast(1.08) brightness(0.86) blur(7px); }
+    .seg04-cool { position: absolute; inset: 0; background: var(--navy); mix-blend-mode: soft-light; opacity: 0.75; pointer-events: none; }
+    #seg04-sc054-low { position: absolute; left: 0; right: 0; bottom: 0; height: 420px; background: linear-gradient(180deg, rgba(13,12,11,0), rgba(13,12,11,0.8)); }
+    #seg04-sc054-txt { position: absolute; left: 110px; bottom: 104px; font-size: 64px; }
+
+    /* ---------- SC055 SILICON VALLEY (cool streaks) ---------- */
+    #seg04-sc055-bg { position: absolute; inset: -40px; background-size: cover; background-position: 34% 50%; filter: grayscale(1) blur(3px); opacity: 0.15; transform: scale(1.6); }
+    #seg04-sc055-glow { position: absolute; left: 210px; top: 90px; width: 1500px; height: 900px;
+      background: radial-gradient(ellipse at center, rgba(120,160,230,0.15), rgba(80,120,200,0.05) 45%, transparent 70%); }
+    #seg04-sc055-lab { position: absolute; left: 0; right: 0; top: 372px; text-align: center; font-size: 32px; }
+    #seg04-sc055-ttl { position: absolute; left: 0; right: 0; top: 448px; text-align: center; height: 190px; }
+    #seg04-sc055-ttl .t { position: absolute; left: 0; right: 0; top: 0; font-size: 200px; letter-spacing: 0.02em; white-space: nowrap; }
+    #seg04-sc055-sv { filter: url(#seg04-choke55); }
+    #seg04-sc055-ghost { color: transparent; -webkit-text-stroke: 2px rgba(244,238,226,0.42); opacity: 0; }
+    #seg04-sc055-q { position: absolute; left: 1700px; top: 380px; font-size: 230px; opacity: 0; }
+    #seg04-sc055-dot { position: absolute; left: 928px; top: 508px; }
+
+    /* ---------- SC056 R10-B Boston topo ---------- */
+    #seg04-sc056-cam { width: 4738px; height: 5963px; }
+    #seg04-sc056-cam > img { filter: sepia(0.4) saturate(0.5) contrast(1.08) brightness(1.0); }
+    #seg04-sc056-boston { position: absolute; right: 110px; bottom: 96px; font-size: 220px; color: var(--ink); text-shadow: 0 0 30px rgba(239,231,213,0.9), 0 0 8px rgba(239,231,213,0.9); }
+
+    /* ---------- SC057 MIT -> Harvard (shutter) ---------- */
+    #seg04-sc057-weave { position: absolute; inset: -16px; }
+    .seg04-shot57 { position: absolute; inset: 0; }
+    #seg04-sc057-a .plate { inset: auto; left: 0; top: 0; width: 3356px; height: 1080px; }
+    .seg04-shot57 .plate .img, .seg04-shot57 .plate .fringe { filter: grayscale(1) sepia(0.15) contrast(1.08) brightness(0.88); }
+    .seg04-shot57 .plate .fringe { filter: grayscale(1) sepia(0.15) contrast(1.08) brightness(0.88) blur(7px); }
+    #seg04-sc057-b .plate .img, #seg04-sc057-b .plate .fringe { object-position: 50% 35%; }
+    #seg04-sc057-low { position: absolute; left: 0; right: 0; bottom: 0; height: 460px; background: linear-gradient(180deg, rgba(13,12,11,0), rgba(13,12,11,0.78)); }
+    .seg04-n57 { position: absolute; left: 110px; bottom: 96px; font-size: 200px; opacity: 0; }
+
+    /* ---------- SC058 triangle diagram ---------- */
+    #seg04-sc058-cam { position: absolute; inset: 0; transform-origin: 960px 600px; }
+    .seg04-node { position: absolute; width: 270px; height: 270px; margin: -135px 0 0 -135px; border-radius: 50%; overflow: hidden; background: var(--paper-2);
+      box-shadow: 0 0 0 5px var(--ink), 0 16px 34px rgba(35,48,58,0.3); }
+    .seg04-node img { position: absolute; filter: url(#seg04-tint-ink) contrast(1.1); }
+    .seg04-node .ht { position: absolute; inset: 0; background-size: 300px auto; mix-blend-mode: multiply; opacity: 0.55; }
+    .seg04-nlab { position: absolute; width: 600px; margin-left: -300px; text-align: center; font-size: 34px; color: var(--ink); }
+    #seg04-sc058-lead { position: absolute; width: 700px; margin-left: -350px; text-align: center; font-size: 46px; color: var(--ink); }
+    .seg04-flow { position: absolute; width: 14px; height: 14px; margin: -7px 0 0 -7px; border-radius: 50%; background: var(--ink); }
+
+    /* ---------- SC059 free flow (weave) ---------- */
+    #seg04-sc059-weave { position: absolute; inset: -16px; }
+    #seg04-sc059-vid { position: absolute; left: 0; top: -90px; width: 1952px; height: 1260px; object-fit: cover; }
+    #seg04-sc059-sep { position: absolute; inset: 0; background: #6b5a44; mix-blend-mode: soft-light; opacity: 0.55; }
+    #seg04-sc059-low { position: absolute; left: 0; right: 0; bottom: 0; height: 480px; background: linear-gradient(180deg, rgba(13,12,11,0), rgba(13,12,11,0.82)); }
+    #seg04-sc059-txt { position: absolute; left: 110px; bottom: 100px; font-size: 84px; }
+    .seg04-fd { position: absolute; width: 16px; height: 16px; margin: -8px 0 0 -8px; border-radius: 50%; background: var(--bone);
+      box-shadow: 0 0 0 2px rgba(244,238,226,0.35), 0 0 14px rgba(255,220,180,0.6); }
+    #seg04-sc059-dots { position: absolute; inset: 0; opacity: 0.4; mix-blend-mode: screen; }
+
+    /* ---------- SC060 logos -> MIT ---------- */
+    #seg04-sc060-board { position: absolute; inset: 0; transform-origin: 960px 540px; }
+    #seg04-sc060-mit { left: 660px; top: 330px; width: 600px; height: 400px; }
+    #seg04-sc060-tagm { left: 690px; top: 694px; }
+    .seg04-lcard { position: absolute; background: #f3ecdc; filter: url(#seg04-rough); box-shadow: 0 16px 34px rgba(35,48,58,0.28); text-align: center; color: var(--ink); }
+    #seg04-sc060-ge { left: 170px; top: 130px; width: 340px; height: 390px; }
+    #seg04-sc060-gelogo { position: absolute; left: 50px; top: 36px; width: 240px; height: 240px; background: var(--ink);
+      -webkit-mask: url('assets/archival/brain_drain/ge_logo.svg') center / contain no-repeat; mask: url('assets/archival/brain_drain/ge_logo.svg') center / contain no-repeat; }
+    #seg04-sc060-att { left: 1410px; top: 110px; width: 340px; height: 400px; }
+    #seg04-sc060-attlogo { position: absolute; left: 40px; top: 30px; width: 260px; height: 260px; object-fit: contain; filter: url(#seg04-tint-ink); }
+    #seg04-sc060-bl { left: 1290px; top: 700px; width: 470px; height: 240px; }
+    .seg04-lcard .cap { position: absolute; left: 0; right: 0; bottom: 30px; font-size: 24px; }
+    #seg04-sc060-bl .w { position: absolute; left: 0; right: 0; top: 40px; font-size: 104px; }
+    #seg04-sc060-visit { position: absolute; left: 180px; top: 800px; font-size: 78px; color: var(--ink); }
+
+    /* ---------- SC061 fund labs (Vox layered) ---------- */
+    #seg04-sc061-bgwrap { position: absolute; inset: -80px; }
+    #seg04-sc061-bg1 { position: absolute; inset: 0; background-size: cover; background-position: center; filter: url(#seg04-tint-night) blur(2px); opacity: 0.85; }
+    #seg04-sc061-mit { position: absolute; left: 740px; top: 410px; width: 600px; height: 400px; background-size: cover; background-position: center; filter: url(#seg04-tint-night);
+      box-shadow: -30px 30px 80px rgba(0,0,0,0.55); }
+    #seg04-sc061-vp { position: absolute; left: 20px; top: 640px; width: 820px; height: 560px; overflow: hidden; box-shadow: 30px -20px 80px rgba(0,0,0,0.55); }
+    #seg04-sc061-vid { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: grayscale(1) sepia(0.3) brightness(0.62) contrast(1.05); }
+    #seg04-sc061-bgtx { position: absolute; inset: 0; background-size: cover; mix-blend-mode: overlay; opacity: 0.45; }
+    #seg04-sc061-shade { position: absolute; inset: 0; background: radial-gradient(ellipse 65% 70% at 40% 55%, rgba(16,15,14,0.05), rgba(16,15,14,0.62)); }
+    #seg04-sc061-tubewrap { position: absolute; left: 330px; top: 130px; width: 584px; height: 818px; transform-origin: 50% 90%; }
+    #seg04-sc061-tglow { position: absolute; left: -200px; top: -120px; width: 984px; height: 900px; background: radial-gradient(ellipse at 50% 40%, rgba(255,190,120,0.28), rgba(255,150,80,0.06) 45%, rgba(0,0,0,0) 70%); }
+    #seg04-sc061-tube { position: absolute; left: 0; top: 0; width: 584px; height: 818px; filter: sepia(0.2) contrast(1.05) drop-shadow(0 30px 40px rgba(0,0,0,0.6)); }
+    #seg04-sc061-tag { position: absolute; left: 330px; top: 560px; width: 200px; height: 120px; background: #efe5cf; filter: url(#seg04-rough);
+      box-shadow: 0 14px 26px rgba(0,0,0,0.5); transform-origin: 0 50%; color: var(--ink); }
+    #seg04-sc061-tag .hole { position: absolute; left: 18px; top: 50px; width: 18px; height: 18px; border-radius: 50%; background: #2b2724; }
+    #seg04-sc061-tag .d { position: absolute; left: 56px; top: 4px; font-size: 96px; color: var(--vermilion); }
+    #seg04-sc061-string { position: absolute; left: 260px; top: 548px; width: 90px; height: 70px; overflow: visible; }
+    #seg04-sc061-fund { position: absolute; left: 1060px; top: 190px; font-size: 150px; white-space: nowrap; }
+    #seg04-sc061-prof { position: absolute; left: 1070px; top: 390px; font-size: 74px; color: #e8dccb; white-space: nowrap; }
+    #seg04-sc061-com { position: absolute; left: 1062px; top: 520px; font-size: 118px; white-space: nowrap; }
+    .seg04-credit { position: absolute; right: 24px; bottom: 16px; font-size: 13px; color: rgba(244,238,226,0.55); }
+
+    /* ---------- SC062 MIT Bulletin (typeset recreation) ---------- */
+    #seg04-sc062-cam { position: absolute; inset: 0; transform-origin: 1490px 330px; }
+    #seg04-sc062-stage { position: absolute; inset: 0; perspective: 2600px; perspective-origin: 700px 400px; }
+    #seg04-sc062-page { position: absolute; left: 230px; top: 50px; width: 860px; height: 1120px; background: #f1e8d2; padding: 54px 70px; color: #2a2723;
+      box-shadow: 0 40px 90px rgba(35,48,58,0.38); transform-origin: 50% 30%; }
+    #seg04-sc062-page .pp { position: absolute; inset: 0; background-size: cover; mix-blend-mode: multiply; opacity: 0.6; }
+    #seg04-sc062-page .ht { position: absolute; inset: 0; background-size: 300px auto; mix-blend-mode: overlay; opacity: 0.3; }
+    .seg04-b-rule { height: 0; border-top: 3px solid #2a2723; border-bottom: 1px solid #2a2723; padding-top: 3px; margin: 10px 0; }
+    .seg04-b-k { text-align: center; font-size: 24px; letter-spacing: 0.35em; }
+    .seg04-b-inst { text-align: center; font-size: 31px; letter-spacing: 0.02em; font-weight: 600; margin-top: 6px; white-space: nowrap; }
+    .seg04-b-city { text-align: center; font-size: 22px; letter-spacing: 0.3em; margin-top: 4px; }
+    .seg04-b-course { text-align: center; font-size: 92px; font-weight: 700; margin-top: 40px; line-height: 1; }
+    .seg04-b-dept { text-align: center; font-size: 48px; margin-top: 4px; }
+    .seg04-b-h { text-align: center; font-size: 50px; font-weight: 600; margin-top: 40px; position: relative; display: block; }
+    .seg04-b-h span { position: relative; }
+    #seg04-sc062-hl { position: absolute; left: -12px; right: -12px; top: 6px; bottom: -2px; background: var(--yellow); mix-blend-mode: multiply; transform-origin: 0 50%; filter: url(#seg04-roughhl); opacity: 0.9; }
+    .seg04-b-p { font-size: 27px; line-height: 1.45; text-align: justify; margin-top: 20px; text-indent: 1.6em; hyphens: auto; }
+    #seg04-sc062-photo { position: absolute; left: 1170px; top: 100px; width: 640px; height: 450px; background: #f3ecdc; padding: 14px; filter: url(#seg04-rough);
+      box-shadow: 0 26px 60px rgba(35,48,58,0.4); }
+    #seg04-sc062-photo .ph { position: relative; width: 100%; height: 100%; overflow: hidden; }
+    #seg04-sc062-photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: sepia(0.3) contrast(1.06) brightness(0.95); }
+    #seg04-sc062-stu { position: absolute; left: 1190px; top: 600px; font-size: 76px; color: var(--ink); }
+    #seg04-sc062-real { position: absolute; left: 1186px; top: 700px; font-size: 96px; color: var(--ink); line-height: 0.98; }
+    #seg04-sc062-cur { position: absolute; left: 1192px; top: 920px; font-size: 30px; background: var(--ink); color: var(--paper); padding: 10px 18px 8px; }
+
+    /* ---------- global overlays ---------- */
+    #seg04-dust { opacity: 0; }
+    #seg04-vig { opacity: 0; }
+    #seg04-iris { z-index: 5; }
+  </style>
+  <div id="root" data-composition-id="seg04" data-vo-start="296.23" data-duration="102.23" data-width="1920" data-height="1080">
+    <svg id="seg04-defs" width="0" height="0" style="position:absolute"></svg>
+    <svg id="seg04-mkdefs" width="0" height="0" style="position:absolute"></svg>
+
+    <!-- SC048 · 296.23–304.23 · PAPER · born 1900 -->
+    <div class="scene paper" id="seg04-sc048" data-scene="SC048">
+      <div id="seg04-sc048-wrap">
+        <div id="seg04-sc048-age" class="t-label">age = <span class="n" id="seg04-sc048-ay">1900</span> − 1900 = <span class="n" id="seg04-sc048-aa">0</span></div>
+        <div id="seg04-sc048-born" class="t-label">born</div>
+        <div id="seg04-sc048-y1" class="t-display">1900</div>
+        <div id="seg04-sc048-y2" class="t-display">2000</div>
+        <svg id="seg04-sc048-marks" class="seg04-svg" viewBox="0 0 1920 1080"></svg>
+        <div id="seg04-sc048-lucky" class="t-serif-i">a lucky year</div>
+      </div>
+      <div class="paper-tex" style="background-image:url('assets/textures/paper_cream_01.jpg')"></div>
+      <div class="folds"></div>
+    </div>
+
+    <!-- SC049 · 304.23–308.87 · NIGHT · accomplished -->
+    <div class="scene night" id="seg04-sc049" data-scene="SC049">
+      <div id="seg04-sc049-bgwrap">
+        <div id="seg04-sc049-bg1" class="seg04-l49" style="background-image:url('assets/archival/hoover/stanford_campus_aerial_c1920_quad1921.jpg')"></div>
+        <div id="seg04-sc049-bg3" class="seg04-l49" style="background-image:url('assets/archival/hoover/stanford_arcade_c1920_quad1921.jpg')"></div>
+        <div id="seg04-sc049-bgtx" style="background-image:url('assets/textures/newsprint_02_norm.jpg')"></div>
+      </div>
+      <div id="seg04-sc049-shade"></div>
+      <img id="seg04-sc049-ter" src="assets/cutouts/terman_young_ht.png" alt="" />
+      <div id="seg04-sc049-book" style="background-image:url('assets/archival/terman/terman_1916_title_page_HIRES_color.jpg')"></div>
+      <div id="seg04-sc049-word" class="t-display halate">accomplished</div>
+    </div>
+
+    <!-- SC050 · 308.87–314.55 · PAPER · The Measurement of Intelligence -->
+    <div class="scene paper" id="seg04-sc050" data-scene="SC050">
+      <div id="seg04-sc050-cam">
+        <div id="seg04-sc050-stage">
+          <div id="seg04-sc050-book">
+            <div class="seg04-pg" id="seg04-sc050-chart" style="background-image:url('assets/archival/terman/terman_1916_IQ_distribution_chart_HIRES_color.jpg')"><div class="ht" style="background-image:url('assets/textures/halftone_01_norm.jpg')"></div></div>
+            <div id="seg04-sc050-flip">
+              <div class="seg04-pg" id="seg04-sc050-front" style="background-image:url('assets/archival/terman/terman_1916_title_page_HIRES_color.jpg')">
+                <div class="ht" style="background-image:url('assets/textures/halftone_01_norm.jpg')"></div>
+                <div class="seg04-hl50" id="seg04-sc050-hl1"></div>
+                <div class="seg04-hl50" id="seg04-sc050-hl2"></div>
+              </div>
+              <div class="seg04-pg" id="seg04-sc050-back"></div>
+            </div>
+          </div>
+        </div>
+        <div id="seg04-sc050-ring"></div>
+        <img id="seg04-sc050-por" src="assets/cutouts/lewis_terman_ht.png" alt="" />
+        <div id="seg04-sc050-name" class="t-display">Lewis Terman</div>
+        <div id="seg04-sc050-role" class="t-serif-i">Stanford psychologist</div>
+        <div id="seg04-sc050-inv" class="t-display">invented the <span class="hl" id="seg04-sc050-iq" style="--hl:0">IQ</span> test</div>
+      </div>
+      <div class="paper-tex" style="background-image:url('assets/textures/paper_cream_02.jpg')"></div>
+      <div class="folds"></div>
+    </div>
+
+    <!-- SC051 · 314.55–321.27 · NIGHT · 1950s portable TV -->
+    <div class="scene night" id="seg04-sc051" data-scene="SC051">
+      <div id="seg04-sc051-wall"></div>
+      <div id="seg04-sc051-glow"></div>
+      <div id="seg04-sc051-table"></div>
+      <div id="seg04-sc051-set">
+        <div id="seg04-sc051-shadow"></div>
+        <div id="seg04-sc051-screen">
+          <div id="seg04-sc051-inner">
+            <video id="seg04-sc051-vid" src="assets/archival/footage/classroom_test_1956_wide.mp4" muted playsinline data-start="18.32" data-duration="6.72" data-media-start="0.2"
+              data-color-grading='{"adjust":{"contrast":0.1},"effects":{"chromaticAberration":0.25,"chromaticAngle":0,"scanlines":0.35,"scanlineCount":0.22,"scanlineSoftness":1,"crtCurvature":0.2,"filmArtifacts":0.35},"details":{"vignette":0.3,"grain":0.25}}'></video>
+            <div id="seg04-sc051-glare"></div>
+            <div id="seg04-sc051-flash"></div>
+          </div>
+        </div>
+        <img id="seg04-sc051-tv" src="assets/textures/tv_frame_03_cut.png" alt="" />
+      </div>
+      <div id="seg04-sc051-dad" class="t-serif-i halate">Frederick Terman's dad</div>
+      <div id="seg04-sc051-inv" class="t-display halate">invented it</div>
+    </div>
+
+    <!-- SC052 · 321.27–330.63 · PAPER · collage + timeline (s08) -->
+    <div class="scene paper" id="seg04-sc052" data-scene="SC052">
+      <div id="seg04-sc052-board">
+        <div id="seg04-sc052-stan" class="seg04-card"><div class="ph"><img src="assets/archival/hoover/stanford_campus_aerial_c1920_quad1921.jpg" alt="" /><div class="ht" style="background-image:url('assets/textures/halftone_03.png')"></div></div></div>
+        <div id="seg04-sc052-ter" class="seg04-card"><div class="ph"><img src="assets/archival/terman/terman_frederick_1920_theta_xi_crop_2x.jpg" alt="" /><div class="ht" style="background-image:url('assets/textures/halftone_03.png')"></div></div></div>
+        <div id="seg04-sc052-tagt" class="seg04-tag t-label">Frederick Terman</div>
+        <div id="seg04-sc052-tags" class="seg04-tag t-label">Stanford</div>
+        <div id="seg04-sc052-und" class="t-serif-i">undergrad</div>
+        <div id="seg04-sc052-24" class="t-display">24</div>
+        <div id="seg04-sc052-yo" class="t-label">years old</div>
+        <div id="seg04-sc052-map" class="seg04-card"><div class="ph"><img src="assets/maps/old/rand_mcnally_railroad_map_us_1920.jpg" alt="" /></div></div>
+        <div id="seg04-sc052-tl">
+          <div id="seg04-sc052-axis"></div>
+          <div id="seg04-sc052-ticks"></div>
+          <div id="seg04-sc052-dot"></div>
+        </div>
+        <div id="seg04-sc052-1924" class="t-display">1924</div>
+      </div>
+      <div class="paper-tex" style="background-image:url('assets/textures/paper_cream_01.jpg')"></div>
+      <div class="folds"></div>
+    </div>
+
+    <!-- SC053 · 330.63–337.19 · PAPER (light archival map) · R10-A railroad map -->
+    <div class="scene paper" id="seg04-sc053" data-scene="SC053">
+      <div class="seg04-mapstage">
+        <div class="seg04-tilt" id="seg04-sc053-tilt">
+          <div class="seg04-mapcam" id="seg04-sc053-cam">
+            <img src="assets/maps/old/rand_mcnally_railroad_map_us_1920.jpg" alt="" />
+            <div class="pp" style="background-image:url('assets/textures/paper_cream_01.jpg')"></div>
+            <div class="ht" style="background-image:url('assets/textures/halftone_01_norm.jpg')"></div>
+            <svg id="seg04-sc053-svg" width="3840" height="2827" viewBox="0 0 3840 2827"></svg>
+            <div class="seg04-pin navy t-display" id="seg04-sc053-pin" style="left:3402px; top:1434px">1</div>
+            <div class="seg04-maplab label-box" id="seg04-sc053-mit" style="left:3460px; top:1330px; font-size:64px">MIT</div>
+          </div>
+        </div>
+      </div>
+      <div id="seg04-sc053-edge" class="seg04-tex"></div>
+      <div class="seg04-slip" id="seg04-sc053-slip">
+        <div class="a t-serif-i" id="seg04-sc053-t1">goes East</div>
+        <div class="b t-label" id="seg04-sc053-t2">doctorate degree</div>
+        <div class="c t-serif-i" id="seg04-sc053-t3">engineering</div>
+      </div>
+      <div class="paper-tex" style="background-image:url('assets/textures/paper_cream_01.jpg'); opacity:0.35"></div>
+    </div>
+
+    <!-- SC054 · 337.19–342.95 · NIGHT · MIT aerial 1925 -->
+    <div class="scene night" id="seg04-sc054" data-scene="SC054">
+      <div id="seg04-sc054-weave">
+        <div class="plate" id="seg04-sc054-plate"><img class="img" src="assets/archival/terman/mit_campus_aerial_1925_great_dome.jpg" alt="" /><img class="fringe" src="assets/archival/terman/mit_campus_aerial_1925_great_dome.jpg" alt="" /></div>
+      </div>
+      <div class="seg04-cool"></div>
+      <div id="seg04-sc054-low"></div>
+      <div id="seg04-sc054-txt" class="t-serif-i halate cool">something very interesting</div>
+    </div>
+
+    <!-- SC055 · 342.95–348.31 · NIGHT · SILICON VALLEY (callback) -->
+    <div class="scene night" id="seg04-sc055" data-scene="SC055">
+      <div id="seg04-sc055-bg" style="background-image:url('assets/archival/terman/mit_campus_aerial_1925_great_dome.jpg')"></div>
+      <canvas id="seg04-sc055-streaks" class="streaks" style="filter: blur(2.5px);"></canvas>
+      <div id="seg04-sc055-glow"></div>
+      <div id="seg04-sc055-lab" class="t-label halate cool">the United States already had a</div>
+      <div id="seg04-sc055-ttl">
+        <div class="t t-display" id="seg04-sc055-ghost">SILICON VALLEY</div>
+        <div class="t t-display halate" id="seg04-sc055-sv">SILICON VALLEY</div>
+      </div>
+      <div id="seg04-sc055-q" class="t-serif-i halate">?</div>
+      <div class="seg04-pin navy t-display" id="seg04-sc055-dot" style="margin:0; opacity:0">1</div>
+    </div>
+
+    <!-- SC056 · 348.31–355.59 · PAPER (light archival map) · R10-B Boston/Cambridge -->
+    <div class="scene paper" id="seg04-sc056" data-scene="SC056">
+      <div class="seg04-mapstage">
+        <div class="seg04-tilt" id="seg04-sc056-tilt">
+          <div class="seg04-mapcam" id="seg04-sc056-cam">
+            <img src="assets/maps/old/usgs_boston_1903_topo_grey.jpg" alt="" />
+            <div class="pp" style="background-image:url('assets/textures/paper_cream_01.jpg')"></div>
+            <div class="ht" style="background-image:url('assets/textures/halftone_01_norm.jpg')"></div>
+            <svg id="seg04-sc056-svg" width="4738" height="5963" viewBox="0 0 4738 5963"></svg>
+            <div class="seg04-pin navy t-display" id="seg04-sc056-p1" style="left:2963px; top:3225px; transform-origin:50% 50%; scale:1.45">1</div>
+            <div class="seg04-pin navy t-display" id="seg04-sc056-p2" style="left:2579px; top:2914px; scale:1.45">2</div>
+            <div class="seg04-maplab label-box" id="seg04-sc056-l1" style="left:3030px; top:3230px; font-size:52px">MIT</div>
+            <div class="seg04-maplab label-box" id="seg04-sc056-l2" style="left:2250px; top:2770px; font-size:52px">Harvard</div>
+          </div>
+        </div>
+      </div>
+      <div id="seg04-sc056-edge" class="seg04-tex" style="background: linear-gradient(180deg, rgba(239,231,213,0.5), rgba(239,231,213,0) 22%), radial-gradient(ellipse 80% 75% at 50% 55%, rgba(0,0,0,0) 60%, rgba(40,34,26,0.35));"></div>
+      <div class="seg04-slip" id="seg04-sc056-slip" style="top: 820px"><div class="a t-serif-i" id="seg04-sc056-ing">the ingredients</div></div>
+      <div id="seg04-sc056-boston" class="t-display">Boston</div>
+      <div class="paper-tex" style="background-image:url('assets/textures/paper_cream_01.jpg'); opacity:0.35"></div>
+    </div>
+
+    <!-- SC057 · 355.59–359.98 · NIGHT · MIT -> Harvard -->
+    <div class="scene night" id="seg04-sc057" data-scene="SC057">
+      <div id="seg04-sc057-weave">
+        <div class="seg04-shot57" id="seg04-sc057-a"><div class="plate"><img class="img" src="assets/archival/collage/mit_main_group_from_boston.png" alt="" /><img class="fringe" src="assets/archival/collage/mit_main_group_from_boston.png" alt="" /></div></div>
+        <div class="seg04-shot57" id="seg04-sc057-b" style="opacity:0"><div class="plate"><img class="img" src="assets/archival/campuses/harvard_widener_library_dedication_1915.jpg" alt="" /><img class="fringe" src="assets/archival/campuses/harvard_widener_library_dedication_1915.jpg" alt="" /></div></div>
+      </div>
+      <div class="seg04-cool" style="opacity:0.55"></div>
+      <div id="seg04-sc057-low"></div>
+      <div class="seg04-n57 t-display halate cool" id="seg04-sc057-mit">MIT</div>
+      <div class="seg04-n57 t-display halate cool" id="seg04-sc057-har">Harvard</div>
+    </div>
+
+    <!-- SC058 · 359.98–366.22 · PAPER · triangle diagram -->
+    <div class="scene paper" id="seg04-sc058" data-scene="SC058">
+      <div id="seg04-sc058-cam">
+        <svg id="seg04-sc058-edges" class="seg04-svg" viewBox="0 0 1920 1080"></svg>
+        <div id="seg04-sc058-flows"></div>
+        <div class="seg04-node" id="seg04-sc058-n1" style="left:960px; top:300px"><img src="assets/archival/terman/mit_campus_aerial_1925_great_dome.jpg" alt="" style="left:-347px; top:-383px; width:1400px" /><div class="ht" style="background-image:url('assets/textures/halftone_03.png')"></div></div>
+        <div class="seg04-node" id="seg04-sc058-n2" style="left:560px; top:760px"><img src="assets/archival/terman/vannevar_bush_1938.jpg" alt="" style="left:-30px; top:-40px; width:330px" /><div class="ht" style="background-image:url('assets/textures/halftone_03.png')"></div></div>
+        <div class="seg04-node" id="seg04-sc058-n3" style="left:1360px; top:760px"><img src="assets/archival/companies/ge_schenectady_postcard.jpg" alt="" style="left:-120px; top:-60px; width:560px" /><div class="ht" style="background-image:url('assets/textures/halftone_03.png')"></div></div>
+        <div class="seg04-nlab t-label" id="seg04-sc058-l1" style="left:960px; top:110px">universities</div>
+        <div class="seg04-nlab t-label" id="seg04-sc058-l2" style="left:560px; top:920px">professors</div>
+        <div class="seg04-nlab t-label" id="seg04-sc058-l3" style="left:1360px; top:920px">companies</div>
+        <div id="seg04-sc058-lead" class="t-serif-i" style="left:1360px; top:968px">leading technological companies</div>
+      </div>
+      <div class="paper-tex" style="background-image:url('assets/textures/paper_cream_02.jpg')"></div>
+      <div class="folds"></div>
+    </div>
+
+    <!-- SC059 · 366.22–371.82 · NIGHT · free flow (weave) -->
+    <div class="scene night" id="seg04-sc059" data-scene="SC059">
+      <div id="seg04-sc059-weave">
+        <video id="seg04-sc059-vid" src="assets/archival/footage/radio_school_1940_students_lab_bench_a.mp4" muted playsinline data-start="69.74" data-duration="5.85" data-media-start="0.3"
+          data-color-grading='{"adjust":{"contrast":0.1,"saturation":-1},"effects":{"filmArtifacts":0.4},"details":{"vignette":0.35,"grain":0.3}}'></video>
+        <div id="seg04-sc059-sep"></div>
+      </div>
+      <div id="seg04-sc059-dots"></div>
+      <div id="seg04-sc059-low"></div>
+      <div id="seg04-sc059-txt" class="t-serif-i halate">free flow of people</div>
+    </div>
+
+    <!-- SC060 · 371.82–378.62 · PAPER · logos -> MIT -->
+    <div class="scene paper" id="seg04-sc060" data-scene="SC060">
+      <div id="seg04-sc060-board">
+        <div id="seg04-sc060-mit" class="seg04-card"><div class="ph"><img src="assets/archival/collage/mit_aerial_1925.jpg" alt="" /><div class="ht" style="background-image:url('assets/textures/halftone_03.png')"></div></div></div>
+        <div id="seg04-sc060-tagm" class="seg04-tag t-label">MIT</div>
+        <div id="seg04-sc060-ge" class="seg04-lcard"><div id="seg04-sc060-gelogo"></div><div class="cap t-label">General Electric</div></div>
+        <div id="seg04-sc060-att" class="seg04-lcard"><img id="seg04-sc060-attlogo" src="assets/logos/bell_system_1921.png" alt="" /><div class="cap t-label">AT&amp;T</div></div>
+        <div id="seg04-sc060-bl" class="seg04-lcard"><div class="w t-display">Bell Labs</div><div class="cap t-label">Bell Telephone Laboratories</div></div>
+        <svg id="seg04-sc060-marks" class="seg04-svg" viewBox="0 0 1920 1080"></svg>
+        <div id="seg04-sc060-visit" class="t-serif-i">visit campus</div>
+      </div>
+      <div class="paper-tex" style="background-image:url('assets/textures/paper_cream_01.jpg')"></div>
+      <div class="folds"></div>
+    </div>
+
+    <!-- SC061 · 378.62–388.70 · NIGHT · fund labs / commercialize -->
+    <div class="scene night" id="seg04-sc061" data-scene="SC061">
+      <div id="seg04-sc061-bgwrap">
+        <div id="seg04-sc061-bg1" style="background-image:url('assets/archival/terman/bush_differential_analyzer_integrator_mit_museum.jpg')"></div>
+        <div id="seg04-sc061-vp">
+          <video id="seg04-sc061-vid" src="assets/archival/footage/ge_schenectady_1923_edison_langmuir_vacuum_tube.mp4" muted playsinline data-start="82.39" data-duration="10.08" data-media-start="0.5"></video>
+        </div>
+        <div id="seg04-sc061-mit" style="background-image:url('assets/archival/collage/mit_aerial_1925.jpg')"></div>
+        <div id="seg04-sc061-bgtx" style="background-image:url('assets/textures/newsprint_01_norm.jpg')"></div>
+      </div>
+      <div id="seg04-sc061-shade"></div>
+      <div id="seg04-sc061-tubewrap">
+        <div id="seg04-sc061-tglow"></div>
+        <img id="seg04-sc061-tube" src="assets/cutouts/vacuum_tube_bh_cut.png" alt="" />
+        <svg id="seg04-sc061-string" viewBox="0 0 90 70"><path d="M2 4 C 30 10, 60 30, 88 60" fill="none" stroke="#d9cdb4" stroke-width="3" stroke-linecap="round" /></svg>
+        <div id="seg04-sc061-tag"><div class="hole"></div><div class="d t-display">$</div></div>
+      </div>
+      <div id="seg04-sc061-fund" class="t-display halate">fund labs</div>
+      <div id="seg04-sc061-prof" class="t-serif-i halate">professors invent</div>
+      <div id="seg04-sc061-com" class="t-display halate">commercialize</div>
+      <div class="seg04-credit t-serif-i" id="seg04-sc061-cr">Vacuum tube: Joe Haupt, CC BY-SA 2.0</div>
+    </div>
+
+    <!-- SC062 · 388.70–398.46 · PAPER · MIT Bulletin, Course VI-A (typeset recreation) -->
+    <div class="scene paper" id="seg04-sc062" data-scene="SC062">
+      <div id="seg04-sc062-cam">
+        <div id="seg04-sc062-stage">
+          <div id="seg04-sc062-page">
+            <div class="seg04-b-k t-serif">BULLETIN</div>
+            <div class="seg04-b-rule"></div>
+            <div class="seg04-b-inst t-serif">MASSACHUSETTS INSTITUTE OF TECHNOLOGY</div>
+            <div class="seg04-b-city t-serif">CAMBRIDGE · MASSACHUSETTS</div>
+            <div class="seg04-b-rule"></div>
+            <div class="seg04-b-course t-serif">Course VI-A</div>
+            <div class="seg04-b-dept t-serif-i">Electrical Engineering</div>
+            <div class="seg04-b-h t-serif"><span><i id="seg04-sc062-hl"></i>The Co-operative Course</span></div>
+            <div class="seg04-b-p t-serif">In this course the student divides his time between the Institute and the works of the General Electric Company. Terms of study at Cambridge alternate with terms of practical work in the shops, the testing departments and the laboratories of the Company.</div>
+            <div class="seg04-b-p t-serif">The work in the plant is arranged in a definite sequence and is supervised by members of the Institute staff, so that the experience gained there forms a regular part of the student's programme of instruction and is counted toward his degree.</div>
+            <div class="seg04-b-p t-serif">Students who complete the course receive both the degree of Bachelor of Science and that of Master of Science.</div>
+            <div class="pp" style="background-image:url('assets/textures/paper_cream_02.jpg')"></div>
+            <div class="ht" style="background-image:url('assets/textures/halftone_01_norm.jpg')"></div>
+          </div>
+        </div>
+        <div id="seg04-sc062-photo"><div class="ph"><img src="assets/archival/companies/ge_research_lab_kellogg_rice_speaker_1925.jpg" alt="" /></div></div>
+        <div id="seg04-sc062-stu" class="t-serif-i">students</div>
+        <div id="seg04-sc062-real" class="t-display">real-life<br />experience</div>
+        <div id="seg04-sc062-cur" class="t-label">part of the curriculum</div>
+      </div>
+      <div class="paper-tex" style="background-image:url('assets/textures/paper_cream_01.jpg')"></div>
+      <div class="folds"></div>
+    </div>
+
+    <!-- global overlays -->
+    <svg id="seg04-iris" class="iris"></svg>
+    <div id="seg04-dust" class="tx tx-dust" style="background-image:url('assets/textures/dust_02.jpg')"></div>
+    <div id="seg04-vig" class="vignette"></div>
+    <div id="seg04-grain" class="tx tx-grain" style="background-image:url('assets/textures/grain_02_norm.jpg'); opacity: 0.28"></div>
+    <audio id="seg04-vo" class="temp-vo" src="vo10.mp3" data-start="0" data-duration="102.23" data-media-start="296.23" data-volume="1"></audio>
+  </div>
+  <script>
+  (function () {
+    const SEG = "seg04", SEG_START = 296.23, SEG_END = 398.46, DURATION = +(SEG_END - SEG_START).toFixed(2);
+    const T = (s) => +(s - SEG_START).toFixed(3);
+    const tl = gsap.timeline({ paused: true });
+    const $ = (id) => document.getElementById(SEG + "-" + id);
+    const C = (d, e) => FX.choppy(e || "power3.out", d, 12);
+    const NS = "http://www.w3.org/2000/svg";
+    const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+    const lerp = (a, b, k) => a + (b - a) * k;
+    const smooth = (k) => { k = clamp(k, 0, 1); return k * k * (3 - 2 * k); };
+    const post = (k, dur) => { const n = Math.max(1, Math.round(dur * 12)); return k >= 1 ? 1 : Math.floor(clamp(k, 0, 1) * n) / n; };
+    // register per-frame work only inside a scene window (perf)
+    function gate(a, b, reg) {
+      const orig = FX.onFrame;
+      FX.onFrame = (fn) => orig((t) => { if (t < a - 0.05 || t > b + 0.05) return; fn(t); });
+      try { reg(); } finally { FX.onFrame = orig; }
+    }
+    // scene windows (VO seconds)
+    function scene(id, a, b) {
+      const el = $(id);
+      tl.set(el, { autoAlpha: 1 }, T(a));
+      tl.set(el, { autoAlpha: 0 }, T(b));
+    }
+    const NIGHT = [["sc049", 304.23, 308.87], ["sc051", 314.55, 321.27], ["sc054", 337.19, 342.95], ["sc055", 342.95, 348.31],
+                   ["sc057", 355.59, 359.98], ["sc059", 366.22, 371.82], ["sc061", 378.62, 388.70]];
+
+    // ---------- shared defs ----------
+    const defs = document.getElementById("seg04-defs");
+    FX.tintDefs(defs, "seg04-tint-ink", "#23303a", "#efe7d6");
+    FX.tintDefs(defs, "seg04-tint-night", "#141312", "#6d665b");
+    FX.tintDefs(defs, "seg04-tint-bone", "#1b1a18", "#d9cfbd");
+    FX.roughDefs(defs, "seg04-rough", { freq: 0.04, scale: 6 });
+    FX.roughDefs(defs, "seg04-roughhl", { freq: 0.04, scale: 9 });
+    FX.roughDefs(defs, "seg04-roughmk", { freq: 0.012, scale: 14 });
+    const choke55 = FX.roughDefs(defs, "seg04-choke55", { freq: 0.05, scale: 5, choke: 0 });
+    const mk = FX.markupDefs(document.getElementById("seg04-mkdefs"), "seg04-mk");
+    FX.grain(document.getElementById("seg04-grain"), 401);
+    FX.dust(document.getElementById("seg04-dust"), 402, 2);
+    const iris = FX.iris(document.getElementById("seg04-iris"), { blades: 7, close: 0.16, hold: 2 / 24, open: 0.2 });
+
+    // night overlays only on night scenes
+    NIGHT.forEach(([id, a, b]) => {
+      tl.set("#seg04-dust", { opacity: 0.45 }, T(a)); tl.set("#seg04-dust", { opacity: 0 }, T(b));
+      tl.set("#seg04-vig", { opacity: 1 }, T(a)); tl.set("#seg04-vig", { opacity: 0 }, T(b));
+    });
+
+    // =====================================================================
+    // SC048 · 296.23–304.23 · PAPER · "born in the 1900s … like being born in the 2000s"
+    // =====================================================================
+    scene("sc048", 296.23, 304.23);
+    tl.fromTo("#seg04-sc048-wrap", { scale: 1.0 }, { scale: 1.03, duration: 8, ease: "none" }, T(296.23));
+    tl.fromTo("#seg04-sc048-born", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.25, ease: C(0.25), immediateRender: true }, T(296.55) - 0.06);
+    tl.fromTo("#seg04-sc048-y1", { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, T(297.03) - 0.06);
+    FX.text.count(tl, $("sc048-y1"), T(297.03) - 0.06, 1850, 1900, 0.75, (v) => String(Math.round(v)));
+    const m48 = $("sc048-marks");
+    FX.markup.underline(tl, m48, T(297.03) + 0.75, { x1: 700, x2: 1220, y: 612, color: "#e5482a", width: 10, filter: mk, dur: 0.35 });
+    FX.text.rise(tl, [$("sc048-lucky")], T(298.55) - 0.06, { dur: 0.55 });
+    // shift: 1900 left, 2000 right (navy), hand-drawn "="
+    const u48 = m48.lastChild;
+    tl.to(u48, { opacity: 0, duration: 0.2 }, T(300.23));
+    tl.to("#seg04-sc048-y1", { x: -400, duration: 0.42, ease: C(0.42, "power3.inOut") }, T(300.23));
+    tl.to("#seg04-sc048-born", { opacity: 0, duration: 0.2 }, T(300.23));
+    tl.fromTo("#seg04-sc048-y2", { opacity: 0, x: 600 }, { opacity: 1, x: 400, duration: 0.3, ease: C(0.3), immediateRender: true }, T(300.87) - 0.06);
+    FX.markup.underline(tl, m48, T(300.87) + 0.15, { x1: 920, x2: 1000, y: 455, color: "#18222f", width: 14, filter: mk, dur: 0.14 });
+    FX.markup.underline(tl, m48, T(300.87) + 0.3, { x1: 918, x2: 1002, y: 505, color: "#18222f", width: 14, filter: mk, dur: 0.14 });
+    // "you can just calculate": age = year − 1900
+    tl.fromTo("#seg04-sc048-age", { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.25, ease: C(0.25) }, T(302.07) - 0.06);
+    FX.text.count(tl, $("sc048-ay"), T(302.07) + 0.15, 1900, 1924, 1.0, (v) => String(Math.round(v)));
+    FX.text.count(tl, $("sc048-aa"), T(302.07) + 0.15, 0, 24, 1.0, (v) => String(Math.round(v)));
+    // numbers slide off left
+    tl.to("#seg04-sc048-wrap", { x: -2100, duration: 0.3, ease: C(0.3, "power2.in") }, T(303.93));
+
+    // =====================================================================
+    // SC049 · 304.23–308.87 · NIGHT · Vox layered: "accomplished"
+    // =====================================================================
+    scene("sc049", 304.23, 308.87);
+    tl.fromTo("#seg04-sc049-bg1", { x: 0, scale: 1.04 }, { x: -60, scale: 1.0, duration: 4.64, ease: "none" }, T(304.23));
+    tl.fromTo("#seg04-sc049-bg3", { x: -40, y: 80, rotation: -6, opacity: 0 }, { x: 0, y: 0, rotation: -3, opacity: 0.9, duration: 0.5, ease: C(0.5) }, T(304.23) + 0.05);
+    tl.to("#seg04-sc049-bg3", { x: 70, duration: 3.9, ease: "none" }, T(304.23) + 0.55);
+    tl.fromTo("#seg04-sc049-book", { x: 160, y: -40, rotation: 9, opacity: 0 }, { x: 0, y: 0, rotation: 4.5, opacity: 1, duration: 0.5, ease: C(0.5) }, T(304.23) + 0.2);
+    tl.to("#seg04-sc049-book", { x: -40, y: 10, duration: 3.3, ease: "none" }, T(304.23) + 0.7);
+    tl.fromTo("#seg04-sc049-ter", { y: 120, opacity: 0 }, { y: 0, opacity: 1, duration: 0.6, ease: C(0.6) }, T(304.55));
+    tl.to("#seg04-sc049-ter", { scale: 1.03, duration: 3.5, ease: "none" }, T(305.2));
+    tl.fromTo("#seg04-sc049-word", { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, T(307.83) - 0.06);
+    FX.text.fill(tl, $("sc049-word"), T(307.83) - 0.06, { per: 0.03, hold: 0.25, settle: 0.4 });
+    // book panel slides to centre -> becomes SC050's page
+    tl.to("#seg04-sc049-book", { x: -550 - 40 + 40, y: 16, rotation: 0, filter: "sepia(0.15) brightness(1) contrast(1.04)", duration: 0.42, ease: C(0.42, "power3.inOut") }, T(308.87) - 0.44);
+    tl.to("#seg04-sc049-word, #seg04-sc049-ter", { opacity: 0, duration: 0.2 }, T(308.87) - 0.42);
+
+    // =====================================================================
+    // SC050 · 308.87–314.55 · PAPER · the 1916 book, page turn to the IQ chart
+    // =====================================================================
+    scene("sc050", 308.87, 314.55);
+    tl.fromTo("#seg04-sc050-book", { x: 0, rotationX: 0, rotationY: 0, rotationZ: 0 },
+      { x: -480, rotationX: 10, rotationY: 14, rotationZ: -2.5, duration: 0.8, ease: "power3.inOut" }, T(309.11));
+    tl.to("#seg04-sc050-book", { rotationY: 9, rotationX: 7, duration: 4.2, ease: "none" }, T(309.11) + 0.8);
+    tl.fromTo("#seg04-sc050-por", { opacity: 0, scale: 0.8, rotation: -6 }, { opacity: 1, scale: 1, rotation: 0, duration: 0.4, ease: C(0.4, "back.out(2)") }, T(309.59) - 0.1);
+    tl.fromTo("#seg04-sc050-ring", { opacity: 0, scale: 0.8 }, { opacity: 1, scale: 1, duration: 0.4, ease: C(0.4, "back.out(2)") }, T(309.59) - 0.1);
+    FX.text.random(tl, $("sc050-name"), T(309.59) - 0.06, { dur: 0.5, seed: 50 });
+    tl.fromTo(["#seg04-sc050-hl1", "#seg04-sc050-hl2"], { scaleX: 0 }, { scaleX: 1, duration: 0.35, stagger: 0.22, ease: C(0.35, "power2.inOut"), immediateRender: true }, T(311.19));
+    FX.text.rise(tl, [$("sc050-role")], T(311.75) - 0.06, { dur: 0.5 });
+    // page turn -> IQ distribution chart
+    tl.fromTo("#seg04-sc050-flip", { rotationY: 0 }, { rotationY: -172, duration: 0.6, ease: "power2.inOut" }, T(312.55));
+    tl.fromTo("#seg04-sc050-inv", { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.3, ease: C(0.3), immediateRender: true }, T(312.71) - 0.06);
+    const hl50 = { v: 0 };
+    tl.fromTo(hl50, { v: 0 }, { v: 1, duration: 0.3, ease: C(0.3, "power2.inOut"), immediateRender: false, onUpdate: () => $("sc050-iq").style.setProperty("--hl", hl50.v) }, T(313.35) - 0.06);
+    // push into the bell curve
+    tl.fromTo("#seg04-sc050-cam", { scale: 1 }, { scale: 3.2, duration: 0.5, ease: "power3.in", immediateRender: false }, T(314.05));
+
+    // =====================================================================
+    // SC051 · 314.55–321.27 · NIGHT · 1950s portable TV
+    // =====================================================================
+    scene("sc051", 314.55, 321.27);
+    tl.fromTo("#seg04-sc051-set", { scale: 0.97 }, { scale: 1.03, duration: 6.72, ease: "none" }, T(314.55));
+    tl.fromTo("#seg04-sc051-inner", { scaleY: 0.012, scaleX: 0.7 }, { scaleY: 1, scaleX: 1, duration: 0.35, ease: "expo.out", immediateRender: true }, T(314.55) + 0.12);
+    tl.fromTo("#seg04-sc051-flash", { opacity: 1 }, { opacity: 0, duration: 0.55, ease: "power2.out", immediateRender: false }, T(314.55) + 0.2);
+    FX.text.rise(tl, [$("sc051-dad")], T(317.91) - 0.06, { dur: 0.6 });
+    tl.fromTo("#seg04-sc051-inv", { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, T(319.59) - 0.06);
+    FX.text.fill(tl, $("sc051-inv"), T(319.59) - 0.06, { per: 0.04, hold: 0.25, settle: 0.45 });
+    // CRT off
+    tl.to("#seg04-sc051-inner", { scaleY: 0.01, duration: 0.12, ease: "power3.in" }, T(321.27) - 0.3);
+    tl.to("#seg04-sc051-inner", { scaleX: 0.01, duration: 0.1, ease: "power2.in" }, T(321.27) - 0.18);
+    tl.to("#seg04-sc051-dad, #seg04-sc051-inv", { opacity: 0, duration: 0.2 }, T(321.27) - 0.25);
+
+    // =====================================================================
+    // SC052 · 321.27–330.63 · PAPER · collage + timeline (from approved s08)
+    // =====================================================================
+    scene("sc052", 321.27, 330.63);
+    const X52 = (yr) => ((yr - 1918) / 8) * 1600;
+    const ticks = $("sc052-ticks");
+    for (let y = 1918; y <= 1926; y++) ticks.insertAdjacentHTML("beforeend", `<div class="seg04-tick" style="left:${X52(y)}px"></div><div class="seg04-yr t-label" style="left:${X52(y)}px">${y}</div>`);
+    $("sc052-1924").style.left = X52(1924) + "px";
+    tl.fromTo("#seg04-sc052-board", { scale: 1.0 }, { scale: 1.03, duration: 8.9, ease: "none" }, T(321.27));
+    tl.fromTo("#seg04-sc052-ter", { y: 60, rotation: -9, opacity: 0 }, { y: 0, rotation: -3.5, opacity: 1, duration: 0.5, ease: C(0.5) }, T(321.27) + 0.05);
+    tl.fromTo("#seg04-sc052-tagt", { opacity: 0, x: -20 }, { opacity: 1, x: 0, duration: 0.3, ease: C(0.3) }, T(321.59) - 0.06);
+    tl.fromTo("#seg04-sc052-axis", { scaleX: 0 }, { scaleX: 1, duration: 0.8, ease: C(0.8) }, T(321.27) + 0.3);
+    tl.fromTo(".seg04-tick, .seg04-yr", { opacity: 0 }, { opacity: 1, duration: 0.01, stagger: 0.06 }, T(321.27) + 0.45);
+    tl.fromTo("#seg04-sc052-dot", { x: X52(1918), scale: 0 }, { x: X52(1918), scale: 1, duration: 0.3, ease: "back.out(3)" }, T(321.27) + 1.0);
+    // "Stanford for his undergrad"
+    tl.fromTo("#seg04-sc052-stan", { y: -60, rotation: 8, opacity: 0 }, { y: 0, rotation: 2.5, opacity: 1, duration: 0.45, ease: C(0.45) }, T(324.55) - 0.4);
+    tl.fromTo("#seg04-sc052-tags", { opacity: 0, scale: 1.3, rotation: -4 }, { opacity: 1, scale: 1, rotation: -1.5, duration: 0.25, ease: C(0.25, "back.out(2)") }, T(324.55) - 0.06);
+    tl.to("#seg04-sc052-dot", { x: X52(1920), duration: 0.6, ease: C(0.6) }, T(324.55));
+    FX.text.rise(tl, [$("sc052-und")], T(325.27) - 0.06, { dur: 0.5 });
+    // "24 years old"
+    tl.fromTo("#seg04-sc052-24", { opacity: 0, scale: 1.3, rotation: -8 }, { opacity: 1, scale: 1, rotation: -4, duration: 0.3, ease: C(0.3, "back.out(2)"), immediateRender: true }, T(327.43) - 0.06);
+    tl.fromTo("#seg04-sc052-yo", { opacity: 0 }, { opacity: 1, duration: 0.2 }, T(328.07) - 0.06);
+    tl.to("#seg04-sc052-dot", { x: X52(1924), duration: 1.9, ease: C(1.9, "power2.inOut") }, T(327.43));
+    tl.fromTo("#seg04-sc052-1924", { opacity: 0, scale: 1.25, y: 20 }, { opacity: 1, scale: 1, y: 0, duration: 0.3, ease: C(0.3, "back.out(2)"), immediateRender: true }, T(329.51) - 0.06);
+    // Stanford card swaps (12 fps) to a railroad-map card, board pushes into it
+    tl.fromTo("#seg04-sc052-map", { x: 240, rotation: 9, opacity: 0 }, { x: 0, rotation: 0, opacity: 1, duration: 0.25, ease: C(0.25) }, T(330.63) - 0.5);
+    tl.to("#seg04-sc052-board", { scale: 1.95, x: (960 - 1220) * 1.95, y: (540 - 430) * 1.95, duration: 0.3, ease: "power3.in", transformOrigin: "50% 50%" }, T(330.63) - 0.3);
+
+    // =====================================================================
+    // R10 map helpers (SC053, SC056)
+    // =====================================================================
+    function catmull(pts) {
+      let d = `M${pts[0][0]} ${pts[0][1]}`;
+      for (let i = 0; i < pts.length - 1; i++) {
+        const p0 = pts[Math.max(0, i - 1)], p1 = pts[i], p2 = pts[i + 1], p3 = pts[Math.min(pts.length - 1, i + 2)];
+        const c1 = [p1[0] + (p2[0] - p0[0]) / 6, p1[1] + (p2[1] - p0[1]) / 6], c2 = [p2[0] - (p3[0] - p1[0]) / 6, p2[1] - (p3[1] - p1[1]) / 6];
+        d += ` C${c1[0].toFixed(1)} ${c1[1].toFixed(1)} ${c2[0].toFixed(1)} ${c2[1].toFixed(1)} ${p2[0]} ${p2[1]}`;
+      }
+      return d;
+    }
+    function marker(svg, d, w) {
+      const p = document.createElementNS(NS, "path");
+      p.setAttribute("d", d); p.setAttribute("fill", "none"); p.setAttribute("stroke", "#f2d33b"); p.setAttribute("stroke-width", w);
+      p.setAttribute("stroke-linecap", "round"); p.setAttribute("stroke-linejoin", "round"); p.setAttribute("filter", "url(#seg04-roughmk)");
+      p.style.mixBlendMode = "multiply"; p.setAttribute("opacity", "0.92");
+      svg.appendChild(p);
+      const L = p.getTotalLength();
+      p.setAttribute("stroke-dasharray", `${L} ${L}`); p.setAttribute("stroke-dashoffset", L);
+      const lut = []; for (let i = 0; i <= 300; i++) { const q = p.getPointAtLength((i / 300) * L); lut.push([q.x, q.y]); }
+      return { p, L, at: (k) => { const f = clamp(k, 0, 1) * 300, i = Math.floor(f), j = Math.min(300, i + 1), r = f - i; return [lerp(lut[i][0], lut[j][0], r), lerp(lut[i][1], lut[j][1], r)]; } };
+    }
+    function ellipsePath(cx, cy, rx, ry, rot, turns, seed) {
+      const r = FX.rng(seed), pts = [], N = 72, a0 = -2.4;
+      const c = Math.cos(rot * Math.PI / 180), s = Math.sin(rot * Math.PI / 180);
+      for (let i = 0; i <= N; i++) {
+        const k = i / N, a = a0 + k * Math.PI * 2 * turns, wob = 1 + (k - 0.5) * 0.09 + (r() - 0.5) * 0.012;
+        const x = Math.cos(a) * rx * wob, y = Math.sin(a) * ry * wob;
+        pts.push([+(cx + x * c - y * s).toFixed(1), +(cy + x * s + y * c).toFixed(1)]);
+      }
+      return "M" + pts.map((q) => q[0] + " " + q[1]).join(" L");
+    }
+    function setCam(cam, tilt, cx, cy, z, k) {
+      cam.style.transform = `translate(${(960 - cx * z).toFixed(1)}px, ${(540 - cy * z).toFixed(1)}px) scale(${z.toFixed(4)})`;
+      tilt.style.transform = `rotateX(${(18 * k).toFixed(2)}deg) rotateZ(${(-6 * k).toFixed(2)}deg)`;
+    }
+    const popPin = (sel, t) => tl.fromTo(sel, { scale: 0, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.3, ease: C(0.3, "back.out(3)"), immediateRender: true }, t);
+
+    // =====================================================================
+    // SC053 · 330.63–337.19 · R10-A: 1920 Rand McNally railroad map, yellow marker Palo Alto -> Boston
+    // =====================================================================
+    scene("sc053", 330.63, 337.19);
+    const cam53 = $("sc053-cam"), tilt53 = $("sc053-tilt"), svg53 = $("sc053-svg");
+    const route = [[382, 1813], [358, 1797], [450, 1735], [497, 1677], [912, 1488], [1920, 1488], [2414, 1473], [2900, 1500], [3365, 1551], [3402, 1434]];
+    const m53 = marker(svg53, catmull(route), 34);
+    const circ53 = document.createElementNS(NS, "path");
+    circ53.setAttribute("d", ellipsePath(3402, 1434, 120, 96, -8, 1.12, 53));
+    ["fill:none", "stroke:#f2d33b", "stroke-width:26", "stroke-linecap:round", "mix-blend-mode:multiply"].forEach((s) => { const [k, v] = s.split(":"); circ53.style.setProperty(k, v); });
+    circ53.setAttribute("filter", "url(#seg04-roughmk)");
+    svg53.appendChild(circ53);
+    const cL = circ53.getTotalLength(); circ53.setAttribute("stroke-dasharray", `${cL} ${cL}`); circ53.setAttribute("stroke-dashoffset", cL);
+    const A0 = { cx: 1920, cy: 1413, z: 0.508 }, A1 = { cx: 1060, cy: 1640, z: 0.86 };
+    const L0 = T(331.83) - 0.04, L1 = T(335.43) + 0.07, E0 = T(335.43) + 0.19, E1 = T(337.19);
+    const eIO = gsap.parseEase("power1.inOut"), eS = gsap.parseEase("sine.inOut"), eP = gsap.parseEase("power2.in");
+    function cam53At(t) {
+      if (t <= L0) {
+        const k = eS(clamp((t - T(330.63)) / (L0 - T(330.63)), 0, 1));
+        return { cx: lerp(A0.cx, A1.cx, k), cy: lerp(A0.cy, A1.cy, k), z: lerp(A0.z, A1.z, k), tk: k };
+      }
+      if (t <= E0) {
+        const p = eIO(clamp((t - L0) / (L1 - L0), 0, 1));
+        const z = 0.86 + 0.18 * p - 0.3 * Math.sin(Math.PI * p);
+        const h = m53.at(p);
+        const hx = clamp(h[0], 960 / z, 3840 - 960 / z), hy = clamp(h[1], 540 / z, 2827 - 540 / z);
+        const b = smooth(p * 4);
+        return { cx: lerp(A1.cx, hx, b), cy: lerp(A1.cy, hy, b), z, tk: 1 };
+      }
+      const s = cam53At(E0 - 0.0001), k = eP(clamp((t - E0) / (E1 - E0), 0, 1)), k2 = eS(clamp((t - E0) / 0.9, 0, 1));
+      return { cx: lerp(s.cx, 3402, k2), cy: lerp(s.cy, 1434, k2), z: lerp(s.z, 1.75, k), tk: 1 };
+    }
+    gate(T(330.63), T(337.19), () => FX.onFrame((t) => {
+      const c = cam53At(t);
+      setCam(cam53, tilt53, c.cx, c.cy, c.z, c.tk);
+      const pd = post((t - L0) / (L1 - L0), L1 - L0);
+      m53.p.setAttribute("stroke-dashoffset", (m53.L * (1 - eIO(clamp(pd, 0, 1)))).toFixed(1));
+      m53.p.style.visibility = pd > 0 ? "visible" : "hidden";
+      const cd = post((t - T(335.75)) / 0.5, 0.5);
+      circ53.setAttribute("stroke-dashoffset", (cL * (1 - clamp(cd, 0, 1))).toFixed(1));
+      circ53.style.visibility = cd > 0 ? "visible" : "hidden";
+    }));
+    setCam(cam53, tilt53, A0.cx, A0.cy, A0.z, 0);
+    tl.fromTo("#seg04-sc053-slip", { opacity: 0, y: 30, rotation: -4 }, { opacity: 1, y: 0, rotation: -1.5, duration: 0.3, ease: C(0.3), immediateRender: true }, T(331.83) - 0.1);
+    FX.text.rise(tl, [$("sc053-t1")], T(331.83) - 0.06, { dur: 0.45 });
+    tl.fromTo("#seg04-sc053-t2", { opacity: 0, x: -14 }, { opacity: 1, x: 0, duration: 0.25, ease: C(0.25), immediateRender: true }, T(332.87) - 0.06);
+    FX.text.rise(tl, [$("sc053-t3")], T(334.39) - 0.06, { dur: 0.45 });
+    popPin("#seg04-sc053-pin", T(336.31) - 0.1);
+    tl.fromTo("#seg04-sc053-mit", { opacity: 0, scale: 0.8 }, { opacity: 1, scale: 1, duration: 0.25, ease: C(0.25, "back.out(2)"), immediateRender: true }, T(336.31) - 0.06);
+    tl.to("#seg04-sc053-slip", { opacity: 0, y: 30, duration: 0.25, ease: "power2.in" }, T(336.31) + 0.2);
+
+    // =====================================================================
+    // SC054 · 337.19–342.95 · NIGHT · MIT aerial 1925, slow zoom to the Great Dome
+    // =====================================================================
+    scene("sc054", 337.19, 342.95);
+    gate(T(337.19), T(342.95), () => FX.weave($("sc054-weave"), { amp: 1.0, rot: 0.05, flicker: 0.025, seed: 54 }));
+    tl.fromTo("#seg04-sc054-plate", { scale: 1.12, opacity: 0.0 }, { scale: 1.3, opacity: 1, duration: 0.35, ease: "power2.out" }, T(337.19));
+    tl.to("#seg04-sc054-plate", { scale: 1.55, duration: 4.9, ease: "none" }, T(337.19) + 0.35);
+    tl.to("#seg04-sc054-plate", { scale: 3.2, duration: 0.55, ease: "power3.in" }, T(342.95) - 0.55);
+    FX.text.rise(tl, [$("sc054-txt")], T(340.39) - 0.06, { dur: 0.6 });
+    tl.to("#seg04-sc054-txt", { opacity: 0, duration: 0.25 }, T(342.95) - 0.5);
+
+    // =====================================================================
+    // SC055 · 342.95–348.31 · NIGHT · "already had a SILICON VALLEY … did not have that name"
+    // =====================================================================
+    scene("sc055", 342.95, 348.31);
+    gate(T(342.95), T(348.31), () => FX.streaks($("sc055-streaks"), { seed: 55, speed: 0.5, xfreq: 0.15, lo: 0.47, hi: 0.88, gamma: 2.3, tint: [170, 198, 255], gain: 1.1 }));
+    tl.fromTo("#seg04-sc055-streaks", { opacity: 0 }, { opacity: 0.65, duration: 1.2, ease: "power2.out" }, T(342.95));
+    tl.fromTo("#seg04-sc055-bg", { scale: 1.6 }, { scale: 1.75, duration: 5.36, ease: "none" }, T(342.95));
+    tl.fromTo("#seg04-sc055-glow", { opacity: 0, scale: 0.9 }, { opacity: 1, scale: 1.05, duration: 5.36, ease: "sine.inOut" }, T(342.95));
+    FX.text.random(tl, $("sc055-lab"), T(344.31) - 0.06, { dur: 0.5, seed: 551 });
+    FX.text.rise(tl, [$("sc055-sv")], T(346.07) - 0.06, { dur: 0.55, blur: 14 });
+    // "did not" -> roughens and chokes away, ghost outline + ?
+    const ch = { r: 0 };
+    tl.fromTo(ch, { r: 0 }, { r: 9, duration: 0.5, ease: C(0.5, "power2.in"), immediateRender: false, onUpdate: () => choke55.setAttribute("radius", ch.r.toFixed(2)) }, T(347.35) - 0.04);
+    tl.to("#seg04-sc055-sv", { opacity: 0, duration: 0.5, ease: C(0.5, "power2.in") }, T(347.35) - 0.04);
+    tl.fromTo("#seg04-sc055-ghost", { opacity: 0 }, { opacity: 1, duration: 0.3 }, T(347.35));
+    tl.to("#seg04-sc055-lab", { opacity: 0, duration: 0.3 }, T(347.35));
+    tl.fromTo("#seg04-sc055-q", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.25, ease: C(0.25) }, T(347.51));
+    // ghost shrinks into a dot -> SC056's numbered pin
+    tl.to("#seg04-sc055-ttl, #seg04-sc055-q", { scale: 0.03, opacity: 0, duration: 0.28, ease: "power3.in", transformOrigin: "50% 50%" }, T(348.31) - 0.36);
+    tl.fromTo("#seg04-sc055-dot", { opacity: 0, scale: 0.2 }, { opacity: 1, scale: 1, duration: 0.2, ease: "back.out(2)" }, T(348.31) - 0.18);
+
+    // =====================================================================
+    // SC056 · 348.31–355.59 · R10-B: Boston/Cambridge 1903 topo, marker loop, pins MIT / Harvard
+    // =====================================================================
+    scene("sc056", 348.31, 355.59);
+    const cam56 = $("sc056-cam"), tilt56 = $("sc056-tilt"), svg56 = $("sc056-svg");
+    const loop = document.createElementNS(NS, "path");
+    loop.setAttribute("d", ellipsePath(2770, 3075, 440, 230, 39, 1.1, 56));
+    ["fill:none", "stroke:#f2d33b", "stroke-width:40", "stroke-linecap:round", "mix-blend-mode:multiply"].forEach((s) => { const [k, v] = s.split(":"); loop.style.setProperty(k, v); });
+    loop.setAttribute("filter", "url(#seg04-roughmk)"); loop.setAttribute("opacity", "0.92");
+    svg56.appendChild(loop);
+    const lL = loop.getTotalLength(); loop.setAttribute("stroke-dasharray", `${lL} ${lL}`); loop.setAttribute("stroke-dashoffset", lL);
+    // camera keys: [t, cx, cy, z, tilt]
+    const K56 = [[T(348.31), 2963, 3225, 1.0, 0.0], [T(348.31) + 0.99, 2900, 3180, 0.95, 1], [T(350.6), 2600, 2960, 0.9, 1], [T(352.5), 2800, 3080, 0.62, 1],
+                 [T(354.4), 2960, 3140, 0.66, 1], [T(355.1), 3080, 3220, 0.72, 1], [T(355.45), 2963, 3225, 0.95, 1], [T(355.59), 2963, 3225, 1.0, 1]];
+    function cam56At(t) {
+      if (t <= K56[0][0]) return K56[0];
+      for (let i = 0; i < K56.length - 1; i++) {
+        const a = K56[i], b = K56[i + 1];
+        if (t <= b[0]) { const k = eS((t - a[0]) / (b[0] - a[0])); return [t, lerp(a[1], b[1], k), lerp(a[2], b[2], k), lerp(a[3], b[3], k), lerp(a[4], b[4], k)]; }
+      }
+      return K56[K56.length - 1];
+    }
+    gate(T(348.31), T(355.59), () => FX.onFrame((t) => {
+      const c = cam56At(t);
+      setCam(cam56, tilt56, c[1], c[2], c[3], c[4]);
+      const d = post((t - T(352.6)) / 1.8, 1.8);
+      loop.setAttribute("stroke-dashoffset", (lL * (1 - gsap.parseEase("power1.inOut")(clamp(d, 0, 1)))).toFixed(1));
+      loop.style.visibility = d > 0 ? "visible" : "hidden";
+    }));
+    setCam(cam56, tilt56, 2963, 3225, 1.0, 0);
+    tl.fromTo("#seg04-sc056-p1", { scale: 1, opacity: 1 }, { scale: 1, opacity: 1, duration: 0.01 }, T(348.31));
+    tl.fromTo("#seg04-sc056-l1", { opacity: 0, x: -10 }, { opacity: 1, x: 0, duration: 0.25, ease: C(0.25), immediateRender: true }, T(348.31) + 0.25);
+    tl.fromTo("#seg04-sc056-slip", { opacity: 0, y: 30, rotation: -4 }, { opacity: 1, y: 0, rotation: -1.5, duration: 0.3, ease: C(0.3), immediateRender: true }, T(348.71) - 0.1);
+    FX.text.rise(tl, [$("sc056-ing")], T(348.71) - 0.06, { dur: 0.45 });
+    popPin("#seg04-sc056-p2", T(349.75));
+    tl.fromTo("#seg04-sc056-l2", { opacity: 0, x: 10 }, { opacity: 1, x: 0, duration: 0.25, ease: C(0.25), immediateRender: true }, T(349.75) + 0.2);
+    tl.to("#seg04-sc056-slip", { opacity: 0, y: 30, duration: 0.25, ease: "power2.in" }, T(352.15));
+    tl.fromTo("#seg04-sc056-boston", { opacity: 0, scale: 1.12 }, { opacity: 1, scale: 1, duration: 0.3, ease: C(0.3, "back.out(2)"), immediateRender: true }, T(355.03) - 0.06);
+    iris.at(tl, T(355.59));
+
+    // =====================================================================
+    // SC057 · 355.59–359.98 · NIGHT · iris: MIT -> Harvard
+    // =====================================================================
+    scene("sc057", 355.59, 359.98);
+    gate(T(355.59), T(359.98), () => FX.weave($("sc057-weave"), { amp: 1.3, flicker: 0.03, seed: 57 }));
+    tl.fromTo("#seg04-sc057-a .plate", { x: 0, scale: 1.0 }, { x: -760, scale: 1.04, duration: 3.7, ease: "none" }, T(355.59));
+    tl.fromTo("#seg04-sc057-mit", { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.3, ease: "power3.out", immediateRender: true }, T(358.46) - 0.06);
+    iris.at(tl, T(359.2));
+    tl.set("#seg04-sc057-a", { opacity: 0 }, T(359.2));
+    tl.set("#seg04-sc057-mit", { opacity: 0 }, T(359.2));
+    tl.set("#seg04-sc057-b", { opacity: 1 }, T(359.2));
+    tl.fromTo("#seg04-sc057-b .plate", { scale: 1.0 }, { scale: 1.05, duration: 0.8, ease: "none" }, T(359.2));
+    tl.fromTo("#seg04-sc057-har", { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.3, ease: "power3.out", immediateRender: true }, T(359.34) - 0.06);
+
+    // =====================================================================
+    // SC058 · 359.98–366.22 · PAPER · universities / professors / companies triangle
+    // =====================================================================
+    scene("sc058", 359.98, 366.22);
+    const N58 = { 1: [960, 300], 2: [560, 760], 3: [1360, 760] };
+    const e58 = $("sc058-edges");
+    const edge = (a, b, t) => {
+      const A = N58[a], B = N58[b], dx = B[0] - A[0], dy = B[1] - A[1], L = Math.hypot(dx, dy), ux = dx / L, uy = dy / L, R = 150;
+      FX.markup.underline(tl, e58, t, { x1: 0, x2: L - 2 * R, y: 0, color: "#18222f", width: 6, filter: mk, dur: 0.45 });
+      const p = e58.lastChild;
+      p.setAttribute("transform", `translate(${A[0] + ux * R} ${A[1] + uy * R}) rotate(${Math.atan2(dy, dx) * 180 / Math.PI})`);
+    };
+    tl.fromTo("#seg04-sc058-cam", { scale: 1.0 }, { scale: 1.04, duration: 5.2, ease: "none" }, T(359.98));
+    const node = (i, t) => {
+      tl.fromTo(`#seg04-sc058-n${i}`, { scale: 0, rotation: -12 }, { scale: 1, rotation: 0, duration: 0.35, ease: C(0.35, "back.out(2)"), immediateRender: true }, t - 0.1);
+      tl.fromTo(`#seg04-sc058-l${i}`, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.25, ease: C(0.25), immediateRender: true }, t - 0.06);
+    };
+    node(1, T(361.34));
+    node(2, T(362.14));
+    edge(1, 2, T(362.14) + 0.1);
+    node(3, T(363.10));
+    edge(2, 3, T(363.10) + 0.1);
+    edge(3, 1, T(363.10) + 0.45);
+    FX.text.rise(tl, [$("sc058-lead")], T(364.46) - 0.06, { dur: 0.5 });
+    // people dots start circling the triangle; push into the centre
+    const flows = $("sc058-flows"), tri = [N58[1], N58[3], N58[2]];
+    const triAt = (k) => { k = ((k % 1) + 1) % 1; const s = Math.floor(k * 3), r = k * 3 - s, a = tri[s], b = tri[(s + 1) % 3]; return [lerp(a[0], b[0], r), lerp(a[1], b[1], r)]; };
+    const fdots = [];
+    for (let i = 0; i < 9; i++) { const d = document.createElement("div"); d.className = "seg04-flow"; flows.appendChild(d); fdots.push(d); }
+    gate(T(364.9), T(366.22), () => FX.onFrame((t) => {
+      const f = Math.floor((t - T(364.9)) * 12) / 12;
+      fdots.forEach((d, i) => { const q = triAt(i / 9 + f * 0.22); d.style.left = q[0] + "px"; d.style.top = q[1] + "px"; d.style.opacity = clamp((t - T(364.9)) * 4 - i * 0.15, 0, 1); });
+    }));
+    tl.to("#seg04-sc058-cam", { scale: 1.45, duration: 0.95, ease: "power2.in" }, T(366.22) - 0.95);
+
+    // =====================================================================
+    // SC059 · 365.97–371.82 · NIGHT · "free flow of people" (6-frame crossfade in)
+    // =====================================================================
+    tl.set("#seg04-sc059", { visibility: "visible" }, T(366.22) - 0.25);
+    tl.fromTo("#seg04-sc059", { opacity: 0 }, { opacity: 1, duration: 0.25, ease: "none", immediateRender: false }, T(366.22) - 0.25);
+    tl.set("#seg04-sc059", { autoAlpha: 0 }, T(371.82));
+    gate(T(366.22) - 0.22, T(371.82), () => FX.weave($("sc059-weave"), { amp: 1.8, flicker: 0.05, seed: 59 }));
+    tl.fromTo("#seg04-sc059-weave", { scale: 1.04 }, { scale: 1.1, duration: 5.85, ease: "none" }, T(366.22) - 0.25);
+    const dots59 = $("sc059-dots"), tri59 = [[960, 230], [1420, 780], [500, 780]], d59 = [];
+    for (let i = 0; i < 12; i++) { const d = document.createElement("div"); d.className = "seg04-fd"; dots59.appendChild(d); d59.push(d); }
+    const tri59At = (k) => { k = ((k % 1) + 1) % 1; const s = Math.floor(k * 3), r = k * 3 - s, a = tri59[s], b = tri59[(s + 1) % 3]; return [lerp(a[0], b[0], r), lerp(a[1], b[1], r)]; };
+    gate(T(366.22) - 0.22, T(371.82), () => FX.onFrame((t) => {
+      const f = t - T(366.22) + 0.22;
+      d59.forEach((d, i) => { const q = tri59At(i / 12 + f * 0.09); d.style.left = q[0] + "px"; d.style.top = q[1] + "px"; });
+    }));
+    FX.text.rise(tl, [$("sc059-txt")], T(367.74) - 0.06, { dur: 0.6 });
+    tl.to("#seg04-sc059-txt", { opacity: 0, duration: 0.3 }, T(371.82) - 0.4);
+    tl.to("#seg04-sc059-weave", { opacity: 0.25, duration: 0.12, yoyo: true, repeat: 1, ease: "none" }, T(371.82) - 0.3);
+
+    // =====================================================================
+    // SC060 · 371.82–378.62 · PAPER · GE / AT&T / Bell Labs visit campus
+    // =====================================================================
+    scene("sc060", 371.82, 378.62);
+    tl.fromTo("#seg04-sc060-board", { scale: 1.0 }, { scale: 1.03, duration: 6.3, ease: "none" }, T(371.82));
+    tl.fromTo("#seg04-sc060-mit", { y: 50, rotation: -6, opacity: 0 }, { y: 0, rotation: -1.5, opacity: 1, duration: 0.45, ease: C(0.45) }, T(371.82) + 0.1);
+    tl.fromTo("#seg04-sc060-tagm", { opacity: 0, x: -20 }, { opacity: 1, x: 0, duration: 0.3, ease: C(0.3) }, T(371.82) + 0.45);
+    const stamp = (sel, t, rot) => tl.fromTo(sel, { opacity: 0, scale: 1.45, rotation: rot * 2.2 }, { opacity: 1, scale: 1, rotation: rot, duration: 0.22, ease: C(0.22, "power4.out"), immediateRender: true }, t);
+    stamp("#seg04-sc060-ge", T(373.74) - 0.08, -5);
+    stamp("#seg04-sc060-att", T(374.94) - 0.08, 4);
+    stamp("#seg04-sc060-bl", T(375.66) - 0.08, -2.5);
+    const m60 = $("sc060-marks");
+    FX.markup.arrow(tl, m60, T(377.58) - 0.04, { x1: 470, y1: 560, x2: 668, y2: 470, bend: 50, color: "#18222f", width: 7, head: 30, filter: mk, dur: 0.35 });
+    FX.markup.arrow(tl, m60, T(377.58) + 0.08, { x1: 1450, y1: 540, x2: 1268, y2: 430, bend: -50, color: "#18222f", width: 7, head: 30, filter: mk, dur: 0.35 });
+    FX.markup.arrow(tl, m60, T(377.58) + 0.2, { x1: 1320, y1: 740, x2: 1222, y2: 690, bend: 30, color: "#18222f", width: 7, head: 26, filter: mk, dur: 0.3 });
+    FX.text.rise(tl, [$("sc060-visit")], T(377.58) - 0.06, { dur: 0.5 });
+    // MIT card tilts -> becomes one panel of SC061
+    tl.to("#seg04-sc060-mit", { rotation: 4, x: 80, y: 80, duration: 0.3, ease: C(0.3, "power2.in") }, T(378.62) - 0.3);
+
+    // =====================================================================
+    // SC061 · 378.62–388.70 · NIGHT · fund labs / professors invent / commercialize
+    // =====================================================================
+    scene("sc061", 378.62, 388.70);
+    tl.fromTo("#seg04-sc061-bg1", { x: 0, scale: 1.05 }, { x: -70, scale: 1.0, duration: 10.08, ease: "none" }, T(378.62));
+    tl.fromTo("#seg04-sc061-mit", { x: 0, y: 0, rotation: 4 }, { x: -520, y: -330, rotation: 6, duration: 0.6, ease: C(0.6, "power3.inOut") }, T(378.62) + 0.05);
+    tl.to("#seg04-sc061-mit", { x: -600, duration: 8.6, ease: "none" }, T(378.62) + 0.65);
+    tl.fromTo("#seg04-sc061-vp", { x: -60, y: 80, rotation: -6, opacity: 0 }, { x: 0, y: 0, rotation: -3, opacity: 0.95, duration: 0.5, ease: C(0.5) }, T(378.62) + 0.2);
+    tl.to("#seg04-sc061-vp", { x: 80, duration: 9.2, ease: "none" }, T(378.62) + 0.7);
+    tl.fromTo("#seg04-sc061-tubewrap", { y: 160, opacity: 0, rotation: -4 }, { y: 0, opacity: 1, rotation: -2, duration: 0.6, ease: C(0.6) }, T(378.62) + 0.3);
+    tl.to("#seg04-sc061-tubewrap", { rotation: 2, scale: 1.04, duration: 8.6, ease: "sine.inOut" }, T(378.62) + 0.9);
+    tl.fromTo("#seg04-sc061-tglow", { opacity: 0.4 }, { opacity: 1, duration: 3.0, ease: "sine.inOut", yoyo: true, repeat: 2 }, T(378.62));
+    tl.fromTo("#seg04-sc061-fund", { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, T(378.94) - 0.06);
+    FX.text.fill(tl, $("sc061-fund"), T(378.94) - 0.06, { per: 0.035, hold: 0.25, settle: 0.45 });
+    FX.text.rise(tl, [$("sc061-prof")], T(381.98) - 0.06, { dur: 0.55 });
+    FX.text.odometer(tl, $("sc061-com"), T(385.34) - 0.06, { glyphs: "abcdefghijklmnopqrstuvwxyz", dur: 0.7, stagger: 0.035, spins: 6, seed: 61 });
+    tl.fromTo("#seg04-sc061-string", { opacity: 0 }, { opacity: 1, duration: 0.1 }, T(385.34) - 0.06);
+    tl.fromTo("#seg04-sc061-tag", { opacity: 0, rotation: -40, scale: 0.6 }, { opacity: 1, rotation: 14, scale: 1, duration: 0.35, ease: C(0.35, "back.out(2.5)"), immediateRender: true }, T(385.34) - 0.06);
+    tl.to("#seg04-sc061-tag", { rotation: 8, duration: 1.2, ease: "sine.inOut", yoyo: true, repeat: 1 }, T(385.34) + 0.3);
+    // exit: panels slide left, everything clears for the bulletin page
+    tl.to("#seg04-sc061-bgwrap, #seg04-sc061-tubewrap, #seg04-sc061-fund, #seg04-sc061-prof, #seg04-sc061-com", { x: "-=700", opacity: 0, duration: 0.32, ease: C(0.32, "power2.in") }, T(388.70) - 0.34);
+
+    // =====================================================================
+    // SC062 · 388.70–398.46 · PAPER · MIT Bulletin, Course VI-A, cut-in GE photo
+    // =====================================================================
+    scene("sc062", 388.70, 398.46);
+    tl.fromTo("#seg04-sc062-page", { y: 900, rotationX: 22, rotationY: 8, rotationZ: -6 }, { y: 0, rotationX: 12, rotationY: 6, rotationZ: -3, duration: 0.55, ease: C(0.55), immediateRender: true }, T(388.70));
+    tl.to("#seg04-sc062-page", { rotationX: 8, rotationY: 3, rotationZ: -2, y: -30, duration: 8.6, ease: "none" }, T(388.70) + 0.55);
+    FX.text.rise(tl, [$("sc062-stu")], T(389.74) - 0.06, { dur: 0.5 });
+    tl.fromTo("#seg04-sc062-hl", { scaleX: 0 }, { scaleX: 1, duration: 0.45, ease: C(0.45, "power2.inOut"), immediateRender: true }, T(393.50) - 0.1);
+    tl.fromTo("#seg04-sc062-real", { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.3, ease: C(0.3), immediateRender: true }, T(393.50) - 0.06);
+    tl.fromTo("#seg04-sc062-photo", { opacity: 0, y: -70, rotation: 9, scale: 1.08 }, { opacity: 1, y: 0, rotation: 3, scale: 1, duration: 0.45, ease: C(0.45), immediateRender: true }, T(394.62) - 0.1);
+    tl.fromTo("#seg04-sc062-cur", { opacity: 0, x: -16 }, { opacity: 1, x: 0, duration: 0.25, ease: C(0.25), immediateRender: true }, T(397.66) - 0.06);
+    // camera pushes into the cut-in photo (hand-off to SC063 curve cut)
+    tl.to("#seg04-sc062-photo", { rotation: 0, duration: 0.42, ease: "power2.in" }, T(398.46) - 0.42);
+    tl.fromTo("#seg04-sc062-cam", { scale: 1, x: 0, y: 0 }, { scale: 3.25, x: 960 - 1490, y: 583 - 330, duration: 0.42, ease: "power3.in", immediateRender: false }, T(398.46) - 0.42);
+
+    FX.mount(tl, DURATION);
+    window.__timelines = window.__timelines || {};
+    window.__timelines[SEG] = tl;
+  })();
+  </script>
+</template>
+</body>
+</html>

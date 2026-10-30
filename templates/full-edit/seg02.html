@@ -1,0 +1,1035 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8" /></head>
+<body>
+<template>
+  <style>
+    #root { position: absolute; inset: 0; overflow: hidden; background: var(--night); }
+    .seg02-scene { position: absolute; inset: 0; overflow: hidden; visibility: hidden; opacity: 0; }
+    .seg02-paper { background: var(--paper); }
+    .seg02-night { background: var(--night); }
+    .seg02-abs { position: absolute; }
+    .seg02-credit { position: absolute; right: 30px; bottom: 22px; font-size: 13px; letter-spacing: 0.08em; color: rgba(244,238,226,0.55); }
+    .seg02-credit.ink { color: rgba(24,34,47,0.55); }
+    .seg02-shade-b { position: absolute; left: 0; right: 0; bottom: 0; height: 520px; background: linear-gradient(180deg, rgba(13,12,11,0), rgba(13,12,11,0.78)); }
+    .seg02-tag { position: absolute; background: var(--ink); color: var(--paper); padding: 10px 18px 8px; font-size: 26px; }
+    .seg02-mk { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; pointer-events: none; }
+
+    /* ===== SC018 shutter montage ===== */
+    #seg02-sc018-weave { position: absolute; inset: -16px; }
+    .seg02-shot { position: absolute; inset: 0; opacity: 0; overflow: hidden; }
+    .seg02-shot .plate .img, .seg02-shot .plate .fringe { filter: sepia(0.32) saturate(0.55) contrast(1.06) brightness(0.92); }
+    .seg02-shot .plate .fringe { filter: sepia(0.32) saturate(0.55) contrast(1.06) brightness(0.92) blur(7px); }
+    #seg02-sc018-s1 .img, #seg02-sc018-s1 .fringe { object-position: 50% 22%; }
+    #seg02-sc018-s2 .img, #seg02-sc018-s2 .fringe { object-position: 50% 38%; }
+    #seg02-sc018-s4 .img, #seg02-sc018-s4 .fringe { object-position: 50% 30%; }
+    #seg02-sc018-pan { position: absolute; left: -1240px; top: -560px; height: 1700px; width: 7565px; }
+    #seg02-sc018-pan img { width: 100%; height: 100%; filter: sepia(0.38) saturate(0.6) contrast(1.12) brightness(0.86); }
+    .seg02-lab { position: absolute; left: 110px; bottom: 96px; opacity: 0; display: flex; align-items: center; gap: 30px; }
+    .seg02-lab .n { font-size: 116px; }
+    #seg02-sc018-ge { width: 132px; height: 132px; opacity: 0.95; filter: drop-shadow(0 0 16px rgba(255,140,80,0.35)); }
+    #seg02-sc018-l4 .n { font-size: 84px; }
+
+    /* ===== SC019 Stanford collage ===== */
+    #seg02-sc019-board { position: absolute; inset: 0; transform-origin: 40% 50%; }
+    .seg02-card { position: absolute; background: #f3ecdc; padding: 14px; filter: url(#seg02-rough); box-shadow: 0 18px 40px rgba(35,48,58,0.28); }
+    .seg02-card .ph { position: relative; width: 100%; height: 100%; overflow: hidden; }
+    .seg02-card .ph img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: url(#seg02-tint-ink) contrast(1.05); }
+    .seg02-card .ht { position: absolute; inset: 0; background-size: 520px auto; mix-blend-mode: multiply; opacity: 0.5; }
+    #seg02-sc019-stan { left: 210px; top: 190px; width: 980px; height: 560px; }
+    #seg02-sc019-stan img { object-position: 60% 50%; }
+    #seg02-sc019-pin { position: absolute; left: 676px; top: 150px; width: 64px; height: 64px; }
+    #seg02-sc019-tag { left: 236px; top: 770px; font-size: 34px; padding: 12px 22px 9px; }
+    .seg02-stu { width: 360px; height: 250px; padding: 10px; }
+    .seg02-stu .ph img { transform: scale(2.3); }
+    #seg02-sc019-st1 { left: 900px; top: 260px; } #seg02-sc019-st2 { left: 940px; top: 330px; } #seg02-sc019-st3 { left: 980px; top: 400px; }
+    #seg02-sc019-st1 img { transform-origin: 30% 45%; } #seg02-sc019-st2 img { transform-origin: 62% 62%; } #seg02-sc019-st3 img { transform-origin: 85% 30%; }
+    #seg02-sc019-like { left: 236px; top: 862px; font-size: 64px; color: var(--ink); }
+
+    /* ===== SC020 BRAIN DRAIN ===== */
+    #seg02-sc020-us { position: absolute; left: 160px; top: 250px; width: 1600px; height: 800px; opacity: 0.42; }
+    #seg02-sc020-flow { position: absolute; left: 160px; top: 250px; width: 1600px; height: 800px; overflow: visible; }
+    #seg02-sc020-title { position: absolute; left: 0; right: 0; top: 70px; text-align: center; font-size: 220px; color: var(--ink); white-space: nowrap; }
+    #seg02-sc020-title span { display: inline-block; filter: url(#seg02-choke20); }
+    #seg02-sc020-in { left: 170px; top: 900px; font-size: 60px; color: var(--ink); }
+
+    /* ===== SC021 NYT 1928 (s06) ===== */
+    #seg02-sc021-bg { position: absolute; inset: -60px; background-size: cover; background-position: center 20%; filter: url(#seg02-tint-n) blur(4px); opacity: 0.55; transform: scale(1.35) rotate(-8deg); }
+    #seg02-sc021-cam { position: absolute; left: 0; top: 0; width: 2400px; height: 2976px; transform-origin: 0 0; }
+    #seg02-sc021-page { position: absolute; left: 0; top: 0; width: 2400px; height: 2976px; transform-origin: 50% 20%; }
+    #seg02-sc021-page img { position: absolute; inset: 0; width: 100%; height: 100%; clip-path: inset(0.7% 0.9% 0.7% 0.9%); filter: sepia(0.28) contrast(1.06) brightness(0.97); }
+    #seg02-sc021-page .ht { position: absolute; inset: 0; background-size: 260px auto; mix-blend-mode: overlay; opacity: 0.5; }
+    #seg02-sc021-page .pp { position: absolute; inset: 0; background-size: cover; mix-blend-mode: multiply; opacity: 0.35; }
+    #seg02-sc021-hl { position: absolute; left: 140px; top: 372px; width: 780px; height: 92px; background: var(--yellow); mix-blend-mode: multiply; transform-origin: 0 50%; filter: url(#seg02-rough9); opacity: 0.92; }
+    #seg02-sc021-dim { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(14,12,10,0) 30%, rgba(14,12,10,0.78) 62%, rgba(14,12,10,0.88)); }
+    #seg02-sc021-clip { position: absolute; left: 1150px; top: 150px; width: 560px; transform-origin: 50% 40%; }
+    #seg02-sc021-photo { position: relative; width: 560px; height: 700px; background: #ece4d2; padding: 18px 18px 60px; filter: url(#seg02-roughsm); box-shadow: 0 30px 80px rgba(0,0,0,0.65); }
+    #seg02-sc021-photo img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 30%; filter: sepia(0.2) contrast(1.05); }
+    #seg02-sc021-fp { left: 1150px; top: 44px; font-size: 64px; color: #ece3d2; }
+    #seg02-sc021-name { left: 1120px; top: 900px; width: 760px; font-size: 96px; filter: url(#seg02-choke21); }
+    #seg02-sc021-black { position: absolute; inset: 0; background: #0f0e0d; opacity: 0; }
+
+    /* ===== SC022 young Hoover + SC023 2.5D quad ===== */
+    #seg02-sc022-weave { position: absolute; inset: -20px; }
+    #seg02-sc022-wrap { position: absolute; inset: 0; transform-origin: 50% 42%; }
+    #seg02-sc022-a, #seg02-sc022-b { position: absolute; inset: 0; overflow: hidden; }
+    #seg02-sc022-a .bg { position: absolute; inset: -40px; background-size: cover; background-position: center 30%; filter: url(#seg02-tint-n) blur(18px); opacity: 0.7; }
+    #seg02-sc022-a .plate { inset: auto; left: 190px; top: 70px; width: 900px; height: 940px; box-shadow: 0 30px 90px rgba(0,0,0,0.6); }
+    #seg02-sc022-a .plate .img, #seg02-sc022-a .plate .fringe { object-position: 50% 28%; }
+    #seg02-sc022-txt { position: absolute; left: 1180px; top: 380px; width: 680px; }
+    #seg02-sc022-h { font-size: 40px; color: #ece3d2; }
+    #seg02-sc022-first { font-size: 104px; margin-top: 18px; }
+    #seg02-sc022-ex { font-size: 50px; margin-top: 22px; color: #ece3d2; }
+    /* 2.5D stage (s10 math) */
+    #seg02-sc023-stage { position: absolute; inset: 0; perspective: 1200px; perspective-origin: 960px 540px; background: #17130f; }
+    #seg02-sc023-world { position: absolute; inset: 0; transform-style: preserve-3d; transform-origin: 960px 540px; }
+    .seg02-L { position: absolute; inset: 0; transform-origin: 960px 540px; }
+    .seg02-L img { position: absolute; display: block; }
+    #seg02-sc023-sky { left: -96px; top: -54px; width: 2112px; height: 1188px; filter: sepia(0.45) brightness(0.36) contrast(1.1) blur(2px); }
+    #seg02-sc023-skyg { position: absolute; left: -500px; right: -500px; top: -500px; height: 1300px;
+      background: linear-gradient(180deg, rgba(12,10,8,0.88) 0%, rgba(40,26,18,0.55) 50%, rgba(150,100,62,0.35) 74%, rgba(190,140,90,0.45) 82%); }
+    #seg02-sc023-title { position: absolute; left: 0; right: 0; top: 92px; text-align: center; }
+    #seg02-sc023-fi { font-size: 34px; color: #ece3d2; }
+    #seg02-sc023-yr { font-size: 290px; line-height: 0.9; margin-top: 8px; }
+    #seg02-sc023-haze { position: absolute; left: -400px; right: -400px; top: 120px; height: 700px;
+      background: radial-gradient(ellipse 55% 40% at 60% 48%, rgba(255,214,170,0.20), rgba(255,214,170,0) 70%); mix-blend-mode: screen; }
+    #seg02-sc023-quad { left: -96px; top: -54px; width: 2112px; height: 1188px; filter: sepia(0.3) saturate(0.85) contrast(1.12) brightness(0.96); }
+    #seg02-sc023-pl { left: 101px; top: 501px; width: 441px; height: 183px; filter: sepia(0.3) brightness(0.9) contrast(1.08) blur(1.2px); transform: scale(1.06); }
+    #seg02-sc023-pr { left: 1347px; top: 465px; width: 669px; height: 670px; filter: sepia(0.3) brightness(0.78) contrast(1.1) blur(3px); transform: scale(1.1); transform-origin: 100% 100%; }
+    #seg02-sc023-bush { left: -96px; top: 582px; width: 130px; height: 294px; filter: sepia(0.3) brightness(0.78) blur(3px); transform: scale(1.1); transform-origin: 0% 100%; }
+    #seg02-sc023-rays { position: absolute; left: 500px; top: -300px; width: 1900px; height: 1500px; mix-blend-mode: soft-light; opacity: 0.5;
+      background: repeating-conic-gradient(from 200deg at 85% 0%, rgba(255,226,180,0.0) 0deg, rgba(255,226,180,0.55) 2deg, rgba(255,226,180,0.0) 5deg, rgba(255,226,180,0.0) 9deg);
+      -webkit-mask-image: radial-gradient(ellipse 70% 80% at 85% 0%, #000 20%, transparent 75%); mask-image: radial-gradient(ellipse 70% 80% at 85% 0%, #000 20%, transparent 75%); filter: blur(6px); }
+    #seg02-sc023-low { position: absolute; left: 0; right: 0; bottom: 0; height: 360px; background: linear-gradient(180deg, rgba(14,12,10,0), rgba(14,12,10,0.7)); }
+    #seg02-sc023-fc { left: 110px; bottom: 92px; font-size: 64px; }
+
+    /* ===== SC024 exam sheet ===== */
+    #seg02-sc024-cam { position: absolute; inset: 0; transform-origin: 40% 50%; }
+    #seg02-sc024-sheet { position: absolute; left: 0; top: 0; width: 1800px; height: 2400px; transform-origin: 0 0; box-shadow: 0 40px 90px rgba(35,48,58,0.35); }
+    #seg02-sc024-sheet img { position: absolute; inset: 0; width: 100%; height: 100%; }
+    #seg02-sc024-sx { position: absolute; left: 0; top: 0; width: 1800px; height: 2400px; overflow: visible; }
+    #seg02-sc024-fails { left: 1060px; top: 300px; font-size: 180px; color: var(--vermilion); }
+    #seg02-sc024-ex { left: 1068px; top: 500px; font-size: 104px; color: var(--ink); line-height: 1; }
+
+    /* ===== SC025 Quaker (Vox layered) ===== */
+    #seg02-sc025-bgwrap { position: absolute; inset: -80px; }
+    .seg02-bgimg { position: absolute; background-size: cover; background-position: center; filter: url(#seg02-tint-v); }
+    #seg02-sc025-bg1 { inset: 0; filter: url(#seg02-tint-v) blur(2px); opacity: 0.85; }
+    #seg02-sc025-bg2 { left: 1160px; top: 60px; width: 920px; height: 700px; transform: rotate(4deg); box-shadow: -30px 30px 80px rgba(0,0,0,0.55); opacity: 0.9; }
+    #seg02-sc025-bg3 { left: -60px; top: 660px; width: 1000px; height: 520px; transform: rotate(-3deg); box-shadow: 30px -20px 80px rgba(0,0,0,0.5); opacity: 0.85; background-position: center 40%; }
+    #seg02-sc025-bgtx { position: absolute; inset: 0; background-size: cover; mix-blend-mode: overlay; opacity: 0.5; }
+    #seg02-sc025-shade { position: absolute; inset: 0; background: radial-gradient(ellipse 65% 70% at 50% 55%, rgba(16,15,14,0.3), rgba(16,15,14,0.8)); }
+    .seg02-vcard { position: absolute; background: #e9e1cf; padding: 16px 16px 22px; filter: url(#seg02-rough7); box-shadow: 0 30px 80px rgba(0,0,0,0.6); transform-origin: 50% 50%; }
+    .seg02-vcard .ph { position: relative; width: 100%; height: 100%; overflow: hidden; background: #2a2622; }
+    .seg02-vcard img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: sepia(0.18) contrast(1.08); }
+    #seg02-sc025-hoov { left: 330px; top: 90px; width: 500px; height: 620px; }
+    #seg02-sc025-hoov img { object-position: 50% 18%; }
+    #seg02-sc025-swain { left: 1090px; top: 80px; width: 500px; height: 620px; }
+    #seg02-sc025-swain img { object-position: 50% 20%; }
+    #seg02-sc025-q { left: 330px; top: 770px; font-size: 128px; }
+    #seg02-sc025-rev { left: 1094px; top: 780px; font-size: 58px; color: #ece3d2; }
+    #seg02-sc025-too { left: 1090px; top: 770px; font-size: 112px; }
+
+    /* ===== SC026 admission card + stamp ===== */
+    #seg02-sc026-cam { position: absolute; inset: 0; transform-origin: 50% 45%; }
+    #seg02-sc026-card { position: absolute; left: 285px; top: 50px; width: 1350px; height: 844px; transform-origin: 50% 50%; filter: drop-shadow(0 30px 50px rgba(35,48,58,0.35)); }
+    #seg02-sc026-cimg { position: absolute; inset: 0; width: 100%; height: 100%; }
+    #seg02-sc026-stamp { position: absolute; left: 640px; top: 470px; width: 680px; transform-origin: 50% 50%; mix-blend-mode: multiply; }
+    #seg02-sc026-bc { left: 0; right: 0; top: 940px; text-align: center; font-size: 60px; color: var(--ink); }
+
+    /* ===== SC027 newsreel film ===== */
+    #seg02-sc027-weave { position: absolute; inset: -18px; background: #0d0c0b; }
+    .seg02-film { position: absolute; left: -120px; top: -180px; width: 2160px; height: 1440px; object-fit: cover; filter: sepia(0.35) saturate(0.6) contrast(1.12) brightness(0.95); }
+    #seg02-sc027-scr { position: absolute; inset: 0; background-size: cover; mix-blend-mode: screen; opacity: 0.35; }
+    #seg02-sc027-leak { position: absolute; inset: 0; background-size: cover; mix-blend-mode: screen; opacity: 0; }
+    .seg02-cap { position: absolute; left: 110px; bottom: 110px; }
+    #seg02-sc027-c1, #seg02-sc027-c2 { font-size: 76px; }
+    #seg02-sc027-c3 { font-size: 40px; }
+
+    /* ===== SC028 his wife ===== */
+    #seg02-sc028-board { position: absolute; inset: 0; transform-origin: 50% 50%; }
+    #seg02-sc028-h { left: 470px; top: 150px; width: 440px; height: 560px; }
+    #seg02-sc028-h img { object-position: 50% 22%; }
+    #seg02-sc028-l { left: 1010px; top: 140px; width: 440px; height: 560px; }
+    #seg02-sc028-l .ph { background: #e4d9c3; }
+    #seg02-sc028-l img { object-fit: contain; object-position: 50% 100%; }
+    #seg02-sc028-tag { left: 1040px; top: 720px; }
+    #seg02-sc028-uni { left: 0; right: 0; top: 860px; text-align: center; font-size: 60px; color: var(--ink); }
+
+    /* ===== SC029 R7 timeline ===== */
+    #seg02-sc029-stage { position: absolute; inset: 0; transform-origin: 1074px 560px; }
+    #seg02-sc029-title { left: 200px; top: 96px; font-size: 76px; color: var(--ink); }
+    #seg02-sc029-title i { font-style: italic; }
+    #seg02-sc029-svg { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; }
+    .seg02-yr { position: absolute; top: 842px; font-size: 22px; color: var(--ink); transform: translateX(-50%); }
+    .seg02-band-l { position: absolute; font-size: 36px; color: var(--ink); white-space: nowrap; transform: translateX(-50%); }
+    #seg02-sc029-pres { left: 1000px; top: 236px; width: 720px; text-align: right; font-size: 44px; color: var(--vermilion); }
+    #seg02-sc029-20s { left: 1340px; top: 918px; font-size: 40px; color: var(--ink); transform: translateX(-50%); }
+    #seg02-sc029-flood { position: absolute; inset: 0; background: #b9a98d; opacity: 0; }
+
+    /* ===== SC030 RCA TRK-12 TV ===== */
+    #seg02-sc030-bg { position: absolute; inset: -60px; background-size: cover; background-position: center 30%; filter: url(#seg02-tint-n) blur(8px); opacity: 0.55; }
+    #seg02-sc030-set { position: absolute; left: 0; top: 0; width: 1686px; height: 2744px; transform-origin: 0 0; }
+    #seg02-sc030-screen { position: absolute; left: 711px; top: 424px; width: 414px; height: 281px; overflow: hidden; border-radius: 48px 48px 6px 6px; background: #0b0b0b; }
+    #seg02-sc030-inner { position: absolute; inset: 0; transform-origin: 50% 50%; }
+    #seg02-sc030-vid { position: absolute; left: -46px; top: -20px; width: 506px; height: 321px; object-fit: cover; }
+    #seg02-sc030-glare { position: absolute; inset: 0; background: radial-gradient(ellipse 70% 60% at 30% 22%, rgba(255,255,255,0.16), rgba(255,255,255,0) 60%), radial-gradient(ellipse 95% 90% at 50% 50%, rgba(0,0,0,0) 60%, rgba(0,0,0,0.55) 100%); }
+    #seg02-sc030-flash { position: absolute; inset: 0; background: #f4f1ea; }
+    #seg02-sc030-tv { position: absolute; left: 0; top: 0; width: 1686px; height: 2744px; -webkit-mask-image: radial-gradient(ellipse 58% 34% at 54% 26%, #000 62%, transparent 100%); mask-image: radial-gradient(ellipse 58% 34% at 54% 26%, #000 62%, transparent 100%); }
+    #seg02-sc030-fade { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; background: linear-gradient(90deg, rgba(14,12,10,0) 45%, rgba(14,12,10,0.85) 62%); }
+    #seg02-sc030-txt { position: absolute; left: 1200px; top: 360px; width: 640px; }
+    #seg02-sc030-adm { font-size: 54px; color: #ece3d2; }
+    .seg02-soc { font-size: 118px; line-height: 1.0; }
+    #seg02-sc030-s1 { margin-top: 26px; }
+
+    /* ===== SC031 clipping ===== */
+    #seg02-sc031-cam { position: absolute; inset: 0; transform-origin: 35% 50%; }
+    #seg02-sc031-clip { position: absolute; left: 200px; top: 90px; width: 780px; height: 900px; background: #ece2cc; filter: url(#seg02-rough7); box-shadow: 0 30px 70px rgba(35,48,58,0.3); padding: 40px 44px; color: #2a2a28; transform-origin: 50% 50%; }
+    #seg02-sc031-clip .tex { position: absolute; inset: 0; background-size: 300px auto; mix-blend-mode: multiply; opacity: 0.45; }
+    #seg02-sc031-clip .tex2 { position: absolute; inset: 0; background-size: cover; mix-blend-mode: multiply; opacity: 0.6; }
+    #seg02-sc031-mast { text-align: center; font-size: 62px; letter-spacing: 0.02em; border-bottom: 3px double #2a2a28; padding-bottom: 8px; }
+    #seg02-sc031-sub { text-align: center; font-size: 15px; padding: 8px 0 10px; border-bottom: 1px solid #2a2a28; }
+    #seg02-sc031-head { position: relative; text-align: center; font-size: 60px; margin-top: 30px; letter-spacing: 0.02em; }
+    #seg02-sc031-hl { position: absolute; left: 30px; right: 30px; top: 8px; height: 64px; background: var(--yellow); mix-blend-mode: multiply; transform-origin: 0 50%; filter: url(#seg02-rough9); opacity: 0.9; }
+    #seg02-sc031-deck { text-align: center; font-size: 26px; margin-top: 10px; color: #3a3a36; }
+    .seg02-cols { display: flex; gap: 26px; margin-top: 26px; }
+    .seg02-col { flex: 1; }
+    .seg02-col i { display: block; height: 9px; margin: 0 0 12px; background: rgba(42,42,40,0.5); border-radius: 2px; }
+    #seg02-sc031-st { left: 1110px; top: 360px; font-size: 44px; color: var(--ink); }
+    #seg02-sc031-bot { left: 1104px; top: 430px; width: 760px; font-size: 140px; color: var(--ink); line-height: 0.95; }
+
+    /* ===== SC032 brain-drain map ===== */
+    #seg02-sc032-cam { position: absolute; left: 0; top: 0; width: 6400px; height: 3200px; transform-origin: 0 0; }
+    #seg02-sc032-base { position: absolute; inset: 0; width: 6400px; height: 3200px; filter: brightness(0.82) contrast(1.08) saturate(0.7); }
+    #seg02-sc032-west { position: absolute; left: 0; top: 0; width: 6400px; height: 3200px; mix-blend-mode: overlay; opacity: 0.55; }
+    #seg02-sc032-svg { position: absolute; left: 0; top: 0; width: 6400px; height: 3200px; overflow: visible; }
+    .seg02-cloud { position: absolute; opacity: 0.5; }
+    .seg02-cshadow { position: absolute; opacity: 0.25; filter: brightness(0) blur(18px); }
+    #seg02-sc032-bd { left: 110px; top: 80px; font-size: 120px; color: var(--bone); filter: url(#seg02-choke32); }
+    #seg02-sc032-wus { left: 150px; top: 620px; font-size: 34px; }
+
+    /* ===== SC033 isotype ===== */
+    #seg02-sc033-stage { position: absolute; inset: 0; }
+    #seg02-sc033-smart { left: 150px; top: 150px; font-size: 80px; color: var(--ink); }
+    .seg02-ico { position: absolute; width: 56px; height: 56px; left: 0; top: 0; }
+    .seg02-ico img { position: absolute; inset: 0; width: 56px; height: 56px; }
+    .seg02-ico .v, .seg02-ico .n { opacity: 0; }
+    #seg02-sc033-line { position: absolute; left: 1005px; top: 250px; width: 0; height: 700px; border-left: 3px dashed rgba(24,34,47,0.55); }
+    .seg02-colh { position: absolute; top: 300px; font-size: 26px; color: var(--navy); }
+    #seg02-sc033-h1 { left: 1110px; } #seg02-sc033-h2 { left: 1500px; }
+
+    /* ===== SC034 Hoover 1928 -> Stanford today ===== */
+    #seg02-sc034-weave { position: absolute; inset: -20px; }
+    #seg02-sc034-wrap { position: absolute; inset: 0; transform-origin: 32% 40%; }
+    #seg02-sc034-a, #seg02-sc034-b { position: absolute; inset: 0; overflow: hidden; }
+    #seg02-sc034-a .bg { position: absolute; inset: -40px; background-size: cover; background-position: center 30%; filter: url(#seg02-tint-n) blur(18px); opacity: 0.6; }
+    #seg02-sc034-a .plate { inset: auto; left: 200px; top: 60px; width: 820px; height: 960px; box-shadow: 0 30px 90px rgba(0,0,0,0.6); }
+    #seg02-sc034-a .plate .img, #seg02-sc034-a .plate .fringe { transform: scale(1.12); object-position: 52% 35%; filter: sepia(0.3) contrast(1.06) brightness(0.95); }
+    #seg02-sc034-a .plate .fringe { filter: sepia(0.3) contrast(1.06) brightness(0.95) blur(7px); }
+    #seg02-sc034-b .plate .img, #seg02-sc034-b .plate .fringe { filter: saturate(0.55) sepia(0.18) contrast(1.05) brightness(0.92); }
+    #seg02-sc034-b .plate .fringe { filter: saturate(0.55) sepia(0.18) contrast(1.05) brightness(0.92) blur(7px); }
+    #seg02-sc034-bplate { position: absolute; inset: 0; transform-origin: 45% 40%; }
+    #seg02-sc034-txt { position: absolute; left: 1120px; top: 380px; width: 720px; }
+    #seg02-sc034-fix { font-size: 64px; color: #ece3d2; }
+    #seg02-sc034-ch { font-size: 210px; margin-top: 6px; filter: url(#seg02-choke34); }
+    #seg02-sc034-today { left: 110px; bottom: 96px; font-size: 44px; }
+    #seg02-sc034-card { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; background: var(--paper); box-shadow: -30px 0 60px rgba(0,0,0,0.45); transform: translateX(1960px); }
+
+    /* ===== global overlays ===== */
+    #seg02-iris { z-index: 5; }
+    #seg02-grain { z-index: 6; }
+    #seg02-dust { z-index: 6; }
+    #seg02-vig { z-index: 6; }
+  </style>
+  <div id="root" data-composition-id="seg02" data-vo-start="100.25" data-duration="106.02" data-width="1920" data-height="1080">
+    <svg id="seg02-defs" width="0" height="0" style="position:absolute"></svg>
+
+    <!-- SC018 · shutter montage (night) -->
+    <div class="seg02-scene seg02-night" id="seg02-sc018" data-scene="SC018">
+      <div id="seg02-sc018-weave">
+        <div class="seg02-shot" id="seg02-sc018-s1"><div class="plate"><img class="img" src="assets/archival/companies/nyc_skyline_battery_park_1929.jpg" alt="" /><img class="fringe" src="assets/archival/companies/nyc_skyline_battery_park_1929.jpg" alt="" /></div></div>
+        <div class="seg02-shot" id="seg02-sc018-s2"><div class="plate"><img class="img" src="assets/archival/companies/bell_labs_west_street_building_historic.jpg" alt="" /><img class="fringe" src="assets/archival/companies/bell_labs_west_street_building_historic.jpg" alt="" /></div></div>
+        <div class="seg02-shot" id="seg02-sc018-s3"><div id="seg02-sc018-pan"><img src="assets/archival/companies/ge_schenectady_works_panorama_1907_lc.jpg" alt="" /></div></div>
+        <div class="seg02-shot" id="seg02-sc018-s4"><div class="plate"><img class="img" src="assets/archival/companies/new_jersey_edison_west_orange_lab_hoover_1928.jpg" alt="" /><img class="fringe" src="assets/archival/companies/new_jersey_edison_west_orange_lab_hoover_1928.jpg" alt="" /></div></div>
+      </div>
+      <div class="seg02-shade-b"></div>
+      <div class="seg02-lab" id="seg02-sc018-l2"><div class="n t-display halate">Bell Labs</div></div>
+      <div class="seg02-lab" id="seg02-sc018-l3"><img id="seg02-sc018-ge" src="assets/archival/brain_drain/ge_logo_bone.svg" alt="" /><div class="n t-display halate">General Electric</div></div>
+      <div class="seg02-lab" id="seg02-sc018-l4"><div class="n t-serif-i halate">and many more</div></div>
+      <div class="seg02-credit t-label" id="seg02-sc018-cr">Photo: Charlesbahr, CC BY-SA 4.0</div>
+    </div>
+
+    <!-- SC019 · Stanford collage (paper) -->
+    <div class="seg02-scene seg02-paper" id="seg02-sc019" data-scene="SC019">
+      <div id="seg02-sc019-board">
+        <div id="seg02-sc019-stan" class="seg02-card"><div class="ph"><img src="assets/archival/hoover/stanford_inner_quad_west_entrance_c1900.jpg" alt="" /><div class="ht" style="background-image:url('assets/textures/halftone_03.png')"></div></div></div>
+        <img id="seg02-sc019-pin" src="assets/icons/pin_vermilion_top.svg" alt="" />
+        <div id="seg02-sc019-tag" class="seg02-tag t-label">Stanford</div>
+        <div id="seg02-sc019-st3" class="seg02-card seg02-stu"><div class="ph"><img src="assets/archival/stanford_1920s/stanford_medical_students_group_1920_quad1921.jpg" alt="" /><div class="ht" style="background-image:url('assets/textures/halftone_03.png')"></div></div></div>
+        <div id="seg02-sc019-st2" class="seg02-card seg02-stu"><div class="ph"><img src="assets/archival/stanford_1920s/stanford_medical_students_group_1920_quad1921.jpg" alt="" /><div class="ht" style="background-image:url('assets/textures/halftone_03.png')"></div></div></div>
+        <div id="seg02-sc019-st1" class="seg02-card seg02-stu"><div class="ph"><img src="assets/archival/stanford_1920s/stanford_medical_students_group_1920_quad1921.jpg" alt="" /><div class="ht" style="background-image:url('assets/textures/halftone_03.png')"></div></div></div>
+        <svg id="seg02-sc019-mk" class="seg02-mk"></svg>
+        <div id="seg02-sc019-like" class="seg02-abs t-serif-i">did not like what they were seeing</div>
+      </div>
+      <div class="paper-tex" style="background-image:url('assets/textures/paper_cream_01.jpg')"></div>
+      <div class="folds"></div>
+    </div>
+
+    <!-- SC020 · BRAIN DRAIN (paper) -->
+    <div class="seg02-scene seg02-paper" id="seg02-sc020" data-scene="SC020">
+      <img id="seg02-sc020-us" src="assets/cutouts/us_halftone.png" alt="" />
+      <svg id="seg02-sc020-flow" viewBox="0 0 1600 800"></svg>
+      <div id="seg02-sc020-title" class="t-display"><span id="seg02-sc020-b">BRAIN</span> <span id="seg02-sc020-d" style="filter:url(#seg02-choke20b)">DRAIN</span></div>
+      <div id="seg02-sc020-in" class="seg02-abs t-serif-i">inside the country</div>
+      <div class="paper-tex" style="background-image:url('assets/textures/paper_cream_02.jpg')"></div>
+      <div class="folds"></div>
+    </div>
+
+    <!-- SC021 · NYT 7 Nov 1928 (night, s06) -->
+    <div class="seg02-scene seg02-night" id="seg02-sc021" data-scene="SC021">
+      <div id="seg02-sc021-bg" style="background-image:url('assets/archival/newspapers/nyt_1928-11-07_hoover_wins_frontpage.jpg')"></div>
+      <div id="seg02-sc021-cam">
+        <div id="seg02-sc021-page">
+          <img src="assets/archival/newspapers/nyt_1928-11-07_hoover_wins_frontpage.jpg" alt="" />
+          <div class="pp" style="background-image:url('assets/textures/grain_01.jpg')"></div>
+          <div class="ht" style="background-image:url('assets/textures/halftone_01_norm.jpg')"></div>
+          <div id="seg02-sc021-hl"></div>
+        </div>
+      </div>
+      <div id="seg02-sc021-dim"></div>
+      <div id="seg02-sc021-fp" class="seg02-abs t-serif-i halate">future president</div>
+      <div id="seg02-sc021-clip"><div id="seg02-sc021-photo"><img src="assets/archival/hoover/hoover_presidential_portrait_photo_NARA.jpg" alt="" /></div></div>
+      <div id="seg02-sc021-name" class="seg02-abs t-display halate">Herbert Hoover</div>
+      <div id="seg02-sc021-black"></div>
+    </div>
+
+    <!-- SC022 young Hoover → curve cut → SC023 2.5D Main Quad (night) -->
+    <div class="seg02-scene seg02-night" id="seg02-sc022" data-scene="SC022">
+      <div id="seg02-sc022-weave">
+        <div id="seg02-sc022-wrap">
+          <div id="seg02-sc022-a">
+            <div class="bg" style="background-image:url('assets/archival/hoover/hoover_young_1898.jpg')"></div>
+            <div class="plate"><img class="img" src="assets/archival/hoover/hoover_young_1898.jpg" alt="" /><img class="fringe" src="assets/archival/hoover/hoover_young_1898.jpg" alt="" /></div>
+          </div>
+          <div id="seg02-sc022-b" data-scene="SC023">
+            <div id="seg02-sc023-stage">
+              <div id="seg02-sc023-world">
+                <div class="seg02-L" id="seg02-sc023-L0"><img id="seg02-sc023-sky" src="assets/archival/hoover/layers_quad/sky.jpg" alt="" /><div id="seg02-sc023-skyg"></div></div>
+                <div class="seg02-L" id="seg02-sc023-L1"><div id="seg02-sc023-title"><div id="seg02-sc023-fi" class="t-label halate">founded in</div><div id="seg02-sc023-yr" class="t-display halate yellow">1891</div></div></div>
+                <div class="seg02-L" id="seg02-sc023-Lh"><div id="seg02-sc023-haze"></div></div>
+                <div class="seg02-L" id="seg02-sc023-L2"><img id="seg02-sc023-quad" src="assets/archival/hoover/layers_quad/quad_seg02.png" alt="" /></div>
+                <div class="seg02-L" id="seg02-sc023-L3"><img id="seg02-sc023-pl" src="assets/archival/hoover/layers_quad/palms_left.png" alt="" /></div>
+                <div class="seg02-L" id="seg02-sc023-L4"><img id="seg02-sc023-pr" src="assets/archival/hoover/layers_quad/palms_right.png" alt="" /><img id="seg02-sc023-bush" src="assets/archival/hoover/layers_quad/bush_left_edge.png" alt="" /></div>
+              </div>
+            </div>
+            <div id="seg02-sc023-rays"></div>
+            <div id="seg02-sc023-low"></div>
+          </div>
+        </div>
+      </div>
+      <div id="seg02-sc022-txt"><div id="seg02-sc022-h" class="t-label halate">Hoover</div><div id="seg02-sc022-first" class="t-display halate">the first class</div><div id="seg02-sc022-ex" class="t-serif-i halate">that ever existed in Stanford</div></div>
+      <div id="seg02-sc023-fc" class="seg02-abs t-serif-i halate">the first class</div>
+      <svg id="seg02-sc023-mk" class="seg02-mk"></svg>
+    </div>
+
+    <!-- SC024 · entrance exams (paper) -->
+    <div class="seg02-scene seg02-paper" id="seg02-sc024" data-scene="SC024">
+      <div id="seg02-sc024-cam">
+        <div id="seg02-sc024-sheet"><img src="assets/archival/documents/entrance_exam_1891_made.png" alt="" /><svg id="seg02-sc024-sx" viewBox="0 0 1800 2400"></svg></div>
+        <div id="seg02-sc024-fails" class="seg02-abs t-display">fails all</div>
+        <div id="seg02-sc024-ex" class="seg02-abs t-serif">entrance exams</div>
+        <svg id="seg02-sc024-mk" class="seg02-mk"></svg>
+      </div>
+      <div class="paper-tex" style="background-image:url('assets/textures/paper_cream_01.jpg')"></div>
+      <div class="folds"></div>
+    </div>
+
+    <!-- SC025 · Quaker (night, Vox layered) -->
+    <div class="seg02-scene seg02-night" id="seg02-sc025" data-scene="SC025">
+      <div id="seg02-sc025-bgwrap">
+        <div id="seg02-sc025-bg1" class="seg02-bgimg" style="background-image:url('assets/archival/hoover/stanford_early_campus_main_entrance_c1900.jpg')"></div>
+        <div id="seg02-sc025-bg2" class="seg02-bgimg" style="background-image:url('assets/archival/hoover/friends_meeting_house_jordans_engraving_1853.jpg')"></div>
+        <div id="seg02-sc025-bg3" class="seg02-bgimg" style="background-image:url('assets/archival/hoover/friends_meeting_house_haddonfield_1868.jpg')"></div>
+        <div id="seg02-sc025-bgtx" style="background-image:url('assets/textures/newsprint_02_norm.jpg')"></div>
+      </div>
+      <div id="seg02-sc025-shade"></div>
+      <div id="seg02-sc025-hoov" class="seg02-vcard"><div class="ph"><img src="assets/archival/hoover/hoover_young_1898.jpg" alt="" /></div></div>
+      <div id="seg02-sc025-swain" class="seg02-vcard"><div class="ph"><img src="assets/archival/hoover/joseph_swain_portrait.jpg" alt="" /></div></div>
+      <svg id="seg02-sc025-mk" class="seg02-mk"></svg>
+      <div id="seg02-sc025-q" class="seg02-abs t-display halate">Quaker</div>
+      <div id="seg02-sc025-rev" class="seg02-abs t-serif-i halate">reviewing admissions</div>
+      <div id="seg02-sc025-too" class="seg02-abs t-display halate">a Quaker too</div>
+    </div>
+
+    <!-- SC026 · admission card + stamp (paper) -->
+    <div class="seg02-scene seg02-paper" id="seg02-sc026" data-scene="SC026">
+      <div id="seg02-sc026-cam">
+        <div id="seg02-sc026-card"><img id="seg02-sc026-cimg" src="assets/cutouts/made/admission_card_hoover_1891.png" alt="" /><img id="seg02-sc026-stamp" src="assets/cutouts/made/stamp_hoover_gets_in.png" alt="" /></div>
+        <div id="seg02-sc026-bc" class="seg02-abs t-serif-i">because of that</div>
+      </div>
+      <div class="paper-tex" style="background-image:url('assets/textures/paper_cream_02.jpg')"></div>
+      <div class="folds"></div>
+    </div>
+
+    <!-- SC027 · newsreel (night, weave) -->
+    <div class="seg02-scene seg02-night" id="seg02-sc027" data-scene="SC027">
+      <div id="seg02-sc027-weave">
+        <video id="seg02-sc027-v1" class="seg02-film" src="assets/archival/footage/hoover_1928_south_america_sequence_full.mp4" muted playsinline data-start="58.41" data-duration="2.3" data-media-start="0"></video>
+        <video id="seg02-sc027-v2" class="seg02-film" src="assets/archival/footage/hoover_1928_south_america_crowd_b.mp4" muted playsinline data-start="60.71" data-duration="5.38" data-media-start="0.6"></video>
+        <div id="seg02-sc027-scr" style="background-image:url('assets/textures/scratches_01.jpg')"></div>
+      </div>
+      <div class="seg02-shade-b"></div>
+      <div id="seg02-sc027-c1" class="seg02-cap t-serif-i halate">a life-changing moment</div>
+      <div id="seg02-sc027-c2" class="seg02-cap t-serif-i halate">very successful</div>
+      <div id="seg02-sc027-c3" class="seg02-cap t-label halate">Stanford played a big role</div>
+      <div id="seg02-sc027-leak" style="background-image:url('assets/textures/lightleak_03.jpg')"></div>
+    </div>
+
+    <!-- SC028 · his wife (paper) -->
+    <div class="seg02-scene seg02-paper" id="seg02-sc028" data-scene="SC028">
+      <div id="seg02-sc028-board">
+        <div id="seg02-sc028-h" class="seg02-card"><div class="ph"><img src="assets/archival/hoover/hoover_young_1898.jpg" alt="" /><div class="ht" style="background-image:url('assets/textures/halftone_03.png')"></div></div></div>
+        <div id="seg02-sc028-l" class="seg02-card"><div class="ph"><img src="assets/cutouts/cards/lou_henry_1905_cut.png" alt="" /><div class="ht" style="background-image:url('assets/textures/halftone_03.png')"></div></div></div>
+        <svg id="seg02-sc028-mk" class="seg02-mk"></svg>
+        <div id="seg02-sc028-tag" class="seg02-tag t-label">his wife</div>
+        <div id="seg02-sc028-uni" class="seg02-abs t-serif-i">at the university</div>
+      </div>
+      <div class="paper-tex" style="background-image:url('assets/textures/paper_cream_01.jpg')"></div>
+      <div class="folds"></div>
+    </div>
+
+    <!-- SC029 · R7 timeline (paper) -->
+    <div class="seg02-scene seg02-paper" id="seg02-sc029" data-scene="SC029">
+      <div id="seg02-sc029-stage">
+        <div id="seg02-sc029-title" class="seg02-abs t-serif">before he becomes <i>president</i></div>
+        <svg id="seg02-sc029-svg" viewBox="0 0 1920 1080"></svg>
+        <div id="seg02-sc029-yrs"></div>
+        <div id="seg02-sc029-b1l" class="seg02-band-l t-serif-i">late 1910s</div>
+        <div id="seg02-sc029-b2l" class="seg02-band-l t-serif-i">early 1920s</div>
+        <div id="seg02-sc029-pres" class="seg02-abs t-display">President of the United States</div>
+        <div id="seg02-sc029-20s" class="seg02-abs t-serif-i">the 20s</div>
+      </div>
+      <div class="paper-tex" style="background-image:url('assets/textures/paper_cream_02.jpg')"></div>
+      <div class="folds"></div>
+      <div id="seg02-sc029-flood"></div>
+    </div>
+
+    <!-- SC030 · RCA TRK-12 (night) -->
+    <div class="seg02-scene seg02-night" id="seg02-sc030" data-scene="SC030">
+      <div id="seg02-sc030-bg" style="background-image:url('assets/archival/hoover/hoover_secretary_of_commerce_1924_with_hughes.jpg')"></div>
+      <div id="seg02-sc030-set">
+        <div id="seg02-sc030-screen">
+          <div id="seg02-sc030-inner">
+            <video id="seg02-sc030-vid" src="assets/archival/footage/hoover_1928_south_america_sequence_full.mp4" muted playsinline data-start="77.05" data-duration="4.73" data-media-start="8.7"
+              data-color-grading='{"adjust":{"contrast":0.08},"effects":{"chromaticAberration":0.25,"chromaticAngle":0,"scanlines":0.35,"scanlineCount":0.25,"scanlineSoftness":1,"crtCurvature":0.2,"filmArtifacts":0.35},"details":{"vignette":0.3,"grain":0.25}}'></video>
+            <div id="seg02-sc030-glare"></div>
+            <div id="seg02-sc030-flash"></div>
+          </div>
+        </div>
+        <img id="seg02-sc030-tv" src="assets/textures/tv_frame_02.png" alt="" />
+      </div>
+      <div id="seg02-sc030-fade"></div>
+      <div id="seg02-sc030-txt"><div id="seg02-sc030-adm" class="t-serif-i halate">part of the administration</div><div id="seg02-sc030-s1" class="seg02-soc t-display halate">Secretary of</div><div id="seg02-sc030-s2" class="seg02-soc t-display halate">Commerce</div></div>
+    </div>
+
+    <!-- SC031 · clipping (paper) -->
+    <div class="seg02-scene seg02-paper" id="seg02-sc031" data-scene="SC031">
+      <div id="seg02-sc031-cam">
+        <div id="seg02-sc031-clip">
+          <div id="seg02-sc031-mast" class="t-serif">Daily Palo Alto</div>
+          <div id="seg02-sc031-sub" class="t-label">Stanford University, California</div>
+          <div id="seg02-sc031-head" class="t-serif"><div id="seg02-sc031-hl"></div><span style="position:relative">BOARD OF TRUSTEES</span></div>
+          
+          <div class="seg02-cols"><div class="seg02-col" id="seg02-sc031-c1"></div><div class="seg02-col" id="seg02-sc031-c2"></div><div class="seg02-col" id="seg02-sc031-c3"></div></div>
+          <div class="tex" style="background-image:url('assets/textures/halftone_03.png')"></div>
+          <div class="tex2" style="background-image:url('assets/textures/newsprint_01.jpg')"></div>
+        </div>
+        <div id="seg02-sc031-st" class="seg02-abs t-label">Stanford's</div>
+        <div id="seg02-sc031-bot" class="seg02-abs t-display">Board of Trustees</div>
+      </div>
+      <div class="paper-tex" style="background-image:url('assets/textures/paper_cream_01.jpg')"></div>
+      <div class="folds"></div>
+    </div>
+
+    <!-- SC032 · brain drain map (night) -->
+    <div class="seg02-scene" id="seg02-sc032" data-scene="SC032" style="background:#0d1116">
+      <div id="seg02-sc032-cam">
+        <img id="seg02-sc032-base" src="assets/maps/us_basemap_desat.jpg" alt="" />
+        <img id="seg02-sc032-west" src="assets/maps/seg02_west_fill.png" alt="" />
+        <svg id="seg02-sc032-svg" viewBox="0 0 6400 3200">
+          <path id="seg02-sc032-river" d="M3279 476L3274 468L3275 464L3281 457L3287 454L3293 455L3301 456L3311 453L3316 450L3328 455L3336 456L3343 456L3349 454L3358 456L3373 460L3380 454L3390 456L3395 457L3395 462L3400 466L3406 470L3410 469L3413 468L3420 468L3420 470L3419 472L3420 478L3432 474L3436 474L3458 485L3460 489L3462 494L3470 503L3464 509L3463 517L3461 521L3448 530L3438 532L3435 537L3434 540L3428 545L3421 544L3419 542L3416 541L3400 545L3395 543L3394 545L3391 547L3390 549L3389 555L3385 556L3383 558L3381 562L3360 576L3359 579L3361 587L3364 589L3363 595L3362 602L3360 607L3363 612L3363 616L3369 621L3373 625L3377 629L3380 632L3378 638L3384 644L3386 650L3390 654L3405 661L3419 668L3441 670L3444 673L3453 677L3460 681L3470 688L3472 698L3476 703L3480 710L3491 705L3494 709L3496 711L3498 718L3510 722L3513 723L3518 724L3534 734L3537 737L3557 741L3567 747L3571 753L3590 756L3616 782L3634 793L3646 794L3653 797L3659 798L3660 800L3663 804L3670 807L3672 810L3672 818L3672 820L3675 823L3676 828L3675 837L3675 842L3676 848L3675 853L3677 857L3678 862L3689 866L3690 875L3684 891L3685 899L3686 907L3691 913L3692 921L3699 928L3725 934L3731 936L3736 944L3735 951L3740 955L3754 962L3758 968L3763 977L3768 980L3780 987L3783 988L3784 992L3785 1002L3781 1016L3776 1020L3770 1025L3767 1032L3766 1034L3766 1038L3759 1043L3756 1046L3740 1049L3730 1055L3694 1062L3690 1074L3692 1081L3700 1085L3706 1097L3693 1114L3690 1119L3687 1130L3677 1136L3666 1138L3660 1143L3659 1146L3663 1151L3662 1158L3656 1162L3649 1174L3651 1199L3654 1204L3656 1206L3655 1212L3657 1215L3661 1220L3662 1226L3691 1248L3693 1254L3720 1270L3726 1278L3727 1284L3729 1289L3728 1292L3730 1296L3730 1300L3742 1312L3757 1303L3764 1306L3782 1312L3787 1318L3783 1324L3780 1328L3779 1339L3764 1363L3763 1375L3764 1378L3772 1384L3776 1389L3784 1394L3792 1399L3803 1404L3811 1407L3825 1415L3833 1425L3848 1432L3848 1437L3848 1442L3850 1449L3856 1460L3848 1469L3850 1474L3852 1477L3856 1484L3861 1494L3871 1500L3873 1497L3870 1495L3872 1492L3875 1495L3878 1497L3880 1500L3882 1502L3886 1501L3887 1508L3887 1513L3885 1516L3887 1524L3880 1539L3872 1542L3864 1536L3861 1539L3858 1549L3853 1554L3849 1553L3850 1545L3842 1548L3845 1552L3847 1559L3844 1565L3837 1566L3841 1571L3844 1574L3832 1575L3839 1586L3834 1589L3832 1592L3829 1603L3833 1610L3826 1608L3822 1612L3828 1617L3805 1628L3809 1635L3806 1639L3807 1643L3805 1647L3799 1649L3798 1655L3790 1662L3788 1670L3792 1681L3787 1688L3781 1689L3779 1694L3772 1698L3770 1700L3769 1711L3752 1718L3754 1724L3750 1727L3745 1726L3741 1736L3741 1755L3734 1762L3726 1763L3724 1762L3725 1767L3723 1771L3722 1772L3718 1771L3712 1780L3704 1784L3712 1794L3707 1797L3697 1799L3691 1802L3695 1804L3693 1812L3695 1819L3690 1821L3686 1824L3681 1829L3677 1832L3685 1837L3683 1842L3676 1843L3680 1847L3687 1852L3687 1860L3682 1868L3687 1871L3689 1878L3690 1885L3685 1887L3684 1903L3688 1904L3693 1908L3689 1913L3685 1919L3686 1925L3693 1929L3687 1932L3683 1936L3686 1940L3690 1943L3690 1947L3690 1954L3697 1958L3701 1964L3708 1966L3708 1969L3700 1980L3690 1986L3690 1989L3691 1999L3683 2002L3681 2006L3672 2012L3665 2016L3660 2026L3657 2038L3656 2043L3648 2054L3650 2058L3650 2062L3647 2071L3639 2072L3635 2074L3639 2079L3639 2082L3637 2085L3642 2092L3635 2105L3645 2108L3648 2114L3646 2119L3642 2124L3654 2126L3662 2124L3665 2130L3673 2141L3674 2146L3679 2148L3680 2160L3676 2162L3676 2165L3681 2165L3685 2167L3679 2169L3686 2172L3689 2174L3685 2177L3685 2180L3687 2180L3693 2179L3699 2182L3698 2186L3705 2188L3707 2187L3710 2191L3714 2193L3716 2197L3720 2199L3726 2198L3731 2195L3734 2194L3739 2195L3742 2194L3752 2194L3753 2199L3760 2201L3765 2205L3774 2203L3779 2205L3786 2205L3788 2207L3793 2206L3794 2205L3804 2206L3807 2209L3808 2212L3805 2212L3803 2211L3803 2212L3800 2218L3799 2226L3806 2236L3821 2242L3839 2254L3840 2257L3849 2264L3857 2264L3873 2280L3874 2284L3859 2307L3859 2306" fill="none" stroke="#a9c8de" stroke-width="9" opacity="0.55" stroke-linejoin="round"/>
+          <g id="seg02-sc032-dots"></g>
+        </svg>
+        <img class="seg02-cshadow" src="assets/maps/clouds/cloud_01_satellite.png" style="left:1420px;top:620px;width:2000px" alt="" />
+        <img class="seg02-cloud" src="assets/maps/clouds/cloud_01_satellite.png" style="left:1360px;top:540px;width:2000px" alt="" />
+        <img class="seg02-cshadow" src="assets/maps/clouds/cloud_03_satellite.png" style="left:4260px;top:2080px;width:1700px" alt="" />
+        <img class="seg02-cloud" src="assets/maps/clouds/cloud_03_satellite.png" style="left:4200px;top:2000px;width:1700px" alt="" />
+      </div>
+      <div id="seg02-sc032-bd" class="seg02-abs t-display">brain drain</div>
+      <div id="seg02-sc032-wus" class="seg02-abs t-label halate">Western United States</div>
+      <div class="seg02-credit t-label">Basemap: NASA Blue Marble</div>
+    </div>
+
+    <!-- SC033 · isotype (paper) -->
+    <div class="seg02-scene seg02-paper" id="seg02-sc033" data-scene="SC033">
+      <div id="seg02-sc033-stage">
+        <div id="seg02-sc033-smart" class="seg02-abs t-serif-i">smart people</div>
+        <div id="seg02-sc033-line"></div>
+        <div id="seg02-sc033-h1" class="seg02-colh t-label">Eastern companies</div>
+        <div id="seg02-sc033-h2" class="seg02-colh t-label">Eastern universities</div>
+        <div id="seg02-sc033-icons"></div>
+      </div>
+      <div class="paper-tex" style="background-image:url('assets/textures/paper_cream_01.jpg')"></div>
+      <div class="folds"></div>
+    </div>
+
+    <!-- SC034 · Hoover 1928 → Stanford today (night) -->
+    <div class="seg02-scene seg02-night" id="seg02-sc034" data-scene="SC034">
+      <div id="seg02-sc034-weave">
+        <div id="seg02-sc034-wrap">
+          <div id="seg02-sc034-a">
+            <div class="bg" style="background-image:url('assets/archival/hoover/hoover_secretary_of_commerce_1928_informal.jpg')"></div>
+            <div class="plate"><img class="img" src="assets/archival/hoover/hoover_secretary_of_commerce_1928_informal.jpg" alt="" /><img class="fringe" src="assets/archival/hoover/hoover_secretary_of_commerce_1928_informal.jpg" alt="" /></div>
+          </div>
+          <div id="seg02-sc034-b"><div id="seg02-sc034-bplate"><div class="plate"><img class="img" src="assets/archival/modern/stanford_oval_main_quad_aerial_2007.jpg" alt="" /><img class="fringe" src="assets/archival/modern/stanford_oval_main_quad_aerial_2007.jpg" alt="" /></div></div><div class="seg02-shade-b"></div></div>
+        </div>
+      </div>
+      <div id="seg02-sc034-txt"><div id="seg02-sc034-fix" class="t-serif-i halate">to fix this</div><div id="seg02-sc034-ch" class="t-display halate">changes</div></div>
+      <div id="seg02-sc034-today" class="seg02-abs t-label halate">Stanford today</div>
+      <div class="seg02-credit t-label" id="seg02-sc034-cr">Photo: Jill Clardy, CC BY-SA 2.0</div>
+      <div id="seg02-sc034-card"><div class="paper-tex" style="background-image:url('assets/textures/paper_cream_01.jpg')"></div></div>
+    </div>
+
+    <!-- global overlays -->
+    <svg id="seg02-iris" class="iris"></svg>
+    <div id="seg02-grain" class="tx tx-grain" style="background-image:url('assets/textures/grain_01_norm.jpg')"></div>
+    <div id="seg02-dust" class="tx tx-dust" style="background-image:url('assets/textures/dust_01.jpg')"></div>
+    <div id="seg02-vig" class="vignette"></div>
+    <audio id="seg02-vo" class="temp-vo" src="vo10.mp3" data-start="0" data-duration="106.02" data-media-start="100.25" data-volume="1"></audio>
+  </div>
+  <script>
+  (function () {
+    const SEG = "seg02", SEG_START = 100.25, SEG_END = 206.27, DURATION = +(SEG_END - SEG_START).toFixed(2);
+    const T = (s) => +(s - SEG_START).toFixed(3);   // word-synced text cues (sync_audit checks these)
+    const S = (s) => +(s - SEG_START).toFixed(3);   // structural cues: cuts, camera, objects (not word-bound)
+    const tl = gsap.timeline({ paused: true });
+    const $ = (id) => document.getElementById(SEG + "-" + id);
+    const C = (d, e) => FX.choppy(e || "power3.out", d, 12);
+    const NS = "http://www.w3.org/2000/svg";
+    const defs = $("defs");
+    const win = (a, b) => (t) => t >= S(a) - 0.05 && t <= S(b) + 0.05;
+
+    // shared filters
+    FX.tintDefs(defs, "seg02-tint-ink", "#23303a", "#efe7d6");
+    FX.tintDefs(defs, "seg02-tint-n", "#141312", "#6d665b");
+    FX.tintDefs(defs, "seg02-tint-v", "#1b1a18", "#7b756b");
+    FX.roughDefs(defs, "seg02-rough", { freq: 0.04, scale: 6 });
+    FX.roughDefs(defs, "seg02-rough7", { freq: 0.03, scale: 7 });
+    FX.roughDefs(defs, "seg02-rough9", { freq: 0.04, scale: 9 });
+    FX.roughDefs(defs, "seg02-roughsm", { freq: 0.05, scale: 6 });
+    const choke20 = FX.roughDefs(defs, "seg02-choke20", { freq: 0.035, scale: 7, choke: 0 });
+    const choke20b = FX.roughDefs(defs, "seg02-choke20b", { freq: 0.035, scale: 7, choke: 0 });
+    const choke21 = FX.roughDefs(defs, "seg02-choke21", { freq: 0.05, scale: 4, choke: 0 });
+    const choke32 = FX.roughDefs(defs, "seg02-choke32", { freq: 0.035, scale: 6, choke: 0 });
+    const choke34 = FX.roughDefs(defs, "seg02-choke34", { freq: 0.05, scale: 5, choke: 0 });
+
+    // hand-drawn ink stroke (trim-path draw-on), parent = svg or <g>
+    function ink(parent, d, t, dur, o) {
+      o = o || {};
+      const p = document.createElementNS(NS, "path");
+      p.setAttribute("d", d); p.setAttribute("fill", "none");
+      p.setAttribute("stroke", o.color || "#e5482a"); p.setAttribute("stroke-width", o.width || 7);
+      p.setAttribute("stroke-linecap", "round"); p.setAttribute("stroke-linejoin", "round");
+      if (o.filter) p.setAttribute("filter", o.filter);
+      parent.appendChild(p);
+      const len = p.getTotalLength() || 1;
+      p.setAttribute("stroke-dasharray", `${len} ${len}`);
+      p.setAttribute("stroke-dashoffset", len);
+      tl.fromTo(p, { attr: { "stroke-dashoffset": len } }, { attr: { "stroke-dashoffset": 0 }, duration: dur, ease: o.ease || "power2.out", immediateRender: true }, t);
+      return p;
+    }
+
+    // scene windows
+    function scene(id, a, b) {
+      tl.fromTo("#" + SEG + "-" + id, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.001, immediateRender: false }, S(a));
+      if (b < SEG_END) tl.set("#" + SEG + "-" + id, { autoAlpha: 0 }, S(b));
+    }
+    // overlays per ground: paper scenes get lighter vignette + less dust
+    function ground(kind, t) {
+      if (kind === "paper") tl.set(["#seg02-vig", "#seg02-dust", "#seg02-grain"], { opacity: (i) => [0.35, 0.16, 0.26][i] }, t);
+      else tl.set(["#seg02-vig", "#seg02-dust", "#seg02-grain"], { opacity: (i) => [1, 0.45, 0.36][i] }, t);
+    }
+
+    FX.grain($("grain"), 201);
+    FX.dust($("dust"), 202, 2);
+
+    // ---------- iris (FX.iris geometry, with exposed state so SC018 can open from closed at t=0) ----------
+    const iris = (function (svg) {
+      const o = { blades: 7, twist: 38 };
+      svg.setAttribute("viewBox", "0 0 1920 1080");
+      svg.innerHTML = `<defs><linearGradient id="seg02-irg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2a2826"/><stop offset="0.04" stop-color="#121110"/><stop offset="1" stop-color="#070707"/></linearGradient></defs>`;
+      const blades = [];
+      for (let k = 0; k < o.blades; k++) {
+        const g = document.createElementNS(NS, "g"), r = document.createElementNS(NS, "rect");
+        r.setAttribute("x", -1800); r.setAttribute("width", 3600); r.setAttribute("height", 2600);
+        r.setAttribute("fill", "url(#seg02-irg)"); r.setAttribute("stroke", "rgba(255,240,220,0.10)"); r.setAttribute("stroke-width", "2");
+        g.appendChild(r); svg.appendChild(g); blades.push(r);
+      }
+      const R = 1250, st = { r: R };
+      const draw = () => {
+        const p = 1 - st.r / R;
+        blades.forEach((r, k) => {
+          r.setAttribute("y", st.r - 6);
+          r.parentNode.setAttribute("transform", `translate(960 540) rotate(${((360 / o.blades) * k + p * o.twist).toFixed(2)}) translate(${(p * 140).toFixed(1)} 0)`);
+        });
+        svg.style.opacity = st.r >= R - 1 ? 0 : 1;
+      };
+      draw();
+      return {
+        openFromClosed(t, dur) { tl.fromTo(st, { r: 0 }, { r: R, duration: dur, ease: "power2.out", onUpdate: draw, immediateRender: true }, t); },
+        at(tMid, close, open) {
+          close = close || 0.15; open = open || 0.2; const hold = 2 / 24;
+          tl.fromTo(st, { r: R }, { r: 0, duration: close, ease: "power2.in", onUpdate: draw, immediateRender: false }, tMid - close - hold / 2);
+          tl.fromTo(st, { r: 0 }, { r: R, duration: open, ease: "power2.out", onUpdate: draw, immediateRender: false }, tMid + hold / 2);
+        },
+      };
+    })($("iris"));
+
+    /* =================== SC018 · 100.25–110.17 shutter montage =================== */
+    scene("sc018", 100.25, 109.9);
+    ground("night", 0);
+    FX.weave($("sc018-weave"), { amp: 1.4, flicker: 0.03, seed: 1801, from: 0, to: S(110.0) });
+    iris.openFromClosed(0, 0.15);
+    const cuts = [100.25, 102.5, 103.55, 107.3, 109.9];
+    for (let k = 1; k <= 4; k++) {
+      const a = cuts[k - 1], b = cuts[k];
+      tl.set(`#seg02-sc018-s${k}`, { opacity: 1 }, S(a));
+      if (k < 4) tl.set(`#seg02-sc018-s${k}`, { opacity: 0 }, S(b));
+      if (k !== 3) tl.fromTo(`#seg02-sc018-s${k} .plate`, { scale: 1.0 }, { scale: 1.08, duration: b - a + 0.25, ease: "none" }, S(a));
+      if (k > 1) iris.at(S(a));
+    }
+    iris.at(S(109.9));
+    tl.fromTo("#seg02-sc018-pan", { x: 0 }, { x: -720, duration: 3.9, ease: "sine.inOut" }, S(103.55));
+    tl.fromTo("#seg02-sc018-pan", { scale: 1.0 }, { scale: 1.05, duration: 3.9, ease: "none", transformOrigin: "40% 55%" }, S(103.55));
+    // labels land on their words
+    tl.fromTo("#seg02-sc018-l2", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.3, ease: "power3.out" }, T(102.59));
+    tl.set("#seg02-sc018-l2", { opacity: 0 }, S(103.55));
+    tl.fromTo("#seg02-sc018-cr", { opacity: 0 }, { opacity: 1, duration: 0.01 }, S(102.5));
+    tl.set("#seg02-sc018-cr", { opacity: 0 }, S(103.55));
+    tl.fromTo("#seg02-sc018-l3", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.3, ease: "power3.out" }, T(103.63));
+    tl.fromTo("#seg02-sc018-ge", { scale: 0.85, rotation: -8 }, { scale: 1, rotation: 0, duration: 0.4, ease: C(0.4, "back.out(2)") }, T(103.63));
+    tl.set("#seg02-sc018-l3", { opacity: 0 }, S(107.3));
+    tl.set("#seg02-sc018-l4", { opacity: 1 }, S(107.3));
+    FX.text.rise(tl, [$("sc018-l4").querySelector(".n")], T(107.39), { dur: 0.6 });
+
+    /* =================== SC019 · 109.9–118.49 Stanford collage =================== */
+    scene("sc019", 109.9, 118.49);
+    ground("paper", S(109.9));
+    const mk19 = $("sc019-mk"); const r19 = FX.markupDefs(mk19, "seg02-mk19");
+    tl.fromTo("#seg02-sc019-board", { scale: 1.0 }, { scale: 1.04, duration: 8.6, ease: "none" }, S(109.9));
+    tl.fromTo("#seg02-sc019-stan", { rotation: -2.5 }, { rotation: -2.5, duration: 0.01 }, S(109.9));
+    tl.fromTo(".seg02-stu", { rotation: (i) => [6, -4, 3][i], opacity: 0 }, { opacity: 1, duration: 0.01 }, S(109.9));
+    // pin pops on "West"
+    tl.fromTo("#seg02-sc019-pin", { scale: 0, y: -30, transformOrigin: "50% 100%" }, { scale: 1, y: 0, duration: 0.3, ease: C(0.3, "back.out(3)") }, S(112.2));
+    tl.fromTo("#seg02-sc019-stan", { y: 0 }, { y: 6, duration: 1 / 12, yoyo: true, repeat: 1, ease: "none", immediateRender: false }, S(112.3));
+    tl.fromTo("#seg02-sc019-tag", { opacity: 0, x: -24 }, { opacity: 1, x: 0, duration: 0.3, ease: C(0.3) }, T(113.79));
+    // students peel away east; arrow points east
+    ink(mk19, "M1290 600 Q1520 520 1760 600", S(116.0), 0.45, { color: "#e5482a", width: 9, filter: r19 });
+    ink(mk19, "M1716 556 L1764 602 L1708 636", S(116.42), 0.16, { color: "#e5482a", width: 9, filter: r19 });
+    [["#seg02-sc019-st1", 115.9, 1400, -40, 9], ["#seg02-sc019-st2", 116.25, 1500, 60, -6], ["#seg02-sc019-st3", 116.6, 1450, 160, 4]].forEach(([sel, t, dx, dy, rot], i) => {
+      tl.to(sel, { x: dx * 0.45, y: dy, rotation: rot, duration: 1.2, ease: C(1.2, "power2.inOut") }, S(t));
+      tl.to(sel, { x: dx + 600, rotation: rot * 1.6, duration: 0.6, ease: C(0.6, "power2.in") }, S(117.75 + i * 0.12));
+    });
+    FX.text.rise(tl, [$("sc019-like")], T(116.83), { dur: 0.6 });
+
+    /* =================== SC020 · 118.49–122.98 BRAIN DRAIN =================== */
+    scene("sc020", 118.49, 122.98);
+    tl.fromTo("#seg02-sc020-us", { scale: 1.0, transformOrigin: "50% 50%" }, { scale: 1.04, duration: 4.5, ease: "none" }, S(118.49));
+    tl.fromTo("#seg02-sc020-b", { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, T(119.79));
+    FX.choke(tl, choke20, T(119.79), 16, 0.5);
+    tl.fromTo("#seg02-sc020-d", { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, T(120.27));
+    FX.choke(tl, choke20b, T(120.27), 16, 0.5);
+    FX.text.rise(tl, [$("sc020-in")], T(121.47), { dur: 0.6 });
+    // dots trickle from California east along a river-like path; navy once past the Mississippi
+    (function () {
+      const g = $("sc020-flow"), N = 60, rnd = FX.rng(2001), dots = [];
+      const P0 = [150, 370], P3 = [1360, 290];
+      const bez = (u, j) => {
+        const c1 = [520, 560 + j * 40], c2 = [980, 120 - j * 30];
+        const x = (1 - u) ** 3 * P0[0] + 3 * (1 - u) ** 2 * u * c1[0] + 3 * (1 - u) * u * u * c2[0] + u ** 3 * P3[0];
+        const y = (1 - u) ** 3 * P0[1] + 3 * (1 - u) ** 2 * u * c1[1] + 3 * (1 - u) * u * u * c2[1] + u ** 3 * P3[1];
+        return [x, y];
+      };
+      for (let i = 0; i < N; i++) {
+        const c = document.createElementNS(NS, "circle");
+        c.setAttribute("r", 10 + rnd() * 4); c.setAttribute("opacity", 0);
+        g.appendChild(c);
+        dots.push({ c, t0: S(120.35) + i * 0.038 + rnd() * 0.04, dur: 1.4 + rnd() * 0.3, j: rnd() * 2 - 1, ex: (rnd() - 0.5) * 90, ey: (rnd() - 0.5) * 110 });
+      }
+      const MISS_X = 940;  // Mississippi in this 1600-wide map space
+      FX.onFrame((t) => {
+        if (!win(118.49, 122.98)(t)) return;
+        const tt = Math.floor(t * 12) / 12;
+        dots.forEach((d) => {
+          const u = (tt - d.t0) / d.dur;
+          if (u <= 0) { d.c.setAttribute("opacity", 0); return; }
+          const k = Math.min(1, u), e = k < 0.5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2;
+          let [x, y] = bez(e, d.j);
+          x += d.ex * e * e; y += d.ey * e * e + d.j * 14 * Math.sin(e * Math.PI);
+          d.c.setAttribute("cx", x.toFixed(1)); d.c.setAttribute("cy", y.toFixed(1));
+          d.c.setAttribute("fill", x > MISS_X ? "#23415e" : "#e5482a");
+          d.c.setAttribute("opacity", 1);
+        });
+      });
+    })();
+
+    /* =================== SC021 · 122.98–131.46 NYT 1928 (s06) =================== */
+    scene("sc021", 122.98, 131.46);
+    ground("night", S(122.98));
+    (function () {
+      const cam = (cx, cy, z) => ({ x: 960 - cx * z, y: 540 - cy * z, scale: z });
+      const A = S(122.98);
+      tl.fromTo("#seg02-sc021-cam", cam(1200, 1420, 0.31), Object.assign(cam(1200, 1300, 0.36), { duration: 2.6, ease: "sine.inOut" }), A);
+      tl.fromTo("#seg02-sc021-page", { rotationX: 14, rotationY: -8, rotation: -3, transformPerspective: 2600 },
+        { rotationX: 4, rotationY: -2, rotation: -1.2, duration: 4.2, ease: "power2.inOut" }, A);
+      tl.to("#seg02-sc021-cam", Object.assign(cam(1150, 520, 0.8), { duration: 1.1, ease: C(1.1, "expo.inOut") }), S(125.6));
+      tl.to("#seg02-sc021-cam", Object.assign(cam(640, 470, 1.32), { duration: 1.0, ease: "power3.inOut" }), S(126.75));
+      tl.fromTo("#seg02-sc021-bg", { x: 0 }, { x: -60, duration: 8.5, ease: "none" }, A);
+      tl.fromTo("#seg02-sc021-hl", { scaleX: 0 }, { scaleX: 1, duration: 0.55, ease: C(0.55, "power2.inOut") }, S(127.3));
+      tl.fromTo("#seg02-sc021-dim", { opacity: 0 }, { opacity: 1, duration: 0.6, ease: "power2.out" }, S(126.5));
+      FX.text.rise(tl, [$("sc021-fp")], T(126.84), { dur: 0.6 });
+      tl.fromTo("#seg02-sc021-clip", { opacity: 0, y: 70, rotation: 7, scale: 1.08 }, { opacity: 1, y: 0, rotation: 3, scale: 1, duration: 0.5, ease: C(0.5) }, S(128.35));
+      tl.fromTo("#seg02-sc021-name", { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, T(128.52));
+      FX.choke(tl, choke21, T(128.52), 14, 0.6);
+      tl.to("#seg02-sc021-cam", Object.assign(cam(915, 480, 1.15), { duration: 0.7, ease: "power3.inOut" }), S(128.3));
+      tl.to("#seg02-sc021-cam", Object.assign(cam(935, 486, 1.19), { duration: 2.2, ease: "none" }), S(129.0));
+      // push into the portrait; the face carries us into SC022's photo
+      tl.to("#seg02-sc021-fp, #seg02-sc021-name", { opacity: 0, duration: 0.3 }, S(130.75));
+      tl.to("#seg02-sc021-clip", { scale: 2.6, x: -470, y: 120, rotation: 0, duration: 0.65, ease: "power2.in" }, S(130.81));
+      tl.fromTo("#seg02-sc021-black", { opacity: 0 }, { opacity: 1, duration: 0.25, ease: "power1.in" }, S(131.2));
+    })();
+
+    /* =================== SC022 · 131.46–136.70 young Hoover (s07 A) → curve cut → SC023 2.5D =================== */
+    scene("sc022", 131.46, 141.70);
+    FX.weave($("sc022-weave"), { amp: 1.6, flicker: 0.04, seed: 2201, from: S(131.4), to: S(141.8) });
+    tl.fromTo("#seg02-sc022-a .plate", { scale: 1.0 }, { scale: 1.07, duration: 5.2, ease: "none" }, S(131.46));
+    tl.fromTo("#seg02-sc022-a", { opacity: 0 }, { opacity: 1, duration: 0.45, ease: "power1.out" }, S(131.46));
+    tl.set("#seg02-sc022-b", { opacity: 0 }, S(131.46));
+    FX.text.random(tl, $("sc022-h"), T(131.80), { dur: 0.45, seed: 22 });
+    tl.set("#seg02-sc022-first", { opacity: 1 }, T(134.12));
+    FX.text.fill(tl, $("sc022-first"), T(134.12), { per: 0.035, hold: 0.3, settle: 0.45 });
+    FX.text.rise(tl, [$("sc022-ex")], T(135.56), { dur: 0.5 });
+    tl.to("#seg02-sc022-txt", { opacity: 0, duration: 0.2 }, S(136.32));
+    const mid22 = FX.curveCut(tl, $("sc022-wrap"), $("sc022-a"), $("sc022-b"), S(136.28), 0.84, { from: 1, to: 1.5, ease: "expo.inOut" });
+    tl.to("#seg02-sc022-wrap", { scale: 1.0, duration: 1.3, ease: "power3.out" }, mid22 + 0.42);
+
+    // 2.5D world: layer z + compensating scale so the rest frame equals the flat photo (s10 math)
+    const P = 1200;
+    [["#seg02-sc023-L0", -900], ["#seg02-sc023-L1", -420], ["#seg02-sc023-Lh", -200], ["#seg02-sc023-L2", 0], ["#seg02-sc023-L3", 150], ["#seg02-sc023-L4", 320]]
+      .forEach(([sel, z]) => gsap.set(sel, { z, scale: (P - z) / P }));
+    tl.fromTo("#seg02-sc023-world", { x: -36, z: -10, rotationY: -1.4 }, { x: 36, z: 130, rotationY: 1.2, duration: S(141.75) - mid22, ease: "sine.inOut" }, mid22);
+    tl.fromTo("#seg02-sc023-rays", { opacity: 0.3, x: 0 }, { opacity: 0.6, x: -90, duration: 5.2, ease: "none" }, mid22);
+    tl.fromTo("#seg02-sc023-haze", { opacity: 0.6 }, { opacity: 1, duration: 5.0, ease: "none" }, mid22);
+    // "founded in 1891": the year rises from behind the arcade roof
+    gsap.set("#seg02-sc023-fi", { opacity: 0 });
+    tl.set("#seg02-sc023-fi", { opacity: 1 }, T(138.44));
+    FX.text.random(tl, $("sc023-fi"), T(138.44), { dur: 0.45, seed: 23 });
+    tl.fromTo("#seg02-sc023-yr", { y: 300 }, { y: 0, duration: 0.7, ease: C(0.7, "power3.out"), immediateRender: true }, T(139.24));
+    FX.text.rise(tl, [$("sc023-fc")], T(141.00), { dur: 0.5 });
+    // ink X flashes over the quad, cut to paper on "And"
+    const mk23 = $("sc023-mk"); const r23 = FX.markupDefs(mk23, "seg02-mk23");
+    ink(mk23, "M720 380 L1200 920", S(141.48), 0.09, { color: "#e5482a", width: 26, filter: r23, ease: "none" });
+    ink(mk23, "M1200 380 L720 920", S(141.58), 0.09, { color: "#e5482a", width: 26, filter: r23, ease: "none" });
+
+    /* =================== SC024 · 141.70–146.74 entrance exams =================== */
+    scene("sc024", 141.70, 146.74);
+    ground("paper", S(141.70));
+    const sheetK = 0.44;
+    tl.fromTo("#seg02-sc024-sheet", { x: 190, y: 140, rotation: -7, scale: sheetK }, { x: 190, y: 40, rotation: -3, scale: sheetK, duration: 0.42, ease: C(0.42) }, S(141.70));
+    tl.fromTo("#seg02-sc024-cam", { scale: 1.0 }, { scale: 1.045, duration: 5.0, ease: "none" }, S(141.70));
+    tl.fromTo("#seg02-sc024-fails", { opacity: 0, scale: 1.3, rotation: -4 }, { opacity: 1, scale: 1, rotation: -2, duration: 0.3, ease: C(0.3, "back.out(2)") }, T(143.88));
+    FX.text.rise(tl, [$("sc024-ex")], T(144.84), { dur: 0.5, y: 18 });
+    (function () {
+      const mk = $("sc024-mk"), r = FX.markupDefs(mk, "seg02-mk24");
+      ink(mk, "M250 170 Q560 520 930 960", S(143.94), 0.2, { color: "#e5482a", width: 24, filter: r });
+      ink(mk, "M940 190 Q600 520 260 990", S(145.46), 0.2, { color: "#e5482a", width: 24, filter: r });
+      const sx = $("sc024-sx"), rs = FX.markupDefs(sx, "seg02-mk24s"); sx.setAttribute("viewBox", "0 0 1800 2400");
+      for (let k = 0; k < 7; k++) {
+        const cx = 1530, cy = 872 + 165 * k, s = 44;
+        FX.markup.cross(tl, sx, S(144.5) + k * 0.13, { x: cx, y: cy, s, dur: 0.05, color: "#e5482a", width: 13, filter: rs });
+      }
+    })();
+    tl.to("#seg02-sc024-cam", { y: 1100, duration: 0.25, ease: C(0.25, "power2.in") }, S(146.5));
+
+    /* =================== SC025 · 146.74–155.55 Quaker (Vox layers) =================== */
+    scene("sc025", 146.74, 155.55);
+    ground("night", S(146.74));
+    tl.fromTo("#seg02-sc025-bg1", { x: 0 }, { x: -60, duration: 8.8, ease: "none" }, S(146.74));
+    tl.fromTo("#seg02-sc025-bg2", { x: 0, y: 0 }, { x: -120, y: 10, duration: 8.8, ease: "none" }, S(146.74));
+    tl.fromTo("#seg02-sc025-bg3", { x: 0 }, { x: 100, duration: 8.8, ease: "none" }, S(146.74));
+    tl.fromTo("#seg02-sc025-hoov", { y: 90, rotation: -8, opacity: 0 }, { y: 0, rotation: -3, opacity: 1, duration: 0.5, ease: C(0.5) }, S(146.78));
+    tl.fromTo("#seg02-sc025-q", { opacity: 0 }, { opacity: 1, duration: 0.01 }, T(147.72));
+    FX.text.fill(tl, $("sc025-q"), T(147.72), { per: 0.04, hold: 0.25, settle: 0.45 });
+    tl.fromTo("#seg02-sc025-swain", { x: 520, rotation: 9, opacity: 0 }, { x: 0, rotation: 2.5, opacity: 1, duration: 0.5, ease: C(0.5) }, S(151.3));
+    FX.text.rise(tl, [$("sc025-rev")], T(152.52), { dur: 0.6 });
+    tl.to("#seg02-sc025-rev", { opacity: 0, duration: 0.15 }, S(154.6));
+    tl.fromTo("#seg02-sc025-too", { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.3, ease: C(0.3) }, T(154.84));
+    // playful Quaker-hat doodles on both heads
+    (function () {
+      const mk = $("sc025-mk"), r = FX.markupDefs(mk, "seg02-mk25");
+      const hat = (cx, cy, w, t) => {
+        ink(mk, `M${cx - w} ${cy} Q${cx} ${cy + w * 0.22} ${cx + w} ${cy - 4}`, t, 0.16, { color: "#e5482a", width: 8, filter: r });
+        ink(mk, `M${cx - w * 0.5} ${cy + 2} L${cx - w * 0.42} ${cy - w * 0.62} Q${cx} ${cy - w * 0.74} ${cx + w * 0.44} ${cy - w * 0.64} L${cx + w * 0.5} ${cy}`, t + 0.14, 0.22, { color: "#e5482a", width: 8, filter: r });
+        ink(mk, `M${cx - w * 0.47} ${cy - w * 0.16} Q${cx} ${cy - w * 0.08} ${cx + w * 0.48} ${cy - w * 0.18}`, t + 0.34, 0.1, { color: "#e5482a", width: 6, filter: r });
+      };
+      hat(585, 222, 120, S(154.95));
+      hat(1322, 196, 112, S(155.05));
+    })();
+    // the Hoover card flips over into the admission card
+    tl.to("#seg02-sc025-hoov", { rotationY: 90, transformPerspective: 1600, duration: 0.2, ease: C(0.2, "power2.in") }, S(155.32));
+
+    /* =================== SC026 · 155.52–158.66 admission + stamp =================== */
+    scene("sc026", 155.52, 158.66);
+    ground("paper", S(155.52));
+    tl.fromTo("#seg02-sc026-card", { rotationY: -90, rotation: -1.5, transformPerspective: 2200 }, { rotationY: 0, rotation: -1.5, duration: 0.25, ease: C(0.25, "power2.out") }, S(155.52));
+    tl.fromTo("#seg02-sc026-cam", { scale: 1.0 }, { scale: 1.05, duration: 3.2, ease: "none" }, S(155.52));
+    FX.text.rise(tl, [$("sc026-bc")], T(155.88), { dur: 0.5 });
+    tl.fromTo("#seg02-sc026-stamp", { opacity: 0, scale: 1.7, rotation: 2 }, { opacity: 1, scale: 1, rotation: -5, duration: 0.12, ease: "power4.in" }, S(157.06));
+    tl.fromTo("#seg02-sc026-cam", { x: 0, y: 0 }, { x: 9, y: -7, duration: 1 / 24, yoyo: true, repeat: 3, ease: "none", immediateRender: false }, S(157.18));
+
+    /* =================== SC027 · 158.66–166.34 newsreel weave =================== */
+    scene("sc027", 158.66, 166.34);
+    ground("night", S(158.66));
+    FX.weave($("sc027-weave"), { amp: 2.0, flicker: 0.06, seed: 2701, from: S(158.6), to: S(166.4) });
+    tl.set("#seg02-sc027-v1", { opacity: 1 }, S(158.66));
+    tl.set("#seg02-sc027-v1", { opacity: 0 }, S(160.96));
+    tl.fromTo("#seg02-sc027-v1", { scale: 1.0 }, { scale: 1.06, duration: 2.3, ease: "none" }, S(158.66));
+    tl.fromTo("#seg02-sc027-v2", { scale: 1.04 }, { scale: 1.0, duration: 5.4, ease: "none" }, S(160.96));
+    FX.onFrame((t) => { if (!win(158.66, 166.34)(t)) return; const f = Math.floor(t * 12); $("sc027-scr").style.backgroundPosition = `${(f * 137) % 900}px ${(f * 61) % 500}px`; });
+    FX.text.rise(tl, [$("sc027-c1")], T(160.92), { dur: 0.55 });
+    tl.to("#seg02-sc027-c1", { opacity: 0, duration: 0.25 }, S(163.25));
+    FX.text.rise(tl, [$("sc027-c2")], T(163.64), { dur: 0.45 });
+    tl.to("#seg02-sc027-c2", { opacity: 0, duration: 0.15 }, S(164.62));
+    tl.set("#seg02-sc027-c3", { opacity: 1 }, T(164.84));
+    FX.text.random(tl, $("sc027-c3"), T(164.84), { dur: 0.45, seed: 27 });
+    // film burn-out
+    tl.fromTo("#seg02-sc027-leak", { opacity: 0 }, { opacity: 1, duration: 4 / 24, ease: "power2.in" }, S(166.08));
+    tl.to("#seg02-sc027-weave", { filter: "brightness(2.2)", duration: 4 / 24, ease: "power2.in" }, S(166.12));
+
+    /* =================== SC028 · 166.34–169.86 his wife =================== */
+    scene("sc028", 166.34, 169.86);
+    ground("paper", S(166.34));
+    tl.fromTo("#seg02-sc028-h", { x: -620, rotation: -10 }, { x: 0, rotation: -3.5, duration: 0.5, ease: C(0.5) }, S(166.36));
+    tl.fromTo("#seg02-sc028-l", { x: 620, rotation: 10 }, { x: 0, rotation: 3, duration: 0.5, ease: C(0.5) }, S(166.46));
+    tl.fromTo("#seg02-sc028-board", { scale: 1.0 }, { scale: 1.04, duration: 3.5, ease: "none" }, S(166.34));
+    tl.fromTo("#seg02-sc028-tag", { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.3, ease: C(0.3) }, T(168.12));
+    (function () {
+      const mk = $("sc028-mk"), r = FX.markupDefs(mk, "seg02-mk28");
+      ink(mk, "M820 520 C880 470 940 380 975 420 C1010 460 930 520 915 470 C900 420 1000 380 1100 430", S(168.45), 0.5, { color: "#e5482a", width: 8, filter: r, ease: "power1.inOut" });
+    })();
+    FX.text.rise(tl, [$("sc028-uni")], T(168.92), { dur: 0.5 });
+    // cards shrink into the first dot of SC029's timeline
+    tl.to("#seg02-sc028-board", { scale: 0.02, x: -760, y: 220, duration: 0.38, ease: C(0.38, "power3.in") }, S(169.48));
+
+    /* =================== SC029 · 169.86–177.30 R7 timeline =================== */
+    scene("sc029", 169.86, 177.30);
+    (function () {
+      const svg = $("sc029-svg"), X = (y) => 200 + (y - 1910) * 76, AX = 820;
+      const r = FX.markupDefs(svg, "seg02-mk29");
+      svg.setAttribute("viewBox", "0 0 1920 1080");
+      const el = (tag, at) => { const e = document.createElementNS(NS, tag); for (const k in at) e.setAttribute(k, at[k]); svg.appendChild(e); return e; };
+      const b1 = el("rect", { x: X(1916), y: 300, width: X(1919.95) - X(1916), height: AX - 300, fill: "#dccfb4" });
+      const b2 = el("rect", { x: X(1920), y: 300, width: X(1923.95) - X(1920), height: AX - 300, fill: "#c9b48c" });
+      [b1, b2].forEach((b) => b.setAttribute("style", "mix-blend-mode:multiply"));
+      const axis = el("line", { x1: X(1910), y1: AX, x2: X(1930), y2: AX, stroke: "#18222f", "stroke-width": 3 });
+      const ticks = [];
+      for (let y = 1910; y <= 1930; y++) ticks.push(el("line", { x1: X(y), y1: AX, x2: X(y), y2: AX + (y % 5 ? 10 : 20), stroke: "#18222f", "stroke-width": y % 5 ? 1.5 : 3 }));
+      const yrs = $("sc029-yrs");
+      [1910, 1915, 1920, 1925, 1930].forEach((y) => yrs.insertAdjacentHTML("beforeend", `<div class="seg02-yr t-label" style="left:${X(y)}px">${y}</div>`));
+      const br = el("path", { d: `M${X(1920)} ${AX + 72} L${X(1920)} ${AX + 86} L${X(1929.9)} ${AX + 86} L${X(1929.9)} ${AX + 72}`, fill: "none", stroke: "#18222f", "stroke-width": 3 });
+      $("sc029-b1l").style.cssText += `left:${(X(1916) + X(1920)) / 2}px;top:318px;`;
+      $("sc029-b2l").style.cssText += `left:${(X(1920) + X(1924)) / 2}px;top:318px;`;
+      $("sc029-20s").style.left = X(1925) + "px";
+      const A = S(169.86);
+      tl.fromTo(axis, { attr: { x2: X(1910) } }, { attr: { x2: X(1930) }, duration: 0.5, ease: C(0.5) }, A);
+      tl.fromTo(ticks, { opacity: 0 }, { opacity: 1, duration: 0.01, stagger: 0.02 }, A + 0.1);
+      tl.fromTo(".seg02-yr", { opacity: 0 }, { opacity: 1, duration: 0.01, stagger: 0.08 }, A + 0.2);
+      tl.fromTo("#seg02-sc029-title", { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.4, ease: C(0.4) }, T(170.36));
+      // career line (ink) toward the vermilion end dot
+      const d = `M${X(1910)} 760 C${X(1912)} 740 ${X(1914)} 700 ${X(1915.5)} 690 S${X(1918)} 600 ${X(1920)} 560 S${X(1923)} 470 ${X(1925)} 440 S${X(1928)} 360 ${X(1929)} 330`;
+      ink(svg, d, S(170.4), 2.1, { color: "#18222f", width: 6, filter: r, ease: C(2.1, "power1.inOut") });
+      const start = el("circle", { cx: X(1910), cy: 760, r: 12, fill: "#18222f" });
+      tl.fromTo(start, { attr: { r: 0 } }, { attr: { r: 12 }, duration: 0.25, ease: "back.out(3)" }, A + 0.05);
+      const dot = el("circle", { cx: X(1929), cy: 330, r: 0, fill: "#e5482a" });
+      const halo = el("circle", { cx: X(1929), cy: 330, r: 20, fill: "none", stroke: "#e5482a", "stroke-width": 4, opacity: 0 });
+      tl.fromTo(dot, { attr: { r: 0 } }, { attr: { r: 18 }, duration: 0.3, ease: C(0.3, "back.out(3)") }, T(171.48));
+      tl.fromTo(halo, { attr: { r: 18 }, opacity: 0.9 }, { attr: { r: 56 }, opacity: 0, duration: 0.9, ease: "power2.out", immediateRender: false }, T(171.48));
+      tl.fromTo("#seg02-sc029-pres", { opacity: 0, x: 20 }, { opacity: 1, x: 0, duration: 0.3, ease: C(0.3) }, T(171.48));
+      tl.fromTo(br, { opacity: 0 }, { opacity: 1, duration: 0.01 }, T(173.40));
+      tl.fromTo("#seg02-sc029-20s", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.25, ease: C(0.25) }, T(173.40));
+      tl.fromTo(b1, { attr: { height: 0, y: AX } }, { attr: { height: AX - 300, y: 300 }, duration: 0.35, ease: C(0.35) }, T(174.68));
+      tl.fromTo("#seg02-sc029-b1l", { opacity: 0 }, { opacity: 1, duration: 0.01 }, T(174.68));
+      tl.fromTo(b2, { attr: { height: 0, y: AX } }, { attr: { height: AX - 300, y: 300 }, duration: 0.35, ease: C(0.35) }, T(176.12));
+      tl.fromTo("#seg02-sc029-b2l", { opacity: 0 }, { opacity: 1, duration: 0.01 }, T(176.12));
+      // push into the early-1920s band; its colour floods into the TV glow
+      tl.to("#seg02-sc029-stage", { scale: 2.6, duration: 0.55, ease: "power3.in" }, S(176.75));
+      tl.fromTo("#seg02-sc029-flood", { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "power2.in" }, S(177.0));
+    })();
+
+    /* =================== SC030 · 177.30–182.03 RCA TRK-12 =================== */
+    scene("sc030", 177.30, 182.03);
+    ground("night", S(177.30));
+    (function () {
+      // keep the screen centre on a fixed frame point while the set pushes in
+      const sc = (z) => ({ x: 600 - 918 * z, y: 520 - 564 * z, scale: z });
+      tl.fromTo("#seg02-sc030-set", sc(0.62), Object.assign(sc(0.96), { duration: 4.8, ease: "sine.inOut" }), S(177.30));
+      tl.fromTo("#seg02-sc030-bg", { scale: 1.06 }, { scale: 1.0, duration: 4.8, ease: "none" }, S(177.30));
+      tl.fromTo("#seg02-sc030-inner", { scaleY: 0.012, scaleX: 0.7 }, { scaleY: 1, scaleX: 1, duration: 0.35, ease: "expo.out" }, S(177.42));
+      tl.fromTo("#seg02-sc030-flash", { opacity: 1 }, { opacity: 0, duration: 0.55, ease: "power2.out" }, S(177.52));
+      FX.text.rise(tl, [$("sc030-adm")], T(178.68), { dur: 0.6 });
+      FX.text.odometer(tl, $("sc030-s1"), T(179.80), { dur: 0.6, stagger: 0.03, spins: 5, seed: 301 });
+      FX.text.odometer(tl, $("sc030-s2"), T(179.80) + 0.25, { dur: 0.6, stagger: 0.03, spins: 5, seed: 302 });
+      // CRT power-off
+      tl.to("#seg02-sc030-flash", { opacity: 0.9, duration: 0.06 }, S(181.82));
+      tl.to("#seg02-sc030-inner", { scaleY: 0.012, duration: 0.09, ease: "power3.in" }, S(181.84));
+      tl.to("#seg02-sc030-inner", { scaleX: 0.0, duration: 0.08, ease: "power3.in" }, S(181.93));
+      tl.to("#seg02-sc030-txt", { opacity: 0, duration: 0.2 }, S(181.8));
+    })();
+
+    /* =================== SC031 · 182.03–186.43 clipping =================== */
+    scene("sc031", 182.03, 186.55);
+    ground("paper", S(182.03));
+    (function () {
+      const rnd = FX.rng(3101);
+      ["c1", "c2", "c3"].forEach((c) => { let h = ""; for (let i = 0; i < 26; i++) h += `<i style="width:${(70 + rnd() * 30).toFixed(0)}%"></i>`; $("sc031-" + c).innerHTML = h; });
+      tl.fromTo("#seg02-sc031-clip", { y: 700, rotation: 6, rotationX: 0 }, { y: 0, rotation: -2.5, rotationX: 8, transformPerspective: 2200, duration: 0.45, ease: C(0.45) }, S(182.05));
+      tl.fromTo("#seg02-sc031-cam", { scale: 1.0 }, { scale: 1.05, duration: 4.5, ease: "none" }, S(182.03));
+      tl.fromTo("#seg02-sc031-st", { opacity: 0 }, { opacity: 1, duration: 0.01 }, T(184.37));
+      FX.text.random(tl, $("sc031-st"), T(184.37), { dur: 0.4, seed: 31 });
+      tl.fromTo("#seg02-sc031-bot", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.3, ease: C(0.3) }, T(185.25));
+      tl.fromTo("#seg02-sc031-hl", { scaleX: 0 }, { scaleX: 1, duration: 0.5, ease: C(0.5, "power2.inOut") }, S(185.31));
+      tl.to("#seg02-sc031-cam", { y: 1150, duration: 0.3, ease: C(0.3, "power2.in") }, S(186.25));
+    })();
+
+    /* =================== SC032 · 186.43–191.39 brain-drain map =================== */
+    scene("sc032", 186.25, 191.39);
+    tl.fromTo("#seg02-sc032", { opacity: 0 }, { opacity: 1, duration: 0.33, ease: "none", immediateRender: false }, S(186.25));
+    ground("night", S(186.43));
+    (function () {
+      const cam = (cx, cy, z) => ({ x: 960 - cx * z, y: 540 - cy * z, scale: z });
+      tl.fromTo("#seg02-sc032-cam", cam(3150, 1560, 0.31), Object.assign(cam(3250, 1420, 0.345), { duration: 5.2, ease: "sine.inOut" }), S(186.25));
+      tl.fromTo(".seg02-cloud, .seg02-cshadow", { x: 0 }, { x: 240, duration: 5.2, ease: "none" }, S(186.25));
+      tl.fromTo("#seg02-sc032-west", { opacity: 0.2 }, { opacity: 0.6, duration: 1.0, ease: "power1.inOut" }, S(189.9));
+      tl.fromTo("#seg02-sc032-bd", { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, T(188.45));
+      FX.choke(tl, choke32, T(188.45), 12, 0.5);
+      tl.fromTo("#seg02-sc032-wus", { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.35, ease: C(0.35) }, T(190.21));
+      const missX = [3372, 3372, 3372, 3372, 3372, 3407, 3401, 3553, 3676, 3739, 3742, 3670, 3692, 3770, 3850, 3858, 3802, 3731, 3687, 3692, 3653, 3691, 3809, 3859, 3859, 3859, 3859, 3859, 3859, 3859, 3859, 3859, 3859];   // Mississippi x every 100 px of y (map space)
+      const mx = (y) => { const i = Math.max(0, Math.min(missX.length - 2, Math.floor(y / 100))); const f = y / 100 - i; return missX[i] + (missX[i + 1] - missX[i]) * f; };
+      const g = $("sc032-dots"), rnd = FX.rng(3201), dots = [];
+      const SRC = [[586, 1456], [560, 1400], [600, 1430], [640, 1370], [700, 1900]];
+      const DST = [[5399, 1129], [5694, 964], [5330, 1180]];
+      for (let i = 0; i < 150; i++) {
+        const s = SRC[i % SRC.length], e = DST[Math.floor(rnd() * 3)];
+        const x0 = s[0] + (rnd() - 0.5) * 120, y0 = s[1] + (rnd() - 0.5) * 120, x1 = e[0] + (rnd() - 0.5) * 140, y1 = e[1] + (rnd() - 0.5) * 140;
+        const cx = (x0 + x1) / 2 + (rnd() - 0.5) * 500, cy = Math.min(y0, y1) - 350 - rnd() * 500;
+        const c = document.createElementNS(NS, "circle");
+        c.setAttribute("r", 22 + rnd() * 8); c.setAttribute("stroke-width", 6); c.setAttribute("opacity", 0);
+        g.appendChild(c);
+        dots.push({ c, x0, y0, x1, y1, cx, cy, t0: S(186.55) + i * 0.028 + rnd() * 0.05, dur: 1.9 + rnd() * 0.6 });
+      }
+      FX.onFrame((t) => {
+        if (!win(186.25, 191.39)(t)) return;
+        const tt = Math.floor(t * 12) / 12;
+        dots.forEach((d) => {
+          const u = (tt - d.t0) / d.dur;
+          if (u <= 0) { d.c.setAttribute("opacity", 0); return; }
+          const k = Math.min(1, u), e = 1 - Math.pow(1 - k, 2);
+          const x = (1 - e) * (1 - e) * d.x0 + 2 * (1 - e) * e * d.cx + e * e * d.x1, y = (1 - e) * (1 - e) * d.y0 + 2 * (1 - e) * e * d.cy + e * e * d.y1;
+          const east = x > mx(y);
+          d.c.setAttribute("cx", x.toFixed(0)); d.c.setAttribute("cy", y.toFixed(0));
+          d.c.setAttribute("fill", east ? "#23415e" : "#f4eee2");
+          d.c.setAttribute("stroke", east ? "#a9c8de" : "rgba(244,238,226,0.35)");
+          d.c.setAttribute("opacity", k >= 1 ? 0.8 : 1);
+        });
+      });
+    })();
+
+    /* =================== SC033 · 191.39–199.07 isotype =================== */
+    scene("sc033", 191.39, 199.07);
+    ground("paper", S(191.39));
+    (function () {
+      const box = $("sc033-icons"), icons = [];
+      const GX = 150, GY = 330, CELL = 78, KEEP = 34;
+      for (let i = 0; i < 60; i++) {
+        const r = Math.floor(i / 10), c = i % 10;
+        const d = document.createElement("div");
+        d.className = "seg02-ico";
+        d.innerHTML = `<img class="g" src="assets/icons/graduate_grey.svg" alt=""/><img class="v" src="assets/icons/graduate_vermilion.svg" alt=""/><img class="n" src="assets/icons/graduate_navy.svg" alt=""/>`;
+        box.appendChild(d);
+        icons.push({ d, r, c, x: GX + c * CELL, y: GY + r * CELL });
+      }
+      gsap.set(icons.map((o) => o.d), { x: (i) => icons[i].x, y: (i) => icons[i].y });
+      // placeholders appear, rows fill vermilion on "smart people"
+      tl.fromTo(".seg02-ico .g", { opacity: 0 }, { opacity: 0.35, duration: 0.01 }, S(191.39));
+      FX.text.rise(tl, [$("sc033-smart")], T(191.57), { dur: 0.5 });
+      for (let r = 0; r < 6; r++) {
+        const row = icons.filter((o) => o.r === r).map((o) => o.d.querySelector(".v"));
+        tl.fromTo(row, { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.18, stagger: 0.012, ease: C(0.18, "back.out(2)") }, S(191.63) + r * 0.22);
+      }
+      tl.fromTo("#seg02-sc033-line", { scaleY: 0, transformOrigin: "50% 0%" }, { scaleY: 1, duration: 0.6, ease: C(0.6) }, S(193.4));
+      tl.fromTo(".seg02-colh", { opacity: 0 }, { opacity: 0, duration: 0.01 }, S(191.39));
+      // slots: rows 0-2 (minus none) → companies, rows 3-5 → universities; one icon stays behind
+      const movers = icons.filter((o, i) => i !== KEEP);
+      const A = movers.filter((o) => o.r < 3), B = movers.filter((o) => o.r >= 3);
+      const slot = (list, x0) => list.forEach((o, k) => { o.tx = x0 + (k % 5) * 66; o.ty = 360 + Math.floor(k / 5) * 72; });
+      slot(A, 1110); slot(B, 1500);
+      const plan = (list, t0) => list.forEach((o) => { o.t0 = t0 + o.r % 3 * 0.32 + (9 - o.c) * 0.035; o.dur = 1.0; });
+      plan(A, S(194.91)); plan(B, S(196.55));
+      const ease = gsap.parseEase("power2.inOut");
+      FX.onFrame((t) => {
+        if (!win(191.39, 199.07)(t)) return;
+        const tt = Math.floor(t * 12) / 12;
+        movers.forEach((o) => {
+          const u = Math.max(0, Math.min(1, (tt - o.t0) / o.dur)), e = ease(u);
+          const x = o.x + (o.tx - o.x) * e, y = o.y + (o.ty - o.y) * e - Math.sin(e * Math.PI) * 40;
+          o.d.style.transform = `translate(${x.toFixed(1)}px, ${y.toFixed(1)}px)`;
+          const east = x + 28 > 1005;
+          o.d.querySelector(".n").style.opacity = east ? 1 : 0;
+        });
+      });
+      tl.fromTo("#seg02-sc033-h1", { opacity: 0, y: -12 }, { opacity: 1, y: 0, duration: 0.25, ease: C(0.25) }, T(196.21));
+      tl.fromTo("#seg02-sc033-h2", { opacity: 0, y: -12 }, { opacity: 1, y: 0, duration: 0.25, ease: C(0.25) }, T(198.05));
+      // the one that stayed: zoom into it
+      const k = icons[KEEP];
+      tl.to("#seg02-sc033-stage", { scale: 7, transformOrigin: `${k.x + 28}px ${k.y + 28}px`, duration: 0.5, ease: C(0.5, "power3.in") }, S(198.57));
+    })();
+
+    /* =================== SC034 · 199.07–206.27 Hoover 1928 → Stanford today =================== */
+    scene("sc034", 199.07, SEG_END);
+    ground("night", S(199.07));
+    FX.weave($("sc034-weave"), { amp: 1.2, flicker: 0.03, seed: 3401, from: S(199.0), to: S(204.0) });
+    tl.fromTo("#seg02-sc034-a .plate", { scale: 1.0 }, { scale: 1.06, duration: 5.0, ease: "none" }, S(199.07));
+    tl.fromTo("#seg02-sc034-a", { opacity: 0 }, { opacity: 1, duration: 0.3 }, S(199.07));
+    tl.set("#seg02-sc034-b", { opacity: 0 }, S(199.07));
+    FX.text.rise(tl, [$("sc034-fix")], T(199.25), { dur: 0.55 });
+    tl.fromTo("#seg02-sc034-ch", { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, T(200.85));
+    FX.choke(tl, choke34, T(200.85), 16, 0.55);
+    tl.to("#seg02-sc034-txt", { opacity: 0, duration: 0.25 }, S(203.4));
+    const mid34 = FX.curveCut(tl, $("sc034-wrap"), $("sc034-a"), $("sc034-b"), S(203.55), 0.9, { from: 1, to: 1.6, ease: "expo.inOut" });
+    tl.to("#seg02-sc034-wrap", { scale: 1.0, duration: 1.2, ease: "power3.out" }, mid34 + 0.45);
+    tl.fromTo("#seg02-sc034-bplate", { scale: 1.0 }, { scale: 1.12, duration: S(SEG_END) - mid34, ease: "none" }, mid34);
+    tl.fromTo("#seg02-sc034-cr", { opacity: 0 }, { opacity: 1, duration: 0.01 }, mid34);
+    tl.set("#seg02-sc034-today", { opacity: 1 }, T(204.13));
+    FX.text.random(tl, $("sc034-today"), T(204.13), { dur: 0.45, seed: 34 });
+    // hand-off: SC035's paper chart card starts sliding in for the last 6 frames (ends at x=+180)
+    ground("paper", S(SEG_END) - 6 / 24);
+    tl.fromTo("#seg02-sc034-card", { x: 1960 }, { x: 180, duration: 6 / 24, ease: "power2.out", immediateRender: true }, S(SEG_END) - 6 / 24);
+
+    FX.mount(tl, DURATION);
+    window.__timelines = window.__timelines || {};
+    window.__timelines[SEG] = tl;
+  })();
+  </script>
+</template>
+</body>
+</html>

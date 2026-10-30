@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8" /></head>
+<body>
+<template>
+  <style>
+    #root { position: absolute; inset: 0; overflow: hidden; background: var(--paper); }
+    #s03-stage { position: absolute; inset: 0; transform-origin: 50% 50%; }
+    /* opening: 2026 -> 1926 */
+    #s03-open { position: absolute; left: 0; right: 0; top: 300px; text-align: center; color: var(--ink); }
+    #s03-open .k { font-size: 26px; color: var(--ink-soft); }
+    #s03-year { font-size: 300px; margin-top: 6px; color: var(--ink); }
+    #s03-open .ago { font-size: 56px; margin-top: 4px; color: var(--ink); }
+    /* equation */
+    #s03-eq { position: absolute; left: 0; right: 0; top: 380px; text-align: center; font-size: 150px; color: var(--ink); }
+    #s03-eq .w { color: var(--vermilion); } #s03-eq .e { color: var(--navy); }
+    #s03-eq .op { display: inline-block; margin: 0 40px; transform-origin: 50% 55%; }
+    #s03-eqlab { position: absolute; left: 0; right: 0; top: 590px; text-align: center; font-size: 24px; color: var(--ink-soft); }
+    /* chart */
+    #s03-title { position: absolute; left: 120px; top: 92px; width: 1500px; font-size: 64px; line-height: 1.1; color: var(--ink); }
+    #s03-sub { position: absolute; left: 124px; top: 178px; font-size: 22px; color: var(--ink-soft); }
+    #s03-grid { position: absolute; left: 124px; top: 270px; width: 560px; height: 560px; }
+    .s03-cell { position: absolute; width: 46px; height: 46px; background: rgba(24,34,47,0.07); }
+    .s03-fill { position: absolute; inset: 0; transform-origin: 50% 100%; }
+    #s03-big { position: absolute; left: 770px; top: 268px; font-size: 230px; }
+    #s03-cap { position: absolute; left: 776px; top: 548px; width: 760px; font-size: 52px; color: var(--ink); line-height: 1.1; }
+    #s03-legend { position: absolute; left: 778px; top: 690px; font-size: 22px; color: var(--ink); }
+    #s03-legend span { display: inline-block; width: 18px; height: 18px; margin: 0 10px -2px 0; }
+    #s03-legend .gap { width: 40px; background: none; }
+    #s03-sky { position: absolute; left: 560px; bottom: -8px; width: 1480px; height: auto; }
+    #s03-src { position: absolute; right: 60px; top: 30px; font-size: 14px; color: var(--ink-soft); }
+  </style>
+  <div id="root" data-composition-id="s03" data-width="1920" data-height="1080">
+    <svg id="s03-svg" width="0" height="0" style="position:absolute"></svg>
+    <div id="s03-stage">
+      <div id="s03-open"><div class="k t-label" id="s03-k">The U.S. economy</div><div id="s03-year" class="t-display halate ink">2026</div><div class="ago t-serif-i" id="s03-ago">one hundred years earlier</div></div>
+      <div id="s03-eq" class="t-display"><span class="w">WEST</span><span class="op" id="s03-op">&gt;</span><span class="e">EAST</span></div>
+      <div id="s03-eqlab" class="t-label">Where the money is made</div>
+      <div id="s03-title" class="t-serif">In the 1920s, America's economy lived in the <span class="hl" id="s03-hl" style="--hl:0">East</span></div>
+      <div id="s03-sub" class="t-label">Share of U.S. GDP · 1 square = 1%</div>
+      <div id="s03-grid"></div>
+      <div id="s03-big"><span class="label-box" id="s03-pct">0%</span></div>
+      <div id="s03-cap" class="t-serif-i">of America's economic output came from the East</div>
+      <div id="s03-legend" class="t-label"><span style="background: var(--navy)"></span>East · 90%<span class="gap"></span><span style="background: var(--vermilion)"></span>West · 10%</div>
+      <img id="s03-sky" src="assets/archival/cutouts/nyc_skyline_1921_halftone.png" alt="" />
+    </div>
+    <div class="paper-tex" style="background-image:url('assets/textures/paper_cream_01.jpg')"></div>
+    <div class="folds"></div>
+    <div id="s03-grain" class="tx tx-grain" style="background-image:url('assets/textures/grain_02_norm.jpg'); opacity: 0.25"></div>
+    
+    <audio id="s03-vo" src="vo10.mp3" data-start="0" data-duration="9.6" data-media-start="58.4" data-volume="1"></audio>
+  </div>
+  <script>
+  (function () {
+    const tl = gsap.timeline({ paused: true });
+    const T = (s) => s - 58.4;
+    const $ = (id) => document.getElementById(id);
+    const C = (d, e) => FX.choppy(e || "power3.out", d, 12);
+    FX.grain($("s03-grain"), 31);
+
+    // build the 10x10 isotype grid; fill order: bottom-left upward, East (navy) first
+    const grid = $("s03-grid"), fills = [];
+    for (let i = 0; i < 100; i++) {
+      const col = i % 10, row = 9 - Math.floor(i / 10);
+      const c = document.createElement("div");
+      c.className = "s03-cell"; c.style.left = col * 56 + "px"; c.style.top = row * 56 + "px";
+      const f = document.createElement("div");
+      f.className = "s03-fill"; f.style.background = i < 90 ? "var(--navy)" : "var(--vermilion)";
+      c.appendChild(f); grid.appendChild(c); fills.push(f);
+    }
+    gsap.set(fills, { scaleY: 0 });
+    tl.fromTo("#s03-stage", { scale: 1.0 }, { scale: 1.03, duration: 9.6, ease: "none" }, 0);
+
+    // A — "go back just 100 years": 2026 rolls back to 1926
+    FX.text.random(tl, $("s03-k"), T(58.5), { dur: 0.45, seed: 3 });
+    tl.fromTo("#s03-year", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.35, ease: C(0.35) }, T(58.55));
+    FX.text.count(tl, $("s03-year"), T(59.65), 2026, 1926, 0.75, (v) => String(Math.round(v)));
+    FX.text.rise(tl, [$("s03-ago")], T(59.9), { dur: 0.5 });
+    tl.to("#s03-open", { opacity: 0, y: -30, duration: 0.3, ease: "power2.in" }, T(60.75));
+
+    // B — "that equation is completely flipped": the comparator flips over
+    tl.fromTo("#s03-eq", { opacity: 0, scale: 0.94 }, { opacity: 1, scale: 1, duration: 0.3, ease: C(0.3) }, T(60.95));
+    tl.fromTo("#s03-eqlab", { opacity: 0 }, { opacity: 1, duration: 0.3 }, T(61.2));
+    tl.fromTo("#s03-op", { rotation: 0 }, { rotation: 180, duration: 0.5, ease: C(0.5, "back.inOut(2)") }, T(62.45));
+    tl.to("#s03-eq, #s03-eqlab", { opacity: 0, duration: 0.25 }, T(63.7));
+
+    // C — "90% of the US GDP": grid fills, label box counts, skyline rises
+    tl.fromTo("#s03-title, #s03-sub", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.35, stagger: 0.08, ease: C(0.35) }, T(63.8));
+    tl.fromTo(".s03-cell", { opacity: 0 }, { opacity: 1, duration: 0.01 }, T(63.85));
+    tl.to(fills.slice(0, 90), { scaleY: 1, duration: 0.12, stagger: 0.009, ease: "power2.out" }, T(64.15));
+    tl.to(fills.slice(90), { scaleY: 1, duration: 0.12, stagger: 0.03, ease: "power2.out" }, T(65.1));
+    tl.fromTo("#s03-big", { opacity: 0, scale: 0.9 }, { opacity: 1, scale: 1, duration: 0.25, ease: C(0.25, "back.out(2)") }, T(64.1));
+    FX.text.count(tl, $("s03-pct"), T(64.15), 0, 90, 0.85, (v) => Math.round(v) + "%");
+    tl.fromTo("#s03-cap", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.4, ease: C(0.4) }, T(65.1));
+    tl.fromTo("#s03-legend", { opacity: 0 }, { opacity: 1, duration: 0.3 }, T(65.6));
+    tl.fromTo("#s03-sky", { y: 420 }, { y: 0, duration: 0.9, ease: C(0.9) }, T(64.3));
+
+    // "out in the east" — highlighter swipes the word
+    const hl = { v: 0 };
+    tl.fromTo(hl, { v: 0 }, { v: 1, duration: 0.4, ease: C(0.4, "power2.inOut"), immediateRender: false, onUpdate: () => $("s03-hl").style.setProperty("--hl", hl.v) }, T(67.35));
+
+    FX.mount(tl, 9.6);
+    window.__timelines["s03"] = tl;
+  })();
+  </script>
+</template>
+</body>
+</html>

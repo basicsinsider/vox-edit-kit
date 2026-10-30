@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8" /></head>
+<body>
+<template>
+  <style>
+    #root { position: absolute; inset: 0; overflow: hidden; background: #171513; }
+    #s06-bg { position: absolute; inset: -60px; background-size: cover; background-position: center 20%;
+      filter: url(#s06-tint) blur(4px); opacity: 0.55; transform: scale(1.35) rotate(-8deg); }
+    #s06-cam { position: absolute; left: 0; top: 0; width: 2400px; height: 2976px; transform-origin: 0 0; }
+    #s06-page { position: absolute; left: 0; top: 0; width: 2400px; height: 2976px; transform-origin: 50% 20%;
+      }
+    #s06-dim { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(14,12,10,0) 30%, rgba(14,12,10,0.78) 62%, rgba(14,12,10,0.88)); }
+    #s06-page img { position: absolute; inset: 0; width: 100%; height: 100%; clip-path: inset(0.7% 0.9% 0.7% 0.9%); filter: sepia(0.28) contrast(1.06) brightness(0.97); }
+    #s06-page .ht { position: absolute; inset: 0; background-size: 260px auto; mix-blend-mode: overlay; opacity: 0.5; }
+    #s06-page .pp { position: absolute; inset: 0; background-size: cover; mix-blend-mode: multiply; opacity: 0.35; }
+    #s06-hl { position: absolute; left: 140px; top: 372px; width: 780px; height: 92px; background: #f2d33b;
+      mix-blend-mode: multiply; transform-origin: 0 50%; filter: url(#s06-rough); opacity: 0.92; }
+    #s06-clip { position: absolute; left: 1150px; top: 150px; width: 560px; }
+    #s06-photo { position: relative; width: 560px; height: 700px; background: #ece4d2; padding: 18px 18px 60px; filter: url(#s06-roughsm);
+      box-shadow: 0 30px 80px rgba(0,0,0,0.65); }
+    #s06-photo img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 30%; filter: sepia(0.2) contrast(1.05); }
+    #s06-name { position: absolute; left: 1120px; top: 900px; width: 700px; font-size: 96px; filter: url(#s06-choke); }
+    #s06-role { position: absolute; left: 1124px; top: 1000px; width: 700px; font-size: 44px; color: #e8dccb; }
+  </style>
+  <div id="root" data-composition-id="s06" data-width="1920" data-height="1080">
+    <svg id="s06-svg" width="0" height="0" style="position:absolute"></svg>
+    <div id="s06-bg" style="background-image:url('assets/archival/newspapers/nyt_1928-11-07_hoover_wins_frontpage.jpg')"></div>
+    <div id="s06-cam">
+      <div id="s06-page">
+        <img src="assets/archival/newspapers/nyt_1928-11-07_hoover_wins_frontpage.jpg" alt="" />
+        <div class="pp" style="background-image:url('assets/textures/grain_01.jpg')"></div>
+        <div class="ht" style="background-image:url('assets/textures/halftone_01_norm.jpg')"></div>
+        <div id="s06-hl"></div>
+      </div>
+    </div>
+    <div id="s06-dim"></div>
+    <div id="s06-clip"><div id="s06-photo"><img src="assets/archival/hoover/hoover_presidential_portrait_photo_NARA.jpg" alt="" /></div></div>
+    <div id="s06-name" class="t-display halate">Herbert Hoover</div>
+    <div id="s06-role" class="t-serif-i halate">31st President of the United States</div>
+    <div id="s06-grain" class="tx tx-grain" style="background-image:url('assets/textures/grain_01_norm.jpg')"></div>
+    <div id="s06-dust" class="tx tx-dust" style="background-image:url('assets/textures/dust_02.jpg')"></div>
+    <div class="vignette"></div>
+    <audio id="s06-vo" src="vo10.mp3" data-start="0" data-duration="8.4" data-media-start="122.9" data-volume="1"></audio>
+  </div>
+  <script>
+  (function () {
+    const tl = gsap.timeline({ paused: true });
+    const T = (s) => s - 122.9;
+    const $ = (id) => document.getElementById(id);
+    const svg = $("s06-svg");
+    FX.tintDefs(svg, "s06-tint", "#141312", "#6d665b");
+    FX.roughDefs(svg, "s06-rough", { freq: 0.04, scale: 9 });
+    FX.roughDefs(svg, "s06-roughsm", { freq: 0.05, scale: 6 });
+    const choke = FX.roughDefs(svg, "s06-choke", { freq: 0.05, scale: 4, choke: 0 });
+    FX.grain($("s06-grain"), 61);
+    FX.dust($("s06-dust"), 62, 2);
+    const cam = (cx, cy, z) => ({ x: 960 - cx * z, y: 540 - cy * z, scale: z });
+
+    // whole page on the table -> push into the headline -> tight on "HOOVER WINS"
+    tl.fromTo("#s06-cam", cam(1200, 1420, 0.31), Object.assign(cam(1200, 1300, 0.36), { duration: 2.9, ease: "sine.inOut" }), 0);
+    tl.fromTo("#s06-page", { rotationX: 14, rotationY: -8, rotation: -3, transformPerspective: 2600 },
+      { rotationX: 4, rotationY: -2, rotation: -1.2, duration: 4.2, ease: "power2.inOut" }, 0);
+    tl.to("#s06-cam", Object.assign(cam(1150, 520, 0.8), { duration: 1.1, ease: FX.choppy("expo.inOut", 1.1, 12) }), T(125.6));
+    tl.to("#s06-cam", Object.assign(cam(640, 470, 1.32), { duration: 1.0, ease: "power3.inOut" }), T(126.75));
+    tl.fromTo("#s06-bg", { x: 0 }, { x: -60, duration: 8.4, ease: "none" }, 0);
+
+    // yellow highlighter on "HOOVER WINS" (rough edges, 12fps)
+    tl.fromTo("#s06-hl", { scaleX: 0 }, { scaleX: 1, duration: 0.55, ease: FX.choppy("power2.inOut", 0.55, 12) }, T(127.3));
+
+    tl.fromTo("#s06-dim", { opacity: 0 }, { opacity: 1, duration: 0.6, ease: "power2.out" }, T(128.3));
+    // Hoover clipping drops in on his name, name chokes in
+    tl.fromTo("#s06-clip", { opacity: 0, y: 70, rotation: 7, scale: 1.08 }, { opacity: 1, y: 0, rotation: 3, scale: 1, duration: 0.5, ease: FX.choppy("power3.out", 0.5, 12) }, T(128.35));
+    tl.fromTo("#s06-name", { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, T(128.55));
+    FX.choke(tl, choke, T(128.55), 14, 0.6);
+    FX.text.rise(tl, [$("s06-role")], T(129.2), { dur: 0.6 });
+    tl.to("#s06-cam", Object.assign(cam(915, 480, 1.15), { duration: 0.7, ease: "power3.inOut" }), T(128.3));
+    tl.to("#s06-cam", Object.assign(cam(935, 486, 1.19), { duration: 2.4, ease: "none" }), T(129.0));
+
+    FX.mount(tl, 8.4);
+    window.__timelines["s06"] = tl;
+  })();
+  </script>
+</template>
+</body>
+</html>

@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8" /></head>
+<body>
+<template>
+  <style>
+    #root { position: absolute; inset: 0; overflow: hidden; background: #1a1917; }
+    #s09-bgwrap { position: absolute; inset: -80px; }
+    .s09-bgimg { position: absolute; background-size: cover; background-position: center; filter: url(#s09-tint); }
+    #s09-bg1 { inset: 0; filter: url(#s09-tint) blur(2px); opacity: 0.85; }
+    #s09-bg2 { left: 1180px; top: 90px; width: 900px; height: 620px; transform: rotate(4deg); box-shadow: -30px 30px 80px rgba(0,0,0,0.55); opacity: 0.9; }
+    #s09-bg3 { left: -60px; top: 640px; width: 980px; height: 520px; transform: rotate(-3deg); box-shadow: 30px -20px 80px rgba(0,0,0,0.5); background-position: center 30%; opacity: 0.9; }
+    #s09-bgtx { position: absolute; inset: 0; background-size: cover; mix-blend-mode: overlay; opacity: 0.5; }
+    #s09-shade { position: absolute; inset: 0; background: radial-gradient(ellipse 65% 70% at 50% 60%, rgba(16,15,14,0.25), rgba(16,15,14,0.75)); }
+    .s09-card { position: absolute; background: #e9e1cf; padding: 16px 16px 22px; filter: url(#s09-rough); box-shadow: 0 30px 80px rgba(0,0,0,0.6); }
+    .s09-card .ph { position: relative; width: 100%; height: 100%; overflow: hidden; }
+    .s09-card img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: contrast(1.08) sepia(0.12); }
+    .s09-card .sil { position: absolute; inset: -20px; background: #0e0d0c; opacity: 0.88; }
+    #s09-hew { left: 270px; top: 70px; width: 560px; height: 700px; }
+    #s09-hew img { object-position: 50% 22%; }
+    #s09-pac { left: 1060px; top: 55px; width: 620px; height: 730px; }
+    #s09-pac img { object-position: 50% 30%; }
+    .s09-name { position: absolute; bottom: 48px; }
+    #s09-hn { left: 240px; } #s09-pn { left: 1030px; }
+    .s09-name .f { font-size: 52px; color: #e8dccb; }
+    .s09-name .l { font-size: 120px; margin-top: -8px; }
+    #s09-top { position: absolute; left: 0; right: 0; top: 70px; text-align: center; font-size: 28px; color: #e8dccb; }
+  </style>
+  <div id="root" data-composition-id="s09" data-width="1920" data-height="1080">
+    <svg id="s09-svg" width="0" height="0" style="position:absolute"></svg>
+    <div id="s09-bgwrap">
+      <div id="s09-bg1" class="s09-bgimg" style="background-image:url('assets/archival/hoover/stanford_main_quad_panorama_c1896_b.jpg')"></div>
+      <div id="s09-bg2" class="s09-bgimg" style="background-image:url('assets/archival/hoover/stanford_inner_quad_west_entrance_c1900.jpg')"></div>
+      <div id="s09-bg3" class="s09-bgimg" style="background-image:url('assets/archival/hp/hewlett_and_packard_together_1960.jpg')"></div>
+      <div id="s09-bgtx" style="background-image:url('assets/textures/newsprint_02_norm.jpg')"></div>
+    </div>
+    <div id="s09-shade"></div>
+    <div id="s09-top" class="t-label halate">Two of Terman's students</div>
+    <div id="s09-hew" class="s09-card"><div class="ph"><img src="assets/archival/hp/hewlett_william_c1962.jpg" alt="" /><div class="sil"></div></div></div>
+    <div id="s09-pac" class="s09-card"><div class="ph"><img src="assets/archival/hp/packard_david_1933.jpg" alt="" /><div class="sil"></div></div></div>
+    <div id="s09-hn" class="s09-name"><div class="f t-serif-i halate">Bill</div><div class="l t-display halate" id="s09-hl">Hewlett</div></div>
+    <div id="s09-pn" class="s09-name"><div class="f t-serif-i halate">David</div><div class="l t-display halate" id="s09-pl">Packard</div></div>
+    <div id="s09-grain" class="tx tx-grain" style="background-image:url('assets/textures/grain_01_norm.jpg')"></div>
+    <div id="s09-dust" class="tx tx-dust" style="background-image:url('assets/textures/dust_01.jpg')"></div>
+    <div class="vignette"></div>
+    <audio id="s09-vo" src="vo10.mp3" data-start="0" data-duration="6.2" data-media-start="513.0" data-volume="1"></audio>
+  </div>
+  <script>
+  (function () {
+    const tl = gsap.timeline({ paused: true });
+    const T = (s) => s - 513.0;
+    const $ = (id) => document.getElementById(id);
+    FX.tintDefs($("s09-svg"), "s09-tint", "#1b1a18", "#7b756b");
+    FX.roughDefs($("s09-svg"), "s09-rough", { freq: 0.03, scale: 7 });
+    FX.grain($("s09-grain"), 91);
+    FX.dust($("s09-dust"), 92, 2);
+
+    // layered background drifts at different speeds
+    tl.fromTo("#s09-bg1", { x: 0 }, { x: -50, duration: 6.2, ease: "none" }, 0);
+    tl.fromTo("#s09-bg2", { x: 0, y: 0 }, { x: -110, y: 10, duration: 6.2, ease: "none" }, 0);
+    tl.fromTo("#s09-bg3", { x: 0 }, { x: 90, duration: 6.2, ease: "none" }, 0);
+
+    FX.text.random(tl, $("s09-top"), T(513.15), { dur: 0.6, seed: 9 });
+    // silhouettes rise in
+    tl.fromTo("#s09-hew", { y: 80, rotation: -7, opacity: 0 }, { y: 0, rotation: -3, opacity: 1, duration: 0.6, ease: FX.choppy("power3.out", 0.6, 12) }, T(513.3));
+    tl.fromTo("#s09-pac", { y: 80, rotation: 7, opacity: 0 }, { y: 0, rotation: 2.5, opacity: 1, duration: 0.6, ease: FX.choppy("power3.out", 0.6, 12) }, T(513.5));
+
+    // each lights up on his name
+    const light = (who, name, last, t) => {
+      tl.to(`#${who} .sil`, { opacity: 0, duration: 0.25, ease: FX.choppy("power1.out", 0.25, 12) }, t);
+      tl.to(`#${who}`, { scale: 1.04, duration: 0.3, ease: "back.out(2)" }, t);
+      tl.fromTo(`#${name}`, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.35, ease: "power3.out" }, t);
+      FX.text.fill(tl, $(last), t + 0.05, { per: 0.035, hold: 0.25, settle: 0.45 });
+    };
+    light("s09-hew", "s09-hn", "s09-hl", T(515.68));
+    light("s09-pac", "s09-pn", "s09-pl", T(516.8));
+    tl.to("#s09-top", { opacity: 0, duration: 0.3 }, T(515.6));
+
+    FX.mount(tl, 6.2);
+    window.__timelines["s09"] = tl;
+  })();
+  </script>
+</template>
+</body>
+</html>

@@ -1,0 +1,30 @@
+You are taking over a documentary video-editing workflow that another Claude Code session built and the owner (Krish) approved. This repository is the complete kit: the style manual, an effects library, tools, the owner's visual references, studied tutorial reels, templates, assets, and a test voiceover. Your job is to learn the style, prove it by reproducing the approved samples, and then edit new voiceovers in exactly this style.
+
+## Step 0 — Read before acting
+Read these fully, in order: `CLAUDE.md`, `MANUAL.md` (every section, it is the style law), `SAMPLES.md`, `EDITOR_BRIEF.md`, then skim `example-docs/` (the planning documents from the approved 10-minute edit). Look at every image in `references/style-images/` and every contact sheet in `references/reels/` (with `references/reels/REELS.md`, the narration transcripts of the tutorial reels that define each technique). Then open `expected/*.sheet.jpg` to see what the approved samples look like.
+
+## Step 1 — Set up the environment
+Run `bash setup.sh` from the repo root, then `export PATH=~/.local/bin:$PATH`. It installs: ffmpeg + ffprobe, zsh, Node-based HyperFrames CLI pinned at 0.8.217 plus its Chrome and its agent skills (`/hyperframes`, `/hyperframes-core`, `/general-video`, `/hyperframes-animation`, `/media-use`, `/hyperframes-audio`, `/hyperframes-cli`), the Parakeet speech-to-text model, a `.venv` with numpy/scipy/pillow/soundfile (use `.venv/bin/python` for every Python tool), the three fonts, and **Agent Reach** (https://github.com/Panniantong/Agent-Reach — used to download/watch Instagram reels via its bundled yt-dlp at `~/.local/share/uv/tools/agent-reach/bin/yt-dlp`). Node 22+ must already exist; if it doesn't, install it. Then run `npx hyperframes@0.8.217 doctor`. If the HyperFrames skills were installed just now and aren't loaded in your session, read them directly from `~/.claude/skills/*/SKILL.md` (and their `references/`) — at minimum `hyperframes-core`.
+If anything fails (network blocks in a cloud sandbox are common: Instagram, archive.org, Wikimedia, the HyperFrames registry), tell me exactly what failed and continue with what the repo already contains — every reel is already studied in `references/reels/` and every sample asset is in `assets/`.
+
+## Step 2 — Environment check
+Run `python3 tools/build_index.py && npx hyperframes@0.8.217 lint` (expect 0 errors), then `tools/render_samples.sh s01 s03 s10` and compare the results in `renders/samples/` with `expected/`. This only proves the machine renders correctly; it is not the test.
+
+## Step 3 — The acceptance test: rebuild all 11 samples yourself
+Move the approved compositions out of the way: `mkdir -p _approved && git mv compositions/s*.html _approved/` (keep them for later comparison, but do NOT open them while building). Then rebuild each sample from scratch into `compositions/` with the same file names and composition ids (s01…s11), using only `MANUAL.md`, `SAMPLES.md` (the exact VO window, narration, required content and points for each), `lib/fx.js` / `lib/fx.css`, `tools/`, `assets/`, `transcript.json` for exact word times, and the references. For s02 use `tools/gen_s02.py` with its template as the manual describes. Work one sample at a time:
+1. write it, 2. `python3 tools/build_index.py sNN && npx hyperframes@0.8.217 lint`, 3. `npx hyperframes@0.8.217 snapshot --at <key moments> --no-end -o .snap/sNN` and LOOK at the frames, fix layout/timing/readability, 4. `python3 tools/sync_audit.py compositions/sNN-*.html`, 5. `tools/render_samples.sh sNN`, 6. compare against `expected/sNN-*.sheet.jpg` and the 720p preview; list differences and fix the ones that matter.
+If you get truly stuck on one technique, you may consult the matching file in `_approved/`, but say which sample and what you looked at. When all 11 are done, make a reel of them (as the manual describes) and report to me: for each sample, how close it is to the approved version, what you couldn't match, and anything in MANUAL.md that was unclear or wrong — then fix MANUAL.md (add a Changelog line). Stop and wait for my approval before doing anything else.
+
+## Step 4 — After I approve: editing new audio
+The next inputs are already in `input/` (see `input/README.md`): run `bash input/join.sh` to rebuild `input/Face Cam.mp4` and `input/Full Audio.mp3` from their parts (it verifies they're byte-identical). Don't start editing them until I tell you which part(s) to edit and how to use the face-cam footage. When I give you the go-ahead, follow MANUAL §8 exactly: trim/prepare without re-encoding the voice, transcribe with Parakeet, write `analysis/BEATS.md`, `EDIT_NOTES.md` (every effect #1–#20 at least once with variations, all reference layouts except R3, R2 optional), `ASSETS_NEEDED.md` and `SEGMENTS.md` in the same format as `example-docs/`; source assets (free/PD/CC only, SOURCES.md for each); show me 4–10 s samples of the new edit's key moments first and wait for my feedback; then build the full edit in parallel segments with subagents (one per ~100 s, sandboxes via `tools/make_sandbox.sh`), place sound with the marimba bed + per-object SFX (MANUAL §7, `tools/audio/`), assemble with `tools/build_master.py`, review every scene, and render. `templates/full-edit/` shows how the approved 10-minute edit was built — use it as the quality bar.
+
+## Rules that always apply
+- Never process the voiceover. Never put words on screen that the narrator didn't say (no fact-checking; only fix misheard names).
+- Only Cooper Hewitt, Haskoy, Crimson Pro. Only the palette in `lib/fx.css`. West = vermilion, East = navy, yellow only for the highlighter and one key number.
+- Every on-screen word lands 0–120 ms before its spoken word.
+- No logins, no account creation, no paid sources. Ask me before anything outward-facing.
+- Keep this repo private (Texturelabs textures can't be redistributed publicly).
+- Keep `MANUAL.md` current: whenever you learn a technique, hit a gotcha, or I give feedback, update it and its Changelog, and commit.
+- Commit your work to a branch as you go and tell me what you committed.
+
+Start with Step 0 now and tell me briefly when each step is done.

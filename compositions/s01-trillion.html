@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8" /></head>
+<body>
+<template>
+  <style>
+    #root { position: absolute; inset: 0; overflow: hidden; background: var(--night); }
+    #s01-stage { position: absolute; inset: 0; }
+    #s01-glow { position: absolute; left: 210px; top: 36px; width: 1500px; height: 900px;
+      background: radial-gradient(ellipse at center, rgba(255,140,70,0.16), rgba(255,100,40,0.05) 45%, transparent 70%); }
+    #s01-date { position: absolute; top: 210px; left: 0; right: 0; text-align: center; font-size: 26px; color: #cfc6b6; }
+    #s01-rule { position: absolute; top: 262px; left: 700px; width: 520px; height: 1px; background: rgba(244,238,226,0.35); transform-origin: 50% 50%; }
+    #s01-twelve { position: absolute; left: 110px; top: 300px; width: 640px; text-align: right; font-size: 430px; }
+    #s01-right { position: absolute; left: 800px; top: 372px; width: 820px; }
+    #s01-companies { font-size: 64px; color: var(--bone); letter-spacing: 0.06em; }
+    #s01-us { margin-top: 10px; font-size: 52px; color: #e8dccb; }
+    #s01-worth { margin-top: 64px; font-size: 26px; color: #cfc6b6; }
+    #s01-amount { margin-top: 10px; font-size: 92px; font-weight: 700; letter-spacing: -0.01em; }
+    #s01-each { margin-top: 6px; font-size: 44px; color: #e8dccb; }
+  </style>
+  <div id="root" data-composition-id="s01" data-width="1920" data-height="1080">
+    <canvas id="s01-streaks" class="streaks" style="filter: blur(2.5px);"></canvas>
+    <div id="s01-glow"></div>
+    <div id="s01-stage">
+      <div id="s01-date" class="t-label halate">October 2026</div>
+      <div id="s01-rule"></div>
+      <div id="s01-twelve" class="t-display halate yellow">12</div>
+      <div id="s01-right">
+        <div id="s01-companies" class="t-label halate">Companies</div>
+        <div id="s01-us" class="t-serif-i halate">in the United States</div>
+        <div id="s01-worth" class="t-label halate">each worth more than</div>
+        <div id="s01-amount" class="t-display halate">$1,000,000,000,000</div>
+        <div id="s01-each" class="t-serif-i halate">a trillion dollars</div>
+      </div>
+    </div>
+    <div id="s01-grain" class="tx tx-grain" style="background-image:url('assets/textures/grain_01.jpg')"></div>
+    <div id="s01-dust" class="tx tx-dust" style="background-image:url('assets/textures/dust_01.jpg')"></div>
+    <div class="vignette"></div>
+    <audio id="s01-vo" src="vo10.mp3" data-start="0" data-duration="6.8" data-media-start="19.0" data-volume="1"></audio>
+  </div>
+  <script>
+  (function () {
+    const tl = gsap.timeline({ paused: true });
+    const T = (s) => s - 19.0; // VO time -> local time
+    const $ = (id) => document.getElementById(id);
+
+    FX.streaks($("s01-streaks"), { seed: 21, speed: 0.45, xfreq: 0.17, lo: 0.47, hi: 0.86, gamma: 2.3, tint: [255, 214, 178], gain: 1.15 });
+    FX.grain($("s01-grain"), 3);
+    FX.dust($("s01-dust"), 5, 2);
+
+    tl.fromTo("#s01-streaks", { opacity: 0 }, { opacity: 0.7, duration: 1.4, ease: "power2.out" }, 0);
+    tl.fromTo("#s01-glow", { opacity: 0, scale: 0.9 }, { opacity: 1, scale: 1.05, duration: 6.8, ease: "sine.inOut" }, 0);
+    tl.fromTo("#s01-stage", { scale: 1.0 }, { scale: 1.045, duration: 6.8, ease: "none" }, 0);
+
+    FX.text.random(tl, $("s01-date"), T(19.12), { dur: 0.55, seed: 3 });
+    tl.fromTo("#s01-rule", { scaleX: 0 }, { scaleX: 1, duration: 0.6, ease: FX.choppy("power3.out", 0.6, 12) }, T(19.4));
+
+    FX.text.odometer(tl, $("s01-twelve"), T(21.05), { dur: 0.75, stagger: 0.08, spins: 9, seed: 12 });
+    FX.text.fill(tl, $("s01-companies"), T(21.76), { per: 0.03, hold: 0.25, settle: 0.5 });
+    FX.text.rise(tl, [$("s01-us")], T(22.45), { dur: 0.6 });
+
+    FX.text.random(tl, $("s01-worth"), T(23.45), { dur: 0.45, seed: 8 });
+    tl.fromTo("#s01-amount", { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, T(23.8));
+    FX.text.count(tl, $("s01-amount"), T(23.8), 0, 1e12, 1.15, (v) => "$" + Math.round(v).toLocaleString("en-US"));
+    tl.fromTo("#s01-amount", { color: "#f2cf3b" }, { color: "#f4eee2", duration: 0.6, ease: "power1.inOut", immediateRender: false }, T(25.0));
+    FX.text.rise(tl, [$("s01-each")], T(24.3), { dur: 0.6 });
+
+    FX.mount(tl, 6.8);
+    window.__timelines["s01"] = tl;
+  })();
+  </script>
+</template>
+</body>
+</html>

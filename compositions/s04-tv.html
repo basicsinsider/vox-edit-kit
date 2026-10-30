@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8" /></head>
+<body>
+<template>
+  <style>
+    #root { position: absolute; inset: 0; overflow: hidden; background: #121110; }
+    #s04-bg { position: absolute; inset: -60px; background-size: cover; background-position: center 60%; filter: url(#s04-tint) blur(6px); opacity: 0.6; }
+    #s04-floor { position: absolute; left: 0; right: 0; bottom: 0; height: 260px; background: linear-gradient(180deg, rgba(18,17,16,0), rgba(10,9,8,0.9)); }
+    #s04-set { position: absolute; left: 120px; top: 70px; width: 1040px; height: 991px; transform-origin: 50% 60%; }
+    #s04-screen { position: absolute; left: 100px; top: 95px; width: 693px; height: 509px; overflow: hidden; border-radius: 17% / 21%; background: #0b0b0b; }
+    #s04-screen-inner { position: absolute; inset: 0; transform-origin: 50% 50%; }
+    #s04-vid { position: absolute; left: -20px; top: -20px; width: 733px; height: 549px; object-fit: cover; }
+    #s04-glare { position: absolute; inset: 0; background: radial-gradient(ellipse 70% 60% at 30% 22%, rgba(255,255,255,0.14), rgba(255,255,255,0) 60%),
+      radial-gradient(ellipse 95% 90% at 50% 50%, rgba(0,0,0,0) 62%, rgba(0,0,0,0.55) 100%); }
+    #s04-flash { position: absolute; inset: 0; background: #f4f1ea; }
+    #s04-tv { position: absolute; left: 0; top: 0; width: 1040px; height: 991px; }
+    #s04-shadow { position: absolute; left: 90px; top: 930px; width: 860px; height: 70px; border-radius: 50%; background: rgba(0,0,0,0.6); filter: blur(24px); }
+    #s04-text { position: absolute; left: 1230px; top: 230px; width: 620px; }
+    #s04-schools .s { font-size: 80px; line-height: 1.02; }
+    #s04-schools .amp { font-size: 46px; color: #e8dccb; margin: 4px 0 6px; }
+    #s04-era { margin-top: 26px; font-size: 30px; color: #cfc6b6; }
+    #s04-era .y { font-size: 120px; text-transform: none; letter-spacing: -0.01em; color: #f2cf3b; display: block; margin-top: 4px; }
+    #s04-opp { position: absolute; left: 1230px; top: 420px; width: 640px; }
+    #s04-opp .l1 { font-size: 54px; color: #e8dccb; line-height: 1.1; }
+    #s04-opp .l2 { font-size: 168px; margin-top: 6px; filter: url(#s04-choke); }
+  </style>
+  <div id="root" data-composition-id="s04" data-width="1920" data-height="1080">
+    <svg id="s04-svg" width="0" height="0" style="position:absolute"></svg>
+    <div id="s04-bg" style="background-image:url('assets/archival/hoover/stanford_inner_quad_west_entrance_c1900.jpg')"></div>
+    <div id="s04-floor"></div>
+    <div id="s04-set">
+      <div id="s04-shadow"></div>
+      <div id="s04-screen">
+        <div id="s04-screen-inner">
+          <video id="s04-vid" src="assets/archival/footage/berkeley_1932_grad_cut.mp4" muted playsinline data-start="0" data-duration="10.08"
+            data-color-grading='{"adjust":{"contrast":0.08},"effects":{"chromaticAberration":0.2,"chromaticAngle":0,"scanlines":0.3,"scanlineCount":0.2,"scanlineSoftness":1,"crtCurvature":0.18,"filmArtifacts":0.35},"details":{"vignette":0.25,"grain":0.25}}'></video>
+          <div id="s04-glare"></div>
+          <div id="s04-flash"></div>
+        </div>
+      </div>
+      <img id="s04-tv" src="assets/textures/tv_frame_01.png" alt="" />
+    </div>
+    <div id="s04-text">
+      <div id="s04-schools"><div class="s t-display halate" id="s04-st">STANFORD</div><div class="amp t-serif-i halate" id="s04-amp">or</div><div class="s t-display halate" id="s04-uc">UC BERKELEY</div></div>
+      <div id="s04-era" class="t-label halate">Graduates of the <span class="y t-display halate yellow" id="s04-y">1920s</span></div>
+    </div>
+    <div id="s04-opp"><div class="l1 t-serif-i halate" id="s04-l1">Opportunities in the West were</div><div class="l2 t-display halate yellow" id="s04-l2">scarce.</div></div>
+    <div id="s04-grain" class="tx tx-grain" style="background-image:url('assets/textures/grain_01_norm.jpg')"></div>
+    <div id="s04-dust" class="tx tx-dust" style="background-image:url('assets/textures/dust_03.jpg')"></div>
+    <div class="vignette"></div>
+    <audio id="s04-vo" src="vo10.mp3" data-start="0" data-duration="10.2" data-media-start="73.7" data-volume="1"></audio>
+  </div>
+  <script>
+  (function () {
+    const tl = gsap.timeline({ paused: true });
+    const T = (s) => s - 73.7;
+    const $ = (id) => document.getElementById(id);
+    const svg = $("s04-svg");
+    FX.tintDefs(svg, "s04-tint", "#121110", "#5c564d");
+    const choke = FX.roughDefs(svg, "s04-choke", { freq: 0.05, scale: 5, choke: 0 });
+    FX.grain($("s04-grain"), 41);
+    FX.dust($("s04-dust"), 42, 2);
+
+    // set drifts in slowly
+    tl.fromTo("#s04-set", { scale: 0.96, y: 10 }, { scale: 1.04, y: 0, duration: 10.2, ease: "none" }, 0);
+    tl.fromTo("#s04-bg", { scale: 1.06 }, { scale: 1.0, duration: 10.2, ease: "none" }, 0);
+    // CRT power-on
+    tl.fromTo("#s04-screen-inner", { scaleY: 0.012, scaleX: 0.7 }, { scaleY: 1, scaleX: 1, duration: 0.35, ease: "expo.out" }, 0.15);
+    tl.fromTo("#s04-flash", { opacity: 1 }, { opacity: 0, duration: 0.55, ease: "power2.out" }, 0.25);
+
+    // Stanford / UC Berkeley / 1920s
+    FX.text.odometer(tl, $("s04-st"), T(75.9), { dur: 0.6, stagger: 0.03, spins: 5, seed: 41 });
+    tl.fromTo("#s04-amp", { opacity: 0 }, { opacity: 1, duration: 0.3 }, T(76.5));
+    FX.text.odometer(tl, $("s04-uc"), T(76.75), { dur: 0.6, stagger: 0.03, spins: 5, seed: 42 });
+    tl.fromTo("#s04-era", { opacity: 0 }, { opacity: 1, duration: 0.01 }, T(78.2));
+    FX.text.fill(tl, $("s04-y"), T(78.5), { per: 0.05, hold: 0.25, settle: 0.4, cool: "#f2cf3b" });
+    tl.to("#s04-text", { opacity: 0, y: -20, duration: 0.35, ease: "power2.in" }, T(81.2));
+
+    // "opportunities in the West were scarce."
+    FX.text.rise(tl, [$("s04-l1")], T(81.6), { dur: 0.6 });
+    tl.fromTo("#s04-l2", { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, T(83.35));
+    FX.choke(tl, choke, T(83.35), 16, 0.55);
+
+    FX.mount(tl, 10.2);
+    window.__timelines["s04"] = tl;
+  })();
+  </script>
+</template>
+</body>
+</html>

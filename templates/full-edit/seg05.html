@@ -1,0 +1,826 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8" /></head>
+<body>
+<template>
+  <style>
+    #root { position: absolute; inset: 0; overflow: hidden; background: var(--night); }
+    .seg05-scene { position: absolute; inset: 0; overflow: hidden; visibility: hidden; opacity: 0; }
+    .seg05-fill { position: absolute; inset: 0; }
+    .seg05-night { background: var(--night); }
+    .seg05-paper { background: var(--paper); }
+    .seg05-ptex { position: absolute; inset: 0; background-size: cover; mix-blend-mode: multiply; opacity: 0.55; pointer-events: none; }
+    .seg05-sepia .img, .seg05-sepia .fringe { filter: sepia(0.32) saturate(0.55) contrast(1.06) brightness(0.9); }
+    .seg05-sepia .fringe { filter: sepia(0.32) saturate(0.55) contrast(1.06) brightness(0.9) blur(7px); }
+    .seg05-credit { position: absolute; right: 30px; bottom: 22px; font-size: 13px; letter-spacing: 0.08em; color: rgba(244,238,226,0.55); }
+    .seg05-credit.ink { color: rgba(24,34,47,0.6); }
+    .seg05-shadeb { position: absolute; left: 0; right: 0; bottom: 0; height: 560px; background: linear-gradient(180deg, rgba(14,13,12,0), rgba(14,13,12,0.82)); }
+    .seg05-tag { position: absolute; background: var(--ink); color: var(--paper); padding: 10px 18px 8px; font-size: 24px; white-space: nowrap; }
+    .seg05-print { position: absolute; background: #f3ecdc; padding: 16px 16px 16px; box-shadow: 0 22px 46px rgba(35,48,58,0.3); }
+    .seg05-print .ph { position: relative; width: 100%; height: 100%; overflow: hidden; }
+    .seg05-print img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    .seg05-print .ht { position: absolute; inset: 0; background-size: 520px auto; mix-blend-mode: multiply; opacity: 0.5; }
+    .seg05-stamp { display: inline-block; border: 12px solid var(--ink); padding: 18px 34px 6px; color: var(--ink); line-height: 1; }
+    .seg05-svgfull { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; }
+
+    /* ---------- SC063 curve cuts ---------- */
+    #seg05-sc063-weave { position: absolute; inset: -18px; }
+    #seg05-sc063-wrap { position: absolute; inset: 0; transform-origin: 50% 45%; }
+    .seg05-sc063-shot { position: absolute; inset: 0; overflow: hidden; }
+    #seg05-sc063-a .img, #seg05-sc063-a .fringe { object-position: 46% 30%; }
+    #seg05-sc063-pano { position: absolute; left: 0; top: -270px; width: 6230px; height: 1400px; }
+    #seg05-sc063-c .img, #seg05-sc063-c .fringe { object-position: 50% 55%; }
+    #seg05-sc063-hired { position: absolute; left: 110px; bottom: 96px; font-size: 230px; }
+    #seg05-sc063-back { position: absolute; left: 116px; bottom: 110px; font-size: 96px; }
+
+    /* ---------- SC064 two prints ---------- */
+    #seg05-sc064-cam { position: absolute; inset: 0; transform-origin: 520px 380px; }
+    #seg05-sc064-mit { left: 170px; top: 130px; width: 720px; height: 500px; }
+    #seg05-sc064-mit img { filter: url(#seg05-tint-sepia) contrast(1.05); }
+    #seg05-sc064-stan { left: 1050px; top: 150px; width: 700px; height: 470px; }
+    #seg05-sc064-stan img { filter: saturate(0.45) sepia(0.15) contrast(1.02); }
+    #seg05-sc064-tag { left: 1110px; top: 722px; }
+    #seg05-sc064-now { position: absolute; left: 1350px; top: 710px; font-size: 52px; color: var(--ink); }
+    #seg05-sc064-conn { position: absolute; left: 0; right: 0; top: 870px; text-align: center; font-size: 74px; color: var(--ink); }
+
+    /* ---------- SC065 Terman ---------- */
+    #seg05-sc065-bg { position: absolute; inset: -60px; background-size: cover; background-position: center 40%; filter: url(#seg05-tint-dark) blur(14px); opacity: 0.75; }
+    #seg05-sc065-weave { position: absolute; inset: 0; }
+    #seg05-sc065-plate { position: absolute; left: 1180px; top: 70px; width: 440px; height: 944px; overflow: hidden; box-shadow: 0 40px 100px rgba(0,0,0,0.7); transform-origin: 50% 50%; }
+    #seg05-sc065-plate .plate { inset: 0 -40px 0 0; }
+    #seg05-sc065-plate .img, #seg05-sc065-plate .fringe { object-position: 50% 30%; filter: sepia(0.3) saturate(0.5) contrast(1.08) brightness(0.95); }
+    #seg05-sc065-plate .fringe { filter: sepia(0.3) saturate(0.5) contrast(1.08) brightness(0.95) blur(6px); }
+    #seg05-sc065-low { position: absolute; left: 110px; top: 560px; width: 980px; }
+    #seg05-sc065-name { font-size: 112px; }
+    #seg05-sc065-grad { font-size: 56px; color: #e8dccb; margin-top: 18px; }
+    #seg05-sc065-mit { display: inline-block; margin-top: 18px; font-size: 26px; padding: 8px 14px 6px; background: var(--navy); color: var(--bone); }
+
+    /* ---------- cork board (SC066 + SC074) ---------- */
+    #seg05-cork { background: #15110d; }
+    #seg05-cork-mindbg { position: absolute; left: 0; right: 0; bottom: 0; height: 380px; background: linear-gradient(180deg, rgba(10,9,8,0), rgba(10,9,8,0.88) 60%); opacity: 0; }
+    #seg05-cork-cam { position: absolute; left: 0; top: 0; width: 3840px; height: 2160px; transform-origin: 0 0; }
+    #seg05-cork-tex { position: absolute; inset: 0; background-size: cover; filter: brightness(0.92) saturate(0.85); }
+    .seg05-card { position: absolute; background: #f1eadb; padding: 18px 18px 22px; box-shadow: 6px 22px 34px rgba(20,12,6,0.5), 0 2px 4px rgba(20,12,6,0.4); }
+    .seg05-card .ph { position: relative; width: 100%; height: 100%; overflow: hidden; }
+    .seg05-card img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: url(#seg05-tint-ink) contrast(1.05); }
+    .seg05-card .ht { position: absolute; inset: 0; background-size: 520px auto; mix-blend-mode: multiply; opacity: 0.5; }
+    .seg05-card.cap { padding-bottom: 76px; }
+    .seg05-card .capt { position: absolute; left: 0; right: 0; bottom: 14px; text-align: center; font-size: 36px; color: var(--ink); }
+    .seg05-pin { position: absolute; width: 64px; height: 64px; margin: -34px 0 0 -34px; }
+    #seg05-cork-strings { position: absolute; left: 0; top: 0; width: 3840px; height: 2160px; overflow: visible; }
+    .seg05-ctag { position: absolute; background: #f4eee2; color: var(--ink); padding: 14px 26px 10px; font-size: 44px; box-shadow: 4px 12px 18px rgba(20,12,6,0.45); white-space: nowrap; }
+    #seg05-k-terman { left: 1000px; top: 640px; width: 460px; height: 640px; }
+    #seg05-k-terman img { object-position: 50% 22%; }
+    #seg05-k-bush { left: 1840px; top: 600px; width: 480px; height: 600px; }
+    #seg05-k-bush img { object-position: 50% 30%; }
+    #seg05-k-advisor { left: 1930px; top: 1250px; }
+    #seg05-k-mit { left: 220px; top: 190px; width: 660px; height: 470px; }
+    #seg05-k-harvard { left: 200px; top: 860px; width: 580px; height: 450px; }
+    #seg05-k-via { left: 360px; top: 1480px; width: 440px; height: 520px; background: #ece4d0; }
+    #seg05-k-ray { left: 1110px; top: 1460px; width: 380px; height: 560px; }
+    #seg05-k-ray img { object-position: 50% 40%; }
+    #seg05-k-taboo { left: 1660px; top: 1600px; width: 500px; height: 330px; background: #f6efd9; padding: 26px 30px; }
+    #seg05-k-att { left: 2400px; top: 1480px; width: 400px; height: 400px; }
+    #seg05-k-att img { object-fit: contain; filter: url(#seg05-tint-ink); }
+    #seg05-k-ge { left: 2780px; top: 180px; width: 680px; height: 450px; }
+    #seg05-k-boston { left: 2960px; top: 760px; width: 420px; height: 540px; }
+    #seg05-k-bell { left: 2980px; top: 1440px; width: 600px; height: 470px; }
+    #seg05-k-via .t1 { font-size: 40px; color: var(--ink); text-align: center; margin-top: 18px; }
+    #seg05-k-via .rule { height: 6px; background: rgba(24,34,47,0.28); margin: 26px 20px 0; }
+    #seg05-k-via .rule.s { margin-right: 120px; }
+    #seg05-k-taboo .a { font-size: 76px; color: var(--ink); position: relative; display: inline-block; }
+    #seg05-k-taboo .a::after { content: ""; position: absolute; left: -8px; right: -8px; top: 46%; height: 7px; background: var(--vermilion); transform: rotate(-4deg); }
+    #seg05-k-taboo .b { font-size: 92px; color: var(--ink); margin-top: 14px; }
+    #seg05-cork-dark { position: absolute; inset: 0; background: #0b0a09; opacity: 0; }
+    #seg05-cork-lamp { position: absolute; left: -960px; top: -540px; width: 3840px; height: 2160px; opacity: 0; transform-origin: 50% 50%;
+      background: radial-gradient(circle at 50% 50%, rgba(255,190,120,0.10) 0, rgba(10,9,8,0) 9%, rgba(10,9,8,0.55) 14%, rgba(10,9,8,0.92) 22%); }
+    #seg05-cork-mind { position: absolute; left: 0; right: 0; top: 905px; text-align: center; font-size: 104px; }
+
+    /* ---------- SC067 TV ---------- */
+    #seg05-sc067-room { position: absolute; inset: 0; background: radial-gradient(ellipse 50% 60% at 50% 42%, #2a221b, #0c0b0a 75%); }
+    #seg05-sc067-set { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 970px 425px; }
+    #seg05-sc067-screen { position: absolute; left: 685px; top: 197px; width: 533px; height: 461px; overflow: hidden; border-radius: 18% / 20%; background: #0b0b0b; }
+    #seg05-sc067-inner { position: absolute; inset: 0; transform-origin: 50% 50%; }
+    #seg05-sc067-vid { position: absolute; left: -24px; top: -20px; width: 581px; height: 501px; object-fit: cover; }
+    #seg05-sc067-glare { position: absolute; inset: 0; background: radial-gradient(ellipse 70% 60% at 30% 22%, rgba(255,255,255,0.13), rgba(255,255,255,0) 60%),
+      radial-gradient(ellipse 95% 90% at 50% 50%, rgba(0,0,0,0) 60%, rgba(0,0,0,0.6) 100%); }
+    #seg05-sc067-flash { position: absolute; inset: 0; background: #f4f1ea; }
+    #seg05-sc067-tv { position: absolute; left: 344px; top: -78px; width: 1267px; height: 2143px; filter: brightness(0.62) saturate(0.8) contrast(1.05);
+      clip-path: polygon(0.5% 4%, 25% 0.8%, 50% 0%, 75% 0.8%, 99.5% 4.5%, 95% 25%, 92% 48%, 91.5% 66%, 6% 66%, 5% 49%, 2.5% 25%); }
+    #seg05-sc067-floor { position: absolute; left: 0; right: 0; bottom: 0; height: 340px; background: linear-gradient(180deg, rgba(12,11,10,0), rgba(12,11,10,0.96) 70%); }
+    #seg05-sc067-lamp { position: absolute; inset: 0; background: radial-gradient(ellipse 34% 40% at 50% 38%, rgba(180,190,210,0.10), rgba(0,0,0,0) 70%); mix-blend-mode: screen; }
+
+    /* ---------- SC068 (s11 adapted) ---------- */
+    #seg05-sc068-weave { position: absolute; inset: -16px; }
+    #seg05-sc068-cam { position: absolute; inset: 0; transform-origin: 634px 300px; }
+    #seg05-sc068-cam .plate { inset: auto; left: 0; top: -80px; width: 1920px; height: 1401px; }
+    #seg05-sc068-cam .plate .img, #seg05-sc068-cam .plate .fringe { filter: sepia(0.3) saturate(0.6) contrast(1.06) brightness(0.92); }
+    #seg05-sc068-cam .plate .fringe { filter: sepia(0.3) saturate(0.6) contrast(1.06) brightness(0.92) blur(7px); }
+    #seg05-sc068-shade { position: absolute; inset: 0; background: radial-gradient(ellipse 60% 70% at 33% 30%, rgba(0,0,0,0), rgba(10,9,8,0.45)); }
+    #seg05-sc068-prof { position: absolute; left: 100px; top: 470px; font-size: 76px; }
+    #seg05-sc068-mit { position: absolute; left: 104px; top: 572px; font-size: 34px; padding: 10px 18px 8px; background: var(--vermilion); color: var(--bone); }
+    #seg05-sc068-panel { position: absolute; left: 0; bottom: 0; width: 1920px; height: 380px; background: linear-gradient(180deg, rgba(20,19,18,0), rgba(20,19,18,0.93) 42%); }
+    #seg05-sc068-found { position: absolute; left: 104px; bottom: 236px; font-size: 48px; color: #e8dccb; }
+    #seg05-sc068-ray { position: absolute; left: 100px; bottom: 92px; font-size: 140px; }
+    #seg05-sc068-def { position: absolute; left: 760px; bottom: 112px; font-size: 54px; color: #e8dccb; }
+    #seg05-sc068-still { position: absolute; left: 106px; bottom: 32px; font-size: 26px; color: #cfc6b6; }
+    #seg05-sc068-scan { position: absolute; inset: 0; background: repeating-linear-gradient(180deg, rgba(0,0,0,0.35) 0, rgba(0,0,0,0.35) 2px, rgba(0,0,0,0) 2px, rgba(0,0,0,0) 5px); }
+
+    /* ---------- SC069 TABOO ---------- */
+    #seg05-sc069-tower { left: 230px; top: 250px; width: 560px; height: 640px; }
+    #seg05-sc069-tower img { filter: url(#seg05-tint-ink) contrast(1.08); object-position: 72% 40%; }
+    #seg05-sc069-fact { left: 1140px; top: 300px; width: 600px; height: 520px; }
+    #seg05-sc069-fact img { filter: url(#seg05-tint-ink) contrast(1.08); object-position: 50% 50%; }
+    #seg05-sc069-other { position: absolute; left: 230px; top: 110px; font-size: 66px; color: var(--ink); }
+    #seg05-sc069-ltag { left: 250px; top: 900px; }
+    #seg05-sc069-rtag { left: 1160px; top: 830px; }
+    #seg05-sc069-stampw { position: absolute; left: 0; right: 0; top: 400px; text-align: center; }
+    #seg05-sc069-stamp { font-size: 230px; filter: url(#seg05-choke69); transform-origin: 50% 50%; }
+
+    /* ---------- SC070 ivory tower + gate ---------- */
+    #seg05-sc070-bgwrap { position: absolute; inset: -80px; }
+    .seg05-sc070-bg { position: absolute; background-size: cover; background-position: center; filter: url(#seg05-tint-dark); box-shadow: -30px 30px 80px rgba(0,0,0,0.55); }
+    #seg05-sc070-bg1 { inset: 0; filter: url(#seg05-tint-dark) blur(2px); background-position: 70% 40%; }
+    #seg05-sc070-bg2 { left: 1220px; top: 110px; width: 860px; height: 620px; transform: rotate(4deg); background-position: center 40%; }
+    #seg05-sc070-bg3 { left: -40px; top: 620px; width: 940px; height: 560px; transform: rotate(-3deg); background-position: center 30%; }
+    #seg05-sc070-tx { position: absolute; inset: 0; background-size: cover; mix-blend-mode: overlay; opacity: 0.5; }
+    #seg05-sc070-bgs { position: absolute; inset: 0; }
+    #seg05-sc070-shade { position: absolute; inset: 0; background: radial-gradient(ellipse 60% 55% at 50% 55%, rgba(16,15,14,0.55), rgba(16,15,14,0.82)); }
+    #seg05-sc070-gate { position: absolute; inset: 0; perspective: 1600px; }
+    .seg05-leaf { position: absolute; top: 120px; width: 960px; height: 960px; }
+    #seg05-sc070-leafL { left: 0; transform-origin: 0 50%; }
+    #seg05-sc070-leafR { left: 960px; transform-origin: 100% 50%; }
+    #seg05-sc070-text { position: absolute; left: 0; right: 0; top: 330px; text-align: center; }
+    #seg05-sc070-l1 { font-size: 150px; }
+    #seg05-sc070-l2 { font-size: 72px; color: #e8dccb; margin-top: 18px; }
+
+    /* ---------- SC071 Boston ---------- */
+    #seg05-sc071-strip { position: absolute; left: 1360px; top: -30px; width: 600px; height: 1140px; overflow: hidden; box-shadow: -18px 0 40px rgba(35,48,58,0.25); }
+    #seg05-sc071-strip img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 30%; filter: url(#seg05-tint-ink) contrast(1.08); }
+    #seg05-sc071-strip .ht { position: absolute; inset: 0; background-size: 520px auto; mix-blend-mode: multiply; opacity: 0.5; }
+    #seg05-sc071-in { position: absolute; left: 130px; top: 190px; font-size: 40px; color: var(--ink); }
+    #seg05-sc071-sw { position: absolute; left: 120px; top: 300px; }
+    #seg05-sc071-taboo, #seg05-sc071-opp { font-size: 190px; transform-origin: 0 50%; }
+    #seg05-sc071-opp { position: absolute; left: 0; top: 0; white-space: nowrap; }
+    #seg05-sc071-cons { position: absolute; left: 130px; top: 640px; width: 1150px; font-size: 76px; color: var(--ink); line-height: 1.05; }
+
+    /* ---------- SC072 lab footage ---------- */
+    #seg05-sc072-weave { position: absolute; inset: -18px; }
+    .seg05-sc072-v { position: absolute; left: 0; top: -180px; width: 1956px; height: 1467px; object-fit: cover; filter: sepia(0.35) saturate(0.4) contrast(1.12) brightness(0.92); }
+    #seg05-sc072-scr { position: absolute; inset: 0; background-size: cover; mix-blend-mode: screen; opacity: 0.35; }
+    #seg05-sc072-t1 { position: absolute; left: 110px; bottom: 120px; font-size: 74px; }
+    #seg05-sc072-t2 { position: absolute; left: 110px; bottom: 110px; font-size: 128px; }
+
+    /* ---------- SC073 Raytheon layered ---------- */
+    #seg05-sc073-bgwrap { position: absolute; inset: -80px; }
+    #seg05-sc073-bg1 { position: absolute; inset: 0; background-size: cover; background-position: center 55%; filter: url(#seg05-tint-dark) blur(2px); }
+    #seg05-sc073-bg2 { position: absolute; left: -60px; top: 80px; width: 900px; height: 560px; background-size: cover; background-position: center; filter: url(#seg05-tint-dark); transform: rotate(-3deg); box-shadow: 30px 30px 80px rgba(0,0,0,0.55); }
+    #seg05-sc073-tx { position: absolute; inset: 0; background-size: cover; mix-blend-mode: overlay; opacity: 0.5; }
+    #seg05-sc073-shade { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(16,15,14,0.85) 0%, rgba(16,15,14,0.55) 48%, rgba(16,15,14,0.35) 100%); }
+    .seg05-vcard { position: absolute; background: #e9e1cf; padding: 16px 16px 20px; filter: url(#seg05-rough73); box-shadow: 0 30px 80px rgba(0,0,0,0.6); }
+    .seg05-vcard .ph { position: relative; width: 100%; height: 100%; overflow: hidden; }
+    .seg05-vcard img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: contrast(1.06) sepia(0.15) saturate(0.7); }
+    #seg05-sc073-bush { left: 1040px; top: 110px; width: 430px; height: 560px; }
+    #seg05-sc073-bush img { object-position: 50% 28%; filter: contrast(1.06) sepia(0.2); }
+    #seg05-sc073-ray { left: 1440px; top: 200px; width: 380px; height: 540px; transform-origin: 50% 60%; }
+    #seg05-sc073-rtag { position: absolute; left: 1250px; top: 780px; font-size: 26px; padding: 10px 18px 8px; background: var(--bone); color: var(--ink); white-space: nowrap; }
+    #seg05-sc073-prof { position: absolute; left: 110px; top: 300px; font-size: 34px; color: #e8dccb; }
+    #seg05-sc073-start { position: absolute; left: 104px; top: 360px; width: 900px; font-size: 118px; }
+    #seg05-sc073-big { position: absolute; left: 110px; top: 690px; font-size: 150px; color: var(--bone); }
+
+    /* ---------- SC075 relief map ---------- */
+    #seg05-sc075-cam { position: absolute; left: 0; top: 0; width: 6400px; height: 3200px; transform-origin: 0 0; }
+    #seg05-sc075-base { position: absolute; left: 0; top: 0; width: 6400px; height: 3200px; filter: brightness(0.86) contrast(1.06); }
+    .seg05-world { position: absolute; left: 0; top: 0; width: 6400px; height: 3200px; overflow: visible; }
+    #seg05-sc075-after { position: absolute; left: 110px; top: 96px; font-size: 84px; }
+    #seg05-sc075-west { position: absolute; left: 1160px; top: 430px; font-size: 230px; color: var(--vermilion);
+      text-shadow: 0 0 1px rgba(255,220,200,0.8), 0 0 8px rgba(255,110,60,0.55), 0 0 24px rgba(255,80,40,0.35), 0 0 52px rgba(255,70,30,0.2); }
+    #seg05-sc075-stan { position: absolute; left: 0; top: 0; font-size: 34px; padding: 10px 16px 8px; background: var(--bone); color: var(--ink); white-space: nowrap; }
+    #seg05-sc075-shade { position: absolute; inset: 0; background: radial-gradient(ellipse 75% 70% at 50% 50%, rgba(0,0,0,0) 50%, rgba(6,8,10,0.55) 100%); }
+
+    /* ---------- SC076 radio engineering ---------- */
+    #seg05-sc076-sch { position: absolute; inset: 0; opacity: 0.32; mix-blend-mode: multiply; }
+    #seg05-sc076-txt { position: absolute; left: 0; right: 0; top: 300px; text-align: center; }
+    #seg05-sc076-career { font-size: 38px; color: var(--ink); }
+    #seg05-sc076-radio { font-size: 220px; color: var(--ink); margin-top: 30px; line-height: 0.9; }
+    #seg05-sc076-eng { font-size: 170px; color: var(--ink); line-height: 0.9; }
+
+    /* ---------- SC077 graduation ---------- */
+    #seg05-sc077-weave { position: absolute; inset: -18px; }
+    #seg05-sc077-vid { position: absolute; left: 0; top: -201px; width: 1956px; height: 1467px; object-fit: cover; filter: grayscale(1) sepia(0.18) contrast(1.1) brightness(0.88); }
+    #seg05-sc077-every { position: absolute; left: 110px; bottom: 110px; font-size: 56px; }
+    #seg05-sc077-dim { position: absolute; inset: 0; background: #0d0c0b; opacity: 0; }
+    #seg05-sc077-icon { position: absolute; left: 864px; top: 444px; width: 192px; height: 192px; color: var(--bone); opacity: 0; filter: drop-shadow(0 0 18px rgba(255,140,80,0.35)); }
+    #seg05-sc077-vig { position: absolute; inset: 0; background: radial-gradient(ellipse 62% 60% at 50% 48%, rgba(0,0,0,0) 40%, rgba(8,6,4,0.8) 100%); }
+
+    /* ---------- global textures ---------- */
+    #seg05-grain { opacity: 0.32; }
+  </style>
+  <div id="root" data-composition-id="seg05" data-vo-start="398.46" data-duration="98.46" data-width="1920" data-height="1080">
+    <svg id="seg05-defs" width="0" height="0" style="position:absolute"></svg>
+
+    <!-- SC063 · curve cut lab → factory → campus -->
+    <div class="seg05-scene seg05-night" id="seg05-sc063" data-scene="SC063">
+      <div id="seg05-sc063-weave"><div id="seg05-sc063-wrap">
+        <div class="seg05-sc063-shot seg05-sepia" id="seg05-sc063-a"><div class="plate" id="seg05-sc063-ap"><img class="img" src="assets/archival/companies/ge_research_lab_kellogg_rice_speaker_1925.jpg" alt="" /><img class="fringe" src="assets/archival/companies/ge_research_lab_kellogg_rice_speaker_1925.jpg" alt="" /></div></div>
+        <div class="seg05-sc063-shot seg05-sepia" id="seg05-sc063-b"><div id="seg05-sc063-pano"><div class="plate"><img class="img" src="assets/archival/companies/ge_schenectady_works_panorama_1907_lc.jpg" alt="" /><img class="fringe" src="assets/archival/companies/ge_schenectady_works_panorama_1907_lc.jpg" alt="" /></div></div></div>
+        <div class="seg05-sc063-shot seg05-sepia" id="seg05-sc063-c"><div class="plate" id="seg05-sc063-cp"><img class="img" src="assets/archival/terman/mit_campus_aerial_1925_great_dome.jpg" alt="" /><img class="fringe" src="assets/archival/terman/mit_campus_aerial_1925_great_dome.jpg" alt="" /></div></div>
+      </div></div>
+      <div class="seg05-shadeb"></div>
+      <div id="seg05-sc063-hired" class="t-display halate">hired</div>
+      <div id="seg05-sc063-back" class="t-serif-i halate">back and forth</div>
+    </div>
+
+    <!-- SC064 · two prints + markups -->
+    <div class="seg05-scene seg05-paper" id="seg05-sc064" data-scene="SC064">
+      <div id="seg05-sc064-cam">
+        <div id="seg05-sc064-mit" class="seg05-print"><div class="ph"><img src="assets/archival/terman/mit_campus_aerial_1925_great_dome.jpg" alt="" /><div class="ht" style="background-image:url('assets/textures/halftone_03.png')"></div></div></div>
+        <div id="seg05-sc064-stan" class="seg05-print"><div class="ph"><img src="assets/archival/modern/stanford_oval_main_quad_aerial_2007.jpg" alt="" /></div></div>
+        <div id="seg05-sc064-tag" class="seg05-tag t-label">Stanford</div>
+        <div id="seg05-sc064-now" class="t-serif-i">right now</div>
+        <svg id="seg05-sc064-marks" class="seg05-svgfull"></svg>
+      </div>
+      <div id="seg05-sc064-conn" class="t-serif-i">the connection</div>
+      <div class="seg05-ptex" style="background-image:url('assets/textures/paper_cream_01.jpg')"></div>
+      <div class="folds"></div>
+      <div class="seg05-credit ink">Stanford aerial: Jill Clardy, CC BY-SA 2.0</div>
+    </div>
+
+    <!-- SC065 · Frederick Terman -->
+    <div class="seg05-scene seg05-night" id="seg05-sc065" data-scene="SC065">
+      <div id="seg05-sc065-bg" style="background-image:url('assets/archival/collage/mit_main_group_from_boston.png')"></div>
+      <div id="seg05-sc065-weave">
+        <div id="seg05-sc065-plate"><div class="plate"><img class="img" src="assets/archival/terman/terman_frederick_1920_theta_xi_crop_2x.jpg" alt="" /><img class="fringe" src="assets/archival/terman/terman_frederick_1920_theta_xi_crop_2x.jpg" alt="" /></div></div>
+      </div>
+      <div id="seg05-sc065-low">
+        <div id="seg05-sc065-name" class="t-display halate">Frederick Terman</div>
+        <div id="seg05-sc065-grad" class="t-serif-i halate">graduate student</div>
+        <div id="seg05-sc065-mit" class="t-label">at MIT</div>
+      </div>
+    </div>
+
+    <!-- SC066 + SC074 · the cork board (one board, two framings) -->
+    <div class="seg05-scene" id="seg05-cork" data-scene="SC066,SC074">
+      <div id="seg05-cork-cam">
+        <div id="seg05-cork-tex" class="seg05-fill" style="background-image:url('assets/textures/cork_01.jpg')"></div>
+        <div id="seg05-k-mit" class="seg05-card seg05-k2"><div class="ph"><img src="assets/archival/terman/mit_campus_aerial_1925_great_dome.jpg" alt="" /><div class="ht" style="background-image:url('assets/textures/halftone_03.png')"></div></div></div>
+        <div id="seg05-k-harvard" class="seg05-card seg05-k2"><div class="ph"><img src="assets/archival/campuses/harvard_widener_library_dedication_1915.jpg" alt="" /><div class="ht" style="background-image:url('assets/textures/halftone_03.png')"></div></div></div>
+        <div id="seg05-k-via" class="seg05-card seg05-k2"><div class="t1 t-label">Course VI-A</div><div class="rule"></div><div class="rule"></div><div class="rule s"></div><div class="rule"></div><div class="rule"></div><div class="rule s"></div><div class="rule"></div><div class="rule"></div><div class="rule s"></div></div>
+        <div id="seg05-k-ray" class="seg05-card seg05-k2"><div class="ph"><img src="assets/archival/terman/raytheon_bh_tube_c1925.jpg" alt="" /><div class="ht" style="background-image:url('assets/textures/halftone_03.png')"></div></div></div>
+        <div id="seg05-k-taboo" class="seg05-card seg05-k2"><div class="a t-display">TABOO</div><div class="b t-display">OPPOSITE</div></div>
+        <div id="seg05-k-att" class="seg05-card seg05-k2"><div class="ph"><img src="assets/logos/att_bell_1921_1939.png" alt="" /></div></div>
+        <div id="seg05-k-ge" class="seg05-card seg05-k2"><div class="ph"><img src="assets/archival/companies/ge_research_lab_kellogg_rice_speaker_1925.jpg" alt="" /><div class="ht" style="background-image:url('assets/textures/halftone_03.png')"></div></div></div>
+        <div id="seg05-k-boston" class="seg05-card seg05-k2"><div class="ph"><img src="assets/archival/companies/massachusetts_boston_custom_house_1920.jpg" alt="" /><div class="ht" style="background-image:url('assets/textures/halftone_03.png')"></div></div></div>
+        <div id="seg05-k-bell" class="seg05-card seg05-k2"><div class="ph"><img src="assets/archival/companies/bell_labs_west_street_building_historic.jpg" alt="" /><div class="ht" style="background-image:url('assets/textures/halftone_03.png')"></div></div></div>
+        <div id="seg05-k-terman" class="seg05-card cap"><div class="ph"><img src="assets/archival/terman/terman_frederick_1920_theta_xi_crop_2x.jpg" alt="" /><div class="ht" style="background-image:url('assets/textures/halftone_03.png')"></div></div><div class="capt t-label">Frederick Terman</div></div>
+        <div id="seg05-k-bush" class="seg05-card cap"><div class="ph"><img src="assets/archival/terman/vannevar_bush_1938.jpg" alt="" /><div class="ht" style="background-image:url('assets/textures/halftone_03.png')"></div></div><div class="capt t-label" id="seg05-k-bushname">Vannevar Bush</div></div>
+        <div id="seg05-k-advisor" class="seg05-ctag t-label">advisor</div>
+        <svg id="seg05-cork-strings" viewBox="0 0 3840 2160"></svg>
+        <div id="seg05-cork-pins"></div>
+      </div>
+      <div id="seg05-cork-lamp"></div>
+      <div id="seg05-cork-mindbg"></div>
+      <div id="seg05-cork-mind" class="t-serif-i halate">mind palace</div>
+      <div id="seg05-cork-dark"></div>
+      <div class="seg05-credit">Cork: Trougnouf, CC BY 4.0 · Raytheon tube: Joe Haupt, CC BY-SA 2.0 · Bell Labs: Charlesbahr, CC BY-SA 4.0</div>
+    </div>
+
+    <!-- SC067 · 1940s console TV, Bush newsreel -->
+    <div class="seg05-scene seg05-night" id="seg05-sc067" data-scene="SC067">
+      <div id="seg05-sc067-room"></div>
+      <div id="seg05-sc067-set">
+        <div id="seg05-sc067-screen"><div id="seg05-sc067-inner">
+          <video id="seg05-sc067-vid" src="assets/archival/footage/vannevar_bush_1945_united_news_osrd.mp4" muted playsinline data-start="24.85" data-duration="4.08" data-media-start="2.3"
+            data-color-grading='{"adjust":{"contrast":0.1},"effects":{"chromaticAberration":0.25,"chromaticAngle":0,"scanlines":0.35,"scanlineCount":0.22,"scanlineSoftness":1,"crtCurvature":0.2,"filmArtifacts":0.35},"details":{"vignette":0.3,"grain":0.25}}'></video>
+          <div id="seg05-sc067-glare"></div>
+          <div id="seg05-sc067-flash"></div>
+        </div></div>
+        <img id="seg05-sc067-tv" src="assets/textures/tv_frame_04.png" alt="" />
+        <div id="seg05-sc067-floor"></div>
+      </div>
+      <div id="seg05-sc067-lamp"></div>
+    </div>
+
+    <!-- SC068 · Bush & Compton, Vox markups (s11) -->
+    <div class="seg05-scene seg05-night" id="seg05-sc068" data-scene="SC068">
+      <div id="seg05-sc068-weave"><div id="seg05-sc068-cam">
+        <div class="plate"><img class="img" src="assets/archival/terman/vannevar_bush_karl_compton_mit_1932.jpg" alt="" /><img class="fringe" src="assets/archival/terman/vannevar_bush_karl_compton_mit_1932.jpg" alt="" /></div>
+        <svg id="seg05-sc068-marks" class="seg05-svgfull"></svg>
+        <div id="seg05-sc068-prof" class="t-serif-i halate">a professor</div>
+        <div id="seg05-sc068-mit" class="t-label">MIT</div>
+      </div></div>
+      <div id="seg05-sc068-shade"></div>
+      <div id="seg05-sc068-panel"></div>
+      <svg id="seg05-sc068-marks2" class="seg05-svgfull"></svg>
+      <div id="seg05-sc068-found" class="t-serif-i halate">one of the founders of</div>
+      <div id="seg05-sc068-ray" class="t-display halate">Raytheon</div>
+      <div id="seg05-sc068-def" class="t-serif-i halate">defense electronics</div>
+      <div id="seg05-sc068-still" class="t-label halate">still exists to this very day</div>
+      <div id="seg05-sc068-scan"></div>
+    </div>
+
+    <!-- SC069 · TABOO stamp -->
+    <div class="seg05-scene seg05-paper" id="seg05-sc069" data-scene="SC069">
+      <div id="seg05-sc069-tower" class="seg05-print"><div class="ph"><img src="assets/archival/campuses/yale_harkness_tower_branford_court_postcard_c1930.jpg" alt="" /><div class="ht" style="background-image:url('assets/textures/halftone_03.png')"></div></div></div>
+      <div id="seg05-sc069-fact" class="seg05-print"><div class="ph"><img src="assets/archival/companies/rca_victor_camden_cabinet_assembler_hine_1937.jpg" alt="" /><div class="ht" style="background-image:url('assets/textures/halftone_03.png')"></div></div></div>
+      <svg id="seg05-sc069-marks" class="seg05-svgfull"></svg>
+      <div id="seg05-sc069-other" class="t-serif-i">at other universities</div>
+      <div id="seg05-sc069-stampw"><div id="seg05-sc069-stamp" class="seg05-stamp t-display">TABOO</div></div>
+      <div class="seg05-ptex" style="background-image:url('assets/textures/paper_cream_02.jpg')"></div>
+      <div class="folds"></div>
+    </div>
+
+    <!-- SC071 · Boston: the complete opposite (sits under SC070 so the gate opens onto it) -->
+    <div class="seg05-scene seg05-paper" id="seg05-sc071" data-scene="SC071">
+      <div id="seg05-sc071-strip"><img src="assets/archival/companies/massachusetts_boston_custom_house_1920.jpg" alt="" /><div class="ht" style="background-image:url('assets/textures/halftone_03.png')"></div></div>
+      <div id="seg05-sc071-in" class="t-label">In Boston</div>
+      <div id="seg05-sc071-sw"><div id="seg05-sc071-taboo" class="seg05-stamp t-display">TABOO</div><div id="seg05-sc071-opp" class="seg05-stamp t-display">OPPOSITE</div></div>
+      <div id="seg05-sc071-cons" class="t-serif-i">consultants for the companies</div>
+      <div class="seg05-ptex" style="background-image:url('assets/textures/paper_cream_01.jpg')"></div>
+      <div class="folds"></div>
+    </div>
+
+    <!-- SC070 · ivory tower, closed gate -->
+    <div class="seg05-scene" id="seg05-sc070" data-scene="SC070">
+      <div id="seg05-sc070-bgs">
+        <div class="seg05-fill seg05-night"></div>
+        <div id="seg05-sc070-bgwrap">
+          <div id="seg05-sc070-bg1" class="seg05-sc070-bg" style="background-image:url('assets/archival/campuses/yale_harkness_tower_branford_court_postcard_c1930.jpg')"></div>
+          <div id="seg05-sc070-bg2" class="seg05-sc070-bg" style="background-image:url('assets/archival/campuses/harvard_widener_library_dedication_1915.jpg')"></div>
+          <div id="seg05-sc070-bg3" class="seg05-sc070-bg" style="background-image:url('assets/archival/campuses/harvard_north_gate_1879_detroit_1910s.jpg')"></div>
+          <div id="seg05-sc070-tx" style="background-image:url('assets/textures/newsprint_02_norm.jpg')"></div>
+        </div>
+        <div id="seg05-sc070-shade"></div>
+      </div>
+      <div id="seg05-sc070-gate">
+        <svg id="seg05-sc070-leafL" class="seg05-leaf" viewBox="0 0 960 960"></svg>
+        <svg id="seg05-sc070-leafR" class="seg05-leaf" viewBox="0 0 960 960"></svg>
+      </div>
+      <div id="seg05-sc070-text"><div id="seg05-sc070-l1" class="t-serif-i halate">commercializing</div><div id="seg05-sc070-l2" class="t-serif-i halate">their inventions or research</div></div>
+      <svg id="seg05-sc070-marks" class="seg05-svgfull"></svg>
+    </div>
+
+    <!-- SC072 · lab footage, gate weave -->
+    <div class="seg05-scene seg05-night" id="seg05-sc072" data-scene="SC072">
+      <div id="seg05-sc072-weave">
+        <video id="seg05-sc072-va" class="seg05-sc072-v" src="assets/archival/footage/radio_school_1940_students_lab_bench_a.mp4" muted playsinline data-start="56.37" data-duration="4.58" data-media-start="0.6"></video>
+        <video id="seg05-sc072-vb" class="seg05-sc072-v" src="assets/archival/footage/radio_engineers_1940_lab_benches.mp4" muted playsinline data-start="60.95" data-duration="1.58" data-media-start="2.6"></video>
+      </div>
+      <div id="seg05-sc072-scr" style="background-image:url('assets/textures/scratches_01.jpg')"></div>
+      <div class="seg05-shadeb"></div>
+      <div id="seg05-sc072-t1" class="t-serif-i halate"><span id="seg05-sc072-w1">come work with students,</span> <span id="seg05-sc072-w2">teach them</span></div>
+      <div id="seg05-sc072-t2" class="t-display halate">fund our research labs</div>
+    </div>
+
+    <!-- SC073 · professors start companies (Vox layered) -->
+    <div class="seg05-scene seg05-night" id="seg05-sc073" data-scene="SC073">
+      <div id="seg05-sc073-bgwrap">
+        <div id="seg05-sc073-bg1" style="background-image:url('assets/archival/collage/mit_main_group_from_boston.png')"></div>
+        <div id="seg05-sc073-bg2" style="background-image:url('assets/archival/terman/bush_differential_analyzer_integrator_mit_museum.jpg')"></div>
+        <div id="seg05-sc073-tx" style="background-image:url('assets/textures/newsprint_01_norm.jpg')"></div>
+      </div>
+      <div id="seg05-sc073-shade"></div>
+      <div id="seg05-sc073-bush" class="seg05-vcard"><div class="ph"><img src="assets/archival/terman/vannevar_bush_1938.jpg" alt="" /></div></div>
+      <div id="seg05-sc073-ray" class="seg05-vcard"><div class="ph"><img src="assets/archival/terman/raytheon_bh_tube_c1925.jpg" alt="" /></div></div>
+      <div id="seg05-sc073-rtag" class="t-label">Raytheon — Vannevar Bush</div>
+      <div id="seg05-sc073-prof" class="t-label halate">professors</div>
+      <div id="seg05-sc073-start" class="t-display halate">starting these companies</div>
+      <div id="seg05-sc073-big" class="t-serif-i halate">very big</div>
+      <div class="seg05-credit">Raytheon tube: Joe Haupt, CC BY-SA 2.0</div>
+    </div>
+
+    <!-- SC075 · grey relief, back West, California vermilion -->
+    <div class="seg05-scene" id="seg05-sc075" data-scene="SC075" style="background:#2e3e4a">
+      <div id="seg05-sc075-cam">
+        <img id="seg05-sc075-base" src="assets/maps/us_relief_grey.jpg" alt="" />
+        <svg id="seg05-sc075-fill" class="seg05-world" viewBox="0 0 6400 3200">
+          <defs>
+            <clipPath id="seg05-ca-clip"><path id="seg05-ca-path" d="M939.7,1852.2 L945.4,1852.6 L955.5,1857.1 L963.0,1859.0 L963.4,1861.2 L969.1,1866.4 L967.3,1870.1 L962.7,1868.0 L953.3,1867.4 L951.2,1864.4 L951.2,1858.0 L944.0,1856.6 L939.7,1852.2ZM939.3,1896.9 L942.6,1896.6 L950.5,1906.6 L964.8,1917.8 L961.2,1917.5 L957.3,1919.3 L951.2,1915.6 L946.5,1909.4 L941.5,1899.2 L939.3,1896.9ZM894.1,1850.9 L897.0,1850.3 L897.3,1853.8 L893.4,1853.2 L894.1,1850.9ZM856.8,1797.1 L859.6,1798.6 L863.6,1797.4 L863.6,1799.9 L857.5,1800.3 L854.3,1798.5 L856.8,1797.1ZM842.1,1872.1 L847.1,1871.5 L854.3,1874.5 L857.1,1877.2 L852.5,1878.5 L845.3,1876.6 L842.1,1872.1ZM808.0,1792.3 L814.4,1792.9 L819.1,1794.8 L824.5,1794.4 L831.3,1798.0 L838.1,1798.4 L840.6,1795.0 L847.8,1796.8 L843.9,1800.5 L833.8,1801.4 L827.7,1804.1 L812.6,1802.0 L812.3,1796.8 L808.0,1792.3ZM775.3,1799.8 L783.2,1799.2 L786.4,1797.4 L791.1,1798.0 L795.8,1796.4 L795.8,1800.5 L802.2,1801.7 L802.6,1805.8 L787.9,1810.4 L782.1,1807.2 L775.3,1799.8ZM755.2,1796.2 L760.9,1794.8 L763.1,1792.4 L765.2,1795.4 L769.9,1797.6 L762.4,1798.1 L755.2,1796.2ZM378.7,1000.2 L434.3,1000.5 L437.5,1000.0 L465.2,1000.1 L485.3,999.0 L495.3,999.7 L536.6,999.5 L549.9,999.1 L584.0,999.2 L600.1,999.6 L655.4,1000.3 L696.3,1000.7 L767.0,1000.7 L800.1,1000.5 L800.1,1000.6 L800.1,1125.0 L800.4,1127.9 L800.4,1192.8 L800.1,1226.6 L799.7,1227.7 L799.7,1267.0 L799.3,1277.5 L800.1,1300.0 L809.4,1306.7 L850.7,1335.0 L891.6,1363.9 L914.2,1379.5 L949.7,1405.1 L994.6,1437.5 L1016.9,1453.5 L1062.4,1487.3 L1174.8,1572.3 L1258.8,1637.5 L1283.9,1657.6 L1336.7,1699.9 L1336.3,1712.5 L1342.0,1717.4 L1344.6,1723.3 L1352.8,1728.7 L1362.1,1749.3 L1361.4,1754.2 L1366.1,1754.8 L1377.2,1763.4 L1382.2,1765.1 L1386.2,1769.7 L1386.6,1773.9 L1377.6,1779.5 L1377.2,1781.1 L1371.1,1782.9 L1367.5,1786.4 L1359.3,1788.9 L1356.4,1791.3 L1356.4,1797.2 L1346.4,1807.2 L1348.9,1808.9 L1349.6,1813.6 L1347.4,1814.1 L1347.1,1818.5 L1349.6,1824.0 L1350.3,1830.3 L1347.4,1831.4 L1346.0,1840.8 L1347.4,1844.8 L1344.2,1846.8 L1334.2,1858.7 L1327.3,1859.5 L1330.2,1863.8 L1327.0,1869.4 L1332.4,1873.0 L1331.6,1885.2 L1329.1,1890.9 L1334.2,1896.8 L1335.2,1895.3 L1339.9,1897.4 L1342.4,1896.3 L1348.1,1897.0 L1353.5,1908.7 L1353.2,1915.5 L1346.7,1920.9 L1347.4,1924.3 L1338.5,1926.6 L1329.8,1925.4 L1328.0,1928.1 L1178.7,1938.9 L1087.6,1946.6 L1086.5,1938.2 L1083.3,1932.8 L1080.4,1931.1 L1075.4,1933.1 L1074.3,1927.4 L1074.6,1921.3 L1071.8,1917.8 L1075.0,1912.6 L1071.8,1898.7 L1067.1,1887.8 L1063.9,1883.2 L1049.5,1866.6 L1040.5,1861.4 L1037.0,1857.0 L1031.6,1853.8 L1028.3,1854.0 L1021.5,1845.8 L1012.2,1840.7 L1007.2,1839.5 L1000.0,1834.6 L991.0,1827.0 L982.4,1823.6 L981.7,1827.7 L974.1,1829.7 L967.7,1828.5 L964.1,1826.3 L958.7,1825.8 L957.3,1822.5 L960.5,1819.6 L960.9,1815.9 L955.8,1805.9 L951.9,1800.5 L945.8,1796.2 L933.2,1796.1 L925.3,1796.8 L919.6,1799.8 L914.6,1796.6 L904.5,1795.2 L891.2,1790.1 L886.9,1790.0 L878.3,1785.4 L872.2,1773.3 L868.6,1772.4 L862.5,1767.9 L861.1,1768.2 L853.9,1762.6 L846.4,1760.4 L844.2,1758.7 L832.7,1758.4 L827.0,1760.4 L820.5,1758.3 L812.6,1759.1 L799.3,1754.0 L791.1,1754.0 L785.7,1752.7 L769.9,1753.3 L752.7,1755.2 L752.3,1752.5 L747.7,1746.8 L741.9,1744.3 L737.6,1744.6 L735.5,1741.9 L740.1,1729.6 L736.2,1724.4 L739.0,1714.2 L732.9,1709.6 L736.2,1699.7 L736.5,1687.7 L730.1,1682.8 L725.0,1682.2 L724.0,1684.0 L714.3,1679.3 L710.3,1675.2 L713.9,1663.9 L713.2,1659.7 L709.3,1655.1 L699.6,1653.9 L689.9,1645.1 L683.4,1636.5 L674.8,1634.3 L668.7,1628.6 L666.9,1621.7 L661.2,1617.6 L658.6,1614.5 L653.6,1611.5 L651.5,1603.0 L649.7,1599.9 L642.5,1597.5 L637.1,1588.5 L628.1,1580.4 L616.3,1574.9 L612.3,1571.1 L609.5,1564.2 L609.8,1560.6 L605.9,1551.9 L606.6,1544.0 L602.7,1542.6 L606.2,1536.3 L612.7,1539.6 L615.9,1537.0 L618.4,1531.7 L621.3,1519.6 L613.8,1506.8 L609.5,1503.1 L605.9,1502.2 L602.7,1504.6 L589.4,1504.4 L579.3,1498.6 L571.4,1489.8 L566.4,1488.3 L565.7,1485.6 L559.6,1480.5 L558.1,1475.1 L559.9,1464.0 L555.6,1456.4 L554.9,1451.9 L550.6,1450.7 L548.5,1447.9 L548.1,1442.4 L549.9,1440.1 L550.6,1433.5 L548.5,1421.9 L553.5,1419.5 L559.2,1418.9 L561.4,1420.9 L563.9,1428.5 L560.7,1429.3 L564.6,1438.4 L563.9,1440.8 L573.6,1442.7 L583.3,1449.6 L586.1,1449.2 L591.2,1454.6 L595.5,1454.3 L593.3,1450.9 L589.0,1449.3 L585.4,1441.8 L582.9,1432.4 L575.4,1427.8 L574.7,1423.8 L566.8,1421.6 L570.0,1415.2 L567.5,1409.4 L562.1,1409.5 L557.1,1403.7 L559.9,1404.4 L563.2,1402.2 L563.2,1398.8 L570.0,1398.9 L573.6,1395.6 L570.0,1389.5 L560.7,1385.7 L556.0,1388.3 L551.0,1388.8 L551.7,1392.8 L549.9,1396.8 L555.3,1401.2 L551.0,1403.3 L549.5,1407.1 L556.4,1411.9 L553.8,1413.1 L549.9,1410.6 L552.4,1416.7 L547.0,1418.1 L543.8,1414.8 L534.5,1409.6 L529.8,1410.6 L521.5,1404.9 L517.9,1400.3 L511.8,1397.5 L506.1,1396.8 L498.9,1399.6 L503.9,1388.7 L505.0,1384.6 L500.7,1376.7 L503.2,1375.0 L497.5,1368.9 L493.5,1369.8 L493.2,1364.0 L487.1,1354.9 L479.9,1350.6 L474.9,1348.9 L467.0,1343.4 L453.7,1328.3 L448.7,1325.8 L445.8,1322.3 L434.7,1314.6 L426.1,1304.6 L431.1,1297.9 L430.7,1294.3 L425.7,1283.5 L420.0,1272.9 L417.4,1263.9 L418.5,1255.4 L423.2,1244.0 L421.4,1239.6 L421.4,1234.0 L416.4,1226.1 L414.9,1216.8 L409.2,1213.7 L407.0,1209.0 L394.5,1197.6 L392.0,1197.0 L392.0,1193.4 L389.1,1189.7 L381.2,1186.9 L363.6,1173.9 L365.0,1168.5 L363.6,1162.5 L358.9,1156.2 L362.2,1147.7 L367.2,1138.4 L382.3,1115.6 L386.2,1107.4 L388.7,1097.2 L384.4,1094.0 L384.1,1085.7 L385.5,1085.5 L389.4,1077.0 L393.8,1056.1 L392.0,1045.3 L386.6,1034.3 L383.7,1026.0 L380.5,1026.4 L374.4,1021.7 L378.0,1015.4 L379.8,1005.9 L378.7,1000.2Z"/></clipPath>
+            <mask id="seg05-ca-wipe" maskUnits="userSpaceOnUse" x="0" y="0" width="6400" height="3200"><circle id="seg05-ca-wipec" cx="586" cy="1456" r="0" fill="#fff"/></mask>
+            <filter id="seg05-ca-glow" x="-10%" y="-10%" width="120%" height="120%"><feGaussianBlur stdDeviation="14"/></filter>
+            <pattern id="seg05-ca-dots" width="22" height="22" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><circle cx="11" cy="11" r="5" fill="#7a1d0e" fill-opacity="0.55"/></pattern>
+          </defs>
+          <g mask="url(#seg05-ca-wipe)">
+            <use href="#seg05-ca-path" fill="none" stroke="#ffb054" stroke-width="30" filter="url(#seg05-ca-glow)" opacity="0.9"/>
+            <g clip-path="url(#seg05-ca-clip)">
+              <rect x="300" y="950" width="1150" height="1050" fill="#e5482a" style="mix-blend-mode:multiply"/>
+              <rect x="300" y="950" width="1150" height="1050" fill="url(#seg05-ca-dots)"/>
+            </g>
+            <use href="#seg05-ca-path" fill="none" stroke="#ffc46b" stroke-width="5" opacity="0.95"/>
+          </g>
+        </svg>
+        <svg id="seg05-sc075-route" class="seg05-world" viewBox="0 0 6400 3200"></svg>
+        <div id="seg05-sc075-stan" class="t-label">Stanford</div>
+      </div>
+      <div id="seg05-sc075-shade"></div>
+      <div id="seg05-sc075-after" class="t-serif-i halate">after MIT</div>
+      <div id="seg05-sc075-west" class="t-display">West</div>
+      <div class="seg05-credit">Terrain: Mapzen Terrain Tiles (SRTM/GMTED/ETOPO1, USGS)</div>
+    </div>
+
+    <!-- SC076 · radio engineering -->
+    <div class="seg05-scene seg05-paper" id="seg05-sc076" data-scene="SC076">
+      <svg id="seg05-sc076-sch" class="seg05-svgfull" viewBox="0 0 1920 1080"></svg>
+      <div id="seg05-sc076-txt">
+        <div id="seg05-sc076-career" class="t-label">teaching career</div>
+        <div id="seg05-sc076-radio" class="t-display">RADIO</div>
+        <div id="seg05-sc076-eng" class="t-display">ENGINEERING</div>
+      </div>
+      <div class="seg05-ptex" style="background-image:url('assets/textures/paper_fiber_01.jpg')"></div>
+      <div class="folds"></div>
+    </div>
+
+    <!-- SC077 · graduation footage, freeze to pictogram -->
+    <div class="seg05-scene seg05-night" id="seg05-sc077" data-scene="SC077">
+      <div id="seg05-sc077-weave">
+        <video id="seg05-sc077-vid" src="assets/archival/footage/berkeley_1932_grad_cut.mp4" muted playsinline data-start="93.02" data-duration="5.44" data-media-start="2.64" data-playback-rate="0.6"></video>
+      </div>
+      <div id="seg05-sc077-vig"></div>
+      <div id="seg05-sc077-every" class="t-serif-i halate">every year</div>
+      <div id="seg05-sc077-dim"></div>
+      <svg id="seg05-sc077-icon" viewBox="0 0 64 64" fill="currentColor">
+        <path d="M32 3 L57 12 L32 21 L7 12 Z"/><path d="M49 15 L49 25 L51 25 L51 14.3 Z"/><path d="M51.5 25 a2.2 2.2 0 1 1 -4.4 0 a2.2 2.2 0 1 1 4.4 0 Z"/>
+        <path d="M19 15.5 L32 20.2 L45 15.5 L45 21 C45 23 39 25 32 25 C25 25 19 23 19 21 Z"/><circle cx="32" cy="31" r="8"/>
+        <path d="M16 62 L18 47 C19 42 24 40 28 40 L32 46 L36 40 C40 40 45 42 46 47 L48 62 Z"/>
+      </svg>
+    </div>
+
+    <!-- global texture stack -->
+    <div id="seg05-grain" class="tx tx-grain" style="background-image:url('assets/textures/grain_01_norm.jpg')"></div>
+    <div id="seg05-dust" class="tx tx-dust" style="background-image:url('assets/textures/dust_02.jpg')"></div>
+    <div class="vignette"></div>
+    <audio id="seg05-vo" class="temp-vo" src="vo10.mp3" data-start="0" data-duration="98.46" data-media-start="398.46" data-volume="1"></audio>
+  </div>
+  <script>
+  (function () {
+    const SEG = "seg05", SEG_START = 398.46, SEG_END = 496.92, DURATION = +(SEG_END - SEG_START).toFixed(2);
+    const T = (s) => +(s - SEG_START).toFixed(3);
+    const tl = gsap.timeline({ paused: true });
+    const $ = (id) => document.getElementById(id);
+    const C = (d, e) => FX.choppy(e || "power3.out", d, 12);
+    const defs = $("seg05-defs");
+    FX.tintDefs(defs, "seg05-tint-sepia", "#2a2622", "#ede3cf");
+    FX.tintDefs(defs, "seg05-tint-ink", "#23303a", "#efe7d6");
+    FX.tintDefs(defs, "seg05-tint-dark", "#141312", "#6f685d");
+    FX.grain($("seg05-grain"), 501);
+    FX.dust($("seg05-dust"), 502, 2);
+
+    // scene windows (VO seconds); dust is lighter on paper
+    const scene = (id, a, b, paper) => {
+      tl.set("#" + id, { autoAlpha: 1 }, a);
+      if (b !== null) tl.set("#" + id, { autoAlpha: 0 }, b);
+      tl.set("#seg05-dust", { opacity: paper ? 0.16 : 0.42 }, a);
+    };
+
+    /* ======================= SC063 · 398.46–405.90 · curve cut ×2 ======================= */
+    scene("seg05-sc063", 0, T(405.90), false);
+    FX.weave($("seg05-sc063-weave"), { amp: 1.4, flicker: 0.035, seed: 631, from: 0, to: T(405.9) });
+    gsap.set("#seg05-sc063-b, #seg05-sc063-c", { opacity: 0 });
+    tl.fromTo("#seg05-sc063-ap", { scale: 1.06 }, { scale: 1.12, duration: 1.2, ease: "none" }, 0);
+    // there: lab → factory (cut at peak velocity ≈ 399.2, "hired")
+    const m1 = FX.curveCut(tl, $("seg05-sc063-wrap"), $("seg05-sc063-a"), $("seg05-sc063-b"), T(398.70), 1.0, { from: 1, to: 1.55 });
+    tl.to("#seg05-sc063-wrap", { scale: 1.0, duration: 1.4, ease: "power3.out" }, m1 + 0.4);
+    tl.fromTo("#seg05-sc063-pano", { x: -500 }, { x: -3300, duration: T(404.9) - m1, ease: "sine.inOut" }, m1);
+    tl.fromTo("#seg05-sc063-hired", { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, T(399.26) - 0.06);
+    FX.choke(tl, FX.roughDefs(defs, "seg05-choke63", { freq: 0.04, scale: 5, choke: 14 }), T(399.26) - 0.06, 14, 0.5);
+    $("seg05-sc063-hired").style.filter = "url(#seg05-choke63)";
+    tl.to("#seg05-sc063-hired", { opacity: 0, duration: 0.35, ease: "power1.in" }, T(401.18));
+    // and back: factory → campus
+    const m2 = FX.curveCut(tl, $("seg05-sc063-wrap"), $("seg05-sc063-b"), $("seg05-sc063-c"), T(404.4), 1.0, { from: 1, to: 1.55 });
+    tl.to("#seg05-sc063-wrap", { scale: 1.0, duration: 1.1, ease: "power3.out" }, m2 + 0.35);
+    tl.fromTo("#seg05-sc063-cp", { scale: 1.0 }, { scale: 1.05, duration: 1.2, ease: "none" }, m2);
+    FX.text.rise(tl, [$("seg05-sc063-back")], T(405.10) - 0.06, { dur: 0.45, y: 18 });
+
+    /* ======================= SC064 · 405.90–410.94 · prints + markups ======================= */
+    scene("seg05-sc064", T(405.90) - 0.3, T(410.94), true);
+    const mk64 = FX.markupDefs($("seg05-sc064-marks"), "seg05-rough64");
+    tl.fromTo("#seg05-sc064", { x: 1920 }, { x: 0, duration: 0.3, ease: "power3.out" }, T(405.90) - 0.3);
+    tl.fromTo("#seg05-sc064-mit", { rotation: -9, y: 40 }, { rotation: -3.5, y: 0, duration: 0.45, ease: C(0.45) }, T(405.90) - 0.25);
+    tl.fromTo("#seg05-sc064-stan", { rotation: 10, y: -60, opacity: 0 }, { rotation: 2.5, y: 0, opacity: 1, duration: 0.4, ease: C(0.4) }, T(406.38));
+    tl.fromTo("#seg05-sc064-cam", { scale: 1.0 }, { scale: 1.03, duration: 4.4, ease: "none" }, T(405.90));
+    FX.markup.circle(tl, $("seg05-sc064-marks"), T(407.26) - 0.06, { cx: 1400, cy: 385, rx: 430, ry: 300, rot: 3, color: "#e5482a", width: 10, filter: mk64, dur: 0.5, seed: 64 });
+    tl.fromTo("#seg05-sc064-tag", { opacity: 0, x: -16 }, { opacity: 1, x: 0, duration: 0.25, ease: C(0.25) }, T(407.26) - 0.06);
+    FX.text.rise(tl, [$("seg05-sc064-now")], T(407.74) - 0.06, { dur: 0.4, y: 12 });
+    // the connection: there-and-back arrows between the two prints
+    FX.markup.arrow(tl, $("seg05-sc064-marks"), T(409.82) - 0.06, { x1: 560, y1: 112, x2: 1150, y2: 108, bend: -90, color: "#e5482a", width: 9, head: 34, filter: mk64, dur: 0.4 });
+    FX.markup.arrow(tl, $("seg05-sc064-marks"), T(409.82) + 0.3, { x1: 990, y1: 690, x2: 540, y2: 680, bend: -80, color: "#e5482a", width: 9, head: 34, filter: mk64, dur: 0.4 });
+    FX.text.rise(tl, [$("seg05-sc064-conn")], T(409.82) - 0.06, { dur: 0.45, y: 14 });
+    // camera slides onto the MIT print
+    tl.to("#seg05-sc064-cam", { scale: 1.9, x: 440, y: 160, duration: 0.55, ease: "power3.in" }, T(410.94) - 0.55);
+    tl.to("#seg05-sc064-conn", { opacity: 0, duration: 0.2 }, T(410.94) - 0.55);
+
+    /* ======================= SC065 · 410.94–416.86 · Terman ======================= */
+    scene("seg05-sc065", T(410.94), T(416.86), false);
+    FX.weave($("seg05-sc065-weave"), { amp: 1.0, flicker: 0.025, seed: 651, from: T(410.94), to: T(416.86) });
+    tl.fromTo("#seg05-sc065-bg", { scale: 1.12, opacity: 0.4 }, { scale: 1.0, opacity: 0.75, duration: 5.9, ease: "none" }, T(410.94));
+    tl.fromTo("#seg05-sc065-plate .plate", { scale: 1.0 }, { scale: 1.07, duration: 5.3, ease: "none" }, T(410.94));
+    tl.fromTo("#seg05-sc065-plate", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.4, ease: "power2.out" }, T(410.94));
+    FX.text.rise(tl, [$("seg05-sc065-name")], T(411.26) - 0.06, { dur: 0.6 });
+    FX.text.rise(tl, [$("seg05-sc065-grad")], T(413.74) - 0.06, { dur: 0.5, y: 14 });
+    tl.fromTo("#seg05-sc065-mit", { opacity: 0, x: -18 }, { opacity: 1, x: 0, duration: 0.25, ease: C(0.25) }, T(415.34) - 0.06);
+    // portrait shrinks to its spot on the cork board
+    tl.to("#seg05-sc065-low", { opacity: 0, duration: 0.3 }, T(416.86) - 0.6);
+    tl.to("#seg05-sc065-plate", { x: -850, y: -40, scale: 0.62, rotation: -3, duration: 0.55, ease: "power3.in" }, T(416.86) - 0.55);
+    tl.to("#seg05-sc065-bg", { opacity: 0.15, duration: 0.5 }, T(416.86) - 0.5);
+
+    /* ======================= cork board (shared by SC066 + SC074) ======================= */
+    const CAM = (wx, wy, s) => ({ x: 960 - s * wx, y: 540 - s * wy, scale: s });
+    const CLOSE = CAM(1640, 1000, 1.0), WIDE = CAM(1920, 1080, 0.5);
+    const pins = $("seg05-cork-pins");
+    const strings = $("seg05-cork-strings");
+    const pinAt = (id, x, y, col) => {
+      pins.insertAdjacentHTML("beforeend", `<img id="${id}" class="seg05-pin" src="assets/icons/pin_${col}_top.svg" alt="" style="left:${x}px;top:${y}px" />`);
+      return "#" + id;
+    };
+    const land = (sel, pin, t, rot, seed) => {
+      const r = FX.rng(seed);
+      tl.fromTo(sel, { opacity: 0, scale: 1.18, rotation: rot + (r() - 0.5) * 14, y: -50 }, { opacity: 1, scale: 1, rotation: rot, y: 0, duration: 0.3, ease: C(0.3) }, t);
+      tl.fromTo(pin, { opacity: 0, scale: 2.2 }, { opacity: 1, scale: 1, duration: 0.17, ease: C(0.17), immediateRender: true }, t + 0.2);
+    };
+    const stringPath = (x1, y1, x2, y2) => {
+      const NS = "http://www.w3.org/2000/svg";
+      const p = document.createElementNS(NS, "path");
+      const mx = (x1 + x2) / 2, my = (y1 + y2) / 2 + Math.hypot(x2 - x1, y2 - y1) * 0.08;
+      p.setAttribute("d", `M${x1} ${y1} Q${mx} ${my} ${x2} ${y2}`);
+      p.setAttribute("fill", "none"); p.setAttribute("stroke", "#e5482a"); p.setAttribute("stroke-width", "6");
+      p.setAttribute("stroke-linecap", "round"); p.setAttribute("style", "filter: drop-shadow(3px 7px 3px rgba(0,0,0,0.4))");
+      strings.appendChild(p);
+      const len = p.getTotalLength();
+      p.setAttribute("stroke-dasharray", `${len} ${len}`); p.setAttribute("stroke-dashoffset", len);
+      return { p, len };
+    };
+    const drawString = (s, t, dur) => tl.fromTo(s.p, { attr: { "stroke-dashoffset": s.len } }, { attr: { "stroke-dashoffset": 0 }, duration: dur, ease: C(dur, "power2.inOut"), immediateRender: true }, t);
+    // the board items: [cardId, pinX, pinY, rotation, pinColour]
+    const T0 = [1230, 668];
+    const pinTer = pinAt("seg05-p-terman", T0[0], T0[1], "vermilion");
+    const pinBush = pinAt("seg05-p-bush", 2080, 628, "vermilion");
+    const pinAdv = pinAt("seg05-p-adv", 2080, 1262, "bone");
+    gsap.set("#seg05-k-terman", { rotation: -3 });
+    gsap.set("#seg05-k-bush", { rotation: 2.5 });
+    gsap.set("#seg05-k-advisor", { rotation: -2 });
+    const extra = [
+      ["seg05-k-mit", 550, 205, -4, "navy"], ["seg05-k-harvard", 490, 875, 3, "navy"], ["seg05-k-via", 580, 1495, -5, "navy"],
+      ["seg05-k-ray", 1300, 1475, 4, "vermilion"], ["seg05-k-taboo", 1910, 1615, -3, "bone"], ["seg05-k-att", 2600, 1495, 5, "navy"],
+      ["seg05-k-ge", 3120, 195, 3, "navy"], ["seg05-k-boston", 3170, 775, -4, "navy"], ["seg05-k-bell", 3280, 1455, 2, "navy"],
+    ];
+    const extraPins = extra.map(([id, x, y, rot, col]) => { gsap.set("#" + id, { rotation: rot }); return pinAt(id.replace("-k-", "-p-"), x, y, col); });
+    gsap.set(".seg05-k2", { opacity: 0 });
+    gsap.set(extraPins.join(","), { opacity: 0 });
+
+    /* ======================= SC066 · 416.86–423.31 · cork close-up ======================= */
+    scene("seg05-cork", T(416.86), T(423.31), true);
+    tl.set("#seg05-cork-cam", CLOSE, T(416.86));
+    tl.fromTo("#seg05-cork-cam", CLOSE, { x: CLOSE.x - 40, y: CLOSE.y - 14, scale: 1.02, duration: 5.6, ease: "none", immediateRender: false }, T(416.86));
+    tl.fromTo("#seg05-k-terman", { scale: 1.08, rotation: -6 }, { scale: 1, rotation: -3, duration: 0.25, ease: C(0.25) }, T(416.86));
+    tl.fromTo(pinTer, { opacity: 0, scale: 2.2 }, { opacity: 1, scale: 1, duration: 0.17, ease: C(0.17), immediateRender: true }, T(416.86) + 0.12);
+    land("#seg05-k-advisor", pinAdv, T(418.14) - 0.25, -2, 661);
+    gsap.set("#seg05-k-bush", { opacity: 0 });
+    land("#seg05-k-bush", pinBush, T(421.26) - 0.26, 2.5, 662);
+    const sBush = stringPath(T0[0], T0[1], 2080, 628);
+    drawString(sBush, T(421.26) + 0.24, 0.5);
+    // tilt down off the board into darkness
+    tl.to("#seg05-cork-cam", { y: CLOSE.y - 520, duration: 0.6, ease: "power2.in" }, T(423.31) - 0.6);
+    tl.fromTo("#seg05-cork-dark", { opacity: 0 }, { opacity: 1, duration: 0.5, ease: "power1.in", immediateRender: false }, T(423.31) - 0.5);
+    tl.set("#seg05-cork-dark", { opacity: 0 }, T(423.31));
+
+    /* ======================= SC067 · 423.31–427.39 · console TV ======================= */
+    scene("seg05-sc067", T(423.31), T(427.39), false);
+    tl.fromTo("#seg05-sc067-set", { scale: 1.0 }, { scale: 1.1, duration: 3.5, ease: "none" }, T(423.31));
+    tl.fromTo("#seg05-sc067-inner", { scaleY: 0.012, scaleX: 0.7 }, { scaleY: 1, scaleX: 1, duration: 0.35, ease: "expo.out" }, T(423.31) + 0.12);
+    tl.fromTo("#seg05-sc067-flash", { opacity: 1 }, { opacity: 0, duration: 0.55, ease: "power2.out" }, T(423.31) + 0.2);
+    // push through the glass
+    tl.to("#seg05-sc067-set", { scale: 4.4, duration: 0.6, ease: "expo.in" }, T(427.39) - 0.6);
+
+    /* ======================= SC068 · 427.39–437.23 · Bush & Compton (s11) ======================= */
+    scene("seg05-sc068", T(427.39), T(437.23), false);
+    const mk68 = FX.markupDefs($("seg05-sc068-marks"), "seg05-rough68");
+    const mk68b = FX.markupDefs($("seg05-sc068-marks2"), "seg05-rough68b");
+    FX.weave($("seg05-sc068-weave"), { amp: 1.3, flicker: 0.03, seed: 681, from: T(427.39), to: T(437.23) });
+    tl.fromTo("#seg05-sc068-scan", { opacity: 0.9 }, { opacity: 0, duration: 0.6, ease: "power2.out" }, T(427.39));
+    tl.fromTo("#seg05-sc068-cam", { scale: 1.12 }, { scale: 1.0, duration: 0.6, ease: "power3.out" }, T(427.39));
+    tl.to("#seg05-sc068-cam", { scale: 1.07, duration: 9.2, ease: "none" }, T(427.39) + 0.6);
+    // "He was a professor at MIT"
+    FX.markup.circle(tl, $("seg05-sc068-marks"), T(427.39) + 0.3, { cx: 640, cy: 205, rx: 150, ry: 175, rot: -8, color: "#e5482a", width: 8, filter: mk68, dur: 0.5, seed: 4 });
+    FX.text.rise(tl, [$("seg05-sc068-prof")], T(427.87) - 0.06, { dur: 0.45, y: 16 });
+    FX.markup.arrow(tl, $("seg05-sc068-marks"), T(428.1), { x1: 360, y1: 465, x2: 510, y2: 330, bend: -50, color: "#f4eee2", width: 6, head: 28, filter: mk68, dur: 0.32 });
+    tl.fromTo("#seg05-sc068-mit", { opacity: 0, x: -20 }, { opacity: 1, x: 0, duration: 0.25, ease: C(0.25) }, T(428.51) - 0.06);
+    FX.markup.box(tl, $("seg05-sc068-marks"), T(428.51) + 0.1, { x: 92, y: 562, w: 104, h: 66, color: "#f4eee2", width: 5, filter: mk68, dur: 0.4 });
+    // "one of the founders of Raytheon, the defense electronics company"
+    tl.fromTo("#seg05-sc068-panel", { opacity: 0 }, { opacity: 1, duration: 0.5 }, T(430.27));
+    tl.to("#seg05-sc068-prof, #seg05-sc068-mit", { opacity: 0.35, duration: 0.4 }, T(430.27));
+    FX.text.rise(tl, [$("seg05-sc068-found")], T(430.67) - 0.06, { dur: 0.45, y: 14 });
+    tl.fromTo("#seg05-sc068-ray", { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, T(432.03) - 0.06);
+    FX.text.fill(tl, $("seg05-sc068-ray"), T(432.03) - 0.06, { per: 0.04, hold: 0.25, settle: 0.4 });
+    FX.markup.underline(tl, $("seg05-sc068-marks2"), T(432.03) + 0.55, { x1: 100, x2: 690, y: 990, color: "#e5482a", width: 9, filter: mk68b, dur: 0.4 });
+    FX.text.rise(tl, [$("seg05-sc068-def")], T(433.23) - 0.06, { dur: 0.5, y: 14 });
+    FX.text.random(tl, $("seg05-sc068-still"), T(435.63) - 0.06, { dur: 0.45, seed: 68 });
+
+    /* ======================= SC069 · 437.23–443.63 · TABOO ======================= */
+    scene("seg05-sc069", T(437.23), T(443.63), true);
+    const mk69 = FX.markupDefs($("seg05-sc069-marks"), "seg05-rough69");
+    const choke69 = FX.roughDefs(defs, "seg05-choke69", { freq: 0.045, scale: 7, choke: 16 });
+    tl.fromTo("#seg05-sc069-tower", { x: -620, rotation: -10 }, { x: 0, rotation: -3, duration: 0.45, ease: C(0.45) }, T(437.23));
+    tl.fromTo("#seg05-sc069-fact", { x: 820, rotation: 9 }, { x: 0, rotation: 2.5, duration: 0.45, ease: C(0.45) }, T(437.23) + 0.15);
+    // the gap: a hand-drawn barrier between campus and company
+    [[936, 180, 950, 920], [990, 175, 978, 925]].forEach(([x1, y1, x2, y2], i) => {
+      const NS = "http://www.w3.org/2000/svg";
+      const p = document.createElementNS(NS, "path");
+      p.setAttribute("d", `M${x1} ${y1} L${(x1 + x2) / 2 + (i ? 8 : -8)} ${(y1 + y2) / 2} L${x2} ${y2}`);
+      p.setAttribute("fill", "none"); p.setAttribute("stroke", "#18222f"); p.setAttribute("stroke-width", "8"); p.setAttribute("stroke-linecap", "round");
+      p.setAttribute("stroke-dasharray", "34 22"); p.setAttribute("filter", mk69);
+      $("seg05-sc069-marks").appendChild(p);
+      tl.fromTo(p, { opacity: 0, scaleY: 0, transformOrigin: "50% 0%" }, { opacity: 1, scaleY: 1, duration: 0.5, ease: C(0.5), immediateRender: true }, T(437.23) + 0.6 + i * 0.12);
+    });
+    FX.text.rise(tl, [$("seg05-sc069-other")], T(439.71) - 0.06, { dur: 0.5, y: 14 });
+    tl.fromTo("#seg05-sc069-stamp", { opacity: 0, scale: 1.5, rotation: -14 }, { opacity: 1, scale: 1, rotation: -7, duration: 0.17, ease: C(0.17, "power4.in"), immediateRender: true }, T(441.87) - 0.06);
+    FX.choke(tl, choke69, T(441.87) + 0.1, 16, 0.5);
+    tl.to("#seg05-sc069-stampw, #seg05-sc069-tower", { x: -1400, duration: 0.35, ease: "power3.in" }, T(443.63) - 0.35);
+    tl.to("#seg05-sc069-fact, #seg05-sc069-other, #seg05-sc069-marks", { opacity: 0, duration: 0.25 }, T(443.63) - 0.3);
+
+    /* ======================= SC070 · 443.63–449.07 · ivory tower + gate ======================= */
+    scene("seg05-sc070", T(443.63), T(449.07), false);
+    // draw an iron gate (two leaves) — bars with spear tips, rails, a scroll arch
+    const leaf = (svg, flip) => {
+      let h = "";
+      const col = "#0c0b0a", hi = "rgba(244,238,226,0.10)";
+      for (let i = 0; i < 12; i++) {
+        const x = 40 + i * 76, top = 200 - Math.sin((i / 11) * Math.PI * 0.5 + (flip ? Math.PI * 0.5 : 0)) * 0;
+        const arch = flip ? 60 + (i / 11) * 140 : 200 - (i / 11) * 140;
+        h += `<rect x="${x - 7}" y="${arch}" width="14" height="${960 - arch}" fill="${col}"/><rect x="${x - 7}" y="${arch}" width="3" height="${960 - arch}" fill="${hi}"/>`;
+        h += `<path d="M${x - 16} ${arch + 6} L${x} ${arch - 46} L${x + 16} ${arch + 6} Z" fill="${col}"/>`;
+      }
+      h += `<rect x="0" y="330" width="960" height="18" fill="${col}"/><rect x="0" y="760" width="960" height="18" fill="${col}"/><rect x="0" y="905" width="960" height="26" fill="${col}"/>`;
+      h += `<rect x="${flip ? 932 : 0}" y="0" width="28" height="960" fill="${col}"/>`;
+      for (let i = 0; i < 6; i++) h += `<circle cx="${116 + i * 152}" cy="545" r="58" fill="none" stroke="${col}" stroke-width="10"/>`;
+      svg.innerHTML = h;
+    };
+    leaf($("seg05-sc070-leafL"), false); leaf($("seg05-sc070-leafR"), true);
+    const mk70 = FX.markupDefs($("seg05-sc070-marks"), "seg05-rough70");
+    tl.fromTo("#seg05-sc070-bg1", { x: 0 }, { x: -60, duration: 5.5, ease: "none" }, T(443.63));
+    tl.fromTo("#seg05-sc070-bg2", { x: 120, y: 0 }, { x: -40, y: 12, duration: 5.5, ease: "none" }, T(443.63));
+    tl.fromTo("#seg05-sc070-bg3", { x: -60 }, { x: 80, duration: 5.5, ease: "none" }, T(443.63));
+    tl.fromTo("#seg05-sc070-gate", { scale: 1.08 }, { scale: 1.0, duration: 5.0, ease: "none" }, T(443.63));
+    FX.text.rise(tl, [$("seg05-sc070-l1")], T(445.79) - 0.06, { dur: 0.5 });
+    FX.text.rise(tl, [$("seg05-sc070-l2")], T(446.83), { dur: 0.45, y: 14 });
+    FX.markup.underline(tl, $("seg05-sc070-marks"), T(447.95) - 0.06, { x1: 470, x2: 1450, y: 425, color: "#e5482a", width: 12, filter: mk70, dur: 0.28 });
+    FX.markup.underline(tl, $("seg05-sc070-marks"), T(447.95) + 0.22, { x1: 560, x2: 1370, y: 548, color: "#e5482a", width: 10, filter: mk70, dur: 0.25 });
+    // the gate swings open onto Boston (paper)
+    tl.to("#seg05-sc070-text, #seg05-sc070-marks", { opacity: 0, duration: 0.2 }, T(449.07) - 0.55);
+    tl.to("#seg05-sc070-bgs", { opacity: 0, duration: 0.4, ease: "power1.in" }, T(449.07) - 0.45);
+    tl.fromTo("#seg05-sc070-leafL", { rotationY: 0 }, { rotationY: -96, duration: 0.6, ease: C(0.6, "power2.in"), immediateRender: false }, T(449.07) - 0.55);
+    tl.fromTo("#seg05-sc070-leafR", { rotationY: 0 }, { rotationY: 96, duration: 0.6, ease: C(0.6, "power2.in"), immediateRender: false }, T(449.07) - 0.55);
+
+    /* ======================= SC071 · 449.07–454.83 · Boston: the opposite ======================= */
+    scene("seg05-sc071", T(449.07) - 0.5, T(454.83), true);
+    const choke71 = FX.roughDefs(defs, "seg05-rough71", { freq: 0.045, scale: 5, choke: 0 });
+    $("seg05-sc071-taboo").style.filter = "url(#seg05-rough71)";
+    $("seg05-sc071-opp").style.filter = "url(#seg05-rough71)";
+    gsap.set("#seg05-sc071-sw", { rotation: -5 });
+    tl.fromTo("#seg05-sc071-strip", { x: 0 }, { x: -40, duration: 5.8, ease: "none" }, T(449.07) - 0.5);
+    tl.fromTo("#seg05-sc071-in", { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.25, ease: C(0.25) }, T(449.39) - 0.06);
+    tl.set("#seg05-sc071-taboo", { opacity: 0 }, T(450.51) - 0.06);
+    gsap.set("#seg05-sc071-opp", { opacity: 0 });
+    FX.text.odometer(tl, $("seg05-sc071-opp"), T(450.51) - 0.06, { dur: 0.75, stagger: 0.05, spins: 7, seed: 71 });
+    FX.text.rise(tl, [$("seg05-sc071-cons")], T(453.15) - 0.06, { dur: 0.5, y: 14 });
+    tl.to("#seg05-sc071-strip", { x: 700, duration: 0.4, ease: "power3.in" }, T(454.83) - 0.4);
+
+    /* ======================= SC072 · 454.83–460.99 · lab footage ======================= */
+    scene("seg05-sc072", T(454.83), T(460.99), false);
+    FX.weave($("seg05-sc072-weave"), { amp: 2.0, flicker: 0.06, seed: 721, from: T(454.83), to: T(460.99) });
+    FX.dust($("seg05-sc072-scr"), 722, 2);
+    tl.fromTo("#seg05-sc072-weave", { scale: 1.0 }, { scale: 1.06, duration: 6.2, ease: "none" }, T(454.83));
+    gsap.set("#seg05-sc072-w1, #seg05-sc072-w2, #seg05-sc072-t2", { opacity: 0 });
+    FX.text.rise(tl, [$("seg05-sc072-w1")], T(456.67) - 0.06, { dur: 0.45, y: 12 });
+    FX.text.rise(tl, [$("seg05-sc072-w2")], T(457.95) - 0.06, { dur: 0.45, y: 12 });
+    tl.to("#seg05-sc072-t1", { opacity: 0, duration: 0.2 }, T(459.15));
+    tl.fromTo("#seg05-sc072-t2", { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, T(459.47) - 0.06);
+    FX.text.fill(tl, $("seg05-sc072-t2"), T(459.47) - 0.06, { per: 0.03, hold: 0.25, settle: 0.45 });
+    // flicker out
+    tl.to("#seg05-sc072-weave", { opacity: 0.2, duration: 1 / 12, yoyo: true, repeat: 3, ease: "none" }, T(460.99) - 0.34);
+
+    /* ======================= SC073 · 460.99–470.95 · professors start companies ======================= */
+    scene("seg05-sc073", T(460.99), T(470.95), false);
+    FX.roughDefs(defs, "seg05-rough73", { freq: 0.03, scale: 6 });
+    tl.fromTo("#seg05-sc073-bgwrap", { x: 120 }, { x: 0, duration: 0.45, ease: "power3.out" }, T(460.99));
+    tl.fromTo("#seg05-sc073-bg1", { x: 0 }, { x: -60, duration: 10, ease: "none" }, T(460.99));
+    tl.fromTo("#seg05-sc073-bg2", { x: 0, y: 0 }, { x: 110, y: 10, duration: 10, ease: "none" }, T(460.99));
+    tl.fromTo("#seg05-sc073-bush", { y: 90, rotation: -8, opacity: 0 }, { y: 0, rotation: -3, opacity: 1, duration: 0.5, ease: C(0.5) }, T(460.99) + 0.2);
+    tl.fromTo("#seg05-sc073-prof", { opacity: 0, x: -14 }, { opacity: 1, x: 0, duration: 0.25, ease: C(0.25) }, T(462.11) - 0.06);
+    FX.text.rise(tl, [$("seg05-sc073-start")], T(463.55) - 0.06, { dur: 0.55 });
+    tl.fromTo("#seg05-sc073-ray", { y: 90, rotation: 9, opacity: 0 }, { y: 0, rotation: 3, opacity: 1, duration: 0.45, ease: C(0.45) }, T(464.27) - 0.3);
+    tl.fromTo("#seg05-sc073-rtag", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.25, ease: C(0.25) }, T(464.27) - 0.06);
+    // "go on to become ... very big": the Raytheon card grows step-wise
+    [[465.63, 1.14], [466.35, 1.28], [466.91, 1.42]].forEach(([w, s]) => tl.to("#seg05-sc073-ray", { scale: s, duration: 0.12, ease: C(0.12) }, T(w) - 0.04));
+    tl.to("#seg05-sc073-rtag", { y: 110, duration: 0.5, ease: C(0.5) }, T(466.35));
+    tl.to("#seg05-sc073-prof, #seg05-sc073-start", { opacity: 0.3, duration: 0.3 }, T(468.03));
+    tl.fromTo("#seg05-sc073-big", { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, T(468.43) - 0.06);
+    FX.text.fill(tl, $("seg05-sc073-big"), T(468.43) - 0.06, { per: 0.05, hold: 0.35, settle: 0.6 });
+    // cards fly off to the board
+    tl.to("#seg05-sc073-bush, #seg05-sc073-ray, #seg05-sc073-rtag", { x: 900, y: -700, rotation: 18, duration: 0.42, ease: "power3.in", stagger: 0.05 }, T(470.95) - 0.5);
+    tl.to("#seg05-sc073-prof, #seg05-sc073-start, #seg05-sc073-big", { opacity: 0, duration: 0.25 }, T(470.95) - 0.45);
+
+    /* ======================= SC074 · 470.95–479.31 · the full board, mind palace ======================= */
+    scene("seg05-cork", T(470.95), T(479.31), true);
+    tl.set("#seg05-cork-cam", CLOSE, T(470.95));
+    tl.to("#seg05-cork-cam", { ...WIDE, duration: 1.7, ease: "power2.inOut" }, T(470.95));
+    tl.set("#seg05-k-advisor", { opacity: 1 }, T(470.95));
+    extra.forEach(([id], i) => land("#" + id, extraPins[i], T(470.95) + 0.05 + i * 0.15, gsap.getProperty("#" + id, "rotation"), 740 + i));
+    // red strings from Terman to every card
+    extra.forEach(([id, x, y], i) => drawString(stringPath(T0[0], T0[1], x, y), T(471.43) + i * 0.33, 0.45));
+    // filed away: lamp pool narrows, board recedes
+    tl.to("#seg05-cork-cam", { ...CAM(1500, 1100, 0.44), duration: 4.4, ease: "sine.inOut" }, T(474.95) - 0.1);
+    tl.fromTo("#seg05-cork-lamp", { opacity: 0, scale: 2.6 }, { opacity: 1, scale: 1.25, duration: 1.4, ease: "power2.inOut", immediateRender: false }, T(474.95) - 0.1);
+    tl.fromTo("#seg05-cork-mindbg", { opacity: 0 }, { opacity: 1, duration: 0.6, immediateRender: false }, T(474.95) - 0.2);
+    FX.text.rise(tl, [$("seg05-cork-mind")], T(474.95) - 0.06, { dur: 0.6 });
+    tl.to("#seg05-cork-lamp", { scale: 0.95, duration: 0.25, ease: C(0.25) }, T(476.07) - 0.05);
+    tl.to("#seg05-cork-mind", { opacity: 0, duration: 0.6 }, T(477.47));
+    tl.to("#seg05-cork-lamp", { scale: 0.75, duration: 0.5, ease: "power1.inOut" }, T(478.19) - 0.05);
+    tl.fromTo("#seg05-cork-dark", { opacity: 0 }, { opacity: 1, duration: 10 / 24, ease: "power1.in", immediateRender: false }, T(479.31) - 10 / 24);
+    gsap.set("#seg05-cork-mind", { opacity: 0 });
+    gsap.set("#seg05-cork-lamp, #seg05-cork-mindbg", { opacity: 0 });
+
+    /* ======================= SC075 · 479.31–486.92 · back West ======================= */
+    scene("seg05-sc075", T(479.31), T(486.92), false);
+    const MAP = (wx, wy, s) => ({ x: 960 - s * wx, y: 540 - s * wy, scale: s });
+    const BOS = [5694, 964], PAL = [586, 1456];
+    tl.fromTo("#seg05-sc075-cam", MAP(3200, 1600, 0.34), { ...MAP(3150, 1580, 0.35), duration: 2.3, ease: "none", immediateRender: false }, T(479.31));
+    tl.fromTo("#seg05-sc075-shade", { opacity: 1 }, { opacity: 0.7, duration: 1, ease: "none" }, T(479.31));
+    tl.fromTo("#seg05-sc075-cam", { opacity: 0 }, { opacity: 1, duration: 10 / 24, ease: "power1.out", immediateRender: false }, T(479.31));
+    FX.text.rise(tl, [$("seg05-sc075-after")], T(480.75) - 0.06, { dur: 0.5, y: 14 });
+    // navy dotted route Boston → Palo Alto (dots pop at 12 fps)
+    const route = $("seg05-sc075-route");
+    const NS = "http://www.w3.org/2000/svg";
+    const rp = document.createElementNS(NS, "path");
+    rp.setAttribute("d", `M${BOS[0]} ${BOS[1]} Q3200 420 ${PAL[0]} ${PAL[1]}`);
+    route.appendChild(rp);
+    const RL = rp.getTotalLength(), ND = 78;
+    route.insertAdjacentHTML("beforeend", `<circle cx="${BOS[0]}" cy="${BOS[1]}" r="34" fill="#23415e" stroke="#f4eee2" stroke-width="8"/>`);
+    let dots = "";
+    for (let i = 1; i < ND; i++) { const q = rp.getPointAtLength((i / ND) * RL); dots += `<circle class="seg05-rdot" cx="${q.x.toFixed(1)}" cy="${q.y.toFixed(1)}" r="15" fill="#23415e" stroke="#f4eee2" stroke-width="4"/>`; }
+    route.insertAdjacentHTML("beforeend", dots);
+    route.insertAdjacentHTML("beforeend", `<g id="seg05-sc075-pin"><circle cx="${PAL[0]}" cy="${PAL[1]}" r="60" fill="none" stroke="#f2d33b" stroke-width="9"/><circle cx="${PAL[0]}" cy="${PAL[1]}" r="24" fill="#f4eee2" stroke="#141312" stroke-width="5"/></g>`);
+    rp.setAttribute("fill", "none");
+    const rdots = route.querySelectorAll(".seg05-rdot");
+    gsap.set(rdots, { opacity: 0 });
+    const rt0 = T(481.63), rt1 = T(485.08);
+    rdots.forEach((d, i) => tl.set(d, { opacity: 1 }, rt0 + Math.floor((i / rdots.length) * (rt1 - rt0) * 12) / 12));
+    // camera follows the route west, then pushes into California
+    tl.to("#seg05-sc075-cam", { ...MAP(2700, 1500, 0.38), duration: rt1 - rt0 - 0.4, ease: "sine.inOut" }, rt0 - 0.2);
+    tl.to("#seg05-sc075-after", { opacity: 0, duration: 0.3 }, T(484.04));
+    tl.to("#seg05-sc075-cam", { ...MAP(1180, 1470, 0.82), duration: 1.6, ease: "power2.inOut" }, T(485.24) - 0.6);
+    gsap.set("#seg05-sc075-pin", { opacity: 0 });
+    tl.fromTo("#seg05-sc075-pin", { opacity: 0, scale: 2.4, transformOrigin: `${PAL[0]}px ${PAL[1]}px` }, { opacity: 1, scale: 1, duration: 0.2, ease: C(0.2), immediateRender: false }, T(485.24) - 0.06);
+    // California fills vermilion (halftone + glowing edge), wiping out from Palo Alto at 12 fps
+    tl.fromTo("#seg05-ca-wipec", { attr: { r: 0 } }, { attr: { r: 1500 }, duration: 0.75, ease: C(0.75, "power2.out"), immediateRender: true }, T(485.24) - 0.06);
+    gsap.set("#seg05-sc075-stan", { x: PAL[0] + 80, y: PAL[1] - 40, scale: 1.4, transformOrigin: "0 0" });
+    gsap.set("#seg05-sc075-stan", { opacity: 0 });
+    tl.fromTo("#seg05-sc075-stan", { opacity: 0 }, { opacity: 1, duration: 0.17, ease: C(0.17), immediateRender: false }, T(485.24) - 0.06);
+    gsap.set("#seg05-sc075-west", { opacity: 0 });
+    tl.fromTo("#seg05-sc075-west", { opacity: 0, scale: 1.25 }, { opacity: 1, scale: 1, duration: 0.25, ease: C(0.25), immediateRender: false }, T(486.52) - 0.06);
+
+    /* ======================= SC076 · 486.92–491.48 · radio engineering ======================= */
+    scene("seg05-sc076", T(486.92), T(491.48), true);
+    // faint 1920s radio schematic drawn on (triode, tuned circuit, coils)
+    const sch = $("seg05-sc076-sch");
+    const schPaths = [
+      "M150 840 L150 620 L330 620", "M330 590 L330 650", "M346 590 L346 650", "M346 620 L520 620 L520 560",
+      "M520 560 C540 540 500 520 520 500 C540 480 500 460 520 440 C540 420 500 400 520 380 L520 300 L760 300",
+      "M150 840 L760 840", "M760 300 L760 420", "M760 760 L760 840",
+      "M700 420 L820 420", "M705 560 L815 560", "M700 690 L820 690",
+      "M760 690 L760 760", "M660 560 L600 560 L600 840",
+      "M760 470 m-120 120 a120 120 0 1 0 240 0 a120 120 0 1 0 -240 0",
+      "M820 420 L1180 420 L1180 360", "M1180 360 C1200 340 1160 320 1180 300 C1200 280 1160 260 1180 240 L1180 180 L1500 180",
+      "M1500 180 L1500 900 L150 900", "M1420 260 L1580 260 M1420 290 L1580 290", "M1700 300 L1700 760 M1660 760 L1740 760 M1675 785 L1725 785 M1690 810 L1710 810",
+      "M1500 520 L1700 520",
+    ];
+    schPaths.forEach((d, i) => {
+      const p = document.createElementNS(NS, "path");
+      p.setAttribute("d", d); p.setAttribute("fill", "none"); p.setAttribute("stroke", "#18222f"); p.setAttribute("stroke-width", "5"); p.setAttribute("stroke-linecap", "round");
+      sch.appendChild(p);
+      const L = p.getTotalLength();
+      p.setAttribute("stroke-dasharray", `${L} ${L}`);
+      tl.fromTo(p, { attr: { "stroke-dashoffset": L } }, { attr: { "stroke-dashoffset": 0 }, duration: 0.7, ease: C(0.7, "power2.inOut"), immediateRender: true }, T(486.92) + 0.05 + i * 0.12);
+    });
+    tl.fromTo("#seg05-sc076-sch", { scale: 1.0 }, { scale: 1.05, duration: 4.6, ease: "none" }, T(486.92));
+    FX.text.random(tl, $("seg05-sc076-career"), T(487.96) - 0.06, { dur: 0.35, seed: 761 });
+    FX.text.random(tl, $("seg05-sc076-radio"), T(489.72) - 0.06, { dur: 0.45, seed: 762 });
+    FX.text.random(tl, $("seg05-sc076-eng"), T(489.72) + 0.3, { dur: 0.55, seed: 763 });
+    tl.to("#seg05-sc076-txt", { opacity: 0.35, duration: 0.4 }, T(491.48) - 0.45);
+
+    /* ======================= SC077 · 491.48–496.92 · graduation, freeze ======================= */
+    scene("seg05-sc077", T(491.48), null, false);
+    FX.weave($("seg05-sc077-weave"), { amp: 1.8, flicker: 0.05, seed: 771, from: T(491.48), to: T(496.92) });
+    tl.fromTo("#seg05-sc077-weave", { scale: 1.0 }, { scale: 1.06, duration: 5.44, ease: "none" }, T(491.48));
+    FX.text.rise(tl, [$("seg05-sc077-every")], T(493.64) - 0.06, { dur: 0.6, y: 12 });
+    tl.to("#seg05-sc077-every", { opacity: 0, duration: 0.4 }, T(495.80));
+    tl.to("#seg05-sc077-dim", { opacity: 0.86, duration: 0.5, ease: "power2.inOut" }, T(496.92) - 0.62);
+    tl.fromTo("#seg05-sc077-icon", { opacity: 0, scale: 1.35 }, { opacity: 1, scale: 1, duration: 0.25, ease: C(0.25), immediateRender: false }, T(496.92) - 0.38);
+
+    FX.mount(tl, DURATION);
+    window.__timelines = window.__timelines || {};
+    window.__timelines[SEG] = tl;
+  })();
+  </script>
+</template>
+</body>
+</html>

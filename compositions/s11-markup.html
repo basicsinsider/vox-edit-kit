@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8" /></head>
+<body>
+<template>
+  <style>
+    #root { position: absolute; inset: 0; overflow: hidden; background: var(--night); }
+    #s11-weave { position: absolute; inset: -16px; }
+    #s11-cam { position: absolute; inset: 0; transform-origin: 634px 300px; }
+    #s11-cam .plate { inset: auto; left: 0; top: -80px; width: 1920px; height: 1401px; }
+    #s11-cam .plate .img, #s11-cam .plate .fringe { filter: sepia(0.3) saturate(0.6) contrast(1.06) brightness(0.92); }
+    #s11-cam .plate .fringe { filter: sepia(0.3) saturate(0.6) contrast(1.06) brightness(0.92) blur(7px); }
+    #s11-marks, #s11-marks2 { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; }
+    #s11-name { position: absolute; left: 96px; top: 470px; width: 520px; }
+    #s11-name .n { font-size: 72px; }
+    #s11-name .r { font-size: 38px; color: #e8dccb; margin-top: 4px; }
+    #s11-mit { position: absolute; left: 100px; top: 640px; font-size: 22px; padding: 8px 14px 6px; background: var(--vermilion); color: var(--bone); }
+    #s11-panel { position: absolute; left: 0; bottom: 0; width: 1920px; height: 300px;
+      background: linear-gradient(180deg, rgba(20,19,18,0), rgba(20,19,18,0.92) 45%); }
+    #s11-ray { position: absolute; left: 100px; bottom: 120px; font-size: 128px; }
+    #s11-raysub { position: absolute; left: 106px; bottom: 58px; font-size: 40px; color: #e8dccb; }
+    #s11-shade { position: absolute; inset: 0; background: radial-gradient(ellipse 60% 70% at 33% 30%, rgba(0,0,0,0), rgba(10,9,8,0.45)); }
+  </style>
+  <div id="root" data-composition-id="s11" data-width="1920" data-height="1080">
+    <div id="s11-weave">
+      <div id="s11-cam">
+        <div class="plate"><img class="img" src="assets/archival/terman/vannevar_bush_karl_compton_mit_1932.jpg" alt="" /><img class="fringe" src="assets/archival/terman/vannevar_bush_karl_compton_mit_1932.jpg" alt="" /></div>
+        <svg id="s11-marks"></svg>
+        <div id="s11-name"><div class="n t-display halate" id="s11-nn">Vannevar Bush</div><div class="r t-serif-i halate" id="s11-nr">Terman's advisor at MIT</div></div>
+        <div id="s11-mit" class="t-label">MIT · 1932</div>
+      </div>
+    </div>
+    <div id="s11-shade"></div>
+    <div id="s11-panel"></div>
+    <svg id="s11-marks2"></svg>
+    <div id="s11-ray" class="t-display halate">Raytheon</div>
+    <div id="s11-raysub" class="t-serif-i halate">co-founded by Bush · defense electronics</div>
+    <div id="s11-grain" class="tx tx-grain" style="background-image:url('assets/textures/grain_01_norm.jpg')"></div>
+    <div id="s11-dust" class="tx tx-dust" style="background-image:url('assets/textures/dust_02.jpg')"></div>
+    <div class="vignette"></div>
+    <audio id="s11-vo" src="vo10.mp3" data-start="0" data-duration="7.9" data-media-start="427.3" data-volume="1"></audio>
+  </div>
+  <script>
+  (function () {
+    const tl = gsap.timeline({ paused: true });
+    const T = (s) => s - 427.3;
+    const $ = (id) => document.getElementById(id);
+    const svg = $("s11-marks");
+    const rough = FX.markupDefs(svg, "s11-rough");
+    const svg2 = $("s11-marks2");
+    const rough2 = FX.markupDefs(svg2, "s11-rough2");
+    FX.weave($("s11-weave"), { amp: 1.3, flicker: 0.03, seed: 111 });
+    FX.grain($("s11-grain"), 112);
+    FX.dust($("s11-dust"), 113, 2);
+
+    // slow push toward Bush, settles back a little when Raytheon arrives
+    tl.fromTo("#s11-cam", { scale: 1.0 }, { scale: 1.06, duration: 7.9, ease: "none" }, 0);
+
+    // "He was a professor" — circle his face, arrow to the name
+    FX.markup.circle(tl, svg, T(427.8), { cx: 640, cy: 205, rx: 150, ry: 175, rot: -8, color: "#e5482a", width: 8, filter: rough, dur: 0.55, seed: 4 });
+    FX.markup.arrow(tl, svg, T(428.25), { x1: 330, y1: 455, x2: 500, y2: 300, bend: -60, color: "#f4eee2", width: 6, head: 30, filter: rough, dur: 0.35 });
+    FX.text.random(tl, $("s11-nn"), T(428.3), { dur: 0.45, seed: 11 });
+    FX.text.rise(tl, [$("s11-nr")], T(428.6), { dur: 0.5 });
+    tl.fromTo("#s11-mit", { opacity: 0, x: -20 }, { opacity: 1, x: 0, duration: 0.3, ease: FX.choppy("power3.out", 0.3, 12) }, T(428.5));
+
+    // "one of the founders of Raytheon" — callout band with a scribbled underline
+    tl.fromTo("#s11-panel", { opacity: 0 }, { opacity: 1, duration: 0.4 }, T(431.0));
+    tl.fromTo("#s11-ray", { opacity: 0 }, { opacity: 1, duration: 0.01 }, T(431.95));
+    FX.text.fill(tl, $("s11-ray"), T(431.95), { per: 0.04, hold: 0.25, settle: 0.4 });
+    FX.markup.underline(tl, svg2, T(432.6), { x1: 100, x2: 640, y: 950, color: "#e5482a", width: 9, filter: rough2, dur: 0.4 });
+    FX.text.rise(tl, [$("s11-raysub")], T(433.2), { dur: 0.5 });
+
+    FX.mount(tl, 7.9);
+    window.__timelines["s11"] = tl;
+  })();
+  </script>
+</template>
+</body>
+</html>

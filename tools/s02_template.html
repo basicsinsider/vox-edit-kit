@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8" /></head>
+<body>
+<template>
+  <style>
+    #root { position: absolute; inset: 0; overflow: hidden; background: #0d1116; }
+    #s02-cam { position: absolute; left: 0; top: 0; width: 6400px; height: 3200px; transform-origin: 0 0; }
+    #s02-base { position: absolute; inset: 0; width: 6400px; height: 3200px; filter: brightness(0.82) contrast(1.08) saturate(0.7); }
+    .s02-svg { position: absolute; left: 0; top: 0; width: 6400px; height: 3200px; overflow: visible; }
+    #s02-fills { mix-blend-mode: overlay; }
+    .s02-cloud { position: absolute; opacity: 0.6; }
+    .s02-cshadow { position: absolute; opacity: 0.28; filter: brightness(0) blur(18px); }
+    .s02-count { font-weight: 700; font-size: 120px; fill: #f4eee2; paint-order: stroke; stroke: #141312; stroke-width: 16px; }
+    .s02-mlabel { position: absolute; white-space: nowrap; transform-origin: 0 0; }
+    #s02-west-lab { left: 1500px; top: 1900px; }
+    #s02-east-lab { left: 4520px; top: 1800px; }
+    .s02-mlabel .big { font-size: 230px; }
+    .s02-mlabel .sub { font-size: 70px; letter-spacing: 0.18em; margin-top: 10px; }
+    #s02-river-lab { left: 3330px; top: 1500px; font-size: 92px; transform: rotate(-78deg); color: #dcefff; }
+    #s02-head { position: absolute; left: 96px; top: 860px; }
+    #s02-head .n { font-size: 120px; display: inline-block; vertical-align: middle; }
+    #s02-head .l { display: inline-block; vertical-align: middle; margin-left: 22px; font-size: 26px; line-height: 1.35; color: #e8dccb; }
+    #s02-fg { position: absolute; left: -400px; top: -500px; width: 3200px; filter: blur(5px); }
+    #s02-card { position: absolute; left: 1050px; top: 300px; width: 560px; }
+    #s02-photo { position: relative; width: 560px; height: 340px; overflow: hidden; border: 1px solid rgba(244,238,226,0.35); box-shadow: 0 20px 60px rgba(0,0,0,0.55); }
+    #s02-photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    #s02-lead { position: absolute; left: 975px; top: 535px; width: 80px; height: 2px; background: #f2cf3b; transform-origin: 0 50%; }
+    #s02-card .name { margin-top: 22px; font-size: 76px; }
+    #s02-card .where { font-size: 40px; color: #e8dccb; margin-top: 4px; }
+    #s02-card .what { font-size: 22px; color: #cfc6b6; margin-top: 14px; }
+    #s02-credit { position: absolute; right: 30px; bottom: 22px; font-size: 13px; letter-spacing: 0.08em; color: rgba(244,238,226,0.5); }
+  </style>
+  <div id="root" data-composition-id="s02" data-width="1920" data-height="1080">
+    <div id="s02-cam">
+      <img id="s02-base" src="assets/maps/us_basemap_desat.jpg" alt="" />
+      <svg id="s02-fills" class="s02-svg" viewBox="0 0 6400 3200">
+        <defs>
+          <filter id="s02-burnA" filterUnits="userSpaceOnUse" x="0" y="0" width="6400" height="3200" color-interpolation-filters="sRGB">
+            <feImage href="assets/maps/burn_a.png" preserveAspectRatio="none" result="n"/>
+            <feColorMatrix id="s02-bA" in="n" type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  12 0 0 0 -12" result="t"/>
+            <feComposite in="SourceGraphic" in2="t" operator="in"/>
+          </filter>
+          <filter id="s02-burnB" filterUnits="userSpaceOnUse" x="0" y="0" width="6400" height="3200" color-interpolation-filters="sRGB">
+            <feImage href="assets/maps/burn_b.png" preserveAspectRatio="none" result="n"/>
+            <feColorMatrix id="s02-bB" in="n" type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  12 0 0 0 -12" result="t"/>
+            <feComposite in="SourceGraphic" in2="t" operator="in"/>
+          </filter>
+        </defs>
+        <path d="%%WEST%%" fill="#cf8a45" opacity="0.9" filter="url(#s02-burnA)"/>
+        <path d="%%EAST%%" fill="#3f7fb0" filter="url(#s02-burnB)"/>
+      </svg>
+      <svg id="s02-lines" class="s02-svg" viewBox="0 0 6400 3200">
+        <defs>
+          <filter id="s02-char" filterUnits="userSpaceOnUse" x="0" y="0" width="6400" height="3200" color-interpolation-filters="sRGB">
+            <feImage href="assets/maps/burn_a.png" preserveAspectRatio="none" result="n"/>
+            <feColorMatrix id="s02-cA1" in="n" type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  12 0 0 0 -12" result="e"/>
+            <feColorMatrix id="s02-cA2" in="n" type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  12 0 0 0 -12" result="l"/>
+            <feComposite in="e" in2="l" operator="arithmetic" k1="0" k2="1" k3="-1" k4="0" result="ring"/>
+            <feComposite in="SourceGraphic" in2="ring" operator="in"/>
+          </filter>
+          <filter id="s02-charB" filterUnits="userSpaceOnUse" x="0" y="0" width="6400" height="3200" color-interpolation-filters="sRGB">
+            <feImage href="assets/maps/burn_b.png" preserveAspectRatio="none" result="n"/>
+            <feColorMatrix id="s02-cB1" in="n" type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  12 0 0 0 -12" result="e"/>
+            <feColorMatrix id="s02-cB2" in="n" type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  12 0 0 0 -12" result="l"/>
+            <feComposite in="e" in2="l" operator="arithmetic" k1="0" k2="1" k3="-1" k4="0" result="ring"/>
+            <feComposite in="SourceGraphic" in2="ring" operator="in"/>
+          </filter>
+          <filter id="s02-glow" x="-5%" y="-5%" width="110%" height="110%"><feGaussianBlur stdDeviation="14"/></filter>
+        </defs>
+        <path d="%%WEST%%" fill="#3a1a08" opacity="0.8" filter="url(#s02-char)"/>
+        <path d="%%EAST%%" fill="#0b1a2a" opacity="0.8" filter="url(#s02-charB)"/>
+        <path id="s02-states" d="%%STATES%%" fill="none" stroke="#f4eee2" stroke-opacity="0.22" stroke-width="3"/>
+        <path id="s02-wedge" d="%%WEST%%" fill="none" stroke="#f6c37a" stroke-opacity="0.7" stroke-width="6"/>
+        <path id="s02-eedge" d="%%EAST%%" fill="none" stroke="#9cc6e8" stroke-opacity="0.7" stroke-width="6"/>
+        <path id="s02-river-glow" d="%%RIVER%%" fill="none" stroke="#8fd0ff" stroke-width="34" opacity="0.55" filter="url(#s02-glow)" stroke-dasharray="%%RLEN%%" stroke-dashoffset="%%RLEN%%" stroke-linecap="round"/>
+        <path id="s02-river" d="%%RIVER%%" fill="none" stroke="#e6f4ff" stroke-width="11" stroke-dasharray="%%RLEN%%" stroke-dashoffset="%%RLEN%%" stroke-linecap="round" stroke-linejoin="round"/>
+        %%PINS%%
+      </svg>
+      <img class="s02-cshadow" src="assets/maps/clouds/cloud_01_satellite.png" style="left:820px;top:520px;width:2000px" alt="" />
+      <img class="s02-cloud" src="assets/maps/clouds/cloud_01_satellite.png" style="left:760px;top:440px;width:2000px" alt="" />
+      <img class="s02-cshadow" src="assets/maps/clouds/cloud_03_satellite.png" style="left:4060px;top:1980px;width:1800px" alt="" />
+      <img class="s02-cloud" src="assets/maps/clouds/cloud_03_satellite.png" style="left:4000px;top:1900px;width:1800px" alt="" />
+      <div id="s02-west-lab" class="s02-mlabel"><div class="big t-display halate">WEST</div><div class="sub t-label halate">11 of 12 companies</div></div>
+      <div id="s02-east-lab" class="s02-mlabel"><div class="big t-display halate">EAST</div><div class="sub t-label halate">1 of 12</div></div>
+      <div id="s02-river-lab" class="s02-mlabel t-serif-i halate cool">Mississippi River</div>
+    </div>
+    <img id="s02-fg" src="assets/maps/clouds/cloud_06_puffy.png" alt="" />
+    <div id="s02-head"><span class="n t-display halate yellow">12</span><span class="l t-label halate">trillion-dollar<br/>companies</span></div>
+    <div id="s02-lead"></div>
+    <div id="s02-card">
+      <div id="s02-photo"><img src="assets/maps/eli_lilly_hq_corporate_center.jpg" alt="" /><div class="vignette"></div></div>
+      <div class="name t-display halate yellow">Eli Lilly</div>
+      <div class="where t-serif-i halate">Indianapolis, Indiana</div>
+      <div class="what t-label halate">Pharmaceuticals · the only one east</div>
+    </div>
+    <div id="s02-grain" class="tx tx-grain" style="background-image:url('assets/textures/grain_01.jpg')"></div>
+    <div id="s02-dust" class="tx tx-dust" style="background-image:url('assets/textures/dust_01.jpg')"></div>
+    <div class="vignette"></div>
+    <div id="s02-credit" class="t-label">Photo: Momoneymoproblemz, CC BY-SA 4.0 · Basemap: NASA Blue Marble</div>
+    <audio id="s02-vo" src="vo10.mp3" data-start="0" data-duration="10.0" data-media-start="32.9" data-volume="1"></audio>
+  </div>
+  <script>
+  (function () {
+    const tl = gsap.timeline({ paused: true });
+    const T = (s) => s - 32.9;
+    const $ = (id) => document.getElementById(id);
+    const cam = (cx, cy, z) => ({ x: 960 - cx * z, y: 540 - cy * z, scale: z });
+    FX.grain($("s02-grain"), 23);
+    FX.dust($("s02-dust"), 25, 2);
+
+    // camera: wide US -> drift -> push into Indianapolis
+    gsap.set("#s02-cam", cam(3050, 1640, 0.335));
+    tl.fromTo("#s02-cam", cam(3050, 1640, 0.335), Object.assign(cam(2950, 1600, 0.35), { duration: 8.4, ease: "none" }), 0);
+    tl.to("#s02-cam", Object.assign(cam(4184, 1223, 0.62), { duration: 1.6, ease: "power3.inOut" }), T(41.3));
+
+    // foreground cloud fly-through reveals the map
+    tl.fromTo("#s02-fg", { x: 0, opacity: 1, scale: 1.2 }, { x: -2600, opacity: 0, scale: 1.5, duration: 1.8, ease: "power2.in" }, 0);
+    tl.fromTo(".s02-cloud, .s02-cshadow", { x: 0 }, { x: 260, duration: 10, ease: "none" }, 0);
+
+    // "12 companies" — clusters drop in
+    tl.fromTo("#s02-head", { opacity: 0 }, { opacity: 1, duration: 0.01 }, T(33.7));
+    FX.text.count(tl, $("s02-head").querySelector(".n"), T(33.7), 0, 12, 0.6, (v) => String(Math.round(v)));
+    tl.fromTo(".s02-pin", { scale: 0, transformOrigin: "50% 50%" }, { scale: 1, duration: 0.35, stagger: 0.09, ease: "back.out(2.4)" }, T(33.8));
+    tl.fromTo(".s02-halo", { scale: 0.6, opacity: 0.7, transformOrigin: "50% 50%" }, { scale: 1.6, opacity: 0, duration: 1.2, stagger: 0.09, ease: "power2.out" }, T(33.8));
+
+    // river draws on "Mississippi River"
+    tl.to("#s02-river, #s02-river-glow", { strokeDashoffset: 0, duration: 1.5, ease: FX.choppy("power2.inOut", 1.5, 12) }, T(37.0));
+    tl.fromTo("#s02-river-lab", { opacity: 0 }, { opacity: 1, duration: 0.5 }, T(37.8));
+
+    // burn-film reveal: west on "west", east on "east"
+    const burn = (fill, c1, c2, t, d) => {
+      const s = { b: -12.5 };
+      const M = (o) => "0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  12 0 0 0 " + o.toFixed(3);
+      tl.fromTo(s, { b: -12.5 }, { b: 1.2, duration: d, ease: FX.choppy("power1.inOut", d, 12), immediateRender: false,
+        onUpdate: () => { $(fill).setAttribute("values", M(s.b)); $(c1).setAttribute("values", M(s.b + 2.2)); $(c2).setAttribute("values", M(s.b)); } }, t);
+    };
+    burn("s02-bA", "s02-cA1", "s02-cA2", T(36.0), 1.9);
+    burn("s02-bB", "s02-cB1", "s02-cB2", T(40.2), 1.4);
+    tl.fromTo("#s02-wedge", { opacity: 0 }, { opacity: 1, duration: 0.6 }, T(37.4));
+    tl.fromTo("#s02-eedge", { opacity: 0 }, { opacity: 1, duration: 0.6 }, T(41.0));
+    tl.fromTo("#s02-west-lab", { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, T(36.9));
+    tl.fromTo("#s02-east-lab", { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, T(40.6));
+    tl.to("#s02-west-lab, #s02-east-lab, #s02-river-lab, #s02-head", { opacity: 0, duration: 0.4 }, T(41.3));
+
+    // Eli Lilly callout
+    tl.fromTo("#s02-indy-halo", { scale: 1, opacity: 0.8, transformOrigin: "50% 50%" }, { scale: 2.6, opacity: 0, duration: 0.9, repeat: 1, ease: "power2.out" }, T(41.5));
+    tl.fromTo("#s02-lead", { scaleX: 0 }, { scaleX: 1, duration: 0.3, ease: "power2.out" }, T(42.0));
+    tl.fromTo("#s02-card", { opacity: 0, x: -30 }, { opacity: 1, x: 0, duration: 0.45, ease: "power3.out" }, T(42.05));
+    FX.text.fill(tl, $("s02-card").querySelector(".name"), T(42.1), { per: 0.03, hold: 0.3, settle: 0.4, cool: "#f2cf3b" });
+    tl.fromTo("#s02-credit", { opacity: 0 }, { opacity: 1, duration: 0.3 }, T(42.05));
+
+    FX.mount(tl, 10.0);
+    window.__timelines["s02"] = tl;
+  })();
+  </script>
+</template>
+</body>
+</html>

@@ -1,0 +1,954 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8" /></head>
+<body>
+<template>
+  <style>
+    #root { position: absolute; inset: 0; overflow: hidden; background: var(--night); }
+    .seg06-scene { position: absolute; inset: 0; overflow: hidden; visibility: hidden; opacity: 0; }
+    .seg06-night { background: var(--night); }
+    .seg06-paper { background: var(--paper); }
+    .seg06-full { position: absolute; inset: 0; }
+    .seg06-credit { position: absolute; right: 30px; bottom: 22px; font-size: 13px; letter-spacing: 0.08em; color: rgba(244,238,226,0.5); }
+    .seg06-tag { position: absolute; background: var(--ink); color: var(--paper); padding: 10px 18px 8px; font-size: 24px; white-space: nowrap; }
+    .seg06-card { position: absolute; background: #f3ecdc; padding: 14px; filter: url(#seg06-rough); box-shadow: 0 18px 40px rgba(35,48,58,0.28); }
+    .seg06-card .ph { position: relative; width: 100%; height: 100%; overflow: hidden; background: #e7dcc6; }
+    .seg06-card img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: url(#seg06-tint-paper) contrast(1.05); }
+    .seg06-card .ht { position: absolute; inset: 0; background-size: 520px auto; mix-blend-mode: multiply; opacity: 0.5; }
+    .seg06-ico { position: absolute; width: 56px; height: 56px; color: var(--ink); }
+    .seg06-ico svg { width: 100%; height: 100%; display: block; }
+    .seg06-msvg { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; }
+
+    /* ---------- SC078 isotype (paper) ---------- */
+    #seg06-sc078-seal { position: absolute; left: 560px; top: 200px; width: 800px; height: 800px; opacity: 0.07; }
+    #seg06-sc078-cam { position: absolute; inset: 0; transform-origin: 960px 540px; }
+    #seg06-sc078-design { position: absolute; inset: 0; transform: scale(1.45); transform-origin: 960px 540px; }
+    #seg06-sc078-title { position: absolute; left: 0; right: 0; top: 128px; text-align: center; font-size: 84px; color: var(--ink); }
+    #seg06-sc078-east { position: absolute; left: 1420px; top: 352px; font-size: 62px; color: var(--navy); }
+    #seg06-sc078-dark { position: absolute; inset: 0; background: var(--night); opacity: 0; }
+
+    /* ---------- SC079 streaks + 1938 (night) ---------- */
+    #seg06-sc079-glow { position: absolute; left: 210px; top: 0; width: 1500px; height: 900px;
+      background: radial-gradient(ellipse at center, rgba(255,140,70,0.18), rgba(255,100,40,0.05) 45%, transparent 70%); }
+    #seg06-sc079-stage { position: absolute; inset: 0; transform-origin: 960px 480px; }
+    #seg06-sc079-year { position: absolute; left: 0; right: 0; top: 190px; text-align: center; font-size: 320px; }
+    #seg06-sc079-line { position: absolute; left: 0; right: 0; top: 540px; text-align: center; font-size: 66px; color: #e8dccb; }
+    #seg06-sc079-two { position: absolute; left: 0; right: 0; top: 930px; text-align: center; font-size: 30px; color: #e8dccb; }
+    .seg06-sc079-stu { position: absolute; top: 760px; width: 130px; height: 130px; color: var(--bone); filter: drop-shadow(0 0 14px rgba(255,140,80,0.45)); }
+    #seg06-sc079-s1 { left: 815px; } #seg06-sc079-s2 { left: 975px; }
+
+    /* ---------- SC080 Vox cutout cards (night, s09) ---------- */
+    #seg06-sc080-bgwrap { position: absolute; inset: -80px; }
+    .seg06-sc080-bgimg { position: absolute; background-size: cover; background-position: center; filter: url(#seg06-tint-night); }
+    #seg06-sc080-bg1 { inset: 0; filter: url(#seg06-tint-night) blur(2px); opacity: 0.85; }
+    #seg06-sc080-bg2 { left: 1180px; top: 90px; width: 900px; height: 620px; transform: rotate(4deg); box-shadow: -30px 30px 80px rgba(0,0,0,0.55); opacity: 0.9; }
+    #seg06-sc080-bg3 { left: -60px; top: 640px; width: 980px; height: 520px; transform: rotate(-3deg); box-shadow: 30px -20px 80px rgba(0,0,0,0.5); background-position: center 30%; opacity: 0.9; }
+    #seg06-sc080-bgtx { position: absolute; inset: 0; background-size: cover; mix-blend-mode: overlay; opacity: 0.5; }
+    #seg06-sc080-shade { position: absolute; inset: 0; background: radial-gradient(ellipse 65% 70% at 50% 60%, rgba(16,15,14,0.25), rgba(16,15,14,0.75)); }
+    .seg06-vcard { position: absolute; background: #e9e1cf; padding: 16px 16px 22px; filter: url(#seg06-rough9); box-shadow: 0 30px 80px rgba(0,0,0,0.6); }
+    .seg06-vcard .ph { position: relative; width: 100%; height: 100%; overflow: hidden; }
+    .seg06-vcard img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: contrast(1.08) sepia(0.12); }
+    .seg06-vcard .sil { position: absolute; inset: -20px; background: #0e0d0c; opacity: 0.88; }
+    #seg06-sc080-hew { left: 270px; top: 70px; width: 560px; height: 700px; }
+    #seg06-sc080-hew img { object-position: 50% 22%; }
+    #seg06-sc080-pac { left: 1060px; top: 55px; width: 620px; height: 730px; }
+    #seg06-sc080-pac img { object-position: 50% 30%; }
+    .seg06-sc080-name { position: absolute; bottom: 48px; }
+    #seg06-sc080-hn { left: 240px; } #seg06-sc080-pn { left: 1030px; }
+    .seg06-sc080-name .f { font-size: 52px; color: #e8dccb; }
+    .seg06-sc080-name .l { font-size: 120px; margin-top: -8px; }
+
+    /* ---------- SC081 California markup (paper) ---------- */
+    #seg06-sc081-board { position: absolute; inset: 0; transform-origin: 700px 540px; }
+    #seg06-sc081-map { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; }
+    #seg06-sc081-card { left: 300px; top: 508px; width: 250px; height: 310px; transform-origin: 125px 14px; }
+    #seg06-sc081-card img { object-fit: contain; object-position: 50% 100%; }
+    #seg06-sc081-hole { position: absolute; left: 417px; top: 513px; width: 16px; height: 16px; border-radius: 50%; background: #3a3530; box-shadow: inset 0 2px 3px rgba(0,0,0,0.6), 0 0 0 3px rgba(24,34,47,0.15); }
+    #seg06-sc081-pin { position: absolute; left: 413px; top: 509px; width: 24px; height: 24px; border-radius: 50%; background: var(--vermilion); box-shadow: 0 4px 6px rgba(0,0,0,0.35), inset -3px -3px 0 rgba(0,0,0,0.18); }
+    #seg06-sc081-ptag { left: 330px; top: 836px; }
+    #seg06-sc081-stan { position: absolute; left: 80px; top: 432px; width: 240px; text-align: right; font-size: 24px; color: var(--ink); }
+    #seg06-sc081-stay { position: absolute; left: 1060px; top: 250px; font-size: 76px; color: var(--ink); }
+    #seg06-sc081-gone { position: absolute; left: 1060px; top: 650px; font-size: 150px; color: var(--ink); }
+
+    /* ---------- SC082 GE + $100 (night) ---------- */
+    #seg06-sc082-cam { position: absolute; inset: 0; transform-origin: 1100px 420px; }
+    #seg06-sc082-cam .plate .img, #seg06-sc082-cam .plate .fringe { filter: grayscale(1) sepia(0.4) contrast(1.08) brightness(0.8); object-position: 50% 40%; }
+    #seg06-sc082-cam .plate .fringe { filter: grayscale(1) sepia(0.4) contrast(1.08) brightness(0.8) blur(7px); }
+    #seg06-sc082-shade { position: absolute; left: 0; right: 0; bottom: 0; height: 640px; background: linear-gradient(180deg, rgba(14,12,10,0), rgba(14,12,10,0.88) 65%); }
+    #seg06-sc082-ge { position: absolute; left: 96px; top: 80px; width: 120px; height: 120px; opacity: 0.9; filter: drop-shadow(0 0 16px rgba(255,140,80,0.35)); }
+    #seg06-sc082-lab { position: absolute; left: 100px; top: 600px; font-size: 34px; color: #e8dccb; }
+    #seg06-sc082-row { position: absolute; left: 96px; top: 660px; display: flex; align-items: baseline; gap: 28px; white-space: nowrap; }
+    #seg06-sc082-around, #seg06-sc082-month { font-size: 64px; color: #e8dccb; }
+    #seg06-sc082-amt { font-size: 230px; }
+
+    /* ---------- SC083 fork collage (paper) ---------- */
+    #seg06-sc083-board { position: absolute; inset: 0; transform-origin: 1470px 770px; }
+    #seg06-sc083-hew { left: 150px; top: 240px; width: 420px; height: 520px; }
+    #seg06-sc083-hew img { object-position: 50% 20%; }
+    #seg06-sc083-htag { left: 176px; top: 788px; }
+    #seg06-sc083-uni { left: 1240px; top: 120px; width: 470px; height: 320px; }
+    #seg06-sc083-utag { left: 1266px; top: 462px; }
+    #seg06-sc083-blank { position: absolute; left: 1240px; top: 610px; width: 470px; height: 320px; border: 3px dashed rgba(24,34,47,0.5); }
+    #seg06-sc083-q { position: absolute; left: 0; right: 0; top: 70px; text-align: center; font-size: 150px; color: rgba(24,34,47,0.35); }
+
+    /* ---------- SC084 shutter montage (night) ---------- */
+    #seg06-sc084-weave { position: absolute; inset: -16px; }
+    .seg06-sc084-shot { position: absolute; inset: 0; opacity: 0; }
+    .seg06-sc084-shot .plate .img, .seg06-sc084-shot .plate .fringe { filter: grayscale(1) sepia(0.32) saturate(0.7) contrast(1.06) brightness(0.88); }
+    .seg06-sc084-shot .plate .fringe { filter: grayscale(1) sepia(0.32) saturate(0.7) contrast(1.06) brightness(0.88) blur(7px); }
+    #seg06-sc084-sh1 .img, #seg06-sc084-sh1 .fringe { object-position: 50% 35%; }
+    #seg06-sc084-pano { position: absolute; left: 0; top: -70px; width: 5250px; height: 1180px; }
+    #seg06-sc084-sh4 .img, #seg06-sc084-sh4 .fringe { object-position: 50% 100%; }
+    #seg06-sc084-shade { position: absolute; left: 0; right: 0; bottom: 0; height: 520px; background: linear-gradient(180deg, rgba(13,12,11,0), rgba(13,12,11,0.88) 75%); }
+    #seg06-sc084-job { position: absolute; left: 110px; bottom: 100px; font-size: 128px; }
+
+    /* ---------- SC085 Palo Alto topo, R10 (paper) ---------- */
+    #seg06-sc085-stage { position: absolute; inset: 0; perspective: 1700px; perspective-origin: 960px 540px; }
+    #seg06-sc085-tilt { position: absolute; inset: 0; transform-origin: 960px 540px; transform: rotateX(18deg) rotateZ(-6deg); }
+    #seg06-sc085-cam { position: absolute; left: 0; top: 0; width: 1500px; height: 1200px; transform-origin: 0 0; }
+    #seg06-sc085-plane { position: absolute; left: 0; top: 0; width: 1500px; height: 1200px; background: #efe7d5; box-shadow: 0 30px 70px rgba(35,48,58,0.35); }
+    #seg06-sc085-plane img { position: absolute; inset: 0; width: 100%; height: 100%; mix-blend-mode: multiply; filter: contrast(1.08); }
+    #seg06-sc085-plane .pp { position: absolute; inset: 0; background-size: cover; mix-blend-mode: multiply; opacity: 0.3; }
+    #seg06-sc085-route { position: absolute; left: 0; top: 0; width: 1500px; height: 1200px; overflow: visible; }
+    #seg06-sc085-pin { position: absolute; left: 772px; top: 433px; width: 36px; height: 36px; border-radius: 50%; background: var(--vermilion);
+      border: 3px solid var(--bone); box-shadow: 0 6px 10px rgba(0,0,0,0.35); color: var(--bone); font-size: 20px; line-height: 31px; text-align: center; transform-origin: 50% 100%; }
+    #seg06-sc085-pin::after { content: ""; position: absolute; left: 13px; top: 33px; width: 4px; height: 14px; background: var(--ink); }
+    #seg06-sc085-kick { position: absolute; left: 96px; top: 84px; font-size: 30px; padding: 12px 20px 9px; }
+    #seg06-sc085-co { position: absolute; left: 1120px; top: 820px; font-size: 80px; color: var(--ink); padding: 0 18px 6px; background: rgba(239,231,213,0.85); }
+
+    /* ---------- SC086 + SC094 garage 2.5D (night, s10) ---------- */
+    .seg06-g-stage { position: absolute; inset: 0; perspective: 1200px; perspective-origin: 960px 540px; }
+    .seg06-g-world { position: absolute; inset: 0; transform-style: preserve-3d; transform-origin: 960px 540px; }
+    .seg06-g-layer { position: absolute; inset: 0; transform-origin: 960px 540px; }
+    .seg06-g-layer img { position: absolute; display: block; }
+    .seg06-g-bd { left: -260px; top: -340px; width: 2440px; height: 1830px; filter: brightness(0.5) saturate(0.75) sepia(0.25) blur(4px); }
+    .seg06-g-sky { position: absolute; left: -400px; right: -400px; top: -400px; height: 900px; background: linear-gradient(180deg, rgba(120,52,30,0.55), rgba(120,52,30,0) 100%); mix-blend-mode: soft-light; }
+    .seg06-g-gar { left: 411px; top: 183px; width: 1098px; height: 921px; filter: sepia(0.22) saturate(0.8) contrast(1.04) brightness(0.8) drop-shadow(0 40px 60px rgba(0,0,0,0.5)); }
+    .seg06-g-hedge { left: 60px; top: 380px; width: 560px; height: 1243px; filter: brightness(0.5) saturate(0.8) blur(6px); }
+    .seg06-g-house { left: 1690px; top: -700px; width: 300px; height: 2385px; filter: brightness(0.42) saturate(0.7) blur(6px); }
+    .seg06-g-ground { position: absolute; left: -300px; right: -300px; bottom: -200px; height: 420px; background: linear-gradient(180deg, rgba(21,18,15,0), rgba(21,18,15,0.95) 60%); }
+    .seg06-g-haze { position: absolute; left: -400px; right: -400px; top: 200px; height: 900px; background: radial-gradient(ellipse 60% 45% at 55% 40%, rgba(255,214,170,0.22), rgba(255,214,170,0) 70%); mix-blend-mode: screen; }
+    .seg06-g-rays { position: absolute; left: 600px; top: -300px; width: 1800px; height: 1500px; mix-blend-mode: soft-light; opacity: 0.55;
+      background: repeating-conic-gradient(from 200deg at 85% 0%, rgba(255,226,180,0.0) 0deg, rgba(255,226,180,0.55) 2deg, rgba(255,226,180,0.0) 5deg, rgba(255,226,180,0.0) 9deg);
+      -webkit-mask-image: radial-gradient(ellipse 70% 80% at 85% 0%, #000 20%, transparent 75%); mask-image: radial-gradient(ellipse 70% 80% at 85% 0%, #000 20%, transparent 75%); filter: blur(6px); }
+    #seg06-sc086-title { position: absolute; left: 0; right: 0; top: 60px; text-align: center; }
+    #seg06-sc086-title .ca { font-size: 30px; color: #e8dccb; }
+    #seg06-sc086-title .pa { font-size: 250px; line-height: 0.95; margin-top: 6px; filter: url(#seg06-choke86); }
+    #seg06-sc094-flick { position: absolute; inset: -20px; }
+    #seg06-sc094-leak { position: absolute; inset: -60px; background-size: cover; background-position: center; mix-blend-mode: screen; opacity: 0; }
+
+    /* ---------- SC087 thesis page (paper) ---------- */
+    #seg06-sc087-bg { position: absolute; inset: -60px; background-size: cover; background-position: center 30%; filter: blur(10px) sepia(0.2); opacity: 0.35; transform: rotate(-8deg) scale(1.3); }
+    #seg06-sc087-cam { position: absolute; left: 0; top: 0; width: 850px; height: 1100px; transform-origin: 0 0; }
+    #seg06-sc087-page { position: absolute; left: 0; top: 0; width: 850px; height: 1100px; transform-origin: 50% 40%; box-shadow: 0 30px 80px rgba(35,48,58,0.4); }
+    #seg06-sc087-page img { position: absolute; inset: 0; width: 100%; height: 100%; filter: sepia(0.15) contrast(1.04); }
+    #seg06-sc087-page .ht { position: absolute; inset: 0; background-size: 300px auto; mix-blend-mode: overlay; opacity: 0.35; }
+    #seg06-sc087-hl { position: absolute; left: 262px; top: 352px; width: 330px; height: 50px; background: #f2d33b; mix-blend-mode: multiply; transform-origin: 0 50%; filter: url(#seg06-roughhl); opacity: 0.9; }
+    #seg06-sc087-tag { left: 1250px; top: 600px; font-size: 30px; }
+
+    /* ---------- SC088 HP 200A (night) ---------- */
+    #seg06-sc088-cam { position: absolute; inset: 0; transform-origin: 928px 586px; }
+    #seg06-sc088-cam .plate .img, #seg06-sc088-cam .plate .fringe { object-position: 50% 55%; filter: sepia(0.28) saturate(0.55) contrast(1.08) brightness(0.86); }
+    #seg06-sc088-cam .plate .fringe { filter: sepia(0.28) saturate(0.55) contrast(1.08) brightness(0.86) blur(8px); }
+    #seg06-sc088-shade { position: absolute; left: 0; right: 0; top: 0; height: 420px; background: linear-gradient(0deg, rgba(14,12,10,0), rgba(14,12,10,0.8)); }
+    #seg06-sc088-name { position: absolute; left: 96px; top: 92px; font-size: 128px; white-space: nowrap; }
+
+    /* ---------- SC089 signal diagram (paper) ---------- */
+    .seg06-node { position: absolute; width: 440px; height: 440px; border-radius: 50%; overflow: hidden; background: #e7dcc6; border: 6px solid var(--ink); box-shadow: 0 18px 40px rgba(35,48,58,0.25); }
+    .seg06-node img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: url(#seg06-tint-paper) contrast(1.1); }
+    .seg06-node .ht { position: absolute; inset: 0; background-size: 420px auto; mix-blend-mode: multiply; opacity: 0.5; }
+    #seg06-sc089-n1 { left: 200px; top: 300px; }
+    #seg06-sc089-n1 img { object-position: 46% 55%; transform: scale(1.45); }
+    #seg06-sc089-n2 { left: 1280px; top: 300px; }
+    #seg06-sc089-n2 img { object-position: 50% 40%; }
+    #seg06-sc089-l1 { position: absolute; left: 220px; width: 400px; top: 776px; text-align: center; font-size: 24px; color: var(--ink-soft); }
+    #seg06-sc089-l2 { left: 1305px; top: 768px; font-size: 28px; }
+    #seg06-sc089-cons { position: absolute; left: 1200px; width: 600px; top: 840px; text-align: center; font-size: 66px; color: var(--ink); }
+
+    /* ---------- SC090 testing footage (night) ---------- */
+    #seg06-sc090-weave { position: absolute; inset: -20px; }
+    #seg06-sc090-vid { position: absolute; left: 0; top: -60px; width: 1960px; height: 1200px; object-fit: cover; filter: grayscale(1) sepia(0.3) contrast(1.12) brightness(0.85); }
+    #seg06-sc090-shade { position: absolute; left: 0; right: 0; bottom: 0; height: 560px; background: linear-gradient(180deg, rgba(13,12,11,0), rgba(13,12,11,0.85) 70%); }
+    #seg06-sc090-test { position: absolute; left: 100px; top: 600px; font-size: 220px; }
+    #seg06-sc090-good { position: absolute; left: 108px; top: 830px; font-size: 68px; color: #e8dccb; }
+    #seg06-sc090-wave { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; filter: drop-shadow(0 0 6px rgba(255,200,150,0.6)); }
+
+    /* ---------- SC091 thesis -> product (paper) ---------- */
+    #seg06-sc091-board { position: absolute; inset: 0; transform-origin: 960px 480px; }
+    #seg06-sc091-a { left: 130px; top: 140px; width: 380px; height: 492px; }
+    #seg06-sc091-a img { filter: sepia(0.1) contrast(1.05); }
+    #seg06-sc091-b { left: 680px; top: 200px; width: 540px; height: 405px; }
+    #seg06-sc091-c { position: absolute; left: 1390px; top: 150px; width: 362px; height: 461px; transform-origin: 50% 50%; }
+    #seg06-sc091-ptag { left: 156px; top: 668px; }
+    #seg06-sc091-thesis { position: absolute; left: 282px; top: 660px; font-size: 52px; color: var(--ink); }
+    #seg06-sc091-comm { position: absolute; left: 0; right: 0; top: 770px; text-align: center; font-size: 150px; color: var(--ink); }
+    #seg06-sc091-res { position: absolute; left: 0; right: 0; top: 922px; text-align: center; font-size: 62px; color: var(--ink); }
+
+    /* ---------- SC092 money (night) ---------- */
+    .seg06-note { position: absolute; box-shadow: 0 30px 70px rgba(0,0,0,0.6); }
+    .seg06-note img { display: block; width: 100%; height: auto; filter: url(#seg06-tint-money); }
+    .seg06-note .ht { position: absolute; inset: 0; background-size: 380px auto; mix-blend-mode: overlay; opacity: 0.55; }
+    #seg06-sc092-n1 { left: -80px; top: 560px; width: 860px; }
+    #seg06-sc092-n2 { left: 1180px; top: 620px; width: 820px; }
+    #seg06-sc092-n3 { left: 230px; top: 40px; width: 640px; filter: blur(3px); opacity: 0.65; }
+    #seg06-sc092-n4 { left: 1180px; top: 60px; width: 600px; filter: blur(4px); opacity: 0.55; }
+    #seg06-sc092-dim { position: absolute; inset: 0; background: radial-gradient(ellipse 45% 40% at 50% 50%, rgba(14,12,10,0.85), rgba(14,12,10,0.25) 80%); }
+    #seg06-sc092-money { position: absolute; left: 0; right: 0; top: 330px; text-align: center; font-size: 280px; filter: url(#seg06-choke92); }
+    #seg06-sc092-off { position: absolute; left: 0; right: 0; top: 650px; text-align: center; font-size: 66px; color: #e8dccb; }
+
+    /* ---------- SC093 fellowship (paper) ---------- */
+    #seg06-sc093-board { position: absolute; inset: 0; transform-origin: 700px 540px; }
+    #seg06-sc093-letter { position: absolute; left: 170px; top: 130px; width: 600px; height: 800px; transform: rotate(-4deg); box-shadow: 0 24px 60px rgba(35,48,58,0.35); filter: url(#seg06-rough); }
+    #seg06-sc093-letter img { width: 100%; height: 100%; display: block; filter: sepia(0.12) contrast(1.05); }
+    #seg06-sc093-letter .ht { position: absolute; inset: 0; background-size: 300px auto; mix-blend-mode: overlay; opacity: 0.3; }
+    #seg06-sc093-pin { position: absolute; left: 455px; top: 120px; width: 26px; height: 26px; border-radius: 50%; background: var(--vermilion); box-shadow: 0 5px 8px rgba(0,0,0,0.35), inset -3px -3px 0 rgba(0,0,0,0.18); }
+    #seg06-sc093-ph1 { left: 600px; top: 640px; width: 170px; height: 210px; padding: 10px; transform: rotate(6deg); }
+    #seg06-sc093-ph2 { left: 690px; top: 700px; width: 170px; height: 210px; padding: 10px; transform: rotate(-5deg); }
+    #seg06-sc093-ph1 img, #seg06-sc093-ph2 img { object-position: 50% 15%; }
+    #seg06-sc093-clip { position: absolute; left: 650px; top: 640px; width: 150px; height: 40px; background: rgba(236,226,200,0.72); transform: rotate(-12deg); box-shadow: 0 2px 4px rgba(0,0,0,0.12); }
+    #seg06-sc093-fel { position: absolute; left: 960px; top: 380px; font-size: 170px; color: var(--ink); }
+    #seg06-sc093-makes { position: absolute; left: 966px; top: 610px; font-size: 64px; color: var(--ink); }
+
+    #seg06-iris { z-index: 5; }
+    #seg06-grain { z-index: 6; }
+    #seg06-dust { z-index: 6; }
+    #seg06-black { position: absolute; inset: 0; background: #000; opacity: 0; z-index: 7; }
+  </style>
+  <div id="root" data-composition-id="seg06" data-vo-start="496.92" data-duration="103.08" data-width="1920" data-height="1080">
+    <svg id="seg06-defs" width="0" height="0" style="position:absolute"></svg>
+
+    <!-- SC078 · R5 isotype: the smartest students leave East -->
+    <div class="seg06-scene seg06-paper" id="seg06-sc078" data-scene="SC078">
+      <div class="paper-ground"></div>
+      <svg id="seg06-sc078-seal" viewBox="0 0 800 800">
+        <defs><path id="seg06-sc078-ring" d="M400 400 m-300 0 a300 300 0 1 1 600 0 a300 300 0 1 1 -600 0" /></defs>
+        <circle cx="400" cy="400" r="380" fill="none" stroke="#18222f" stroke-width="6" />
+        <circle cx="400" cy="400" r="360" fill="none" stroke="#18222f" stroke-width="2" />
+        <circle cx="400" cy="400" r="235" fill="none" stroke="#18222f" stroke-width="3" />
+        <text class="t-label" font-size="44" fill="#18222f" letter-spacing="10"><textPath href="#seg06-sc078-ring" startOffset="0">LELAND STANFORD JUNIOR UNIVERSITY ·</textPath></text>
+        <path d="M400 210 C360 280 330 300 300 330 C350 330 330 360 300 400 C360 395 350 430 320 470 C370 460 380 480 390 520 L390 600 L410 600 L410 520 C420 480 430 460 480 470 C450 430 440 395 500 400 C470 360 450 330 500 330 C470 300 440 280 400 210 Z" fill="#18222f" />
+      </svg>
+      <div id="seg06-sc078-cam">
+        <div id="seg06-sc078-design">
+          <svg class="seg06-msvg" id="seg06-sc078-lane"></svg>
+          <div id="seg06-sc078-row"></div>
+          <div id="seg06-sc078-east" class="t-display">East</div>
+        </div>
+        <div id="seg06-sc078-title" class="t-serif-i">his smartest students</div>
+      </div>
+      <div class="paper-tex" style="background-image:url('assets/textures/paper_cream_01.jpg')"></div>
+      <div class="folds"></div>
+      <div id="seg06-sc078-dark"></div>
+    </div>
+
+    <!-- SC079 · light streaks + 1938 -->
+    <div class="seg06-scene seg06-night" id="seg06-sc079" data-scene="SC079">
+      <canvas id="seg06-sc079-streaks" class="streaks" style="filter: blur(2.5px);"></canvas>
+      <div id="seg06-sc079-glow"></div>
+      <div id="seg06-sc079-stage">
+        <div id="seg06-sc079-year" class="t-display halate yellow">1925</div>
+        <div id="seg06-sc079-line" class="t-serif-i halate">he decides to change this</div>
+        <div class="seg06-sc079-stu" id="seg06-sc079-s1"></div>
+        <div class="seg06-sc079-stu" id="seg06-sc079-s2"></div>
+        <div id="seg06-sc079-two" class="t-label halate">two favorite students</div>
+      </div>
+      <div class="vignette"></div>
+    </div>
+
+    <!-- SC080 · Vox layered cards: Hewlett & Packard (s09) -->
+    <div class="seg06-scene seg06-night" id="seg06-sc080" data-scene="SC080">
+      <div id="seg06-sc080-bgwrap">
+        <div id="seg06-sc080-bg1" class="seg06-sc080-bgimg" style="background-image:url('assets/archival/hoover/stanford_main_quad_panorama_c1896_b.jpg')"></div>
+        <div id="seg06-sc080-bg2" class="seg06-sc080-bgimg" style="background-image:url('assets/archival/hoover/stanford_inner_quad_west_entrance_c1900.jpg')"></div>
+        <div id="seg06-sc080-bg3" class="seg06-sc080-bgimg" style="background-image:url('assets/archival/hp/hewlett_and_packard_together_1960.jpg')"></div>
+        <div id="seg06-sc080-bgtx" style="background-image:url('assets/textures/newsprint_02_norm.jpg')"></div>
+      </div>
+      <div id="seg06-sc080-shade"></div>
+      <div id="seg06-sc080-hew" class="seg06-vcard"><div class="ph"><img src="assets/archival/hp/hewlett_william_c1962.jpg" alt="" /><div class="sil"></div></div></div>
+      <div id="seg06-sc080-pac" class="seg06-vcard"><div class="ph"><img src="assets/archival/hp/packard_david_1933.jpg" alt="" /><div class="sil"></div></div></div>
+      <div id="seg06-sc080-hn" class="seg06-sc080-name"><div class="f t-serif-i halate" id="seg06-sc080-hf">Bill</div><div class="l t-display halate" id="seg06-sc080-hl">Hewlett</div></div>
+      <div id="seg06-sc080-pn" class="seg06-sc080-name"><div class="f t-serif-i halate" id="seg06-sc080-pf">David</div><div class="l t-display halate" id="seg06-sc080-pl">Packard</div></div>
+      <div class="vignette"></div>
+    </div>
+
+    <!-- SC081 · markup: stay in California / Packard already gone -->
+    <div class="seg06-scene seg06-paper" id="seg06-sc081" data-scene="SC081">
+      <div class="paper-ground"></div>
+      <div id="seg06-sc081-board">
+        <svg id="seg06-sc081-map" viewBox="0 0 1920 1080">
+          <path id="seg06-sc081-ca" d="M254.2 111.0 L294.3 111.3 L296.6 110.9 L316.5 110.9 L331.0 110.0 L338.2 110.6 L367.9 110.5 L377.5 110.1 L402.0 110.2 L413.6 110.5 L453.4 111.2 L482.9 111.5 L533.8 111.5 L557.6 111.3 L557.6 111.4 L557.6 224.0 L557.8 226.6 L557.8 285.4 L557.6 315.9 L557.3 317.0 L557.3 352.5 L557.1 362.0 L557.6 382.4 L564.3 388.4 L594.0 414.1 L623.5 440.2 L639.7 454.3 L665.3 477.5 L697.6 506.8 L713.6 521.3 L746.5 551.9 L827.3 628.8 L887.8 687.8 L905.9 706.0 L943.9 744.2 L943.6 755.7 L947.7 760.1 L949.6 765.5 L955.5 770.4 L962.2 788.9 L961.7 793.5 L965.1 794.0 L973.1 801.8 L976.7 803.3 L979.5 807.5 L979.8 811.3 L973.3 816.3 L973.1 817.8 L968.7 819.4 L966.1 822.5 L960.1 824.8 L958.1 827.0 L958.1 832.3 L950.8 841.3 L952.7 842.9 L953.2 847.2 L951.6 847.6 L951.4 851.6 L953.2 856.6 L953.7 862.3 L951.6 863.3 L950.6 871.8 L951.6 875.4 L949.3 877.3 L942.1 888.0 L937.1 888.7 L939.2 892.7 L936.9 897.7 L940.8 900.9 L940.2 911.9 L938.4 917.1 L942.1 922.4 L942.8 921.1 L946.2 923.1 L948.0 922.0 L952.1 922.7 L956.0 933.2 L955.8 939.4 L951.1 944.3 L951.6 947.4 L945.2 949.4 L939.0 948.4 L937.7 950.8 L830.2 960.6 L764.5 967.5 L763.8 959.9 L761.4 955.1 L759.4 953.5 L755.8 955.3 L755.0 950.2 L755.2 944.7 L753.2 941.5 L755.5 936.7 L753.2 924.2 L749.8 914.3 L747.5 910.2 L737.2 895.1 L730.7 890.4 L728.1 886.4 L724.2 883.6 L721.9 883.7 L717.0 876.3 L710.3 871.7 L706.7 870.6 L701.5 866.1 L695.0 859.3 L688.8 856.3 L688.3 859.9 L682.9 861.7 L678.2 860.6 L675.7 858.7 L671.8 858.2 L670.7 855.3 L673.1 852.6 L673.3 849.3 L669.7 840.3 L666.9 835.3 L662.5 831.4 L653.4 831.3 L647.7 831.9 L643.6 834.7 L640.0 831.8 L632.8 830.5 L623.2 826.0 L620.1 825.8 L613.9 821.7 L609.5 810.7 L606.9 809.9 L602.5 805.8 L601.5 806.0 L596.3 801.0 L590.9 799.1 L589.3 797.5 L581.1 797.2 L576.9 799.1 L572.3 797.1 L566.6 797.9 L557.1 793.2 L551.1 793.2 L547.2 792.1 L535.9 792.6 L523.5 794.3 L523.2 791.9 L519.8 786.8 L515.7 784.4 L512.6 784.7 L511.1 782.3 L514.4 771.1 L511.6 766.5 L513.6 757.2 L509.2 753.0 L511.6 744.1 L511.8 733.2 L507.2 728.8 L503.6 728.3 L502.8 729.9 L495.8 725.7 L493.0 721.9 L495.6 711.7 L495.0 707.9 L492.2 703.7 L485.2 702.6 L478.2 694.7 L473.6 686.9 L467.4 684.9 L463.0 679.8 L461.7 673.5 L457.6 669.8 L455.8 667.0 L452.1 664.2 L450.6 656.5 L449.3 653.8 L444.1 651.6 L440.3 643.5 L433.8 636.2 L425.3 631.2 L422.4 627.7 L420.4 621.5 L420.6 618.2 L417.8 610.4 L418.3 603.2 L415.4 602.0 L418.0 596.2 L422.7 599.2 L425.0 596.8 L426.8 592.1 L428.9 581.1 L423.5 569.5 L420.4 566.2 L417.8 565.4 L415.4 567.5 L405.9 567.4 L398.7 562.1 L393.0 554.2 L389.4 552.8 L388.8 550.3 L384.4 545.7 L383.4 540.9 L384.7 530.8 L381.6 523.9 L381.1 519.9 L378.0 518.8 L376.4 516.2 L376.2 511.2 L377.5 509.1 L378.0 503.2 L376.4 492.7 L380.1 490.6 L384.2 489.9 L385.7 491.8 L387.5 498.6 L385.2 499.3 L388.1 507.7 L387.5 509.8 L394.5 511.6 L401.5 517.8 L403.6 517.4 L407.2 522.3 L410.3 522.0 L408.7 518.9 L405.6 517.5 L403.0 510.7 L401.2 502.2 L395.8 498.0 L395.3 494.4 L389.6 492.4 L391.9 486.7 L390.1 481.4 L386.3 481.5 L382.6 476.2 L384.7 476.9 L387.0 474.9 L387.0 471.7 L391.9 471.9 L394.5 468.9 L391.9 463.4 L385.2 459.9 L381.9 462.3 L378.2 462.7 L378.8 466.4 L377.5 470.0 L381.3 473.9 L378.2 475.9 L377.2 479.3 L382.1 483.6 L380.3 484.7 L377.5 482.5 L379.3 488.0 L375.4 489.2 L373.1 486.3 L366.4 481.5 L363.0 482.5 L357.1 477.3 L354.5 473.1 L350.1 470.6 L345.9 470.0 L340.8 472.5 L344.4 462.7 L345.2 458.9 L342.1 451.8 L343.9 450.2 L339.7 444.8 L336.9 445.5 L336.6 440.3 L332.2 432.1 L327.1 428.1 L323.5 426.7 L317.8 421.7 L308.2 408.0 L304.6 405.7 L302.5 402.6 L294.5 395.6 L288.3 386.5 L291.9 380.5 L291.7 377.2 L288.1 367.4 L283.9 357.9 L282.1 349.7 L282.9 342.0 L286.3 331.7 L285.0 327.7 L285.0 322.6 L281.3 315.5 L280.3 307.1 L276.2 304.3 L274.6 300.0 L265.6 289.7 L263.8 289.2 L263.8 285.9 L261.7 282.5 L256.0 280.0 L243.4 268.3 L244.4 263.4 L243.4 257.9 L240.0 252.2 L242.3 244.6 L245.9 236.1 L256.8 215.5 L259.6 208.1 L261.4 198.9 L258.3 196.0 L258.1 188.4 L259.1 188.3 L262.0 180.6 L265.1 161.6 L263.8 151.8 L259.9 141.9 L257.8 134.4 L255.5 134.7 L251.1 130.5 L253.7 124.8 L255.0 116.2 L254.2 111.0Z" fill="#e4d9c3" stroke="#18222f" stroke-width="2.5" stroke-linejoin="round" />
+        </svg>
+        <div id="seg06-sc081-hole"></div>
+        <div id="seg06-sc081-stan" class="t-label">Stanford</div>
+        <div id="seg06-sc081-mover">
+          <div id="seg06-sc081-card" class="seg06-card"><div class="ph"><img src="assets/cutouts/seg06/packard_cut.png" alt="" /><div class="ht" style="background-image:url('assets/textures/halftone_03.png')"></div></div></div>
+          <div id="seg06-sc081-pin"></div>
+          <div id="seg06-sc081-ptag" class="seg06-tag t-label">David Packard</div>
+        </div>
+        <svg class="seg06-msvg" id="seg06-sc081-marks"></svg>
+      </div>
+      <div id="seg06-sc081-stay" class="t-serif-i">stay in California</div>
+      <div id="seg06-sc081-gone" class="t-display halate ink">already gone</div>
+      <div class="paper-tex" style="background-image:url('assets/textures/paper_cream_01.jpg')"></div>
+      <div class="folds"></div>
+    </div>
+
+    <!-- SC082 · General Electric, $100 a month -->
+    <div class="seg06-scene seg06-night" id="seg06-sc082" data-scene="SC082">
+      <div id="seg06-sc082-cam">
+        <div class="plate"><img class="img" src="assets/archival/companies/ge_schenectady_postcard.jpg" alt="" /><img class="fringe" src="assets/archival/companies/ge_schenectady_postcard.jpg" alt="" /></div>
+      </div>
+      <div id="seg06-sc082-shade"></div>
+      <img id="seg06-sc082-ge" src="assets/archival/brain_drain/ge_logo_bone.svg" alt="" />
+      <div id="seg06-sc082-lab" class="t-label halate">General Electric</div>
+      <div id="seg06-sc082-row"><span id="seg06-sc082-around" class="t-serif-i halate">around</span><span id="seg06-sc082-amt" class="t-display halate yellow">$0</span><span id="seg06-sc082-month" class="t-serif-i halate">a month</span></div>
+      <div class="vignette"></div>
+    </div>
+
+    <!-- SC083 · collage fork: Bill Hewlett, studies or a job -->
+    <div class="seg06-scene seg06-paper" id="seg06-sc083" data-scene="SC083">
+      <div class="paper-ground"></div>
+      <div id="seg06-sc083-board">
+        <div id="seg06-sc083-hew" class="seg06-card"><div class="ph"><img src="assets/cutouts/seg06/hewlett_cut.png" alt="" /><div class="ht" style="background-image:url('assets/textures/halftone_03.png')"></div></div></div>
+        <div id="seg06-sc083-htag" class="seg06-tag t-label">Bill Hewlett</div>
+        <div id="seg06-sc083-uni" class="seg06-card"><div class="ph"><img src="assets/cutouts/seg06/harvard_widener_1600.jpg" alt="" /><div class="ht" style="background-image:url('assets/textures/halftone_03.png')"></div></div></div>
+        <div id="seg06-sc083-utag" class="seg06-tag t-label">studies</div>
+        <div id="seg06-sc083-blank"><div id="seg06-sc083-q" class="t-display">?</div></div>
+        <svg class="seg06-msvg" id="seg06-sc083-marks"></svg>
+      </div>
+      <div class="paper-tex" style="background-image:url('assets/textures/paper_cream_01.jpg')"></div>
+      <div class="folds"></div>
+    </div>
+
+    <!-- SC084 · shutter montage: Eastern companies (callback of SC018) -->
+    <div class="seg06-scene seg06-night" id="seg06-sc084" data-scene="SC084">
+      <div id="seg06-sc084-weave">
+        <div class="seg06-sc084-shot" id="seg06-sc084-sh1"><div class="plate"><img class="img" src="assets/archival/companies/bell_labs_west_street_building_historic.jpg" alt="" /><img class="fringe" src="assets/archival/companies/bell_labs_west_street_building_historic.jpg" alt="" /></div></div>
+        <div class="seg06-sc084-shot" id="seg06-sc084-sh2"><div id="seg06-sc084-pano"><div class="plate"><img class="img" src="assets/archival/companies/ge_schenectady_works_panorama_1907_lc.jpg" alt="" /></div></div></div>
+        <div class="seg06-sc084-shot" id="seg06-sc084-sh3"><div class="plate"><img class="img" src="assets/archival/companies/rca_victor_camden_coil_winder_hine_1937.jpg" alt="" /><img class="fringe" src="assets/archival/companies/rca_victor_camden_coil_winder_hine_1937.jpg" alt="" /></div></div>
+        <div class="seg06-sc084-shot" id="seg06-sc084-sh4"><div class="plate"><img class="img" src="assets/archival/companies/westinghouse_east_pittsburgh_postcard_c1930.jpg" alt="" /><img class="fringe" src="assets/archival/companies/westinghouse_east_pittsburgh_postcard_c1930.jpg" alt="" /></div></div>
+      </div>
+      <div id="seg06-sc084-shade"></div>
+      <div id="seg06-sc084-job" class="t-serif-i halate">a job</div>
+      <div class="vignette" style="background: radial-gradient(ellipse 72% 68% at 50% 50%, rgba(0,0,0,0) 50%, rgba(8,6,4,0.65) 100%)"></div>
+    </div>
+
+    <!-- SC085 · R10 old Palo Alto map: the plan -->
+    <div class="seg06-scene seg06-paper" id="seg06-sc085" data-scene="SC085">
+      <div class="paper-ground"></div>
+      <div id="seg06-sc085-stage">
+        <div id="seg06-sc085-tilt">
+          <div id="seg06-sc085-cam">
+            <div id="seg06-sc085-plane">
+              <img src="assets/maps/old/usgs_palo_alto_1899_seg06_crop_grey.jpg" alt="" />
+              <div class="pp" style="background-image:url('assets/textures/paper_cream_01.jpg')"></div>
+              <svg id="seg06-sc085-route" viewBox="0 0 1500 1200"></svg>
+              <div id="seg06-sc085-pin" class="t-display">1</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="paper-tex" style="background-image:url('assets/textures/paper_cream_01.jpg'); opacity: 0.35"></div>
+      <div id="seg06-sc085-kick" class="seg06-tag t-label">The plan</div>
+      <div id="seg06-sc085-co" class="t-serif-i">a company</div>
+      <div class="vignette" style="opacity: 0.5"></div>
+    </div>
+
+    <!-- SC086 · 2.5D garage (s10): California / PALO ALTO -->
+    <div class="seg06-scene seg06-night" id="seg06-sc086" data-scene="SC086">
+      <div class="seg06-g-stage" id="seg06-sc086-stage">
+        <div class="seg06-g-world" id="seg06-sc086-world">
+          <div class="seg06-g-layer" id="seg06-sc086-L0"><img class="seg06-g-bd" src="assets/cutouts/seg06/garage_backdrop_2440.jpg" alt="" /><div class="seg06-g-sky"></div></div>
+          <div class="seg06-g-layer" id="seg06-sc086-L1"><div id="seg06-sc086-title"><div class="ca t-label halate" id="seg06-sc086-ca">California</div><div class="pa t-display halate" id="seg06-sc086-pa">PALO ALTO</div></div></div>
+          <div class="seg06-g-layer" id="seg06-sc086-Lh"><div class="seg06-g-haze"></div></div>
+          <div class="seg06-g-layer" id="seg06-sc086-L2"><img class="seg06-g-gar" src="assets/archival/hp/layers/garage.png" alt="" /><div class="seg06-g-ground"></div></div>
+          <div class="seg06-g-layer" id="seg06-sc086-L3"><img class="seg06-g-hedge" src="assets/archival/hp/layers/hedge.png" alt="" /><img class="seg06-g-house" src="assets/archival/hp/layers/house.png" alt="" /></div>
+        </div>
+      </div>
+      <div class="seg06-g-rays" id="seg06-sc086-rays"></div>
+      <div class="vignette"></div>
+      <div class="seg06-credit t-label">Photo: BrokenSphere, CC BY-SA 3.0</div>
+    </div>
+
+    <!-- SC087 · document: Hewlett's thesis title page -->
+    <div class="seg06-scene seg06-paper" id="seg06-sc087" data-scene="SC087">
+      <div class="paper-ground"></div>
+      <div id="seg06-sc087-bg" style="background-image:url('assets/archival/documents/hewlett_thesis_titlepage_1939_recreation.png')"></div>
+      <div id="seg06-sc087-cam">
+        <div id="seg06-sc087-page">
+          <img src="assets/archival/documents/hewlett_thesis_titlepage_1939_recreation.png" alt="" />
+          <div class="ht" style="background-image:url('assets/textures/halftone_01_norm.jpg')"></div>
+          <div id="seg06-sc087-hl"></div>
+        </div>
+      </div>
+      <div id="seg06-sc087-tag" class="seg06-tag t-label">his thesis</div>
+      <div class="paper-tex" style="background-image:url('assets/textures/paper_cream_01.jpg'); opacity: 0.4"></div>
+      <div class="folds"></div>
+    </div>
+
+    <!-- SC088 · HQ photo: HP 200A audio oscillator -->
+    <div class="seg06-scene seg06-night" id="seg06-sc088" data-scene="SC088">
+      <div id="seg06-sc088-cam">
+        <div class="plate"><img class="img" src="assets/archival/hp/hp_200A_audio_oscillator_front_panel.jpg" alt="" /><img class="fringe" src="assets/archival/hp/hp_200A_audio_oscillator_front_panel.jpg" alt="" /></div>
+        <svg class="seg06-msvg" id="seg06-sc088-marks"></svg>
+      </div>
+      <div id="seg06-sc088-shade"></div>
+      <div id="seg06-sc088-name" class="t-display halate">audio oscillator</div>
+      <div class="vignette" style="background: radial-gradient(ellipse 72% 68% at 50% 52%, rgba(0,0,0,0) 48%, rgba(8,6,4,0.7) 100%)"></div>
+      <div class="seg06-credit t-label">Photo: Colin, CC BY-SA 2.0</div>
+    </div>
+
+    <!-- SC089 · signal diagram: oscillator -> audio equipment makers -->
+    <div class="seg06-scene seg06-paper" id="seg06-sc089" data-scene="SC089">
+      <div class="paper-ground"></div>
+      <div id="seg06-sc089-n1" class="seg06-node"><img src="assets/archival/hp/hp_200A_audio_oscillator_front_panel.jpg" alt="" /><div class="ht" style="background-image:url('assets/textures/halftone_03.png')"></div></div>
+      <div id="seg06-sc089-n2" class="seg06-node"><img src="assets/archival/companies/rca_victor_camden_cabinet_assembler_hine_1937.jpg" alt="" /><div class="ht" style="background-image:url('assets/textures/halftone_03.png')"></div></div>
+      <svg class="seg06-msvg" id="seg06-sc089-marks"></svg>
+      <div id="seg06-sc089-l1" class="t-label">audio oscillator</div>
+      <div id="seg06-sc089-l2" class="seg06-tag t-label">audio equipment makers</div>
+      <div id="seg06-sc089-cons" class="t-serif-i">for consumers</div>
+      <div class="paper-tex" style="background-image:url('assets/textures/paper_cream_01.jpg')"></div>
+      <div class="folds"></div>
+    </div>
+
+    <!-- SC090 · gate weave: 1940 sound testing footage -->
+    <div class="seg06-scene seg06-night" id="seg06-sc090" data-scene="SC090">
+      <div id="seg06-sc090-weave">
+        <video id="seg06-sc090-vid" src="assets/archival/footage/radio_factory_1940_headphone_testing.mp4" muted playsinline data-start="76.99" data-duration="4.88" data-media-start="0.6"></video>
+      </div>
+      <div id="seg06-sc090-shade"></div>
+      <svg id="seg06-sc090-wave" viewBox="0 0 1920 1080"><path id="seg06-sc090-sine" d="M0 540" fill="none" stroke="#f4eee2" stroke-width="3.5" stroke-linecap="round" /></svg>
+      <div id="seg06-sc090-test" class="t-display halate">test</div>
+      <div id="seg06-sc090-good" class="t-serif-i halate">good enough — or not?</div>
+      <div class="vignette" style="background: radial-gradient(ellipse 72% 68% at 50% 50%, rgba(0,0,0,0) 48%, rgba(8,6,4,0.72) 100%)"></div>
+    </div>
+
+    <!-- SC091 · collage: thesis -> product -> $ -->
+    <div class="seg06-scene seg06-paper" id="seg06-sc091" data-scene="SC091">
+      <div class="paper-ground"></div>
+      <div id="seg06-sc091-board">
+        <div id="seg06-sc091-a" class="seg06-card"><div class="ph"><img src="assets/archival/documents/hewlett_thesis_titlepage_1939_recreation.png" alt="" /></div></div>
+        <div id="seg06-sc091-b" class="seg06-card"><div class="ph"><img src="assets/archival/hp/hp_200A_audio_oscillator_front_panel.jpg" alt="" style="object-position: 50% 62%" /><div class="ht" style="background-image:url('assets/textures/halftone_03.png')"></div></div></div>
+        <svg id="seg06-sc091-c" viewBox="0 0 330 420"></svg>
+        <div id="seg06-sc091-ptag" class="seg06-tag t-label">PhD</div>
+        <div id="seg06-sc091-thesis" class="t-serif-i">thesis</div>
+        <svg class="seg06-msvg" id="seg06-sc091-marks"></svg>
+      </div>
+      <div id="seg06-sc091-comm" class="t-display halate ink">commercialize</div>
+      <div id="seg06-sc091-res" class="t-serif-i">all the research</div>
+      <div class="paper-tex" style="background-image:url('assets/textures/paper_cream_01.jpg')"></div>
+      <div class="folds"></div>
+    </div>
+
+    <!-- SC092 · rough choke: money -->
+    <div class="seg06-scene seg06-night" id="seg06-sc092" data-scene="SC092">
+      <canvas id="seg06-sc092-streaks" class="streaks" style="filter: blur(3px); opacity: 0.35"></canvas>
+      <div id="seg06-sc092-n3" class="seg06-note"><img src="assets/cutouts/seg06/gold_50.jpg" alt="" /><div class="ht" style="background-image:url('assets/textures/halftone_01_norm.jpg')"></div></div>
+      <div id="seg06-sc092-n4" class="seg06-note"><img src="assets/cutouts/seg06/gold_1000.jpg" alt="" /><div class="ht" style="background-image:url('assets/textures/halftone_01_norm.jpg')"></div></div>
+      <div id="seg06-sc092-n1" class="seg06-note"><img src="assets/cutouts/seg06/gold_100.jpg" alt="" /><div class="ht" style="background-image:url('assets/textures/halftone_01_norm.jpg')"></div></div>
+      <div id="seg06-sc092-n2" class="seg06-note"><img src="assets/cutouts/seg06/gold_20.jpg" alt="" /><div class="ht" style="background-image:url('assets/textures/halftone_01_norm.jpg')"></div></div>
+      <div id="seg06-sc092-dim"></div>
+      <div id="seg06-sc092-money" class="t-display halate yellow">money</div>
+      <div id="seg06-sc092-off" class="t-serif-i halate">to get it off the ground</div>
+      <div class="vignette"></div>
+    </div>
+
+    <!-- SC093 · random letters: fellowship -->
+    <div class="seg06-scene seg06-paper" id="seg06-sc093" data-scene="SC093">
+      <div class="paper-ground"></div>
+      <div id="seg06-sc093-board">
+        <div id="seg06-sc093-letter"><img src="assets/cutouts/made/fellowship_letter_1938.png" alt="" /><div class="ht" style="background-image:url('assets/textures/halftone_01_norm.jpg')"></div></div>
+        <div id="seg06-sc093-pin"></div>
+        <div id="seg06-sc093-ph1" class="seg06-card"><div class="ph"><img src="assets/cutouts/seg06/hewlett_cut.png" alt="" /></div></div>
+        <div id="seg06-sc093-ph2" class="seg06-card"><div class="ph"><img src="assets/cutouts/seg06/packard_cut.png" alt="" /></div></div>
+        <div id="seg06-sc093-clip"></div>
+      </div>
+      <div id="seg06-sc093-fel" class="t-display halate ink">fellowship</div>
+      <div id="seg06-sc093-makes" class="t-serif-i">he makes sure they get it</div>
+      <svg class="seg06-msvg" id="seg06-sc093-marks"></svg>
+      <div class="paper-tex" style="background-image:url('assets/textures/paper_cream_01.jpg')"></div>
+      <div class="folds"></div>
+    </div>
+
+    <!-- SC094 · hold on the garage, textures + flicker, fade to black -->
+    <div class="seg06-scene seg06-night" id="seg06-sc094" data-scene="SC094">
+      <div id="seg06-sc094-flick">
+        <div class="seg06-g-stage" style="filter: brightness(0.62)">
+          <div class="seg06-g-world" id="seg06-sc094-world">
+            <div class="seg06-g-layer"><img class="seg06-g-bd" src="assets/cutouts/seg06/garage_backdrop_2440.jpg" alt="" /><div class="seg06-g-sky"></div></div>
+            <div class="seg06-g-layer"><div class="seg06-g-haze"></div></div>
+            <div class="seg06-g-layer"><img class="seg06-g-gar" src="assets/archival/hp/layers/garage.png" alt="" /><div class="seg06-g-ground"></div></div>
+            <div class="seg06-g-layer"><img class="seg06-g-hedge" src="assets/archival/hp/layers/hedge.png" alt="" /><img class="seg06-g-house" src="assets/archival/hp/layers/house.png" alt="" /></div>
+          </div>
+        </div>
+      </div>
+      <div id="seg06-sc094-leak" style="background-image:url('assets/textures/lightleak_02.jpg')"></div>
+      <div class="vignette" style="background: radial-gradient(ellipse 70% 66% at 50% 50%, rgba(0,0,0,0) 45%, rgba(8,6,4,0.75) 100%)"></div>
+      <div class="seg06-credit t-label">Photo: BrokenSphere, CC BY-SA 3.0</div>
+    </div>
+
+    <svg id="seg06-iris" class="iris"></svg>
+    <div id="seg06-grain" class="tx tx-grain" style="background-image:url('assets/textures/grain_01_norm.jpg')"></div>
+    <div id="seg06-dust" class="tx tx-dust" style="background-image:url('assets/textures/dust_03.jpg')"></div>
+    <div id="seg06-black"></div>
+    <audio id="seg06-vo" class="temp-vo" src="vo10.mp3" data-start="0" data-duration="103.08" data-media-start="496.92" data-volume="1"></audio>
+  </div>
+  <script>
+  (function () {
+    const SEG = "seg06", SEG_START = 496.92, SEG_END = 600.00, DURATION = +(SEG_END - SEG_START).toFixed(2);
+    const T = (s) => +(s - SEG_START).toFixed(3);
+    const tl = gsap.timeline({ paused: true });
+    const $ = (id) => document.getElementById("seg06-" + id);
+    const C = (d, e) => FX.choppy(e || "power3.out", d, 12);
+    const NS = "http://www.w3.org/2000/svg";
+    const defs = $("defs");
+
+    // run per-frame effects only inside [a, b] (local seconds)
+    const gate = (a, b, fn) => {
+      const orig = FX.onFrame;
+      FX.onFrame = (f) => orig((t) => { if (t >= a - 0.05 && t <= b + 0.05) f(t); });
+      try { return fn(); } finally { FX.onFrame = orig; }
+    };
+    // scene visibility windows + per-ground texture levels
+    const scene = (id, a, b, ground) => {
+      tl.set($(id), { display: "block", autoAlpha: 1 }, a);
+      tl.set($(id), { display: "none", autoAlpha: 0 }, b);
+      tl.set($("grain"), { opacity: ground === "paper" ? 0.24 : 0.36 }, a);
+      tl.set($("dust"), { opacity: ground === "paper" ? 0.12 : 0.42 }, a);
+    };
+    // dashoffset draw-on for any path ("trim paths"), optional 12 fps
+    const drawPath = (svg, d, o, t, dur, ease) => {
+      const p = document.createElementNS(NS, "path");
+      p.setAttribute("d", d); p.setAttribute("fill", "none");
+      p.setAttribute("stroke", o.color || "#18222f"); p.setAttribute("stroke-width", o.width || 5);
+      p.setAttribute("stroke-linecap", "round"); p.setAttribute("stroke-linejoin", "round");
+      if (o.filter) p.setAttribute("filter", o.filter);
+      if (o.blend) p.style.mixBlendMode = o.blend;
+      if (o.opacity) p.setAttribute("opacity", o.opacity);
+      svg.appendChild(p);
+      const len = p.getTotalLength();
+      if (o.dash) {
+        // dashed line revealed by a mask-like second dasharray is complex; reveal dashed lines by clip width instead
+        p.setAttribute("stroke-dasharray", o.dash);
+      } else {
+        p.setAttribute("stroke-dasharray", `${len} ${len}`);
+        p.setAttribute("stroke-dashoffset", len);
+        tl.fromTo(p, { attr: { "stroke-dashoffset": len } }, { attr: { "stroke-dashoffset": 0 }, duration: dur, ease: ease || "power2.inOut", immediateRender: true }, t);
+      }
+      return p;
+    };
+    const ICON = '<svg viewBox="0 0 64 64" fill="currentColor"><path d="M32 3 L57 12 L32 21 L7 12 Z"/><path d="M49 15 L49 25 L51 25 L51 14.3 Z"/><path d="M51.5 25 a2.2 2.2 0 1 1 -4.4 0 a2.2 2.2 0 1 1 4.4 0 Z"/><path d="M19 15.5 L32 20.2 L45 15.5 L45 21 C45 23 39 25 32 25 C25 25 19 23 19 21 Z"/><circle cx="32" cy="31" r="8"/><path d="M16 62 L18 47 C19 42 24 40 28 40 L32 46 L36 40 C40 40 45 42 46 47 L48 62 Z"/></svg>';
+
+    // shared filters
+    FX.tintDefs(defs, "seg06-tint-paper", "#18222f", "#efe7d5");
+    FX.tintDefs(defs, "seg06-tint-night", "#1b1a18", "#7b756b");
+    FX.tintDefs(defs, "seg06-tint-money", "#1d1b18", "#a39a88");
+    gate(0, DURATION, () => {
+      FX.roughDefs(defs, "seg06-rough", { freq: 0.04, scale: 6 });
+      FX.roughDefs(defs, "seg06-rough9", { freq: 0.03, scale: 7 });
+      FX.roughDefs(defs, "seg06-roughhl", { freq: 0.04, scale: 9 });
+      FX.grain($("grain"), 601);
+      FX.dust($("dust"), 602, 2);
+    });
+    const iris = FX.iris($("iris"), { blades: 7, close: 0.15, hold: 2 / 24, open: 0.2 });
+
+    // =====================================================================
+    // SC078 · 496.92–504.92 · R5 isotype — the smartest students go East
+    // =====================================================================
+    scene("sc078", T(496.92), T(504.92), "paper");
+    {
+      const row = $("sc078-row"), icons = [];
+      for (let i = 0; i < 12; i++) {
+        const d = document.createElement("div");
+        d.className = "seg06-ico"; d.innerHTML = ICON;
+        d.style.left = (470 + i * 84) + "px"; d.style.top = "560px";
+        row.appendChild(d); icons.push(d);
+      }
+      const smart = [1, 4, 7, 10].map((i) => icons[i]);
+      const rest = icons.filter((x) => !smart.includes(x));
+      // dashed lane + arrow toward the East
+      const lane = $("sc078-lane");
+      const laneLine = drawPath(lane, "M430 468 L1550 468", { color: "#18222f", width: 3, dash: "14 12", opacity: 0.55 }, 0, 0);
+      const head = drawPath(lane, "M1530 452 L1556 468 L1530 484", { color: "#18222f", width: 3, opacity: 0.55 }, 0, 0);
+      tl.fromTo(laneLine, { attr: { "stroke-dashoffset": 0 }, opacity: 0 }, { opacity: 0.55, duration: 0.3, immediateRender: true }, T(499.48) - 0.1);
+      tl.fromTo(head, { opacity: 0 }, { opacity: 0.55, duration: 0.3, immediateRender: true }, T(499.48) - 0.1);
+      tl.to(laneLine, { attr: { "stroke-dashoffset": -104 }, duration: 4.0, ease: "none" }, T(499.48));
+
+      tl.fromTo("#seg06-sc078-cam", { scale: 1.0 }, { scale: 1.05, duration: 8.0, ease: "none" }, T(496.92));
+      tl.fromTo("#seg06-sc078-seal", { rotation: -6 }, { rotation: 4, duration: 8.0, ease: "none" }, T(496.92));
+      // icons pop in (12 fps), first one already there to match SC077's frozen graduate
+      // icon 0 = SC077's frozen graduate (192 px, frame centre) settling into its slot
+      tl.fromTo(icons[0], { x: 462, y: -48, scale: 2.36 }, { x: 0, y: 0, scale: 1, duration: 0.38, ease: "power3.inOut", immediateRender: true }, T(496.92));
+      icons.slice(1).forEach((ic, i) => tl.fromTo(ic, { scale: 0 }, { scale: 1, duration: 0.18, ease: C(0.18, "back.out(3)"), immediateRender: true }, T(496.92) + 0.12 + Math.floor(i * 0.42) / 12));
+      // "his smartest students"
+      FX.text.rise(tl, [$("sc078-title")], T(497.32) - 0.06, { dur: 0.6 });
+      smart.forEach((ic, j) => {
+        tl.to(ic, { color: "#e5482a", duration: 0.001 }, T(497.32) + j * 0.08);
+        tl.fromTo(ic, { scale: 1.35 }, { scale: 1, duration: 0.3, ease: C(0.3, "back.out(2)"), immediateRender: false }, T(497.32) + j * 0.08);
+      });
+      // the rest settle to grey ("they stay")
+      tl.to(rest, { color: "#9a968c", duration: 0.4, ease: "power1.inOut" }, T(499.96));
+      // the four hop up to the lane, then walk right in 8 fps steps
+      smart.forEach((ic, j) => {
+        tl.to(ic, { y: -120, duration: 0.3, ease: C(0.3, "power2.out") }, T(499.48) + j * 0.05);
+        const x0 = 470 + [1, 4, 7, 10][j] * 84, x1 = 1150 + j * 84;
+        tl.to(ic, { x: x1 - x0, duration: 3.3, ease: FX.choppy("sine.inOut", 3.3, 8) }, T(499.96) + 0.1);
+        tl.to(ic, { y: -132, duration: 1 / 8, yoyo: true, repeat: 25, ease: "none" }, T(499.96) + 0.1 + j * 0.04);
+      });
+      // "... out east": they land on East and turn navy
+      tl.fromTo("#seg06-sc078-east", { opacity: 0, scale: 0.7 }, { opacity: 1, scale: 1, duration: 0.3, ease: C(0.3, "back.out(2.5)") }, T(503.64) - 0.06);
+      tl.to(smart, { color: "#23415e", duration: 0.001, stagger: 0.05 }, T(503.64) - 0.04);
+      smart.forEach((ic, j) => tl.to(ic, { x: 1150 + j * 84 - (470 + [1, 4, 7, 10][j] * 84) + 640, duration: 0.7, ease: FX.choppy("power2.in", 0.7, 8) }, T(503.64) + 0.36 + j * 0.06));
+      // slow push into darkness -> streaks
+      tl.to("#seg06-sc078-dark", { opacity: 1, duration: 0.45, ease: "power1.in" }, T(504.92) - 0.45);
+    }
+
+    // =====================================================================
+    // SC079 · 504.92–513.08 · light streaks, 1938 counts up
+    // =====================================================================
+    scene("sc079", T(504.92), T(513.08), "night");
+    {
+      gate(T(504.92), T(513.08), () => FX.streaks($("sc079-streaks"), { seed: 79, speed: 0.95, xfreq: 0.15, lo: 0.44, hi: 0.86, gamma: 2.1, tint: [255, 196, 140], gain: 1.25 }));
+      $("sc079-s1").innerHTML = ICON; $("sc079-s2").innerHTML = ICON;
+      tl.fromTo("#seg06-sc079-streaks", { opacity: 0 }, { opacity: 0.78, duration: 1.0, ease: "power2.out" }, T(504.92));
+      tl.fromTo("#seg06-sc079-glow", { opacity: 0, scale: 0.9 }, { opacity: 1, scale: 1.06, duration: 8.16, ease: "sine.inOut" }, T(504.92));
+      tl.fromTo("#seg06-sc079-stage", { scale: 1.0 }, { scale: 1.05, duration: 8.16, ease: "none" }, T(504.92));
+      // "in 1938" — counts 1925 -> 1938
+      tl.fromTo("#seg06-sc079-year", { opacity: 0, scale: 1.06 }, { opacity: 1, scale: 1, duration: 0.25, ease: C(0.25) }, T(505.96) - 0.06);
+      FX.text.count(tl, $("sc079-year"), T(505.96) - 0.06, 1925, 1938, 0.9, (v) => String(Math.round(v)));
+      FX.text.rise(tl, [$("sc079-line")], T(507.64) - 0.06, { dur: 0.65 });
+      tl.to("#seg06-sc079-year, #seg06-sc079-line", { opacity: 0.35, duration: 0.4, ease: "power1.inOut" }, T(511.08) - 0.1);
+      // "two of his favorite students"
+      FX.text.random(tl, $("sc079-two"), T(511.08) - 0.06, { dur: 0.5, seed: 79 });
+      tl.fromTo(".seg06-sc079-stu", { opacity: 0, y: 90 }, { opacity: 1, y: 0, duration: 0.45, stagger: 0.14, ease: C(0.45) }, T(511.08) - 0.04);
+      // the two figures push toward camera -> they become the two cards
+      tl.to(".seg06-sc079-stu", { scale: 1.8, y: -160, opacity: 0, duration: 0.35, ease: "power2.in" }, T(513.08) - 0.35);
+      tl.to("#seg06-sc079-two, #seg06-sc079-year, #seg06-sc079-line", { opacity: 0, duration: 0.3 }, T(513.08) - 0.35);
+    }
+
+    // =====================================================================
+    // SC080 · 513.08–519.24 · Vox layered cards (approved s09, re-timed)
+    // =====================================================================
+    scene("sc080", T(513.08), T(519.24), "night");
+    {
+      const d = 6.16;
+      tl.fromTo("#seg06-sc080-bg1", { x: 0 }, { x: -50, duration: d, ease: "none" }, T(513.08));
+      tl.fromTo("#seg06-sc080-bg2", { x: 0, y: 0 }, { x: -110, y: 10, duration: d, ease: "none" }, T(513.08));
+      tl.fromTo("#seg06-sc080-bg3", { x: 0 }, { x: 90, duration: d, ease: "none" }, T(513.08));
+      tl.fromTo("#seg06-sc080-hew", { y: 80, rotation: -7, opacity: 0 }, { y: 0, rotation: -3, opacity: 1, duration: 0.6, ease: C(0.6) }, T(513.08) + 0.05);
+      tl.fromTo("#seg06-sc080-pac", { y: 80, rotation: 7, opacity: 0 }, { y: 0, rotation: 2.5, opacity: 1, duration: 0.6, ease: C(0.6) }, T(513.08) + 0.25);
+      const light = (who, first, last, tFirst, tLast) => {
+        tl.to(`#seg06-${who} .sil`, { opacity: 0, duration: 0.25, ease: C(0.25, "power1.out") }, tFirst);
+        tl.to(`#seg06-${who}`, { scale: 1.04, duration: 0.3, ease: "back.out(2)" }, tFirst);
+        tl.fromTo($(first), { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.3, ease: "power3.out", immediateRender: true }, tFirst);
+        FX.text.fill(tl, $(last), tLast, { per: 0.035, hold: 0.25, settle: 0.45 });
+      };
+      light("sc080-hew", "sc080-hf", "sc080-hl", T(515.72) - 0.05, T(515.96) - 0.06);
+      light("sc080-pac", "sc080-pf", "sc080-pl", T(516.84) - 0.05, T(517.24) - 0.06);
+      // hand-off: Hewlett side clears, Packard's card flies to his pin on the California map
+      tl.to("#seg06-sc080-hew, #seg06-sc080-hn, #seg06-sc080-pn, #seg06-sc080-bgwrap", { opacity: 0, duration: 0.3, ease: "power1.in" }, T(519.24) - 0.4);
+      tl.to("#seg06-sc080-pac", { x: -945, y: 260, scale: 0.42, rotation: -3, duration: 0.4, ease: C(0.4, "power2.inOut") }, T(519.24) - 0.4);
+    }
+
+    // =====================================================================
+    // SC081 · 519.24–527.32 · markups: stay in California / already gone
+    // =====================================================================
+    scene("sc081", T(519.24), T(527.32), "paper");
+    {
+      const marks = $("sc081-marks");
+      const rough = gate(T(519.24), T(527.32), () => FX.markupDefs(marks, "seg06-sc081-rough"));
+      const ca = $("sc081-ca"), caLen = ca.getTotalLength();
+      ca.setAttribute("stroke-dasharray", `${caLen} ${caLen}`);
+      tl.fromTo(ca, { attr: { "stroke-dashoffset": caLen }, fillOpacity: 0 }, { attr: { "stroke-dashoffset": 0 }, duration: 1.1, ease: "power2.inOut", immediateRender: true }, T(519.24));
+      tl.to(ca, { fillOpacity: 1, duration: 0.6, ease: "power1.out" }, T(519.24) + 0.7);
+      tl.fromTo("#seg06-sc081-board", { scale: 1.0 }, { scale: 1.04, duration: 8.08, ease: "none" }, T(519.24));
+      tl.fromTo("#seg06-sc081-card", { rotation: -5 }, { rotation: -2, duration: 0.4, ease: C(0.4, "back.out(2)") }, T(519.24));
+      tl.fromTo("#seg06-sc081-pin", { scale: 0 }, { scale: 1, duration: 0.2, ease: C(0.2, "back.out(3)"), immediateRender: true }, T(519.24) + 0.3);
+      tl.fromTo("#seg06-sc081-ptag", { opacity: 0, x: -16 }, { opacity: 1, x: 0, duration: 0.3, ease: C(0.3), immediateRender: true }, T(520.44) - 0.06);
+      // "convince them to stay in California"
+      FX.text.rise(tl, [$("sc081-stay")], T(523.40) - 0.06, { dur: 0.6 });
+      FX.markup.circle(tl, marks, T(524.12) - 0.04, { cx: 425, cy: 660, rx: 225, ry: 245, rot: -8, color: "#e5482a", width: 9, filter: rough, dur: 0.6, seed: 81 });
+      FX.text.random(tl, $("sc081-stan"), T(525.24) - 0.06, { dur: 0.4, seed: 81 });
+      // "Packard is already gone" — card slides out East along a navy arrow
+      FX.markup.arrow(tl, marks, T(525.96) - 0.04, { x1: 640, y1: 610, x2: 1830, y2: 520, bend: -110, color: "#23415e", width: 9, head: 34, filter: rough, dur: 0.5 });
+      tl.to("#seg06-sc081-mover", { x: 1700, y: -110, rotation: 6, duration: 0.65, ease: C(0.65, "power2.in") }, T(525.96) + 0.12);
+      FX.text.rise(tl, [$("sc081-gone")], T(526.92) - 0.06, { dur: 0.35, y: 18, blur: 6 });
+    }
+
+    // =====================================================================
+    // SC082 · 527.32–531.00 · GE Schenectady, around $100 a month
+    // =====================================================================
+    scene("sc082", T(527.32), T(531.00), "night");
+    {
+      tl.fromTo("#seg06-sc082-cam", { scale: 1.02, x: 0 }, { scale: 1.12, x: -30, duration: 3.68, ease: "none" }, T(527.32));
+      tl.fromTo("#seg06-sc082-ge", { opacity: 0, scale: 0.85 }, { opacity: 0.9, scale: 1, duration: 0.35, ease: C(0.35), immediateRender: true }, T(528.12) - 0.1);
+      FX.text.random(tl, $("sc082-lab"), T(528.12) - 0.06, { dur: 0.45, seed: 82 });
+      tl.fromTo("#seg06-sc082-around", { opacity: 0 }, { opacity: 1, duration: 0.25, immediateRender: true }, T(529.56) - 0.06);
+      tl.fromTo("#seg06-sc082-amt", { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, T(529.88) - 0.06);
+      FX.text.count(tl, $("sc082-amt"), T(529.88) - 0.06, 0, 100, 0.6, (v) => "$" + Math.round(v));
+      tl.fromTo("#seg06-sc082-month", { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.3, ease: "power3.out", immediateRender: true }, T(530.60) - 0.06);
+      // quick slide to paper
+      tl.to("#seg06-sc082-cam", { x: -290, duration: 0.14, ease: "power2.in" }, T(531.00) - 0.14);
+      tl.to("#seg06-sc082-row, #seg06-sc082-lab, #seg06-sc082-ge", { x: -260, duration: 0.14, ease: "power2.in" }, T(531.00) - 0.14);
+    }
+
+    // =====================================================================
+    // SC083 · 531.00–536.92 · collage fork: Bill Hewlett — studies, or ... ?
+    // =====================================================================
+    scene("sc083", T(531.00), T(536.92), "paper");
+    {
+      const marks = $("sc083-marks");
+      const rough = gate(T(531.00), T(536.92), () => FX.markupDefs(marks, "seg06-sc083-rough"));
+      tl.fromTo("#seg06-sc083-hew", { x: 180, rotation: 3, opacity: 1 }, { x: 0, rotation: -3, duration: 0.3, ease: C(0.3) }, T(531.00));
+      tl.fromTo("#seg06-sc083-htag", { opacity: 0, x: -20 }, { opacity: 1, x: 0, duration: 0.25, ease: C(0.25), immediateRender: true }, T(531.16) - 0.05);
+      tl.fromTo("#seg06-sc083-board", { scale: 1.0 }, { scale: 1.03, duration: 5.5, ease: "none" }, T(531.00));
+      // the fork grows ("planning on going to do something")
+      FX.markup.arrow(tl, marks, T(533.24) - 0.05, { x1: 600, y1: 500, x2: 1215, y2: 290, bend: -70, color: "#18222f", width: 7, head: 30, filter: rough, dur: 0.6 });
+      FX.markup.arrow(tl, marks, T(534.20) - 0.05, { x1: 600, y1: 520, x2: 1215, y2: 760, bend: 70, color: "#18222f", width: 7, head: 30, filter: rough, dur: 0.6 });
+      // "next part in his studies"
+      tl.fromTo("#seg06-sc083-uni", { y: -70, rotation: 7, opacity: 0 }, { y: 0, rotation: 2.5, opacity: 1, duration: 0.45, ease: C(0.45), immediateRender: true }, T(535.40) - 0.05);
+      tl.fromTo("#seg06-sc083-utag", { opacity: 0, x: 20 }, { opacity: 1, x: 0, duration: 0.25, ease: C(0.25), immediateRender: true }, T(536.04) - 0.06);
+      tl.fromTo("#seg06-sc083-blank", { opacity: 0 }, { opacity: 1, duration: 0.15, immediateRender: true }, T(534.20) + 0.5);
+      // "... or take up a job" — camera follows the lower branch into the shutter
+      tl.to("#seg06-sc083-board", { scale: 1.35, x: -60, y: -40, duration: 0.5, ease: "power2.in" }, T(536.68) - 0.26);
+      iris.at(tl, T(536.92));
+    }
+
+    // =====================================================================
+    // SC084 · 536.92–542.47 · shutter montage of Eastern companies (faster callback)
+    // =====================================================================
+    scene("sc084", T(536.92), T(542.47), "night");
+    {
+      gate(T(536.92), T(542.47), () => FX.weave($("sc084-weave"), { amp: 1.4, flicker: 0.035, seed: 84 }));
+      const cuts = [T(536.92), T(538.92) - 0.3, T(540.36) - 0.04, T(541.56), T(542.47)];
+      for (let k = 1; k <= 4; k++) {
+        const a = cuts[k - 1], b = cuts[k];
+        tl.set(`#seg06-sc084-sh${k}`, { opacity: 1 }, a);
+        if (k < 4) tl.set(`#seg06-sc084-sh${k}`, { opacity: 0 }, b);
+        if (k !== 2) tl.fromTo(`#seg06-sc084-sh${k} .plate`, { scale: 1.0 }, { scale: 1.08, duration: b - a + 0.25, ease: "none" }, a);
+        if (k > 1) iris.at(tl, a);
+      }
+      tl.fromTo("#seg06-sc084-pano", { x: -300 }, { x: -1900, duration: cuts[2] - cuts[1] + 0.2, ease: "none" }, cuts[1]);
+      FX.text.rise(tl, [$("sc084-job")], T(537.40) - 0.06, { dur: 0.5 });
+      tl.set("#seg06-sc084-job", { opacity: 0 }, cuts[1]);
+      iris.at(tl, T(542.47));
+    }
+
+    // =====================================================================
+    // SC085 · 542.47–549.03 · R10 old Palo Alto map: the plan
+    // =====================================================================
+    scene("sc085", T(542.47), T(549.03), "paper");
+    {
+      const svg = $("sc085-route");
+      const rough = gate(T(542.47), T(549.03), () => FX.markupDefs(svg, "seg06-sc085-rough"));
+      svg.setAttribute("viewBox", "0 0 1500 1200");
+      const cam = (cx, cy, z) => ({ x: 960 - cx * z, y: 540 - cy * z, scale: z });
+      // Stanford Main Quad -> Palm Drive -> University Ave -> Waverley -> 367 Addison
+      const route = "M542 842 L540 760 L541 690 L548 650 L578 575 L600 522 L622 478 L672 437 L721 397 L756 440 L790 481";
+      const marker = drawPath(svg, route, { color: "#f2d33b", width: 20, filter: rough, blend: "multiply" }, T(545.35) + 0.15, 2.45, FX.choppy("none", 2.45, 12));
+      tl.set("#seg06-sc085-cam", cam(720, 650, 1.35), T(542.47));
+      tl.to("#seg06-sc085-cam", Object.assign(cam(560, 790, 1.55), { duration: 2.9, ease: "power2.inOut" }), T(542.47) + 0.1);
+      tl.to("#seg06-sc085-cam", Object.assign(cam(612, 520, 1.7), { duration: 1.5, ease: "sine.inOut" }), T(545.35) + 0.15);
+      tl.to("#seg06-sc085-cam", Object.assign(cam(760, 470, 1.85), { duration: 1.1, ease: "sine.inOut" }), T(546.87) + 0.1);
+      const ring = FX.markup.circle(tl, svg, T(548.15) - 0.06, { cx: 790, cy: 470, rx: 52, ry: 46, rot: -10, color: "#f2d33b", width: 9, filter: rough, dur: 0.4, seed: 85 });
+      ring.style.mixBlendMode = "multiply";
+      tl.fromTo("#seg06-sc085-pin", { scale: 0, y: -30 }, { scale: 1, y: 0, duration: 0.3, ease: C(0.3, "back.out(3)"), immediateRender: true }, T(548.15) - 0.04);
+      // "THE PLAN" kicker, "a company"
+      tl.fromTo("#seg06-sc085-kick", { opacity: 0, x: -20 }, { opacity: 1, x: 0, duration: 0.25, ease: C(0.25), immediateRender: true }, T(544.39) - 0.06);
+      FX.text.rise(tl, [$("sc085-co")], T(548.15) - 0.06, { dur: 0.4, y: 16, blur: 6 });
+      tl.to("#seg06-sc085-kick, #seg06-sc085-co", { opacity: 0, duration: 0.2 }, T(548.79) + 0.05);
+      // dive into the pin -> the garage world
+      tl.to("#seg06-sc085-cam", Object.assign(cam(790, 470, 6.0), { duration: 0.32, ease: "expo.in" }), T(548.79) - 0.08);
+      tl.to("#seg06-sc085-stage", { filter: "blur(10px)", duration: 0.16, ease: "power1.in" }, T(549.03) - 0.16);
+    }
+
+    // =====================================================================
+    // SC086 · 549.03–556.31 · 2.5D garage (approved s10, re-timed)
+    // =====================================================================
+    scene("sc086", T(549.03), T(556.31), "night");
+    {
+      const choke = gate(T(549.03), T(556.31), () => FX.roughDefs(defs, "seg06-choke86", { freq: 0.03, scale: 6, choke: 0 }));
+      const P = 1200;
+      [["#seg06-sc086-L0", -900], ["#seg06-sc086-L1", -420], ["#seg06-sc086-Lh", -200], ["#seg06-sc086-L2", 0], ["#seg06-sc086-L3", 320]].forEach(([sel, z]) =>
+        gsap.set(sel, { z, scale: (P - z) / P }));
+      const d = 7.28;
+      tl.fromTo("#seg06-sc086-stage", { scale: 1.14, filter: "blur(9px)" }, { scale: 1, filter: "blur(0px)", duration: 0.4, ease: "expo.out" }, T(549.03));
+      tl.fromTo("#seg06-sc086-rays", { opacity: 0.35, x: 0 }, { opacity: 0.6, x: -80, duration: d, ease: "none" }, T(549.03));
+      tl.fromTo("#seg06-sc086-world", { x: 150, z: -80, rotationY: -3 }, { x: -150, z: 150, rotationY: 3, duration: d, ease: "sine.inOut" }, T(549.03));
+      // "here in California, in Palo Alto" — title tucked behind the roof
+      FX.text.random(tl, $("sc086-ca"), T(549.03) - 0.04, { dur: 0.45, seed: 86 });
+      tl.fromTo("#seg06-sc086-pa", { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, T(549.91) - 0.06);
+      FX.choke(tl, choke, T(549.91) - 0.06, 18, 0.6);
+    }
+
+    // =====================================================================
+    // SC087 · 556.31–561.59 · Hewlett's thesis title page + highlighter
+    // =====================================================================
+    scene("sc087", T(556.31), T(561.59), "paper");
+    {
+      const cam = (cx, cy, z, sx) => ({ x: (sx || 760) - cx * z, y: 540 - cy * z, scale: z });
+      tl.fromTo("#seg06-sc087-cam", cam(425, 560, 0.86), Object.assign(cam(425, 470, 0.98), { duration: 4.0, ease: "sine.inOut" }), T(556.31));
+      tl.fromTo("#seg06-sc087-page", { y: 140, rotationX: 16, rotationY: -12, rotation: -5, transformPerspective: 2400 },
+        { y: 0, rotationX: 7, rotationY: -6, rotation: -2.5, duration: 4.5, ease: "power2.out" }, T(556.31));
+      tl.fromTo("#seg06-sc087-bg", { x: 0 }, { x: -50, duration: 5.3, ease: "none" }, T(556.31));
+      tl.fromTo("#seg06-sc087-tag", { opacity: 0, x: 20 }, { opacity: 1, x: 0, duration: 0.25, ease: C(0.25), immediateRender: true }, T(560.31) - 0.06);
+      tl.fromTo("#seg06-sc087-hl", { scaleX: 0 }, { scaleX: 1, duration: 0.45, ease: C(0.45, "power2.inOut"), immediateRender: true }, T(561.11) - 0.12);
+      // push into "Oscillator"
+      tl.to("#seg06-sc087-tag", { opacity: 0, duration: 0.15 }, T(561.11) + 0.15);
+      tl.to("#seg06-sc087-cam", Object.assign(cam(427, 376, 2.6, 960), { duration: 0.42, ease: "expo.in" }), T(561.11) + 0.06);
+    }
+
+    // =====================================================================
+    // SC088 · 561.59–567.03 · HP 200A audio oscillator, HQ photo + circle
+    // =====================================================================
+    scene("sc088", T(561.59), T(567.03), "night");
+    {
+      const marks = $("sc088-marks");
+      const rough = gate(T(561.59), T(567.03), () => FX.markupDefs(marks, "seg06-sc088-rough"));
+      tl.fromTo("#seg06-sc088-cam", { scale: 1.16 }, { scale: 1.0, duration: 0.5, ease: "expo.out" }, T(561.59));
+      tl.to("#seg06-sc088-cam", { scale: 1.2, duration: 4.94, ease: "sine.inOut" }, T(561.59) + 0.5);
+      FX.text.odometer(tl, $("sc088-name"), T(563.43) - 0.06, { dur: 0.6, stagger: 0.03, spins: 5, seed: 88 });
+      FX.markup.circle(tl, marks, T(565.27) - 0.04, { cx: 930, cy: 588, rx: 250, ry: 232, rot: -6, color: "#e5482a", width: 9, filter: rough, dur: 0.55, seed: 88 });
+    }
+
+    // =====================================================================
+    // SC089 · 567.03–573.91 · signal diagram: oscillator -> audio equipment makers
+    // =====================================================================
+    scene("sc089", T(567.03), T(573.91), "paper");
+    {
+      const marks = $("sc089-marks");
+      const rough = gate(T(567.03), T(573.91), () => FX.markupDefs(marks, "seg06-sc089-rough"));
+      tl.fromTo("#seg06-sc089-n1", { scale: 0.55, rotation: -8 }, { scale: 1, rotation: 0, duration: 0.35, ease: C(0.35, "back.out(2)"), immediateRender: true }, T(567.03));
+      tl.fromTo("#seg06-sc089-l1", { opacity: 0 }, { opacity: 1, duration: 0.25, immediateRender: true }, T(567.03) + 0.2);
+      FX.markup.arrow(tl, marks, T(567.27), { x1: 660, y1: 520, x2: 1262, y2: 520, bend: 0.01, color: "#18222f", width: 7, head: 28, filter: rough, dur: 0.6 });
+      tl.fromTo("#seg06-sc089-n2", { scale: 0, rotation: 8 }, { scale: 1, rotation: 0, duration: 0.35, ease: C(0.35, "back.out(2)"), immediateRender: true }, T(567.99) - 0.1);
+      tl.fromTo("#seg06-sc089-l2", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.25, ease: C(0.25), immediateRender: true }, T(567.99) - 0.06);
+      FX.text.rise(tl, [$("sc089-cons")], T(571.67) - 0.06, { dur: 0.55 });
+      // a clean sine wave runs along the signal line
+      let d = "M680 520";
+      for (let x = 680; x <= 1236; x += 4) d += ` L${x} ${(520 - 46 * Math.sin(((x - 680) / 556) * Math.PI * 2 * 4)).toFixed(1)}`;
+      drawPath(marks, d, { color: "#e5482a", width: 6, filter: rough }, T(572.31) - 0.02, 1.5, FX.choppy("none", 1.5, 12));
+    }
+
+    // =====================================================================
+    // SC090 · 573.91–578.79 · 1940 sound testing footage, weave + sine overlay
+    // =====================================================================
+    scene("sc090", T(573.91), T(578.79), "night");
+    {
+      const a = T(573.91), b = T(578.79), wob0 = T(574.87) + 0.43, clean = T(577.75);
+      const sine = $("sc090-sine");
+      gate(a, b, () => {
+        FX.weave($("sc090-weave"), { amp: 1.8, flicker: 0.05, seed: 90 });
+        FX.onFrame((t) => {
+          const k = t - a;
+          const wob = t < wob0 ? 0.15 : t < clean ? 1 : 0;
+          let dd = "";
+          for (let x = 0; x <= 1920; x += 8) {
+            const ph = (x / 1920) * Math.PI * 2 * 5 - k * 6;
+            const amp = 48 * (1 + wob * (FX.noise2(x * 0.004, k * 3, 90) - 0.5) * 1.8);
+            const jit = wob * (FX.noise2(x * 0.05, k * 12, 91) - 0.5) * 26;
+            dd += (x ? " L" : "M") + x + " " + (300 - amp * Math.sin(ph + wob * 2 * FX.noise2(x * 0.01, k, 92)) + jit).toFixed(1);
+          }
+          sine.setAttribute("d", dd);
+        });
+      });
+      tl.fromTo("#seg06-sc090-wave", { opacity: 0 }, { opacity: 0.75, duration: 0.5 }, a + 0.2);
+      tl.fromTo("#seg06-sc090-test", { opacity: 0, scale: 1.08 }, { opacity: 1, scale: 1, duration: 0.25, ease: C(0.25), immediateRender: true }, T(573.91));
+      tl.to("#seg06-sc090-test", { opacity: 0.4, duration: 0.3 }, T(577.75) - 0.2);
+      FX.text.rise(tl, [$("sc090-good")], T(577.75) - 0.06, { dur: 0.5 });
+      tl.fromTo("#seg06-sc090-wave", { scale: 1 }, { scale: 1.02, duration: 0.12, yoyo: true, repeat: 1 }, clean);
+    }
+
+    // =====================================================================
+    // SC091 · 578.79–588.15 · collage: thesis -> product -> commercialize
+    // =====================================================================
+    scene("sc091", T(578.79), T(588.15), "paper");
+    {
+      const marks = $("sc091-marks");
+      const rough = gate(T(578.79), T(588.15), () => FX.markupDefs(marks, "seg06-sc091-rough"));
+      // own-made price tag card: blank tag with a "$"
+      const tag = $("sc091-c");
+      tag.innerHTML = `<g filter="url(#seg06-rough)">
+          <path d="M40 90 L165 20 L290 90 L290 400 L40 400 Z" fill="#f3ecdc" stroke="#18222f" stroke-width="6" stroke-linejoin="round"/>
+          <circle cx="165" cy="80" r="16" fill="none" stroke="#18222f" stroke-width="6"/>
+          <path d="M165 64 C150 20 120 0 90 4" fill="none" stroke="#18222f" stroke-width="4"/>
+          <text x="165" y="320" text-anchor="middle" class="t-display" font-size="230" fill="#18222f">$</text>
+        </g>`;
+      tl.fromTo("#seg06-sc091-board", { scale: 1.0 }, { scale: 1.035, duration: 9.36, ease: "none" }, T(578.79));
+      tl.fromTo("#seg06-sc091-a", { y: 80, rotation: -9, opacity: 1 }, { y: 0, rotation: -3.5, opacity: 1, duration: 0.45, ease: C(0.45), immediateRender: true }, T(578.79));
+      tl.fromTo("#seg06-sc091-ptag", { opacity: 0, x: -20 }, { opacity: 1, x: 0, duration: 0.25, ease: C(0.25), immediateRender: true }, T(580.39) - 0.06);
+      tl.fromTo("#seg06-sc091-thesis", { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.3, ease: C(0.3), immediateRender: true }, T(581.27) - 0.06);
+      // "do an idea, something similar"
+      FX.markup.arrow(tl, marks, T(583.11) - 0.1, { x1: 528, y1: 380, x2: 664, y2: 400, bend: -40, color: "#18222f", width: 6, head: 26, filter: rough, dur: 0.4 });
+      tl.fromTo("#seg06-sc091-b", { y: -70, rotation: 8, opacity: 0 }, { y: 0, rotation: 2, opacity: 1, duration: 0.45, ease: C(0.45), immediateRender: true }, T(583.11) + 0.2);
+      // "commercialize"
+      FX.markup.arrow(tl, marks, T(585.03) - 0.25, { x1: 1240, y1: 400, x2: 1385, y2: 392, bend: -40, color: "#18222f", width: 6, head: 26, filter: rough, dur: 0.35 });
+      tl.fromTo("#seg06-sc091-c", { scale: 0.6, rotation: -14, opacity: 0 }, { scale: 1, rotation: -4, opacity: 1, duration: 0.35, ease: C(0.35, "back.out(2)"), immediateRender: true }, T(585.03) - 0.06);
+      tl.fromTo("#seg06-sc091-comm", { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, T(585.03) - 0.06);
+      FX.text.fill(tl, $("sc091-comm"), T(585.03) - 0.06, { per: 0.03, hold: 0.3, settle: 0.5, cool: "#18222f" });
+      FX.text.rise(tl, [$("sc091-res")], T(587.27) - 0.06, { dur: 0.5 });
+      // the $ tag flips -> banknotes
+      tl.to("#seg06-sc091-c", { rotationY: 90, transformPerspective: 1200, duration: 0.25, ease: "power2.in" }, T(587.75) + 0.15);
+    }
+
+    // =====================================================================
+    // SC092 · 588.15–594.15 · banknotes rise, MONEY chokes in
+    // =====================================================================
+    scene("sc092", T(588.15), T(594.15), "night");
+    {
+      const choke = gate(T(588.15), T(594.15), () => {
+        FX.streaks($("sc092-streaks"), { seed: 92, speed: 0.4, xfreq: 0.13, lo: 0.5, hi: 0.9, gamma: 2.4, tint: [255, 214, 170], gain: 1.0 });
+        return FX.roughDefs(defs, "seg06-choke92", { freq: 0.05, scale: 5, choke: 0 });
+      });
+      const notes = [["n1", 260, -340, -8, -4], ["n2", 300, -380, 7, 3], ["n3", 160, -220, 5, 9], ["n4", 180, -240, -6, -10]];
+      notes.forEach(([n, y0, y1, r0, r1]) => tl.fromTo(`#seg06-sc092-${n}`, { y: y0, rotation: r0 }, { y: y1, rotation: r1, duration: 6.0, ease: FX.choppy("none", 6.0, 12) }, T(588.15)));
+      tl.fromTo("#seg06-sc092-dim", { opacity: 0.4 }, { opacity: 1, duration: 0.8 }, T(591.59) - 0.8);
+      tl.fromTo("#seg06-sc092-money", { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, T(591.59) - 0.06);
+      FX.choke(tl, choke, T(591.59) - 0.06, 16, 0.6);
+      FX.text.rise(tl, [$("sc092-off")], T(592.47) - 0.06, { dur: 0.6 });
+      // a note flips over -> the fellowship letter
+      tl.to("#seg06-sc092-n2", { rotationY: 90, transformPerspective: 1400, duration: 0.3, ease: "power2.in" }, T(593.67) + 0.15);
+    }
+
+    // =====================================================================
+    // SC093 · 594.15–598.87 · fellowship letter, random letters + underline
+    // =====================================================================
+    scene("sc093", T(594.15), T(598.87) + 0.55, "paper");
+    {
+      const marks = $("sc093-marks");
+      const rough = gate(T(594.15), T(598.87) + 0.55, () => FX.markupDefs(marks, "seg06-sc093-rough"));
+      tl.fromTo("#seg06-sc093-letter", { rotationY: -80, transformPerspective: 1400, x: 120 }, { rotationY: 0, x: 0, duration: 0.4, ease: C(0.4) }, T(594.15));
+      tl.fromTo("#seg06-sc093-pin", { scale: 0 }, { scale: 1, duration: 0.2, ease: C(0.2, "back.out(3)"), immediateRender: true }, T(594.15) + 0.35);
+      tl.fromTo("#seg06-sc093-ph1, #seg06-sc093-ph2, #seg06-sc093-clip", { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.3, stagger: 0.12, ease: C(0.3), immediateRender: true }, T(594.15) + 0.45);
+      tl.fromTo("#seg06-sc093-board", { scale: 1.0 }, { scale: 1.06, duration: 5.3, ease: "none" }, T(594.15));
+      FX.text.random(tl, $("sc093-fel"), T(594.71) - 0.06, { dur: 0.6, seed: 93 });
+      FX.text.rise(tl, [$("sc093-makes")], T(597.27) - 0.06, { dur: 0.55 });
+      FX.markup.underline(tl, marks, T(598.23) - 0.06, { x1: 960, x2: 1780, y: 572, color: "#e5482a", width: 10, filter: rough, dur: 0.4 });
+    }
+
+    // =====================================================================
+    // SC094 · 598.87–600.00 · dissolve to the garage, light leak, fade to black
+    // =====================================================================
+    {
+      const a = T(598.87);
+      tl.set($("sc094"), { display: "block", visibility: "visible" }, a);
+      tl.fromTo($("sc094"), { opacity: 0 }, { opacity: 1, duration: 0.45, ease: "power1.inOut", immediateRender: false }, a);
+      tl.set($("grain"), { opacity: 0.4 }, a + 0.45);
+      tl.set($("dust"), { opacity: 0.5 }, a + 0.45);
+      document.querySelectorAll("#seg06-sc094-world > .seg06-g-layer").forEach((el, i) => { const z = [-900, -200, 0, 320][i]; gsap.set(el, { z, scale: (1200 - z) / 1200 }); });
+      gate(a, DURATION, () => FX.weave($("sc094-flick"), { amp: 0.8, flicker: 0.07, seed: 94 }));
+      tl.fromTo("#seg06-sc094-world", { x: -150, z: 150, rotationY: 3, scale: 1.0 }, { x: -175, z: 185, rotationY: 3.4, scale: 1.0, duration: DURATION - a, ease: "none" }, a);
+      tl.fromTo("#seg06-sc094-leak", { opacity: 0, x: -80 }, { opacity: 0.38, x: 40, duration: DURATION - a, ease: "sine.inOut" }, a);
+      tl.fromTo("#seg06-black", { opacity: 0 }, { opacity: 1, duration: DURATION - T(599.43) - 0.06, ease: "power1.inOut" }, T(599.43));
+    }
+
+    // scenes stay out of the render tree outside their windows (built while laid out, hidden now)
+    gsap.set(".seg06-scene", { display: "none" });
+    FX.mount(tl, DURATION);
+    window.__timelines = window.__timelines || {};
+    window.__timelines[SEG] = tl;
+  })();
+  </script>
+</template>
+</body>
+</html>
