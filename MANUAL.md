@@ -117,6 +117,21 @@ jittered per frame by `FX.grain`) + `tx-dust` (dust_01/02/03, screen ~0.4–0.55
 `FX.dust`) + `.vignette`. Paper scenes add `paper-tex` (paper_cream_01, multiply) + `.folds`.
 Print/newspaper adds halftone (halftone_01_norm overlay, or the canonical `halftone` treatment).
 
+### 3.4 Changing or adding a texture (always from Texturelabs)
+When the user asks for a different texture, it comes from **https://texturelabs.org** (free for commercial video
+use, attribution optional; never redistribute the files publicly, never use them to train models).
+1. Find candidates by category (`/category/grunge/`, `/category/paper/`, `/category/lensfx/`, …) or the site search.
+   Each texture page is `https://texturelabs.org/textures/<name_NNN>/` and shows previews — read the pages with
+   WebFetch / `agent-reach web read <url>` and pick 2–3 that fit (dark background = dust/scratches/leaks; light = paper).
+2. **Downloading needs the site's own "Download" button** (it hands out a short-lived link). Do NOT script the site's
+   download endpoint directly — that was blocked as circumventing the site. Use a browser tool if this session has
+   one (click the large-size download, then fetch the link it gives). If no browser tool is available, give the user
+   the exact page URLs and ask them to download the files and drop them in `assets/textures/_raw/` (or upload them).
+3. Prepare each file: `.venv/bin/python tools/prep_texture.py assets/textures/_raw/<file>.jpg <descriptive_name>` —
+   makes the 1920 px copy, hi-res copy and the 50 %-grey `_norm` version, and prints the right blend mode.
+4. Add a row to `assets/textures/SOURCES.md`, swap the filename in the composition(s) (`.tx-grain`, `.tx-dust`,
+   `.paper-tex`, halftone layers), keep it subtle (opacity rules in §3.3), snapshot before/after, and show the user.
+
 ## 4. HyperFrames rules that bite (read `/hyperframes-core` once)
 
 ### 4.1 Composition skeleton (copy any `compositions/sNN-*.html`)
@@ -291,6 +306,7 @@ Vary every layout each time it's reused (different colour lead, orientation, den
 - 2026-10-29 — v1: samples s01–s10; palette locked; markups (s11) added from the Vox markup reel; paper-
   aesthetic chart (s03) from the user's Pinterest refs; sound brief from the Vox marimba reel; sync audit tool;
   halftone tool; verified 12 trillion-dollar companies for the map.
+- 2026-10-30 — §3.4 added: how to fetch new Texturelabs textures (browser download or ask the user) + tools/prep_texture.py.
 - 2026-10-30 — §6 rewritten: worked example + still for every reference layout, and the method for new reference images (§6.1). Map/relief/old-map assets added to the repo.
 - 2026-10-30 — packaged as a GitHub repo (vox-edit-kit): setup.sh for Linux/macOS, portable .venv paths, expected/ previews of the 11 approved samples.
 - 2026-10-29 — final 10-min render with sound: renders/taiwan_first10_final.mp4 (VO −27.2 LUFS, identical to raw). Map-heavy segments are generated from templates: tools/seg01/gen_seg01.py, tools/seg03/gen_seg03.py (edit the template, re-run). Sound: tools/audio/place_sound.py rebuilds all three beds from compositions/segNN.sfx.json.
