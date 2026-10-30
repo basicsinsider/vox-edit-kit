@@ -18,5 +18,5 @@ carry their own `SOURCES.md` in `assets/**`.
 | data | companiesmarketcap.com (trillion-dollar list, dated) | always date-stamp data |
 | reference reels | Instagram via Agent Reach's yt-dlp | studied copies in `references/reels/` |
 
-Blocked or flaky from servers: Library of Congress / Chronicling America APIs (403/503), Wikimedia originals (429),
+Blocked or flaky: Library of Congress search/API (blocks all scripts; its image servers tile/cdn.loc.gov work — MANUAL §8.1), Wikimedia originals (429),
 Instagram from datacenter IPs. Cloud sessions: see `CLOUD_SETUP.md` (Full network access) and the fetch relay (§8.2).
