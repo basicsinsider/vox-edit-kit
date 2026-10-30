@@ -4,83 +4,101 @@
 <body>
 <template>
   <style>
-    #root { position: absolute; inset: 0; overflow: hidden; background: #121110; }
-    #s04-bg { position: absolute; inset: -60px; background-size: cover; background-position: center 60%; filter: url(#s04-tint) blur(6px); opacity: 0.6; }
-    #s04-floor { position: absolute; left: 0; right: 0; bottom: 0; height: 260px; background: linear-gradient(180deg, rgba(18,17,16,0), rgba(10,9,8,0.9)); }
-    #s04-set { position: absolute; left: 120px; top: 70px; width: 1040px; height: 991px; transform-origin: 50% 60%; }
-    #s04-screen { position: absolute; left: 100px; top: 95px; width: 693px; height: 509px; overflow: hidden; border-radius: 17% / 21%; background: #0b0b0b; }
-    #s04-screen-inner { position: absolute; inset: 0; transform-origin: 50% 50%; }
-    #s04-vid { position: absolute; left: -20px; top: -20px; width: 733px; height: 549px; object-fit: cover; }
-    #s04-glare { position: absolute; inset: 0; background: radial-gradient(ellipse 70% 60% at 30% 22%, rgba(255,255,255,0.14), rgba(255,255,255,0) 60%),
-      radial-gradient(ellipse 95% 90% at 50% 50%, rgba(0,0,0,0) 62%, rgba(0,0,0,0.55) 100%); }
-    #s04-flash { position: absolute; inset: 0; background: #f4f1ea; }
-    #s04-tv { position: absolute; left: 0; top: 0; width: 1040px; height: 991px; }
-    #s04-shadow { position: absolute; left: 90px; top: 930px; width: 860px; height: 70px; border-radius: 50%; background: rgba(0,0,0,0.6); filter: blur(24px); }
-    #s04-text { position: absolute; left: 1230px; top: 230px; width: 620px; }
-    #s04-schools .s { font-size: 80px; line-height: 1.02; }
-    #s04-schools .amp { font-size: 46px; color: #e8dccb; margin: 4px 0 6px; }
-    #s04-era { margin-top: 26px; font-size: 30px; color: #cfc6b6; }
-    #s04-era .y { font-size: 120px; text-transform: none; letter-spacing: -0.01em; color: #f2cf3b; display: block; margin-top: 4px; }
-    #s04-opp { position: absolute; left: 1230px; top: 420px; width: 640px; }
-    #s04-opp .l1 { font-size: 54px; color: #e8dccb; line-height: 1.1; }
-    #s04-opp .l2 { font-size: 168px; margin-top: 6px; filter: url(#s04-choke); }
+    #root { position: absolute; inset: 0; overflow: hidden; background: var(--night); }
+    #s04-defs { position: absolute; width: 0; height: 0; }
+    #s04-bg { position: absolute; left: -260px; top: -150px; width: 2500px; height: 1350px; overflow: hidden; }
+    #s04-bg img { position: absolute; left: -60px; top: -40px; width: 2620px; filter: url(#s04-tint) blur(3px); opacity: 0.5; }
+    #s04-bgshade { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(20,19,18,0.35) 0%, rgba(20,19,18,0.15) 45%, rgba(20,19,18,0.82) 70%, rgba(20,19,18,0.9) 100%); }
+    #s04-set { position: absolute; left: 110px; top: 96px; width: 960px; height: 915px; }
+    #s04-tube { position: absolute; left: 88px; top: 84px; width: 650px; height: 480px; background: radial-gradient(ellipse at 50% 45%, #1c1c1b, #050505 75%); }
+    #s04-screen { position: absolute; left: 88px; top: 84px; width: 650px; height: 480px; overflow: hidden; background: #0b0b0b; transform-origin: 50% 50%; }
+    #s04-film { position: absolute; left: 0; top: 0; width: 650px; height: 480px; object-fit: cover; }
+    #s04-flash { position: absolute; inset: 0; background: #f4eee2; opacity: 0; mix-blend-mode: screen; }
+    #s04-glare { position: absolute; inset: 0; background: radial-gradient(ellipse 60% 45% at 30% 22%, rgba(255,250,240,0.20), rgba(255,250,240,0) 70%); mix-blend-mode: screen; }
+    #s04-tv { position: absolute; left: 0; top: 0; width: 960px; height: 915px; filter: drop-shadow(0 30px 50px rgba(0,0,0,0.6)); }
+    #s04-col { position: absolute; left: 1150px; top: 250px; width: 700px; }
+    #s04-kick { font-size: 24px; color: #d9cdb9; }
+    #s04-stan, #s04-berk { font-size: 104px; line-height: 1.04; white-space: nowrap; }
+    #s04-or { font-size: 46px; color: #e8dccb; margin: 2px 0 0 4px; }
+    #s04-era { margin-top: 34px; }
+    #s04-era .k { font-size: 24px; color: #d9cdb9; }
+    #s04-1920 { font-size: 130px; line-height: 1; margin-top: 6px; display: inline-block; transform-origin: 0 70%; }
+    #s04-col2 { position: absolute; left: 1150px; top: 330px; width: 760px; }
+    #s04-after { font-size: 50px; color: #e8dccb; }
+    #s04-opp { font-size: 56px; line-height: 1.12; margin-top: 26px; color: var(--bone); }
+    #s04-opp .west { color: var(--vermilion); font-style: normal; font-weight: 600; }
+    #s04-scarce { font-size: 172px; line-height: 1; margin-top: 18px; filter: url(#s04-rough); }
   </style>
   <div id="root" data-composition-id="s04" data-width="1920" data-height="1080">
-    <svg id="s04-svg" width="0" height="0" style="position:absolute"></svg>
-    <div id="s04-bg" style="background-image:url('assets/archival/hoover/stanford_inner_quad_west_entrance_c1900.jpg')"></div>
-    <div id="s04-floor"></div>
+    <svg id="s04-defs"></svg>
+    <div id="s04-bg"><img src="assets/archival/hoover/stanford_inner_quad_west_entrance_c1900.jpg" alt="" /><div id="s04-bgshade"></div></div>
     <div id="s04-set">
-      <div id="s04-shadow"></div>
+      <div id="s04-tube"></div>
       <div id="s04-screen">
-        <div id="s04-screen-inner">
-          <video id="s04-vid" src="assets/archival/footage/berkeley_1932_grad_cut.mp4" muted playsinline data-start="0" data-duration="10.08"
-            data-color-grading='{"adjust":{"contrast":0.08},"effects":{"chromaticAberration":0.2,"chromaticAngle":0,"scanlines":0.3,"scanlineCount":0.2,"scanlineSoftness":1,"crtCurvature":0.18,"filmArtifacts":0.35},"details":{"vignette":0.25,"grain":0.25}}'></video>
-          <div id="s04-glare"></div>
-          <div id="s04-flash"></div>
-        </div>
+        <video id="s04-film" class="clip" src="assets/archival/footage/berkeley_1932_grad_cut.mp4" muted playsinline
+          data-start="0.3" data-duration="9.9" data-media-start="0" data-track-index="2"
+          data-color-grading='{"intensity":1,"adjust":{"saturation":-1,"contrast":0.1},"effects":{"chromaticAberration":0.35,"chromaticAngle":0,"scanlines":0.4,"scanlineCount":0.17,"scanlineSoftness":1,"crtCurvature":0.35,"filmArtifacts":0.45}}'></video>
+        <div id="s04-flash"></div>
+        <div id="s04-glare"></div>
       </div>
       <img id="s04-tv" src="assets/textures/tv_frame_01.png" alt="" />
     </div>
-    <div id="s04-text">
-      <div id="s04-schools"><div class="s t-display halate" id="s04-st">STANFORD</div><div class="amp t-serif-i halate" id="s04-amp">or</div><div class="s t-display halate" id="s04-uc">UC BERKELEY</div></div>
-      <div id="s04-era" class="t-label halate">Graduates of the <span class="y t-display halate yellow" id="s04-y">1920s</span></div>
+    <div id="s04-col">
+      <div id="s04-kick" class="t-label halate">studying at</div>
+      <div id="s04-stan" class="t-display halate">STANFORD</div>
+      <div id="s04-or" class="t-serif-i halate">or</div>
+      <div id="s04-berk" class="t-display halate">UC BERKELEY</div>
+      <div id="s04-era"><div class="k t-label halate">at this time, in the</div><div id="s04-1920" class="t-display halate yellow">1920s</div></div>
     </div>
-    <div id="s04-opp"><div class="l1 t-serif-i halate" id="s04-l1">Opportunities in the West were</div><div class="l2 t-display halate yellow" id="s04-l2">scarce.</div></div>
+    <div id="s04-col2">
+      <div id="s04-after" class="t-serif-i halate"><span>after </span><span>you </span><span>graduate,</span></div>
+      <div id="s04-opp" class="t-serif-i halate"><span>Opportunities </span><span>in </span><span>the </span><span class="west">West </span><span>were</span></div>
+      <div id="s04-scarce" class="t-display halate">scarce.</div>
+    </div>
     <div id="s04-grain" class="tx tx-grain" style="background-image:url('assets/textures/grain_01_norm.jpg')"></div>
-    <div id="s04-dust" class="tx tx-dust" style="background-image:url('assets/textures/dust_03.jpg')"></div>
+    <div id="s04-dust" class="tx tx-dust" style="background-image:url('assets/textures/dust_01.jpg'); opacity:0.38"></div>
     <div class="vignette"></div>
     <audio id="s04-vo" src="vo10.mp3" data-start="0" data-duration="10.2" data-media-start="73.7" data-volume="1"></audio>
   </div>
   <script>
   (function () {
     const tl = gsap.timeline({ paused: true });
-    const T = (s) => s - 73.7;
+    const T = (s) => +(s - 73.7).toFixed(3);
+    const S = T;
     const $ = (id) => document.getElementById(id);
-    const svg = $("s04-svg");
-    FX.tintDefs(svg, "s04-tint", "#121110", "#5c564d");
-    const choke = FX.roughDefs(svg, "s04-choke", { freq: 0.05, scale: 5, choke: 0 });
-    FX.grain($("s04-grain"), 41);
-    FX.dust($("s04-dust"), 42, 2);
+    const defs = $("s04-defs");
+    FX.tintDefs(defs, "s04-tint", "#100f0e", "#8a7a64");
+    const morph = FX.roughDefs(defs, "s04-rough", { freq: 0.04, scale: 6, choke: 9 });
+    FX.grain($("s04-grain"), 51);
+    FX.dust($("s04-dust"), 53, 2);
+    FX.weave($("s04-screen"), { amp: 0.9, rot: 0.03, flicker: 0.05, seed: 54 });
 
-    // set drifts in slowly
-    tl.fromTo("#s04-set", { scale: 0.96, y: 10 }, { scale: 1.04, y: 0, duration: 10.2, ease: "none" }, 0);
-    tl.fromTo("#s04-bg", { scale: 1.06 }, { scale: 1.0, duration: 10.2, ease: "none" }, 0);
-    // CRT power-on
-    tl.fromTo("#s04-screen-inner", { scaleY: 0.012, scaleX: 0.7 }, { scaleY: 1, scaleX: 1, duration: 0.35, ease: "expo.out" }, 0.15);
-    tl.fromTo("#s04-flash", { opacity: 1 }, { opacity: 0, duration: 0.55, ease: "power2.out" }, 0.25);
+    // Stanford backdrop drifts slowly (camera)
+    tl.fromTo("#s04-bg", { x: 0, scale: 1.04 }, { x: -70, scale: 1.0, duration: 10.2, ease: "none" }, 0);
+    tl.fromTo("#s04-set", { x: -10, scale: 0.985, transformOrigin: "40% 60%" }, { x: 10, scale: 1.015, duration: 10.2, ease: "none" }, 0);
 
-    // Stanford / UC Berkeley / 1920s
-    FX.text.odometer(tl, $("s04-st"), T(75.9), { dur: 0.6, stagger: 0.03, spins: 5, seed: 41 });
-    tl.fromTo("#s04-amp", { opacity: 0 }, { opacity: 1, duration: 0.3 }, T(76.5));
-    FX.text.odometer(tl, $("s04-uc"), T(76.75), { dur: 0.6, stagger: 0.03, spins: 5, seed: 42 });
-    tl.fromTo("#s04-era", { opacity: 0 }, { opacity: 1, duration: 0.01 }, T(78.2));
-    FX.text.fill(tl, $("s04-y"), T(78.5), { per: 0.05, hold: 0.25, settle: 0.4, cool: "#f2cf3b" });
-    tl.to("#s04-text", { opacity: 0, y: -20, duration: 0.35, ease: "power2.in" }, T(81.2));
+    // CRT power-on: a bright line opens to the full picture with a white flash
+    tl.fromTo("#s04-screen", { scaleY: 0.012, scaleX: 0.7 }, { scaleY: 1, scaleX: 1, duration: 0.32, ease: FX.choppy("expo.out", 0.32, 24), immediateRender: true }, S(74.0));
+    tl.fromTo("#s04-flash", { opacity: 1 }, { opacity: 0, duration: 0.45, ease: "power2.out", immediateRender: true }, S(74.0));
 
-    // "opportunities in the West were scarce."
-    FX.text.rise(tl, [$("s04-l1")], T(81.6), { dur: 0.6 });
-    tl.fromTo("#s04-l2", { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, T(83.35));
-    FX.choke(tl, choke, T(83.35), 16, 0.55);
+    // "studying at" / STANFORD / or / UC BERKELEY — odometer reels
+    FX.text.rise(tl, [$("s04-kick")], T(75.07), { dur: 0.4, y: 8, blur: 6 });
+    FX.text.odometer(tl, $("s04-stan"), T(75.95), { dur: 0.6, stagger: 0.035, seed: 41 });
+    FX.text.rise(tl, [$("s04-or")], T(76.51), { dur: 0.3, y: 6, blur: 4 });
+    FX.text.odometer(tl, $("s04-berk"), T(76.75), { dur: 0.6, stagger: 0.035, seed: 42 });
+    // "this time in the 1920s" — yellow pop at 12 fps
+    FX.text.rise(tl, [$("s04-era").querySelector(".k")], T(77.71), { dur: 0.4, y: 8, blur: 6 });
+    tl.fromTo("#s04-1920", { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.33, ease: FX.choppy("back.out(2.2)", 0.33, 12), immediateRender: true }, T(78.51));
+    tl.to("#s04-col", { y: -40, opacity: 0, duration: 0.3, ease: "power2.in" }, S(79.5));
+
+    // "after you graduate," — word by word
+    [T(79.95), T(80.35), T(80.59)].forEach((c, i) => tl.fromTo($("s04-after").children[i], { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, c));
+    // "Opportunities in the West were"
+    const oppT = [T(81.55), T(82.35), T(82.51), T(82.59), T(83.07)];
+    oppT.forEach((c, i) => tl.fromTo($("s04-opp").children[i], { opacity: 0, y: 6 }, { opacity: 1, y: 0, duration: 0.12, immediateRender: true }, c));
+    // "scarce." — Simple Choker reveal with rough, boiling edges at 12 fps
+    tl.fromTo("#s04-scarce", { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, T(83.39));
+    FX.choke(tl, morph, T(83.39), 9, 0.42);
 
     FX.mount(tl, 10.2);
     window.__timelines["s04"] = tl;

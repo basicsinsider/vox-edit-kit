@@ -7,14 +7,14 @@ set -e
 export PATH=~/.local/bin:$PATH
 cd "${0:A:h}/.."
 ids=("$@")
-if [ ${#ids[@]} -eq 0 ]; then ids=(s01 s02 s03 s04 s05 s06 s07 s08 s09 s10); fi
+if [ ${#ids[@]} -eq 0 ]; then ids=(s01 s02 s03 s04 s05 s06 s07 s08 s09 s10 s11); fi
 mkdir -p renders/samples
 for id in $ids; do
   file=$(ls compositions/${id}-*.html 2>/dev/null | head -1) || true
   [ -z "$file" ] && { echo "skip $id (no composition)"; continue; }
   name=$(basename $file .html)
   python3 tools/build_index.py $id >/dev/null
-  npx hyperframes render -o renders/samples/_${name}.mp4 >/dev/null 2>&1
+  npx --yes hyperframes@0.8.217 render -o renders/samples/_${name}.mp4 >/dev/null 2>&1
   # media-start / duration of the sample's VO, read from its <audio> tag
   ms=$(grep -o 'data-media-start="[0-9.]*"' $file | head -1 | grep -o '[0-9.]*')
   du=$(grep -o "id=\"${id}-vo\"[^>]*data-duration=\"[0-9.]*\"" $file | grep -o 'data-duration="[0-9.]*"' | grep -o '[0-9.]*')

@@ -5,65 +5,71 @@
 <template>
   <style>
     #root { position: absolute; inset: 0; overflow: hidden; background: var(--night); }
-    #s01-stage { position: absolute; inset: 0; }
-    #s01-glow { position: absolute; left: 210px; top: 36px; width: 1500px; height: 900px;
-      background: radial-gradient(ellipse at center, rgba(255,140,70,0.16), rgba(255,100,40,0.05) 45%, transparent 70%); }
-    #s01-date { position: absolute; top: 210px; left: 0; right: 0; text-align: center; font-size: 26px; color: #cfc6b6; }
-    #s01-rule { position: absolute; top: 262px; left: 700px; width: 520px; height: 1px; background: rgba(244,238,226,0.35); transform-origin: 50% 50%; }
-    #s01-twelve { position: absolute; left: 110px; top: 300px; width: 640px; text-align: right; font-size: 430px; }
-    #s01-right { position: absolute; left: 800px; top: 372px; width: 820px; }
-    #s01-companies { font-size: 64px; color: var(--bone); letter-spacing: 0.06em; }
-    #s01-us { margin-top: 10px; font-size: 52px; color: #e8dccb; }
-    #s01-worth { margin-top: 64px; font-size: 26px; color: #cfc6b6; }
-    #s01-amount { margin-top: 10px; font-size: 92px; font-weight: 700; letter-spacing: -0.01em; }
-    #s01-each { margin-top: 6px; font-size: 44px; color: #e8dccb; }
+    #s01-streaks { opacity: 0.6; filter: blur(2.5px); }
+    #s01-leak { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; mix-blend-mode: screen; opacity: 0; }
+    #s01-date { position: absolute; left: 0; top: 250px; width: 1920px; text-align: center; font-size: 30px; letter-spacing: 0.42em; color: #e8dccb; }
+    #s01-block { position: absolute; left: 320px; top: 360px; width: 1100px; height: 420px; }
+    #s01-twelve { position: absolute; left: 0; top: 0; font-size: 330px; line-height: 1; }
+    #s01-right { position: absolute; left: 430px; top: 46px; width: 760px; }
+    #s01-companies { font-size: 76px; letter-spacing: 0.04em; line-height: 1; color: var(--bone); }
+    #s01-us { font-size: 46px; color: #e8dccb; margin-top: 10px; }
+    #s01-worth { font-size: 24px; color: #d9cdb9; margin-top: 46px; }
+    #s01-money { font-size: 92px; line-height: 1; margin-top: 12px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+    #s01-tril { font-size: 44px; color: #e8dccb; margin-top: 8px; }
   </style>
   <div id="root" data-composition-id="s01" data-width="1920" data-height="1080">
-    <canvas id="s01-streaks" class="streaks" style="filter: blur(2.5px);"></canvas>
-    <div id="s01-glow"></div>
-    <div id="s01-stage">
-      <div id="s01-date" class="t-label halate">October 2026</div>
-      <div id="s01-rule"></div>
+    <canvas id="s01-streaks" class="streaks"></canvas>
+    <img id="s01-leak" src="assets/textures/lightleak_02.jpg" alt="" />
+    <div id="s01-date" class="t-label halate">October 2026</div>
+    <div id="s01-block">
       <div id="s01-twelve" class="t-display halate yellow">12</div>
       <div id="s01-right">
-        <div id="s01-companies" class="t-label halate">Companies</div>
+        <div id="s01-companies" class="t-display">COMPANIES</div>
         <div id="s01-us" class="t-serif-i halate">in the United States</div>
         <div id="s01-worth" class="t-label halate">each worth more than</div>
-        <div id="s01-amount" class="t-display halate">$1,000,000,000,000</div>
-        <div id="s01-each" class="t-serif-i halate">a trillion dollars</div>
+        <div id="s01-money" class="t-display halate">$0</div>
+        <div id="s01-tril" class="t-serif-i halate">a trillion dollars</div>
       </div>
     </div>
-    <div id="s01-grain" class="tx tx-grain" style="background-image:url('assets/textures/grain_01.jpg')"></div>
-    <div id="s01-dust" class="tx tx-dust" style="background-image:url('assets/textures/dust_01.jpg')"></div>
+    <div id="s01-grain" class="tx tx-grain" style="background-image:url('assets/textures/grain_01_norm.jpg')"></div>
+    <div id="s01-dust" class="tx tx-dust" style="background-image:url('assets/textures/dust_02.jpg')"></div>
     <div class="vignette"></div>
     <audio id="s01-vo" src="vo10.mp3" data-start="0" data-duration="6.8" data-media-start="19.0" data-volume="1"></audio>
   </div>
   <script>
   (function () {
     const tl = gsap.timeline({ paused: true });
-    const T = (s) => s - 19.0; // VO time -> local time
+    const T = (s) => +(s - 19.0).toFixed(3);   // text cues: voiceover seconds -> local
+    const S = T;                                 // structural cues (not audited)
     const $ = (id) => document.getElementById(id);
 
-    FX.streaks($("s01-streaks"), { seed: 21, speed: 0.45, xfreq: 0.17, lo: 0.47, hi: 0.86, gamma: 2.3, tint: [255, 214, 178], gain: 1.15 });
-    FX.grain($("s01-grain"), 3);
-    FX.dust($("s01-dust"), 5, 2);
+    FX.streaks($("s01-streaks"), { seed: 31, speed: 0.5, tint: [255, 206, 158], lo: 0.4, gain: 1.05 });
+    FX.grain($("s01-grain"), 11);
+    FX.dust($("s01-dust"), 13, 2);
 
-    tl.fromTo("#s01-streaks", { opacity: 0 }, { opacity: 0.7, duration: 1.4, ease: "power2.out" }, 0);
-    tl.fromTo("#s01-glow", { opacity: 0, scale: 0.9 }, { opacity: 1, scale: 1.05, duration: 6.8, ease: "sine.inOut" }, 0);
-    tl.fromTo("#s01-stage", { scale: 1.0 }, { scale: 1.045, duration: 6.8, ease: "none" }, 0);
+    // light streaks fade up, very slow drift; one breath of light leak
+    tl.fromTo("#s01-streaks", { opacity: 0 }, { opacity: 0.6, duration: 1.2, ease: "power1.out" }, 0);
+    tl.fromTo("#s01-streaks", { y: 0 }, { y: -40, duration: 6.8, ease: "none" }, 0);
+    tl.fromTo("#s01-leak", { opacity: 0 }, { opacity: 0.16, duration: 1.4, yoyo: true, repeat: 1, ease: "sine.inOut" }, S(22.0));
 
-    FX.text.random(tl, $("s01-date"), T(19.12), { dur: 0.55, seed: 3 });
-    tl.fromTo("#s01-rule", { scaleX: 0 }, { scaleX: 1, duration: 0.6, ease: FX.choppy("power3.out", 0.6, 12) }, T(19.4));
+    // "October 2026" — letters appear in random order
+    FX.text.random(tl, $("s01-date"), T(19.06), { dur: 0.75, seed: 6 });
 
-    FX.text.odometer(tl, $("s01-twelve"), T(21.05), { dur: 0.75, stagger: 0.08, spins: 9, seed: 12 });
-    FX.text.fill(tl, $("s01-companies"), T(21.76), { per: 0.03, hold: 0.25, settle: 0.5 });
-    FX.text.rise(tl, [$("s01-us")], T(22.45), { dur: 0.6 });
+    // "12" — odometer, yellow halation (the one key number)
+    FX.text.odometer(tl, $("s01-twelve"), T(21.12), { dur: 0.75, stagger: 0.08, seed: 12 });
+    // "companies" — Vox fill pop: yellow, settles to bone
+    FX.text.fill(tl, $("s01-companies"), T(21.70), { per: 0.03, hold: 0.3, settle: 0.5, cool: "#f4eee2" });
+    // "in the United States"
+    FX.text.rise(tl, [$("s01-us")], T(22.18), { dur: 0.5, y: 14, blur: 8 });
+    // "worth more than"
+    FX.text.rise(tl, [$("s01-worth")], T(23.46), { dur: 0.4, y: 10, blur: 6 });
+    // "a trillion" — the counter starts on "a" and lands on $1,000,000,000,000 as "dollars" begins
+    tl.fromTo("#s01-money", { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, T(24.10));
+    FX.text.count(tl, $("s01-money"), T(24.10), 0, 1e12, 0.84, (v) => "$" + (Math.round(v / 1e9) * 1e9).toLocaleString("en-US"));
+    FX.text.rise(tl, [$("s01-tril")], T(24.90), { dur: 0.45, y: 10, blur: 6 });
 
-    FX.text.random(tl, $("s01-worth"), T(23.45), { dur: 0.45, seed: 8 });
-    tl.fromTo("#s01-amount", { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, T(23.8));
-    FX.text.count(tl, $("s01-amount"), T(23.8), 0, 1e12, 1.15, (v) => "$" + Math.round(v).toLocaleString("en-US"));
-    tl.fromTo("#s01-amount", { color: "#f2cf3b" }, { color: "#f4eee2", duration: 0.6, ease: "power1.inOut", immediateRender: false }, T(25.0));
-    FX.text.rise(tl, [$("s01-each")], T(24.3), { dur: 0.6 });
+    // slow push on the whole title block (camera), settles before the cut
+    tl.fromTo("#s01-block", { scale: 0.97, transformOrigin: "40% 50%" }, { scale: 1.02, duration: 6.8, ease: "none" }, 0);
 
     FX.mount(tl, 6.8);
     window.__timelines["s01"] = tl;

@@ -640,3 +640,7 @@ Commons files: license as stated on the Commons file page (check attribution req
 - Date: photo 2017 (tube c.1925)
 - Dimensions: 1280x1791
 - Added by: asset agent A (2026-10-29), verified visually
+
+## companies/crops/ (derived, 2026-10-30)
+16:9 working crops of the five `companies/*.jpg` photos above (borders, captions and the scanner's grey bar removed;
+long side capped at 2400 px) — same sources and licences as the originals. Used by s05.

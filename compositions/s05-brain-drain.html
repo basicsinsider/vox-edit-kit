@@ -4,79 +4,111 @@
 <body>
 <template>
   <style>
-    #root { position: absolute; inset: 0; overflow: hidden; background: #0d0c0b; }
-    #s05-weave { position: absolute; inset: -16px; }
-    .s05-shot { position: absolute; inset: 0; opacity: 0; }
-    .s05-shot .plate .img, .s05-shot .plate .fringe { filter: sepia(0.32) saturate(0.55) contrast(1.06) brightness(0.92); }
-    .s05-shot .plate .fringe { filter: sepia(0.32) saturate(0.55) contrast(1.06) brightness(0.92) blur(7px); }
+    #root { position: absolute; inset: 0; overflow: hidden; background: var(--night); }
+    #s05-defs { position: absolute; width: 0; height: 0; }
+    #s05-shots { position: absolute; inset: -12px; }
+    .s05-shot { position: absolute; inset: 0; opacity: 0; visibility: hidden; }
     .s05-shot .plate { transform-origin: 50% 50%; }
-    #s05-sh1 .img, #s05-sh1 .fringe { object-position: 50% 62%; transform: scale(1.5); transform-origin: 50% 62%; }
-    #s05-sh3 .img, #s05-sh3 .fringe { object-position: 50% 40%; }
-    #s05-sh4 .img, #s05-sh4 .fringe { object-position: 50% 30%; }
-    #s05-sh5 .img, #s05-sh5 .fringe { object-position: 50% 40%; }
-    #s05-sh6 { background: #161412; }
-    #s05-sh6 .paper { position: absolute; inset: 0; background-size: cover; mix-blend-mode: overlay; opacity: 0.5; }
-    #s05-ge { position: absolute; left: 860px; top: 300px; width: 200px; height: 200px; opacity: 0.92; filter: drop-shadow(0 0 18px rgba(255,140,80,0.35)); }
-    .s05-lab { position: absolute; left: 110px; bottom: 96px; opacity: 0; }
-    .s05-lab .n { font-size: 116px; }
-    .s05-lab .s { font-size: 40px; color: #e8dccb; margin-top: 4px; }
-    #s05-lab6 { left: 0; right: 0; bottom: 330px; text-align: center; }
-    #s05-route { position: absolute; left: 110px; top: 86px; font-size: 24px; color: #e8dccb; }
-    #s05-giants { position: absolute; left: 112px; bottom: 300px; font-size: 46px; color: #e8dccb; opacity: 0; }
-    #s05-shade { position: absolute; left: 0; right: 0; bottom: 0; height: 520px; background: linear-gradient(180deg, rgba(13,12,11,0), rgba(13,12,11,0.75)); }
+    .s05-shot .img, .s05-shot .fringe { filter: url(#s05-tint); }
+    .s05-shot .fringe { filter: url(#s05-tint) blur(7px); }
+    .s05-lab { position: absolute; left: 108px; bottom: 112px; }
+    .s05-lab .n { font-size: 96px; line-height: 1; }
+    .s05-lab .s { font-size: 30px; color: #e8dccb; margin-top: 10px; }
+    #s05-work { position: absolute; left: 108px; top: 96px; font-size: 44px; color: var(--bone); }
+    #s05-ge { background: var(--night); }
+    #s05-ge-logo { position: absolute; left: 860px; top: 290px; width: 200px; height: 200px; opacity: 0.92; }
+    #s05-ge .lab2 { position: absolute; left: 0; top: 540px; width: 1920px; text-align: center; }
+    #s05-ge .lab2 .n { font-size: 96px; line-height: 1; }
+    #s05-ge .lab2 .s { font-size: 30px; color: #e8dccb; margin-top: 12px; }
+    .s05-iris { position: absolute; inset: 0; width: 100%; height: 100%; }
   </style>
   <div id="root" data-composition-id="s05" data-width="1920" data-height="1080">
-    <div id="s05-weave">
-      <div class="s05-shot" id="s05-sh1"><div class="plate"><img class="img" src="assets/archival/companies/california_san_francisco_powell_street_1920.jpg" alt="" /><img class="fringe" src="assets/archival/companies/california_san_francisco_powell_street_1920.jpg" alt="" /></div></div>
-      <div class="s05-shot" id="s05-sh2"><div class="plate"><img class="img" src="assets/archival/companies/nyc_skyline_battery_park_1929.jpg" alt="" /><img class="fringe" src="assets/archival/companies/nyc_skyline_battery_park_1929.jpg" alt="" /></div></div>
-      <div class="s05-shot" id="s05-sh3"><div class="plate"><img class="img" src="assets/archival/companies/new_jersey_edison_west_orange_lab_hoover_1928.jpg" alt="" /><img class="fringe" src="assets/archival/companies/new_jersey_edison_west_orange_lab_hoover_1928.jpg" alt="" /></div></div>
-      <div class="s05-shot" id="s05-sh4"><div class="plate"><img class="img" src="assets/archival/companies/massachusetts_boston_custom_house_1920.jpg" alt="" /><img class="fringe" src="assets/archival/companies/massachusetts_boston_custom_house_1920.jpg" alt="" /></div></div>
-      <div class="s05-shot" id="s05-sh5"><div class="plate"><img class="img" src="assets/archival/companies/bell_labs_west_street_building_historic.jpg" alt="" /><img class="fringe" src="assets/archival/companies/bell_labs_west_street_building_historic.jpg" alt="" /></div></div>
-      <div class="s05-shot" id="s05-sh6"><div class="paper" style="background-image:url('assets/textures/newsprint_01_norm.jpg')"></div><img id="s05-ge" src="assets/archival/brain_drain/ge_logo_bone.svg" alt="" /></div>
+    <svg id="s05-defs"></svg>
+    <div id="s05-shots">
+      <div class="s05-shot" id="s05-ca">
+        <div class="plate"><img class="img" src="assets/archival/companies/crops/california_san_francisco_powell_street_1920.jpg" alt="" /><img class="fringe" src="assets/archival/companies/crops/california_san_francisco_powell_street_1920.jpg" alt="" /></div>
+        <div class="vignette"></div>
+        <div class="s05-lab"><div class="n t-display halate">California</div><div class="s t-serif-i halate">San Francisco, 1920</div></div>
+      </div>
+      <div class="s05-shot" id="s05-ny">
+        <div class="plate"><img class="img" src="assets/archival/companies/crops/nyc_skyline_battery_park_1929.jpg" alt="" /><img class="fringe" src="assets/archival/companies/crops/nyc_skyline_battery_park_1929.jpg" alt="" /></div>
+        <div class="vignette"></div>
+        <div class="s05-lab"><div class="n t-display halate">New York</div></div>
+      </div>
+      <div class="s05-shot" id="s05-nj">
+        <div class="plate"><img class="img" src="assets/archival/companies/crops/new_jersey_edison_west_orange_lab_hoover_1928.jpg" alt="" style="object-position:50% 30%" /><img class="fringe" src="assets/archival/companies/crops/new_jersey_edison_west_orange_lab_hoover_1928.jpg" alt="" style="object-position:50% 30%" /></div>
+        <div class="vignette"></div>
+        <div class="s05-lab"><div class="n t-display halate">New Jersey</div></div>
+      </div>
+      <div class="s05-shot" id="s05-ma">
+        <div class="plate"><img class="img" src="assets/archival/companies/crops/massachusetts_boston_custom_house_1920.jpg" alt="" style="object-position:50% 20%" /><img class="fringe" src="assets/archival/companies/crops/massachusetts_boston_custom_house_1920.jpg" alt="" style="object-position:50% 20%" /></div>
+        <div class="vignette"></div>
+        <div id="s05-work" class="t-serif-i halate"><span>work </span><span>in </span><span>major </span><span>technological </span><span>companies</span></div>
+        <div class="s05-lab"><div class="n t-display halate">Massachusetts</div><div class="s t-serif-i halate">Boston, 1920</div></div>
+      </div>
+      <div class="s05-shot" id="s05-bl">
+        <div class="plate"><img class="img" src="assets/archival/companies/crops/bell_labs_west_street_building_historic.jpg" alt="" /><img class="fringe" src="assets/archival/companies/crops/bell_labs_west_street_building_historic.jpg" alt="" /></div>
+        <div class="vignette"></div>
+        <div class="s05-lab"><div class="n t-display halate">Bell Labs</div><div class="s t-serif-i halate">West Street, Manhattan</div></div>
+      </div>
+      <div class="s05-shot" id="s05-ge">
+        <img id="s05-ge-logo" src="assets/archival/brain_drain/ge_logo_bone.svg" alt="" />
+        <div class="lab2"><div class="n t-display halate">General Electric</div><div class="s t-serif-i halate">Schenectady, New York</div></div>
+      </div>
     </div>
-    <div id="s05-shade"></div>
-    <div class="s05-lab" id="s05-lab1"><div class="n t-display halate">California</div><div class="s t-serif-i halate">San Francisco, 1920</div></div>
-    <div class="s05-lab" id="s05-lab2"><div class="n t-display halate">New York</div></div>
-    <div class="s05-lab" id="s05-lab3"><div class="n t-display halate">New Jersey</div><div class="s t-serif-i halate">Edison's West Orange lab</div></div>
-    <div class="s05-lab" id="s05-lab4"><div class="n t-display halate">Massachusetts</div><div class="s t-serif-i halate">Boston, 1920</div></div>
-    <div class="s05-lab" id="s05-lab5"><div class="n t-display halate yellow">Bell Labs</div><div class="s t-serif-i halate">West Street, Manhattan</div></div>
-    <div class="s05-lab" id="s05-lab6"><div class="n t-display halate">General Electric</div><div class="s t-serif-i halate">Schenectady, New York</div></div>
-    <div id="s05-giants" class="t-serif-i halate">to work for the East's technology giants</div>
-    <svg id="s05-iris" class="iris"></svg>
-    <div id="s05-grain" class="tx tx-grain" style="background-image:url('assets/textures/grain_01_norm.jpg')"></div>
-    <div id="s05-dust" class="tx tx-dust" style="background-image:url('assets/textures/dust_01.jpg')"></div>
-    <div class="vignette" style="background: radial-gradient(ellipse 72% 68% at 50% 50%, rgba(0,0,0,0) 50%, rgba(8,6,4,0.65) 100%)"></div>
+    <div id="s05-grain" class="tx tx-grain" style="background-image:url('assets/textures/grain_02_norm.jpg')"></div>
+    <div id="s05-dust" class="tx tx-dust" style="background-image:url('assets/textures/dust_02.jpg')"></div>
+    <div class="vignette"></div>
+    <svg id="s05-iris" class="s05-iris"></svg>
+    <svg id="s05-irisf" class="s05-iris"></svg>
     <audio id="s05-vo" src="vo10.mp3" data-start="0" data-duration="8.0" data-media-start="96.5" data-volume="1"></audio>
-    <audio id="s05-sfx-1" src="assets/sfx/shutter.wav" data-start="1.53" data-duration="0.42" data-volume="0.35"></audio>
-    <audio id="s05-sfx-2" src="assets/sfx/shutter.wav" data-start="2.01" data-duration="0.42" data-volume="0.35"></audio>
-    <audio id="s05-sfx-3" src="assets/sfx/shutter.wav" data-start="2.65" data-duration="0.42" data-volume="0.35"></audio>
-    <audio id="s05-sfx-4" src="assets/sfx/shutter.wav" data-start="5.93" data-duration="0.42" data-volume="0.35"></audio>
-    <audio id="s05-sfx-5" src="assets/sfx/shutter.wav" data-start="6.97" data-duration="0.42" data-volume="0.35"></audio>
+    <audio id="s05-sfx-1" src="assets/audio/sfx/camera_shutter_mech.wav" data-start="1.35" data-volume="0.3"></audio>
+    <audio id="s05-sfx-2" src="assets/audio/sfx/camera_shutter_mech_02.wav" data-start="1.87" data-volume="0.26"></audio>
+    <audio id="s05-sfx-3" src="assets/audio/sfx/camera_shutter_mech_03.wav" data-start="2.5" data-volume="0.3"></audio>
+    <audio id="s05-sfx-4" src="assets/audio/sfx/camera_shutter_mech.wav" data-start="5.75" data-volume="0.3"></audio>
+    <audio id="s05-sfx-5" src="assets/audio/sfx/camera_shutter_mech_02.wav" data-start="6.8" data-volume="0.3"></audio>
   </div>
   <script>
   (function () {
     const tl = gsap.timeline({ paused: true });
+    const T = (s) => +(s - 96.5).toFixed(3);
+    const S = T;
     const $ = (id) => document.getElementById(id);
-    FX.weave($("s05-weave"), { amp: 1.4, flicker: 0.03, seed: 51 });
-    FX.grain($("s05-grain"), 52);
-    FX.dust($("s05-dust"), 53, 2);
-    const iris = FX.iris($("s05-iris"), { blades: 7, close: 0.15, hold: 2 / 24, open: 0.2 });
+    FX.tintDefs($("s05-defs"), "s05-tint", "#1d1a17", "#efe5d2");
+    FX.grain($("s05-grain"), 61);
+    FX.dust($("s05-dust"), 63, 2);
+    FX.weave($("s05-shots"), { amp: 1.8, rot: 0.06, flicker: 0.05, seed: 65 });
+    const iris = FX.iris($("s05-iris"));
+    const fast = FX.iris($("s05-irisf"), { close: 0.1, hold: 1 / 24, open: 0.12 });
 
-    // shot k is visible from cuts[k-1] to cuts[k]; cuts land at the closed iris
-    const cuts = [0, 1.68, 2.16, 2.80, 6.08, 7.12, 8.0];
-    for (let k = 1; k <= 6; k++) {
-      const a = cuts[k - 1], b = cuts[k];
-      tl.set(`#s05-sh${k}`, { opacity: 1 }, a);
-      tl.set(`#s05-lab${k}`, { opacity: 1 }, a);
-      if (k < 6) { tl.set(`#s05-sh${k}`, { opacity: 0 }, b); tl.set(`#s05-lab${k}`, { opacity: 0 }, b); }
-      tl.fromTo(`#s05-sh${k} .plate`, { scale: 1.0 }, { scale: 1.08, duration: b - a + 0.25, ease: "none" }, a);
-      tl.fromTo(`#s05-lab${k}`, { y: 14 }, { y: 0, duration: 0.3, ease: "power3.out" }, a + 0.02);
-      if (k > 1) iris.at(tl, a);
-    }
-    // "work in major technological companies" over MIT
-    FX.text.rise(tl, [$("s05-giants")], 4.0, { dur: 0.6 });
-    tl.to("#s05-giants", { opacity: 0, duration: 0.01 }, 6.08);
-    tl.fromTo("#s05-ge", { scale: 0.9 }, { scale: 1.0, duration: 0.6, ease: "power3.out" }, 7.12);
+    // shots swap exactly at the closed iris (structural cues); labels land on their words (text cues)
+    const shots = [
+      ["s05-ca", 0, iris],
+      ["s05-ny", S(98.0), iris],
+      ["s05-nj", S(98.52), fast],
+      ["s05-ma", S(99.15), iris],
+      ["s05-bl", S(102.4), iris],
+      ["s05-ge", S(103.45), iris],
+    ];
+    shots.forEach(([id, t0, ir], i) => {
+      const t1 = i < shots.length - 1 ? shots[i + 1][1] : 8.0;
+      tl.fromTo("#" + id, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.001, immediateRender: i === 0 }, t0);
+      if (i < shots.length - 1) tl.set("#" + id, { autoAlpha: 0 }, t1);
+      if (i > 0) ir.at(tl, t0);
+      const plate = document.querySelector("#" + id + " .plate");
+      if (plate) tl.fromTo(plate, { scale: 1.0 }, { scale: 1.0 + 0.012 * (t1 - t0) + 0.01, duration: t1 - t0, ease: "none", immediateRender: false }, t0);
+    });
+
+    const lab = (id) => document.querySelector("#" + id + " .s05-lab, #" + id + " .lab2");
+    const pop = (el, t) => tl.fromTo(el, { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.25, ease: FX.choppy("power3.out", 0.25, 12), immediateRender: true }, t);
+    pop(lab("s05-ca"), T(97.15));
+    pop(lab("s05-ny"), T(98.19));
+    pop(lab("s05-nj"), T(98.67));
+    pop(lab("s05-ma"), T(99.31));
+    [T(100.35), T(100.67), T(100.91), T(101.23), T(101.95)].forEach((c, i) => tl.fromTo($("s05-work").children[i], { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, c));
+    pop(lab("s05-bl"), T(102.59));
+    tl.fromTo("#s05-ge-logo", { opacity: 0, scale: 0.7 }, { opacity: 0.92, scale: 1, duration: 0.3, ease: FX.choppy("back.out(2)", 0.3, 12), immediateRender: true }, S(103.5));
+    pop(lab("s05-ge"), T(103.63));
 
     FX.mount(tl, 8.0);
     window.__timelines["s05"] = tl;
