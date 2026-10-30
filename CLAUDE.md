@@ -4,10 +4,12 @@ You are a documentary video editor. This repo holds a complete, user-approved ed
 HyperFrames (HTML + GSAP rendered to MP4): effects library, tools, references, templates and a manual.
 
 Read, in order, before doing anything:
+0. `USER_BRIEF.md` — the owner's own words (original brief + feedback). The source of truth.
 1. `MANUAL.md` — the style law. Every rule there is a decision the user already made. §0 = non-negotiables.
 2. `SAMPLES.md` — the 11 approved samples (your acceptance test).
 3. `EDITOR_BRIEF.md` — how a segment editor works (sandbox, sync audit, notes).
-4. `example-docs/` — the full planning set from the approved 10-minute edit (beats, edit notes, segments,
+4. `AGENT_BRIEFS.md` (the agent team), `SOURCES_INDEX.md` (where every asset came from), `CLOUD_SETUP.md`.
+5. `example-docs/` — the full planning set from the approved 10-minute edit (beats, edit notes, segments,
    decisions, asset list) — copy their format for new projects.
 
 Hard rules (details in MANUAL §0):

@@ -44,6 +44,9 @@ uv venv --python 3.12 .venv >/dev/null 2>&1 || uv venv .venv
 uv pip install --python .venv/bin/python numpy scipy pillow soundfile >/dev/null
 .venv/bin/python -c "import numpy, scipy.signal, PIL; print('python env ok')"
 
+say "Music score (synthesized, ~1 min) -> assets/audio/music"
+[ -d assets/audio/music ] || .venv/bin/python tools/audio/gen_music.py >/dev/null && echo "music ready"
+
 say "Fonts (Cooper Hewitt, Haskoy, Crimson Pro) — bundled in assets/fonts; also installed system-wide"
 if [ "$OS" = "Linux" ]; then mkdir -p "$HOME/.local/share/fonts" && cp assets/fonts/* "$HOME/.local/share/fonts/" && fc-cache -f >/dev/null 2>&1 || true; fi
 

@@ -1,3 +1,4 @@
+import os
 """Beige muted US map (ref R11) in the us_basemap pixel space (6400x3200, x=(lon+128)*100, y=(52-lat)*100).
 Writes assets/maps/us_beige.svg (vector, states as <path id="st-XX">) and us_beige_3840.png (paper texture inside states).
 Usage: gen_us_beige.py NE_DIR   (Natural Earth ne_50m_admin_0_countries + ne_50m_lakes geojson)"""
@@ -54,7 +55,7 @@ draw(others+usa,base,LAND2,LAND2_LINE,2)
 mask=Image.new('L',(w,h),0); draw(conus,mask,255)
 lm=Image.new('L',(w,h),0); draw(bigl,lm,255)
 mask=ImageChops.subtract(mask,lm)
-paper=Image.open(ROOT+'/assets/textures/paper_cream_01_hires.jpg').convert('RGB').resize((w,h))
+paper=Image.open((ROOT+'/assets/textures/paper_cream_01_hires.jpg' if os.path.exists(ROOT+'/assets/textures/paper_cream_01_hires.jpg') else ROOT+'/assets/textures/paper_cream_01.jpg')).convert('RGB').resize((w,h))
 pa=np.asarray(paper,np.float32)/255; pa=pa/pa.mean(axis=(0,1))  # normalise to keep the beige hue
 beige=np.array([0xe6,0xd6,0xb2],np.float32)/255
 land=np.clip(beige[None,None,:]*(0.55+0.45*pa),0,1)

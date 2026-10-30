@@ -1,0 +1,17 @@
+# Footage
+- berkeley_1932_grad_cut.mp4 — cut from "Laney family gathering for 1932 UC Berkeley graduation of Howard and Clarence Laney" (Joseph C. Laney), California Revealed / Internet Archive id copl_000211, Public Domain Mark 1.0. Segments 11.5–14.1s (commencement stage), 17.0–20.3s (graduates), 44.5–48.6s (University of California diploma). https://archive.org/details/copl_000211
+
+## Clips added by asset gatherer B (all: h264 yuv420p, 24 fps, no audio, native SD resolution — not upscaled)
+Source contact sheets: `_sheet/src_*.jpg` (timestamps approximate ±2 s); per-clip 6-frame sheets: `_sheet/<clip>.jpg`.
+- hoover_1928_south_america_with_officials_a.mp4 (A11, 3.7 s, 720x480 — 3:2 frame, 4:3 picture with thin side bars) — Hoover (centre, dark coat & hat) with naval/army officials, Chile 1928 goodwill tour. Source: "Henry Ford and Charles E. Sorensen / … / Herbert Hoover in South America / …" (1928, Ford Motor Co. Film Collection, NARA), https://archive.org/details/fc-fc-4093-r1 , file fc-fc-4093-r1.mp4 at 94.80–98.45 s. Public domain (Ford Collection donated to NARA; US federal holding, no copyright notice).
+- hoover_1928_south_america_sequence_full.mp4 (A11, 13.5 s) — same source 84.95–98.45 s: Hoover at train, officials, newsreel cameraman, group shot (several shots; pick in edit).
+- hoover_1928_south_america_crowd_b.mp4 (A11, 7 s) — same source 106.8–113.8 s: Hoover walking through a crowd of officials and reporters.
+- vannevar_bush_1945_united_news_osrd.mp4 (A32, 6.6 s, 640x480) — OSRD conference table, then close-up of Dr. Vannevar Bush. Source: NARA ARC 39087 "Radio Proximity Fuse — Weapon Behind Victory" (United News newsreel 1945), https://archive.org/details/gov.archives.arc.39087 , file gov.archives.arc.39087.mpeg at 43.4–50.0 s. CC0 1.0 (as listed) / US gov work.
+- classroom_test_1956_wide.mp4 (A23, 7 s, 640x480) — wide shot of a high-school class writing a test. Source: "How To Take A Test" (Centron / Young America Films, 1956), Prelinger Archives, https://archive.org/details/0618_How_To_Take_A_Test_E00472_02_50_10_00 at 187.6–194.6 s. Public domain (Prelinger Archives).
+- ge_schenectady_1923_edison_langmuir_vacuum_tube.mp4 (A27/A30, 11.4 s, 720x480) — Edison and Irving Langmuir examining a high-power vacuum tube in the GE Research Laboratory, Schenectady, 1923. Source: "Thomas A. Edison at General Electric" (1923, Ford Film Collection, NARA), https://archive.org/details/fc-fc-3901 at 199.6–211.0 s. Public domain.
+- ge_schenectady_research_lab_1923_interior.mp4 (A27/A30, 9.4 s) — GE Schenectady lab/plant interior, windows + machinery (dim). Same source 245.6–255.0 s.
+- radio_engineers_1940_lab_benches.mp4 (A27, 10.8 s, 640x480) — first ~2 s an engineer at a machine, then two engineers testing apparatus at a lab bench. Source: "Radio and Television" (Your Life Work series, Guidance Films/Burton Holmes, 1940), Prelinger, https://archive.org/details/6111_Radio_and_Television_00_13_13_01 at 198.3–209.0 s. Public domain (Prelinger).
+- radio_school_1940_students_lab_bench_a.mp4 (A27, 8.4 s) — students around a radio set on a lab bench, instructor at blackboard. Same source 586.5–594.9 s.
+- radio_school_1940_students_lab_bench_b.mp4 (A27, 9.2 s) — students at a transmitter rack. Same source 595.2–604.4 s.
+- radio_factory_1940_assembly_line.mp4 (A37, 10 s) — women wiring radio chassis on an assembly line. Same source 256–266 s.
+- radio_factory_1940_headphone_testing.mp4 (A37, 12 s) — testers in headphones checking sets on the line. Same source 271–283 s.
