@@ -30,7 +30,7 @@ grey = np.asarray(im.convert("L"), dtype=float)
 med = float(np.median(grey))
 if "--no-norm" not in sys.argv:
     norm = np.clip(grey + (128 - med), 0, 255).astype(np.uint8)
-    n = Image.fromarray(norm, "L")
+    n = Image.fromarray(norm)
     n.save(root / f"{name}_norm_hires.jpg", quality=95)
     n.resize((w, round(n.height * w / n.width)), Image.LANCZOS).save(root / f"{name}_norm.jpg", quality=92)
 
