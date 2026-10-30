@@ -195,24 +195,44 @@ with a blur first, then apply the matte to the original; it fails on buildings).
 with `tools/halftone.py --sky-key`, or hand-draw a polygon mask (see garage layers in s10 / notes in §8).
 `tools/halftone.py` renders any image as a 45° print dot screen (ref #1 look).
 
-## 6. The user's reference layouts (`references/style-images/`) → how to build each
+## 6. Reference layouts: turning the user's images into animated scenes
 
-| ref | look | build with | use for |
+The user regularly sends reference images (Pinterest charts, maps, boards) and expects them to be **rebuilt as
+animated scenes in OUR style** — our fonts, our palette, our textures, our Vox-style motion — never copied as-is
+and never used as static pictures. The first batch is in `references/style-images/` (1–12). Every one of them
+(except #3, which the user skipped, and #2, optional) was built in the approved 10-minute edit; the code is in
+`templates/full-edit/segNN.html` (search the scene id) and a still of the result is in `expected/layouts/`.
+
+| ref | look | build with | worked example (scene · file · still) |
 |---|---|---|---|
-| 1 | paper + vermilion bars with watercolour tops, dashed line, halftone building cutout, ink "4%" box | bars (scaleY choppy, top fade via gradient + grain), `--vermilion`, `tools/halftone.py` cutout, `.label-box` | any declining/rising stat |
-| 2 | (optional) duotone line chart over engraved banknote | tint image to navy/paper, SVG polyline drawn on, dot markers popping, labels | money over time |
-| 3 | skip | — | — |
-| 4 | ranked bars topped with circular portrait cutouts, ghosted building | bars + circle-masked portraits (remove-background) | ranking people/companies |
-| 5 | isotype pictogram grid | grid of icons/squares filling in order | proportions (90 %, 1 in 12) |
-| 6 | horizontal bars, serif title with italic emphasis | bars + `t-serif` title | comparisons |
-| 7 | line chart with shaded era band, end labels, annotations | SVG path draw-on, band fade, label pops | trends over decades |
-| 8 | dot-matrix parliament / semicircle, highlighted headline phrase | dot grid fill + `.hl` | shares of a whole |
-| 9 | cork board with pinned photos and red string | cork texture, photo cards pinned (stop-motion), red string paths drawn on | connecting people/places (Terman ↔ Bush ↔ HP) |
-| 10 | old topographic/street map, yellow marker line, circle, numbered pin | archival map scan + markups (§5 #19) | routes, "here" |
-| 11 | muted map, beige land, vermilion regions, leader-line labels, big km² numbers | basemap + region fills + leader lines | regions + numbers |
-| 12 | grey relief map, red country with halftone + glowing edge | relief basemap + region fill + halftone + glow | country/state focus |
+| 1 | paper, vermilion bars with watercolour tops, dashed threshold, halftone building cutout, ink "4%" label box | bars scaleY at 12 fps, watercolour top via `assets/textures/watercolour_edge_mask_01.png`, `tools/halftone.py --sky-key` cutout, `.label-box` counter | SC013 · seg01 · `R1_SC013.jpg` (also `compositions/s03-gdp.html`) |
+| 2 | (optional) duotone line chart over an engraved banknote | tint the note to navy/paper, SVG path draw-on, dot markers pop, value labels | not built yet — if used, animate the line draw + markers well |
+| 3 | skip (user decision) | — | — |
+| 4 | ranked bars topped with circular portraits/logos, ghosted building behind | bars + circle-masked cutouts (`remove-background`) or logos (`media-use resolve --type logo`), dashed threshold | SC006 · seg01 · `R4_SC006.jpg` |
+| 5 | isotype pictogram grid | grid of `assets/icons/graduate*.svg` (or squares) filling in order, then moving | SC033 · seg02, SC078 · seg06 · `R5_*.jpg`, `compositions/s03-gdp.html` |
+| 6 | horizontal bars, serif title with italic emphasis word | bars + `t-serif` title, emphasis word in vermilion italic | SC035 · seg03 · `R6_SC035.jpg` |
+| 7 | line chart, shaded era band, end labels, annotations | SVG path draw-on, band fade, dot + label pops, bracket | SC029 · seg02 · `R7_SC029.jpg` |
+| 8 | dot-matrix semicircle ("parliament"), highlighted headline phrase | dots placed on arcs, filled clockwise at 12 fps, `.hl` highlighter, leader labels | SC009 · seg01 · `R8_SC009.jpg` |
+| 9 | cork board, pinned photos/notes, red string | `assets/textures/cork_01.jpg` (CC BY — credit), cards pinned stop-motion, string paths drawn on, lamp-pool lighting | SC066/SC074 · seg05 · `R9_SC074.jpg` |
+| 10 | old street/topo map, yellow marker route, circle, numbered pin | `assets/maps/old/*` (with `.json` lon/lat→pixel), tilted plane, rough yellow marker draw-on (`FX.markup`), pin | SC053 · seg04, SC085 · seg06 · `R10*.jpg` |
+| 11 | muted beige map, coloured regions, leader-line labels, big numbers | `assets/maps/us_beige.svg` (states as `#st-XX`), watercolour fills, leader labels, dotted route | SC017 · seg01 · `R11_SC017.jpg` |
+| 12 | grey relief map, one region filled red with halftone + glowing edge | `assets/maps/*_relief_grey.jpg` + masks, region fill + halftone + glow; `tools/gen_relief.py` / `fetch_terrain.py` make relief maps for ANY country | SC075 · seg05, SC008 · seg01 · `R12*.jpg` |
 
-Always our fonts and palette; always animated (12 fps pops, draw-ons, counters, camera drift).
+### 6.1 Method for any NEW reference image (do this every time)
+1. **Read the reference for structure, not style**: what kind of comparison it makes (ranking, share of a whole,
+   trend, geography, connection, route), its layout grid, hierarchy, and the one "hero" element. Say this in one line.
+2. **Translate the style to ours**: replace its fonts with Haskoy / Cooper Hewitt / Crimson Pro (§3.2); its colours
+   with our palette tokens (§3.1 — map its main accent to `--vermilion`, its secondary to `--navy`, highlights to
+   `--yellow`, its background to `--paper` or `--night`); add our texture stack (§3.3). Keep the layout idea.
+3. **Use the narration's real numbers and words**, never the reference's content. Every label lands on its word (§4.4).
+4. **Animate it with our Vox moves** (§5): elements build in the order the narrator explains them; bars/dots/icons
+   at 12 fps (`FX.choppy`); lines and markups drawn on; numbers counted (`FX.text.count`); the key word highlighted
+   or filled; a slow camera drift or push; a designed exit into the next scene. Never a static chart.
+5. **Build it as a short sample first** (4–10 s on a real narration window), snapshot it, compare side by side with
+   the reference image, and show the user before using it widely.
+6. **Record it**: add a row to the table above (ref number, look, build, worked example) and save the reference
+   image into `references/style-images/` with the next number, so future sessions can reuse it. Changelog line.
+Vary every layout each time it's reused (different colour lead, orientation, density, entry animation).
 
 ## 7. Sound design (from the user's reference reel + rules)
 - Bed: **marimba-led** documentary underscore (sits outside the voice's band, emotionally neutral, reads as
@@ -271,6 +291,7 @@ Always our fonts and palette; always animated (12 fps pops, draw-ons, counters, 
 - 2026-10-29 — v1: samples s01–s10; palette locked; markups (s11) added from the Vox markup reel; paper-
   aesthetic chart (s03) from the user's Pinterest refs; sound brief from the Vox marimba reel; sync audit tool;
   halftone tool; verified 12 trillion-dollar companies for the map.
+- 2026-10-30 — §6 rewritten: worked example + still for every reference layout, and the method for new reference images (§6.1). Map/relief/old-map assets added to the repo.
 - 2026-10-30 — packaged as a GitHub repo (vox-edit-kit): setup.sh for Linux/macOS, portable .venv paths, expected/ previews of the 11 approved samples.
 - 2026-10-29 — final 10-min render with sound: renders/taiwan_first10_final.mp4 (VO −27.2 LUFS, identical to raw). Map-heavy segments are generated from templates: tools/seg01/gen_seg01.py, tools/seg03/gen_seg03.py (edit the template, re-run). Sound: tools/audio/place_sound.py rebuilds all three beds from compositions/segNN.sfx.json.
 - 2026-10-29 — full 10-min edit built by 6 parallel editors (94 scenes, 600 s); first full render 8m47s on this Mac.

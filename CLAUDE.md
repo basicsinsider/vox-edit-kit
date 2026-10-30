@@ -17,6 +17,7 @@ Hard rules (details in MANUAL §0):
 - Every on-screen word lands 0–120 ms before its spoken word (`tools/sync_audit.py`).
 - Free/public-domain/CC assets only; log every asset in the folder's SOURCES.md; never log in or create accounts.
 - Show 4–10 s samples and get the user's approval before building a full edit.
+- Reference images from the user (charts, maps, boards) are rebuilt as animated scenes in our style — MANUAL §6/§6.1, examples in `expected/layouts/`.
 - Look at your snapshots (`npx hyperframes snapshot`) before claiming anything looks right.
 - Update `MANUAL.md` (and its Changelog) whenever you learn or fix something; re-run `tools/build_kit.sh`
   only if the user wants the zip-style kit as well.

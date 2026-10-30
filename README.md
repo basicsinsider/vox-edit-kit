@@ -9,7 +9,7 @@ highlighters, vintage TVs, 2.5D parallax, Vox markups, marimba sound bed).
 - `setup.sh` — installs everything (Linux or macOS)
 - `lib/` effects library (fx.js / fx.css) · `tools/` build, render, audit, image and sound tools
 - `compositions/` the 11 approved samples · `templates/full-edit/` the six segments of the approved 10-minute edit
-- `references/` the user's style images + studied tutorial reels · `expected/` approved sample previews
+- `references/` the user's style images + studied tutorial reels · `expected/` approved sample previews + `layouts/` stills of every reference layout
 - `assets/` fonts, textures (Texturelabs), maps, archival media used by the samples, icons, logos, SFX
 - `vo10.mp3` + `transcript.json` — the test voiceover (first 10 minutes of the "Taiwan" episode)
 
