@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8" /></head>
+<body>
+<template>
+  <style>
+    #root { position: absolute; inset: 0; overflow: hidden; background: var(--night); }
+    #s11-defs { position: absolute; width: 0; height: 0; }
+    #s11-weave { position: absolute; inset: -14px; }
+    #s11-cam { position: absolute; left: 14px; top: 14px; width: 1920px; height: 1080px; transform-origin: 600px 560px; }
+    #s11-cam .plate .img, #s11-cam .plate .fringe { object-position: 50% 20%; filter: url(#s11-tint); }
+    #s11-cam .plate .fringe { filter: url(#s11-tint) blur(7px); }
+    #s11-scrim { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(14,12,10,0.6) 0%, rgba(14,12,10,0.15) 42%, rgba(14,12,10,0) 60%), linear-gradient(0deg, rgba(14,12,10,0.65) 0%, rgba(14,12,10,0) 40%); }
+    #s11-marks { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; }
+    #s11-name { position: absolute; left: 96px; top: 452px; }
+    #s11-name .n { font-size: 78px; line-height: 1; }
+    #s11-name .p { font-size: 40px; color: #e8dccb; margin-top: 8px; }
+    #s11-found { position: absolute; left: 100px; top: 690px; font-size: 40px; color: #e8dccb; }
+    #s11-ray { position: absolute; left: 96px; top: 740px; font-size: 136px; line-height: 1; color: var(--bone); }
+    #s11-def { position: absolute; left: 100px; top: 918px; font-size: 38px; color: #e8dccb; }
+  </style>
+  <div id="root" data-composition-id="s11" data-width="1920" data-height="1080">
+    <svg id="s11-defs"></svg>
+    <div id="s11-weave">
+      <div id="s11-cam">
+        <div class="plate"><img class="img" src="assets/archival/terman/vannevar_bush_karl_compton_mit_1932.jpg" alt="" /><img class="fringe" src="assets/archival/terman/vannevar_bush_karl_compton_mit_1932.jpg" alt="" /></div>
+        <div class="vignette"></div>
+        <div id="s11-scrim"></div>
+        <div id="s11-name"><div class="n t-display halate">Vannevar Bush</div>
+          <div class="p t-serif-i halate"><span>professor </span><span>at MIT</span></div></div>
+        <div id="s11-found" class="t-serif-i halate"><span>one </span><span>of </span><span>the </span><span>founders </span><span>of</span></div>
+        <div id="s11-ray" class="t-display halate">Raytheon</div>
+        <div id="s11-def" class="t-serif-i halate"><span>the </span><span>defense </span><span>electronics </span><span>company</span></div>
+        <svg id="s11-marks"></svg>
+      </div>
+    </div>
+    <div id="s11-grain" class="tx tx-grain" style="background-image:url('assets/textures/grain_02_norm.jpg')"></div>
+    <div id="s11-dust" class="tx tx-dust" style="background-image:url('assets/textures/dust_01.jpg')"></div>
+    <div class="vignette"></div>
+    <audio id="s11-vo" src="vo10.mp3" data-start="0" data-duration="7.9" data-media-start="427.3" data-volume="1"></audio>
+  </div>
+  <script>
+  (function () {
+    const tl = gsap.timeline({ paused: true });
+    const T = (s) => +(s - 427.3).toFixed(3);
+    const S = T;
+    const $ = (id) => document.getElementById(id);
+    FX.tintDefs($("s11-defs"), "s11-tint", "#1b1916", "#ece2cf");
+    FX.grain($("s11-grain"), 121);
+    FX.dust($("s11-dust"), 123, 2);
+    FX.weave($("s11-weave"), { amp: 1.6, rot: 0.05, flicker: 0.05, seed: 125 });
+    const svg = $("s11-marks");
+    const rough = FX.markupDefs(svg, "s11-rough");   // two stacked roughen passes, boiling at 12 fps
+
+    // camera: slow push towards Bush (marks + labels live inside the camera, so they track the photo)
+    tl.fromTo("#s11-cam", { scale: 1.0 }, { scale: 1.08, duration: 7.9, ease: "none", immediateRender: true }, 0);
+
+    // rough red circle on Bush ("look here first"), name label, white arrow from the name to him
+    FX.markup.circle(tl, svg, S(427.45), { cx: 652, cy: 236, rx: 118, ry: 132, rot: -8, dur: 0.6, width: 8, color: "#e5482a", filter: rough, seed: 4 });
+    FX.text.rise(tl, [$("s11-name").querySelector(".n")], S(427.6), { dur: 0.35, y: 10, blur: 6 });
+    FX.markup.arrow(tl, svg, S(427.95), { x1: 330, y1: 440, x2: 545, y2: 318, bend: -70, head: 30, dur: 0.45, width: 6, color: "#f4eee2", filter: rough });
+    // "professor at MIT"
+    tl.fromTo($("s11-name").querySelector(".p").children[0], { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, T(427.81));
+    tl.fromTo($("s11-name").querySelector(".p").children[1], { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, T(428.45));
+
+    // "one of the founders of Raytheon"
+    [T(430.61), T(430.77), T(430.93), T(431.09), T(431.73)].forEach((c, i) =>
+      tl.fromTo($("s11-found").children[i], { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, c));
+    FX.text.fill(tl, $("s11-ray"), T(431.97), { per: 0.03, hold: 0.28, settle: 0.45, cool: "#f4eee2" });
+    // scribbled underline under "Raytheon", drawn on like trim paths
+    FX.markup.underline(tl, svg, S(432.35), { x1: 96, x2: 700, y: 895, dur: 0.4, width: 9, color: "#e5482a", filter: rough });
+    // "the defense electronics company"
+    [T(433.01), T(433.17), T(433.73), T(434.69)].forEach((c, i) =>
+      tl.fromTo($("s11-def").children[i], { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, c));
+
+    FX.mount(tl, 7.9);
+    window.__timelines["s11"] = tl;
+  })();
+  </script>
+</template>
+</body>
+</html>

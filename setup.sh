@@ -32,7 +32,7 @@ say "Node.js (needs >= 22) + HyperFrames CLI"
 node -v || { echo "!! Node.js missing — install Node 22+ (e.g. via nvm) and re-run"; exit 1; }
 npx --yes hyperframes@0.8.217 --version
 npx --yes hyperframes@0.8.217 browser ensure 2>/dev/null || npx --yes hyperframes@0.8.217 doctor || true
-say "HyperFrames agent skills (/hyperframes, /hyperframes-core, /general-video, /media-use, ...)"
+say "HyperFrames agent skills (/hyperframes, /hyperframes-cli, /hyperframes-registry, /media-use)"
 npx --yes hyperframes@0.8.217 skills update general-video || true
 npx --yes hyperframes@0.8.217 skills update || true
 say "Local speech-to-text model (Parakeet) for word timestamps"

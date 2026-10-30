@@ -41,9 +41,15 @@ npx hyperframes doctor # should report ffmpeg, ffprobe, Chrome OK
 ```
 - Use `.venv/bin/python` for every Python tool in `tools/` (never the system python for numpy/scipy work).
 - The shell tools in `tools/*.sh` are zsh scripts (`setup.sh` installs zsh on Linux).
-- HyperFrames is pinned at **0.8.217** (package.json). Its skills (`/hyperframes`, `/hyperframes-core`,
-  `/general-video`, `/hyperframes-animation`, `/media-use`, `/hyperframes-audio`, `/hyperframes-cli`) are
-  installed by `npx hyperframes skills update`; restart the agent session to load them if they were just installed.
+- HyperFrames is pinned at **0.8.217** (package.json). Always call it as `npx --yes hyperframes@0.8.217 …`: a bare
+  `npx hyperframes` silently fetches the newest release (0.8.222 on 2026-10-30). Its skills are installed by
+  `npx hyperframes skills update`; as of 2026-10-30 that installs **`/hyperframes`, `/hyperframes-cli`,
+  `/hyperframes-registry`, `/media-use`** (the older names `/hyperframes-core`, `/general-video`, `/hyperframes-animation`,
+  `/hyperframes-audio` no longer exist — the composition contract is in `hyperframes/references/format.md`, grading/TV
+  effects in `media-use/references/grading.md`). The skills describe the newest CLI (e.g. 30 fps defaults, `check`);
+  this kit's own rules win (24 fps, `lint`, pinned version). Restart the session to load freshly installed skills.
+- `setup.sh`'s `apt install` can fail with a dpkg error on cloud images; harmless when ffmpeg, ffprobe and zsh are
+  already present (check `which ffmpeg zsh`).
 - Cloud/sandboxed sessions may have restricted network access. If Instagram, archive.org, Wikimedia or the
   HyperFrames registry are blocked, say so to the user and continue with what's in the repo (all reels are
   already studied in `references/reels/`, all sample assets are in `assets/`).
@@ -59,6 +65,9 @@ npx hyperframes doctor # should report ffmpeg, ffprobe, Chrome OK
 - Wikimedia returns HTTP 429 for full-size originals under load: download standard thumbnail widths
   (`/thumb/x/xy/Name.jpg/1920px-Name.jpg`) with `tools/commons_thumb.sh "File name.jpg" out.jpg 1920`.
   Library of Congress / Chronicling America APIs were blocked (403/503); archive.org and Commons work.
+  In claude.ai cloud sessions the **Commons API** (`commons.wikimedia.org/w/api.php`) can answer HTTP 429 to every
+  request (shared datacenter IP) even with Full network access, while `upload.wikimedia.org` files still download:
+  search with a pause between calls, or ask for the files through the fetch relay (§8.2).
 
 ## 2. Project layout
 
@@ -132,7 +141,7 @@ use, attribution optional; never redistribute the files publicly, never use them
 4. Add a row to `assets/textures/SOURCES.md`, swap the filename in the composition(s) (`.tx-grain`, `.tx-dust`,
    `.paper-tex`, halftone layers), keep it subtle (opacity rules in §3.3), snapshot before/after, and show the user.
 
-## 4. HyperFrames rules that bite (read `/hyperframes-core` once)
+## 4. HyperFrames rules that bite (read `/hyperframes` + its `references/format.md` once)
 
 ### 4.1 Composition skeleton (copy any `compositions/sNN-*.html`)
 - Sub-composition = `<template>` containing `<style>`, the root `<div id="root" data-composition-id="sNN">`,
@@ -151,8 +160,13 @@ use, attribution optional; never redistribute the files publicly, never use them
 - CSS `inset:` after `left/top` overrides them. Order matters.
 - Never centre with CSS `transform: translateX(-50%)` on an element GSAP also moves — GSAP rewrites `transform` and the
   centring is lost (a label ran off-screen in the first full render). Position with left/width + text-align, or use `xPercent`.
-- Map region overlays (mix-blend overlay on the desaturated basemap): West vermilion at fill-opacity ≈ 0.35, East navy ≈ 0.5.
-  Higher and the whole West reads as a red slab.
+- Map region overlays (mix-blend overlay on the desaturated basemap): on the dark satellite map of s02, West vermilion
+  `#e5482a` at fill-opacity ≈ 0.6 (≥ 0.85 reads as a red slab, ≤ 0.45 turns brown); East uses the light East fill
+  `--sky` `#a9c8de` at ≈ 0.8 (navy disappears under overlay on a dark map). On light/beige maps navy works.
+- `mix-blend-mode` on any child of a `preserve-3d` container makes Chrome flatten the whole 3D context (layers lose their
+  depth and land at the wrong place). Keep blended overlays (rays, haze with blend, grain) outside the 3D camera.
+- A 3D-rotated element inside a `perspective` root can composite above its flat siblings (a scrim/shade drawn after it
+  did nothing in s06). Put `perspective` on a dedicated wrapper that holds only the 3D layer.
 - SVG filters: set `color-interpolation-filters="sRGB"`; `feTurbulence` output ranges are unpredictable —
   for threshold reveals use a pre-made equalised noise image via `feImage` + `feColorMatrix` alpha offset.
   Filters inside `<mask>` failed in Chrome — apply the filter to the shape directly (`feComposite in`).
@@ -163,6 +177,9 @@ npx hyperframes lint                        # 0 errors before anything else
 npx hyperframes snapshot --at 1,3.5,6 --no-end -o .snap/x   # LOOK at the frames (Read the PNGs)
 tools/render_samples.sh s01 s05             # renders each, swaps in bit-exact MP3 VO (keeps mix if SFX)
 ```
+Renders and snapshots both rewrite `index.html`: while a render runs in the root, snapshot in a sandbox
+(`tools/make_sandbox.sh snap`, then `cd work/snap && python3 tools/build_index.py sNN --root .`).
+Compare a render with the approved sample: `tools/compare_expected.sh renders/samples/sNN-x.mp4 expected/sNN-x.720p.mp4 out.jpg`.
 Parallel editors: each works in a private sandbox so previews never collide —
 `tools/make_sandbox.sh segNN` → `cd work/segNN && python3 tools/build_index.py segNN --root . && npx hyperframes snapshot …`
 (compositions/, assets/, lib/ are symlinked; edit files in the main compositions/ folder).
@@ -174,7 +191,13 @@ Write every cue as `T(<voiceover seconds>)` where `const T = s => s - SCENE_VO_S
 start time from `transcript.json` (or BEATS.md §4 key-word cues). Text should appear 0–120 ms before its
 word; structural moves (exits, camera) may sit anywhere. Audit: `python3 tools/sync_audit.py compositions/*.html`.
 Convention from the full edit: write **text** cues as `T(vo)` and **structural** cues (cuts, camera, exits, objects) as
-`S(vo)` (same function) so the audit only checks words. Long segments: one sub-composition per ~100 s, scenes as layers
+`S(vo)` (same function) so the audit only checks words. The audit only sees **literal** `T(123.45)` calls — never write
+`T(c)` over an array of numbers (those cues go unchecked); write the array as `[T(64.83), T(64.91), …]`. It also
+matches each cue to the *nearest* word start, so a cue for a short word right after another can be reported against
+its neighbour; and it only flags offsets outside −0.25…+0.12 s — read the list and make sure every text cue is ≤ 0.
+Default: put the cue 0.06 s before the word. Longer lines are revealed **word by word**, each word on its own `T()`,
+so no word is ever on screen before it is spoken (s03, s04, s06, s08, s11). A title like "The first class" lands on
+its first spoken word ("the"), not on the key word. Long segments: one sub-composition per ~100 s, scenes as layers
 gated by `FX.gate`, `display:none` outside their window (keeps the render's heavy-overlay count low).
 
 ## 5. Effect catalog (lib/fx.js API + where to see it)
@@ -192,15 +215,15 @@ bars, pops; keep camera moves smooth. `FX.split(el,'chars'|'words')`.
 | 6 | Sound | §7 | — |
 | 7 | Textures | §3.3 | all |
 | 8 | Light streaks | `FX.streaks(canvas,{seed,speed,xfreq,lo,hi,gamma,tint,gain})` — fractal noise squashed into vertical streaks, evolving, levels crushed; canvas `blur(2.5px)`, opacity 0.3–0.7, screen | s01 |
-| 9 | Shutter transition (+ click SFX) | `FX.iris(svg).at(tl, cutTime)`; swap shots exactly at the closed iris; shutter SFX ~0.15 s before | s05 |
+| 9 | Shutter transition (+ click SFX) | `FX.iris(svg, {close:0.16, hold:2/24, open:0.28}).at(tl, cutTime)` (the default 0.2 s opening barely reads); swap shots exactly at the closed iris; shutter SFX ~0.15 s before (`<audio id="sNN-sfx-k" src="assets/audio/sfx/camera_shutter_mech*.wav" data-volume="0.3">`); a second, faster iris (`close:0.1, open:0.12`) for words < 0.6 s apart (New York → New Jersey); dark scrim at the bottom/top of bright plates so labels read | s05 |
 | 10 | Vox layered backgrounds | 2–3 related images tinted with `FX.tintDefs(svg,id,dark,light)` (blacks→dark grey, whites slightly bright), offset/rotated panels with shadows, newsprint overlay, each drifting at its own speed; subject on top | s09 |
-| 11 | Footage inside a vintage TV | transparent-screen TV PNG (`assets/textures/tv_frame_01.png`, screen bbox in `tv_frame_01_screen.json`), video under it with `data-color-grading` effects chromaticAberration/scanlines/crtCurvature/filmArtifacts; CRT power-on (scaleY 0.012→1 + white flash); glass glare. **Vary the TV** (find other sets, wood consoles, portable, 1930s radio-cabinet) | s04 |
+| 11 | Footage inside a vintage TV | transparent-screen TV PNG (`assets/textures/tv_frame_01.png`, screen bbox in `tv_frame_01_screen.json`), video under it with `data-color-grading='{"intensity":1,"adjust":{"saturation":-1,"contrast":0.1},"effects":{"chromaticAberration":0.35,"chromaticAngle":0,"scanlines":0.4,"scanlineCount":0.17,"scanlineSoftness":1,"crtCurvature":0.35,"filmArtifacts":0.45}}'` (keys: `npx --yes hyperframes@0.8.217 media-treatment --capability retro-glitch --json`); a black "tube" div behind the screen so the hole is dark before power-on; CRT power-on (scaleY 0.012→1 + white flash); glass glare. **Vary the TV** (find other sets, wood consoles, portable, 1930s radio-cabinet) | s04 |
 | 12 | Collage / timelines | paper ground; photos tinted to the palette (`FX.tintDefs` ink→paper), halftone multiply, torn edges (`FX.roughDefs`), cards pinned with 12 fps stop-motion, timeline axis + travelling dot; Stanford→MIT swaps | s08 |
 | 13 | Text animations (reusable) | `FX.text.fill` (yellow pop → settles to reading colour), `FX.text.random` (letters appear in random order), `FX.text.odometer` (slot-machine letters; reels lock to final glyph width), `FX.text.count` (numbers, 12 fps), `FX.text.rise` (blur-in). One text animation at a time on screen | s01, s04, s07, s09 |
 | 14 | Old-footage gate weave + flicker | `FX.weave(el,{amp,flicker,seed})` on a wrapper | s07, s05, s11 |
 | 15 | "Cutting the curve" match cut | `FX.curveCut(tl, wrap, a, b, t0, dur)` — both images in one wrapper share the expo.inOut zoom (12 fps); cut at peak velocity with a 2-frame blur | s07 |
 | 16 | Hi-quality photo treatment | fringe blur (`.plate .fringe` radial-masked blurred copy), film dust, vignette, slow zoom | s07, s05 |
-| 17 | 2.5D | cut the photo into depth layers (backdrop with subject removed + blurred, title layer, subject, foreground), place in a `perspective:1200px` stage; each layer `{z, scale:(P−z)/P}` so the rest frame equals the flat photo; dolly camera (x drift ±150, z −80→150, rotationY ±3°); haze between layers, light rays, foreground blur (depth of field); title tucked behind the subject | s10 |
+| 17 | 2.5D | cut the photo into depth layers (backdrop with subject removed + blurred, title layer, subject, foreground), place in a `perspective:1200px` stage; each layer is a full-frame plane (`inset:0`, origin 50% 50%) holding its image at the photo's own offsets (`layout.json` next to every layer set), set to `{z, scale:(P−z)/P}` so the rest frame equals the flat photo; fit the photo so the subject fills ~75 % of the width and fill side margins with a bigger, blurrier copy of the far plate; feather the cut edges of near layers (mask-image) so they never show as stickers; dolly camera (x drift ±150, z −80→150, rotationY ±3°); haze between layers, light rays, foreground blur (depth of field); title tucked behind the subject | s10 |
 | 18 | Rough edges + highlighter | `FX.roughDefs(svg,id)` (boiling displacement at 12 fps) on text/paper; `FX.choke(tl, morph, t, from, dur)` = Simple Choker reveal (erode radius → 0, 12 fps); highlighter = yellow rect, multiply, rough filter, scaleX 0→1 choppy | s06, s04, s10 |
 | 19 | **Vox markups** (circles, arrows, underlines, boxes, X) | `FX.markupDefs(svg,id)` (two stacked rough passes, 12 fps boil) + `FX.markup.circle/arrow/underline/box/cross(tl, svg, t, {…})` drawn on with dashoffset ("trim paths"). Put the svg **inside the camera layer** so marks track the photo | s11 |
 | 20 | Map/document callouts | combine 19 with maps (circle a region, arrow to a pin, "look here first") | (use in edit) |
@@ -258,7 +281,7 @@ Vary every layout each time it's reused (different colour lead, orientation, den
   scratches on markups, highlighter swipe, ticks on counters/odometers, shutter clicks, projector loop on
   archival film, CRT click on TVs, low boom on big reveals, burn crackle on map burns, wind under clouds.
 - Levels: VO untouched at unity; music ≈ −28…−32 LUFS under speech, may lift ~3 dB in gaps; SFX peaks far
-  below VO. Details: `assets/audio/MIX_RULES.md` and `/hyperframes-audio`. (This VO measures −27.2 LUFS, so
+  below VO. Details: `assets/audio/MIX_RULES.md` and `/media-use` (audio). (This VO measures −27.2 LUFS, so
   the bed is set relative to it instead: ~14 LU under the voice ≈ −41 LUFS.)
 
 ### 7.1 How to place sound (pipeline)
@@ -342,6 +365,14 @@ built per project by `tools/audio/place_sound.py`.
 - [ ] Textures subtle. [ ] SFX on objects, quiet. [ ] Credits for CC-BY assets.
 
 ## Changelog
+- 2026-10-30 — Rebuild test (new cloud session): all 11 samples rebuilt from the docs (originals in `_approved/`). Learned
+  and fixed: pin every CLI call to 0.8.217 (`render_samples.sh` used the newest release; s11 added to its defaults);
+  current skill names (§1); Commons API 429 in cloud sessions (§1); sync audit only sees literal `T()` cues + word-by-word
+  reveals (§4.4); s02 template cues were late (WEST +0.02, Mississippi label +0.28, Eli Lilly +0.58 s) and its fills
+  off-palette — template now uses `S()` for structure, vermilion 0.6 / sky 0.8 (§4.2); blend modes flatten
+  `preserve-3d` and 3D layers can sit above flat siblings (§4.2); TV grading payload (§5 #11); iris opening 0.28 s
+  (§5 #9); 2.5D fitting/feathering (§5 #17) + `assets/archival/hp/layers/layout.json` (offsets were missing);
+  `tools/compare_expected.sh`; snapshot in a sandbox while rendering (§4.3).
 - 2026-10-29 — v1: samples s01–s10; palette locked; markups (s11) added from the Vox markup reel; paper-
   aesthetic chart (s03) from the user's Pinterest refs; sound brief from the Vox marimba reel; sync audit tool;
   halftone tool; verified 12 trillion-dollar companies for the map.
