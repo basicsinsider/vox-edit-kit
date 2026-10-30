@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8" /></head>
+<body>
+<template>
+  <style>
+    #root { position: absolute; inset: 0; overflow: hidden; background: #1c1a18; }
+    #s09-defs { position: absolute; width: 0; height: 0; }
+    /* Vox layered background: tinted Stanford photos at different depths, each drifting */
+    .s09-bgp { position: absolute; overflow: hidden; box-shadow: 0 30px 60px rgba(0,0,0,0.55); }
+    .s09-bgp img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: url(#s09-tintbg); }
+    #s09-p1 { left: -160px; top: -90px; width: 1250px; height: 760px; }
+    #s09-p2 { left: 820px; top: 140px; width: 1300px; height: 640px; }
+    #s09-p3 { left: 120px; top: 600px; width: 1500px; height: 560px; }
+    #s09-news { position: absolute; inset: -40px; mix-blend-mode: overlay; opacity: 0.42; background-size: cover; }
+    #s09-dim { position: absolute; inset: 0; background: radial-gradient(ellipse 70% 60% at 50% 48%, rgba(20,19,18,0.25), rgba(20,19,18,0.7)); }
+    .s09-card { position: absolute; width: 470px; height: 580px; background: #ece3d2; padding: 16px; box-shadow: 0 24px 44px rgba(0,0,0,0.6); filter: url(#s09-rough); }
+    .s09-card .ph { position: relative; width: 100%; height: 100%; overflow: hidden; background: #111; }
+    .s09-card .ph img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: url(#s09-tint) contrast(1.06); }
+    .s09-card .sil { position: absolute; inset: 0; background: #0f0e0d; }
+    #s09-h { left: 330px; top: 150px; }
+    #s09-p { left: 1110px; top: 170px; }
+    .s09-name { position: absolute; top: 790px; white-space: nowrap; }
+    .s09-name .f { font-size: 42px; color: #e8dccb; }
+    .s09-name .l { font-size: 104px; line-height: 0.95; }
+    #s09-hn { left: 350px; }
+    #s09-pn { left: 1130px; }
+    #s09-kick { position: absolute; left: 0; top: 76px; width: 1920px; text-align: center; font-size: 26px; color: #e8dccb; }
+  </style>
+  <div id="root" data-composition-id="s09" data-width="1920" data-height="1080">
+    <svg id="s09-defs"></svg>
+    <div id="s09-bg">
+      <div class="s09-bgp" id="s09-p1"><img src="assets/archival/hoover/stanford_inner_quad_west_entrance_c1900.jpg" alt="" style="object-position:60% 40%" /></div>
+      <div class="s09-bgp" id="s09-p2"><img src="assets/archival/hoover/stanford_main_quad_panorama_c1896_b.jpg" alt="" style="object-position:30% 55%" /></div>
+      <div class="s09-bgp" id="s09-p3"><img src="assets/archival/hoover/stanford_main_quad_panorama_c1896.jpg" alt="" style="object-position:55% 60%" /></div>
+      <div id="s09-news" style="background-image:url('assets/textures/newsprint_01_norm.jpg')"></div>
+      <div id="s09-dim"></div>
+    </div>
+    <div class="s09-card" id="s09-h"><div class="ph"><img src="assets/archival/hp/hewlett_william_c1962.jpg" alt="" style="object-position:50% 12%" /><div class="sil"></div></div></div>
+    <div class="s09-card" id="s09-p"><div class="ph"><img src="assets/archival/hp/packard_david_1933.jpg" alt="" style="object-position:50% 30%" /><div class="sil"></div></div></div>
+    <div id="s09-kick" class="t-label halate">the students' names</div>
+    <div class="s09-name" id="s09-hn"><div class="f t-serif-i halate">Bill</div><div class="l t-display halate">Hewlett</div></div>
+    <div class="s09-name" id="s09-pn"><div class="f t-serif-i halate">David</div><div class="l t-display halate">Packard</div></div>
+    <div id="s09-grain" class="tx tx-grain" style="background-image:url('assets/textures/grain_01_norm.jpg')"></div>
+    <div id="s09-dust" class="tx tx-dust" style="background-image:url('assets/textures/dust_03.jpg'); opacity:0.35"></div>
+    <div class="vignette"></div>
+    <audio id="s09-vo" src="vo10.mp3" data-start="0" data-duration="6.2" data-media-start="513.0" data-volume="1"></audio>
+  </div>
+  <script>
+  (function () {
+    const tl = gsap.timeline({ paused: true });
+    const T = (s) => +(s - 513.0).toFixed(3);
+    const S = T;
+    const $ = (id) => document.getElementById(id);
+    const defs = $("s09-defs");
+    FX.tintDefs(defs, "s09-tintbg", "#2b2825", "#9c907e");   // blacks -> dark grey, whites only slightly bright
+    FX.tintDefs(defs, "s09-tint", "#1d1a17", "#f0e6d3");
+    FX.roughDefs(defs, "s09-rough", { freq: 0.045, scale: 6 });
+    FX.grain($("s09-grain"), 101);
+    FX.dust($("s09-dust"), 103, 2);
+
+    // each background layer drifts at its own speed (depth)
+    tl.fromTo("#s09-p1", { x: 0, y: 0, rotation: -2 }, { x: 46, y: 10, rotation: -2, duration: 6.2, ease: "none", immediateRender: true }, 0);
+    tl.fromTo("#s09-p2", { x: 0, y: 0, rotation: 3 }, { x: -70, y: -6, rotation: 3, duration: 6.2, ease: "none", immediateRender: true }, 0);
+    tl.fromTo("#s09-p3", { x: 0, y: 0, rotation: -1 }, { x: 110, y: -14, rotation: -1, duration: 6.2, ease: "none", immediateRender: true }, 0);
+    tl.fromTo("#s09-news", { x: 0 }, { x: -30, duration: 6.2, ease: "none" }, 0);
+
+    // the two cards arrive as silhouettes (stop-motion 12 fps)
+    tl.fromTo("#s09-h", { opacity: 0, y: 60, rotation: -10 }, { opacity: 1, y: 0, rotation: -3.5, duration: 0.42, ease: FX.choppy("back.out(1.5)", 0.42, 12), immediateRender: true }, S(513.2));
+    tl.fromTo("#s09-p", { opacity: 0, y: 60, rotation: 9 }, { opacity: 1, y: 0, rotation: 3, duration: 0.42, ease: FX.choppy("back.out(1.5)", 0.42, 12), immediateRender: true }, S(513.45));
+    tl.fromTo(".s09-card", { scale: 1 }, { scale: 1.03, duration: 5.6, ease: "none" }, S(513.6));
+    FX.text.random(tl, $("s09-kick"), T(514.62), { dur: 0.45, seed: 9 });
+
+    // each card lights up from silhouette exactly on its name (12 fps steps), name lands with it
+    const light = (card, t) => {
+      tl.fromTo(card + " .sil", { opacity: 0.94 }, { opacity: 0, duration: 0.33, ease: FX.choppy("power2.out", 0.33, 12), immediateRender: true }, t);
+    };
+    light("#s09-h", T(515.66));
+    FX.text.rise(tl, [$("s09-hn").children[0]], T(515.66), { dur: 0.25, y: 8, blur: 4 });
+    FX.text.fill(tl, $("s09-hn").children[1], T(515.90), { per: 0.03, hold: 0.25, settle: 0.4, cool: "#f4eee2" });
+    light("#s09-p", T(516.78));
+    FX.text.rise(tl, [$("s09-pn").children[0]], T(516.78), { dur: 0.25, y: 8, blur: 4 });
+    FX.text.fill(tl, $("s09-pn").children[1], T(517.18), { per: 0.03, hold: 0.25, settle: 0.4, cool: "#f4eee2" });
+
+    FX.mount(tl, 6.2);
+    window.__timelines["s09"] = tl;
+  })();
+  </script>
+</template>
+</body>
+</html>

@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8" /></head>
+<body>
+<template>
+  <style>
+    #root { position: absolute; inset: 0; overflow: hidden; background: #1a1714; }
+    #s10-defs { position: absolute; width: 0; height: 0; }
+    /* 2.5D stage: every layer is a full-frame plane at translateZ(z) scaled by (P - z) / P,
+       so the rest frame equals the flat photo; the camera then dollies through the planes. P = 1200 */
+    #s10-stage { position: absolute; inset: 0; perspective: 1200px; perspective-origin: 50% 50%; }
+    #s10-cam { position: absolute; inset: 0; transform-style: preserve-3d; transform-origin: 50% 50%; }
+    .s10-l { position: absolute; inset: 0; transform-origin: 50% 50%; }
+    .s10-l img { position: absolute; filter: saturate(0.82) contrast(1.03) sepia(0.12); }
+    /* world: photo scaled 0.55 -> 1795 x 1346, placed at (62, 211); offsets from assets/archival/hp/layers/layout.json.
+       #s10-bd2 = a bigger, blurrier copy of the far plate that fills the side margins */
+    #s10-bd2 { left: -340px; top: -230px; width: 2600px; filter: saturate(0.7) sepia(0.2) brightness(0.72) blur(16px) !important; }
+    #s10-bd img#s10-bd1 { left: 62px; top: 211px; width: 1795px; -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 160px); mask-image: linear-gradient(180deg, transparent 0, #000 160px); filter: saturate(0.75) sepia(0.15) brightness(0.8) blur(4px); }
+    #s10-haze { background: linear-gradient(180deg, rgba(236,214,180,0.0) 10%, rgba(236,214,180,0.16) 45%, rgba(236,214,180,0.04) 80%); }
+    #s10-rays { position: absolute; inset: 0; background:
+        linear-gradient(118deg, transparent 30%, rgba(255,230,190,0.22) 33%, transparent 37%),
+        linear-gradient(112deg, transparent 40%, rgba(255,230,190,0.16) 42.5%, transparent 46%),
+        linear-gradient(124deg, transparent 50%, rgba(255,230,190,0.12) 52%, transparent 55%);
+      mix-blend-mode: screen; }
+    #s10-title-wrap { text-align: center; }
+    #s10-cal { position: absolute; left: 0; top: 88px; width: 1920px; text-align: center; font-size: 28px; color: #f0e6d4; }
+    #s10-title { position: absolute; left: 0; top: 128px; width: 1920px; text-align: center; font-size: 236px; line-height: 1; letter-spacing: 0.01em; filter: url(#s10-rough); }
+    #s10-gar img { left: 185px; top: 284px; width: 1517px; }
+    #s10-hedge img { left: 62px; top: 649px; width: 405px; -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 70px); mask-image: linear-gradient(90deg, transparent 0, #000 70px); }
+    #s10-house img { left: 1688px; top: 211px; width: 169px; -webkit-mask-image: linear-gradient(270deg, transparent 0, #000 60px), linear-gradient(0deg, transparent 0, #000 90px); mask-image: linear-gradient(270deg, transparent 0, #000 60px); }
+    #s10-cap { position: absolute; left: 108px; bottom: 96px; font-size: 46px; color: var(--bone); }
+    #s10-shade { position: absolute; inset: 0; background: linear-gradient(0deg, rgba(14,12,10,0.6) 0%, rgba(14,12,10,0) 30%), linear-gradient(180deg, rgba(20,17,14,0.75) 0%, rgba(20,17,14,0) 14%); }
+  </style>
+  <div id="root" data-composition-id="s10" data-width="1920" data-height="1080">
+    <svg id="s10-defs"></svg>
+    <div id="s10-stage">
+      <div id="s10-cam">
+        <div class="s10-l" id="s10-bd"><img id="s10-bd2" src="assets/archival/hp/layers/backdrop.jpg" alt="" /><img id="s10-bd1" src="assets/archival/hp/layers/backdrop.jpg" alt="" /></div>
+        <div class="s10-l" id="s10-tl">
+          <div id="s10-cal" class="t-label halate">California</div>
+          <div id="s10-title" class="t-display halate">PALO ALTO</div>
+        </div>
+        <div class="s10-l" id="s10-haze"></div>
+        <div class="s10-l" id="s10-gar"><img src="assets/archival/hp/layers/garage.png" alt="" /></div>
+        <div class="s10-l" id="s10-hedge"><img src="assets/archival/hp/layers/hedge.png" alt="" /></div>
+        <div class="s10-l" id="s10-house"><img src="assets/archival/hp/layers/house.png" alt="" /></div>
+      </div>
+    </div>
+    <div id="s10-rays"></div>
+    <div id="s10-shade"></div>
+    <div id="s10-cap" class="t-serif-i halate"><span>start </span><span>some </span><span>kind </span><span>of </span><span>company </span><span>here</span></div>
+    <div id="s10-grain" class="tx tx-grain" style="background-image:url('assets/textures/grain_01_norm.jpg')"></div>
+    <div id="s10-dust" class="tx tx-dust" style="background-image:url('assets/textures/dust_02.jpg'); opacity:0.3"></div>
+    <div class="vignette"></div>
+    <audio id="s10-vo" src="vo10.mp3" data-start="0" data-duration="7.0" data-media-start="544.5" data-volume="1"></audio>
+  </div>
+  <script>
+  (function () {
+    const tl = gsap.timeline({ paused: true });
+    const T = (s) => +(s - 544.5).toFixed(3);
+    const S = T;
+    const $ = (id) => document.getElementById(id);
+    const defs = $("s10-defs");
+    const morph = FX.roughDefs(defs, "s10-rough", { freq: 0.035, scale: 6, choke: 10 });
+    FX.grain($("s10-grain"), 111);
+    FX.dust($("s10-dust"), 113, 2);
+
+    // depth layout: {z, scale: (P - z) / P}
+    const P = 1200;
+    const Z = { "#s10-bd": -500, "#s10-tl": -260, "#s10-haze": -160, "#s10-gar": 0, "#s10-hedge": 160, "#s10-house": 260 };
+    for (const [sel, z] of Object.entries(Z)) gsap.set(sel, { z, scale: (P - z) / P });
+
+    // camera dolly: drift across + push in + slight yaw (smooth, not choppy)
+    tl.fromTo("#s10-cam", { x: 60, z: -30, rotationY: 1.5 }, { x: -50, z: 120, rotationY: -1.5, duration: 7.0, ease: "power1.inOut", immediateRender: true }, 0);
+    // depth of field: foreground softens as we push in; haze and rays breathe
+    tl.fromTo("#s10-hedge img, #s10-house img", { filter: "saturate(0.82) sepia(0.12) blur(1.5px)" }, { filter: "saturate(0.82) sepia(0.12) blur(6px)", duration: 7.0, ease: "none", immediateRender: true }, 0);
+    tl.fromTo("#s10-rays", { opacity: 0.55, x: -40 }, { opacity: 0.95, x: 60, duration: 7.0, ease: "sine.inOut", immediateRender: true }, 0);
+
+    // "start some kind of company here" — word by word
+    [T(547.29), T(547.61), T(547.77), T(547.93), T(548.09), T(548.57)].forEach((c, i) =>
+      tl.fromTo($("s10-cap").children[i], { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, c));
+    tl.to("#s10-cap", { opacity: 0, duration: 0.3 }, S(549.6));
+
+    // "California" then "PALO ALTO" chokes in behind the roof (Simple Choker + rough edges, 12 fps)
+    FX.text.random(tl, $("s10-cal"), T(548.97), { dur: 0.45, seed: 10 });
+    tl.fromTo("#s10-title", { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, T(549.85));
+    FX.choke(tl, morph, T(549.85), 10, 0.55);
+
+    FX.mount(tl, 7.0);
+    window.__timelines["s10"] = tl;
+  })();
+  </script>
+</template>
+</body>
+</html>
