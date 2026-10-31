@@ -183,3 +183,8 @@
 - Licence / credit: Commons — check (PD/CC)
 - Author: — · Date: 
 - Size: 3080x1379 · 3080x1379 native
+
+## edison_lamp_patent_223898_1880.jpg (c2s03 editor, 2026-10-31)
+- Subject: T. A. Edison, Electric-Lamp, US Patent 223,898 (27 Jan 1880), drawing sheet
+- Source: https://commons.wikimedia.org/wiki/File:Light_bulb_Edison_2.jpg (960 px thumb of 2128 px)
+- Licence / credit: Public domain (US patent) · Size: 960x1408 · Used: C2S113–114 invention circle (light bulb)

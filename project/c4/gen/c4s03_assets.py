@@ -46,3 +46,25 @@ frame(f"{F}/taiwan_1960_red_brick_hall_cyclists.mp4", 1.0, f"{D}/red_brick_hall_
 frame(f"{F}/taiwan_1960_school_building.mp4", 8.0, f"{D}/school_building_1960_frame.jpg")
 frame(f"{F}/taiwan_1960_students_writing_class.mp4", 6.0, f"{D}/students_writing_1960_frame.jpg")
 print("ok")
+
+# 5. C4S088 2.5D backdrop: the NARA photo at the cut-out's size (1/1.96) with the figure removed (normalised-blur inpaint)
+if not os.path.exists(f"{D}/chiang_backdrop_nofigure.jpg"):
+    cut = Image.open("assets/c4/cutouts/chiang_kaishek_uniform_cape_cutout.png")
+    src = Image.open("assets/c4/photos/chiang_kaishek_uniform_cape_map_nara.jpg").convert("RGB").resize(cut.size, Image.LANCZOS)
+    a = np.asarray(cut.split()[3].filter(ImageFilter.MaxFilter(31))).astype(float) / 255
+    keep = (a < 0.05).astype(float)
+    img = np.asarray(src).astype(float)
+    from scipy.ndimage import gaussian_filter
+    hole = keep < 0.5
+    # diffusion fill on a 1/8 copy (Laplace inpaint), upscale, blur, paste into the hole only
+    sm = (img.shape[1] // 8, img.shape[0] // 8)
+    imS = np.asarray(Image.fromarray(img.astype(np.uint8)).resize(sm, Image.BILINEAR)).astype(float)
+    hS = np.asarray(Image.fromarray((hole * 255).astype(np.uint8)).resize(sm, Image.NEAREST)) > 127
+    f = imS.copy(); f[hS] = imS[~hS].mean(0)
+    for _ in range(1500):
+        avg = (np.roll(f, 1, 0) + np.roll(f, -1, 0) + np.roll(f, 1, 1) + np.roll(f, -1, 1)) / 4
+        f[hS] = avg[hS]
+    big = np.asarray(Image.fromarray(np.clip(f, 0, 255).astype(np.uint8)).resize(cut.size, Image.BICUBIC)).astype(float)
+    big = np.stack([gaussian_filter(big[..., c], 6) for c in range(3)], -1)
+    out = img.copy(); out[hole] = big[hole]
+    Image.fromarray(np.clip(out, 0, 255).astype(np.uint8)).filter(ImageFilter.GaussianBlur(2)).save(f"{D}/chiang_backdrop_nofigure.jpg", quality=88)

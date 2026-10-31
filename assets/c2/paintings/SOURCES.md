@@ -47,3 +47,13 @@
 - Licence / credit: Public domain (LOC)
 - Author: — · Date: 19th c.
 - Size: 1920x2421
+
+## gutenberg_press_engraving_1890.jpg (c2s03 editor, 2026-10-31)
+- Subject: Gutenberg at his press examining a proof — wood engraving, *Zhivopisnoe obozrenie* 1890, page 1074
+- Source: https://commons.wikimedia.org/wiki/File:Живописное_обозрение_1890,_№_01-26_(1_янв._-_24_июня);_№_27-52_(1_июля_-_23_дек.)_Page_1074.jpg (1920 px thumb of 4072 px original)
+- Licence / credit: Public domain (CC0 on Commons) · Size: 1920x1358 · Used: C2S113–114 invention circle (printing press)
+
+## bell_telephone_lyceum_salem_1877.jpg (c2s03 editor, 2026-10-31)
+- Subject: "Professor Bell in Lyceum Hall, Salem … trial exhibition of Bell's telephone", sketch by E. R. Morse, 1877 (LOC LCCN2014645960)
+- Source: https://commons.wikimedia.org/wiki/File:Professor_Bell_in_Lyceum_Hall,_Salem,_addressing_a_party_of_scientific_men_in_Boston_-_From_sketches_by_E.R._Morse._LCCN2014645960.jpg (1280 thumb of 1536)
+- Licence / credit: Public domain (LOC) · Size: 1280x942 · Used: C2S113–114 invention circle (telephone)

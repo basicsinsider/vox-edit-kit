@@ -31,3 +31,8 @@
 - Licence / credit: Public domain (USGS)
 - Author: USGS · Date: 1948
 - Size: 4983x6204 · 4983x6204
+
+## black_marble_city_lights_2012.jpg (c2s03 editor, 2026-10-31)
+- Subject: NASA Black Marble 2012 — Earth at night, globe view (Americas/Atlantic)
+- Source: https://commons.wikimedia.org/wiki/File:Black_Marble_-_City_Lights_2012_(8246892319).jpg (original, NASA Goddard via Flickr)
+- Licence / credit: CC BY 2.0 (NASA Goddard Space Flight Center / NASA Earth Observatory) — on-screen credit "NASA Earth Observatory / Suomi NPP" · Size: 1920x1080 · Used: C2S115 (N76)

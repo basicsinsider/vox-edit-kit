@@ -247,3 +247,8 @@
 - Licence / credit: Public domain
 - Author: Carleton E. Watkins · Date: 1874
 - Size: 1920x2899 · 1920 thumb of 4443x6708
+
+## framework_laptop13_motherboard_2023.jpg (c2s03 editor, 2026-10-31)
+- Subject: Framework Laptop 13 (2023, AMD Ryzen) — internal mainboard and chips (modern ICs on an everyday board)
+- Source: https://commons.wikimedia.org/wiki/File:Framework_Laptop_13_-_2023_AMD_Ryzen_-_Internal_motherboard_and_component_view.jpg (1920 thumb of 2869)
+- Licence / credit: CC BY 4.0 — on-screen credit "Photo: Wikimedia Commons, CC BY 4.0" · Size: 1920x1446 · Used: C2S108 (N73), crop on the mainboard only

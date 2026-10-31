@@ -1,0 +1,861 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8" /></head>
+<body>
+<template>
+  <style>
+    /* c4s01 — chunk c4, LOCAL VO 0.00–199.14 (C4S001–C4S036). Source: project/c4/gen/c4s01.src.html → build_c4s01.py */
+    #root { position: absolute; inset: 0; overflow: hidden; background: var(--night); }
+    .k-scene { position: absolute; inset: 0; overflow: hidden; visibility: hidden; opacity: 0; }
+    .k-shot { position: absolute; inset: 0; overflow: hidden; transform-origin: 50% 50%; }
+    .k-night { background: var(--night); }
+    .k-paper { background: var(--paper); }
+    .k-abs { position: absolute; }
+    .k-p1, .k-p2 { position: absolute; inset: 0; background-size: cover; background-position: center; pointer-events: none; }
+    .k-p2 { opacity: 0.9; mix-blend-mode: multiply; }
+    .k-credit { position: absolute; right: 30px; bottom: 20px; font-size: 13px; letter-spacing: 0.08em; color: rgba(242,237,227,0.6); z-index: 6; }
+    .k-credit.ink { color: rgba(20,27,36,0.6); }
+    .k-mk { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; pointer-events: none; }
+    .k-w { display: inline-block; white-space: pre; opacity: 0; }
+    .k-ink { color: var(--ink); }
+    .k-redbox { display: inline-block; background: var(--vermilion); color: var(--bone); padding: 0.1em 0.24em 0.02em; line-height: 1; }
+    .k-inkbox { display: inline-block; background: var(--ink); color: var(--paper); padding: 0.1em 0.24em 0.02em; line-height: 1; }
+    .k-celrule { position: relative; display: inline-block; }
+    .k-celrule .u { position: absolute; left: 0; right: 0; bottom: -12px; height: 9px; background: var(--celadon); transform-origin: 0 50%; }
+    .k-hlbar { position: absolute; background: var(--yellow); mix-blend-mode: multiply; transform-origin: 0 50%; opacity: 0.9; }
+    .k-scrim-b { position: absolute; left: 0; right: 0; bottom: 0; height: 420px; background: linear-gradient(180deg, rgba(15,19,24,0), rgba(15,19,24,0.82)); }
+    .k-scrim-t { position: absolute; left: 0; right: 0; top: 0; height: 360px; background: linear-gradient(0deg, rgba(15,19,24,0), rgba(15,19,24,0.75)); }
+    .k-veil { position: absolute; inset: 0; opacity: 0; pointer-events: none; }
+    .k-card { position: absolute; background: #efe8d8; box-shadow: 0 26px 60px rgba(20,27,36,0.32); overflow: hidden; }
+    .k-card img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    .k-desk { position: absolute; inset: 0; background: radial-gradient(ellipse 60% 70% at 52% 44%, #3a3128 0%, #1d1915 55%, #0f0e0c 100%); }
+    .k-lamp { position: absolute; inset: 0; background: radial-gradient(ellipse 45% 55% at 52% 42%, rgba(255,214,170,0.20), rgba(255,214,170,0) 70%); mix-blend-mode: screen; pointer-events: none; }
+    .k-stamp { position: absolute; color: var(--ink); border: 9px solid var(--ink); padding: 6px 24px 0; mix-blend-mode: multiply; opacity: 0; }
+    .k-lbl { font-size: 30px; }
+    #c4s01-flash { position: absolute; inset: 0; background: #fbf4e6; opacity: 0; pointer-events: none; z-index: 7; }
+    #c4s01-grain, #c4s01-dust, #c4s01-vig { z-index: 8; }
+
+    /* C4S001 Security Council chamber */
+    #c4s01-sc001-cam { position: absolute; inset: 0; transform-origin: 52% 82%; }
+    #c4s01-sc001-img { position: absolute; left: 0; top: -150px; width: 1920px; height: 1320px; object-fit: cover; filter: grayscale(1) sepia(0.18) contrast(1.08) brightness(0.92); }
+    #c4s01-sc001-veto { left: 0; top: 150px; width: 1920px; text-align: center; font-size: 220px; opacity: 0; }
+    #c4s01-sc001-sc { left: 1010px; top: 640px; font-size: 40px; }
+
+    /* C4S002–003 seat horseshoe */
+    #c4s01-sc002-cam { position: absolute; inset: 0; transform-origin: 50% 45%; }
+    #c4s01-sc002-svg { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; }
+    #c4s01-sc002-perm { left: 0; top: 52px; width: 1920px; text-align: center; font-size: 40px; }
+    #c4s01-sc002-rot { left: 140px; top: 780px; font-size: 62px; }
+    #c4s01-sc002-11 { left: 760px; top: 455px; width: 400px; text-align: center; font-size: 150px; }
+    #c4s01-sc002-11 .k-inkbox { color: var(--yellow); }
+    #c4s01-sc002-mem { left: 760px; top: 640px; width: 400px; text-align: center; font-size: 34px; opacity: 0; }
+    #c4s01-sc003-ov { left: 140px; top: 900px; font-size: 64px; }
+    #c4s01-sc003-stampw { position: absolute; left: 1060px; top: 40px; width: 300px; height: 130px; }
+    #c4s01-sc003-stamp { left: 0; top: 0; font-size: 92px; transform: rotate(-9deg); filter: url(#c4s01-ch003); }
+    #c4s01-sc003-hl { left: 18px; top: 128px; width: 260px; height: 26px; }
+    #c4s01-sc003-10 { left: 1520px; top: 760px; font-size: 140px; opacity: 0; }
+    #c4s01-sc003-card { left: 840px; top: 470px; width: 240px; height: 170px; transform: rotate(-3deg); background: #f3eddf; padding: 26px 24px; opacity: 0; }
+    #c4s01-sc003-card .ln { height: 9px; background: rgba(20,27,36,0.32); margin: 0 0 15px; border-radius: 2px; }
+    #c4s01-sc003-np { left: 1220px; top: 900px; width: 600px; text-align: right; font-size: 52px; }
+
+    /* C4S004 curve cut emblem → GA hall */
+    #c4s01-sc004-wrap { position: absolute; inset: 0; transform-origin: 960px 540px; }
+    #c4s01-sc004-a, #c4s01-sc004-b { position: absolute; inset: 0; }
+    #c4s01-sc004-emb { position: absolute; left: 780px; top: 387px; width: 360px; height: 306px; filter: grayscale(1) brightness(2.2) sepia(0.25); opacity: 0.92; }
+    #c4s01-sc004-ring { position: absolute; left: 700px; top: 280px; width: 520px; height: 520px; border-radius: 50%; background: radial-gradient(circle, rgba(242,237,227,0.10) 0%, rgba(242,237,227,0) 70%); }
+    /* GA photo placed so its emblem (orig 1873,1178, ⌀≈165 px) sits on the A-emblem at the cut (scale 2.18) */
+    #c4s01-sc004-gab { position: absolute; left: -3123px; top: -2028px; width: 8371px; height: 5581px; }
+    #c4s01-sc004-ga { position: absolute; inset: 0; width: 100%; height: 100%; filter: saturate(0.55) contrast(1.06) brightness(0.9); }
+    .k-dimr { position: absolute; background: rgba(12,10,8,0.82); }
+    #c4s01-sc004-gen { left: 0; top: 780px; width: 1920px; text-align: center; font-size: 150px; }
+    #c4s01-sc004-jur { left: 0; top: 960px; width: 1920px; text-align: center; font-size: 52px; }
+
+    /* C4S005 GA hall 2.5D */
+    #c4s01-sc005-stage { position: absolute; inset: 0; perspective: 1200px; perspective-origin: 50% 45%; background: #120f0c; }
+    #c4s01-sc005-cam { position: absolute; inset: 0; transform-style: preserve-3d; transform-origin: 50% 50%; }
+    .k-L { position: absolute; inset: 0; transform-origin: 50% 50%; }
+    .k-L img { position: absolute; left: -60px; top: -75px; width: 2040px; height: 1360px; object-fit: cover; }
+    #c4s01-sc005-far { filter: saturate(0.5) brightness(0.72) blur(1.2px); }
+    #c4s01-sc005-near { filter: saturate(0.55) brightness(0.88) contrast(1.05);
+      -webkit-mask-image: linear-gradient(180deg, transparent 58%, #000 72%); mask-image: linear-gradient(180deg, transparent 58%, #000 72%); }
+    #c4s01-sc005-haze { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(40,32,24,0) 30%, rgba(60,50,40,0.28) 62%, rgba(40,32,24,0) 80%); }
+    #c4s01-sc005-jur { left: 120px; top: 120px; font-size: 40px; }
+    #c4s01-sc005-who { left: 120px; top: 860px; font-size: 92px; }
+    #c4s01-sc005-seatw { position: relative; display: inline-block; }
+    #c4s01-sc005-seathl { left: -4px; right: -4px; top: 34px; bottom: 6px; mix-blend-mode: normal; }
+    #c4s01-sc005-seat { position: relative; color: var(--ink); }
+
+    /* C4S006 SC president (ROC delegate) footage */
+    #c4s01-sc006-bg { position: absolute; left: -200px; top: -300px; width: 2320px; height: 1740px; object-fit: cover; filter: blur(26px) brightness(0.38) grayscale(1); }
+    #c4s01-sc006-cam { position: absolute; inset: 0; transform-origin: 50% 50%; }
+    #c4s01-sc006-plate { position: absolute; left: 480px; top: 60px; width: 960px; height: 720px; overflow: hidden; box-shadow: 0 0 80px rgba(0,0,0,0.7); }
+    #c4s01-sc006-plate img, #c4s01-sc006-plate video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    #c4s01-sc006-blur { position: absolute; inset: 0; backdrop-filter: blur(7px); -webkit-backdrop-filter: blur(7px); }
+    #c4s01-sc006-vote { left: 120px; top: 120px; font-size: 40px; }
+    #c4s01-sc006-cs { left: 0; top: 840px; width: 1920px; text-align: center; font-size: 140px; }
+
+    /* C4S007 Vox layered: Mao 1949 */
+    #c4s01-sc007-cam { position: absolute; inset: 0; transform-origin: 50% 50%; }
+    .k-panel { position: absolute; overflow: hidden; box-shadow: 0 22px 50px rgba(20,27,36,0.35); background: #d8d0bf; }
+    .k-panel img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    .k-panel .ht { position: absolute; inset: 0; background: url('assets/textures/halftone_01_norm.jpg') 0 0 / 420px auto; mix-blend-mode: overlay; opacity: 0.45; }
+    #c4s01-sc007-crowd { left: 90px; top: 150px; width: 700px; height: 488px; transform: rotate(-4deg); }
+    #c4s01-sc007-crowd img { filter: url(#c4s01-tint-ink); }
+    #c4s01-sc007-gate { left: 1220px; top: 90px; width: 600px; height: 330px; transform: rotate(3deg); }
+    #c4s01-sc007-gate img { object-position: 50% 0%; filter: url(#c4s01-tint-ink); }
+    #c4s01-sc007-mao { left: 560px; top: 230px; width: 900px; height: 660px; transform: rotate(-1deg); }
+    #c4s01-sc007-mao img { filter: url(#c4s01-tint-red) contrast(1.05); }
+    #c4s01-sc007-ccp { left: 140px; top: 760px; font-size: 120px; }
+    #c4s01-sc007-china { left: 1490px; top: 560px; font-size: 92px; }
+    #c4s01-sc007-cal { position: absolute; left: 1540px; top: 720px; width: 250px; height: 290px; }
+    .k-calpg { position: absolute; left: 0; top: 30px; width: 250px; height: 260px; background: #f3eddf; box-shadow: 0 8px 20px rgba(20,27,36,0.3); transform-origin: 50% 0%; }
+    .k-calpg .bar { position: absolute; left: 0; right: 0; top: 0; height: 52px; background: var(--ink); }
+    .k-calpg .g { position: absolute; left: 22px; right: 22px; top: 76px; bottom: 20px; background:
+      repeating-linear-gradient(90deg, rgba(20,27,36,0.22) 0 2px, transparent 2px 29.4px), repeating-linear-gradient(0deg, rgba(20,27,36,0.22) 0 2px, transparent 2px 32px); }
+    #c4s01-sc007-cal .rings { position: absolute; left: 30px; right: 30px; top: 18px; height: 26px; background: repeating-linear-gradient(90deg, #6b6b6b 0 8px, transparent 8px 38px); border-radius: 4px; }
+    #c4s01-sc007-eye { left: 1250px; top: 1000px; width: 600px; text-align: right; font-size: 34px; }
+
+    /* C4S008 / C4S017 Eurasia night map */
+    .k-mapcam { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
+    .k-mapcam img { position: absolute; left: 0; top: 0; }
+    .k-mapcam svg { position: absolute; left: 0; top: 0; overflow: visible; }
+    #c4s01-sc008-cam, #c4s01-sc017-cam { width: 6190px; height: 2139px; }
+    #c4s01-sc008-cam img, #c4s01-sc017-cam img { width: 6190px; height: 2139px; filter: brightness(1.15) contrast(1.08); }
+    #c4s01-sc008-wp { left: 120px; top: 110px; font-size: 40px; }
+    #c4s01-sc008-ccp { left: 1460px; top: 820px; font-size: 96px; }
+
+    /* C4S009 UN draft resolution */
+    #c4s01-sc009-stage { position: absolute; inset: 0; perspective: 2200px; }
+    #c4s01-sc009-cam { position: absolute; left: 0; top: 0; width: 1400px; height: 1808px; transform-origin: 0 0; }
+    #c4s01-sc009-page { position: absolute; left: 0; top: 0; width: 1400px; height: 1808px; background: #efeadf; transform: rotateY(-8deg) rotateX(5deg) rotate(-1.5deg); transform-origin: 50% 40%; box-shadow: 0 40px 90px rgba(20,27,36,0.35); overflow: hidden; }
+    #c4s01-sc009-page img { position: absolute; left: 0; top: 0; width: 1400px; height: 1808px; filter: sepia(0.35) contrast(1.05); mix-blend-mode: multiply; }
+    #c4s01-sc009-page .ht { position: absolute; inset: 0; background: url('assets/textures/halftone_01_norm.jpg') 0 0 / 380px auto; mix-blend-mode: overlay; opacity: 0.2; }
+    #c4s01-sc009-dim { position: absolute; inset: 0; background: #efeadf; opacity: 0; }
+    #c4s01-sc009-key { position: absolute; inset: 0; }
+    #c4s01-sc009-key img { filter: sepia(0.35) contrast(1.15); mix-blend-mode: multiply; }
+    #c4s01-sc009-mk { position: absolute; left: 0; top: 0; width: 1400px; height: 1808px; overflow: visible; }
+    #c4s01-sc009-res { left: 120px; top: 110px; font-size: 40px; color: var(--ink); }
+    #c4s01-sc009-ko { left: 1300px; top: 140px; font-size: 96px; color: var(--ink); }
+    #c4s01-sc009-tw { left: 1380px; top: 860px; font-size: 84px; }
+
+    /* C4S010 seat moves ROC → CCP */
+    #c4s01-sc010-cam { position: absolute; inset: 0; transform-origin: 50% 50%; }
+    .k-circ { position: absolute; width: 440px; height: 440px; border-radius: 50%; overflow: hidden; border: 8px solid var(--ink); background: #e2dccd; }
+    #c4s01-sc010-tw { left: 270px; top: 130px; }
+    #c4s01-sc010-tw img { position: absolute; left: 95px; top: 18px; width: 280px; height: auto; filter: drop-shadow(0 6px 8px rgba(20,27,36,0.3)); }
+    #c4s01-sc010-cn { left: 1210px; top: 130px; border-color: var(--vermilion); }
+    #c4s01-sc010-cn img { position: absolute; left: -70px; top: -30px; width: 700px; height: 514px; object-fit: cover; filter: url(#c4s01-tint-red); }
+    #c4s01-sc010-twl { left: 270px; top: 600px; width: 440px; text-align: center; font-size: 34px; color: var(--ink); }
+    #c4s01-sc010-ccp { left: 1210px; top: 596px; width: 440px; text-align: center; font-size: 64px; }
+    #c4s01-sc010-chair { position: absolute; left: 380px; top: 690px; width: 220px; height: 240px; overflow: visible; }
+    #c4s01-sc010-svg { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; }
+    #c4s01-sc010-cs { left: 0; top: 40px; width: 1920px; text-align: center; font-size: 80px; color: var(--ink); }
+    #c4s01-sc010-pv { left: 0; top: 980px; width: 1920px; text-align: center; font-size: 36px; color: var(--ink); }
+
+    /* C4S011 resolution stack, DEFEATED */
+    #c4s01-sc011-cam { position: absolute; inset: 0; transform-origin: 52% 48%; }
+    .k-doc { position: absolute; left: 640px; top: 120px; width: 640px; height: 827px; background: #ece5d6; box-shadow: 0 24px 60px rgba(0,0,0,0.6); overflow: hidden; }
+    .k-doc img { position: absolute; inset: 0; width: 100%; height: 100%; filter: sepia(0.4) contrast(1.05) brightness(0.96); mix-blend-mode: multiply; }
+    .k-doc .k-stamp { left: 120px; top: 330px; font-size: 84px; transform: rotate(-12deg); color: #2a3442; border-color: #2a3442; }
+    #c4s01-sc011-ey { left: 120px; top: 120px; font-size: 40px; }
+    #c4s01-sc011-hab { left: 1380px; top: 860px; font-size: 92px; }
+
+    /* C4S012 votes falling (grid) */
+    #c4s01-sc012-cam { position: absolute; inset: 0; transform-origin: 30% 50%; }
+    #c4s01-sc012-svg { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; }
+    #c4s01-sc012-def { left: 220px; top: 120px; font-size: 40px; color: var(--ink); }
+    #c4s01-sc012-vfd { left: 1060px; top: 820px; font-size: 96px; color: var(--ink); }
+
+    /* C4S013–014 Africa night */
+    #c4s01-sc013-cam { width: 3413px; height: 3413px; }
+    #c4s01-sc013-cam img { width: 3413px; height: 3413px; filter: brightness(1.18) contrast(1.06); }
+    #c4s01-sc013-nc { left: 120px; top: 110px; font-size: 40px; }
+    #c4s01-sc013-af { left: 0; top: 830px; width: 1920px; text-align: center; font-size: 190px; }
+    #c4s01-sc014-tw, #c4s01-sc014-cn { position: absolute; top: 330px; width: 300px; height: 380px; opacity: 0; }
+    #c4s01-sc014-tw { left: 70px; }
+    #c4s01-sc014-tw img { position: absolute; left: 60px; top: 10px; width: 190px; filter: drop-shadow(0 0 10px rgba(159,199,178,0.5)); }
+    #c4s01-sc014-cn { left: 1550px; }
+    #c4s01-sc014-cn svg { position: absolute; left: 0; top: 30px; width: 300px; height: 300px; overflow: visible; }
+    #c4s01-sc014-rope { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; }
+    #c4s01-sc014-twl { left: 70px; top: 740px; width: 300px; text-align: center; font-size: 40px; }
+    #c4s01-sc014-ccp { left: 1550px; top: 730px; width: 300px; text-align: center; font-size: 64px; }
+    #c4s01-sc014-fo { left: 0; top: 110px; width: 1920px; text-align: center; font-size: 110px; }
+    #c4s01-sc014-yc { left: 0; top: 900px; width: 1920px; text-align: center; font-size: 64px; }
+
+    /* C4S015 diplomatic cable */
+    #c4s01-sc015-cam { position: absolute; inset: 0; transform-origin: 72% 66%; }
+    #c4s01-sc015-form { position: absolute; left: 230px; top: 90px; width: 1300px; height: 900px; background: #efe6cf; transform: rotate(-1.2deg); box-shadow: 0 30px 70px rgba(20,27,36,0.35); overflow: hidden; }
+    #c4s01-sc015-form .t1 { position: absolute; inset: 0; background: url('assets/textures/paper_stained_01_hires.jpg') center / cover; mix-blend-mode: multiply; opacity: 0.55; }
+    #c4s01-sc015-form .hd { position: absolute; left: 70px; top: 54px; right: 70px; border-bottom: 5px double var(--ink); padding-bottom: 18px; font-size: 76px; color: var(--ink); letter-spacing: 0.08em; }
+    #c4s01-sc015-form .row { position: absolute; left: 70px; right: 70px; height: 2px; background: rgba(20,27,36,0.35); }
+    #c4s01-sc015-form .lab { position: absolute; font-size: 22px; color: rgba(20,27,36,0.7); }
+    .k-type { position: absolute; left: 110px; font-size: 52px; color: #2a3140; letter-spacing: 0.06em; }
+    .k-type .c { opacity: 0; }
+    #c4s01-sc015-clip { position: absolute; left: 1040px; top: 520px; width: 560px; height: 400px; background: #efe8d8; padding: 14px; transform: rotate(5deg); box-shadow: 0 20px 50px rgba(20,27,36,0.4); opacity: 0; }
+    #c4s01-sc015-clip .in { position: relative; width: 100%; height: 100%; overflow: hidden; }
+    #c4s01-sc015-clip img { position: absolute; left: -822px; top: -231px; width: 1600px; height: 800px; filter: saturate(0.8) sepia(0.1); }
+    #c4s01-sc015-clip svg { position: absolute; left: 0; top: 0; width: 532px; height: 372px; overflow: visible; }
+    #c4s01-sc015-pc { position: absolute; left: 1150px; top: 498px; width: 46px; height: 110px; border: 6px solid #8b8f94; border-radius: 24px; transform: rotate(5deg); opacity: 0; }
+
+    /* C4S016 Africa atlas */
+    #c4s01-sc016-cam { width: 3413px; height: 3413px; }
+    #c4s01-sc016-cam img { width: 3413px; height: 3413px; filter: saturate(0.7) sepia(0.15) brightness(1.02); }
+    #c4s01-sc016-tex { position: absolute; inset: 0; background: url('assets/textures/paper_cream_01.jpg') center / cover; mix-blend-mode: multiply; opacity: 0.55; pointer-events: none; }
+    #c4s01-sc016-conv { left: 120px; top: 110px; font-size: 72px; color: var(--ink); }
+    #c4s01-sc016-roc { left: 1300px; top: 820px; font-size: 96px; }
+
+    /* C4S017 */
+    #c4s01-sc017-ccp { left: 120px; top: 110px; font-size: 96px; }
+    #c4s01-sc017-st { left: 120px; top: 250px; font-size: 64px; }
+    #c4s01-sc017-big { left: 0; top: 860px; width: 1920px; text-align: center; font-size: 150px; }
+
+    /* C4S018 bars */
+    #c4s01-sc018-title { left: 170px; top: 120px; font-size: 96px; color: var(--ink); }
+    #c4s01-sc018-title i { font-style: italic; color: var(--vermilion); }
+    .k-row { position: absolute; left: 170px; width: 1600px; height: 170px; }
+    .k-row .lb { position: absolute; left: 0; top: 52px; width: 330px; font-size: 34px; color: var(--ink); opacity: 0; }
+    .k-row .b { position: absolute; left: 340px; height: 52px; transform-origin: 0 50%; }
+    .k-row .b .ht { position: absolute; inset: 0; background: url('assets/textures/halftone_01_norm.jpg') 0 0 / 300px auto; mix-blend-mode: multiply; opacity: 0.35; }
+    .k-row .r { top: 22px; background: var(--vermilion); }
+    .k-row .c { top: 86px; background: var(--celadon); }
+    #c4s01-sc018-key { left: 1330px; top: 880px; font-size: 40px; color: var(--ink); }
+    #c4s01-sc018-sw { position: absolute; left: 1270px; top: 878px; width: 44px; height: 44px; background: var(--celadon); opacity: 0; }
+
+    /* C4S019–020 scale → hemicycle (one tall sheet) */
+    #c4s01-sc019-sheet { position: absolute; left: 0; top: 0; width: 1920px; height: 2160px; }
+    #c4s01-sc019-sheet .k-p1, #c4s01-sc019-sheet .k-p2 { background-size: 1920px 2160px; }
+    #c4s01-sc019-svg { position: absolute; left: 0; top: 0; width: 1920px; height: 2160px; overflow: visible; }
+    #c4s01-sc019-ccp { left: 1250px; top: 120px; font-size: 64px; }
+    #c4s01-sc019-win { left: 0; top: 820px; width: 1920px; text-align: center; font-size: 140px; color: var(--ink); }
+    #c4s01-sc020-title { left: 0; top: 1160px; width: 1920px; text-align: center; font-size: 76px; color: var(--ink); }
+    #c4s01-sc020-afw { position: relative; display: inline-block; }
+    #c4s01-sc020-hl { left: -4px; right: -4px; top: 30px; bottom: 6px; }
+    #c4s01-sc020-ccp { left: 1400px; top: 1380px; font-size: 56px; }
+    #c4s01-sc020-cs { left: 0; top: 2030px; width: 1920px; text-align: center; font-size: 52px; color: var(--ink); }
+    #c4s01-sc020-tw { left: 140px; top: 1380px; font-size: 44px; color: var(--ink); }
+    #c4s01-sc020-chair { position: absolute; left: 905px; top: 1830px; width: 110px; height: 120px; overflow: visible; }
+
+    /* C4S021 Eisenhower in Taipei */
+    #c4s01-sc021-weave { position: absolute; inset: -14px; }
+    #c4s01-sc021-cam { position: absolute; inset: 0; transform-origin: 55% 45%; }
+    #c4s01-sc021-bg { position: absolute; left: -100px; top: -100px; width: 2120px; height: 1325px; object-fit: cover; filter: blur(24px) brightness(0.45) grayscale(1); }
+    #c4s01-sc021-img { position: absolute; left: 175px; top: 50px; width: 1570px; height: 982px; object-fit: cover; filter: grayscale(1) sepia(0.2) contrast(1.06);
+      -webkit-mask-image: radial-gradient(ellipse 54% 56% at 50% 50%, #000 72%, transparent 100%); mask-image: radial-gradient(ellipse 54% 56% at 50% 50%, #000 72%, transparent 100%); }
+    #c4s01-sc021-nbi { left: 120px; top: 110px; font-size: 64px; }
+    #c4s01-sc021-us { left: 120px; top: 860px; font-size: 64px; }
+
+    /* C4S022 / C4S025 war-room atlas */
+    .k-wr { position: absolute; left: 0; top: 0; width: 6144px; height: 3072px; transform-origin: 0 0; }
+    .k-wr img { position: absolute; inset: 0; width: 6144px; height: 3072px; filter: saturate(0.75) sepia(0.12) contrast(1.02); }
+    .k-wr svg { position: absolute; left: 0; top: 0; width: 6144px; height: 3072px; overflow: visible; }
+    .k-wrtex { position: absolute; inset: 0; background: url('assets/textures/paper_stained_01_hires.jpg') center / cover; mix-blend-mode: multiply; opacity: 0.45; pointer-events: none; }
+    .k-wrtex2 { position: absolute; inset: 0; background: url('assets/textures/paper_cream_02.jpg') center / cover; mix-blend-mode: multiply; opacity: 0.4; pointer-events: none; }
+    #c4s01-sc022-dw { left: 120px; top: 110px; font-size: 44px; color: var(--ink); }
+    #c4s01-sc022-roc { left: 120px; top: 190px; font-size: 64px; }
+    #c4s01-sc022-ccp { left: 360px; top: 190px; font-size: 64px; }
+    #c4s01-sc022-tab { position: absolute; left: 1600px; top: 780px; width: 380px; height: 120px; background: #e9dfc8; box-shadow: -8px 10px 24px rgba(20,27,36,0.35); border-left: 12px solid var(--ink); padding: 26px 0 0 34px; font-size: 54px; color: var(--ink); }
+    #c4s01-sc025-comp { left: 120px; top: 110px; font-size: 72px; color: var(--ink); }
+    #c4s01-sc025-ccp { left: 120px; top: 220px; font-size: 64px; }
+    #c4s01-sc025-ov { left: 1300px; top: 900px; font-size: 52px; color: var(--ink); }
+
+    /* C4S023 oscilloscope */
+    #c4s01-sc023-cam { position: absolute; inset: 0; transform-origin: 47% 42%; }
+    #c4s01-sc023-tube { position: absolute; left: 551px; top: 174px; width: 704px; height: 574px; background: radial-gradient(ellipse at 50% 50%, #1b231f 0%, #0b0f0d 80%); }
+    #c4s01-sc023-tr { position: absolute; left: 551px; top: 174px; width: 704px; height: 574px; overflow: visible; }
+    #c4s01-sc023-fr { position: absolute; left: 0; top: 34px; width: 1920px; height: 1013px; }
+    #c4s01-sc023-be { left: 120px; top: 110px; font-size: 40px; }
+    #c4s01-sc023-sei { left: 0; top: 820px; width: 1920px; text-align: center; font-size: 210px; opacity: 0; }
+    #c4s01-sc023-eq { left: 0; top: 880px; width: 1920px; text-align: center; font-size: 76px; }
+
+    /* C4S024 Taipei boulevard */
+    #c4s01-sc024-weave { position: absolute; inset: -14px; }
+    #c4s01-sc024-cam { position: absolute; inset: 0; transform-origin: 50% 40%; }
+    #c4s01-sc024-vid { position: absolute; left: 0; top: -180px; width: 1920px; height: 1440px; object-fit: cover; }
+    #c4s01-sc024-te { left: 120px; top: 860px; font-size: 64px; }
+
+    /* C4S026 filmstrip rewind */
+    #c4s01-sc026-weave { position: absolute; inset: -14px; }
+    #c4s01-sc026-strip { position: absolute; left: 520px; top: 0; width: 880px; }
+    .k-fr { position: relative; width: 880px; height: 600px; background: #0c0b0a; padding: 30px 80px; border-left: 0; }
+    .k-fr::before, .k-fr::after { content: ""; position: absolute; top: 0; bottom: 0; width: 34px; background: repeating-linear-gradient(180deg, transparent 0 22px, #d9d2c3 22px 52px, transparent 52px 75px); opacity: 0.55; }
+    .k-fr::before { left: 22px; } .k-fr::after { right: 22px; }
+    .k-fr img { width: 720px; height: 540px; object-fit: cover; filter: grayscale(1) sepia(0.3) contrast(1.1) brightness(0.9); display: block; }
+    #c4s01-sc026-scr { position: absolute; inset: 0; background: url('assets/textures/scratches_01.jpg') center / cover; mix-blend-mode: screen; opacity: 0.35; }
+    #c4s01-sc026-bu { left: 0; top: 400px; width: 1920px; text-align: center; font-size: 200px; }
+
+    /* C4S027 1935 expo poster */
+    #c4s01-sc027-cam { position: absolute; inset: 0; transform-origin: 40% 40%; }
+    #c4s01-sc027-post { position: absolute; left: 260px; top: 60px; width: 690px; height: 965px; box-shadow: 0 30px 70px rgba(20,27,36,0.35); transform: rotate(-1.5deg); }
+    #c4s01-sc027-post img { width: 100%; height: 100%; object-fit: cover; filter: saturate(0.85) contrast(1.03); }
+    #c4s01-sc027-rbj { left: 1060px; top: 250px; font-size: 130px; color: var(--ink); line-height: 1; }
+    #c4s01-sc027-roc { position: absolute; left: 1920px; top: 640px; width: 300px; height: 110px; background: var(--celadon); padding: 26px 0 0 40px; font-size: 52px; color: var(--ink); box-shadow: -6px 8px 20px rgba(20,27,36,0.25); }
+    #c4s01-sc027-ax { position: absolute; left: 1060px; right: 120px; top: 930px; height: 4px; background: var(--ink); transform-origin: 0 50%; }
+    #c4s01-sc027-ww { left: 1450px; top: 960px; font-size: 34px; color: var(--ink); }
+    #c4s01-sc027-tick { position: absolute; left: 1560px; top: 900px; width: 6px; height: 64px; background: var(--ink); transform-origin: 50% 100%; }
+
+    /* C4S028 1895 print + Meiji */
+    #c4s01-sc028-cam { position: absolute; inset: 0; transform-origin: 50% 50%; }
+    #c4s01-sc028-img { position: absolute; left: 0; top: -110px; width: 1950px; height: 1300px; object-fit: cover; filter: saturate(0.8) contrast(1.04) brightness(0.9); }
+    #c4s01-sc028-yr { left: 0; top: 330px; width: 1920px; text-align: center; font-size: 260px; }
+    #c4s01-sc028-card { position: absolute; left: 1350px; top: 210px; width: 420px; height: 530px; background: #ebe3d1; padding: 16px; box-shadow: 0 30px 70px rgba(0,0,0,0.6); transform: rotate(4deg); opacity: 0; filter: url(#c4s01-rough028); }
+    #c4s01-sc028-card .in { position: relative; width: 100%; height: 100%; overflow: hidden; }
+    #c4s01-sc028-card img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 18%; }
+    #c4s01-sc028-me { left: 1350px; top: 790px; width: 460px; text-align: center; font-size: 44px; }
+
+    /* C4S029 ledger band */
+    #c4s01-sc029-cam { position: absolute; inset: 0; transform-origin: 50% 50%; }
+    #c4s01-sc029-band { position: absolute; left: 300px; top: 470px; width: 1320px; height: 110px; background: rgba(42,38,34,0.78); transform-origin: 0 50%; }
+    #c4s01-sc029-band .ht { position: absolute; inset: 0; background: url('assets/textures/halftone_01_norm.jpg') 0 0 / 300px auto; mix-blend-mode: overlay; opacity: 0.5; }
+    #c4s01-sc029-ax { position: absolute; left: 200px; right: 200px; top: 640px; height: 4px; background: var(--ink); }
+    #c4s01-sc029-y { left: 230px; top: 670px; font-size: 40px; color: var(--ink); }
+    #c4s01-sc029-rule { left: 320px; top: 492px; font-size: 44px; color: var(--paper); }
+    #c4s01-sc029-end { left: 1280px; top: 670px; width: 520px; font-size: 40px; color: var(--ink); text-align: right; }
+    #c4s01-sc029-mark { position: absolute; left: 1617px; top: 440px; width: 8px; height: 220px; background: var(--ink); transform-origin: 50% 100%; }
+
+    /* C4S030–031 layered dark, Japanese army in China */
+    #c4s01-sc030-cam { position: absolute; inset: 0; transform-origin: 46% 50%; }
+    #c4s01-sc030-a { left: 60px; top: 120px; width: 900px; height: 716px; transform: rotate(-3deg); }
+    #c4s01-sc030-a img { filter: url(#c4s01-tint-night) contrast(1.1); }
+    #c4s01-sc030-b { left: 880px; top: 200px; width: 980px; height: 616px; transform: rotate(2deg); }
+    #c4s01-sc030-b img { filter: url(#c4s01-tint-night) contrast(1.05); }
+    #c4s01-sc030-pr { left: 120px; top: 900px; font-size: 64px; }
+    #c4s01-sc030-jh { left: 940px; top: 900px; width: 880px; text-align: right; font-size: 52px; }
+    #c4s01-sc031-br { left: 0; top: 400px; width: 1920px; text-align: center; font-size: 230px; opacity: 0; filter: url(#c4s01-ch031); }
+
+    /* C4S032 colonial police */
+    #c4s01-sc032-cam { position: absolute; inset: 0; transform-origin: 46% 46%; }
+    #c4s01-sc032-ph { position: absolute; left: 420px; top: 90px; width: 1080px; height: 818px; background: #e8e1d2; padding: 18px; box-shadow: 0 26px 60px rgba(20,27,36,0.32); transform: rotate(-1.5deg); }
+    #c4s01-sc032-ph img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(1) sepia(0.35) contrast(1.05); mix-blend-mode: multiply; }
+    #c4s01-sc032-ws { left: 120px; top: 110px; font-size: 64px; color: var(--ink); }
+    #c4s01-sc032-br { left: 1300px; top: 960px; font-size: 40px; color: var(--ink); }
+
+    /* C4S033 Taihoku street → positives */
+    #c4s01-sc033-cam { position: absolute; inset: 0; transform-origin: 50% 40%; }
+    #c4s01-sc033-img { position: absolute; left: 0; top: -560px; width: 1920px; height: 3178px; object-fit: cover; }
+    #c4s01-sc033-str { opacity: 0; filter: blur(2.5px); }
+    #c4s01-sc033-pos { left: 0; top: 420px; width: 1920px; text-align: center; font-size: 210px; }
+
+    /* C4S034–035 infrastructure collage */
+    #c4s01-sc034-cam { position: absolute; left: 0; top: 0; width: 2600px; height: 1080px; transform-origin: 0 0; }
+    #c4s01-sc034-box { position: absolute; left: 110px; top: 110px; font-size: 104px; }
+    .k-pc { position: absolute; background: #efe8d8; padding: 14px 14px 58px; box-shadow: 0 22px 50px rgba(20,27,36,0.32); opacity: 0; }
+    .k-pc .in { position: relative; width: 100%; height: 100%; overflow: hidden; }
+    .k-pc img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: grayscale(1) sepia(0.3) contrast(1.05); }
+    .k-pc .cap { position: absolute; left: 14px; bottom: 12px; font-size: 26px; color: var(--ink); }
+    .k-pc svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+    #c4s01-sc034-rail { left: 140px; top: 330px; width: 600px; height: 380px; transform: rotate(-3deg); }
+    #c4s01-sc034-port { left: 760px; top: 420px; width: 560px; height: 420px; transform: rotate(2.5deg); }
+    #c4s01-sc034-port img { filter: saturate(0.75) sepia(0.15); }
+    #c4s01-sc034-hydro { left: 1360px; top: 260px; width: 560px; height: 430px; transform: rotate(-2deg); }
+    #c4s01-sc034-elec { left: 1950px; top: 470px; width: 420px; height: 420px; transform: rotate(3deg); background: #ece4cf; }
+    #c4s01-sc035-school { left: 1980px; top: 70px; width: 520px; height: 380px; transform: rotate(-2.5deg); }
+    #c4s01-sc035-net { position: absolute; left: 0; top: 0; width: 2600px; height: 1080px; overflow: visible; }
+    #c4s01-sc035-ps { position: absolute; left: 1580px; top: 760px; font-size: 52px; color: var(--ink); }
+    #c4s01-sc035-sys { position: absolute; left: 1120px; top: 900px; font-size: 96px; }
+
+    /* C4S036 1935 bird's-eye painting */
+    #c4s01-sc036-cam { position: absolute; left: 0; top: 0; width: 3986px; height: 1081px; }
+    #c4s01-sc036-img { position: absolute; left: 0; top: 0; width: 3986px; height: 1081px; filter: saturate(0.8) contrast(1.03) brightness(0.92); }
+    #c4s01-sc036-as { left: 120px; top: 110px; font-size: 72px; }
+    #c4s01-sc036-ge { left: 120px; top: 880px; font-size: 64px; }
+  </style>
+  <div id="root" data-composition-id="c4s01" data-vo-start="0.00" data-duration="199.14" data-width="1920" data-height="1080">
+    <svg id="c4s01-defs" width="0" height="0" style="position:absolute"></svg>
+
+    <!-- C4S001 · 0.00–8.00 · All of them have a veto … jurisdiction of the Security Council · real SC chamber (1962) -->
+    <div class="k-scene k-night" id="c4s01-sc001" data-scene="C4S001"><div class="k-shot" id="c4s01-sc001-shot">
+      <div id="c4s01-sc001-cam">
+        <img id="c4s01-sc001-img" src="assets/c4/photos/un_security_council_1962_stevenson_chamber.jpg" alt="" />
+        <div class="k-veil" id="c4s01-sc001-veil"></div>
+        <svg id="c4s01-sc001-mk" class="k-mk"></svg>
+        <div id="c4s01-sc001-sc" class="k-abs t-label clean"><span class="k-w">Security </span><span class="k-w">Council</span></div>
+      </div>
+      <div class="k-scrim-t"></div>
+      <div id="c4s01-sc001-veto" class="k-abs t-display halate">VETO</div>
+      <div class="k-credit t-label">Photo: US Government (UN Security Council, 1962) · public domain</div>
+    </div></div>
+
+    <!-- C4S002–C4S003 · 8.00–21.31 · five permanent + six rotating = 11 · one vote, a veto blocks ten · paper seat horseshoe -->
+    <div class="k-scene k-paper" id="c4s01-sc002" data-scene="C4S002-C4S003" style="z-index:2"><div class="k-shot" id="c4s01-sc002-shot">
+      <div class="k-p1" style="background-image:url('assets/textures/paper_cream_01.jpg')"></div>
+      <div class="k-p2" style="background-image:url('assets/textures/paper_fiber_01.jpg'); opacity:0.5"></div>
+      <div id="c4s01-sc002-cam">
+        <svg id="c4s01-sc002-svg" viewBox="0 0 1920 1080"></svg>
+        <div id="c4s01-sc003-card" class="k-abs"><div class="ln" style="width:92%"></div><div class="ln" style="width:80%"></div><div class="ln" style="width:88%"></div><div class="ln" style="width:56%"></div></div>
+        <svg id="c4s01-sc003-mk" class="k-mk"></svg>
+        <div id="c4s01-sc002-perm" class="k-abs t-label k-ink"><span class="k-w">5 </span><span class="k-w">permanent</span></div>
+        <div id="c4s01-sc002-rot" class="k-abs t-serif-i k-ink"><span class="k-w">6 </span><span class="k-w">rotating</span></div>
+        <div id="c4s01-sc002-11" class="k-abs t-display"><span class="k-inkbox" id="c4s01-sc002-11b" style="opacity:0"><span id="c4s01-sc002-n">0</span></span></div>
+        <div id="c4s01-sc002-mem" class="k-abs t-label k-ink">members</div>
+        <div id="c4s01-sc003-stampw"><div class="k-hlbar k-abs" id="c4s01-sc003-hl"></div><div id="c4s01-sc003-stamp" class="k-stamp k-abs t-display">VETO</div></div>
+        <div id="c4s01-sc003-ov" class="k-abs t-serif-i k-ink"><span class="k-w">one </span><span class="k-w">vote</span></div>
+        <div id="c4s01-sc003-10" class="k-abs t-display k-ink">10</div>
+        <div id="c4s01-sc003-np" class="k-abs t-label k-ink"><span class="k-w">not </span><span class="k-w">gonna </span><span class="k-w">pass</span></div>
+      </div>
+    </div></div>
+
+    <!-- C4S004 · 21.31–25.79 · That's not how things are in the General Assembly … a lot more jurisdiction · emblem curve-cut → GA hall -->
+    <div class="k-scene k-night" id="c4s01-sc004" data-scene="C4S004"><div class="k-shot" id="c4s01-sc004-shot">
+      <div id="c4s01-sc004-wrap">
+        <div id="c4s01-sc004-a"><div id="c4s01-sc004-ring"></div><img id="c4s01-sc004-emb" src="assets/c4/cutouts/un_emblem.svg" alt="" /></div>
+        <div id="c4s01-sc004-b"><div id="c4s01-sc004-gab"><img id="c4s01-sc004-ga" src="assets/c4/photos/un_general_assembly_hall_wide_emblem.jpg" alt="" /><div class="k-dimr" style="left:36.2%;top:38.5%;width:7.9%;height:6.6%"></div><div class="k-dimr" style="left:53.1%;top:38.3%;width:8.1%;height:6.6%"></div></div></div>
+      </div>
+      <div class="k-scrim-b"></div>
+      <div id="c4s01-sc004-gen" class="k-abs t-display halate"><span class="k-w">GENERAL </span><span class="k-w">ASSEMBLY</span></div>
+      <div id="c4s01-sc004-jur" class="k-abs t-serif-i clean"><span class="k-w">a </span><span class="k-w">lot </span><span class="k-w">more </span><span class="k-w">jurisdiction</span></div>
+      <div class="k-credit t-label" id="c4s01-sc004-cr" style="opacity:0">Photo: Patrick Gruban, CC BY-SA 3.0</div>
+    </div></div>
+
+    <!-- C4S005 · 25.79–32.11 · General Assembly has a jurisdiction over who should get what seat · 2.5D hall -->
+    <div class="k-scene k-night" id="c4s01-sc005" data-scene="C4S005"><div class="k-shot" id="c4s01-sc005-shot">
+      <div id="c4s01-sc005-stage"><div id="c4s01-sc005-cam">
+        <div class="k-L" id="c4s01-sc005-L0"><img id="c4s01-sc005-far" src="assets/c4/photos/un_general_assembly_hall_wide_emblem.jpg" alt="" /><div class="k-dimr" style="left:678px;top:449px;width:161px;height:90px"></div><div class="k-dimr" style="left:1023px;top:446px;width:165px;height:90px"></div></div>
+        <div class="k-L" id="c4s01-sc005-L1"><div id="c4s01-sc005-haze"></div></div>
+        <div class="k-L" id="c4s01-sc005-L2"><img id="c4s01-sc005-near" src="assets/c4/photos/un_general_assembly_hall_wide_emblem.jpg" alt="" /></div>
+      </div></div>
+      <div class="k-veil" id="c4s01-sc005-veil"></div>
+      <div class="k-scrim-b"></div>
+      <div id="c4s01-sc005-jur" class="k-abs t-label clean">jurisdiction</div>
+      <div id="c4s01-sc005-who" class="k-abs t-serif-i clean"><span class="k-w">who </span><span class="k-w">should </span><span class="k-w">get </span><span class="k-w">what </span><span id="c4s01-sc005-seatw"><span class="k-hlbar k-abs" id="c4s01-sc005-seathl"></span><span class="k-w" id="c4s01-sc005-seat">seat</span></span></div>
+      <div class="k-credit t-label">Photo: Patrick Gruban, CC BY-SA 3.0</div>
+    </div></div>
+
+    <!-- C4S006 · 32.11–37.87 · a vote in the General Assembly decides who the Chinese seat belongs to · ROC delegate presides the SC (1950 newsreel) -->
+    <div class="k-scene k-night" id="c4s01-sc006" data-scene="C4S006"><div class="k-shot" id="c4s01-sc006-shot">
+      <img id="c4s01-sc006-bg" src="assets/c4/derived/c4s01/sc_president_china_last.jpg" alt="" />
+      <div id="c4s01-sc006-cam"><div id="c4s01-sc006-plate">
+        <img src="assets/c4/derived/c4s01/sc_president_china_last.jpg" alt="" />
+        <video id="c4s01-sc006-vid" src="assets/c4/footage/un_1950_security_council_president_china_delegate.mp4" muted playsinline data-start="32.11" data-duration="4.75" data-media-start="0"
+          data-color-grading='{"adjust":{"saturation":-1,"contrast":0.08},"effects":{"chromaticAberration":0.12,"chromaticAngle":0}}'></video>
+        <div id="c4s01-sc006-blur"></div>
+      </div></div>
+      <div class="k-scrim-b"></div>
+      <div id="c4s01-sc006-vote" class="k-abs t-label clean">vote</div>
+      <div id="c4s01-sc006-cs" class="k-abs t-display halate"><span class="k-w">THE </span><span class="k-w">CHINESE </span><span class="k-w">SEAT</span></div>
+      <div class="k-credit t-label">UN Security Council, 1950 · newsreel</div>
+    </div></div>
+
+    <!-- C4S007 · 37.87–43.15 · ever since the CCP started claiming that they're China, every single year · Vox layered 1949 -->
+    <div class="k-scene k-paper" id="c4s01-sc007" data-scene="C4S007"><div class="k-shot" id="c4s01-sc007-shot">
+      <div class="k-p1" style="background-image:url('assets/textures/paper_cream_02.jpg')"></div>
+      <div class="k-p2" style="background-image:url('assets/textures/newsprint_01.jpg'); opacity:0.35"></div>
+      <div id="c4s01-sc007-cam">
+        <div class="k-panel" id="c4s01-sc007-crowd"><img src="assets/c4/photos/prc_founding_1949_tiananmen_crowd.jpg" alt="" /><div class="ht"></div></div>
+        <div class="k-panel" id="c4s01-sc007-gate"><img src="assets/c4/photos/prc_founding_1949_tiananmen_crowd.jpg" alt="" /><div class="ht"></div></div>
+        <div class="k-panel" id="c4s01-sc007-mao"><img src="assets/c4/photos/mao_proclaims_prc_1949_tiananmen.jpg" alt="" /><div class="ht"></div></div>
+      </div>
+      <div id="c4s01-sc007-ccp" class="k-abs t-display"><span class="k-redbox" id="c4s01-sc007-ccpb" style="opacity:0">CCP</span></div>
+      <div id="c4s01-sc007-china" class="k-abs t-serif-i k-ink" style="opacity:0">China</div>
+      <div id="c4s01-sc007-cal"><div class="k-calpg" id="c4s01-sc007-pg0"><div class="bar"></div><div class="g"></div></div><div class="k-calpg" id="c4s01-sc007-pg1"><div class="bar"></div><div class="g"></div></div><div class="k-calpg" id="c4s01-sc007-pg2"><div class="bar"></div><div class="g"></div></div><div class="k-calpg" id="c4s01-sc007-pg3"><div class="bar"></div><div class="g"></div></div><div class="k-calpg" id="c4s01-sc007-pg4"><div class="bar"></div><div class="g"></div></div><div class="rings"></div></div>
+      <div id="c4s01-sc007-eye" class="k-abs t-label k-ink"><span class="k-w">every </span><span class="k-w">single </span><span class="k-w">year</span></div>
+      <div class="k-credit ink t-label">Photos: Tiananmen, 1 Oct 1949 · public domain</div>
+    </div></div>
+
+    <!-- C4S008 · 43.15–48.59 · one of the countries, especially from the Warsaw Pact … close to the CCP · Eurasia night map -->
+    <div class="k-scene k-night" id="c4s01-sc008" data-scene="C4S008"><div class="k-shot" id="c4s01-sc008-shot">
+      <div class="k-mapcam" id="c4s01-sc008-cam"><img src="assets/c4/derived/c4s01/eurasia_night.jpg" alt="" /><svg id="c4s01-sc008-svg" viewBox="0 0 6190 2139"></svg></div>
+      <svg id="c4s01-sc008-mk" class="k-mk"></svg>
+      <div id="c4s01-sc008-wp" class="k-abs t-label clean"><span class="k-w">Warsaw </span><span class="k-w">Pact</span></div>
+      <div id="c4s01-sc008-ccp" class="k-abs t-display"><span class="k-redbox" id="c4s01-sc008-ccpb" style="opacity:0">CCP</span></div>
+      <div class="k-credit t-label">Relief: AWS Terrain Tiles (PD) · Natural Earth</div>
+    </div></div>
+
+    <!-- C4S009 · 48.59–54.67 · bring up a resolution … kick out this government that's sitting in Taiwan · real UN draft A/L.630 -->
+    <div class="k-scene k-paper" id="c4s01-sc009" data-scene="C4S009"><div class="k-shot" id="c4s01-sc009-shot">
+      <div class="k-p1" style="background-image:url('assets/textures/paper_stained_01_hires.jpg'); filter:brightness(0.86)"></div>
+      <div class="k-p2" style="background-image:url('assets/textures/paper_cream_02.jpg'); opacity:0.6"></div>
+      <div id="c4s01-sc009-stage"><div id="c4s01-sc009-cam"><div id="c4s01-sc009-page">
+        <img src="assets/c4/documents/un_draft_A-L630_1971_expel.jpg" alt="" />
+        <div class="ht"></div>
+        <div id="c4s01-sc009-dim"></div>
+        <div id="c4s01-sc009-key"><img src="assets/c4/documents/un_draft_A-L630_1971_expel.jpg" alt="" style="position:absolute;left:0;top:0;width:1400px;height:1808px" /></div>
+        <svg id="c4s01-sc009-mk" viewBox="0 0 1400 1808"></svg>
+      </div></div></div>
+      <div id="c4s01-sc009-res" class="k-abs t-label">resolution</div>
+      <div id="c4s01-sc009-ko" class="k-abs t-serif-i"><span class="k-w">kick </span><span class="k-w">out</span></div>
+      <div id="c4s01-sc009-tw" class="k-abs t-display k-ink"><span class="k-celrule" id="c4s01-sc009-twr" style="opacity:0">Taiwan<span class="u" id="c4s01-sc009-twu"></span></span></div>
+      <div class="k-credit ink t-label">UN General Assembly draft resolution A/L.630 · UN Digital Library</div>
+    </div></div>
+
+    <!-- C4S010 · 54.67–59.07 · and let's give the CCP the Chinese seat, including the permanent veto · D15 two circles + chair -->
+    <div class="k-scene k-paper" id="c4s01-sc010" data-scene="C4S010"><div class="k-shot" id="c4s01-sc010-shot">
+      <div class="k-p1" style="background-image:url('assets/textures/paper_cream_01.jpg')"></div>
+      <div class="k-p2" style="background-image:url('assets/textures/paper_lined_01_hires.jpg'); opacity:0.35; filter:grayscale(0.8)"></div>
+      <div id="c4s01-sc010-cam">
+        <div class="k-circ" id="c4s01-sc010-tw"><img src="assets/c4/derived/c4s01/taiwan_celadon_relief.png" alt="" /></div>
+        <div class="k-circ" id="c4s01-sc010-cn"><img src="assets/c4/photos/mao_proclaims_prc_1949_tiananmen.jpg" alt="" /></div>
+        <div id="c4s01-sc010-twl" class="k-abs t-label">ROC · Taiwan</div>
+        <div id="c4s01-sc010-ccp" class="k-abs t-display"><span class="k-redbox" id="c4s01-sc010-ccpb" style="opacity:0">CCP</span></div>
+        <svg id="c4s01-sc010-svg" class="k-mk"></svg>
+        <svg id="c4s01-sc010-chair" viewBox="0 0 220 240"></svg>
+      </div>
+      <div id="c4s01-sc010-cs" class="k-abs t-display"><span class="k-w">CHINESE </span><span class="k-w">SEAT</span></div>
+      <div id="c4s01-sc010-pv" class="k-abs t-label"><span class="k-w">permanent </span><span class="k-w">veto</span></div>
+    </div></div>
+
+    <!-- C4S011 · 59.07–65.39 · every year this resolution is very heavily defeated … a habit · stack of drafts on a lamp-lit desk -->
+    <div class="k-scene k-night" id="c4s01-sc011" data-scene="C4S011"><div class="k-shot" id="c4s01-sc011-shot">
+      <div class="k-desk"></div>
+      <div id="c4s01-sc011-cam">
+        <div class="k-doc" id="c4s01-sc011-d0"><img src="assets/c4/documents/un_draft_A-L630_1971_expel.jpg" alt="" /><div class="k-stamp t-display" id="c4s01-sc011-s0">DEFEATED</div></div>
+        <div class="k-doc" id="c4s01-sc011-d1"><img src="assets/c4/documents/un_draft_A-L630_1971_expel.jpg" alt="" /><div class="k-stamp t-display" id="c4s01-sc011-s1">DEFEATED</div></div>
+        <div class="k-doc" id="c4s01-sc011-d2"><img src="assets/c4/documents/un_draft_A-L630_1971_expel.jpg" alt="" /><div class="k-stamp t-display" id="c4s01-sc011-s2">DEFEATED</div></div>
+        <div class="k-doc" id="c4s01-sc011-d3"><img src="assets/c4/documents/un_draft_A-L630_1971_expel.jpg" alt="" /><div class="k-stamp t-display" id="c4s01-sc011-s3">DEFEATED</div></div>
+      </div>
+      <div class="k-lamp"></div>
+      <div id="c4s01-sc011-ey" class="k-abs t-label clean"><span class="k-w">every </span><span class="k-w">year</span></div>
+      <div id="c4s01-sc011-hab" class="k-abs t-serif-i clean" style="opacity:0">habit</div>
+      <div class="k-credit t-label">UN draft resolution A/L.630 · UN Digital Library</div>
+    </div></div>
+
+    <!-- C4S012 · 65.39–70.72 · they bring it up, it gets defeated … how the votes are falling down · line chart on graph paper -->
+    <div class="k-scene k-paper" id="c4s01-sc012" data-scene="C4S012"><div class="k-shot" id="c4s01-sc012-shot">
+      <div class="k-p1" style="background-image:url('assets/textures/paper_cream_02.jpg')"></div>
+      <div class="k-p2" style="background-image:url('assets/textures/paper_graph_01_hires.jpg'); mix-blend-mode:multiply; opacity:0.85"></div>
+      <div id="c4s01-sc012-cam"><svg id="c4s01-sc012-svg" viewBox="0 0 1920 1080"></svg></div>
+      <div id="c4s01-sc012-def" class="k-abs t-label" style="opacity:0">defeated</div>
+      <div id="c4s01-sc012-vfd" class="k-abs t-display"><span class="k-w">VOTES </span><span class="k-w">FALLING </span><span class="k-w">DOWN</span></div>
+    </div></div>
+
+    <!-- C4S013–C4S014 · 70.72–82.56 · new countries being born in Africa … Taiwan and the CCP have to fight over · Africa night map -->
+    <div class="k-scene k-night" id="c4s01-sc013" data-scene="C4S013-C4S014"><div class="k-shot" id="c4s01-sc013-shot">
+      <div class="k-mapcam" id="c4s01-sc013-cam"><img src="assets/c4/derived/c4s01/africa_night.jpg" alt="" /><svg id="c4s01-sc013-svg" viewBox="0 0 3413 3413"></svg><div class="k-veil" id="c4s01-sc014-veil" style="width:3413px;height:3413px"></div></div>
+      <svg id="c4s01-sc014-rope" viewBox="0 0 1920 1080"></svg>
+      <div id="c4s01-sc014-tw"><img src="assets/c4/derived/c4s01/taiwan_celadon_relief.png" alt="" /></div>
+      <div id="c4s01-sc014-cn"><svg id="c4s01-sc014-cnsvg" viewBox="0 0 300 300"></svg></div>
+      <div id="c4s01-sc013-nc" class="k-abs t-label clean"><span class="k-w">new </span><span class="k-w">countries</span></div>
+      <div id="c4s01-sc013-af" class="k-abs t-display halate" style="opacity:0">AFRICA</div>
+      <div id="c4s01-sc014-twl" class="k-abs t-label clean" style="opacity:0">Taiwan</div>
+      <div id="c4s01-sc014-ccp" class="k-abs t-display"><span class="k-redbox" id="c4s01-sc014-ccpb" style="opacity:0">CCP</span></div>
+      <div id="c4s01-sc014-fo" class="k-abs t-display clean"><span class="k-w">FIGHT </span><span class="k-w">OVER</span></div>
+      <div id="c4s01-sc014-yc" class="k-abs t-serif-i clean"><span class="k-w">your </span><span class="k-w">camp</span></div>
+      <div class="k-credit t-label">Relief: AWS Terrain Tiles (PD) · Natural Earth</div>
+    </div></div>
+
+    <!-- C4S015 · 82.56–88.64 · Taiwan … send in aid, diplomat missions, whatever they can · typeset cable -->
+    <div class="k-scene k-paper" id="c4s01-sc015" data-scene="C4S015" style="z-index:2"><div class="k-shot" id="c4s01-sc015-shot">
+      <div class="k-p1" style="background-image:url('assets/textures/paper_cream_01.jpg'); filter:brightness(0.85)"></div>
+      <div class="k-p2" style="background-image:url('assets/textures/paper_fiber_01.jpg'); opacity:0.5"></div>
+      <div id="c4s01-sc015-cam">
+        <div id="c4s01-sc015-form"><div class="t1"></div>
+          <div class="hd t-display">CABLE</div>
+          <div class="lab t-label" style="left:70px;top:200px">From</div><div class="row" style="top:290px"></div>
+          <div class="lab t-label" style="left:70px;top:320px">Message</div><div class="row" style="top:500px"></div><div class="row" style="top:620px"></div><div class="row" style="top:740px"></div>
+          <div class="k-type t-label" style="top:228px"><span id="c4s01-sc015-ty0">TAIWAN</span></div>
+          <div class="k-type t-label" style="top:440px"><span id="c4s01-sc015-ty1">AID</span></div>
+          <div class="k-type t-label" style="top:560px"><span id="c4s01-sc015-ty2">DIPLOMAT </span><span id="c4s01-sc015-ty3">MISSIONS</span></div>
+          <div class="k-type t-label" style="top:680px"><span id="c4s01-sc015-ty4">WHATEVER </span><span id="c4s01-sc015-ty5">THEY </span><span id="c4s01-sc015-ty6">CAN</span></div>
+        </div>
+        <div id="c4s01-sc015-clip"><div class="in"><img src="assets/c4/derived/c4s01/world_atlas_6144.jpg" alt="" /><svg id="c4s01-sc015-route" viewBox="0 0 532 372"></svg></div></div>
+        <div id="c4s01-sc015-pc"></div>
+      </div>
+    </div></div>
+
+    <!-- C4S016 · 88.64–92.80 · to convince these countries to come on the Taiwanese side, ROC side · atlas Africa, celadon fills -->
+    <div class="k-scene k-paper" id="c4s01-sc016" data-scene="C4S016"><div class="k-shot" id="c4s01-sc016-shot">
+      <div class="k-mapcam" id="c4s01-sc016-cam"><img src="assets/c4/derived/c4s01/africa_atlas.jpg" alt="" /><svg id="c4s01-sc016-svg" viewBox="0 0 3413 3413"></svg></div>
+      <div id="c4s01-sc016-tex"></div>
+      <div id="c4s01-sc016-conv" class="k-abs t-serif-i" style="opacity:0">convince</div>
+      <div id="c4s01-sc016-roc" class="k-abs t-display k-ink"><span class="k-celrule" id="c4s01-sc016-rocr"><span class="k-w">ROC </span><span class="k-w">SIDE</span><span class="u" id="c4s01-sc016-rocu"></span></span></div>
+      <div class="k-credit ink t-label">Relief: AWS Terrain Tiles (PD) · Natural Earth</div>
+    </div></div>
+
+    <!-- C4S017 · 92.80–96.96 · CCP does the same thing. Unfortunately, CCP is just a lot bigger · R12 China red -->
+    <div class="k-scene k-night" id="c4s01-sc017" data-scene="C4S017"><div class="k-shot" id="c4s01-sc017-shot">
+      <div class="k-mapcam" id="c4s01-sc017-cam"><img src="assets/c4/derived/c4s01/eurasia_night.jpg" alt="" /><svg id="c4s01-sc017-svg" viewBox="0 0 6190 2139"></svg></div>
+      <div id="c4s01-sc017-ccp" class="k-abs t-display"><span class="k-redbox" id="c4s01-sc017-ccpb" style="opacity:0">CCP</span></div>
+      <div id="c4s01-sc017-st" class="k-abs t-serif-i clean"><span class="k-w">same </span><span class="k-w">thing</span></div>
+      <div id="c4s01-sc017-big" class="k-abs t-display clean" style="opacity:0">BIGGER</div>
+      <div class="k-credit t-label">Relief: AWS Terrain Tiles (PD) · Natural Earth</div>
+    </div></div>
+
+    <!-- C4S018 · 96.96–101.36 · a lot more access to … land and people, their resources are bigger than Taiwan · bars -->
+    <div class="k-scene k-paper" id="c4s01-sc018" data-scene="C4S018"><div class="k-shot" id="c4s01-sc018-shot">
+      <div class="k-p1" style="background-image:url('assets/textures/paper_cream_01.jpg')"></div>
+      <div class="k-p2" style="background-image:url('assets/intro/papers/ke1960_mm_grid_green_norm_hires.jpg'); background-size:1920px auto; filter:grayscale(1); opacity:0.5"></div>
+      <div id="c4s01-sc018-title" class="k-abs t-serif"><span class="k-w">a </span><span class="k-w">lot </span><span class="k-w"><i>more</i></span></div>
+      <div id="c4s01-sc018-rows"></div>
+      <div id="c4s01-sc018-sw"></div>
+      <div id="c4s01-sc018-key" class="k-abs t-label" style="opacity:0">Taiwan</div>
+    </div></div>
+
+    <!-- C4S019–C4S020 · 101.36–113.60 · slowly, CCP is winning … more African countries going towards the CCP · scale → GA hemicycle -->
+    <div class="k-scene k-paper" id="c4s01-sc019" data-scene="C4S019-C4S020"><div class="k-shot" id="c4s01-sc019-shot">
+      <div id="c4s01-sc019-sheet">
+        <div class="k-p1" style="background-image:url('assets/textures/paper_cream_02.jpg')"></div>
+        <div class="k-p2" style="background-image:url('assets/textures/paper_fiber_01.jpg'); opacity:0.45"></div>
+        <svg id="c4s01-sc019-svg" viewBox="0 0 1920 2160"></svg>
+        <div id="c4s01-sc019-ccp" class="k-abs t-display"><span class="k-redbox" id="c4s01-sc019-ccpb" style="opacity:0">CCP</span></div>
+        <div id="c4s01-sc019-win" class="k-abs t-display" style="opacity:0">WINNING</div>
+        <div id="c4s01-sc020-title" class="k-abs t-serif"><span class="k-w">A </span><span class="k-w">lot </span><span class="k-w">more </span><span id="c4s01-sc020-afw"><span class="k-hlbar k-abs" id="c4s01-sc020-hl"></span><span class="k-w" style="position:relative">African </span></span><span class="k-w">countries</span></div>
+        <div id="c4s01-sc020-ccp" class="k-abs t-display"><span class="k-redbox" id="c4s01-sc020-ccpb" style="opacity:0">CCP</span></div>
+        <div id="c4s01-sc020-tw" class="k-abs t-label"><span class="k-celrule" id="c4s01-sc020-twr" style="opacity:0">Taiwan<span class="u"></span></span></div>
+        <div id="c4s01-sc020-cs" class="k-abs t-serif-i"><span class="k-w">Chinese </span><span class="k-w">seat</span></div>
+        <svg id="c4s01-sc020-chair" viewBox="0 0 220 240"></svg>
+      </div>
+    </div></div>
+
+    <!-- C4S021 · 113.60–120.00 · Even then, not a big issue. The US is with Taiwan · Eisenhower + Chiang motorcade, Taipei 1960 -->
+    <div class="k-scene k-night" id="c4s01-sc021" data-scene="C4S021"><div class="k-shot" id="c4s01-sc021-shot">
+      <img id="c4s01-sc021-bg" src="assets/c4/photos/eisenhower_chiang_motorcade_taipei_1960.jpg" alt="" />
+      <div id="c4s01-sc021-weave"><div id="c4s01-sc021-cam"><img id="c4s01-sc021-img" src="assets/c4/photos/eisenhower_chiang_motorcade_taipei_1960.jpg" alt="" /></div></div>
+      <div class="k-scrim-b"></div>
+      <div id="c4s01-sc021-nbi" class="k-abs t-serif-i clean"><span class="k-w">not </span><span class="k-w">a </span><span class="k-w">big </span><span class="k-w">issue</span></div>
+      <div id="c4s01-sc021-us" class="k-abs t-label clean"><span class="k-w">The </span><span class="k-w">US </span><span class="k-w">is </span><span class="k-w">with </span><span class="k-celrule k-w" id="c4s01-sc021-tw">Taiwan<span class="u" id="c4s01-sc021-twu"></span></span></div>
+      <div class="k-credit t-label">Photo: Taipei, June 1960 · public domain</div>
+    </div></div>
+
+    <!-- C4S022 · 120.00–127.44 · the diplomatic front, diplomatic war between the ROC and the CCP in the 70s · war-room atlas -->
+    <div class="k-scene k-paper" id="c4s01-sc022" data-scene="C4S022" style="z-index:2"><div class="k-shot" id="c4s01-sc022-shot">
+      <div class="k-wr" id="c4s01-sc022-cam"><img src="assets/c4/derived/c4s01/world_atlas_6144.jpg" alt="" /><svg id="c4s01-sc022-svg" viewBox="0 0 6144 3072"></svg></div>
+      <div class="k-wrtex"></div><div class="k-wrtex2"></div>
+      <div id="c4s01-sc022-dw" class="k-abs t-label"><span class="k-w">diplomatic </span><span class="k-w">war</span></div>
+      <div id="c4s01-sc022-roc" class="k-abs t-display k-ink"><span class="k-celrule" id="c4s01-sc022-rocr" style="opacity:0">ROC<span class="u"></span></span></div>
+      <div id="c4s01-sc022-ccp" class="k-abs t-display"><span class="k-redbox" id="c4s01-sc022-ccpb" style="opacity:0">CCP</span></div>
+      <div id="c4s01-sc022-tab" class="t-serif-i"><span class="k-w">the </span><span class="k-w">70s</span></div>
+      <div class="k-credit ink t-label">Relief: AWS Terrain Tiles (PD) · Natural Earth</div>
+    </div></div>
+
+    <!-- C4S023 · 127.44–134.51 · a big event, almost a seismic event that changes the equation · Tektronix scope -->
+    <div class="k-scene k-night" id="c4s01-sc023" data-scene="C4S023"><div class="k-shot" id="c4s01-sc023-shot">
+      <div id="c4s01-sc023-cam">
+        <div id="c4s01-sc023-tube"></div>
+        <svg id="c4s01-sc023-tr" viewBox="0 0 704 574"></svg>
+        <img id="c4s01-sc023-fr" src="assets/intro/screens/tektronix_475a_scope_frame.png" alt="" />
+      </div>
+      <div class="k-scrim-b" style="height:360px"></div>
+      <div id="c4s01-sc023-be" class="k-abs t-label clean"><span class="k-w">big </span><span class="k-w">event</span></div>
+      <div id="c4s01-sc023-sei" class="k-abs t-display halate">SEISMIC</div>
+      <div id="c4s01-sc023-eq" class="k-abs t-serif-i clean"><span class="k-w">the </span><span class="k-w">equation</span></div>
+      <div class="k-credit t-label">Tektronix 475A: CC BY-SA 4.0 (Wikimedia Commons)</div>
+    </div></div>
+
+    <!-- C4S024 · 134.51–139.71 · let me explain how the Taiwanese economy is at this point · Taipei 1960 footage -->
+    <div class="k-scene k-night" id="c4s01-sc024" data-scene="C4S024"><div class="k-shot" id="c4s01-sc024-shot">
+      <div id="c4s01-sc024-weave"><div id="c4s01-sc024-cam">
+        <video id="c4s01-sc024-vid" src="assets/intro/footage/taiwan_1960_taipei_boulevard_high_angle.mp4" muted playsinline data-start="134.51" data-duration="5.44" data-media-start="2.0"
+          data-color-grading='{"adjust":{"saturation":-0.6,"contrast":0.1},"effects":{"chromaticAberration":0.12,"chromaticAngle":0}}'></video>
+      </div></div>
+      <div class="k-scrim-b"></div>
+      <div id="c4s01-sc024-te" class="k-abs t-label clean"><span class="k-w">Taiwanese </span><span class="k-w">economy</span></div>
+      <div class="k-credit t-label">"Taiwan: The Face of Free China" (1960) · NARA, public domain</div>
+    </div></div>
+
+    <!-- C4S025 · 139.71–144.83 · competing with the CCP to … win favors overseas · war-room atlas, wider -->
+    <div class="k-scene k-paper" id="c4s01-sc025" data-scene="C4S025"><div class="k-shot" id="c4s01-sc025-shot">
+      <div class="k-wr" id="c4s01-sc025-cam"><img src="assets/c4/derived/c4s01/world_atlas_6144.jpg" alt="" /><svg id="c4s01-sc025-svg" viewBox="0 0 6144 3072"></svg></div>
+      <div class="k-wrtex"></div><div class="k-wrtex2"></div>
+      <div id="c4s01-sc025-comp" class="k-abs t-serif-i" style="opacity:0">competing</div>
+      <div id="c4s01-sc025-ccp" class="k-abs t-display"><span class="k-redbox" id="c4s01-sc025-ccpb" style="opacity:0">CCP</span></div>
+      <div id="c4s01-sc025-ov" class="k-abs t-label" style="opacity:0">overseas</div>
+      <div class="k-credit ink t-label">Relief: AWS Terrain Tiles (PD) · Natural Earth</div>
+    </div></div>
+
+    <!-- C4S026 · 144.83–147.87 · this is where we have to back up just a little bit more · filmstrip running backwards -->
+    <div class="k-scene k-night" id="c4s01-sc026" data-scene="C4S026"><div class="k-shot" id="c4s01-sc026-shot">
+      <div id="c4s01-sc026-weave"><div id="c4s01-sc026-strip"></div></div>
+      <div id="c4s01-sc026-scr"></div>
+      <div id="c4s01-sc026-bu" class="k-abs t-display clean"><span id="c4s01-sc026-b1">BACK</span> <span id="c4s01-sc026-b2">UP</span></div>
+    </div></div>
+
+    <!-- C4S027 · 147.87–154.83 · Taiwan was actually ruled by Japan before the ROC came over, before World War II · 1935 expo poster -->
+    <div class="k-scene k-paper" id="c4s01-sc027" data-scene="C4S027"><div class="k-shot" id="c4s01-sc027-shot">
+      <div class="k-p1" style="background-image:url('assets/textures/paper_cream_02.jpg')"></div>
+      <div class="k-p2" style="background-image:url('assets/textures/paper_stained_01_hires.jpg'); opacity:0.5"></div>
+      <div id="c4s01-sc027-cam">
+        <div id="c4s01-sc027-post"><img src="assets/intro/paintings/taiwan_expo_1935_poster.jpg" alt="" /></div>
+        <div id="c4s01-sc027-rbj" class="k-abs t-display"><span class="k-w">RULED </span><span class="k-w">BY</span><br /><span class="k-w">JAPAN</span></div>
+        <div id="c4s01-sc027-ax"></div><div id="c4s01-sc027-tick"></div>
+        <div id="c4s01-sc027-ww" class="k-abs t-label"><span class="k-w">World </span><span class="k-w">War </span><span class="k-w">II</span></div>
+      </div>
+      <div id="c4s01-sc027-roc" class="t-label">ROC</div>
+      <div class="k-credit ink t-label">Poster: Taiwan Exposition, 1935 · public domain</div>
+    </div></div>
+
+    <!-- C4S028 · 154.83–161.39 · Japan took over the island of Taiwan in 1890s, during the Meiji era · 1895 print + Meiji -->
+    <div class="k-scene k-night" id="c4s01-sc028" data-scene="C4S028"><div class="k-shot" id="c4s01-sc028-shot">
+      <div id="c4s01-sc028-cam"><img id="c4s01-sc028-img" src="assets/c4/paintings/taiwan_1895_sankakuyu_battle_woodblock.jpg" alt="" /></div>
+      <div class="k-scrim-b"></div><div class="k-scrim-t"></div>
+      <div id="c4s01-sc028-yr" class="k-abs t-display halate" style="opacity:0">1890s</div>
+      <div id="c4s01-sc028-card"><div class="in"><img src="assets/c4/paintings/emperor_meiji_portrait_painting.jpg" alt="" /></div></div>
+      <div id="c4s01-sc028-me" class="k-abs t-label clean"><span class="k-w">Meiji </span><span class="k-w">era</span></div>
+      <div class="k-credit t-label">Woodblock print, 1895 · Emperor Meiji portrait · public domain</div>
+    </div></div>
+
+    <!-- C4S029 · 161.39–164.43 · and this rule continues until the end of World War II · ledger band -->
+    <div class="k-scene k-paper" id="c4s01-sc029" data-scene="C4S029"><div class="k-shot" id="c4s01-sc029-shot">
+      <div class="k-p1" style="background-image:url('assets/textures/paper_cream_01.jpg')"></div>
+      <div class="k-p2" style="background-image:url('assets/textures/paper_lined_01_hires.jpg'); filter:grayscale(0.75) brightness(1.05); opacity:0.85"></div>
+      <div id="c4s01-sc029-cam">
+        <div id="c4s01-sc029-band"><div class="ht"></div></div>
+        <div id="c4s01-sc029-ax"></div><div id="c4s01-sc029-mark"></div>
+        <div id="c4s01-sc029-y" class="k-abs t-label" style="opacity:0">1890s</div>
+        <div id="c4s01-sc029-rule" class="k-abs t-label" style="opacity:0">rule</div>
+        <div id="c4s01-sc029-end" class="k-abs t-label"><span class="k-w">end </span><span class="k-w">of </span><span class="k-w">World </span><span class="k-w">War </span><span class="k-w">II</span></div>
+      </div>
+    </div></div>
+
+    <!-- C4S030–C4S031 · 164.43–174.35 · problems with Japanese rule … Japanese history in China … pretty brutal · layered dark archival -->
+    <div class="k-scene k-night" id="c4s01-sc030" data-scene="C4S030-C4S031"><div class="k-shot" id="c4s01-sc030-shot">
+      <div id="c4s01-sc030-cam">
+        <div class="k-panel" id="c4s01-sc030-b"><img src="assets/c4/photos/japanese_army_parade_nanking_1937_colour.jpg" alt="" /><div class="ht"></div></div>
+        <div class="k-panel" id="c4s01-sc030-a"><img src="assets/c4/photos/japanese_naval_troops_shanghai_1937.jpg" alt="" /><div class="ht"></div></div>
+        <div class="k-veil" id="c4s01-sc031-veil"></div>
+      </div>
+      <div class="k-scrim-b"></div>
+      <div id="c4s01-sc030-pr" class="k-abs t-serif-i clean" style="opacity:0">problems</div>
+      <div id="c4s01-sc030-jh" class="k-abs t-label clean"><span class="k-w">Japanese </span><span class="k-w">history </span><span class="k-w">in </span><span class="k-w">China</span></div>
+      <div id="c4s01-sc031-br" class="k-abs t-display clean">BRUTAL</div>
+      <div class="k-credit t-label">Photos: China, 1937 · public domain</div>
+    </div></div>
+
+    <!-- C4S032 · 174.35–181.55 · not as bad as some of the worst stories … that doesn't mean there wasn't any brutality · colonial police 1918 -->
+    <div class="k-scene k-paper" id="c4s01-sc032" data-scene="C4S032" style="z-index:2"><div class="k-shot" id="c4s01-sc032-shot">
+      <div class="k-p1" style="background-image:url('assets/textures/paper_stained_01_hires.jpg')"></div>
+      <div class="k-p2" style="background-image:url('assets/textures/paper_cream_02.jpg'); opacity:0.6"></div>
+      <div id="c4s01-sc032-cam">
+        <div id="c4s01-sc032-ph"><img src="assets/c4/photos/japanese_era_police_officer_sedan_chair_1918.jpg" alt="" /></div>
+        <svg id="c4s01-sc032-mk" class="k-mk"></svg>
+      </div>
+      <div id="c4s01-sc032-ws" class="k-abs t-serif-i"><span class="k-w">worst </span><span class="k-w">stories</span></div>
+      <div id="c4s01-sc032-br" class="k-abs t-label" style="opacity:0">brutality</div>
+      <div class="k-credit ink t-label">Photo: Taiwan, 1918 · public domain</div>
+    </div></div>
+
+    <!-- C4S033 · 181.55–184.67 · But there were positives from the Japanese rule · 1930s Taihoku street -->
+    <div class="k-scene k-night" id="c4s01-sc033" data-scene="C4S033"><div class="k-shot" id="c4s01-sc033-shot">
+      <div id="c4s01-sc033-cam"><img id="c4s01-sc033-img" src="assets/c4/photos/taihoku_1930s_street_joss_paper_store.jpg" alt="" /></div>
+      <canvas id="c4s01-sc033-str" class="streaks"></canvas>
+      <div id="c4s01-sc033-pos" class="k-abs t-display halate" style="opacity:0">POSITIVES</div>
+      <div class="k-credit t-label">Photo: Taihoku (Taipei), 1930s · public domain</div>
+    </div></div>
+
+    <!-- C4S034–C4S035 · 184.67–194.74 · infrastructure, railways, ports, hydropower, electricity … primary school … a system · collage -->
+    <div class="k-scene k-paper" id="c4s01-sc034" data-scene="C4S034-C4S035"><div class="k-shot" id="c4s01-sc034-shot">
+      <div class="k-p1" style="background-image:url('assets/textures/paper_cream_01.jpg')"></div>
+      <div class="k-p2" style="background-image:url('assets/textures/paper_torn_01_hires.jpg'); mix-blend-mode:screen; opacity:0.25"></div>
+      <div id="c4s01-sc034-cam">
+        <div id="c4s01-sc034-box" class="t-display"><span class="k-inkbox" id="c4s01-sc034-boxb" style="opacity:0">INFRASTRUCTURE</span></div>
+        <svg id="c4s01-sc035-net" viewBox="0 0 2600 1080"></svg>
+        <div class="k-pc" id="c4s01-sc034-rail"><div class="in"><img src="assets/c4/photos/japanese_era_taihoku_station.jpg" alt="" /></div><div class="cap t-label">railways</div></div>
+        <div class="k-pc" id="c4s01-sc034-port"><div class="in"><img src="assets/c4/paintings/kiirun_harbor_1930s_illustration.jpg" alt="" /></div><div class="cap t-label">ports</div></div>
+        <div class="k-pc" id="c4s01-sc034-hydro"><div class="in"><img src="assets/c4/photos/japanese_era_jitsugetsutan_power_plant_workers.jpg" alt="" /></div><div class="cap t-label">hydropower</div></div>
+        <div class="k-pc" id="c4s01-sc034-elec"><div class="in"><svg id="c4s01-sc034-pyl" viewBox="0 0 392 348"></svg></div><div class="cap t-label">electricity</div></div>
+        <div class="k-pc" id="c4s01-sc035-school"><div class="in"><img src="assets/c4/photos/japanese_era_fenglin_kogakko_school.jpg" alt="" /></div><div class="cap t-label">primary school</div></div>
+        <div id="c4s01-sc035-ps" class="t-serif-i"><span class="k-w">for </span><span class="k-w">everyone</span></div>
+        <div id="c4s01-sc035-sys" class="t-display"><span class="k-inkbox" id="c4s01-sc035-sysb" style="opacity:0"><span class="k-w">A </span><span class="k-w">SYSTEM</span></span></div>
+      </div>
+      <div class="k-credit ink t-label">Photos: Japanese-era Taiwan (Taihoku Station, Kiirun Harbour, Jitsugetsutan plant) · public domain · Hōrin school: CC BY 3.0 TW</div>
+    </div></div>
+
+    <!-- C4S036 · 194.74–199.14 · That gave Taiwan a shot at being pretty good economy · 1935 bird's-eye painting -->
+    <div class="k-scene k-night" id="c4s01-sc036" data-scene="C4S036"><div class="k-shot" id="c4s01-sc036-shot">
+      <div id="c4s01-sc036-cam"><img id="c4s01-sc036-img" src="assets/intro/paintings/taiwan_birdseye_1935.jpg" alt="" /></div>
+      <div class="k-scrim-t"></div>
+      <div id="c4s01-sc036-as" class="k-abs t-serif-i clean"><span class="k-w">a </span><span class="k-w">shot</span></div>
+      <div id="c4s01-sc036-ge" class="k-abs t-label clean"><span class="k-w">good </span><span class="k-w">economy</span></div>
+      <div class="k-credit t-label">Bird's-eye view of Taiwan, 1935 · public domain</div>
+    </div></div>
+
+    <!-- global overlays -->
+    <div id="c4s01-flash"></div>
+    <div id="c4s01-grain" class="tx tx-grain" style="background-image:url('assets/textures/grain_01_norm.jpg')"></div>
+    <div id="c4s01-dust" class="tx tx-dust" style="background-image:url('assets/textures/dust_01.jpg')"></div>
+    <div id="c4s01-vig" class="vignette"></div>
+    <audio id="c4s01-vo" class="temp-vo" src="vo_c4.mp3" data-start="0" data-duration="199.14" data-media-start="0.00" data-volume="1"></audio>
+  </div>
+  <script>
+  (function () {
+    const SEG = "c4s01", SEG_START = 0.00, SEG_END = 199.14, DURATION = +(SEG_END - SEG_START).toFixed(2);
+    const T = (s) => +(s - 0.00).toFixed(3);   // TEXT cues (audited) — literal word start − 0.06
+    const S = (s) => +(s - 0.00).toFixed(3);   // STRUCTURAL cues (cuts, camera, objects)
+    const tl = gsap.timeline({ paused: true });
+    const $ = (id) => document.getElementById(SEG + "-" + id);
+    const NS = "http://www.w3.org/2000/svg";
+    const defs = $("defs");
+    const E = FX.ease;
+    const C = (e, d) => FX.choppy(e, d, 12);
+    const BONE = "#f2ede3", INK = "#141b24", RED = "#e03f2c", CEL = "#9fc7b2", YEL = "#f2d33b", PAPER = "#ebe4d6";
+    const MAPS = /*__PATHS__*/null;
+
+    function gated(a, b, fn) { const on = FX.onFrame; FX.onFrame = (f) => on(FX.gate(S(a) - 0.1, S(b) + 0.1, f)); try { return fn(); } finally { FX.onFrame = on; } }
+    // scene window: hidden (display none) outside [a, b]
+    function scene(id, a, b) {
+      const el = $(id);
+      gsap.set(el, { autoAlpha: 0, display: "none" });
+      tl.fromTo(el, { autoAlpha: 0, display: "none" }, { autoAlpha: 1, display: "block", duration: 0.001, immediateRender: false }, S(a));
+      if (b < SEG_END) tl.set(el, { autoAlpha: 0, display: "none" }, S(b));
+    }
+    function ground(kind, t) {
+      const v = kind === "paper" ? [0.32, 0.14, 0.26] : [1, 0.42, 0.36];
+      tl.set([$("vig"), $("dust"), $("grain")], { opacity: (i) => v[i] }, t);
+    }
+    const show = (el, t) => tl.fromTo(el, { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, t);
+    const rise = (el, t, o) => { o = o || {}; const d = o.dur || 1.0;
+      tl.fromTo(el, { opacity: 0, y: o.y == null ? 22 : o.y }, { opacity: 1, y: 0, duration: d, ease: C(E.out, d), immediateRender: true }, t); };
+    const pop = (el, t, d) => { d = d || 0.8; tl.fromTo(el, { opacity: 0, scale: 0.8 }, { opacity: 1, scale: 1, duration: d, ease: C(E.out, d), immediateRender: true }, t); };
+    const words = (id) => $(id).querySelectorAll(".k-w");
+    const whipN = { n: 0 };
+    function whip(a, b, t, o) {
+      o = Object.assign({ dir: 1, vertical: false, flash: false, dur: 0.32 }, o);
+      const k = ++whipN.n, ba = FX.whipDefs(defs, `${SEG}-wa${k}`), bb = FX.whipDefs(defs, `${SEG}-wb${k}`), h = o.dur / 2;
+      tl.set(a, { filter: `url(#${SEG}-wa${k})` }, t - h - 0.01); tl.set(a, { filter: "none" }, t + 0.06);
+      tl.set(b, { filter: `url(#${SEG}-wb${k})` }, t - 0.001); tl.set(b, { filter: "none" }, t + h + 0.02);
+      FX.whip(tl, a, b, t, { dir: o.dir, vertical: o.vertical, dur: o.dur, blurA: ba, blurB: bb });
+      if (o.flash) tl.fromTo($("flash"), { opacity: 0 }, { opacity: 0.85, duration: 0.08, yoyo: true, repeat: 1, ease: "power2.in", immediateRender: false }, t - 0.08);
+    }
+    function ink(parent, d, t, dur, o) {
+      o = o || {};
+      const p = document.createElementNS(NS, "path");
+      p.setAttribute("d", d); p.setAttribute("fill", "none");
+      p.setAttribute("stroke", o.color || INK); p.setAttribute("stroke-width", o.width || 6);
+      p.setAttribute("stroke-linecap", "round"); p.setAttribute("stroke-linejoin", "round");
+      if (o.filter) p.setAttribute("filter", o.filter);
+      if (o.dasharray) p.setAttribute("data-da", o.dasharray);
+      parent.appendChild(p);
+      const len = p.getTotalLength() || 1;
+      p.setAttribute("stroke-dasharray", `${len} ${len}`); p.setAttribute("stroke-dashoffset", len);
+      tl.fromTo(p, { attr: { "stroke-dashoffset": len } }, { attr: { "stroke-dashoffset": 0 }, duration: dur, ease: o.ease || C(E.out, dur), immediateRender: true }, t);
+      p._len = len; return p;
+    }
+    // red/celadon pin (map) — head + needle shadow
+    function pin(svg, x, y, color, r, id) {
+      svg.insertAdjacentHTML("beforeend", `<g id="${id}" opacity="0"><ellipse cx="${x + r * 0.6}" cy="${y + r * 0.5}" rx="${r * 0.9}" ry="${r * 0.35}" fill="rgba(20,27,36,0.35)"/><path d="M${x} ${y} L${x} ${y - r * 2.6}" stroke="#444" stroke-width="${r * 0.25}"/><circle cx="${x}" cy="${y - r * 2.6}" r="${r}" fill="${color}" stroke="${INK}" stroke-width="${r * 0.18}"/><circle cx="${x - r * 0.3}" cy="${y - r * 2.9}" r="${r * 0.28}" fill="rgba(255,255,255,0.55)"/></g>`);
+      return document.getElementById(id);
+    }
+    // the shared 'CHINA' chair icon (motif master): ink line chair + nameplate
+    const CHAIR = `<g fill="none" stroke="${INK}" stroke-width="7" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M58 20 L58 128 M162 20 L162 128 M50 20 L170 20 M58 70 L162 70"/><path d="M40 128 L180 128 L172 150 L48 150 Z" fill="#e2dccd"/>
+        <path d="M54 150 L46 232 M166 150 L174 232 M74 150 L72 212 M146 150 L148 212"/></g>
+        <rect x="52" y="160" width="116" height="38" fill="${INK}"/><text x="110" y="188" text-anchor="middle" fill="${PAPER}" font-size="26" class="t-label" style="letter-spacing:0.14em">CHINA</text>`;
+    // typewriter: characters appear one per 1/24 s from t
+    function typeOn(el, t, per) {
+      const chars = FX.split(el, "chars"); per = per || 1 / 24;
+      chars.forEach((c, i) => { c.classList.add("c"); tl.fromTo(c, { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, t + i * per); });
+      return t + chars.length * per;
+    }
+    function pathsFill(svg, region, ids, attrs, prefix) {
+      ids.forEach((k) => { const d = MAPS[region].d[k]; if (!d) return; svg.insertAdjacentHTML("beforeend", `<path id="${prefix}${k}" d="${d}" ${attrs}/>`); });
+    }
+
+    // shared filters
+    FX.tintDefs(defs, "c4s01-tint-ink", "#1d1f22", "#e9e1cf");
+    FX.tintDefs(defs, "c4s01-tint-red", "#5a1710", "#efe3d0");
+    FX.tintDefs(defs, "c4s01-tint-night", "#0e1013", "#bdb6a8");
+    defs.insertAdjacentHTML("beforeend", `
+      <pattern id="c4s01-ht-red" width="14" height="14" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="14" height="14" fill="${RED}" opacity="0.55"/><circle cx="7" cy="7" r="4.2" fill="${RED}"/></pattern>
+      <pattern id="c4s01-ht-bone" width="14" height="14" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="14" height="14" fill="${BONE}" opacity="0.10"/><circle cx="7" cy="7" r="3.4" fill="${BONE}" opacity="0.55"/></pattern>
+      <pattern id="c4s01-ht-cel" width="12" height="12" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="12" height="12" fill="${CEL}" opacity="0.72"/><circle cx="6" cy="6" r="3" fill="#6f9c86" opacity="0.6"/></pattern>
+      <filter id="c4s01-wc" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="3" seed="7" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="14" xChannelSelector="R" yChannelSelector="G"/></filter>`);
+    FX.grain($("grain"), 401);
+    FX.dust($("dust"), 402, 2);
+
+    /*__SCENES__*/
+
+    FX.mount(tl, DURATION);
+    window.__timelines = window.__timelines || {}; window.__timelines[SEG] = tl;
+  })();
+  </script>
+</template>
+</body>
+</html>
