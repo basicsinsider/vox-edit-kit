@@ -13,9 +13,10 @@
 
     function gated(a, b, fn) { const on = FX.onFrame; FX.onFrame = (f) => on(FX.gate(S(a) - 0.1, S(b) + 0.1, f)); try { return fn(); } finally { FX.onFrame = on; } }
     // scenes are display:none outside their window (keeps the render's heavy-overlay count low, MANUAL §4.4)
+    const hideAtEnd = [];   // display:none is applied after every scene is built (odometers/fills measure text at build time)
     function scene(id, a, b) {
       if (a <= 0) gsap.set($(id), { autoAlpha: 1, display: "block" });
-      else { gsap.set($(id), { display: "none" }); tl.fromTo($(id), { autoAlpha: 0, display: "none" }, { autoAlpha: 1, display: "block", duration: 0.001, immediateRender: false }, S(a)); }
+      else { hideAtEnd.push($(id)); tl.fromTo($(id), { autoAlpha: 0, display: "none" }, { autoAlpha: 1, display: "block", duration: 0.001, immediateRender: false }, S(a)); }
       if (b < SEG_END) tl.set($(id), { autoAlpha: 0, display: "none" }, S(b));
     }
     function ground(kind, t) {
@@ -179,8 +180,8 @@
       const cam = $("sc007-cam");
       const at = (cx, cy, z) => ({ x: 960 - cx * z, y: 540 - cy * z, scale: z });
       tl.fromTo(cam, at(1500, 1150, 0.9), Object.assign(at(1700, 1200, 0.62), { duration: 3.6, ease: E.cam, immediateRender: true }), S(38.61));
-      tl.to(cam, Object.assign(at(3600, 1500, 0.27), { duration: 2.4, ease: E.cam }), S(42.30));
-      tl.to(cam, Object.assign(at(3700, 1520, 0.265), { duration: 1.5, ease: "none" }), S(44.70));
+      tl.to(cam, Object.assign(at(3780, 1920, 0.284), { duration: 2.4, ease: E.cam }), S(42.30));
+      tl.to(cam, Object.assign(at(3840, 1920, 0.282), { duration: 1.5, ease: "none" }), S(44.70));
       tl.fromTo($("sc007-glow"), { opacity: 0, scale: 0.4 }, { opacity: 1, scale: 1, duration: 1.4, ease: C(E.out, 1.4), immediateRender: true }, S(39.0));
       tl.fromTo($("sc007-core"), { opacity: 0 }, { opacity: 1, duration: 0.6, ease: C(E.out, 0.6), immediateRender: true }, S(39.1));
       tl.to($("sc007-glow"), { scale: 1.35, duration: 0.9, ease: "sine.inOut", yoyo: true, repeat: 3 }, S(40.6));
@@ -203,6 +204,7 @@
     words($("sc007-pw"), [T(41.03), T(41.35)], { dur: 0.5, y: 14 });
     fade($("sc007-pw"), S(42.35), 0.25);
     words($("sc007-cw"), [T(42.55), T(43.27), T(43.75), T(43.91)], { dur: 0.45, y: 10 });
+    fade($("sc007-cw"), S(44.75), 0.2);
     words($("sc007-ci"), [T(44.87), T(45.43)], { dur: 0.35, y: 14 });
     whip($("sc007-shot"), $("sc008-shot"), S(46.13), { dir: 1 });
 
@@ -254,7 +256,7 @@
       tl.fromTo($("sc010-thl"), { opacity: 0 }, { opacity: 1, duration: 0.5, immediateRender: true }, S(57.60));
       // "less": Micron dips behind the line; "more": a ghost 13th bar crosses it
       tl.to($("sc010-b11"), { scaleX: 0.86, duration: 0.6, ease: C(E.inOut, 0.6) }, S(62.40));
-      gsap.set($("sc010-less"), { left: 414 + 1.06 * K * 0.86 + 30, top: 250 + 11 * 64 + 2 });
+      gsap.set($("sc010-less"), { left: 414 + K + 40, top: 250 + 11 * 64 + 2 });
       rise($("sc010-less"), T(62.47), { dur: 0.45, y: 8 });
       gsap.set($("sc010-ghost"), { top: 250 + 12 * 64 + 14, width: 1.02 * K });
       tl.fromTo($("sc010-ghost"), { opacity: 0, scaleX: 0 }, { opacity: 1, scaleX: 1, duration: 0.45, ease: C(E.out, 0.45), immediateRender: true }, S(63.62));
@@ -700,6 +702,7 @@
       tl.fromTo(sb, { v: 0 }, { v: 90, duration: 0.16, ease: "power2.in", immediateRender: false, onUpdate: () => bl.setAttribute("stdDeviation", `0 ${sb.v.toFixed(1)}`) }, S(208.37));
     })();
 
+    hideAtEnd.forEach((el) => gsap.set(el, { display: "none" }));
     FX.mount(tl, DURATION);
     window.__timelines = window.__timelines || {}; window.__timelines[SEG] = tl;
   })();

@@ -232,7 +232,7 @@
     scene("sc008", 32.63, 37.3);
     ground("night", S(32.63));
     const CA = US.california, caB = bbox(CA);
-    const F_US = frame(3196, 1762, 0.30), F_CA = frame(caB.cx, caB.cy, 0.66, 600, 560);
+    const F_US = frame(3196, 1762, 0.30), F_CA = frame(caB.cx, caB.cy, 0.66, 470, 560);
     (function () {
       const svg = $("sc008-svg");
       const fill = el("path", { d: CA, fill: RED, "fill-opacity": 0.6, opacity: 0 }, svg); fill.style.mixBlendMode = "overlay";

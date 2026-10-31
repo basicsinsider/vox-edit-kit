@@ -80,7 +80,7 @@
       const mimg = "linear-gradient(180deg, transparent 0%, #000 14%, #000 86%, transparent 100%)";
       $("sc046-map").style.webkitMaskImage = mimg; $("sc046-map").style.maskImage = mimg;
       const f = $("sc046-fill"); Object.assign(f.style, { left: J.tw_box[0] + "px", top: J.tw_box[1] + "px" });
-      const a = camAt(0.9, tw[0] + 140, tw[1]), b = camAt(0.335, (tw[0] + sv[0]) / 2, (tw[1] + sv[1]) / 2 + 10);
+      const a = camAt(0.9, tw[0] + 260, tw[1]); a.x = Math.min(-40, a.x); const b = camAt(0.335, (tw[0] + sv[0]) / 2, (tw[1] + sv[1]) / 2 + 10);
       b.x = Math.min(0, Math.max(1920 - 5896 * 0.335, b.x));
       tl.fromTo(cam, a, Object.assign({}, a, { x: a.x - 30, duration: 2.4, ease: "none", immediateRender: true }), S(216.84));
       tl.to(cam, Object.assign({}, b, { duration: 2.4, ease: E.cam }), S(219.24));
@@ -143,6 +143,8 @@
     ground("night", S(228.30));
     (function () {
       const cam = $("sc048-cam");
+      $("sc048-sea").style.background = `rgb(${M.tw_sat.corner.join(",")})`;
+      const fe = "linear-gradient(90deg, transparent 0%, #000 6%, #000 94%, transparent 100%)"; $("sc048-map").style.webkitMaskImage = fe; $("sc048-map").style.maskImage = fe;
       tl.fromTo(cam, camAt(0.42, 960, 1250), Object.assign(camAt(0.56, 960, 1380), { duration: 7.66, ease: E.cam, immediateRender: true }), S(228.28));
       // clouds drift in from the north-west, a shadow under the big one
       const cl = [["sc048-c1", -700, -200, 1700, 0.9, 380, 260], ["sc048-sh1", -640, -120, 1700, 1, 380, 260], ["sc048-c2", -900, 900, 1500, 0.8, 300, 160], ["sc048-c3", 1300, -500, 1400, 0.7, -160, 220]];
@@ -207,12 +209,11 @@
       svg.insertAdjacentHTML("beforeend", `<circle id="c3s02-sc051-dot" cx="1700" cy="862" r="17" fill="${CEL}" stroke="${INK}" stroke-width="4" opacity="0"/>`);
       pop($("sc051-dot"), S(250.0), 0.6);
       tl.fromTo($("sc051-band"), { attr: { opacity: 0 } }, { attr: { opacity: 1 }, duration: 0.8, ease: C(E.out, 0.8), immediateRender: true }, S(250.12));
-      tl.fromTo($("sc051-cam"), { x: 0 }, { x: -330, duration: 8.6, ease: E.cam, immediateRender: true }, S(244.90));
+      tl.fromTo($("sc051-cam"), { x: 0 }, { x: -140, duration: 8.6, ease: E.cam, immediateRender: true }, S(244.90));
       [T(245.32), T(245.96)].forEach((c, i) => rise(words("sc051-sv")[i], c, { dur: 0.6, y: 8 }));
       [T(246.76), T(247.08), T(247.24)].forEach((c, i) => rise(words("sc051-uu")[i], c, { dur: 0.6, y: 10 }));
       rise(words("sc051-tw")[0], T(247.80), { dur: 0.6, y: 8 });
       [T(250.12), T(251.00)].forEach((c, i) => rise(words("sc051-ec")[i], c, { dur: 0.8, y: 12 }));
-      $("sc051-ec").style.left = "170px"; $("sc051-ec").style.top = "900px"; $("sc051-uu").style.left = "640px"; $("sc051-uu").style.top = "70px";
     })();
     whip($("sc051-shot"), $("sc052-shot"), S(253.88), { dir: 1 });
 

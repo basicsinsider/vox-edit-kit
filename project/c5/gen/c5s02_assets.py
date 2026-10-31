@@ -80,7 +80,7 @@ def render_globe(tex, frames_fn, out, W=1920, H=1080, fps=24, bg=(13, 16, 20), n
 def globes():
     # C5S050: Washington -> Pakistan, scene 227.66-231.58; video starts at 227.50 (local c5 s)
     t0 = 227.50; n = int((231.80-t0)*24)+1
-    tex = load_draft(K+"world_satdesat_21600.jpg", (5400, 2700))
+    tex = np.clip(load_draft(K+"world_satdesat_21600.jpg", (5400, 2700)).astype(np.float32)*1.22, 0, 255).astype(np.uint8)
     WAS, RWP = (-77.04, 38.9), (73.05, 33.6)
     route = gc(WAS, RWP, 160)
     def st50(i):
@@ -92,7 +92,7 @@ def globes():
         R = 600 - 40*k; cx, cy = 960, 590
         def draw(im, lon0, lat0, R, cx, cy, i):
             d = ImageDraw.Draw(im, "RGBA")
-            f = min(1, max(0, (t-228.35)/2.0)); f = 1-(1-f)**2.2
+            f = min(1, max(0, (t-227.80)/2.55)); f = 1-(1-f)**1.8
             m = int(f*len(route))
             pts = []
             for j, (lo, la) in enumerate(route[:m]):

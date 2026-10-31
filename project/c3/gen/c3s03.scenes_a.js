@@ -93,7 +93,7 @@
         <g fill="none" stroke="${BONE}" stroke-opacity="0.35" stroke-width="3"><path d="${MAPS.asia.d.china}"/><path d="${MAPS.asia.d.mongolia}"/></g>
         <g id="c3s03-sc080-cn" clip-path="url(#c3s03-sc080-clip)" filter="url(#c3s03-glow)"><path d="${MAPS.asia.d.china}" fill="url(#c3s03-ht-cel)" fill-opacity="0.8" stroke="${CEL}" stroke-width="8"/></g>
         <g id="c3s03-sc080-tw" opacity="0" filter="url(#c3s03-glow)"><path d="${MAPS.asia.d.taiwan}" fill="${CEL}" fill-opacity="0.9" stroke="${CEL}" stroke-width="6"/></g>`;
-      tl.fromTo(cam, at(119, 25.5, 1.25), Object.assign(at(105, 35.5, 0.64), { duration: 4.2, ease: E.cam, immediateRender: true }), S(412.33));
+      tl.fromTo(cam, at(118, 26.5, 0.98), Object.assign(at(105, 35.5, 0.64), { duration: 4.2, ease: E.cam, immediateRender: true }), S(412.33));
       tl.to(cam, Object.assign(at(105, 35.5, 0.62), { duration: 1.4, ease: "none" }), S(416.53));
       tl.fromTo($("sc080-tw"), { attr: { opacity: 0 } }, { attr: { opacity: 1 }, duration: 0.5, ease: C("none", 0.5), immediateRender: true }, S(413.15));
       const cc = $("sc080-cc"), st = { r: 0 };

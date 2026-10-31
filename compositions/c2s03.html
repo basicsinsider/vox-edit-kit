@@ -324,10 +324,10 @@
     #c2s03-sc127-aer img { position: absolute; left: -40px; top: -160px; width: 2000px; height: 1408px; filter: saturate(0.5) brightness(0.55) contrast(1.15) sepia(0.15); }
     #c2s03-sc127-dieov { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; background-size: 1920px auto; background-position: center; mix-blend-mode: overlay; opacity: 0; }
     #c2s03-sc127-dusk { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(10,14,22,0.88) 0%, rgba(10,14,22,0.35) 45%, rgba(10,14,22,0.55) 100%); }
-    #c2s03-sc127-bloom { position: absolute; left: 260px; top: 220px; width: 1400px; height: 420px; background: radial-gradient(ellipse 50% 50% at 50% 50%, rgba(255,170,110,0.28), rgba(255,120,60,0) 70%); mix-blend-mode: screen; opacity: 0; }
-    #c2s03-sc127-sign { position: absolute; left: 0; width: 1920px; top: 330px; text-align: center; font-size: 190px; }
+    #c2s03-sc127-bloom { position: absolute; left: 260px; top: 330px; width: 1400px; height: 420px; background: radial-gradient(ellipse 50% 50% at 50% 50%, rgba(255,170,110,0.28), rgba(255,120,60,0) 70%); mix-blend-mode: screen; opacity: 0; }
+    #c2s03-sc127-sign { position: absolute; left: 0; width: 1920px; top: 470px; text-align: center; font-size: 150px; }   /* = c2s02 C2S080 sign (150 px, top 470, stroke 3 px bone 0.78) */
     #c2s03-sc127-sign .lw { display: inline-block; position: relative; white-space: pre; }
-    #c2s03-sc127-sign .lt { display: inline-block; color: transparent; -webkit-text-stroke: 3px rgba(242,237,227,0.8); opacity: 0; white-space: pre; }
+    #c2s03-sc127-sign .lt { display: inline-block; color: transparent; -webkit-text-stroke: 3px rgba(242,237,227,0.78); opacity: 0; white-space: pre; }
     #c2s03-sc127-sign .lh { position: absolute; left: 0; top: 0; opacity: 0; white-space: pre; }
     #c2s03-sc127-streaks { opacity: 0.35; }
     #c2s03-sc127-bi { left: 110px; top: 100px; font-size: 44px; z-index: 3; }
@@ -872,17 +872,10 @@
     function el(tag, attrs, parent) { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; }
     function gated(a, b, fn) { const o = FX.onFrame; FX.onFrame = (f) => o(FX.gate(S(a) - 0.1, S(b) + 0.1, f)); try { fn(); } finally { FX.onFrame = o; } }
     // the "problem" card: missile cutaway outline covered in ✗ marks (C2S087's drawing, shrunk)
-    function problemCard(box, seed) {
-      box.innerHTML = '<img class="tx" src="assets/textures/paper_cream_01.jpg" alt="" />';
-      const svg = el("svg", { viewBox: "0 0 520 360" }, box);
-      el("path", { d: "M70 180 L120 150 L380 150 Q450 150 480 180 Q450 210 380 210 L120 210 Z M120 150 L80 105 L150 150 M120 210 L80 255 L150 210 M380 150 L400 125 M380 210 L400 235", fill: "none", stroke: INK, "stroke-width": 3, "stroke-linejoin": "round" }, svg);
-      el("path", { d: "M150 150 L150 210 M220 150 L220 210 M300 150 L300 210", stroke: INK, "stroke-width": 2, opacity: 0.6 }, svg);
-      const r = FX.rng(seed);
-      for (let i = 0; i < 110; i++) {
-        const x = 130 + r() * 300, y = 158 + r() * 46, s = 3.2;
-        el("path", { d: `M${(x - s).toFixed(1)} ${(y - s).toFixed(1)} L${(x + s).toFixed(1)} ${(y + s).toFixed(1)} M${(x + s).toFixed(1)} ${(y - s).toFixed(1)} L${(x - s).toFixed(1)} ${(y + s).toFixed(1)}`, stroke: INK, "stroke-width": 1.6, opacity: 0.85 }, svg);
-      }
-      return svg;
+    // the "problem" card: C2S087's missile drawing exported by c2s02 (assets/c2/derived/c2s02/problem_card.png, 2× of 520×360)
+    function problemCard(box) {
+      box.innerHTML = '<img class="tx" src="assets/c2/derived/c2s02/problem_card.png" alt="" style="mix-blend-mode:normal;opacity:1" />';
+      return el("svg", { viewBox: "0 0 520 360" }, box);
     }
     function paperclip(svg, color) {
       el("path", { d: "M18 120 L18 28 Q18 8 34 8 Q50 8 50 28 L50 104 Q50 116 40 116 Q30 116 30 104 L30 36", fill: "none", stroke: color, "stroke-width": 6, "stroke-linecap": "round" }, svg);
@@ -896,7 +889,7 @@
     /* ============ C2S088 · 403.13–407.69 · problem card pinned at the lab (night) ============ */
     scene("088", 403.13, 407.69);
     (function () {
-      problemCard($("sc088-card"), 8801);
+      problemCard($("sc088-card"));
       // lit windows (warm, flicker) along the building's window band
       const g = $("sc088-glow"), wins = [];
       [[200, 150], [430, 110], [700, 140], [880, 90], [1020, 120], [1230, 160], [1470, 110], [1700, 140]].forEach(([x, w], i) => {
@@ -1146,7 +1139,7 @@
     scene("100", 453.95, 459.04);
     ground("paper", S(454.1));
     (function () {
-      const card = $("sc100-pc"); problemCard(card, 8801);
+      const card = $("sc100-pc"); problemCard(card);
       const tsvg = card.querySelector("svg");
       tl.fromTo("#c2s03-sc100-ny", { x: 500, y: -500, rotation: 14 }, { x: 0, y: 0, rotation: 4, duration: 0.9, ease: C(FX.ease.out, 0.9), immediateRender: true }, S(454.45));
       const clip = $("sc100-clip"); paperclip(clip, "#6d6a64");

@@ -66,7 +66,7 @@ if not (O / "africa_satdesat.jpg").exists():
 af = None
 P = paths(K / "world_overlay.svg")
 WK = 45.5111
-f = lambda x, y: ((x / WK - 180 - A["lon0"]) * A["k"], (90 - y / WK - (90 - A["lat1"])) * A["k"])
+f = lambda x, y: ((x / WK - 180 - A["lon0"]) * A["k"], (y / WK - 90 + A["lat1"]) * A["k"])
 afr = ["ghana", "guinea", "nigeria", "senegal", "mali", "c_te_d_ivoire", "cameroon", "chad", "niger", "congo", "dem_rep_congo", "gabon",
        "central_african_rep", "madagascar", "somalia", "mauritania", "burkina_faso", "togo", "benin", "tanzania", "uganda", "kenya", "zambia",
        "malawi", "sudan", "s_sudan", "morocco", "tunisia", "algeria", "sierra_leone", "rwanda", "burundi", "libya", "egypt", "ethiopia", "liberia",
@@ -81,7 +81,7 @@ if not (O / "asia_satdesat.jpg").exists():
     big = Image.open(K / "world_satdesat_21600.jpg"); KB = 60.0
     box = (int((B["lon0"] + 180) * KB), int((90 - B["lat1"]) * KB), int((B["lon1"] + 180) * KB), int((90 - B["lat0"]) * KB))
     big.crop(box).resize((W2, H2), Image.LANCZOS).save(O / "asia_satdesat.jpg", quality=88); del big
-g = lambda x, y: ((x / WK - 180 - B["lon0"]) * B["k"], (90 - y / WK - (90 - B["lat1"])) * B["k"])
+g = lambda x, y: ((x / WK - 180 - B["lon0"]) * B["k"], (y / WK - 90 + B["lat1"]) * B["k"])
 res["asia"] = {"size": [W2, H2], "geo": B, "d": {k: to_d(P[k], g, 1.2, 4) for k in ["china", "taiwan", "mongolia"]}}
 del res["east_asia"]
 

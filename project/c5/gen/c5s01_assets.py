@@ -46,7 +46,7 @@ def raster(cid):
     im = Image.new("L", (W2, H2), 0); dr = ImageDraw.Draw(im)
     for sub in d.split("M")[1:]:
         pts = [tuple(float(v) * s2 for v in p.split(",")) for p in re.split(r"[LZ]", sub) if "," in p]
-        if len(pts) < 3 or any(p[0] < -50 for p in pts): continue
+        if len(pts) < 3: continue
         dr.polygon(pts, fill=255)
     return ImageChops.multiply(im, lm.point(lambda v: 255 if v > 40 else 0)).filter(ImageFilter.GaussianBlur(1.2))
 for cid, col, name in [("c-china", RED, "china_red_fill"), ("c-taiwan", CEL, "taiwan_cel_fill_ea")]:
@@ -63,11 +63,11 @@ for cid, col, name in [("c-china", RED, "china_red_fill"), ("c-taiwan", CEL, "ta
 ti = Image.open("assets/c5/photos/tiananmen_mao_portrait_gatetower_modern.jpg").convert("RGB").resize((2400, 1800), Image.LANCZOS)
 ti.save(O + "tian_far.jpg", quality=88)
 hsv = ti.convert("HSV"); L = ti.convert("L")
-sky = Image.eval(L, lambda v: 255 if v > 168 else 0)
-sat = hsv.split()[1].point(lambda v: 255 if v < 60 else 0)
+sky = Image.eval(L, lambda v: 255 if v > 140 else 0)
+sat = hsv.split()[1].point(lambda v: 255 if v < 55 else 0)
 sky = ImageChops.multiply(sky, sat)
 # only the top region counts as sky (flood from the top rows)
-top = Image.new("L", ti.size, 0); ImageDraw.Draw(top).rectangle([0, 0, 2400, 520], fill=255)
+top = Image.new("L", ti.size, 0); ImageDraw.Draw(top).rectangle([0, 0, 2400, 740], fill=255)
 sky = ImageChops.multiply(sky, top).filter(ImageFilter.MinFilter(3)).filter(ImageFilter.MaxFilter(5)).filter(ImageFilter.GaussianBlur(2))
 gate = ti.copy(); gate.putalpha(ImageChops.invert(sky)); gate.save(O + "tian_gate.png")
 near = ti.copy(); na = Image.new("L", ti.size, 0); dn = ImageDraw.Draw(na)

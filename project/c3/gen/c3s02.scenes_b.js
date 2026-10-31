@@ -17,7 +17,7 @@
       svg.innerHTML = `<g id="c3s02-sc054-cn" opacity="0" filter="url(#c3s02-glow)"><path d="${J.china}" fill="url(#c3s02-ht-red)" fill-opacity="0.78" stroke="${RED}" stroke-width="7" stroke-linejoin="round"/></g>
         <path id="c3s02-sc054-two" d="${J.taiwan}" fill="none" stroke="${BONE}" stroke-width="4" stroke-dasharray="10 9" opacity="0"/>`;
       const tw = $("sc054-tw"); Object.assign(tw.style, { left: J.tw_box[0] + "px", top: J.tw_box[1] + "px", opacity: 0.88 });
-      const a = camAt(0.62, 1900, 1750), b = camAt(1.15, 2150, 2620);
+      const a = camAt(0.54, 1800, 1650), b = camAt(1.15, 2150, 2620);
       tl.fromTo(cam, a, Object.assign({}, b, { duration: 6.4, ease: E.cam, immediateRender: true }), S(265.87));
       tl.fromTo($("sc054-cn"), { attr: { opacity: 0 } }, { attr: { opacity: 1 }, duration: 0.8, ease: C(E.out, 0.8), immediateRender: true }, S(266.03));
       pop(words("sc054-ccp")[0], T(266.03), 0.5);

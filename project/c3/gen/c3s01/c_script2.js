@@ -86,10 +86,10 @@
       tl.fromTo($("sc017-st"), { opacity: 0, scale: 1.7 }, { opacity: 0.92, scale: 1, duration: 0.18, ease: C("power3.in", 0.18), immediateRender: true }, T(76.47) - L - 0.12);
       FX.chokeSettle(tl, ch017, $("sc017-st"), T(76.47) - L, 5, 0.6, "none");
       tl.fromTo($("sc017-cam"), { x: 0 }, { x: 10, duration: 1 / 12, yoyo: true, repeat: 1, ease: "none", immediateRender: false }, S(76.42));
-      tl.fromTo($("sc017-cam"), { y: 0 }, { y: -720, duration: 1.1, ease: E.cam, immediateRender: false }, S(77.4));
+      tl.fromTo($("sc017-cam"), { y: 0 }, { y: -520, duration: 1.1, ease: E.cam, immediateRender: false }, S(77.4));
       const ws = words("sc017-ty");
       [T(78.74) - L, T(78.98) - L, T(79.78) - L, T(80.26) - L, T(80.42) - L, T(80.66) - L, T(81.06) - L].forEach((t, i) => show(ws[i], t));
-      tl.to($("sc017-cam"), { y: -860, duration: 0.6, ease: E.in }, S(82.0));
+      tl.to($("sc017-cam"), { y: -640, duration: 0.6, ease: E.in }, S(82.0));
     })();
 
     /* ============ C3S018 · 82.10–86.90 · the Silicon Valley TV show ============ */
