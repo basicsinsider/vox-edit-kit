@@ -111,3 +111,4 @@ Allegro Sotto Le Stelle (Ab major) — off-key; c6 audition: Longing (B minor), 
 | riser_reverse_cymbal_short.wav | 566b642a-4341-4ad7-961a-d25000cf8341 | Designed, Riser, Cymbal, Reverse, Crescendo, Suspense, Clima… | 1.6 s | lead-in to the reveal hit |
 | swell_reverse_timpani_cymbal.wav | 04845f9f-e404-4209-b190-54d21070eec5 | Musical, Stinger, Trailer Swell, Reverse, Timpani and Cymbal | 8.3 s | "here's the story" launch swell |
 | rubber_stamp_document_01.wav | d530c5b9-3047-42fe-a06a-7c479d637b60 | Office Supplies, Rubber Stamp, Document 01 | 0.2 s | stamps (D07 collage, "YES" hovering) |
+- 2026-10-31 — Disk: stems (bass/drums/instruments/melody WAVs) deleted locally after all c1–c6 beds were built; re-fetch with tools/epidemic_fetch.py (IDs above) to rebuild a bed.
