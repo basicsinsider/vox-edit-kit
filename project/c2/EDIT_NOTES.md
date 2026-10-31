@@ -28,7 +28,7 @@ Prepared 2026-10-31 by the c2 story analyst + edit planner.
 - **Refs** = intro pack `D01–D15` (`references/style-images/intro/`), originals `R1–R12` (`references/style-images/1–12`,
   stills in `expected/layouts/`), plus **new reference ideas** named per scene (summarised in §11.2). Each reuse is a
   VARIATION: colour lead, orientation, density, entry animation are stated.
-- **Palette for c2** (BEATS §7): **red** `#e03f2c` = West / Stanford / Terman / Palo Alto / the Industrial Park · **navy**
+- **Palette for c2** (BEATS §7; = the lead's cross-chunk decision in LONGFORM.md for Silicon Valley content): **red** `#e03f2c` = West / Stanford / Terman / Palo Alto / the Industrial Park · **navy**
   `#1d5c9e` (sky `#9fc3e3` on night) = East / Bell Labs / New Jersey / Washington · **neutral** = Shockley, the eight,
   Fairchild, Noyce, other companies, military · **yellow** = highlighter + one key number per scene · no celadon (Taiwan
   doesn't appear). Max two accents per frame.
@@ -1543,7 +1543,7 @@ Max two accents per frame: S043/S047/S048 carry red + navy only.
   variations, Vox call-outs, painting-to-print, paintings as B-roll, better screens (new sets) ✔.
 
 ## 12. Open questions (defaults in DECISIONS.md)
-1. Palette mapping for Silicon Valley chapters (red = West/Stanford, navy = East/Bell Labs) — confirm it matches c1.
+1. Palette mapping — **settled** by the lead's cross-chunk colour decision (LONGFORM.md): vermilion = West/Stanford, navy = East.
 2. "jack of all trade" — no caption (card only)? → yes.
 3. Copyrighted key photos (Traitorous Eight by Wayne Miller/Magnum, Bell Labs trio, Shockley/Noyce portraits, Fortune 1953) —
    use with credit (fair use)? → yes per §10.9.

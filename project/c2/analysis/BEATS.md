@@ -585,4 +585,5 @@ Taiwan's palette (`lib/palette.css`) stays loaded; in the Silicon Valley chapter
   "West" only by location pins, never by colour on their faces/logos).
 - **yellow** = highlighter + one key number per scene (8,000 acres, 99, 10,000, 100,000).
 - **celadon** = Taiwan only → not used in c2.
-The lead should confirm this matches c1's mapping (same rule as the approved 10-min edit: West = vermilion, East = navy).
+**Confirmed by the lead's cross-chunk colour decision (`project/LONGFORM.md`, 2026-10-31):** Silicon Valley content uses
+vermilion = the West / Stanford, navy = the East, as in the approved samples. (Red-TSMC never appears in c2, so no clash.)
