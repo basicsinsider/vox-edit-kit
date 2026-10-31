@@ -180,6 +180,13 @@ use, attribution optional; never redistribute the files publicly, never use them
   draw horizontal lines across the whole map when stroked.
 - Lint 0.8.217 errors on tweening `letterSpacing` (layout snap) and on any `font-family` declared in composition CSS (also
   for credit lines) — animate scale/x instead and use the `t-label`/`t-serif` classes.
+- Lint (0.8.217) rejects `querySelector(\`#id${i}\`)` (template literal in a selector → error `template_literal_selector`): use
+  `document.getElementById("id" + i)`. Template literals that only build markup strings are fine.
+- A CSS `mask` (url PNG) on an element inside a `rotateX/rotateZ` map plane rendered as an unmasked rectangle (intro01 IS006): bake
+  the masked fill into a transparent PNG instead. `remove-background` fails on objects (a telephone kept only its cord): cut objects
+  with a hand polygon (PIL `ImageDraw.polygon` on a gridded preview) and multiply a halftone's alpha by the cut-out alpha.
+- Gate any FX helper that registers per-frame work (`FX.streaks`, `FX.weave`, `FX.roughDefs` boil) to its scene window by wrapping
+  `FX.onFrame` while calling it: `const on = FX.onFrame; FX.onFrame = f => on(FX.gate(a, b, f)); FX.streaks(...); FX.onFrame = on;` (intro01).
 ### 4.3 Check, look, render
 ```bash
 python3 tools/build_index.py s05            # put one (or several) compositions in index.html
@@ -552,6 +559,7 @@ on action. Use it whenever the narrator quotes someone or introduces a historic 
 - [ ] Smooth long eases, 12 fps. [ ] Cuts on action; whips, no iris. [ ] No photo/clip used > 2× in a chunk.
 
 ## Changelog
+- 2026-10-31 — intro01 editor: §4.2 lint template-literal selectors, CSS masks inside 3D planes, object cut-outs by polygon, gating FX helpers per scene.
 - 2026-10-31 — intro03 editor: §4.2 gotchas (greyscale masks need alpha for CSS mask-image, antimeridian country paths, lint on letterSpacing tweens / font-family in credits).
 - 2026-10-31 — 5 Texturelabs papers added by Krish (assets/textures/paper_{graph,lined,stained,torn,blueprint}_01, SOURCES.md
   "Added 2026-10-31"). Intro usage: graph → export bar chart IS007–008 (D01) + one intro03 chart; stained (multiply) →
