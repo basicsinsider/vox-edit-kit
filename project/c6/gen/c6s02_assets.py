@@ -49,7 +49,7 @@ ussr = [[((x - x0) * K, (y - y0) * K) for x, y in r] for r in subpaths(getd(P("a
 ussr = [simp(r, 3.0) for r in ussr if len(r) > 40]
 paths["euW"], paths["euH"] = ea.width, ea.height
 paths["ussr"] = dstr(ussr)
-route = [(121.47, 31.23), (126.5, 35.5), (131.9, 43.1), (127.5, 49.8), (113.5, 52.0), (104.3, 52.3), (92.9, 56.0), (82.9, 55.0), (73.4, 55.0), (60.6, 56.8), (49.1, 55.8), (37.62, 55.75)]
+route = [(121.47, 31.23), (124.5, 32.6), (129.3, 34.4), (131.4, 40.2), (131.9, 43.1), (127.5, 49.8), (113.5, 52.0), (104.3, 52.3), (92.9, 56.0), (82.9, 55.0), (73.4, 55.0), (60.6, 56.8), (49.1, 55.8), (37.62, 55.75)]
 paths["route"] = [[round(tx(a), 1), round(ty(b), 1)] for a, b in route]
 paths["moscowEU"] = [round(tx(37.62), 1), round(ty(55.75), 1)]; paths["shanghaiEU"] = [round(tx(121.47), 1), round(ty(31.23), 1)]
 
@@ -120,6 +120,7 @@ json.dump(paths, open(P("assets/c6/derived/c6s02/paths.json"), "w"))
 print({k: (len(v) if isinstance(v, str) else v) for k, v in paths.items() if k not in ("fmDots",)})
 
 # ---------- 8. more crops (second pass) ----------
+ax = lambda lon: (lon - 100) * 127.95; ay = lambda lat: (48 - lat) * 150
 ea_at = Image.open(P("assets/maps/kit/east_asia_atlas.jpg"))
 mini = ea_at.crop((int(ax(106)), int(ay(37)), int(ax(126)), int(ay(20)))); s = 720 / mini.width
 mini = mini.resize((720, int(mini.height * s)), Image.LANCZOS); mini.save(P("assets/c6/derived/c6s02/ea_atlas_mini.jpg"), quality=90)

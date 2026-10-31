@@ -13,7 +13,7 @@
     ground("paper", S(458.70));
     (function () {
       const svg = $("sc097-svg"), dots = hemi(svg, 960, 900, "c5s03-d97-");
-      chair(svg, 905, 760, 0.5, "c5s03-ch97", { plate: true });
+      chair(svg, 877, 690, 0.75, "c5s03-ch97", { plate: true });
       cam($("sc097-cam"), { scale: 1.0 }, { scale: 1.04 }, S(458.45), 3.7);
       tl.to($("sc097-cam"), { scale: 1.1, y: -20, duration: 0.45, ease: E.in }, S(462.17));
       rise(words("sc097-vote")[0], T(460.48), { dur: 1.0, y: 14 });
@@ -46,8 +46,8 @@
       $("sc099-cam").insertAdjacentHTML("beforeend", `<div id="c5s03-sc099-ccp" class="k-abs t-label" style="left:1100px;top:330px;font-size:52px"><span class="k-redbox" id="c5s03-sc099-ccpb" style="opacity:0">CCP</span></div>`);
       cam($("sc099-cam"), { scale: 1.0 }, { scale: 1.05 }, S(467.02), 6.4);
       const tw = $("c99tw"), cn = $("c99cn");
-      tl.fromTo(tw, { x: 0, rotation: 0 }, { x: -760, rotation: -50, svgOrigin: "960 470", duration: 1.0, ease: C(E.in, 1.0), immediateRender: true }, S(468.40));
-      tl.fromTo(cn, { x: 1150, rotation: 40, opacity: 1 }, { x: 0, rotation: 0, svgOrigin: "960 470", duration: 1.0, ease: C(E.out, 1.0), immediateRender: true }, S(470.80));
+      tl.fromTo(tw, { attr: { transform: "translate(0 0) rotate(0 960 470)" } }, { attr: { transform: "translate(-1300 40) rotate(-80 960 470)" }, duration: 1.0, ease: C(E.in, 1.0), immediateRender: true }, S(468.40));
+      tl.fromTo(cn, { attr: { transform: "translate(1150 0) rotate(60 960 470)" } }, { attr: { transform: "translate(0 0) rotate(0 960 470)" }, duration: 1.0, ease: C(E.out, 1.0), immediateRender: true }, S(470.80));
       [T(468.32), T(468.56), T(468.72)].forEach((c, i) => rise(words("sc099-kot")[i], c, { dur: 0.8, y: 10 }));
       [T(469.76), T(470.16)].forEach((c, i) => rise(words("sc099-cs")[i], c, { dur: 0.8, y: 10 }));
       pop($("sc099-ccpb"), T(470.80), 0.8);
