@@ -814,6 +814,9 @@ if __name__ == "__main__":
     markers = []
     for f in sorted(glob.glob(os.path.join(ROOT, a.markers))):
         markers += json.load(open(f))
+    ALIAS = {"clunk": "circuit_clunk", "crowd": "crowd_room"}     # c6 editor names
+    for m in markers:
+        m["type"] = ALIAS.get(m["type"], m["type"])
     markers.sort(key=lambda m: m["t"])
     unknown = {m["type"] for m in markers} - set(GAIN) - AMBTYPES
     assert not unknown, unknown
