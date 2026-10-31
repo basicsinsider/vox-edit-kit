@@ -186,7 +186,7 @@
       tl.to(cam, { scale: 1.12, duration: 0.48, ease: E.in }, S(445.50));        // ease-in push; the veil hard-cuts at its peak speed
       tl.to(cam, { scale: 1.18, duration: 5.6, ease: "none" }, S(445.98));
       tl.to(cam, { scale: 1.3, duration: 0.36, ease: E.in }, S(451.60));
-      FX.contrastCallout(tl, $("sc086-veil"), S(445.88), { ellipse: [830, 360, 560, 300], feather: 40, color: "rgba(18,17,16,1)", strength: 0.62 });
+      FX.contrastCallout(tl, $("sc086-veil"), S(445.88), { ellipse: [830, 360, 560, 300], feather: 40, color: "rgba(92,86,78,1)", strength: 0.6 });
       rise($("sc086-pr"), T(444.54), { dur: 0.9, y: 12 });
       out($("sc086-pr"), S(445.62), 0.25);
       [T(445.82), T(446.30)].forEach((c, i) => rise(words("sc086-su")[i], c, { dur: 0.8, y: 10 }));
@@ -210,15 +210,15 @@
       const ll = (lon, lat) => [(lon - 2) * K, (62 - lat) * K];
       const at = (lon, lat, z) => { const [x, y] = ll(lon, lat); return { x: 960 - x * z, y: 540 - y * z, scale: z }; };
       svg.insertAdjacentHTML("beforeend", `<defs><clipPath id="c3s03-gdr"><path d="${EUR.gdr_clip}"/></clipPath></defs>
-        <g id="c3s03-sc088-su" filter="url(#c3s03-glow)"></g><g id="c3s03-sc088-sat" filter="url(#c3s03-glow)"></g><g id="c3s03-sc088-cn" opacity="0" filter="url(#c3s03-glow)"></g><g id="c3s03-sc088-pen"></g>`);
-      const att = `fill="url(#c3s03-ht-red)" fill-opacity="0.8" stroke="${RED}" stroke-width="6" opacity="0"`;
+        <g id="c3s03-sc088-su" filter="url(#c3s03-glowS)"></g><g id="c3s03-sc088-sat" filter="url(#c3s03-glowS)"></g><g id="c3s03-sc088-cn" opacity="0" filter="url(#c3s03-glowS)"></g><g id="c3s03-sc088-pen"></g>`);
+      const att = `fill="url(#c3s03-ht-red)" fill-opacity="0.55" stroke="${RED}" stroke-width="6" opacity="0"`;
       const ussr = ["russia", "ukraine", "belarus", "lithuania", "latvia", "estonia", "moldova", "georgia", "armenia", "azerbaijan", "kazakhstan", "uzbekistan", "turkmenistan", "kyrgyzstan", "tajikistan"];
       const sat = ["poland", "czechia", "slovakia", "hungary", "romania", "bulgaria", "albania"];
       const pu = pathsFill($("sc088-su"), "eurasia", ussr, att, "c3s03-e88-");
       const ps = pathsFill($("sc088-sat"), "eurasia", sat, att, "c3s03-e88-");
       $("sc088-sat").insertAdjacentHTML("beforeend", `<path id="c3s03-e88-gdr" d="${EUR.d.germany}" clip-path="url(#c3s03-gdr)" ${att}/>`);
       ps.splice(0, 0, $("e88-gdr") || document.getElementById("c3s03-e88-gdr"));
-      pathsFill($("sc088-cn"), "eurasia", ["china"], `fill="url(#c3s03-ht-red)" fill-opacity="0.8" stroke="${RED}" stroke-width="7"`, "c3s03-e88c-");
+      pathsFill($("sc088-cn"), "eurasia", ["china"], `fill="url(#c3s03-ht-red)" fill-opacity="0.6" stroke="${RED}" stroke-width="7"`, "c3s03-e88c-");
       pu.forEach((p, i) => attrOn(p, S(455.50) + Math.floor(i / 2) / 12));
       ps.forEach((p, i) => attrOn(p, S(456.95) + i / 12));
       tl.fromTo($("sc088-cn"), { attr: { opacity: 0 } }, { attr: { opacity: 1 }, duration: 0.5, ease: C("none", 0.5), immediateRender: true }, S(460.62));
@@ -275,7 +275,7 @@
       out($("sc090-dm"), S(471.30), 0.3);
       [T(469.58), T(470.06)].forEach((c, i) => rise(words("sc090-sul")[i], c, { dur: 0.6, y: 8 }));
       // the USSR node greys out (doesn't matter)
-      tl.to($("sc090-su"), { filter: "grayscale(1) brightness(0.55)", opacity: 0.45, borderColor: "#6b6f75", duration: 0.5, ease: C("none", 0.5) }, S(470.50));
+      tl.to($("sc090-su"), { filter: "grayscale(1) brightness(0.8)", opacity: 0.6, borderColor: "#6b6f75", duration: 0.5, ease: C("none", 0.5) }, S(470.50));
       tl.to([$("sc090-sul")], { opacity: 0.4, duration: 0.5, ease: C("none", 0.5) }, S(470.50));
       tl.to($("sc090-ls"), { attr: { opacity: 0.15 }, duration: 0.5, ease: C("none", 0.5) }, S(470.50));
       ink(svg, "M890 700 Q700 600 600 455", S(471.64), 0.6, { color: BONE, width: 12, ease: C(E.out, 0.6) });
