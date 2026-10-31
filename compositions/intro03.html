@@ -22,9 +22,12 @@
     /* ---------- IS044 · fight poster BETRAYAL -> RIVALRY ---------- */
     #intro03-sc044-under { position: absolute; inset: 0; }
     #intro03-sc044-under img { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; object-fit: cover; object-position: 50% 25%; filter: url(#intro03-tint-red) brightness(0.8); }
-    #intro03-sc044-sheet { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; }
-    #intro03-sc044-edge { position: absolute; left: -60px; top: 0; width: 70px; height: 1080px; overflow: visible; filter: drop-shadow(-14px 0 18px rgba(0,0,0,0.55)); }
-    #intro03-sc044-poster { position: absolute; inset: 0; overflow: hidden; }
+    /* same tear as intro02's #intro02-tear (2200x1160 at top -40, FX.rng(4344) edge, fibre layer 12 px left) */
+    #intro03-sc044-sheet { position: absolute; left: 0; top: -40px; width: 2200px; height: 1160px; filter: drop-shadow(-14px 0 18px rgba(0,0,0,0.55)); }
+    #intro03-sc044-fib, #intro03-sc044-pap { position: absolute; inset: 0; }
+    #intro03-sc044-fib { background: #f6f1e6; }
+    #intro03-sc044-pap { background: var(--paper); overflow: hidden; }
+    #intro03-sc044-poster { position: absolute; left: 110px; top: 40px; width: 1920px; height: 1080px; overflow: hidden; }
     .i3-44-half { position: absolute; top: 70px; width: 880px; height: 800px; overflow: hidden; }
     .i3-44-half img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
     #intro03-sc044-left { left: 50px; }
@@ -266,8 +269,9 @@
     <!-- ===== IS044 · 185.01–190.61 · PAPER · torn-paper wipe -> fight poster ===== -->
     <div class="i3-scene" id="intro03-sc044" data-scene="IS044">
       <div id="intro03-sc044-under"><img src="assets/intro/derived/intro03/chang_poster.jpg" alt="" /></div>
-      <div id="intro03-sc044-sheet">
-        <svg id="intro03-sc044-edge" viewBox="0 0 70 1080" preserveAspectRatio="none"></svg>
+      <div id="intro03-sc044-sheet"><div id="intro03-sc044-fib"></div><div id="intro03-sc044-pap">
+        <div class="i3-p1" style="background-image:url('assets/textures/paper_cream_01.jpg'); opacity: 0.6"></div>
+        <div class="i3-p1" style="background-image:url('assets/textures/paper_torn_01.jpg'); mix-blend-mode: screen; opacity: 0.32"></div>
         <div id="intro03-sc044-poster">
           <div class="i3-p0"></div>
           <div class="i3-44-half" id="intro03-sc044-left"><img src="assets/intro/derived/intro03/tsao_poster.jpg" alt="" /><div class="i3-ht"></div></div>
@@ -284,7 +288,7 @@
           <div id="intro03-sc044-day" class="t-serif-i"><span class="w">to </span><span class="w">this </span><span class="w">very </span><span class="w">day</span></div>
           <div class="t-label i3-credit ink">Photos: Office of the President (ROC), Attribution · Mori / Office of the President, CC BY 2.0 — Wikimedia Commons</div>
         </div>
-      </div>
+      </div></div>
     </div>
 
     <!-- ===== IS045 · 190.61–196.61 · NIGHT · D13 rival lines over ghost Taiwan ===== -->
@@ -414,7 +418,7 @@
           <div class="i3-p1" style="background-image:url('assets/textures/paper_cream_01.jpg')"></div>
         </div>
       </div>
-      <div class="t-label i3-credit">Photo: T Gordon Cheng, CC BY-SA 4.0 — Wikimedia Commons · pictorial map: see SOURCES</div>
+      <div class="t-label i3-credit">Photo: T Gordon Cheng, CC BY-SA 4.0 — Wikimedia Commons · pictorial map: public domain (Wikimedia Commons)</div>
     </div>
 
     <!-- ===== IS055–IS056 · 233.49–247.86 · NIGHT · dark world map: copies of Silicon Valley fail ===== -->
@@ -628,12 +632,14 @@
     // =====================================================================
     scene("sc044", 185.01, 190.61);
     {
-      const ep = tornPts(4344, 1080, 34, 70);
-      svgEl($("sc044-edge"), "path", { d: `M70 0 L${ep.map(([x, y]) => `${(40 + x).toFixed(1)} ${y.toFixed(1)}`).join(" L")} L70 1080 Z`, fill: "#ebe4d6" });
+      { const r = FX.rng(4344), pts = [], pf = [];   // identical to intro02's tear (hand-off at 185.01)
+        for (let y = 0; y <= 1160; y += 22) { const j = (r() - 0.5) * 44 + Math.sin(y * 0.013) * 16; pts.push(`${(40 + j).toFixed(1)}px ${y}px`); pf.push(`${(28 + j + (r() - 0.5) * 14).toFixed(1)}px ${y}px`); }
+        $("sc044-pap").style.clipPath = `polygon(${pts.join(",")}, 2200px 1160px, 2200px 0px)`;
+        $("sc044-fib").style.clipPath = `polygon(${pf.join(",")}, 2200px 1160px, 2200px 0px)`; }
       const L = tornPts(4345, 860, 26, 60), R2 = tornPts(4346, 860, 26, 60);
       svgEl($("sc044-seam"), "path", { d: `M${L.map(([x, y]) => `${(28 + x).toFixed(1)} ${y.toFixed(1)}`).join(" L")} L${R2.slice().reverse().map(([x, y]) => `${(92 + x).toFixed(1)} ${y.toFixed(1)}`).join(" L")} Z`, fill: "#ebe4d6", filter: "url(#intro03-torn)" });
       // wipe: paper edge at 35 % of frame -> covers the frame in 0.25 s
-      tl.fromTo($("sc044-sheet"), { x: 1248 }, { x: 0, duration: 0.25, ease: C(0.25, FX.ease.out), immediateRender: true }, S(185.01));
+      tl.fromTo($("sc044-sheet"), { x: 1208 }, { x: -110, duration: 0.25, ease: "power2.out", immediateRender: true }, S(185.01));
       tl.fromTo($("sc044-under"), { x: 0 }, { x: -120, duration: 0.25, ease: "power1.out", immediateRender: true }, S(185.01));
       // slow push on the poster
       tl.fromTo($("sc044-poster"), { scale: 1.0 }, { scale: 1.04, duration: 5.3, ease: "none", immediateRender: true, transformOrigin: "50% 45%" }, S(185.26));

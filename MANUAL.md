@@ -173,6 +173,13 @@ use, attribution optional; never redistribute the files publicly, never use them
 - SVG filters: set `color-interpolation-filters="sRGB"`; `feTurbulence` output ranges are unpredictable —
   for threshold reveals use a pre-made equalised noise image via `feImage` + `feColorMatrix` alpha offset.
   Filters inside `<mask>` failed in Chrome — apply the filter to the shape directly (`feComposite in`).
+- CSS `mask-image` uses the image's **alpha**: a greyscale (mode L) mask PNG such as `assets/intro/maps/taiwan_mask.png`
+  masks nothing (the fill covered the whole frame in intro03). Convert it to white+alpha first (intro03:
+  `assets/intro/derived/intro03/taiwan_mask_alpha.png`, made by `project/intro/gen/intro03_assets.py`).
+- Country paths from the world JSONs (Russia, Fiji, …) cross the antimeridian: drop sub-paths with a > 400 px jump or they
+  draw horizontal lines across the whole map when stroked.
+- Lint 0.8.217 errors on tweening `letterSpacing` (layout snap) and on any `font-family` declared in composition CSS (also
+  for credit lines) — animate scale/x instead and use the `t-label`/`t-serif` classes.
 ### 4.3 Check, look, render
 ```bash
 python3 tools/build_index.py s05            # put one (or several) compositions in index.html
@@ -545,6 +552,7 @@ on action. Use it whenever the narrator quotes someone or introduces a historic 
 - [ ] Smooth long eases, 12 fps. [ ] Cuts on action; whips, no iris. [ ] No photo/clip used > 2× in a chunk.
 
 ## Changelog
+- 2026-10-31 — intro03 editor: §4.2 gotchas (greyscale masks need alpha for CSS mask-image, antimeridian country paths, lint on letterSpacing tweens / font-family in credits).
 - 2026-10-31 — 5 Texturelabs papers added by Krish (assets/textures/paper_{graph,lined,stained,torn,blueprint}_01, SOURCES.md
   "Added 2026-10-31"). Intro usage: graph → export bar chart IS007–008 (D01) + one intro03 chart; stained (multiply) →
   profits/crash line chart IS010–011 (D05) and Chang-vs-Tsao bars IS052 (D02); lined → board / "one condition" / approval
