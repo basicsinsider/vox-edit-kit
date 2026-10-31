@@ -43,7 +43,7 @@ P("2. **WWII radar block**: radar footage + PPI scope (N84, N66), chaff (N67), H
 P("3. **HP block**: Hewlett & Packard late-1930s photo (N03), HP 200A high-res (N60), patent drawing (N45), HP catalogue page (N46), Fantasia poster (N36), 1930s coin (N61), modern HP products (N62).")
 P("4. **Hoover/Stanford block**: Stanford under construction (N10), Quaker painting (N35), Hoover inauguration (N20), Depression photos (N21), Lewis Terman hi-res (R06), business school 1925 (N18).")
 P("5. **Paintings/illustrations**: orchard valley painting (N30), painted globe (N31), pictorial California map (N32), Puck hammock cartoon (N34).")
-P("6. **Map kit** (N93) — shared with every chunk; build first (gatherer C).")
+P("6. Map kit (N93) ✅ already built (`assets/maps/kit/`) — use `world_night`, `us_sat`, `bay_area_*`, `northeast_*`, `aerial_stanford_z17`.")
 P("7. Re-downloads from the old edit (all R-IDs + E80–E83 footage) — exact URLs in `example-docs/sources/assets_archival.md`, `assets_archival_documents.md`, `assets_archival_footage.md`, `assets_cutouts*.md`.")
 open("project/c1/ASSETS_NEEDED.md", "w").write("\n".join(o) + "\n")
 print("assets", len(A), "unused:", [k for k in A if not use[k]])

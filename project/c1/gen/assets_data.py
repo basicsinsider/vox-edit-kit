@@ -35,7 +35,7 @@ A = {
 "N23": ("❌", "Places", "US Capitol / Washington 1940s, low angle with flag (≥2000 px)", "LOC Harris & Ewing / FSA via Commons (PD)"),
 "N24": ("❌", "Places", "The Pentagon (1940s–50s aerial)", "Commons 'Pentagon aerial 1943' (US Army, PD)"),
 "N25": ("❌", "Places", "1980s–2000s trading floor / hedge-fund office photo", "Commons 'NYSE trading floor' (CC BY), press photos (fair use)"),
-"N26": ("❌", "Places", "Stanford campus satellite (Esri World Imagery z16–17) for D14 + lab districts outline", "Esri World Imagery tiles (credit 'Esri, Maxar…'); geometry via OSM"),
+"N26": ("✅", "Places", "Stanford campus satellite `assets/maps/kit/aerial_stanford_z17.jpg` (+json) for D14; also `aerial_palo_alto_hp_garage_z18.jpg`, `aerial_mit_z17.jpg`", "map kit (Esri imagery — credit per kit SOURCES.md); lab districts outlined by hand from OSM"),
 # --- paintings / illustrations / posters
 "N30": ("❌", "Paintings", "colour painting / lithograph of the pre-war Santa Clara Valley orchards ('Valley of Heart's Delight') ≥2400 px", "Commons, Calisphere, Santa Clara County historical posters, archive.org fruit-crate-label art (PD)"),
 "N31": ("❌", "Paintings", "illustrated vintage globe (painted/engraved, 1900s–30s)", "Commons 'antique globe painting', Rijksmuseum/Smithsonian Open Access (CC0)"),
@@ -82,7 +82,7 @@ A = {
 "E90": ("✅", "Maps", "s02 US map system `assets/maps/us_basemap*.jpg`, `us_overlay.json`, `mississippi.geojson`, Indiana relief + Eli Lilly", "exists (approved s02, R12b) — upgrade the basemap from `assets/maps/kit/` when built (§10.9)"),
 "E91": ("✅", "Maps", "Rand McNally 1920 railroad map `assets/maps/old/rand_mcnally_railroad_map_us_1920.jpg` (+json)", "exists (R10b)"),
 "E92": ("✅", "Maps", "USGS Palo Alto 1899 topo `assets/maps/old/usgs_palo_alto_1899_topo.jpg` (+json)", "exists"),
-"N93": ("❌", "Maps", "map kit (§10.9): Natural Earth II shaded relief world + US (21600 px class) and dark world for D13/D11 ghost maps", "`assets/maps/kit/` (to be built by gatherer C) — never flat grey/beige relief"),
+"N93": ("✅", "Maps", "map kit `assets/maps/kit/` — `world_night.jpg` (D13/D11 ghost maps), `us_sat.jpg`/`us_satdesat.jpg`/`us_atlas.jpg` (+`us.json`, `us_overlay.svg`), `bay_area_*` (Peninsula/Palo Alto), `northeast_*` (NY/NJ/MA, MIT/Harvard), `scans/` (LOC vintage)", "built 2026-10-31 (README.md, SOURCES.md there; `tools/map_kit.py`) — never flat grey/beige relief"),
 # --- papers
 "E95": ("✅", "Papers", "Texturelabs papers `assets/textures/paper_{graph,lined,stained,torn,blueprint}_01_hires.jpg` + K+E sheets `assets/intro/papers/*`", "full-frame = `_hires` only; K+E scans as cards/props only"),
 "E96": ("✅", "Papers", "cork `assets/textures/cork_01.jpg` (CC BY — credit) for R9", "exists"),

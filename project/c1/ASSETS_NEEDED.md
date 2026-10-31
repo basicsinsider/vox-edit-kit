@@ -62,7 +62,7 @@ Getty/AP: don't download (watermarks/licensing) — use the Getty-free alternati
 | N23 | ❌ | US Capitol / Washington 1940s, low angle with flag (≥2000 px) | LOC Harris & Ewing / FSA via Commons (PD) | C1S040, C1S098, C1S104 (c1s01, c1s02, c1s03) | 3 |
 | N24 | ❌ | The Pentagon (1940s–50s aerial) | Commons 'Pentagon aerial 1943' (US Army, PD) | C1S100 (c1s01) | 1 |
 | N25 | ❌ | 1980s–2000s trading floor / hedge-fund office photo | Commons 'NYSE trading floor' (CC BY), press photos (fair use) | C1S032 (c1s01) | 1 |
-| N26 | ❌ | Stanford campus satellite (Esri World Imagery z16–17) for D14 + lab districts outline | Esri World Imagery tiles (credit 'Esri, Maxar…'); geometry via OSM | C1S103 (c1s01) | 1 |
+| N26 | ✅ | Stanford campus satellite `assets/maps/kit/aerial_stanford_z17.jpg` (+json) for D14; also `aerial_palo_alto_hp_garage_z18.jpg`, `aerial_mit_z17.jpg` | map kit (Esri imagery — credit per kit SOURCES.md); lab districts outlined by hand from OSM | C1S103 (c1s01) | 1 |
 
 ## Paintings
 
@@ -129,7 +129,7 @@ Getty/AP: don't download (watermarks/licensing) — use the Getty-free alternati
 | E90 | ✅ | s02 US map system `assets/maps/us_basemap*.jpg`, `us_overlay.json`, `mississippi.geojson`, Indiana relief + Eli Lilly | exists (approved s02, R12b) — upgrade the basemap from `assets/maps/kit/` when built (§10.9) | C1S011, C1S012 (c1s01) | 2 |
 | E91 | ✅ | Rand McNally 1920 railroad map `assets/maps/old/rand_mcnally_railroad_map_us_1920.jpg` (+json) | exists (R10b) | C1S021, C1S057 (c1s01, c1s02) | 2 |
 | E92 | ✅ | USGS Palo Alto 1899 topo `assets/maps/old/usgs_palo_alto_1899_topo.jpg` (+json) | exists | reserve | 0 |
-| N93 | ❌ | map kit (§10.9): Natural Earth II shaded relief world + US (21600 px class) and dark world for D13/D11 ghost maps | `assets/maps/kit/` (to be built by gatherer C) — never flat grey/beige relief | C1S007, C1S011, C1S043, C1S047, C1S101 (c1s01, c1s02) | 5 |
+| N93 | ✅ | map kit `assets/maps/kit/` — `world_night.jpg` (D13/D11 ghost maps), `us_sat.jpg`/`us_satdesat.jpg`/`us_atlas.jpg` (+`us.json`, `us_overlay.svg`), `bay_area_*` (Peninsula/Palo Alto), `northeast_*` (NY/NJ/MA, MIT/Harvard), `scans/` (LOC vintage) | built 2026-10-31 (README.md, SOURCES.md there; `tools/map_kit.py`) — never flat grey/beige relief | C1S007, C1S011, C1S043, C1S047, C1S101 (c1s01, c1s02) | 5 |
 
 ## Papers
 
@@ -153,5 +153,5 @@ field bars (C1S105). Icons: `assets/icons/graduate*.svg`, pins. Silhouettes 🛠
 3. **HP block**: Hewlett & Packard late-1930s photo (N03), HP 200A high-res (N60), patent drawing (N45), HP catalogue page (N46), Fantasia poster (N36), 1930s coin (N61), modern HP products (N62).
 4. **Hoover/Stanford block**: Stanford under construction (N10), Quaker painting (N35), Hoover inauguration (N20), Depression photos (N21), Lewis Terman hi-res (R06), business school 1925 (N18).
 5. **Paintings/illustrations**: orchard valley painting (N30), painted globe (N31), pictorial California map (N32), Puck hammock cartoon (N34).
-6. **Map kit** (N93) — shared with every chunk; build first (gatherer C).
+6. Map kit (N93) ✅ already built (`assets/maps/kit/`) — use `world_night`, `us_sat`, `bay_area_*`, `northeast_*`, `aerial_stanford_z17`.
 7. Re-downloads from the old edit (all R-IDs + E80–E83 footage) — exact URLs in `example-docs/sources/assets_archival.md`, `assets_archival_documents.md`, `assets_archival_footage.md`, `assets_cutouts*.md`.
