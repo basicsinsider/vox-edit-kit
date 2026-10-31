@@ -15,6 +15,7 @@ def simp(d, step):
         if len(q) > 3: out.append("M" + "L".join(f"{x:.0f} {y:.0f}" for x, y in q) + "Z")
     return "".join(out)
 J["ea"]["china"] = simp(J["ea"]["china"], 7)
+J["pac_tw"] = json.load(open("assets/c3/derived/c3s01/pacific_taiwan.json"))["taiwan"]   # c3s01 C3S037 master path
 out = src.replace("/*__MAPS__*/null", json.dumps(J, separators=(",", ":"))).replace("    /*__SCENES__*/\n", scenes)
 pathlib.Path("compositions/c3s02.html").write_text(out)
 print("compositions/c3s02.html", len(out), "china path", len(J["ea"]["china"]))

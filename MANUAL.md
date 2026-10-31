@@ -190,6 +190,10 @@ use, attribution optional; never redistribute the files publicly, never use them
 - Timed media (`<video data-start …>`, esp. `class="clip"` face cams) becomes visible at its own `data-start` even inside a scene
   that is still `visibility:hidden` — when you move a cut later, move the clip's `data-start` AND `data-media-start` by the same
   delta (lip sync unchanged), and lengthen `data-duration` of clips that ended at the old cut (they go black) (intro fixes).
+- `FX.text.odometer` / `FX.text.fill` measure glyphs when they are called: if the scene is already `display:none` the reels get
+  width 0 and the text never shows (c1s01: 12, OCTOBER 2026). Build every scene first, then set `display:none` on the hidden ones
+  at the end of the script. `assets/textures/watercolour_edge_mask_01.png` is greyscale (mode L) and masks nothing in CSS — use
+  the alpha copies `assets/c1/derived/c1s01/watercolour_edge_mask_alpha.png` / `brush_stroke_mask.png` (c1s01 editor).
 - `FX.markupDefs(svg, …)` resets the svg's viewBox to `0 0 1920 1080`; on a larger camera svg set your viewBox again after it
   (intro01 IS011's arrow was drawn off-frame for the whole first render).
 - `FX.text.odometer` measures glyph widths when it is built: inside a scene that is `display:none` (long segments hide scenes
@@ -674,6 +678,7 @@ on action. Use it whenever the narrator quotes someone or introduces a historic 
   generator workflow for long segments (`project/c4/gen/c4s02_template.html` → `build_c4s02.py` inlines map data).
 - 2026-10-31 — c4s01 editor: §4.2 gotchas (odometer inside hidden scenes, timed video start = scene start, RDP on closed rings); map crops for
   Eurasia/Africa from the kit world relief (`assets/c4/derived/c4s01/`, generator `project/c4/gen/c4s01_assets.py`).
+- 2026-10-31 — c1s01 editor: §4.2 odometer/fill measure at build time (defer display:none), L-mode watercolour mask → alpha copies; 2.5D layers by texture-keyed sky (`project/c1/gen/c1s01_quad_layers.py`); kit US sat placed exactly in the s02 pixel space (left 200, top 200, 6000×2649.6).
 - 2026-10-31 — Intro fixes after Krish's review (`project/intro/FIXES.md`): K+E upscaled grid scans → Texturelabs
   `paper_graph_01_hires` (≤ native); all 66 scenes audited for §10.9 (≈45 timing fixes; IS006 telephone now rides the route and
   holds in the US; IS028 plane lands before the whip); map kit re-projected into the old pixel spaces

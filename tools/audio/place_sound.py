@@ -341,10 +341,12 @@ GAIN = {
     "whip": (0.08, 0.10), "riser": (0.07, 0.09), "phone_ring": (0.05, 0.07), "phone_dial": (0.05, 0.07),
     "plane_pass": (0.08, 0.10), "teletype": (0.05, 0.07), "focus_hunt": (0.05, 0.065),
     "circuit_clunk": (0.08, 0.10),
+    "switch_click": (0.06, 0.08), "card_flip": (0.06, 0.08), "rewind": (0.07, 0.09), "clock_tick": (0.04, 0.05),
+    "typewriter": (0.05, 0.065), "medal_ring": (0.05, 0.07), "solder_hiss": (0.04, 0.05),
 }
 LOWTYPES = {"boom_low", "stamp_thud"}
 SFX_TRIM_DB = -3.0   # this VO is quiet (speech peaks ~ -16 dBFS): trims the table so SFX sit ~20 dB under local VO peaks
-AMBTYPES = {"projector_loop", "crt_hum", "wind", "factory_hum", "crowd_room"}
+AMBTYPES = {"projector_loop", "crt_hum", "wind", "factory_hum", "crowd_room", "tube_hum"}
 
 
 def epi(name, start=0.0, dur=None):
@@ -370,7 +372,8 @@ def render_epidemic(m, i, rng):
         if any(k in note for k in ("morris", "biggest", "seismic")):
             nm = "boom_dark_cinematic_low_hit"
         elif any(k in note for k in ("condition", "'one'", "tsmc", "superpower", "slams", "industrialists",
-                                     "export processing", "chiang")):
+                                     "export processing", "chiang", "traitorous", "integrated circuit",
+                                     "silicon valley")):
             nm = "boom_cinematic_deep"
         elif any(k in note for k in ("died", "sub only")):
             nm = "boom_sub_bass_clean_01"
@@ -563,6 +566,44 @@ def render_event(m, i, rng, wdir):
         y[:len(lat)] += lat / (np.abs(lat).max() + 1e-9)
         y[:len(th)] += 0.6 * th / (np.abs(th).max() + 1e-9)
         return y, onset(y), f"circuit_clunk gen#{seed}"
+    if ty == "switch_click":           # light switch / toggle
+        nm = ["kenney_switch_click", "kenney_metal_click"][i % 2]
+        y = lib(nm)
+        return y, onset(y), nm
+    if ty == "card_flip":              # playing card: short snappy paper flick + a tiny snap
+        y = st(G.paper_slide(seed, float(rng.uniform(0.18, 0.28))))
+        tk = st(G.ui_tick(seed, float(rng.uniform(2200, 3000))))
+        k_ = int(0.6 * len(y)) if len(y) > len(tk) else 0
+        y[k_:k_ + len(tk)] += 0.35 * tk[: len(y) - k_] * np.abs(y).max() / (np.abs(tk).max() + 1e-9)
+        return y, 0.6 * len(y) / SR, f"card_flip gen#{seed}"
+    if ty == "rewind":                 # tape rewind: reversed whoosh (+ fast ticker under longer ones)
+        dur = max(0.35, d or 0.4)
+        y = st(G.whoosh(min(dur, 2.5), seed, 300, 3200, 0.3))[::-1]
+        if dur >= 1.0:
+            tk = st(G.ticker_roll(min(dur, 2.5), 40, 18, seed))
+            n_ = min(len(y), len(tk))
+            y[:n_] += 0.4 * tk[:n_] * np.abs(y).max() / (np.abs(tk).max() + 1e-9)
+        return y, 0.0, f"rewind {dur:.2f}s gen#{seed}"
+    if ty == "clock_tick":
+        dur = d or 1.0
+        y = G.ticker_roll(dur, 14, 7, seed)
+        return y, 0.0, f"clock_tick {dur:.2f}s gen#{seed}"
+    if ty == "typewriter":
+        dur = d or 0.6
+        y = trimfit(st(lib("typewriter_burst_12keys")), dur, 0.05)
+        return y, onset(y), f"typewriter_burst {dur:.2f}s"
+    if ty == "medal_ring":             # metal medal: light plate impact + soft chime
+        a_ = st(lib("kenney_impact_plate_light_01"))
+        b_ = st(lib("chime_soft"))
+        y = np.zeros((max(len(a_), len(b_)), 2))
+        y[:len(a_)] += a_ / (np.abs(a_).max() + 1e-9)
+        y[:len(b_)] += 0.35 * b_ / (np.abs(b_).max() + 1e-9)
+        return y, onset(y), "medal_ring (plate + chime)"
+    if ty == "solder_hiss":            # soldering iron touch: short bright hiss
+        n_ = int(0.55 * SR)
+        z = hp(np.random.default_rng(seed).standard_normal((n_, 2)) * 0.3, 2500, 2)
+        z *= np.exp(-np.arange(n_) / (0.18 * SR))[:, None]
+        return fade(z, 0.01, 0.08), 0.0, f"solder_hiss gen#{seed}"
     if ty == "chime_soft":
         y = lib("chime_soft")
         return y, onset(y), "chime_soft"
@@ -651,6 +692,9 @@ def build_sfx_and_amb(markers, scenes, act, vo):
         if m["type"] == "projector_loop":
             g = 0.06 * (db(-6) if quiet else 1.0)
             loop_seg("projector_loop_8s", m["t"], m["t"] + d, g, 0.15, min(0.5, d / 3))
+        elif m["type"] == "tube_hum":   # vacuum-tube rack: CRT hum + a little electronics room tone
+            g = 0.012 * (1.4 if m.get("level") == "normal" else 1.0)
+            loop_seg("crt_hum_loop_6s", m["t"], m["t"] + d, g, 0.3, 0.5)
         elif m["type"] == "crt_hum":
             g = 0.009
             loop_seg("crt_hum_loop_6s", m["t"], m["t"] + d, g, 0.2, 0.3)

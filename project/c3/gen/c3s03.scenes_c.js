@@ -47,7 +47,7 @@
       tl.fromTo(mp, { attr: { "stroke-dashoffset": L } }, { attr: { "stroke-dashoffset": 0 }, duration: 1.6, ease: C(E.inOut, 1.6), immediateRender: true }, S(556.85));
       attrOn($("sc105-pb"), S(558.40));
       // tilted atlas (D10): scale 0.62, tipped back 42°, panned from West Africa to China
-      const z = 0.62, P = (x, y) => ({ x: 960 - x * z, y: 620 - y * z });
+      const z = 0.62, P = (x, y) => ({ x: 960 - x * z, y: 780 - y * z });
       gsap.set(plane, { rotationX: 42, scale: z, transformOrigin: "0 0" });
       tl.fromTo(plane, P(ax + 300, ay - 300), Object.assign(P(bx - 500, by), { duration: 1.5, ease: E.cam, immediateRender: true }), S(556.65));
       tl.to(plane, Object.assign(P(bx - 380, by + 40), { duration: 2.45, ease: "none" }), S(558.15));

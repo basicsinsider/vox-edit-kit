@@ -122,3 +122,15 @@ Image.open(P("_tmp/c6s02/steps_5.jpg")).save(P("assets/c6/derived/c6s02/roc_gene
 Image.open(P("_tmp/c6s02/po_crowd.jpg")).save(P("assets/c6/derived/c6s02/presidential_office_rally_1961_still.jpg"), quality=92)
 json.dump(paths, open(P("assets/c6/derived/c6s02/paths.json"), "w"))
 print({k: (len(v) if isinstance(v, str) else v) for k, v in paths.items() if k not in ("fmDots",)})
+
+# ---------- 8. more crops (second pass) ----------
+ea_at = Image.open(P("assets/maps/kit/east_asia_atlas.jpg"))
+mini = ea_at.crop((int(ax(106)), int(ay(37)), int(ax(126)), int(ay(20)))); s = 720 / mini.width
+mini = mini.resize((720, int(mini.height * s)), Image.LANCZOS); mini.save(P("assets/c6/derived/c6s02/ea_atlas_mini.jpg"), quality=90)
+mm = lambda lon, lat: [round((ax(lon) - ax(106)) * s, 1), round((ay(lat) - ay(37)) * s, 1)]
+paths["miniW"], paths["miniH"] = mini.width, mini.height
+paths["miniChina"] = mm(116.4, 30.6); paths["miniTaipei"] = mm(121.56, 25.03); paths["miniNanjing"] = mm(118.8, 32.06)
+z82 = Image.open(P("_tmp/c6s02/zis_82.jpg")); z82.crop((240, 190, 1010, 610)).save(P("assets/c6/photos/soviet_zis_plant_scaffold_1931.jpg"), quality=92)
+dl = Image.open(P("_tmp/c6s02/deng_lizhi.jpg")); dl.crop((40, 150, 740, 680)).save(P("assets/c6/photos/deng_xiaoping_billboard_shenzhen_lizhi_park_2025_crop.jpg"), quality=92)
+json.dump(paths, open(P("assets/c6/derived/c6s02/paths.json"), "w"))
+print("mini", paths["miniW"], paths["miniH"], paths["miniChina"], paths["miniTaipei"])

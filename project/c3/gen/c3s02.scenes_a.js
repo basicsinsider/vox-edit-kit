@@ -42,12 +42,12 @@
       tl.to($("sc044-desk"), { opacity: 0, duration: 0.6, ease: "power1.inOut" }, S(208.0));
       // Pan Wen-Yuan: circle pinned off the Hsinchu coast, leader to the city
       const svg = $("sc044-svg"), hs = J.hsinchu, px = hs[0] - 330, py = hs[1] - 40;
-      const pc = document.createElement("div"); pc.className = "k-abs"; pc.style.cssText = `left:${px - 140}px;top:${py - 140}px;width:280px;height:280px;opacity:0`;
-      pc.innerHTML = PANSIL(280); cam.appendChild(pc);
+      const pc = document.createElement("div"); pc.className = "k-abs"; pc.style.cssText = `left:${px - 180}px;top:${py - 180}px;width:360px;height:360px;opacity:0`;
+      pc.innerHTML = PANPH(360, 13); cam.appendChild(pc);
       svg.insertAdjacentHTML("beforeend", `<circle id="c3s02-sc044-hd" cx="${hs[0]}" cy="${hs[1]}" r="9" fill="${BONE}" stroke="${INK}" stroke-width="3" opacity="0"/>`);
       pop(pc, S(210.44), 0.8);
       show($("sc044-hd"), S(210.44));
-      ink(svg, `M${px + 140} ${py + 10} L${hs[0] - 10} ${hs[1]}`, S(210.70), 0.5, { color: BONE, width: 4 });
+      ink(svg, `M${px + 178} ${py + 20} L${hs[0] - 10} ${hs[1]}`, S(210.70), 0.5, { color: BONE, width: 4 });
       [T(210.44), T(210.76), T(211.40)].forEach((c, i) => rise(words("sc044-mip")[i], c, { dur: 0.8, y: 14 }));
       // celadon fill (motif: watercolour edge + halftone + 6 px glow)
       tl.fromTo($("sc044-fill"), { opacity: 0 }, { opacity: 0.9, duration: 0.3, ease: C(E.out, 0.3), immediateRender: true }, S(212.28));
@@ -75,36 +75,33 @@
     scene("sc046", 216.84, 223.46);
     ground("night", S(216.86));
     (function () {
-      const J = M.pac, cam = $("sc046-cam"), svg = $("sc046-svg"), tw = J.taipei, sv = J.sv;
-      // ghost map: soft top/bottom edges so the band floats on the night ground
-      const mimg = "linear-gradient(180deg, transparent 0%, #000 14%, #000 86%, transparent 100%)";
-      $("sc046-map").style.webkitMaskImage = mimg; $("sc046-map").style.maskImage = mimg;
-      const f = $("sc046-fill"); Object.assign(f.style, { left: J.tw_box[0] + "px", top: J.tw_box[1] + "px" });
-      const a = camAt(0.9, tw[0] + 260, tw[1]); a.x = Math.min(-40, a.x); const b = camAt(0.335, (tw[0] + sv[0]) / 2, (tw[1] + sv[1]) / 2 + 10);
-      b.x = Math.min(0, Math.max(1920 - 5896 * 0.335, b.x));
+      // same map/grade/points as c3s01 C3S037 (kit pacific_night native, Stanford [6064.5, 993.2], Taiwan [930, 1560], arc ctrl [3500, 420])
+      const cam = $("sc046-cam"), svg = $("sc046-svg"), tw = [930, 1560], sv = [6064.5, 993.2];
+      svg.insertAdjacentHTML("beforeend", `<path d="${M.pac_tw}" fill="${CEL}" fill-opacity="0.85" stroke="${CEL}" stroke-width="6" style="filter:drop-shadow(0 0 6px rgba(159,199,178,0.8))"/>
+        <circle cx="${tw[0]}" cy="${tw[1]}" r="110" fill="none" stroke="${CEL}" stroke-width="9" opacity="0.9"/>`);
+      const a = camAt(0.9, tw[0] + 260, tw[1]); a.x = Math.min(-40, a.x);
+      const b = camAt(0.32, 3497, 1300);
       tl.fromTo(cam, a, Object.assign({}, a, { x: a.x - 30, duration: 2.4, ease: "none", immediateRender: true }), S(216.84));
       tl.to(cam, Object.assign({}, b, { duration: 2.4, ease: E.cam }), S(219.24));
       tl.to(cam, { x: b.x - 12, duration: 1.8, ease: "none" }, S(221.64));
-      // Pan's small circle on Taiwan
-      const pc = document.createElement("div"); pc.className = "k-abs"; pc.style.cssText = `left:${tw[0] + 50}px;top:${tw[1] - 230}px;width:150px;height:150px;opacity:0`;
-      pc.innerHTML = PANSIL(150); cam.appendChild(pc);
-      svg.insertAdjacentHTML("beforeend", `<path d="M${tw[0] + 60} ${tw[1] - 100} L${tw[0] + 8} ${tw[1] - 6}" stroke="${BONE}" stroke-width="4" opacity="0.8"/>`);
+      // Pan's circle on Taiwan (photo, c3s01 motif)
+      const pc = document.createElement("div"); pc.className = "k-abs"; pc.style.cssText = `left:${tw[0] + 120}px;top:${tw[1] - 420}px;width:250px;height:250px;opacity:0`;
+      pc.innerHTML = PANPH(250, 9); cam.appendChild(pc);
+      svg.insertAdjacentHTML("beforeend", `<path d="M${tw[0] + 150} ${tw[1] - 190} L${tw[0] + 60} ${tw[1] - 80}" stroke="${BONE}" stroke-width="5" opacity="0.8"/>`);
       pop(pc, S(217.10), 0.8);
-      // labels (screen space, placed from the camera at that moment)
-      const lt = $("sc046-twl"); lt.style.left = (a.x - 30 + tw[0] * 0.9 + 70) + "px"; lt.style.top = (a.y + tw[1] * 0.9 + 40) + "px";
+      const lt = $("sc046-twl"); lt.style.left = (a.x - 30 + tw[0] * 0.9 + 120) + "px"; lt.style.top = (a.y + tw[1] * 0.9 + 70) + "px";
       tl.set(lt, { opacity: 1 }, T(218.44)); rise(words("sc046-twl")[0], T(218.44), { dur: 0.6, y: 10 });
       hide(lt, S(219.20), 0.25);
-      const ls = $("sc046-svl"); ls.style.left = (b.x - 12 + sv[0] * 0.335 - 420) + "px"; ls.style.top = (b.y + sv[1] * 0.335 + 50) + "px";
+      const ls = $("sc046-svl"); ls.style.left = (b.x - 12 + sv[0] * 0.32 - 470) + "px"; ls.style.top = (b.y + sv[1] * 0.32 + 50) + "px";
       tl.set(ls, { opacity: 1 }, T(221.88));
       rise(words("sc046-svl")[0], T(221.88), { dur: 0.6, y: 10 }); rise(words("sc046-svl")[1], T(222.44), { dur: 0.4, y: 8 });
-      // Silicon Valley emits (vermilion rings), the signal arcs across the Pacific and reaches Taiwan
-      svg.insertAdjacentHTML("beforeend", `<circle cx="${sv[0]}" cy="${sv[1]}" r="20" fill="${RED}" stroke="${INK}" stroke-width="4" id="c3s02-sc046-svd" opacity="0"/>`);
+      // Stanford / Silicon Valley pin (C3S037 style) emits vermilion rings; the arc reaches Taiwan
+      svg.insertAdjacentHTML("beforeend", `<g id="c3s02-sc046-svd" opacity="0"><circle cx="${sv[0]}" cy="${sv[1]}" r="70" fill="none" stroke="${RED}" stroke-width="8" opacity="0.6"/><circle cx="${sv[0]}" cy="${sv[1]}" r="34" fill="${RED}" stroke="${BONE}" stroke-width="8"/></g>`);
       show($("sc046-svd"), S(221.70));
-      gated(221.6, 223.6, () => FX.radioWaves(svg, sv[0], sv[1], { rings: 4, max: 560, period: 1.3, width: 16, color: RED, from: S(221.88), to: S(223.6) }));
-      const mx = (tw[0] + sv[0]) / 2, my = Math.min(tw[1], sv[1]) - 520;
-      ink(svg, `M${sv[0]} ${sv[1]} Q${mx} ${my} ${tw[0] + 10} ${tw[1] - 10}`, S(221.94), 0.9, { color: BONE, width: 9, ease: C(E.inOut, 0.9), opacity: 0.85 });
-      svg.insertAdjacentHTML("beforeend", `<circle cx="${tw[0]}" cy="${tw[1]}" r="60" fill="none" stroke="${CEL}" stroke-width="10" id="c3s02-sc046-twr" opacity="0"/>`);
-      tl.fromTo($("sc046-twr"), { attr: { opacity: 0, r: 30 } }, { attr: { opacity: 1, r: 80 }, duration: 0.4, ease: C(E.out, 0.4), immediateRender: true }, S(222.84));
+      gated(221.6, 223.6, () => FX.radioWaves(svg, sv[0], sv[1], { rings: 4, max: 620, period: 1.3, width: 18, color: RED, from: S(221.88), to: S(223.6) }));
+      ink(svg, `M${sv[0]} ${sv[1]} Q3500 420 ${tw[0] + 30} ${tw[1] - 30}`, S(221.94), 0.9, { color: BONE, width: 10, ease: C(E.inOut, 0.9), opacity: 0.85 });
+      svg.insertAdjacentHTML("beforeend", `<circle cx="${tw[0]}" cy="${tw[1]}" r="110" fill="none" stroke="${CEL}" stroke-width="14" id="c3s02-sc046-twr" opacity="0"/>`);
+      tl.fromTo($("sc046-twr"), { attr: { opacity: 0, r: 200 } }, { attr: { opacity: 1, r: 120 }, duration: 0.4, ease: C(E.out, 0.4), immediateRender: true }, S(222.84));
     })();
 
     /* =================== C3S047 · 223.46–228.34 · But he's gonna go back and look and see what made it so =================== */
@@ -112,25 +109,23 @@
     ground("paper", S(223.46));
     (function () {
       // the recipe index card (C3S035 motif, rebuilt here: c3s01 owns the master)
-      const rows = [["a great university", "quad_chip.jpg"], ["company", "hp_chip.jpg"], ["industrial park", "park_chip.jpg"], ["people in and out", null]];
-      let h = `<div class="k-recipe">`;
-      for (let y = 150; y < 760; y += 110) h += `<div class="rl" style="top:${y}px"></div>`;
-      h += `<div class="ml"></div><div class="hd t-label">Recipe</div>`;
-      rows.forEach((r, i) => {
-        h += `<div class="ln t-serif" style="top:${170 + i * 110}px">${r[0]}</div>`;
-        if (r[1]) h += `<div class="chip" style="left:${830 + (i % 2) * 40}px;top:${158 + i * 110}px;transform:rotate(${i % 2 ? 3 : -3}deg)"><img src="assets/c3/derived/c3s02/${r[1]}" alt="" /></div>`;
-      });
-      h += `<svg viewBox="0 0 1200 760"><g fill="none" stroke="${INK}" stroke-width="6" stroke-linecap="round"><path d="M860 540 L960 540 M940 524 L962 540 L940 556"/><path d="M1080 570 L980 570 M1000 554 L978 570 L1000 586"/></g></svg></div>`;
+      // c3s01 C3S035 card, copied (all items already written; arrows drawn)
+      const h = `<div class="k-recipe"><div class="rl"></div><div class="ml"></div><div class="hd t-label">RECIPE</div>
+        <div class="ls t-label">• a great university<br />• company<br />• industrial park<br />• people in and out</div>
+        <div class="chip" style="left:880px;top:200px;width:230px;height:150px;transform:rotate(3deg)"><img src="assets/c3/derived/c3s02/quad_chip.jpg" alt="" /></div>
+        <div class="chip" style="left:1130px;top:240px;width:220px;height:170px;transform:rotate(-4deg)"><img src="assets/c3/derived/c3s02/hp_chip.jpg" alt="" /></div>
+        <div class="chip" style="left:920px;top:420px;width:380px;height:140px;transform:rotate(2deg)"><img src="assets/c2/photos/hp_stanford_industrial_park_plant_exterior_1958.jpg" alt="" /></div>
+        <svg viewBox="0 0 1400 900"><g fill="none" stroke="${INK}" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"><path d="M780 532 L640 532 M662 516 L640 532 L662 548"/><path d="M800 532 L940 532 M918 516 L940 532 L918 548"/></g></svg></div>`;
       $("sc047-cards").innerHTML = h; $("sc047-blur").innerHTML = h;
       const cam = $("sc047-cam");
       tl.fromTo(cam, { scale: 1.0 }, { scale: 1.15, duration: 1.4, ease: E.cam, immediateRender: true }, S(223.46));
       tl.to(cam, { scale: 1.18, duration: 3.4, ease: "none" }, S(224.86));
       FX.focusHunt(tl, $("sc047-cards"), S(224.90), { dur: 0.8 });
       FX.focalBlur(tl, $("sc047-blur"), [
-        { t: S(223.46), x: 760, y: 395, r: 200 },
-        { t: S(225.64), x: 830, y: 505, r: 190, dur: 0.9 },
-        { t: S(226.55), x: 830, y: 615, r: 190, dur: 0.6 },
-        { t: S(227.15), x: 860, y: 725, r: 210, dur: 0.6 },
+        { t: S(223.46), x: 760, y: 370, r: 230 },
+        { t: S(225.64), x: 640, y: 455, r: 200, dur: 0.9 },
+        { t: S(226.55), x: 760, y: 540, r: 220, dur: 0.6 },
+        { t: S(227.15), x: 820, y: 625, r: 240, dur: 0.6 },
       ]);
       [T(224.28), T(224.44)].forEach((c, i) => rise(words("sc047-gb")[i], c, { dur: 0.7, y: 12 }));
       [T(226.28), T(226.76), T(227.24)].forEach((c, i) => rise(words("sc047-wm")[i], c, { dur: 0.5, y: 10 }));

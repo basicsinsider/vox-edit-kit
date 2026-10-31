@@ -173,7 +173,7 @@
       }
       cam($("sc086-cam"), { y: 0, scale: 1.02 }, { y: -150, scale: 1.06 }, S(410.86), 4.7, E.cam);
       [T(412.01), T(412.49)].forEach((c, i) => rise(words("sc086-aa")[i], c, { dur: 0.9, y: 12 }));
-      [0, 2, 4].forEach((k, i) => tl.fromTo($("sc086-hl" + k), { scaleX: 0 }, { scaleX: 1, duration: 0.4, ease: "sine.inOut", immediateRender: true }, S(412.05) + i * 0.5));
+      [0, 1, 2, 3, 4, 5, 6].forEach((k, i) => tl.fromTo($("sc086-hl" + k), { scaleX: 0 }, { scaleX: 1, duration: 0.3, ease: "sine.inOut", immediateRender: true }, S(412.05) + i * 0.27));
       // the repeated item is only legible once he says "Taiwan" (focus pull) — the strokes mark it again and again before that
       const tws = $("sc086-rows").querySelectorAll(".tw");
       gsap.set(tws, { filter: "blur(5px)", opacity: 0.6 });
@@ -239,7 +239,7 @@
       rise(words("sc089-inv")[0], T(426.17), { dur: 0.8, y: 10 });
       // C5S090 — zoom to Kinmen; contrast call-out cut at the push's peak velocity
       hide([$("sc089-two"), $("sc089-times"), $("sc089-mao"), $("sc089-inv")], S(427.27), 0.4);
-      tl.to([...a1, ...a2], { attr: { opacity: 0.25 }, duration: 0.5, ease: "power1.in" }, S(427.27));
+      tl.to([...a1, ...a2], { attr: { opacity: 0 }, duration: 0.5, ease: "power1.in" }, S(427.27));
       tl.to(camEl, Object.assign(at(950, 1830, 1.25), { duration: 1.3, ease: C(E.inOut, 1.3) }), S(427.30));
       FX.contrastCallout(tl, $("sc089-veil"), S(427.95), { w: 3840, h: 4096, ellipse: [905, 1868, 150, 115], feather: 34, color: "rgba(150,150,146,1)", strength: 0.55 });
       FX.focusHunt(tl, camEl, S(428.62), { dur: 0.8 });
@@ -280,7 +280,7 @@
       const wrap = $("sc092-wrap"), a = $("sc092-a"), b = $("sc092-b"), svg = $("sc092-svg");
       const P = [1950, 1900], M = 1.43;
       gsap.set(b, { x: 960 - P[0] * M, y: 540 - P[1] * M, scale: M, opacity: 0 });
-      cam(a, { scale: 1.0 }, { scale: 1.1 }, S(434.06), 4.84);
+      cam(a, { scale: 1.07 }, { scale: 1.16 }, S(434.06), 4.84);
       FX.curveCut(tl, wrap, a, b, S(438.90), 1.4, { from: 1, to: 0.37 });
       tl.to(wrap, { scale: 0.345, duration: 5.1, ease: "none" }, S(440.30));
       [T(438.40), T(439.04)].forEach((c, i) => rise(words("sc092-ac")[i], c, { dur: 0.6, y: 10 }));
@@ -289,15 +289,16 @@
       [T(439.76), T(440.48)].forEach((c, i) => rise(words("sc092-ts")[i], c, { dur: 0.5, y: 10 }));
       // the carrier = a bone dot; its route north through the Strait in yellow marker (D14)
       const f = gated(439.5, 445.6, () => markDefs(svg, "c5s03-mk092", "0 0 3840 4096", 12));
-      const route = ink(svg, "M1950 1900 C 2120 1520, 2260 1160, 2560 640", S(441.40), 1.4, { color: YEL, width: 34, filter: f, ease: C(E.inOut, 1.4), opacity: 0.92 });
+      const route = ink(svg, "M1950 1900 C 2080 1640, 2200 1360, 2400 1020", S(441.40), 1.4, { color: YEL, width: 34, filter: f, ease: C(E.inOut, 1.4), opacity: 0.92 });
       const dot = svgEl(svg, "circle", { cx: P[0], cy: P[1], r: 24, fill: BONE, opacity: 0 });
       const halo = svgEl(svg, "circle", { cx: P[0], cy: P[1], r: 24, fill: "none", stroke: BONE, "stroke-width": 6, opacity: 0 });
       tl.fromTo(dot, { attr: { opacity: 0 } }, { attr: { opacity: 1 }, duration: 0.001, immediateRender: true }, S(439.6));
       tl.fromTo(halo, { attr: { r: 24, opacity: 0.9 } }, { attr: { r: 90, opacity: 0 }, duration: 0.9, ease: "power2.out", repeat: 2, immediateRender: false }, S(439.7));
-      const st = { p: 0 };
-      tl.fromTo(st, { p: 0 }, { p: 1, duration: 1.4, ease: C(E.inOut, 1.4), immediateRender: false, onUpdate: () => { const q = route.getPointAtLength(st.p * route._len); dot.setAttribute("cx", q.x.toFixed(1)); dot.setAttribute("cy", q.y.toFixed(1)); } }, S(441.40));
+      const st = { p: 0 }, pts = [];
+      for (let i = 0; i <= 60; i++) { const q = route.getPointAtLength(i / 60 * route._len); pts.push([q.x.toFixed(1), q.y.toFixed(1)]); }   // sampled at build time
+      tl.fromTo(st, { p: 0 }, { p: 1, duration: 1.4, ease: C(E.inOut, 1.4), immediateRender: false, onUpdate: () => { const k = Math.min(60, Math.round(st.p * 60)), q = pts[k]; dot.setAttribute("cx", q[0]); dot.setAttribute("cy", q[1]); } }, S(441.40));
       hide($("sc092-ts"), S(442.6), 0.4);
-      tl.fromTo([$("sc092-tw"), $("sc092-twg")], { opacity: 0 }, { opacity: 1, duration: 0.8, ease: C(E.out, 0.8), immediateRender: true }, S(443.80));
+      tl.fromTo([$("sc092-tw"), $("sc092-twg")], { opacity: 0 }, { opacity: 0.7, duration: 0.8, ease: C(E.out, 0.8), immediateRender: true }, S(443.80));
       [T(443.04), T(443.36), T(443.60), T(443.76)].forEach((c, i) => rise(words("sc093-dm")[i], c, { dur: 0.8, y: 12 }));
     })();
 

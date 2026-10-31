@@ -190,16 +190,16 @@
     scene("sc100", 527.23, 535.25);
     ground("night", S(527.23));
     (function () {
-      const world = $("sc100-world"), flags = ["us48", "japan", "france", "italy", "belgium", "thailand", "peru", "colombia"], SP = 190;
-      world.innerHTML = flags.map((f, i) => `<div class="k-dom" id="c3s03-dom${i}" style="left:${i * SP - 665}px"><div class="tp"></div><div class="fa"><div class="fl">${FL[f]}</div><div class="sh"></div></div><div class="ed"></div></div>`).join("");
+      const world = $("sc100-world"), flags = ["us48", "japan", "france", "italy", "belgium", "thailand", "peru", "colombia"], SP = 330;
+      world.innerHTML = flags.map((f, i) => `<div class="k-dom" id="c3s03-dom${i}" style="left:${i * SP - 1155}px"><div class="tp"></div><div class="fa"><div class="fl">${FL[f]}</div><div class="sh"></div></div><div class="ed"></div></div>`).join("");
       const doms = flags.map((f, i) => $("dom" + i));
-      gsap.set(world, { rotationX: -8, rotationY: 60 });
-      tl.fromTo(world, { x: 160, rotationY: 63 }, { x: -160, rotationY: 57, duration: 8.0, ease: "none", immediateRender: true }, S(527.23));
+      gsap.set(world, { rotationX: -8, rotationY: 60, z: -650 });
+      tl.fromTo(world, { x: 620, rotationY: 63 }, { x: 280, rotationY: 57, duration: 8.0, ease: "none", immediateRender: true }, S(527.23));
       // the first (US) tips onto the second and rests there
-      tl.fromTo(doms[0], { rotationZ: 0 }, { rotationZ: 29, duration: 0.7, ease: C(E.out, 0.7), immediateRender: true }, S(528.91));
+      tl.fromTo(doms[0], { rotationZ: 0 }, { rotationZ: 12, duration: 0.7, ease: C(E.out, 0.7), immediateRender: true }, S(528.91));
       tl.fromTo(doms[1], { rotationZ: 0 }, { rotationZ: 2.5, duration: 0.16, ease: "sine.out", yoyo: true, repeat: 1, immediateRender: false }, S(529.30));
       // …and the whole row follows suit (12 fps)
-      doms.forEach((d, i) => tl.to(d, { rotationZ: i === doms.length - 1 ? 84 : 66, duration: 0.24, ease: C("power2.in", 0.24) }, S(534.03) + i * 0.05));
+      doms.forEach((d, i) => tl.to(d, { rotationZ: 84 - (i % 2) * 2, duration: 0.24, ease: C("power2.in", 0.24) }, S(534.03) + i * 0.05));
       [T(528.85), T(529.09)].forEach((c, i) => rise(words("sc100-oc")[i], c, { dur: 0.7, y: 10 }));
       out($("sc100-oc"), S(531.60), 0.3);
       [T(533.97), T(534.53)].forEach((c, i) => rise(words("sc100-fs")[i], c, { dur: 0.35, y: 8 }));
