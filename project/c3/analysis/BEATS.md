@@ -227,10 +227,10 @@ Timestamps = word start of the key word (raw ASR token in parentheses where it d
 |---|---|---|---|---|
 | OBJECT | IC / integrated circuit | the c2 subject; neutral (photo) | C3B001, C3B005 | 4.56 ("I see"), 21.59 ("I see"), 22.47 (integrated), 23.03 (circuit) |
 | ELEMENT | silicon | | C3B004–005 | 20.23, 25.51 |
-| PLACE | Silicon Valley | **vermilion = West/Stanford/Silicon Valley** (c1 convention) | C3B003, C3B005, C3B017, C3B027, C3B035, C3B042, C3B045, C3B048, C3B050 | 14.72, 25.51 (value), 83.94 (TV show), 130.90, 175.61, 204.82, 221.94, 237.46, 245.38 |
+| PLACE | Silicon Valley | vermilion = West/Stanford/SV in Acts I–IV (c1 convention); navy (US) from 235.94 | C3B003, C3B005, C3B017, C3B027, C3B035, C3B042, C3B045, C3B048, C3B050 | 14.72, 25.51 (value), 83.94 (TV show), 130.90, 175.61, 204.82, 221.94, 237.46, 245.38 |
 | SHOW | this podcast / his videos (Searching Lessons) | intro motif (player + progress bar) | C3B002, C3B003, C3B004, C3B107 | 7.36, 10.64 (videos), 12.96, 18.71, 591.20 |
 | PLACE | California | vermilion | C3B007, C3B008, C3B009, C3B014 | 35.11, 37.67, 46.07, 63.27 |
-| PLACE | United States (as a legal system; later as superpower) | neutral (bone/ink); 48-star flag in 1940s–50s scenes | C3B008, C3B059, C3B061, C3B062, C3B064, C3B065, C3B077, C3B079, C3B080, C3B088, C3B089, C3B092, C3B093, C3B096, C3B097, C3B099, C3B108 | 41.43, 301.29, 314.01, 322.33, 331.24, 338.92, 409.37, 419.05, 425.45, 472.36, 473.72, 495.80, 500.67 (US), 516.51, 524.03, 539.79, 595.44 |
+| PLACE | United States (as a legal system; later as superpower) | neutral; **navy** when contrasted with the Communist side (lead's decision); 48-star flag in 1940s–50s scenes | C3B008, C3B059, C3B061, C3B062, C3B064, C3B065, C3B077, C3B079, C3B080, C3B088, C3B089, C3B092, C3B093, C3B096, C3B097, C3B099, C3B108 | 41.43, 301.29, 314.01, 322.33, 331.24, 338.92, 409.37, 419.05, 425.45, 472.36, 473.72, 495.80, 500.67 (US), 516.51, 524.03, 539.79, 595.44 |
 | LAW | non-compete | | C3B009 | 44.87 (non), 45.11 (compete) |
 | PERSON | David Dudley Field | navy = East/New York | C3B012 | 55.19 (David), 55.67 (Dudley), 56.39 (Field) |
 | DOCUMENT | Field's legal code (Field Code, Draft Civil Code NY 1865 → California Civil Code 1872) | | C3B012–015 | 57.35 (legal), 57.75 (code), 61.43 (code), 69.43 (code) |
@@ -252,14 +252,14 @@ Timestamps = word start of the key word (raw ASR token in parentheses where it d
 | DATE | "the 30s before the war" / "a few decades later" | | C3B036, 041 | 184.01, 184.57, 203.70 |
 | INSTITUTION | the UN / United Nations | neutral (UN blue NOT used — not in palette); bone/ink | C3B051, C3B067, C3B068, C3B082, C3B083, C3B087, C3B089, C3B106, C3B107, C3B108 | 256.26, 351.72, 356.28, 433.29, 442.28, 467.72, 476.12, 577.60, 587.20, 593.28 |
 | GOVT | Republic of China (ROC) / the nationalists | **celadon** | C3B051, C3B062, C3B063, C3B066, C3B067, C3B070, C3B072, C3B077, C3B078, C3B082, C3B104 | 258.50, 318.01, 318.97, 326.92, 343.88, 345.08, 347.72, 367.40, 368.44, 378.92, 379.80, 410.57, 414.25, 435.69, 567.76 |
-| GOVT | CCP / the communists | **ink** (dark neutral + hatch) — never red (red = TSMC/Chang) | C3B052, C3B053, C3B058, C3B061, C3B070, C3B071, C3B084, C3B086, C3B104 | 265.21, 266.09, 295.93, 311.93, 315.21, 370.44, 371.72, 375.40, 377.00, 447.64, 460.68, 566.48 |
+| GOVT | CCP / the communists | **red** (`--vermilion`) — lead's cross-chunk decision: red = PRC/CCP/Communist bloc in political chunks | C3B052, C3B053, C3B058, C3B061, C3B070, C3B071, C3B084, C3B086, C3B104 | 265.21, 266.09, 295.93, 311.93, 315.21, 370.44, 371.72, 375.40, 377.00, 447.64, 460.68, 566.48 |
 | PLACE | China | the mainland (ink when CCP-held; celadon when the claim/ROC seat is meant) | C3B052, C3B053, C3B059, C3B060, C3B062, C3B069, C3B070, C3B078, C3B081, C3B082, C3B083, C3B084, C3B086, C3B087, C3B092, C3B103, C3B109 | 263.93, 267.85, 300.17, 305.61, 320.33, 363.24, 366.52, 416.01, 417.21, 432.25, 437.69, 441.48, 450.12, 461.72, 466.92, 494.84, 557.79, 598.32 |
 | EVENT | UN expels Taiwan (1971, Res. 2758 — he doesn't say the year) | don't print 1971 as a label (he doesn't say it); a dated real front page is fine | C3B051 | 257.22 (kicked), 257.62 (out) |
 | EVENT | World War II | | C3B057–062, 068, 079, 092 | 292.81, 308.49, 316.41, 360.12, 503.71 |
 | PLACE | Japan | neutral | C3B060, C3B062, C3B079, C3B080 | 309.77, 323.53, 422.01, 424.09 |
 | CONCEPT | Big Four / the four policemen of the world | | C3B062–065 | 329.08 (big), 329.48 (four), 335.80 (four), 336.12 (policemen) |
 | PLACE | UK | neutral | C3B066, C3B108 | 340.84, 596.64 |
-| PLACE | Soviet Union / USSR | **ink** side (with the CCP) | C3B066, C3B084, C3B086, C3B088, C3B094, C3B109 | 342.04, 445.88, 456.44 (Soviet bloc), 469.64, 505.47, 601.20 |
+| PLACE | Soviet Union / USSR | **red** (Communist bloc) | C3B066, C3B084, C3B086, C3B088, C3B094, C3B109 | 342.04, 445.88, 456.44 (Soviet bloc), 469.64, 505.47, 601.20 |
 | DOCUMENT | UN Charter | | C3B066 | 351.72, 352.20 |
 | CONCEPT | veto / permanent seat / UN Security Council | yellow highlighter on the seat once | C3B068, C3B083, C3B087, C3B108 | 353.32 (veto), 354.44 (permanent), 355.08 (seat), 356.76, 439.00, 466.20, 592.56 (veto), 593.84 |
 | EVENT | Chinese Civil War (restarts after WWII; four years; communists win) | | C3B068–070 | 361.72 (civil), 365.64 (restarts), 373.56 (four), 377.56 (win) |
@@ -267,7 +267,7 @@ Timestamps = word start of the key word (raw ASR token in parentheses where it d
 | CONCEPT | temporary problems / inconvenience | | C3B074 | 398.57, 399.53, 401.21 |
 | CONCEPT | recognition / "majority of the world" | data §5 | C3B076, C3B078, C3B081, C3B082, C3B084, C3B086, C3B091, C3B097 | 407.21, 413.21, 428.73, 434.65, 446.76, 459.40, 486.12, 486.92, 525.79 |
 | GROUP | US allies (incl. Japan) | | C3B078 | 419.05, 420.57 |
-| GROUP | Soviet bloc / Warsaw Pact | ink | C3B086 | 456.44, 457.48 |
+| GROUP | Soviet bloc / Warsaw Pact | red (Communist bloc) | C3B086 | 456.44, 457.48 |
 | GROUP | Western bloc | neutral bone | C3B095 | 512.11 |
 | CONCEPT | "following suit" (domino) | | C3B096 | 534.03 |
 | EVENT | decolonization of Africa | | C3B099–102 | 553.15, 555.79, 560.88, 571.92, 572.72 |
@@ -422,9 +422,9 @@ against `transcript_c3.json` word starts.
 ## 7. "Visual must show" — one line per beat
 
 Rule (MANUAL §10.1.3): every visual matches the exact words under it; asides get a visual of what the sentence means; **no face
-cam**. Palette for c3 (EDIT_NOTES §0): vermilion = West / Stanford / Silicon Valley / California (c1 code), navy = East coast /
-New York, celadon = Taiwan / the ROC, ink = the CCP and the Soviet side, neutral = US/UN/everyone else, yellow = highlighter + one
-key number. Red-as-TSMC does not appear in this chunk (no TSMC/Chang scenes), so vermilion is free for the West here.
+cam**. Palette (lead's cross-chunk decision, LONGFORM end): Acts I–IV (0–235.94) vermilion = West / Stanford / Silicon Valley /
+California, navy = East coast / New York, celadon = Taiwan / Pan; Acts V–X red = PRC / CCP / Soviet & Communist bloc, celadon =
+Taiwan / ROC, navy = US and allies when a contrast is needed, others neutral; yellow = highlighter + one key number.
 
 | id | time | visual must show |
 |---|---|---|

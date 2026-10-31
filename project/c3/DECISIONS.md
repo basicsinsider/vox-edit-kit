@@ -1,13 +1,13 @@
 # Decisions on the c3 EDIT_NOTES open questions (planner defaults; Krish / lead may override)
 
-1. **Palette mapping for c3** — vermilion = the West / Stanford / Silicon Valley / California (c1's convention; LONGFORM:
-   "one accent for the West / Stanford, navy for the East — say the mapping"); navy = the US East coast (New York, Field's code);
-   celadon = Taiwan, the ROC government and Pan Wen-Yuan; neutral = US/UK/UN/Japan/everyone else. TSMC/Morris Chang (red) do not
-   appear in c3, so vermilion-as-West causes no clash inside this chunk. Vermilion and celadon share a frame only in the five
-   bridge scenes (C3S037, 040, 042, 046, 051), with nothing else accented.
-2. **CCP and the Soviet side = ink + 45° hatch**, never red. Red is TSMC's colour for the whole video; communist-red would teach
-   the viewer the wrong code and would collide with Morris Chang's red in later chunks. Ink also reads as "the other side" on
-   both paper and night grounds (bone outline on night maps).
+1. **Palette mapping for c3 = the lead's cross-chunk decision (LONGFORM, end)**. Acts I–IV (0.00–235.94, Silicon Valley + the
+   Pan Wen-Yuan bridge) use the c1 code: vermilion = the West / Stanford / Silicon Valley / California, navy = the US East coast
+   (New York, Field's code), celadon = Taiwan / Pan. Acts V–X (235.94–602.02, political) use the political code: **red = PRC /
+   CCP / Soviet & Communist bloc**, celadon = Taiwan / ROC, **navy = the US and its allies when a contrast is needed**, everyone
+   else neutral. TSMC/Morris Chang don't appear in c3, so red-TSMC never meets red-PRC.
+2. **Switch point 235.94** ("everyone wants Silicon Valley, but why did Taiwan want it?"). From there Silicon Valley is part of
+   the US → navy (C3S051's line) or neutral ink (C3S049's pins); vermilion appears only as the CCP side, so the viewer never reads
+   "West" and "Communist" from the same colour inside the political acts. Real flags/posters keep their own colours.
 3. **"Hoover Institute" → on screen `HOOVER INSTITUTION`** (the organisation's real name), like "Hsinchu Park" → "Hsinchu Science
    Park" in the intro. The narrator's generic "best institute in the world" gets no caption.
 4. **Self-corrections shown as pen corrections** — "the best institute… very good, very good at least" (C3S033) and "the belief

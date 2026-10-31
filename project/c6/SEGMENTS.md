@@ -29,7 +29,7 @@ Total 107 scenes, 598.01 s, no gaps.
 
 | motif | scenes (segments) | rule | master owner |
 |---|---|---|---|
-| **Assembly hemicycle (D06)** | C6S007–008, C6S027 (01) | same dot size/arc, grey `#9a958c` US side, ink Beijing side, celadon ROC dot, dashed majority line; real 1971 proportions, **no numbers printed** | c6s01 |
+| **Assembly hemicycle (D06)** | C6S007–008, C6S027 (01) | same dot size/arc, navy US side, red Beijing side, celadon ROC dot, dashed majority line; real 1971 proportions, **no numbers printed** | c6s01 |
 | **Chiang Kai-shek portrait card** (N30, torn edge, halftone, celadon tape corners) | C6S039 (01); C6S043, C6S045, C6S052 inset (02) | one card element; c6s01 exports it as a snippet in `compositions/c6s01.NOTES.md` | c6s01 |
 | **Dossier card V3** (manila folder, paper clip, typed fields) | C6S035 (01); C6S065, C6S067 (02) | same folder texture, clip, typed-field style (Cooper Hewitt t-label + typewriter 12 fps), lamp pool on night | c6s01 (snippet in NOTES) |
 | **Taiwan relief + celadon fill (R12)** M03 | C6S040 (01); C6S062, C6S066 outline (02); C6S078 ghost (03) | same relief file/grade, celadon `#9fc7b2` fill with halftone_01_norm + 6 px glow; alpha mask | c6s01 |
@@ -50,8 +50,8 @@ Total 107 scenes, 598.01 s, no gaps.
 ### Palette moments per segment
 | seg | grounds | accents |
 |---|---|---|
-| c6s01 | night press photos of the UN ↔ paper documents/charts ↔ dark maps | celadon Taiwan (ROC seat, chips, dots); PRC = ink; yellow 2/3 + one highlighter; **no red, no blue** |
-| c6s02 | 1920s–30s sepia (Moscow, USSR) ↔ paper cards/maps ↔ lamp-lit dossiers | celadon only for the ROC government/Taiwan; yellow 12 YEARS + one marker route; PRC/Deng ink |
+| c6s01 | night press photos of the UN ↔ paper documents/charts ↔ dark maps | celadon Taiwan (ROC); **red PRC/CCP**; navy US only in the vote hemicycle + Bush split; yellow 2/3 + one highlighter |
+| c6s02 | 1920s–30s sepia (Moscow, USSR) ↔ paper cards/maps ↔ lamp-lit dossiers | celadon ROC/Taiwan; red = USSR / Deng / PRC mainland (C6S049, 054, 076); yellow 12 YEARS + one marker route |
 | c6s03 | paper charts ↔ night footage/maps ↔ the Moon ↔ paper diagram | celadon Taiwan; yellow 0% + freeway route; RCA neutral (vintage RCA logo in bone/ink, not its brand colours) |
 
 ## 3. Shared conventions
@@ -107,8 +107,10 @@ Whips at a segment boundary belong to the outgoing segment's file.
 - Text = narration exactly; spellings fixed (George H. W. Bush, Henry Kissinger, Chiang Kai-shek, Chiang Ching-kuo, Deng Xiaoping,
   Mao Zedong, Sun Yun-suan, K. T. Li, Sarah Paine, Pan Wen-yuan, Fei Hua, RCA); no text on slips/asides (BEATS §2b); paraphrased
   quotes attributed "(paraphrased)". Labels ≥ 22 px, captions ≥ 38 px, 96 px side margins, one text animation at a time.
-- Chinese characters only inside real images (our fonts have no CJK glyphs).
-- Palette tokens from `lib/palette.css` only; ≤ 2 accents per frame; **no `--vermilion`/`--navy` in c6**; yellow only highlighter,
+- Original Chinese of a slogan may appear small as decoration under the English (as an image — our fonts have no CJK glyphs).
+  Real documents keep their own printed words; our overlay text = the narrator's words only.
+- Palette tokens from `lib/palette.css` only; ≤ 2 accents per frame; c6 mapping (lead): `--vermilion` = PRC/CCP/Communist bloc,
+  `--celadon` = Taiwan/ROC, `--navy`/`--sky` = US & allies only where contrasted; yellow only highlighter,
   marker route or the scene's key number.
 - Default texture stack on every scene (grain + dust + vignette; light chromatic aberration 0.1–0.15 on photos/footage);
   copyrighted/CC BY(-SA) assets get a 13 px micro-credit bottom-right while on screen ("© AP", "UN Photo", "NASA", …).

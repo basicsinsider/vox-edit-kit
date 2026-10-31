@@ -237,7 +237,7 @@ No other uh/um tokens; ASR shows a 1.52 s gap 181.59–183.11 (end of Act VI —
 ## 3. Entities
 
 Timestamps = word start of the key word (raw ASR token in parentheses when it differs). Palette for this chunk is in §5 and
-EDIT_NOTES §0 (celadon = Taiwan/ROC; everyone else neutral; red/blue stay reserved for TSMC/UMC and do not appear in c6).
+EDIT_NOTES §0 (red = PRC/CCP/Communist bloc, celadon = Taiwan/ROC, navy = US/allies for contrast, others neutral).
 
 | type | entity | note | beats | key-word timestamps |
 |---|---|---|---|---|
@@ -427,10 +427,10 @@ token start (LOCAL seconds).
 
 ## 5. Story structure, acts and tone
 
-Palette for c6 (fixed meaning across the video, `lib/palette.css`): **celadon** = Taiwan / the ROC government and its
-people · **everyone else neutral** — PRC/CCP = ink/charcoal (dark neutral; the real red flags stay inside desaturated archival
-photos), US / UN / Japan / USSR = bone/grey photo tones · **yellow** = highlighter + the one key number per scene (⅔, 12 years,
-0 %) · **red (TSMC) and blue (UMC) do not appear in c6** (no company in this chunk; RCA stays neutral).
+Palette for c6 (lead's cross-chunk decision, end of `project/LONGFORM.md` — c6 is a political chunk): **red** = PRC / CCP /
+the Communist bloc (incl. the USSR) · **celadon** = Taiwan / the ROC · **navy** = the United States and its allies when a
+contrast is needed (the UN vote, Bush vs Kissinger) · everyone else neutral (UN, Japan, Tanzania, RCA) · **yellow** =
+highlighter + the one key number per scene (2/3, 12 years, 0 %). TSMC/UMC are absent from c6, so red never means TSMC here.
 
 | act | time range | beats | content | emotional tone | music / pacing guidance |
 |---|---|---|---|---|---|
@@ -480,7 +480,7 @@ serving their sentence. No face cam (§10.9). True images preferred (copyrighted
 | C6B023 | 124.56–129.59 | Kissinger + Zhou Enlai toast/handshake (White House/PRC photo), 'the administration' (Nixon White House). |
 | C6B024 | 129.59–134.87 | UN emblem/flag with Taiwan's celadon chip falling out. |
 | C6B025 | 134.87–137.75 | A row of dominoes (country flags/names) starting to fall. |
-| C6B026 | 137.75–142.47 | World map: countries flipping colour from Taiwan (celadon) to Beijing (ink), one by one. |
+| C6B026 | 137.75–142.47 | World map: countries flipping colour from Taiwan (celadon) to Beijing (red), one by one. |
 | C6B027 | 142.47–149.75 | Japan on the map; bars of trade partners with Japan tallest (no values). |
 | C6B028 | 149.75–156.47 | Real photo: Japan–PRC Joint Communiqué signing, Beijing, Sept 1972 (Tanaka & Zhou) — no names on screen. |
 | C6B029 | 156.47–161.11 | Taiwanese family/crowd watching TV in 1971 → the dancing photo on a Tatung screen. |
@@ -571,8 +571,8 @@ real photos and avoid wrong ones.
 - Kissinger's second trip to Beijing ran 20–26 Oct 1971 (photos with Zhou Enlai, White House/NARA = PD).
 - Japan–PRC Joint Communiqué, Beijing, 29 Sep 1972 (Tanaka Kakuei & Zhou Enlai signing photo).
 - Chiang Kai-shek's message after the withdrawal is remembered as 莊敬自強，處變不驚 ("be dignified and self-strengthening;
-  stay calm in adversity"). Show the real characters only as an image (photo of the slogan/calligraphy/newspaper) — our
-  three fonts have no CJK glyphs; the English line on screen = the narrator's words.
+  stay calm in adversity"). The original Chinese may appear small as decoration under the narrator's English (lead's rule) —
+  from the real image or set as an image (our three fonts have no CJK glyphs); the English line = the narrator's words.
 - Chiang Ching-kuo: in Moscow from 1925 (Sun Yat-sen University; Deng Xiaoping was a fellow student), held in the USSR until
   1937, worked at the Uralmash heavy-machinery plant (Sverdlovsk); ROC Premier from 1972. Chiang Kai-shek = Generalissimo.
 - Sun Yun-suan (Minister of Economic Affairs 1969–78), K. T. Li (Li Kwoh-ting, Minister of Finance 1969–76), Fei Hua

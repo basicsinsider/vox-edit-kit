@@ -34,7 +34,7 @@ with camera drift and 12 fps builds, never a static hold.
 | **Pan Wen-Yuan portrait + circle** | C3S039, C3S040, C3S042 (01); C3S044, C3S046 (02) | same duotone (sepia→celadon), same circle size (220 px) and ring (8 px celadon) | c3s01 |
 | **Terman** | C3S019, C3S026, C3S036, C3S038, C3S040 (01) | vermilion ring/label-box; c1's Terman treatment (check `compositions/c1s*` once built) | c3s01 |
 | **Taiwan celadon fill** (relief, watercolour edge, halftone, 6 px glow) | C3S037, C3S044, C3S046, C3S048 (01/02); C3S054, C3S074 (02); C3S080 (03) | same mask/fill/grade from the map kit; drain animation (C3S054) = fill opacity 0.8 → 0 at 12 fps | c3s02 |
-| **East Asia / China relief** (kit) | C3S054, C3S073, C3S074 (02); C3S080 (03) | one projection + json; CCP = ink + 45° hatch (bone 20 % lines), ROC claim = celadon | c3s02 |
+| **East Asia / China relief** (kit) | C3S054, C3S073, C3S074 (02); C3S080 (03) | one projection + json; CCP = red (`--vermilion` 0.6 + halftone, as the R12 look), ROC claim = celadon | c3s02 |
 | **World night map** (kit) | C3S067–C3S068 (02); C3S078, C3S098 (03); ghost world C3S094 (03) | same projection/grade; country fills via `world_countries.svg` paths (drop antimeridian sub-paths, MANUAL §4.2); celadon 0.8 fills | c3s02 (export) |
 | **Flags** (N40) as circles | C3S063, C3S065 (02); C3S079, C3S090, C3S095, C3S100, C3S110, C3S111 (03) | same circle size (160 px), 6 px bone ring, slight halftone; 1945 flags in WWII scenes (48-star US) | c3s02 |
 | **UN horseshoe seats (D06)** | C3S085, C3S089 (03) | 11 seats, 5 permanent ringed, China seat celadon | c3s03 |
@@ -47,9 +47,9 @@ with camera drift and 12 fps builds, never a static hold.
 ### Palette moments per segment
 | seg | grounds | accents |
 |---|---|---|
-| c3s01 | night chip/maps/2.5D ↔ legal documents on paper ↔ grid tree | vermilion West/California/Stanford/SV dominates; navy only for New York/Field (C3S013–014); celadon enters at C3S037 (Taiwan) and with Pan |
-| c3s02 | night maps/newsreels ↔ newspapers, posters, diagrams | celadon Taiwan/ROC vs ink CCP; vermilion only in C3S046 and C3S051 (Silicon Valley) |
-| c3s03 | night maps/plates ↔ paper charts (D02/D03/D04/D06) | celadon ROC vs ink CCP/Soviet; US/UN neutral bone; yellow only highlighters |
+| c3s01 | night chip/maps/2.5D ↔ legal documents on paper ↔ grid tree | c1 code: vermilion West/California/Stanford/SV; navy only for New York/Field (C3S013–014); celadon enters at C3S037 (Taiwan) and with Pan |
+| c3s02 | night maps/newsreels ↔ newspapers, posters, diagrams | to 235.94 c1 code (vermilion SV in C3S046); from 235.94 political code: red CCP vs celadon ROC, navy US when contrasted (C3S051 SV line, C3S063) — no vermilion-as-West after 235.94 |
+| c3s03 | night maps/plates ↔ paper charts (D02/D03/D04/D06) | red CCP/USSR/Warsaw Pact vs celadon ROC; navy US in contrasts (C3S090, 094, 095, 098, 099); UN/UK/Japan neutral; yellow only highlighters |
 
 ## 3. Shared conventions
 
@@ -106,7 +106,7 @@ crt_click, crt_hum, crt_off, boom_low, burn_crackle, wind, lamp_click, chime_sof
 - Text = narration exactly; spellings fixed (IC, Silicon Valley, Terman, Bill Hewlett, Pan Wen-Yuan, Hoover Institution, David
   Dudley Field, ROC, CCP, Warsaw Pact, UN General Assembly, "your side"); no text on slips (BEATS §2b). Labels ≥ 22 px,
   captions ≥ 38 px, 96 px side margins, one text animation at a time.
-- Palette tokens only (EDIT_NOTES §0 c3 mapping); ≤ 2 accents per frame; celadon is never a text colour.
+- Palette tokens only (EDIT_NOTES §0 — lead's cross-chunk mapping: c1 code to 235.94, political code after); ≤ 2 accents per frame; celadon is never a text colour.
 - Default texture stack on every scene; light chromatic aberration (0.1–0.15) on photos/footage; credits: 13 px bottom-right for
   CC BY(-SA) and for fair-use press items ("© The New York Times", "UN Photo", "© HBO", "Wayne F. Miller / Magnum").
 - Maps only from the kit (`assets/maps/kit/`) or the named fallbacks; never flat grey/beige relief.

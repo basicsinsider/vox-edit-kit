@@ -27,13 +27,16 @@ director / edit planner. Quality bar = the approved intro (`review/intro_720p.mp
 - **Ref** = intro pack `D01–D15` (`references/style-images/intro/`), original refs `R1–R12` (`references/style-images/1–12`,
   worked examples in `expected/layouts/`) — always as **variations**; or a named **Pinterest-style idea** (new layout) when
   none fits — each new idea is described in the scene and listed in §11.2.
-- **Palette for c3** (`lib/palette.css`, tokens only; max two accents per frame):
-  - **vermilion** `--vermilion` = the West / Stanford / Silicon Valley / California (c1's convention, LONGFORM: "one accent for
-    the West / Stanford"); TSMC/Morris Chang do not appear in c3, so there is no clash in this chunk.
-  - **navy** `--navy` = the East (US East coast: New York, David Dudley Field's code) — Silicon Valley acts only (0–179).
-  - **celadon** `--celadon` = Taiwan, the ROC government, Pan Wen-Yuan (fill/ring only, never text colour; text on it is ink).
-  - **ink** `--ink` (+ 45° hatch) = the CCP and the Soviet side (never red: red stays TSMC's for the whole video).
-  - **neutral** bone/ink/grey photo tones = the US, UK, UN, Japan, everyone else. **yellow** = highlighter or the scene's one key number.
+- **Palette for c3** (lead's cross-chunk decision, LONGFORM end; `lib/palette.css` tokens only; max two accents per frame):
+  - **Acts I–IV (0.00–235.94, Silicon Valley + Pan)** — c1 convention: **vermilion** = the West / Stanford / Silicon Valley /
+    California; **navy** = the US East coast (New York, Field's code); **celadon** = Taiwan / Pan Wen-Yuan (from C3S037).
+  - **Acts V–X (235.94–602.02, political)** — **red** (`--vermilion`) = PRC / CCP / the Soviet & Communist bloc; **celadon** =
+    Taiwan / the ROC; **navy** = the United States and its allies *when a contrast is needed* (C3S051, 063, 090, 094, 095, 098,
+    099); everyone else neutral (UK, UN, Japan, France: ink/bone/grey). Silicon Valley in Act V is part of the US → navy, never
+    vermilion, so red means only the CCP side from 235.94 on.
+  - TSMC/Morris Chang do not appear in c3 (no red-TSMC/red-PRC clash). Celadon is a fill/ring, never a text colour.
+  - **yellow** = highlighter or the scene's one key number. Real flags/posters/newspapers keep their own colours and words; our
+    overlay text = the narrator's words (small original Chinese of a slogan may appear as decoration under his English).
 - **Spellings on screen**: IC (ASR "I see"), Silicon Valley (ASR "silicon value"), Terman (ASR "tournament"), Bill Hewlett (ASR
   "Hewitt"), Pan Wen-Yuan, Hoover Institution (he says "Institute"), David Dudley Field, Fairchild, Intel, Republic of China / ROC,
   CCP, Warsaw Pact, UN General Assembly, "your side" (ASR "site"). Everything else = his words; no text on slips (BEATS §2b).
@@ -544,7 +547,7 @@ Music: drop to drone/low pulse at "desperate" 241.62; hit on "kicked out" 257.22
 ### C3S049 · 235.94–240.50 · C3B048 · PAPER
 - **Words** "Now, of course, everyone wants Silicon Valley, but why did Taiwan want it?"  **Why** 'everyone wants Silicon Valley, but why did Taiwan want it?' → pins all over a world atlas; Taiwan circled with a question.
 - **FX** #3 vintage atlas + pins + #19 circle + #20 map call-out · **Ref** R10 old map + circle + numbered pin variation (world scale)
-- **Visual** Vintage colour world atlas plate (N05 kit/N68); pins pop in many countries at 12 fps @236.74; rough circle around Taiwan @239.54 + '?'.
+- **Visual** Vintage colour world atlas plate (N05 kit/N68); ink pins pop in many countries at 12 fps @236.74 (neutral — no West accent in the political acts); rough circle around Taiwan @239.54 + '?'.
 - **Assets** N68
 - **Text** `everyone`@236.74 · `Silicon Valley`: `Silicon`@237.46 `Valley`@238.18 · `why`@239.06 · `Taiwan`@239.54.
 - **Camera** push to Taiwan. **Out** `FW` @240.44
@@ -564,7 +567,7 @@ Music: drop to drone/low pulse at "desperate" 241.62; hit on "kicked out" 257.22
 ### C3S051 · 244.74–253.94 · C3B050 · GRID
 - **Words** "because while the Silicon Valley is on the up and up, Taiwan is actually facing one of the most existential crises it has ever faced."  **Why** 'while Silicon Valley is on the up and up, Taiwan is facing… existential crises' → two lines: one up, one plunging into a crisis band.
 - **FX** #2 line chart + era band (D05) · **Ref** D05 line chart + era band
-- **Visual** Graph sheet; vermilion 'Silicon Valley' line climbs @246.82; ink 'Taiwan' line (celadon end dot) dives @248.90; shaded crisis band fades in @250.18. Shapes only.
+- **Visual** Graph sheet; navy 'Silicon Valley' line (US) climbs @246.82; ink 'Taiwan' line with a celadon end dot dives @248.90; shaded crisis band fades in @250.18. Shapes only.
 - **Assets** E27 graph
 - **Text** `Silicon Valley` end label @245.38 · `up and up`: `up`@246.82 `and`@247.14 `up`@247.30 · `Taiwan` end label @247.86 · `existential crises`: `existential`@250.18 `crises`@251.06.
 - **Camera** track right. **Out** `W` → @253.88
@@ -584,9 +587,9 @@ Music: drop to drone/low pulse at "desperate" 241.62; hit on "kicked out" 257.22
 ### C3S053 · 261.05–265.93 · C3B052 · NIGHT
 - **Words** "It basically said that there's no such thing. China belongs to the CCP."  **Why** 'there's no such thing. China belongs to the CCP' → the 1971 UN photo of the PRC delegation taking China's seat.
 - **FX** #16 plate + label · **Ref** —
-- **Visual** N30 UN 1971 photo (PRC delegation seated, 'CHINA' placard) slow push; ink label CCP.
+- **Visual** N30 UN 1971 photo (PRC delegation seated, 'CHINA' placard) slow push; red (vermilion) label CCP.
 - **Assets** N30
-- **Text** `no such thing`: `no`@262.81 `such`@263.05 `thing`@263.37 · `China`@263.93 · `CCP` label-box ink @265.21.
+- **Text** `no such thing`: `no`@262.81 `such`@263.05 `thing`@263.37 · `China`@263.93 · `CCP` label-box red @265.21.
 - **Camera** push to the placard. **Out** `W` ↓ @265.87
 - **Done** key animation complete @265.40 (cut @265.93; hold 0.53 s).
 - **SFX** 261.07 projector_click · 265.19 pop_soft · 265.85 whoosh
@@ -594,7 +597,7 @@ Music: drop to drone/low pulse at "desperate" 241.62; hit on "kicked out" 257.22
 ### C3S054 · 265.93–272.73 · C3B053 · NIGHT
 - **Words** "The CCP is the governing government of China, and because of that, Taiwan is just nothing. Not a country."  **Why** 'CCP is the governing government of China… Taiwan is just nothing. Not a country' → map: China in CCP ink; Taiwan's fill drains away.
 - **FX** #3 relief map + region fill (R12) + glow edge + #20 map call-out · **Ref** R12 relief + filled region (here a fill that empties)
-- **Visual** Map kit East Asia shaded relief; mainland China fills ink + halftone @266.09; Taiwan celadon fill drains to an empty outline @270.65.
+- **Visual** Map kit East Asia shaded relief; mainland China fills red (vermilion 0.6, halftone) @266.09; Taiwan celadon fill drains to an empty outline @270.65.
 - **Assets** N05 kit
 - **Text** `CCP` t-label @266.09 · `China`@267.85 · `nothing` serif-i @270.65 · `not a country`: `Not`@271.53 `a`@271.85 `country`@272.01.
 - **Camera** push to the strait. **Out** `PS` @272.67
@@ -659,7 +662,7 @@ Music: archival strings + low pulse, projector texture; build to "Security Counc
 - **FX** #19 pen strike + rewrite on a page + CS · **Ref** Pinterest idea 'redacted/rewritten history book page'
 - **Visual** Typeset history-book page (our recreation, no real book title) on two paper layers; CCP-era anti-Japanese war woodcut (N34) as its illustration; pen strikes a line and writes over it @297.37.
 - **Assets** N34
-- **Text** `CCP` t-label ink @295.93 · `change the story`: `change`@297.37 `the`@297.69 `story`@297.85.
+- **Text** `CCP` t-label red @295.93 · `change the story`: `change`@297.37 `the`@297.69 `story`@297.85.
 - **Camera** push. **Out** `W` → @298.91
 - **Done** key animation complete @298.40 (cut @298.97; hold 0.57 s).
 - **SFX** 294.03 page_turn · 297.35 pencil_scribble · 298.89 whoosh
@@ -687,7 +690,7 @@ Music: archival strings + low pulse, projector texture; build to "Security Counc
 ### C3S063 · 310.65–317.45 · C3B061 · PAPER
 - **Words** "But it wasn't the CCP that was fighting with the United States. In fact, CCP stay out of World War II."  **Why** 'it wasn't the CCP that was fighting with the United States' → US ↔ CCP link drawn, then crossed out.
 - **FX** #2 diagram (D15) + #19 cross · **Ref** D15 relationship diagram
-- **Visual** US circle (48-star flag, neutral ring) and CCP circle (ink ring); link draws @311.93; pen X on it @312.89. No text on the 'stay out' claim (DECISIONS).
+- **Visual** US circle (48-star flag, navy ring) and CCP circle (red ring); link draws @311.93; pen X on it @312.89. No text on the 'stay out' claim (DECISIONS).
 - **Assets** N40 flags
 - **Text** `CCP` label @311.93.
 - **Camera** static. **Out** `CA` @317.45 (CCP circle slides off as Cairo plate slides in)
@@ -779,8 +782,8 @@ Music: percussive pulse to 383; thin at "flee" 381.00; wistful line 383–404.
 
 ### C3S072 · 365.40–372.76 · C3B070 · PAPER
 - **Words** "it restarts in China, where the ROC, who are the nationalists, are fighting against the communists, which is the CCP."  **Why** 'it restarts… the ROC nationalists fighting the communists, the CCP' → face-off of the two leaders.
-- **FX** #12 torn poster + portrait circles · **Ref** intro IS044 torn fight-poster variation (celadon vs ink)
-- **Visual** Torn-paper poster: Chiang Kai-shek (N45, celadon duotone) left @367.40, Mao Zedong (N45, ink duotone) right @370.44; torn seam down the middle.
+- **FX** #12 torn poster + portrait circles · **Ref** intro IS044 torn fight-poster variation (celadon vs red)
+- **Visual** Torn-paper poster: Chiang Kai-shek (N45, celadon duotone) left @367.40, Mao Zedong (N45, red duotone) right @370.44; torn seam down the middle.
 - **Assets** N45 ×2
 - **Text** `restarts`@365.64 · `ROC`@367.40 · `nationalists`@368.44 · `communists`@370.44 · `CCP`@371.72.
 - **Camera** push. **Out** `W` ↓ @372.70
@@ -790,7 +793,7 @@ Music: percussive pulse to 383; thin at "flee" 381.00; wistful line 383–404.
 ### C3S073 · 372.76–378.68 · C3B071 · NIGHT
 - **Words** "Over the next four years, they fight on the CCP comes out ahead, the communists win the civil war,"  **Why** 'over the next four years… the communists win the civil war' → CCP ink spreading over the map of China.
 - **FX** #3 burn reveal (ink spreads N→S) + #13 count · **Ref** R12 relief + s02 burn reveal variation
-- **Visual** Map kit China relief night; ink (CCP) burns south over four steps at 12 fps; counter 1→4 small.
+- **Visual** Map kit China relief night; red (CCP) burns south over four steps at 12 fps; counter 1→4 small.
 - **Assets** N05
 - **Text** `four years`: `four`@373.56 (count 1→4) `years`@373.80 · `win`@377.56.
 - **Camera** pull back to fit China. **Out** `cont.` @378.68
@@ -923,7 +926,7 @@ Music: steady mid-tempo; darker colour on "problem" 444.60; settle 462–479.
 ### C3S086 · 443.24–451.96 · C3B084 · NIGHT
 - **Words** "But there is a problem. We have the Soviet Union recognizing the CCP as the true government of China because communist communists."  **Why** 'there is a problem: the Soviet Union recognizing the CCP' → Stalin and Mao, Moscow 1949.
 - **FX** #16 plate + contrast call-out · **Ref** §10.6.3
-- **Visual** N53 Stalin & Mao, Dec 1949; contrast call-out on the two @445.88.
+- **Visual** N53 Stalin & Mao, Dec 1949; contrast call-out on the two @445.88; red label CCP.
 - **Assets** N53
 - **Text** `problem`@444.60 · `Soviet Union`: `Soviet`@445.88 `Union`@446.36 · `CCP`@447.64.
 - **Camera** ease-in push. **Out** `CA` @451.96
@@ -943,7 +946,7 @@ Music: steady mid-tempo; darker colour on "problem" 444.60; settle 462–479.
 ### C3S088 · 455.40–462.20 · C3B086 · NIGHT
 - **Words** "slowly the whole Soviet bloc, the Warsaw Pact, starts recognizing CCP as China."  **Why** 'slowly the whole Soviet bloc, the Warsaw Pact, starts recognizing CCP' → Warsaw Pact countries turn to the CCP side one by one.
 - **FX** #3 map fills (slow 12 fps) + contrast call-out + #20 map call-out · **Ref** R12/kit Europe map variation
-- **Visual** Map kit Europe–Asia night; Warsaw Pact states fill ink-hatch with bone outlines, slowly west→east @455.40; contrast call-out on the bloc @457.48.
+- **Visual** Map kit Europe–Asia night; Warsaw Pact states fill red (vermilion 0.6 + halftone), slowly west→east @455.40; contrast call-out on the bloc @457.48.
 - **Assets** N05
 - **Text** `Soviet bloc`: `Soviet`@456.44 `bloc`@456.92 · `WARSAW PACT` label: `Warsaw`@457.48 `Pact`@458.28 · `CCP`@460.68.
 - **Camera** pan east. **Out** `PS` @462.14
@@ -963,7 +966,7 @@ Music: steady mid-tempo; darker colour on "problem" 444.60; settle 462–479.
 ### C3S090 · 468.28–473.08 · C3B088 · NIGHT
 - **Words** "So it doesn't matter if the Soviet Union is recognizing because Taiwan has the United States,"  **Why** 'doesn't matter if the Soviet Union… Taiwan has the United States' → Taiwan tied to the US; the USSR node greys out.
 - **FX** #2 diagram on night (D15) · **Ref** D15 on night ground
-- **Visual** Nodes: Taiwan (celadon), US (bone ring), USSR (ink); USSR greys @469.00; thick line Taiwan↔US draws @472.36.
+- **Visual** Nodes: Taiwan (celadon), US (navy ring), USSR (red ring); USSR greys @469.00; thick line Taiwan↔US draws @472.36.
 - **Assets** N40 flags
 - **Text** `doesn't matter`: `doesn't`@468.68 `matter`@469.00 · `United States`: `United`@472.36 `States`@472.68.
 - **Camera** static. **Out** `W` ↓ @473.02
@@ -1006,7 +1009,7 @@ Music: clock-like pulse from 521.07; domino sting 534.03; hollow sustain on "ver
 ### C3S094 · 490.84–497.63 · C3B092 · NIGHT
 - **Words** "Let me explain A lot of countries say hey Taiwan is the government of China because the United States is saying that."  **Why** 'a lot of countries say Taiwan is the government of China because the United States is saying that' → flows from the US to many countries.
 - **FX** #2 dark Sankey over ghost world map (D11) · **Ref** D11 dark Sankey money-flow variation
-- **Visual** Ghost world map; thin celadon flows fan from a US node to many country nodes @495.32.
+- **Visual** Ghost world map; thin celadon flows fan from a navy US node to many country nodes @495.32.
 - **Assets** E22
 - **Text** `a lot of countries`: `lot`@492.12 `countries`@492.36 · `because the United States`: `because`@495.32 `United`@495.80 `States`@496.20.
 - **Camera** pull back. **Out** `PS` @497.57
@@ -1016,7 +1019,7 @@ Music: clock-like pulse from 521.07; domino sting 534.03; hollow sustain on "ver
 ### C3S095 · 497.63–504.67 · C3B093 · PAPER
 - **Words** "And this is something Taiwan realizes from the beginning, too. US was truly the foremost power after World War II."  **Why** 'Taiwan realizes… the US was truly the foremost power after World War II' → bars topped with flags; the US bar towers.
 - **FX** #2 ranked bars topped with circles (D02) · **Ref** D02 / R4 ranked bars with portraits — flags instead
-- **Visual** Paper; bars rise at 12 fps topped with flag circles (US, USSR, UK, France); US bar tallest; label-box `foremost power`. Shapes only.
+- **Visual** Paper; bars rise at 12 fps topped with flag circles (US, USSR, UK, France); US bar navy and tallest, USSR bar red, others neutral; label-box `foremost power`. Shapes only.
 - **Assets** N40
 - **Text** `Taiwan realizes`: `Taiwan`@498.51 `realizes`@499.07 · `foremost power`: `foremost`@502.11 `power`@502.75.
 - **Camera** tilt up the US bar. **Out** `W` ↑ @504.61
@@ -1046,7 +1049,7 @@ Music: clock-like pulse from 521.07; domino sting 534.03; hollow sustain on "ver
 ### C3S098 · 513.23–521.07 · C3B096 · NIGHT
 - **Words** "So it was the power. And because of that, when the US said something, there were vast majority of the countries who said the same thing."  **Why** 'it was the power… when the US said something, most countries said the same' → a pulse from the US and countries lighting up in its wake.
 - **FX** #3 world map + §10.6.7 radio-wave rings + #20 map call-out · **Ref** radio-wave variation on the world map
-- **Visual** Map kit world night; rings expand from the US @516.51; countries light bone in the ring's wake @518.27.
+- **Visual** Map kit world night; navy rings expand from the US @516.51; countries light navy-tinted in the ring's wake @518.27.
 - **Assets** N05
 - **Text** `the power` hero halate: `the`@514.43 `power`@514.75 · `same thing`: `same`@520.35 `thing`@520.59.
 - **Camera** slow push. **Out** `PS` @521.01
@@ -1056,7 +1059,7 @@ Music: clock-like pulse from 521.07; domino sting 534.03; hollow sustain on "ver
 ### C3S099 · 521.07–527.23 · C3B097 · PAPER
 - **Words** "But that creates an issue. And that issue is if the US pulls your recognition,"  **Why** 'that creates an issue… if the US pulls your recognition' → the isotype grid again; the US string is pulled.
 - **FX** #2 isotype grid (D03 motif) + string · **Ref** D03 motif (C3S093)
-- **Visual** Same grid; strings from each square to a US square; the US square is yanked aside @524.51, strings go taut.
+- **Visual** Same grid; strings from each square to a navy US square; the US square is yanked aside @524.51, strings go taut.
 - **Assets** 🛠
 - **Text** `issue`@522.19 · `pulls`@524.51 · `recognition`@525.79.
 - **Camera** push. **Out** `CA` @527.23
@@ -1129,7 +1132,7 @@ Music: new rhythmic layer at 550.59; keep under the UN explanation; carry across
 ### C3S106 · 560.64–568.56 · C3B104 · NIGHT
 - **Words** "That decolonization is gonna have a drastic impact on this fight that's happening between the CCP and the ROC."  **Why** 'a drastic impact on this fight between the CCP and the ROC' → Ghana's independence 1957, then the two sides' labels.
 - **FX** #1 footage + #14 + split labels · **Ref** —
-- **Visual** N59 Ghana independence footage (Nkrumah) graded; at @566.48 a split: ink CCP label left, celadon ROC label right.
+- **Visual** N59 Ghana independence footage (Nkrumah) graded; at @566.48 a split: red CCP label left, celadon ROC label right.
 - **Assets** N59
 - **Text** `drastic impact`: `drastic`@562.72 `impact`@563.36 · `CCP`@566.48 · `ROC`@567.76.
 - **Camera** slow push. **Out** `PS` @568.50
@@ -1149,7 +1152,7 @@ Music: new rhythmic layer at 550.59; keep under the UN explanation; carry across
 ### C3S108 · 576.80–584.48 · C3B106 · NIGHT
 - **Words** "inside of the UN General Assembly, and that vote is gonna come in very very useful if you can somehow get that vote on your **side.**"  **Why** 'inside the UN General Assembly… useful if you get that vote on your side' → the GA hall; ballots slide to one side.
 - **FX** #16 plate + ballot cards · **Ref** —
-- **Visual** N60 UN General Assembly hall photo (1960s); two ballot stacks (ink CCP / celadon ROC); a ballot slides to one side @583.2 (done 583.95).
+- **Visual** N60 UN General Assembly hall photo (1960s); two ballot stacks (red CCP / celadon ROC); a ballot slides to one side @583.2 (done 583.95).
 - **Assets** N60
 - **Text** `UN GENERAL ASSEMBLY` hero halate: `UN`@577.60 `General`@578.00 `Assembly`@578.40 · `useful`@581.04 · `your side`: `your`@583.76 `side`@584.00.
 - **Camera** push. **Out** `PS` @584.42
@@ -1302,14 +1305,15 @@ MC, CA, PT, CA, W↓, PS, CA, W→, PS, CA, W←, CA, PS, W←, FW, HC, CA, CRT-
 ### 11.6 Hold check (§10.9) ✔
 Every scene's key animation completes ≥ 0.5 s before its cut (script-checked; tightest: C3S001 0.52, C3S006 0.52, C3S026 0.53, C3S042 0.54, C3S101 0.52, C3S108 0.53, C3S110 0.54, C3S111 0.52 → c4). Short scenes (C3S001, C3S037, C3S059, C3S102) use quicker 0.3–0.5 s text rises — the one allowed exception to the 1.0–1.6 s entrance rule; editors keep them ≥ 0.3 s.
 
-### 11.7 Palette check
-- Vermilion (West/Stanford/SV/California): C3S004, 006, 008–011, 015, 023–024, 028–029, 036–038, 040, 042, 046, 051 (the Fairchild tree C3S021–022 is ink). Shares a frame with celadon only in the bridge scenes C3S037, C3S040, C3S042, C3S046, C3S051 (exactly two accents).
-- Navy (East/New York): C3S013–014 only.
-- Celadon (Taiwan/ROC/Pan): C3S037–C3S111 wherever Taiwan/ROC is meant; text on celadon is ink.
-- Ink + hatch (CCP / Soviet side): C3S053–054, 060, 063, 072–073, 086, 088, 090, 106, 108.
-- Yellow: highlighters (C3S010, 016, 031, 041, 066, 083, 089, 107) + the yellow marker routes (C3S015, C3S074). **Key number**: none
-  narrated in c3 except "1965" (C3S026 — bone halate, not yellow) — so yellow stays highlighter-only this chunk.
-- Red-as-TSMC: absent (no TSMC/Chang in c3).
+### 11.7 Palette check (lead's cross-chunk decision)
+- Acts I–IV: vermilion West/Stanford/SV/California — C3S004, 006, 008–011, 015, 023–024, 028–029, 036–038, 040, 042, 046 (the
+  Fairchild tree C3S021–022 is ink); navy East/New York — C3S013–014; celadon Taiwan/Pan — C3S037–046, 048. Vermilion + celadon
+  share a frame only in C3S037, C3S040, C3S042, C3S046 (exactly two accents).
+- Acts V–X: red = CCP / PRC / USSR / Warsaw Pact — C3S053, 054, 060, 063, 072, 073, 086, 088, 090, 095, 096, 106, 108;
+  celadon = Taiwan/ROC — C3S048–111 wherever meant; navy = US (+ allies) only when contrasted — C3S051, 063, 090, 094, 095, 098, 099.
+  No vermilion-as-West after 235.94 (C3S049 pins are ink, C3S051's Silicon Valley line is navy).
+- Yellow: highlighters (C3S010, 016, 031, 041, 066, 083, 089, 107) + yellow marker routes (C3S015, C3S074). No yellow key number in
+  c3 ("1965" is a bone halate).
 
 ### 11.8 Words ↔ visual (§10.1.3) — risky lines and how they're handled
 | words | handling |
@@ -1324,8 +1328,8 @@ Every scene's key animation completes ≥ 0.5 s before its cut (script-checked; 
 | "Very far away from China, but unfortunately." | a dashed distance line Africa → China only |
 
 ## 12. Open questions (defaults in DECISIONS.md)
-1. West colour in c3 = vermilion (c1 convention) while red = TSMC elsewhere — OK because no TSMC in c3? → **yes** (LONGFORM).
-2. CCP / Soviet side = ink + hatch (not red)? → **yes**.
+1. Colour mapping → **resolved by the lead** (LONGFORM end): Acts I–IV vermilion West / navy East; Acts V–X red = CCP/Communist bloc, celadon = ROC, navy = US when contrasted.
+2. Switch point 235.94 ("everyone wants Silicon Valley, but why did Taiwan…") — from there Silicon Valley is navy (US). → **yes**.
 3. "Hoover Institute" → on screen "Hoover Institution"? → **yes** (accurate name).
 4. Show his self-correction best → very good as a pen correction? → **yes** (it is exactly what he says).
 5. Political claims (CCP & WWII) — minimal text, visuals of who fought? → **yes**.

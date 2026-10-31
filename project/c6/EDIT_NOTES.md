@@ -28,12 +28,12 @@ celadon Taiwan, lamp-lit desks, Vox layered panels) with new variations.
 - **Glow**: `.halate` only on the scene's **hero** (marked "hero halate"); everything else `.clean`. Paper never glows.
 - **Ref** = Krish's intro pack `D01–D15` (`references/style-images/intro/`), the older `R1–R12`, the approved stills in
   `expected/layouts/`, or a NEW variation idea **V1–V6** (described in §14) / a named "Pinterest idea".
-- **Palette for c6** (`lib/palette.css`; meanings fixed for the whole video): **celadon** `#9fc7b2` = Taiwan / the ROC
-  government and its people (fills, underlines, dots — never body text) · **PRC / CCP = ink** `#141b24` (neutral dark; the real
-  red of PRC flags only lives inside desaturated archival photos) · US, UN, Japan, USSR, RCA = neutral (bone / grey photo
-  tones) · **yellow** = highlighter + the one key number of a scene (`2/3`, `12 YEARS`, `0%`) and the D10/D14 marker route ·
-  **red (TSMC / Morris Chang) and blue (UMC / Robert Tsao) are NOT used in c6** — no company of theirs is in this chunk; keeping
-  them out preserves their meaning for c7+. Max two accents per frame.
+- **Palette for c6** (`lib/palette.css`; lead's cross-chunk colour decision, `project/LONGFORM.md` end — c6 is a political
+  chunk): **red** `--vermilion #e03f2c` = **PRC / CCP / the Communist bloc** (incl. the Soviet Union) · **celadon** `#9fc7b2` =
+  **Taiwan / ROC** (fills, underlines, dots — never body text) · **navy** `#1d5c9e` (sky `#9fc3e3` on night) = **the United States and
+  its allies, only when a contrast is needed** (the UN vote hemicycle, Bush vs Kissinger split) · everyone else neutral (UN, Japan,
+  Tanzania, RCA = ink/bone/grey) · **yellow** = highlighter + the one key number of a scene (`2/3`, `12 YEARS`, `0%`) and the
+  D10/D14 marker routes. TSMC/UMC do not appear in c6, so red here always means the PRC/Communist bloc. Max two accents per frame.
 - **Spellings on screen** (BEATS §2a): George H. W. Bush, Henry Kissinger, Tanzania, Chiang Kai-shek, Chiang Ching-kuo
   (narrator says "Chang Ching Kuo" — never print "Chang"), Deng Xiaoping, Mao Zedong, Sun Yun-suan, K. T. Li, Sarah Paine,
   Pan Wen-yuan, Fei Hua, RCA, "10 Major Projects". No text on slips/asides (BEATS §2b) — notably never "get Taiwan in",
@@ -107,19 +107,19 @@ Music: low dark pulse under a drone; drop to near-silence on "kicked out" 42.49;
 
 ### C6S007 · 29.77–34.97 · C6B007 · PAPER
 - **Words** "And in that vote, we can see that US does not have a majority, right?"
-- **Why** "in that vote… the US does not have a majority" → the Assembly as a dot hemicycle: the US side fills and stops short of the majority line.
+- **Why** "in that vote… the US does not have a majority" → the Assembly as a dot hemicycle: the US side (navy) fills and stops short of the majority line.
 - **FX** #2 dot-matrix semicircle (12 fps fill) + dashed majority line · **Ref** D06 / R8 (VARIATION: the arc sits low like the GA horseshoe, dots are tiny placards, title top-left serif with italic emphasis)
-- **Assets** own graphic (dots in the real 1971 'important question' proportions — no numbers printed, DECISIONS #2); paper_stained_01_hires
-- **Text** title t-serif `In that *vote*` @30.01 (`that` @30.17, `vote` @30.41 italic) · `US` t-label @32.49 on the grey arc · `not` @33.29 + `majority` @33.85 on the dashed line (ink)
+- **Assets** own graphic (US side navy, Beijing side red, ROC dot celadon; dots in the real 1971 'important question' proportions — no numbers printed, DECISIONS #2); paper_stained_01_hires
+- **Text** title t-serif `In that *vote*` @30.01 (`that` @30.17, `vote` @30.41 italic) · `US` t-label @32.49 on the navy arc · `not` @33.29 + `majority` @33.85 on the dashed line (ink)
 - **Camera** slow drift right. **Out** continuous (same chart, camera keeps sliding) → C6S008.
 - **SFX** 30.0 dot_ticks (fill, 1.6 s) · 33.80 tick_soft.
 
 ### C6S008 · 34.97–38.09 · C6B008 · PAPER
 - **Words** "So China has more than enough votes to get Taiwan in."
-- **Why** "China has more than enough votes" → the Beijing side of the same hemicycle fills past the majority line.
+- **Why** "China has more than enough votes" → the Beijing side (red) of the same hemicycle fills past the majority line.
 - **FX** #2 continued + yellow highlighter on the title's key word · **Ref** D06 continued
 - **Assets** same graphic
-- **Text** `CHINA` label-box (ink fill) @35.29 · `more than enough votes` t-serif-i word by word @35.85/36.09/36.25/36.49 · NO text on 'get Taiwan in' (slip)
+- **Text** `CHINA` label-box (red fill) @35.29 · `more than enough votes` t-serif-i word by word @35.85/36.09/36.25/36.49 · NO text on 'get Taiwan in' (slip)
 - **Camera** drift continues; at 37.9 the camera starts a fast tilt up. **Out** W↑ @38.03.
 - **SFX** 35.27 dot_ticks (1.2 s) · 37.98 whoosh.
 
@@ -137,7 +137,7 @@ Music: low dark pulse under a drone; drop to near-silence on "kicked out" 42.49;
 - **Why** "Taiwan is getting kicked out. China is officially in the United Nations." → the real photo of the PRC delegation taking the 'CHINA' seat; Taiwan's celadon marker drops out of the frame.
 - **FX** #16 plate + §10.6.3 contrast call-out on the CHINA nameplate (hard cut on the push) + #4 hero title · **Ref** —
 - **Assets** N10 PRC delegation (Qiao Guanhua) seated behind the CHINA nameplate, UN GA Nov 1971 (UN Photo/AP); celadon Taiwan chip = own graphic
-- **Text** `TAIWAN` t-label with celadon chip @41.69 → `kicked out` clean @42.49 (chip falls off-frame, 12 fps) · `CHINA` t-display **hero halate** @43.21 · `officially in the United Nations` t-label word-by-word @43.69/44.09/44.25/44.41/44.81
+- **Text** `TAIWAN` t-label with celadon chip @41.69 → `kicked out` clean @42.49 (chip falls off-frame, 12 fps) · `CHINA` t-display **hero halate** (red-tinted halation) @43.21 · `officially in the United Nations` t-label word-by-word @43.69/44.09/44.25/44.41/44.81
 - **Camera** ease-in push to the nameplate; contrast call-out cuts in at peak velocity @43.21. **Out** W← @45.39.
 - **SFX** 42.47 whoosh_soft (chip falls) · 43.19 boom_low + circuit-breaker clunk (contrast) · 45.37 whoosh.
 
@@ -283,8 +283,8 @@ Music: low drone; dark pulse returns on "domino" 136.71.
 - **Words** "He's like, that vote is basically like cutting my legs out of under me while I'm trying to make sure that everyone still believes the US is with Taiwan"
 - **Why** "that vote is… like cutting my legs out from under me while I'm trying to make sure that everyone still believes the US is with Taiwan" → split frame: Bush lobbying in New York | the floor under his card is literally cut by a pen line and drops.
 - **FX** split-screen + #19 pen cut line + 12 fps drop + #16 · **Ref** NEW ref V4 'split-screen contrast' (editorial before/after split with a hand-drawn divider)
-- **Assets** N20 Bush lobbying delegates at the UN, Oct 1971 (AP/UN Photo); N19 (2nd use) on the other side, dimmed
-- **Text** `cutting my legs out` t-serif-i @118.88 (`legs` @119.44) — pen line slices under Bush's card @119.4, the lower strip drops 12 fps · `the US` t-label @122.96/123.20 · `with Taiwan` celadon underline @123.68/123.84
+- **Assets** N20 Bush lobbying delegates at the UN, Oct 1971 (AP/UN Photo); N19 (2nd use) on the other side, dimmed; Bush half carries a thin navy edge, Kissinger-in-Beijing half a thin red edge
+- **Text** `cutting my legs out` t-serif-i @118.88 (`legs` @119.44) — pen line slices under Bush's card @119.4, the lower strip drops 12 fps · `the US` t-label @122.96/123.20 · `with Taiwan` celadon underline (navy `the US` + celadon `Taiwan` = the two accents) @123.68/123.84
 - **Camera** slow push on the Bush half. **Out** CA (the cut strip is still falling) @124.50.
 - **SFX** 118.86 marker_scratch (cut) · 119.5 paper_tear · 123.66 pop_soft.
 
@@ -299,7 +299,7 @@ Music: low drone; dark pulse returns on "domino" 136.71.
 
 ### C6S027 · 129.59–134.87 · C6B024 · PAPER
 - **Words** "We might have won that vote, but because of that visit, Taiwan was out of the out of the United Nation,"
-- **Why** "We might have won that vote, but because of that visit, Taiwan was out of the United Nations" → the hemicycle of C6S007 returns: the US arc creeps toward the line (might have won)… then Taiwan's celadon dot drops out of the Assembly.
+- **Why** "We might have won that vote, but because of that visit, Taiwan was out of the United Nations" → the hemicycle of C6S007 returns: the navy US arc creeps toward the line (might have won)… then Taiwan's celadon dot drops out of the Assembly.
 - **FX** #2 D06 motif callback + 12 fps · **Ref** D06 (callback of C6S007, camera from the other side)
 - **Assets** graphic from C6S007
 - **Text** `might have won` serif-i @129.75 (`won` @129.99) · `TAIWAN` celadon dot + label @132.39 · `out` @132.95 (dot falls, 12 fps) · `United Nations` t-label @134.07
@@ -321,10 +321,10 @@ Music: one rhythmic track at full, low hits on the big moments; peak on "big hit
 
 ### C6S029 · 137.75–142.47 · C6B026 · NIGHT
 - **Words** "Slowly allies are now switching their recognition from Taiwan to the CCP."
-- **Why** "allies are now switching their recognition from Taiwan to the CCP" → world map: countries that recognised Taipei turn from celadon to ink one after another (the dominoes continue as a map).
-- **FX** #3 map + burn reveal (celadon burns to ink with a charred ring, 12 fps) + #20 labels · **Ref** R11 (VARIATION: dark atlas instead of beige; regions + small leader labels) · D13 ghost-map tone
+- **Why** "allies are now switching their recognition from Taiwan to the CCP" → world map: countries that recognised Taipei turn from celadon to red (PRC) one after another (the dominoes continue as a map).
+- **FX** #3 map + burn reveal (celadon burns to red with a charred ring, 12 fps) + #20 labels · **Ref** R11 (VARIATION: dark atlas instead of beige; regions + small leader labels) · D13 ghost-map tone
 - **Assets** M02 map kit world atlas/satellite ≥ 3840 px + admin-0 outlines; burn_a/b.png
-- **Text** `allies` t-label @138.55 · `switching recognition` serif-i @139.43/140.07 · `TAIWAN` celadon label @140.87 · `CCP` ink label-box @141.67
+- **Text** `allies` t-label @138.55 · `switching recognition` serif-i @139.43/140.07 · `TAIWAN` celadon label @140.87 · `CCP` red label-box @141.67
 - **Camera** slow pan east across the map. **Out** W→ @142.41.
 - **SFX** 138.6 burn_crackle (dur 3.6, soft) · 142.39 whoosh.
 
@@ -437,7 +437,7 @@ Music: warm new layer on "statement" 194.04; swell under "Keep on fighting" 200.
 
 ### C6S041 · 196.76–201.96 · C6B037 · PAPER
 - **Words** "The statement basically says, stay dignified and strengthen ourselves. Keep on fighting."
-- **Why** "stay dignified and strengthen ourselves. Keep on fighting." → the real slogan as a hanging calligraphy scroll unrolling (莊敬自強 / 處變不驚); his English words land word by word beside it, each underlined by pen.
+- **Why** "stay dignified and strengthen ourselves. Keep on fighting." → the real slogan as a hanging calligraphy scroll unrolling (莊敬自強 / 處變不驚 — the original Chinese also small as decoration under the English line, per the lead's rule); his English words land word by word beside it, each underlined by pen.
 - **FX** scroll unroll (12 fps) + §10.7 pen underline per word + `CS` reveal on the last line · **Ref** NEW ref V5 'calligraphy scroll unroll' (Pinterest: hanging-scroll reveal, ink on rice paper)
 - **Assets** N31 real photo/scan of the slogan 莊敬自強 處變不驚 (1971 calligraphy, banner, or Central Daily News 26 Oct 1971 front page — © fair use); paper_fiber_01 + paper_cream_02 (two layers)
 - **Text** `stay` @198.28 `dignified` @198.76 `and` @199.40 `strengthen` @199.56 `ourselves` @200.20 (t-serif 72 px, each underlined as spoken) · `Keep on fighting.` t-display ink @200.92/201.16/201.32 (`CS` settle)
@@ -516,7 +516,7 @@ Music: travelling pulse low; darker 244–262 (hostage); lift on "Deng Xiaoping"
 - **Why** "He studied in Moscow in his teenage years, while he's studying in the Soviet Union" → a tilted vintage colour map of Eurasia: route China → Moscow drawn in rough yellow marker; a 1925 photo of the teenage Chiang Ching-kuo pops at Moscow.
 - **FX** #3 tilted map plane + #18/#19 rough yellow marker route + pin + `FH` after the push · **Ref** D10 / R10 (VARIATION: continental scale, route west instead of east)
 - **Assets** M04 vintage colour atlas map of Asia/USSR 1920s–30s (David Rumsey CC BY-NC → only if allowed; else Commons PD atlas scans) + json; N36 Chiang Ching-kuo in Moscow c. 1925–27 (PD)
-- **Text** `MOSCOW` t-label + pin @239.64 · `teenage years` serif-i @240.68 (photo card pops) · `SOVIET UNION` t-label @242.84
+- **Text** `MOSCOW` t-label + pin @239.64 · `teenage years` serif-i @240.68 (photo card pops) · `SOVIET UNION` t-label with red underline @242.84
 - **Camera** camera tracks the route west, pushes to Moscow, `FH` @240.0. **Out** CA (push continues) @244.22.
 - **SFX** 239.0 marker_long (route, 0.9 s) · 239.62 map_pin · 240.66 pop_soft.
 
@@ -561,7 +561,7 @@ Music: travelling pulse low; darker 244–262 (hostage); lift on "Deng Xiaoping"
 - **Why** "guess who was one of his classmates at that political school? A young boy named Deng Xiaoping" → two 1920s photo cards side by side: young Chiang Ching-kuo + a face-down card that flips to young Deng Xiaoping.
 - **FX** #12 cards + card flip (12 fps) + #19 pen bracket 'classmates' · **Ref** D15 relationship (VARIATION: two cards + bracket instead of circles)
 - **Assets** N36 (3rd use, small card) + N39 young Deng Xiaoping, c. 1920s (France/Moscow; PD) ≥ 1200 px
-- **Text** `classmates` t-label @268.13 (pen bracket joins the two cards) · `DENG XIAOPING` label-box (ink) @271.41 as the card flips
+- **Text** `classmates` t-label @268.13 (pen bracket joins the two cards) · `DENG XIAOPING` label-box (red) @271.41 as the card flips
 - **Camera** static then slow push to Deng. **Out** CA (push continues) @272.79.
 - **SFX** 268.11 marker_long · 271.39 paper_flip.
 
@@ -764,8 +764,8 @@ Music: thin under 379–401; warm lift on "democracy" 419.49; playful tick at "s
 
 ### C6S076 · 395.97–401.41 · C6B073 · NIGHT
 - **Words** "But now they're like, Well, we're not China anymore, so we have to get good at being Taiwanese."
-- **Why** "now… we're not China anymore, so we have to get good at being Taiwanese" → the same map: the celadon drains from the mainland (burn reveal), only Taiwan stays lit.
-- **FX** #3 burn reveal (celadon burns away from the mainland) + hero title · **Ref** R12 + s02 burn
+- **Why** "now… we're not China anymore, so we have to get good at being Taiwanese" → the same map: the mainland burns from celadon to red (the PRC), only Taiwan stays celadon.
+- **FX** #3 burn reveal (mainland celadon burns to red) + hero title · **Ref** R12 + s02 burn
 - **Assets** N55 continued; burn_a/b.png
 - **Text** `not China anymore` serif-i @397.97/398.13/398.53 · `BEING TAIWANESE` t-display **hero halate** @400.21/400.45
 - **Camera** push from the mainland onto Taiwan, `FH` @399.6. **Out** W↓ @401.35.
@@ -1190,10 +1190,13 @@ W→, PT, CA, W↓, CA, FW, cont., W↑, CA, W←, PT, CA, W→, CA, PS, W↓, C
 | C6S107 | last word "succeed" | 597.4 | chunk end 598.01 (hold; c7 continues the table) |
 Editors check the last second of every scene in snapshots.
 
-### 15.7 Palette check
-Celadon = Taiwan / ROC only (C6S004, 010, 011, 019, 022, 027, 028, 032, 040, 047, 061, 062, 065, 070, 071, 074, 075–076, 077,
-082, 097, 102). PRC/CCP = ink label-boxes (C6S008, 010, 029, 054). Yellow key numbers: `2/3` (C6S005), `12 YEARS` (C6S051),
-`0%` (C6S084); yellow marker routes C6S049, C6S083; highlighter C6S004, C6S050. **No red, no blue** in c6.
+### 15.7 Palette check (lead's colour decision: red = PRC/CCP/Communist bloc, celadon = Taiwan/ROC, navy = US & allies for contrast)
+Celadon = Taiwan / ROC (C6S004, 010, 011, 019, 025, 027, 028, 032, 040, 047, 061, 062, 065, 070, 071, 075–076, 077, 082, 097,
+102). Red = PRC / CCP / USSR (C6S007–008 Beijing side, C6S010 CHINA, C6S029 switched countries + CCP, C6S049 Soviet Union,
+C6S054 Deng, C6S076 mainland; Soviet posters/flags inside photos stay desaturated). Navy = US side only where contrasted
+(C6S007, C6S025, C6S027). Max two accents per frame (C6S007: navy + red, the ROC dot is the celadon exception only in C6S027
+where navy is dimmed). Yellow key numbers: `2/3` (C6S005), `12 YEARS` (C6S051), `0%` (C6S084); yellow marker routes C6S049,
+C6S083; highlighter C6S004, C6S050. TSMC red / UMC blue do not appear in c6.
 
 ### 15.8 Cohesion with the intro
 Same motifs, new content: label-boxes + Cooper Hewitt labels + Crimson Pro italic captions; lamp-lit desk documents (intro
@@ -1202,12 +1205,12 @@ nodes then celadon); the grey-silhouette-then-reveal device (intro Morris Chang 
 (D10); celadon Taiwan relief (R12); grid-paper charts; Vox layered panels (IS002 → C6S002, 033, 059, 096).
 
 ## 16. Open questions (defaults in DECISIONS.md)
-1. PRC colour — ink (default) vs vermilion red? → **ink** (red is TSMC's for the whole video).
+1. PRC colour → **red** (lead's cross-chunk decision: red = PRC/CCP/Communist bloc in political chunks; navy = US/allies for contrast).
 2. Hemicycle dot counts in C6S007/008/027 — real 1971 proportions (≈ 55/59/15) without printed numbers? → **yes, shapes only**.
 3. "Fei" — super `FEI HUA` (full, accurate) while the narrator says "Fei"? → **yes** (like "Hsinchu Science Park").
 4. Bush / minister / Tanzania lines are the narrator's paraphrases → **attributed "(paraphrased)", no quotation marks**.
 5. Unnamed telecom official → **silhouette + telecom-lab image, never named or captioned**.
-6. Chiang Kai-shek's slogan in Chinese characters → **only as a real image** (our fonts have no CJK); English = his words.
+6. Chiang Kai-shek's slogan → English = his words; the original Chinese small as decoration under it (lead's rule) — taken from the real image/scan or set as an image, since our three fonts have no CJK glyphs.
 7. "10 Major Projects" vs official "Ten Major Construction Projects" → **his words on screen**; official name only inside the
    real poster/stamp art.
 8. Dancing photo used twice (C6S018, C6S022) + a thumbnail (C6S019); Bush head-in-hands photo printed again in C6S016 — allowed
