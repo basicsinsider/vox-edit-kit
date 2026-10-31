@@ -1,0 +1,770 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8" /></head>
+<body>
+<template>
+  <style>
+    #root { position: absolute; inset: 0; overflow: hidden; background: var(--night); }
+    .c63-scene { position: absolute; inset: 0; overflow: hidden; visibility: hidden; opacity: 0; background: var(--night); }
+    .c63-abs { position: absolute; }
+    .c63-cam { position: absolute; inset: 0; }
+    .c63-svg { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; pointer-events: none; }
+    .c63-w { display: inline-block; opacity: 0; white-space: pre; }
+    .c63-credit { position: absolute; right: 30px; bottom: 22px; font-size: 13px; letter-spacing: 0.08em; color: rgba(242,237,227,0.55); z-index: 5; }
+    .c63-credit.ink { color: rgba(20,27,36,0.55); }
+    .c63-pg { position: absolute; inset: 0; background: var(--paper); }
+    .c63-pg img { position: absolute; left: 0; top: 0; width: 100%; height: 100%; object-fit: cover; }
+    .c63-pg .p1 { mix-blend-mode: multiply; opacity: 0.6; }
+    .c63-pg .p2 { mix-blend-mode: multiply; opacity: 0.9; filter: saturate(0.25) contrast(0.6) brightness(1.08); }
+    .c63-pg .p2.gr { filter: saturate(0.25) contrast(1.3) brightness(1.06); transform: scale(1.45); }
+    .c63-pg .p2.st { filter: saturate(0.35) contrast(0.8) brightness(1.1); opacity: 0.75; }
+    .c63-pg .p2.ln { filter: saturate(0.3) contrast(0.9) brightness(1.08); opacity: 0.85; transform: scale(1.3); }
+    .c63-ink { color: var(--ink); }
+    .c63-scrimb { position: absolute; left: 0; right: 0; bottom: 0; height: 520px; background: linear-gradient(180deg, rgba(15,19,24,0) 0%, rgba(15,19,24,0.85) 100%); }
+    .c63-scrimt { position: absolute; left: 0; right: 0; top: 0; height: 360px; background: linear-gradient(0deg, rgba(15,19,24,0) 0%, rgba(15,19,24,0.75) 100%); }
+    .c63-scriml { position: absolute; left: 0; top: 0; bottom: 0; width: 1000px; background: linear-gradient(90deg, rgba(15,19,24,0.9) 0%, rgba(15,19,24,0.55) 55%, rgba(15,19,24,0) 100%); }
+    .c63-card { position: absolute; background: #efe7d6; padding: 12px; box-shadow: 0 22px 44px rgba(0,0,0,0.45); }
+    .c63-card .ph { position: relative; width: 100%; height: 100%; background-size: cover; background-position: center; }
+    .c63-card .ht { position: absolute; inset: 12px; background-size: 360px auto; mix-blend-mode: overlay; opacity: 0.4; }
+    .c63-circ { position: absolute; width: 260px; height: 260px; border-radius: 50%; overflow: hidden; border: 8px solid #9a958c; background: #d9d2c4; box-shadow: 0 16px 34px rgba(20,27,36,0.28); }
+    .c63-circ .ph { position: absolute; inset: 0; background-size: cover; background-position: center; }
+    .c63-circ img.sil { position: absolute; left: -12px; bottom: -6px; width: 270px; }
+    .c63-circ.cel { border-color: var(--celadon); }
+    .c63-lab { color: var(--ink); font-size: 26px; }
+    .c63-tag { position: absolute; background: #f1eadb; box-shadow: 0 10px 22px rgba(20,27,36,0.25); padding: 10px 20px 6px; }
+    .c63-vid { position: absolute; left: 0; top: -180px; width: 1920px; height: 1440px; object-fit: cover; }
+    .c63-weave { position: absolute; inset: -18px; }
+    .c63-lamp { position: absolute; inset: 0; pointer-events: none; mix-blend-mode: screen; }
+    .c63-lb { display: inline-block; background: var(--ink); color: var(--paper); padding: 12px 20px 4px; line-height: 1; }
+    #c6s03-grain, #c6s03-dust, #c6s03-vig { z-index: 20; }
+    #c6s03-flash { position: absolute; inset: 0; background: #fff6e6; opacity: 0; z-index: 25; pointer-events: none; }
+
+    /* C6S077 — elite bar (D04/R6) */
+    #c6s03-sc077-cam { transform-origin: 960px 540px; }
+    #c6s03-sc077-k { left: 150px; top: 150px; font-size: 30px; }
+    #c6s03-sc077-t { left: 150px; top: 230px; font-size: 84px; line-height: 1.05; width: 1650px; }
+    #c6s03-sc077-track { position: absolute; left: 150px; top: 520px; width: 1620px; height: 150px; background: repeating-linear-gradient(-45deg, #4a5260 0 10px, #3c4350 10px 20px); opacity: 0.85; transform-origin: 0 50%; }
+    #c6s03-sc077-track .tx { position: absolute; inset: 0; background: url('assets/textures/paper_cream_01.jpg') center/cover; mix-blend-mode: multiply; opacity: 0.5; }
+    #c6s03-sc077-bar { position: absolute; left: 150px; top: 520px; width: 1620px; height: 150px; background: var(--celadon); transform-origin: 0 50%; }
+    #c6s03-sc077-bar .ht { position: absolute; inset: 0; background: url('assets/textures/halftone_01_norm.jpg') 0 0/420px auto; mix-blend-mode: overlay; opacity: 0.55; }
+    #c6s03-sc077-bar .ed { position: absolute; right: -2px; top: 0; width: 6px; height: 100%; background: #6f9d86; }
+
+    /* C6S078 — economy line over the island ghost (D13) */
+    #c6s03-sc078-ghost { position: absolute; left: 820px; top: -260px; width: 1240px; height: 1680px; object-fit: cover; opacity: 0.3; filter: blur(0.6px) contrast(1.1); }
+    #c6s03-sc078-cam { position: absolute; left: 0; top: 0; width: 2300px; height: 1080px; }
+    #c6s03-sc078-svg { position: absolute; left: 0; top: 0; width: 2300px; height: 1080px; overflow: visible; }
+    #c6s03-sc078-c1 { left: 760px; top: 250px; width: 380px; height: 300px; transform: rotate(-3deg); background: #e7dfcd; }
+    #c6s03-sc078-c2 { left: 1560px; top: 560px; width: 380px; height: 300px; transform: rotate(3deg); background: #e7dfcd; }
+    #c6s03-sc078-c1 .ph, #c6s03-sc078-c2 .ph { filter: grayscale(1) sepia(0.25) contrast(1.1) brightness(0.95); }
+    #c6s03-sc078-k { left: 110px; top: 100px; font-size: 34px; }
+    #c6s03-sc078-r { left: 110px; top: 160px; font-size: 76px; }
+    #c6s03-sc078-h { left: 110px; top: 960px; font-size: 34px; }
+
+    /* C6S079–080 — one-party state → democracy track (D05/R7) */
+    #c6s03-sc079-cam { transform-origin: 960px 600px; }
+    #c6s03-sc079-band { position: absolute; left: 300px; top: 606px; width: 1300px; height: 68px; background: repeating-linear-gradient(-45deg, rgba(20,27,36,0.16) 0 8px, rgba(20,27,36,0.07) 8px 16px); transform-origin: 0 50%; }
+    #c6s03-sc079-one { left: 120px; top: 700px; font-size: 52px; }
+    #c6s03-sc079-dem0 { left: 1560px; top: 690px; font-size: 30px; color: rgba(20,27,36,0.45); }
+    #c6s03-sc079-dem { left: 1010px; top: 720px; font-size: 128px; }
+    #c6s03-sc079-ts { left: 760px; top: 500px; font-size: 64px; }
+    #c6s03-sc079-ballot { position: absolute; left: 1540px; top: 300px; width: 300px; height: 230px; background: #f3ecdc; border: 3px solid var(--ink); transform: rotate(4deg); box-shadow: 0 14px 28px rgba(20,27,36,0.25); overflow: hidden; }
+    #c6s03-sc079-ballot .row { position: absolute; left: 24px; right: 24px; height: 46px; border-bottom: 2px solid rgba(20,27,36,0.35); }
+    #c6s03-sc079-ballot .row i { position: absolute; right: 0; top: 6px; width: 34px; height: 34px; border: 2px solid var(--ink); }
+    #c6s03-sc079-ballot .row b { position: absolute; left: 0; top: 18px; width: 150px; height: 10px; background: rgba(20,27,36,0.35); }
+    #c6s03-sc079-stamp { position: absolute; left: 233px; top: 103px; width: 50px; height: 50px; border-radius: 50%; border: 6px solid var(--ink); opacity: 0; mix-blend-mode: multiply; }
+    #c6s03-sc079-tape { position: absolute; left: 960px; top: 716px; width: 880px; height: 170px; transform: rotate(-5deg); transform-origin: 100% 50%; opacity: 0; }
+    #c6s03-sc079-tape .bd { position: absolute; inset: 0; background: #e6d9b4; opacity: 0.94; box-shadow: 0 8px 18px rgba(20,27,36,0.25); }
+    #c6s03-sc079-tape .tx { position: absolute; inset: 0; background: url('assets/textures/paper_fiber_01.jpg') center/cover; mix-blend-mode: multiply; opacity: 0.6; }
+    #c6s03-sc079-tape .lb { position: absolute; left: 0; width: 880px; top: 50px; text-align: center; font-size: 66px; color: var(--ink); }
+
+    /* C6S081 — 10 Major Projects */
+    #c6s03-sc081-vid { filter: grayscale(0.55) sepia(0.2) brightness(0.62) contrast(1.12); }
+    #c6s03-sc081-k { left: 110px; top: 110px; font-size: 38px; }
+    #c6s03-sc081-ip { left: 110px; top: 170px; font-size: 72px; }
+    #c6s03-sc081-ten { left: 100px; top: 380px; font-size: 470px; line-height: 1; }
+    #c6s03-sc081-mp { left: 660px; top: 520px; font-size: 132px; line-height: 0.95; }
+
+    /* C6S082 — construction + industry footage */
+    #c6s03-sc082-a, #c6s03-sc082-b { filter: grayscale(0.35) sepia(0.15) brightness(0.8) contrast(1.08); }
+    #c6s03-sc082-l1 { left: 110px; top: 110px; font-size: 38px; }
+    #c6s03-sc082-l2 { left: 110px; top: 170px; font-size: 38px; }
+    #c6s03-sc082-it { left: 110px; top: 850px; font-size: 92px; }
+
+    /* C6S083 — projects map (D14) */
+    #c6s03-sc083-cam { position: absolute; left: 0; top: 0; width: 3246px; height: 4399px; transform-origin: 0 0; }
+    #c6s03-sc083-map { position: absolute; left: 0; top: 0; width: 3246px; height: 4399px; filter: brightness(0.82) contrast(1.08); }
+    #c6s03-sc083-msvg { position: absolute; left: 0; top: 0; width: 3246px; height: 4399px; overflow: visible; }
+    #c6s03-sc083-leg { position: absolute; left: 0; top: 0; width: 700px; height: 1080px; background: linear-gradient(90deg, rgba(15,19,24,0.92) 0%, rgba(15,19,24,0.75) 75%, rgba(15,19,24,0) 100%); }
+    .c63-row { position: absolute; left: 110px; width: 560px; height: 120px; opacity: 0; }
+    .c63-row .th { position: absolute; left: 0; top: 0; width: 160px; height: 110px; background-size: cover; background-position: center; border: 5px solid #e9e1cf; box-shadow: 0 10px 20px rgba(0,0,0,0.5); filter: grayscale(0.4) sepia(0.15) contrast(1.05); }
+    .c63-row .lb { position: absolute; left: 190px; top: 38px; font-size: 32px; }
+    #c6s03-sc083-any { left: 1460px; top: 820px; font-size: 60px; line-height: 1.05; }
+
+    /* C6S084–085 — money flows (D11) */
+    #c6s03-sc084-cam { transform-origin: 420px 300px; }
+    #c6s03-sc084-tw { position: absolute; left: 1420px; top: 150px; width: 620px; height: 760px; -webkit-mask: url('assets/intro/derived/intro03/taiwan_mask_alpha.png') center/contain no-repeat; mask: url('assets/intro/derived/intro03/taiwan_mask_alpha.png') center/contain no-repeat; background: var(--celadon); }
+    #c6s03-sc084-tw .ht { position: absolute; inset: 0; background: url('assets/textures/halftone_01_norm.jpg') 0 0/380px auto; mix-blend-mode: overlay; opacity: 0.6; }
+    #c6s03-sc084-svg { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; }
+    #c6s03-sc084-k { left: 110px; top: 60px; font-size: 34px; }
+    #c6s03-sc084-zero { left: 760px; top: 250px; }
+    #c6s03-sc084-zero .n { font-size: 120px; color: var(--yellow); padding: 16px 24px 6px; }
+    #c6s03-sc084-zl { left: 764px; top: 412px; font-size: 28px; }
+    #c6s03-sc084-sa { left: 130px; top: 440px; font-size: 30px; }
+    #c6s03-sc084-inv { left: 110px; top: 900px; font-size: 92px; }
+
+    /* C6S086 — then → now */
+    #c6s03-sc086-then { filter: grayscale(0.5) sepia(0.2) brightness(0.78) contrast(1.08); }
+    #c6s03-sc086-now { position: absolute; inset: 0; opacity: 0; }
+    #c6s03-sc086-now img { position: absolute; left: -240px; top: -135px; width: 2400px; height: 1350px; filter: saturate(0.55) brightness(0.82) contrast(1.08); transform-origin: 1290px 540px; }
+    #c6s03-sc086-wo { left: 110px; top: 110px; font-size: 38px; }
+    #c6s03-sc086-rw { left: 110px; top: 170px; font-size: 84px; }
+    #c6s03-sc086-pd { left: 110px; top: 870px; font-size: 38px; }
+    #c6s03-sc086-td { left: 110px; top: 920px; font-size: 72px; }
+
+    /* C6S087 — ten projects list (D12) */
+    #c6s03-sc087-k { left: 140px; top: 100px; font-size: 34px; }
+    .c63-li { position: absolute; left: 140px; font-size: 27px; color: rgba(242,237,227,0.82); letter-spacing: 0.14em; }
+    .c63-dash { position: absolute; width: 60px; height: 4px; background: rgba(242,237,227,0.32); opacity: 0; }
+    #c6s03-sc087-th { left: 1060px; top: 110px; font-size: 30px; }
+    #c6s03-sc087-ih { left: 1420px; top: 96px; font-size: 48px; }
+    #c6s03-sc087-none { left: 1040px; top: 930px; font-size: 104px; }
+    #c6s03-sc087-all { left: 1450px; top: 930px; font-size: 104px; }
+    #c6s03-sc087-col { position: absolute; left: 1020px; top: 160px; width: 800px; height: 730px; border-left: 2px solid rgba(242,237,227,0.18); }
+
+    /* C6S088–089 — calendar → D15 diagram */
+    #c6s03-sc088-cam { transform-origin: 960px 520px; }
+    #c6s03-sc088-cal { position: absolute; left: 230px; top: 170px; width: 560px; height: 700px; }
+    .c63-calp { position: absolute; left: 0; top: 80px; width: 560px; height: 620px; background: #ede4d0; box-shadow: 0 18px 36px rgba(20,27,36,0.35); transform-origin: 50% 0; overflow: hidden; }
+    .c63-calp .g { position: absolute; left: 40px; top: 110px; width: 480px; height: 460px;
+      background-image: linear-gradient(rgba(20,27,36,0.22) 2px, transparent 2px), linear-gradient(90deg, rgba(20,27,36,0.22) 2px, transparent 2px); background-size: 68.5px 92px; }
+    .c63-calp b { position: absolute; left: 40px; top: 46px; width: 200px; height: 26px; background: rgba(20,27,36,0.6); }
+    .c63-calp .tx { position: absolute; inset: 0; background: url('assets/textures/paper_cream_01.jpg') center/cover; mix-blend-mode: multiply; opacity: 0.6; }
+    #c6s03-sc088-head { position: absolute; left: -12px; top: 0; width: 584px; height: 96px; background: #2a2f38; border-radius: 6px; box-shadow: 0 10px 20px rgba(0,0,0,0.45); }
+    #c6s03-sc088-fm { left: 900px; top: 220px; font-size: 92px; }
+    #c6s03-sc088-card { left: 1000px; top: 330px; width: 380px; height: 470px; transform: rotate(3deg); }
+    #c6s03-sc088-card .ph { background-position: 50% 20%; filter: sepia(0.15) contrast(1.04); }
+    #c6s03-sc088-nm { left: 900px; top: 850px; font-size: 64px; }
+    #c6s03-sc088-cck { left: 290px; top: 380px; }
+    #c6s03-sc088-sg { left: 1150px; top: 380px; }
+    #c6s03-sc088-sgl { left: 1060px; top: 680px; width: 460px; text-align: center; }
+    #c6s03-sc088-eng { left: 1380px; top: 300px; transform: rotate(6deg); font-size: 44px; color: var(--ink); opacity: 0; }
+
+    /* C6S090–091 — memo on a lamp-lit desk (D08) */
+    #c6s03-sc090-desk { position: absolute; inset: 0; background: #1a1714; }
+    #c6s03-sc090-desk .tx { position: absolute; inset: 0; background: url('assets/textures/paper_stained_01_hires.jpg') center/cover; mix-blend-mode: multiply; opacity: 0.55; filter: brightness(0.5); }
+    #c6s03-sc090-cam { transform-origin: 960px 760px; }
+    #c6s03-sc090-memo { position: absolute; left: 520px; top: 60px; width: 900px; height: 1060px; background: #ece4d2; transform: rotate(-1.6deg); box-shadow: 0 30px 60px rgba(0,0,0,0.6); overflow: hidden; }
+    #c6s03-sc090-memo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; mix-blend-mode: multiply; opacity: 0.8; }
+    #c6s03-sc090-memo .rule { position: absolute; left: 70px; right: 70px; height: 2px; background: rgba(20,27,36,0.25); }
+    .c63-ty { position: absolute; left: 80px; font-family: inherit; font-size: 44px; color: #1d232c; }
+    #c6s03-sc090-big { left: 80px; top: 700px; font-size: 104px; }
+    #c6s03-sc090-par { position: absolute; right: 80px; bottom: 120px; font-size: 22px; color: rgba(20,27,36,0.6); opacity: 0; }
+    #c6s03-sc090-pool { background: radial-gradient(ellipse 44% 52% at 50% 46%, rgba(255,226,170,0.22), rgba(255,210,150,0.05) 60%, rgba(0,0,0,0) 80%); }
+    #c6s03-sc090-shade { position: absolute; inset: 0; background: radial-gradient(ellipse 60% 70% at 50% 46%, rgba(0,0,0,0) 45%, rgba(6,5,4,0.75) 100%); pointer-events: none; }
+
+    /* C6S092 — not chips: technology */
+    #c6s03-sc092-cam { transform-origin: 700px 500px; }
+    #c6s03-sc092-card { left: 230px; top: 140px; width: 640px; height: 600px; transform: rotate(-3deg); }
+    #c6s03-sc092-card .ph { filter: grayscale(0.6) sepia(0.2) contrast(1.06); }
+    #c6s03-sc092-n { left: 1060px; top: 300px; font-size: 38px; }
+    #c6s03-sc092-c { left: 1060px; top: 360px; font-size: 110px; }
+    #c6s03-sc092-tech { left: 230px; top: 820px; font-size: 176px; color: var(--ink); }
+
+    /* C6S093 — documentary film strips (D07 variation) */
+    #c6s03-sc093-cam { position: absolute; left: 0; top: 0; width: 2600px; height: 1080px; }
+    .c63-strip { position: absolute; height: 250px; background: #1b1a18; box-shadow: 0 18px 36px rgba(20,27,36,0.35); }
+    .c63-strip::before, .c63-strip::after { content: ""; position: absolute; left: 0; right: 0; height: 18px; background: repeating-linear-gradient(90deg, transparent 0 14px, #e8e0cf 14px 32px, transparent 32px 46px); opacity: 0.85; }
+    .c63-strip::before { top: 8px; } .c63-strip::after { bottom: 8px; }
+    .c63-strip .fr { position: absolute; top: 38px; width: 236px; height: 174px; background-size: cover; background-position: center; filter: grayscale(0.3) sepia(0.2) contrast(1.05); }
+    .c63-pin { position: absolute; width: 26px; height: 26px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #6b7380, #20262f 70%); box-shadow: 0 4px 6px rgba(0,0,0,0.4); }
+    #c6s03-sc093-d { left: 110px; top: 80px; }
+    #c6s03-sc093-d .c63-lb { font-size: 56px; }
+    #c6s03-sc093-t { left: 1200px; top: 900px; font-size: 104px; }
+
+    /* C6S094 — 1955 RCA set, Apollo 11 */
+    #c6s03-sc094-cam { transform-origin: 960px 470px; }
+    #c6s03-sc094-tube { position: absolute; left: 648px; top: 259px; width: 625px; height: 422px; background: #050505; border-radius: 40px; }
+    #c6s03-sc094-scr { position: absolute; left: 648px; top: 259px; width: 625px; height: 422px; overflow: hidden; border-radius: 60px; transform-origin: 50% 50%; }
+    #c6s03-sc094-scr video { position: absolute; left: -40px; top: -20px; width: 705px; height: 462px; object-fit: cover; }
+    #c6s03-sc094-glow { position: absolute; left: 648px; top: 259px; width: 625px; height: 422px; border-radius: 60px; background: radial-gradient(ellipse at 50% 50%, rgba(255,255,255,0.0) 40%, rgba(255,255,255,0.06) 100%); }
+    #c6s03-sc094-tv { position: absolute; left: -242px; top: -486px; width: 2400px; height: 1600px; filter: brightness(0.62) saturate(0.55) contrast(1.05); }
+    #c6s03-sc094-us { left: 110px; top: 110px; font-size: 38px; }
+    #c6s03-sc094-moon { left: 100px; top: 740px; font-size: 230px; }
+    #c6s03-sc094-fu { left: 1360px; top: 880px; font-size: 84px; }
+
+    /* C6S095 — 2.5D Aldrin */
+    #c6s03-sc095-stage { position: absolute; inset: 0; perspective: 1200px; perspective-origin: 960px 480px; }
+    #c6s03-sc095-cam3 { position: absolute; inset: 0; transform-style: preserve-3d; }
+    .c63-lay { position: absolute; inset: 0; transform-origin: 50% 50%; }
+    #c6s03-sc095-back img { position: absolute; left: -240px; top: -20px; width: 2400px; height: 1500px; filter: brightness(0.92) contrast(1.06); }
+    #c6s03-sc095-subj img { position: absolute; left: 790px; top: -20px; width: 438px; height: 877px; }
+    #c6s03-sc095-front img { position: absolute; left: 192px; top: 910px; width: 1536px; height: 570px; filter: blur(2px) brightness(0.85); }
+    #c6s03-sc095-haze { position: absolute; inset: 0; background: radial-gradient(ellipse 60% 40% at 30% 10%, rgba(255,240,220,0.10), rgba(0,0,0,0) 70%); mix-blend-mode: screen; }
+    #c6s03-sc095-m1 { left: 110px; top: 140px; width: 500px; height: 372px; transform: rotate(-4deg); }
+    #c6s03-sc095-m2 { left: 1300px; top: 430px; width: 500px; height: 376px; transform: rotate(3deg); }
+    #c6s03-sc095-m1 .ph, #c6s03-sc095-m2 .ph { filter: saturate(0.7) contrast(1.05); }
+    #c6s03-sc095-l1 { left: 124px; top: 540px; font-size: 32px; }
+    #c6s03-sc095-l2 { left: 1314px; top: 830px; font-size: 32px; }
+    #c6s03-sc095-ci { left: 110px; top: 930px; font-size: 72px; }
+    #c6s03-sc095-gm { left: 110px; top: 930px; font-size: 72px; }
+
+    /* C6S096 — regular flights to the moon (layered tickets) */
+    #c6s03-sc096-pa { left: -120px; top: -60px; width: 1100px; height: 760px; background: url('assets/c6/derived/c6s03/destination_moon_1950_lunar_surface.jpg') center/cover; transform: rotate(-5deg); filter: url(#c6s03-tint-paper) blur(1.5px); opacity: 0.55; }
+    #c6s03-sc096-pb { left: 1100px; top: 420px; width: 1000px; height: 760px; background: url('assets/c6/photos/apollo11_aldrin_as11-40-5903.jpg') 50% 30%/cover; transform: rotate(4deg); filter: url(#c6s03-tint-paper) blur(1.5px); opacity: 0.5; }
+    .c63-tk { position: absolute; left: 0; top: 0; width: 760px; height: 280px; background: #f2ebda; border: 3px solid var(--ink); box-shadow: 0 18px 34px rgba(20,27,36,0.32); overflow: hidden; }
+    .c63-tk .tx { position: absolute; inset: 0; background: url('assets/textures/paper_cream_01.jpg') center/cover; mix-blend-mode: multiply; opacity: 0.55; }
+    .c63-tk .perf { position: absolute; left: 560px; top: 0; bottom: 0; border-left: 3px dashed rgba(20,27,36,0.55); }
+    .c63-tk .moon { position: absolute; left: 600px; top: 70px; width: 130px; height: 130px; border-radius: 50%; background: radial-gradient(circle at 38% 36%, #d8d2c6, #9a958c 70%, #6f6a62); }
+    .c63-tk .moon i { position: absolute; border-radius: 50%; background: rgba(20,27,36,0.22); }
+    .c63-tk .bar { position: absolute; left: 40px; height: 12px; background: rgba(20,27,36,0.4); }
+    .c63-tk .head { position: absolute; left: 0; right: 200px; top: 0; height: 56px; background: var(--ink); }
+    .c63-tk svg { position: absolute; left: 40px; top: 120px; width: 480px; height: 120px; overflow: visible; }
+    #c6s03-sc096-stack { position: absolute; left: 980px; top: 120px; width: 900px; height: 700px; }
+    #c6s03-sc096-t { left: 110px; top: 820px; font-size: 104px; }
+
+    /* C6S097 — Mission Control */
+    #c6s03-sc097-cam { transform-origin: 1100px 420px; }
+    #c6s03-sc097-img { position: absolute; left: 0; top: -100px; width: 1920px; height: 1265px; object-fit: cover; filter: sepia(0.2) brightness(0.72) contrast(1.15); }
+    #c6s03-sc097-pf { left: 110px; top: 110px; font-size: 76px; }
+    #c6s03-sc097-tp { left: 110px; top: 880px; font-size: 38px; }
+    #c6s03-sc097-bu { left: 110px; top: 940px; font-size: 72px; }
+
+    /* C6S098–099 — D15: secretary general → telecom */
+    #c6s03-sc098-cam { position: absolute; left: 0; top: 0; width: 2200px; height: 1080px; transform-origin: 1420px 430px; }
+    #c6s03-sc098-cck { left: 260px; top: 300px; }
+    #c6s03-sc098-sg { left: 860px; top: 300px; }
+    #c6s03-sc098-tc { left: 1460px; top: 300px; }
+    #c6s03-sc098-tc .ph { background-image: url('assets/intro/photos/phones_old_cc0.jpg'); background-size: 520px auto; background-position: -120px -60px; filter: grayscale(1) contrast(1.1) brightness(1.05); }
+    #c6s03-sc098-tc img.sil { opacity: 0.88; }
+    #c6s03-sc098-task { left: 470px; top: 120px; transform: rotate(-4deg); font-size: 46px; color: var(--ink); opacity: 0; }
+    #c6s03-sc098-tg { left: 760px; top: 620px; width: 480px; text-align: center; }
+    #c6s03-sc098-sgl { left: 700px; top: 610px; width: 600px; text-align: center; opacity: 0; }
+    #c6s03-sc098-sgl .c63-lb { font-size: 44px; }
+    #c6s03-sc098-ro { left: 1110px; top: 190px; font-size: 26px; }
+    #c6s03-sc098-tcl { left: 1260px; top: 610px; width: 680px; text-align: center; }
+    #c6s03-sc098-tcl .c63-lb { font-size: 44px; }
+    #c6s03-sc098-gov { left: 1360px; top: 690px; width: 480px; text-align: center; }
+
+    /* C6S100 — transistors */
+    #c6s03-sc100-cam { transform-origin: 480px 640px; }
+    #c6s03-sc100-img { position: absolute; left: 0; top: -100px; width: 1920px; height: 1280px; object-fit: cover; filter: grayscale(0.85) sepia(0.25) brightness(0.72) contrast(1.15); }
+    #c6s03-sc100-tc { left: 110px; top: 110px; font-size: 38px; }
+    #c6s03-sc100-tr { left: 100px; top: 740px; font-size: 176px; }
+    #c6s03-sc100-nt { left: 116px; top: 930px; font-size: 72px; }
+
+    /* C6S101 — oscilloscope + circuit board */
+    #c6s03-sc101-cam { position: absolute; inset: 0; transform-origin: 900px 500px; }
+    #c6s03-sc101-tube { position: absolute; left: 551px; top: 174px; width: 704px; height: 574px; background: #030603; }
+    #c6s03-sc101-scr { position: absolute; left: 551px; top: 174px; width: 704px; height: 574px; overflow: hidden; }
+    #c6s03-sc101-scr video { position: absolute; left: -40px; top: -40px; width: 784px; height: 654px; object-fit: cover; }
+    #c6s03-sc101-frame { position: absolute; left: 0; top: 34px; width: 1920px; height: 1013px; filter: brightness(0.62) contrast(1.08) saturate(0.6); }
+    #c6s03-sc101-board { left: 1300px; top: 250px; width: 520px; height: 520px; transform: rotate(4deg); }
+    #c6s03-sc101-board .ph { filter: grayscale(0.4) sepia(0.2) contrast(1.06); }
+    #c6s03-sc101-70 { left: 110px; top: 100px; font-size: 38px; }
+    #c6s03-sc101-ni { left: 110px; top: 860px; font-size: 84px; }
+    #c6s03-sc101-ct { left: 110px; top: 970px; font-size: 38px; }
+
+    /* C6S102 — the American guy crosses the Pacific */
+    #c6s03-sc102-cam { transform-origin: 300px 640px; }
+    #c6s03-sc102-map { position: absolute; left: 100px; top: 330px; width: 1720px; height: 517px; box-shadow: 0 22px 44px rgba(20,27,36,0.3); overflow: hidden; }
+    #c6s03-sc102-map img { position: absolute; inset: 0; width: 100%; height: 100%; filter: saturate(0.7) sepia(0.15) contrast(1.05); }
+    #c6s03-sc102-map .tx { position: absolute; inset: 0; background: url('assets/textures/paper_cream_02.jpg') center/cover; mix-blend-mode: multiply; opacity: 0.5; }
+    #c6s03-sc102-sg { left: 120px; top: 60px; width: 200px; height: 200px; }
+    #c6s03-sc102-sg img.sil { width: 210px; left: -8px; }
+    #c6s03-sc102-tc { left: 370px; top: 90px; width: 150px; height: 150px; border-width: 6px; }
+    #c6s03-sc102-tc .ph { background-image: url('assets/intro/photos/phones_old_cc0.jpg'); background-size: 320px auto; background-position: -80px -40px; filter: grayscale(1) contrast(1.1); }
+    #c6s03-sc102-tc img.sil { width: 160px; left: -6px; opacity: 0.88; }
+    #c6s03-sc102-am { left: 1640px; top: 400px; width: 170px; height: 170px; border-width: 6px; margin: -85px 0 0 -85px; }
+    #c6s03-sc102-am img.sil { width: 180px; left: -8px; }
+    #c6s03-sc102-ro { left: 600px; top: 140px; font-size: 30px; }
+    #c6s03-sc102-ame { left: 1560px; top: 240px; font-size: 30px; }
+    #c6s03-sc102-ic { left: 110px; top: 900px; font-size: 92px; }
+
+    /* C6S103 — RCA ad */
+    #c6s03-sc103-bg { position: absolute; left: -100px; top: -100px; width: 2120px; height: 1280px; background: url('assets/c5/documents/electronics_1965-04-19_rca_transistor_ad.jpg') 50% 20%/cover; filter: blur(22px) brightness(0.28) sepia(0.3); }
+    #c6s03-sc103-cam { position: absolute; inset: 0; }
+    #c6s03-sc103-ad { position: absolute; left: 820px; top: 60px; width: 980px; height: 1357px; box-shadow: 0 30px 60px rgba(0,0,0,0.6); filter: sepia(0.2) saturate(0.55) contrast(1.05) brightness(0.92); }
+    #c6s03-sc103-ce { left: 110px; top: 200px; font-size: 38px; }
+    #c6s03-sc103-us { left: 110px; top: 260px; font-size: 38px; }
+    #c6s03-sc103-re { left: 110px; top: 380px; font-size: 72px; line-height: 1.1; }
+    #c6s03-sc103-rca { position: absolute; left: 110px; top: 690px; width: 520px; height: 149px; background: var(--bone); -webkit-mask: url('assets/c5/logos/rca_wordmark_1968.svg') center/contain no-repeat; mask: url('assets/c5/logos/rca_wordmark_1968.svg') center/contain no-repeat; opacity: 0; }
+
+    /* C6S104 — Pan Wen-yuan */
+    #c6s03-sc104-bg { position: absolute; left: -100px; top: -100px; width: 2120px; height: 1280px; background: url('assets/c3/photos/pan_wen_yuan_enwiki.jpg') 50% 30%/cover; filter: grayscale(1) blur(26px) brightness(0.3); }
+    #c6s03-sc104-cam { transform-origin: 1300px 500px; }
+    #c6s03-sc104-card { left: 1080px; top: 170px; width: 470px; height: 580px; transform: rotate(2.5deg); }
+    #c6s03-sc104-card .ph { background-image: url('assets/c3/photos/pan_wen_yuan_enwiki.jpg'); filter: grayscale(1) sepia(0.25) contrast(1.08) blur(0.4px); }
+    #c6s03-sc104-badge { position: absolute; left: 1470px; top: 640px; width: 150px; height: 150px; border-radius: 50%; background: #e9e1cf; box-shadow: 0 8px 16px rgba(0,0,0,0.45); border: 6px solid var(--ink); opacity: 0; }
+    #c6s03-sc104-badge i { position: absolute; left: 22px; top: 52px; width: 94px; height: 27px; background: var(--ink); -webkit-mask: url('assets/c5/logos/rca_wordmark_1968.svg') center/contain no-repeat; mask: url('assets/c5/logos/rca_wordmark_1968.svg') center/contain no-repeat; }
+    #c6s03-sc104-nm { left: 110px; top: 600px; font-size: 96px; }
+    #c6s03-sc104-rm { left: 116px; top: 760px; font-size: 38px; }
+
+    /* C6S105 — annual conferences */
+    #c6s03-sc105-pan { left: 200px; top: 220px; }
+    #c6s03-sc105-pan .ph { background-image: url('assets/c3/photos/pan_wen_yuan_enwiki.jpg'); background-size: 300px auto; background-position: -28px -20px; filter: grayscale(1) contrast(1.05); }
+    #c6s03-sc105-gov { left: 1460px; top: 220px; }
+    #c6s03-sc105-gov .tw { position: absolute; left: 65px; top: 22px; width: 130px; height: 200px; -webkit-mask: url('assets/intro/derived/intro03/taiwan_mask_alpha.png') center/contain no-repeat; mask: url('assets/intro/derived/intro03/taiwan_mask_alpha.png') center/contain no-repeat; background: var(--celadon); }
+    .c63-tab { position: absolute; top: 640px; width: 150px; height: 170px; background: #efe6d3; border-top: 26px solid var(--ink); box-shadow: 0 10px 20px rgba(20,27,36,0.25); transform-origin: 50% 0; opacity: 0; }
+    .c63-tab::after { content: ""; position: absolute; left: 22px; right: 22px; top: 40px; height: 70px; background-image: linear-gradient(rgba(20,27,36,0.25) 2px, transparent 2px); background-size: 100% 18px; }
+    #c6s03-sc105-ac { left: 110px; top: 80px; font-size: 38px; }
+    #c6s03-sc105-ey { left: 300px; top: 860px; font-size: 84px; }
+    #c6s03-sc105-co { left: 770px; top: 200px; font-size: 30px; }
+    #c6s03-sc105-gl { left: 1370px; top: 535px; width: 460px; text-align: center; }
+
+    /* C6S106 — classmates → Fei Hua */
+    #c6s03-sc106-cam { transform-origin: 1230px 430px; }
+    #c6s03-sc106-pan { left: 500px; top: 300px; }
+    #c6s03-sc106-pan .ph { background-image: url('assets/c3/photos/pan_wen_yuan_enwiki.jpg'); background-size: 300px auto; background-position: -28px -20px; filter: grayscale(1) contrast(1.05); }
+    #c6s03-sc106-sg { left: 1100px; top: 300px; }
+    #c6s03-sc106-sg svg { position: absolute; left: 0; top: 0; width: 260px; height: 260px; }
+    #c6s03-sc106-oc { left: 640px; top: 760px; font-size: 84px; }
+    #c6s03-sc106-sgl { left: 1000px; top: 610px; width: 460px; text-align: center; }
+    #c6s03-sc106-fh { left: 1030px; top: 600px; width: 400px; text-align: center; opacity: 0; }
+    #c6s03-sc106-fh .c63-lb { font-size: 60px; }
+
+    /* C6S107 — breakfast table */
+    #c6s03-sc107-table { position: absolute; inset: 0; background: #2a2018; }
+    #c6s03-sc107-table .wd { position: absolute; inset: 0; background: repeating-linear-gradient(0deg, rgba(0,0,0,0.0) 0 60px, rgba(0,0,0,0.18) 60px 62px, rgba(0,0,0,0) 62px 150px, rgba(0,0,0,0.25) 150px 153px); }
+    #c6s03-sc107-table .tx { position: absolute; inset: -40px; background: url('assets/textures/paper_stained_01_hires.jpg') center/cover; mix-blend-mode: multiply; opacity: 0.8; filter: sepia(0.6) brightness(0.55) contrast(1.4); transform: rotate(90deg) scale(1.9); }
+    #c6s03-sc107-cam { transform-origin: 960px 560px; }
+    #c6s03-sc107-bowl { position: absolute; left: 760px; top: 360px; width: 400px; height: 400px; border-radius: 50%; background: radial-gradient(circle at 50% 50%, #ede6d6 0 66%, #c9c1b0 70%, #f4efe3 73%, #b9b1a0 100%); box-shadow: 0 28px 50px rgba(0,0,0,0.6), inset 0 -6px 14px rgba(0,0,0,0.25); }
+    #c6s03-sc107-bowl .milk { position: absolute; left: 66px; top: 66px; width: 268px; height: 268px; border-radius: 50%; background: radial-gradient(circle at 42% 38%, #fbf3df 0%, #efe1c2 60%, #dccba7 100%); box-shadow: inset 0 6px 12px rgba(0,0,0,0.22); }
+    #c6s03-sc107-bowl .rim { position: absolute; inset: 8px; border-radius: 50%; border: 5px solid rgba(20,27,36,0.55); }
+    #c6s03-sc107-bowl .hl { position: absolute; left: 110px; top: 96px; width: 90px; height: 40px; border-radius: 50%; background: rgba(255,255,255,0.45); filter: blur(8px); transform: rotate(-30deg); }
+    .c63-yt { position: absolute; width: 420px; height: 70px; border-radius: 35px; background: linear-gradient(180deg, #e2b56a 0%, #c98d3e 55%, #9a6326 100%); box-shadow: 0 16px 26px rgba(0,0,0,0.55); overflow: hidden; }
+    .c63-yt::after { content: ""; position: absolute; inset: 0; background: repeating-linear-gradient(70deg, rgba(255,230,170,0.22) 0 16px, rgba(120,70,20,0.18) 16px 30px); }
+    #c6s03-sc107-note { position: absolute; left: 1200px; top: 640px; width: 520px; height: 300px; background: #efe6d2; transform: rotate(-4deg); box-shadow: 0 18px 36px rgba(0,0,0,0.55); overflow: hidden; }
+    #c6s03-sc107-note img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; mix-blend-mode: multiply; opacity: 0.7; }
+    #c6s03-sc107-note .ln { position: absolute; left: 40px; right: 40px; height: 2px; background: rgba(20,27,36,0.22); }
+    #c6s03-sc107-tom { left: 60px; top: 120px; font-size: 92px; color: #1d232c; }
+    #c6s03-sc107-c1 { left: 250px; top: 300px; width: 280px; height: 340px; transform: rotate(-7deg); }
+    #c6s03-sc107-c2 { left: 1330px; top: 210px; width: 280px; height: 340px; transform: rotate(5deg); }
+    #c6s03-sc107-c3 { left: 420px; top: 650px; width: 280px; height: 300px; transform: rotate(4deg); }
+    #c6s03-sc107-c1 .ph { background: #b9b1a1; }
+    #c6s03-sc107-c2 .ph { background-image: url('assets/c3/photos/pan_wen_yuan_enwiki.jpg'); filter: grayscale(1) sepia(0.25) contrast(1.05); }
+    #c6s03-sc107-c3 .ph { background-image: url('assets/c6/derived/c6s03/fei_hua_circle.jpg'); filter: grayscale(1) sepia(0.2); }
+    #c6s03-sc107-c1 img { position: absolute; left: -20px; bottom: 0; width: 300px; }
+    #c6s03-sc107-pool { background: radial-gradient(ellipse 46% 54% at 50% 50%, rgba(255,214,150,0.30), rgba(255,200,130,0.08) 55%, rgba(0,0,0,0) 78%); }
+    #c6s03-sc107-shade { position: absolute; inset: 0; background: radial-gradient(ellipse 62% 68% at 50% 50%, rgba(0,0,0,0) 42%, rgba(4,3,2,0.8) 100%); pointer-events: none; }
+    #c6s03-sc107-all { left: 110px; top: 970px; font-size: 38px; }
+    #c6s03-sc107-bf { left: 0; width: 1920px; text-align: center; top: 70px; font-size: 190px; }
+    #c6s03-sc107-tn { left: 110px; top: 950px; font-size: 76px; }
+  </style>
+
+  <div id="root" data-composition-id="c6s03" data-vo-start="401.41" data-duration="196.6" data-width="1920" data-height="1080">
+    <svg id="c6s03-defs" width="0" height="0" style="position:absolute"></svg>
+
+    <!-- C6S077 · 401.41–406.77 · more Taiwanese people into the ruling elite (PAPER, D04/R6) -->
+    <div class="c63-scene" id="c6s03-sc077" data-scene="C6S077">
+      <div class="c63-pg"><img class="p1" src="assets/textures/paper_cream_01.jpg" alt="" /><img class="p2 st" src="assets/textures/paper_stained_01_hires.jpg" alt="" /></div>
+      <div id="c6s03-sc077-cam" class="c63-cam">
+        <div id="c6s03-sc077-t" class="c63-abs t-serif c63-ink"><span id="c6s03-sc077-w1" class="c63-w">more </span><span id="c6s03-sc077-w2" class="c63-w t-serif-i">Taiwanese </span><span id="c6s03-sc077-w3" class="c63-w">people </span><span id="c6s03-sc077-w4" class="c63-w">into </span><span id="c6s03-sc077-w5" class="c63-w">the </span><span id="c6s03-sc077-w6" class="c63-w">ruling </span><span id="c6s03-sc077-w7" class="c63-w">elite</span></div>
+        <div id="c6s03-sc077-track"><div class="tx"></div></div>
+        <div id="c6s03-sc077-bar"><div class="ht"></div><div class="ed"></div></div>
+        <svg id="c6s03-sc077-svg" class="c63-svg"></svg>
+      </div>
+      <div class="folds"></div>
+    </div>
+
+    <!-- C6S078 · 406.77–413.09 · economy line over the island ghost (NIGHT, D13) -->
+    <div class="c63-scene" id="c6s03-sc078" data-scene="C6S078">
+      <img id="c6s03-sc078-ghost" src="assets/maps/kit/taiwan_night.jpg" alt="" />
+      <div id="c6s03-sc078-cam">
+        <svg id="c6s03-sc078-svg" viewBox="0 0 2300 1080"></svg>
+        <div class="c63-card" id="c6s03-sc078-c1"><div class="ph" style="background-image:url('assets/c6/derived/c6s03/still_formosa_1959_department_store.jpg')"></div></div>
+        <div class="c63-card" id="c6s03-sc078-c2"><div class="ph" style="background-image:url('assets/c6/derived/c6s03/still_newsreel_1959_formosa_taipei_street.jpg')"></div></div>
+      </div>
+      <div id="c6s03-sc078-k" class="c63-abs t-label clean"><span id="c6s03-sc078-w1" class="c63-w">economy</span></div>
+      <div id="c6s03-sc078-r" class="c63-abs t-serif-i clean"><span id="c6s03-sc078-w2" class="c63-w">get </span><span id="c6s03-sc078-w3" class="c63-w">people </span><span id="c6s03-sc078-w4" class="c63-w">rich</span></div>
+      <div id="c6s03-sc078-h" class="c63-abs t-label clean"><span id="c6s03-sc078-w5" class="c63-w">happy </span><span id="c6s03-sc078-w6" class="c63-w">with </span><span id="c6s03-sc078-w7" class="c63-w">the </span><span id="c6s03-sc078-w8" class="c63-w">government</span></div>
+      <div class="c63-credit t-label">Film: Formosa 1959 newsreels · Relief: AWS Terrain Tiles</div>
+    </div>
+
+    <!-- C6S079–080 · 413.09–425.09 · one-party state → democracy, the 'spoil' tape (PAPER, D05/R7) -->
+    <div class="c63-scene" id="c6s03-sc079" data-scene="C6S079">
+      <div class="c63-pg"><img class="p1" src="assets/textures/paper_cream_02.jpg" alt="" /><img class="p2" src="assets/textures/paper_fiber_01.jpg" alt="" /></div>
+      <div id="c6s03-sc079-cam" class="c63-cam">
+        <div id="c6s03-sc079-band"></div>
+        <svg id="c6s03-sc079-svg" class="c63-svg"></svg>
+        <div id="c6s03-sc079-ballot"><div class="row" style="top:34px"><b></b><i></i></div><div class="row" style="top:98px"><b style="width:120px"></b><i></i></div><div class="row" style="top:162px"><b style="width:170px"></b><i></i></div><div id="c6s03-sc079-stamp"></div></div>
+        <div id="c6s03-sc079-one" class="c63-abs"><span class="c63-lb t-display"><span id="c6s03-sc079-w1" class="c63-w">one </span><span id="c6s03-sc079-w2" class="c63-w">party </span><span id="c6s03-sc079-w3" class="c63-w">state</span></span></div>
+        <div id="c6s03-sc079-dem0" class="c63-abs t-label"><span id="c6s03-sc079-w0" class="c63-w">democracy</span></div>
+        <div id="c6s03-sc079-dem" class="c63-abs t-display c63-ink"><span id="c6s03-sc079-w4" class="c63-w">DEMOCRACY</span></div>
+        <div id="c6s03-sc079-ts" class="c63-abs t-serif-i c63-ink"><span id="c6s03-sc079-w5" class="c63-w">this </span><span id="c6s03-sc079-w6" class="c63-w">story</span></div>
+        <div id="c6s03-sc079-tape"><div class="bd"></div><div class="tx"></div><div class="lb t-label">spoil</div></div>
+      </div>
+      <div class="folds"></div>
+    </div>
+
+    <!-- C6S081 · 425.09–432.86 · 10 Major Projects (NIGHT) -->
+    <div class="c63-scene" id="c6s03-sc081" data-scene="C6S081">
+      <div class="c63-weave" id="c6s03-sc081-wv"><div id="c6s03-sc081-cam" class="c63-cam" style="transform-origin:1300px 400px">
+        <video id="c6s03-sc081-vid" class="c63-vid" src="assets/c4/footage/taiwan_1960_refinery_towers.mp4" muted playsinline data-start="23.68" data-duration="7.6" data-media-start="0.5"
+          data-color-grading='{"intensity":1,"adjust":{"saturation":-0.5,"contrast":0.08},"effects":{"chromaticAberration":0.12,"chromaticAngle":0}}'></video>
+      </div></div>
+      <canvas id="c6s03-sc081-streaks" class="streaks" style="opacity:0.45"></canvas>
+      <div class="c63-scriml"></div>
+      <div id="c6s03-sc081-k" class="c63-abs t-label clean"><span id="c6s03-sc081-w1" class="c63-w">first</span></div>
+      <div id="c6s03-sc081-ip" class="c63-abs t-serif-i clean"><span id="c6s03-sc081-w2" class="c63-w">infrastructure </span><span id="c6s03-sc081-w3" class="c63-w">program</span></div>
+      <div id="c6s03-sc081-ten" class="c63-abs t-display halate" style="opacity:0">10</div>
+      <div id="c6s03-sc081-mp" class="c63-abs t-display clean"><span id="c6s03-sc081-w4" class="c63-w">MAJOR</span><br /><span id="c6s03-sc081-w5" class="c63-w">PROJECTS</span></div>
+      <div class="c63-credit t-label">Film: Taiwan, c. 1960 (refinery) — archival</div>
+    </div>
+
+    <!-- C6S082 · 432.86–438.14 · infrastructure + industry footage (NIGHT) -->
+    <div class="c63-scene" id="c6s03-sc082" data-scene="C6S082">
+      <div class="c63-weave" id="c6s03-sc082-wv"><div id="c6s03-sc082-cam" class="c63-cam" style="transform-origin:960px 540px">
+        <video id="c6s03-sc082-a" class="c63-vid" src="assets/c4/footage/taiwan_1960_highway_builders.mp4" muted playsinline data-start="31.45" data-duration="3.2" data-media-start="0.0"
+          data-color-grading='{"intensity":1,"adjust":{"saturation":-0.35,"contrast":0.06},"effects":{"chromaticAberration":0.12,"chromaticAngle":0}}'></video>
+        <video id="c6s03-sc082-b" class="c63-vid" src="assets/intro/footage/taiwan_1960_steel_mill_molten.mp4" muted playsinline data-start="34.59" data-duration="2.4" data-media-start="2.0"
+          data-color-grading='{"intensity":1,"adjust":{"saturation":-0.3,"contrast":0.06},"effects":{"chromaticAberration":0.12,"chromaticAngle":0}}'></video>
+      </div></div>
+      <div class="c63-scrimt"></div><div class="c63-scrimb" style="height:420px"></div>
+      <div id="c6s03-sc082-l1" class="c63-abs t-label clean"><span id="c6s03-sc082-w1" class="c63-w">infrastructure</span></div>
+      <div id="c6s03-sc082-l2" class="c63-abs t-label clean"><span id="c6s03-sc082-w2" class="c63-w">industry</span></div>
+      <div id="c6s03-sc082-it" class="c63-abs t-serif-i clean"><span id="c6s03-sc082-w3" class="c63-w">inside </span><span id="c6s03-sc082-w4" class="c63-w">of </span><span id="c6s03-sc082-w5" class="c63-w">Taiwan</span></div>
+      <svg id="c6s03-sc082-mk" class="c63-svg"></svg>
+      <div class="c63-credit t-label">Film: Taiwan, c. 1960 (road builders, steel mill) — archival</div>
+    </div>
+
+    <!-- C6S083 · 438.14–446.62 · ports, roads, steel mills… on the satellite map (NIGHT, D14) -->
+    <div class="c63-scene" id="c6s03-sc083" data-scene="C6S083">
+      <div id="c6s03-sc083-cam">
+        <img id="c6s03-sc083-map" src="assets/maps/kit/taiwan_satdesat.jpg" alt="" />
+        <svg id="c6s03-sc083-msvg" viewBox="0 0 3246 4399"></svg>
+      </div>
+      <div id="c6s03-sc083-leg"></div>
+      <div class="c63-row" id="c6s03-sc083-r1" style="top:130px"><div class="th" style="background-image:url('assets/c6/derived/c6s03/still_formosa_1959_harbour_bridge.jpg')"></div><div class="lb t-label clean">ports</div></div>
+      <div class="c63-row" id="c6s03-sc083-r2" style="top:268px"><div class="th" style="background-image:url('assets/c6/derived/c6s03/still_taiwan_1960_highway_builders.jpg')"></div><div class="lb t-label clean">roads</div></div>
+      <div class="c63-row" id="c6s03-sc083-r3" style="top:406px"><div class="th" style="background-image:url('assets/c6/derived/c6s03/still_taiwan_1960_steel_mill_molten.jpg')"></div><div class="lb t-label clean">steel mills</div></div>
+      <div class="c63-row" id="c6s03-sc083-r4" style="top:544px"><div class="th" style="background-image:url('assets/c6/derived/c6s03/still_formosa_1959_ship_loading_export.jpg')"></div><div class="lb t-label clean">shipyards</div></div>
+      <div class="c63-row" id="c6s03-sc083-r5" style="top:682px"><div class="th" style="background-image:url('assets/c6/derived/c6s03/still_taiwan_1960_steam_train.jpg')"></div><div class="lb t-label clean">railways</div></div>
+      <div class="c63-row" id="c6s03-sc083-r6" style="top:820px"><div class="th" style="background:#2b2f35"><svg viewBox="0 0 160 110" style="position:absolute;inset:0;width:100%;height:100%"><path d="M52 98 C58 70 56 48 46 24 L80 24 C70 48 68 70 74 98 Z M92 98 C98 70 96 48 86 24 L120 24 C110 48 108 70 114 98 Z" fill="#c9c3b6"/><path d="M60 18 q8 -10 18 -4 M100 18 q8 -10 18 -4" stroke="#c9c3b6" stroke-width="3" fill="none"/></svg></div><div class="lb t-label clean">nuclear plants</div></div>
+      <div id="c6s03-sc083-any" class="c63-abs t-serif-i clean"><span id="c6s03-sc083-w1" class="c63-w">anything </span><span id="c6s03-sc083-w2" class="c63-w">you </span><br /><span id="c6s03-sc083-w3" class="c63-w">can </span><span id="c6s03-sc083-w4" class="c63-w">think </span><span id="c6s03-sc083-w5" class="c63-w">of</span></div>
+      <div class="c63-credit t-label">Imagery: Esri, Maxar, Earthstar Geographics · Film stills: Taiwan, c. 1959–60</div>
+    </div>
+
+    <!-- C6S084–085 · 446.62–456.94 · money flows in, invested (PAPER, D11) -->
+    <div class="c63-scene" id="c6s03-sc084" data-scene="C6S084">
+      <div class="c63-pg"><img class="p1" src="assets/textures/paper_cream_01.jpg" alt="" /><img class="p2" src="assets/textures/paper_fiber_01.jpg" alt="" /></div>
+      <div id="c6s03-sc084-cam" class="c63-cam">
+        <div id="c6s03-sc084-tw"><div class="ht"></div></div>
+        <svg id="c6s03-sc084-svg" viewBox="0 0 1920 1080"></svg>
+        <div id="c6s03-sc084-zero" class="c63-abs" style="opacity:0"><span class="c63-lb t-display n">0%</span></div>
+        <div id="c6s03-sc084-zl" class="c63-abs t-label c63-ink"><span id="c6s03-sc084-w2" class="c63-w">zero </span><span id="c6s03-sc084-w3" class="c63-w">interest</span></div>
+        <div id="c6s03-sc084-sa" class="c63-abs t-label c63-ink"><span id="c6s03-sc084-w4" class="c63-w">Saudi Arabia</span></div>
+      </div>
+      <div id="c6s03-sc084-k" class="c63-abs t-label c63-ink"><span id="c6s03-sc084-w1" class="c63-w">money</span></div>
+      <div id="c6s03-sc084-inv" class="c63-abs t-serif-i c63-ink"><span id="c6s03-sc084-w5" class="c63-w">invest </span><span id="c6s03-sc084-w6" class="c63-w">a </span><span id="c6s03-sc084-w7" class="c63-w">lot</span></div>
+      <div class="folds"></div>
+      <div class="c63-credit ink t-label">Shapes: Natural Earth (PD)</div>
+    </div>
+
+    <!-- C6S086 · 456.94–466.46 · they work out — then → now (NIGHT) -->
+    <div class="c63-scene" id="c6s03-sc086" data-scene="C6S086">
+      <div class="c63-weave" id="c6s03-sc086-wv"><div id="c6s03-sc086-cama" class="c63-cam" style="transform-origin:960px 540px">
+        <video id="c6s03-sc086-then" class="c63-vid" src="assets/c4/footage/taiwan_1960_highway_builders.mp4" muted playsinline data-start="55.53" data-duration="6.4" data-media-start="3.4"
+          data-color-grading='{"intensity":1,"adjust":{"saturation":-0.4,"contrast":0.06},"effects":{"chromaticAberration":0.12,"chromaticAngle":0}}'></video>
+      </div></div>
+      <div id="c6s03-sc086-now"><img src="assets/c6/derived/c6s03/freeway1_hsinchu_esri_z17_crop.jpg" alt="" /></div>
+      <div class="c63-scrimt"></div><div class="c63-scrimb" style="height:420px"></div>
+      <div id="c6s03-sc086-wo" class="c63-abs t-label clean"><span id="c6s03-sc086-w1" class="c63-w">work </span><span id="c6s03-sc086-w2" class="c63-w">out</span></div>
+      <div id="c6s03-sc086-rw" class="c63-abs t-serif-i clean"><span id="c6s03-sc086-w3" class="c63-w">really </span><span id="c6s03-sc086-w4" class="c63-w">well</span></div>
+      <div id="c6s03-sc086-pd" class="c63-abs t-label clean"><span id="c6s03-sc086-w5" class="c63-w">paying </span><span id="c6s03-sc086-w6" class="c63-w">dividends</span></div>
+      <div id="c6s03-sc086-td" class="c63-abs t-serif-i clean"><span id="c6s03-sc086-w7" class="c63-w">to </span><span id="c6s03-sc086-w8" class="c63-w">this </span><span id="c6s03-sc086-w9" class="c63-w">very </span><span id="c6s03-sc086-w10" class="c63-w">day</span></div>
+      <div class="c63-credit t-label" id="c6s03-sc086-cr1">Film: Taiwan, c. 1960 (road builders) — archival</div>
+      <div class="c63-credit t-label" id="c6s03-sc086-cr2" style="opacity:0">National Freeway 1, Hsinchu — Imagery: Esri, Maxar, Earthstar Geographics</div>
+    </div>
+
+    <!-- C6S087 · 466.46–473.74 · none technological, all infrastructure (NIGHT, D12) -->
+    <div class="c63-scene" id="c6s03-sc087" data-scene="C6S087">
+      <div id="c6s03-sc087-cam" class="c63-cam" style="transform-origin:960px 540px">
+        <div id="c6s03-sc087-k" class="c63-abs t-label clean"><span id="c6s03-sc087-w1" class="c63-w">10 </span><span id="c6s03-sc087-w2" class="c63-w">major </span><span id="c6s03-sc087-w3" class="c63-w">projects</span></div>
+        <div id="c6s03-sc087-list"></div>
+        <div id="c6s03-sc087-col"></div>
+        <div id="c6s03-sc087-th" class="c63-abs t-label clean"><span id="c6s03-sc087-w5" class="c63-w">technological</span></div>
+        <div id="c6s03-sc087-ih" class="c63-abs t-serif-i clean"><span id="c6s03-sc087-w7" class="c63-w">infrastructure</span></div>
+        <svg id="c6s03-sc087-svg" class="c63-svg"></svg>
+        <div id="c6s03-sc087-none" class="c63-abs t-display clean"><span id="c6s03-sc087-w4" class="c63-w">none</span></div>
+        <div id="c6s03-sc087-all" class="c63-abs t-display clean"><span id="c6s03-sc087-w6" class="c63-w">ALL</span></div>
+      </div>
+    </div>
+
+    <!-- C6S088–089 · 473.74–483.42 · a few months → Chiang Ching-kuo → secretary general (PAPER, D15) -->
+    <div class="c63-scene" id="c6s03-sc088" data-scene="C6S088">
+      <div class="c63-pg"><img class="p1" src="assets/textures/paper_cream_02.jpg" alt="" /><img class="p2 gr" src="assets/textures/paper_graph_01_hires.jpg" alt="" /></div>
+      <div id="c6s03-sc088-cam" class="c63-cam">
+        <div id="c6s03-sc088-cal">
+          <div class="c63-calp" id="c6s03-sc088-p4"><b></b><div class="g"></div><div class="tx"></div></div>
+          <div class="c63-calp" id="c6s03-sc088-p3"><b style="width:160px"></b><div class="g"></div><div class="tx"></div></div>
+          <div class="c63-calp" id="c6s03-sc088-p2"><b style="width:240px"></b><div class="g"></div><div class="tx"></div></div>
+          <div class="c63-calp" id="c6s03-sc088-p1"><b style="width:180px"></b><div class="g"></div><div class="tx"></div></div>
+          <div id="c6s03-sc088-head"></div>
+        </div>
+        <div id="c6s03-sc088-fm" class="c63-abs t-serif-i c63-ink"><span id="c6s03-sc088-w1" class="c63-w">a </span><span id="c6s03-sc088-w2" class="c63-w">few </span><span id="c6s03-sc088-w3" class="c63-w">months</span></div>
+        <div class="c63-card" id="c6s03-sc088-card" style="opacity:0"><div class="ph" style="background-image:url('assets/c6/photos/chiang_ching_kuo_portrait_colour.jpg')"></div></div>
+        <div class="c63-circ cel" id="c6s03-sc088-cck" style="opacity:0"><div class="ph" style="background-image:url('assets/c6/photos/chiang_ching_kuo_portrait_colour.jpg');background-size:330px auto;background-position:-35px -18px;filter:sepia(0.15)"></div></div>
+        <div class="c63-circ" id="c6s03-sc088-sg" style="opacity:0"><img class="sil" src="assets/intro/cutouts/silhouette_exec.png" alt="" /></div>
+        <svg id="c6s03-sc088-svg" class="c63-svg"></svg>
+        <div id="c6s03-sc088-nm" class="c63-abs"><span class="c63-lb t-display"><span id="c6s03-sc088-w4" class="c63-w">CHIANG </span><span id="c6s03-sc088-w5" class="c63-w">CHING-KUO</span></span></div>
+        <div id="c6s03-sc088-sgl" class="c63-abs t-label c63-lab"><span id="c6s03-sc088-w6" class="c63-w">secretary </span><span id="c6s03-sc088-w7" class="c63-w">general</span></div>
+        <div id="c6s03-sc088-eng" class="c63-tag t-serif-i">engineer</div>
+      </div>
+      <div class="folds"></div>
+      <div class="c63-credit ink t-label">Portrait: Chiang Ching-kuo (ROC government, PD)</div>
+    </div>
+
+    <!-- C6S090–091 · 483.42–495.95 · the premier's instruction, typed (NIGHT, D08) -->
+    <div class="c63-scene" id="c6s03-sc090" data-scene="C6S090">
+      <div id="c6s03-sc090-desk"><div class="tx"></div></div>
+      <div id="c6s03-sc090-cam" class="c63-cam">
+        <div id="c6s03-sc090-memo">
+          <img src="assets/textures/paper_cream_02.jpg" alt="" />
+          <div class="rule" style="top:86px"></div><div class="rule" style="top:92px;height:1px"></div>
+          <div class="c63-ty t-serif" id="c6s03-sc090-l1" style="top:150px"><span id="c6s03-sc090-w1">technological </span><span id="c6s03-sc090-w2">breakthrough</span></div>
+          <div class="c63-ty t-serif" id="c6s03-sc090-l2" style="top:225px"><span id="c6s03-sc090-w3">Taiwan</span></div>
+          <div class="c63-ty t-serif" id="c6s03-sc090-l3" style="top:300px"><span id="c6s03-sc090-w4">world </span><span id="c6s03-sc090-w5">class</span></div>
+          <div class="c63-ty t-serif" id="c6s03-sc090-l4" style="top:375px"><span id="c6s03-sc090-w6">whatever </span><span id="c6s03-sc090-w7">the </span><span id="c6s03-sc090-w8">technology </span><span id="c6s03-sc090-w9">is</span></div>
+          <div class="c63-ty t-serif" id="c6s03-sc090-l5" style="top:500px"><span id="c6s03-sc090-w10">proposal</span></div>
+          <div id="c6s03-sc090-big" class="c63-abs t-display c63-ink"><span id="c6s03-sc090-w11" class="c63-w">Bigger </span><span id="c6s03-sc090-w12" class="c63-w">the </span><span id="c6s03-sc090-w13" class="c63-w">better</span></div>
+          <svg id="c6s03-sc090-mk" viewBox="0 0 900 1060" style="position:absolute;inset:0;width:100%;height:100%;overflow:visible"></svg>
+          <div id="c6s03-sc090-par" class="t-label">(paraphrased)</div>
+        </div>
+      </div>
+      <div id="c6s03-sc090-pool" class="c63-lamp"></div>
+      <div id="c6s03-sc090-shade"></div>
+    </div>
+
+    <!-- C6S092 · 495.95–502.60 · nothing to do with chips — technology (PAPER) -->
+    <div class="c63-scene" id="c6s03-sc092" data-scene="C6S092">
+      <div class="c63-pg"><img class="p1" src="assets/textures/paper_cream_02.jpg" alt="" /><img class="p2 st" src="assets/textures/paper_stained_01_hires.jpg" alt="" style="object-position:80% 20%" /></div>
+      <div id="c6s03-sc092-cam" class="c63-cam">
+        <div class="c63-card" id="c6s03-sc092-card"><div class="ph" style="background-image:url('assets/c2/photos/chm_micrologic_dime_life_1961.jpg')"></div></div>
+        <svg id="c6s03-sc092-mk" class="c63-svg"></svg>
+        <div id="c6s03-sc092-n" class="c63-abs t-label c63-ink"><span id="c6s03-sc092-w1" class="c63-w">nothing </span><span id="c6s03-sc092-w2" class="c63-w">to </span><span id="c6s03-sc092-w3" class="c63-w">do </span><span id="c6s03-sc092-w4" class="c63-w">with</span></div>
+        <div id="c6s03-sc092-c" class="c63-abs t-serif-i c63-ink"><span id="c6s03-sc092-w5" class="c63-w">chips</span></div>
+        <div id="c6s03-sc092-tech" class="c63-abs t-display">TECHNOLOGY</div>
+      </div>
+      <div class="folds"></div>
+      <div class="c63-credit ink t-label">Photo: Fairchild Micrologic, LIFE 1961 — Computer History Museum (fair use)</div>
+    </div>
+
+    <!-- C6S093 · 502.60–508.81 · documentaries — film strips (PAPER, D07 variation) -->
+    <div class="c63-scene" id="c6s03-sc093" data-scene="C6S093">
+      <div class="c63-pg"><img class="p1" src="assets/textures/paper_cream_01.jpg" alt="" /><img class="p2 ln" src="assets/textures/paper_lined_01_hires.jpg" alt="" /></div>
+      <div id="c6s03-sc093-cam"></div>
+      <div id="c6s03-sc093-d" class="c63-abs"><span class="c63-lb t-label"><span id="c6s03-sc093-w1" class="c63-w">documentaries</span></span></div>
+      <div id="c6s03-sc093-t" class="c63-abs t-serif-i c63-ink"><span id="c6s03-sc093-w2" class="c63-w">technology</span></div>
+      <div class="folds"></div>
+      <div class="c63-credit ink t-label">Film frames: Taiwan, c. 1959–60 — archival</div>
+    </div>
+
+    <!-- C6S094 · 508.81–513.69 · the United States goes to the Moon, on a 1955 RCA set (NIGHT) -->
+    <div class="c63-scene" id="c6s03-sc094" data-scene="C6S094">
+      <div id="c6s03-sc094-cam" class="c63-cam">
+        <div id="c6s03-sc094-tube"></div>
+        <div id="c6s03-sc094-scr"><video id="c6s03-sc094-vid" src="assets/c6/footage/apollo11_first_step_tv_broadcast.mp4" muted playsinline data-start="107.4" data-duration="4.95" data-media-start="4.0"
+          data-color-grading='{"intensity":1,"adjust":{"saturation":-1,"contrast":0.1},"effects":{"chromaticAberration":0.35,"chromaticAngle":0,"scanlines":0.4,"scanlineCount":0.17,"scanlineSoftness":1,"crtCurvature":0.35,"filmArtifacts":0.45}}'></video></div>
+        <div id="c6s03-sc094-glow"></div>
+        <img id="c6s03-sc094-tv" src="assets/c6/made/rca_ctc5_tv_frame.png" alt="" />
+      </div>
+      <div class="c63-scrimb" style="height:420px"></div>
+      <div id="c6s03-sc094-us" class="c63-abs t-label clean"><span id="c6s03-sc094-w1" class="c63-w">United </span><span id="c6s03-sc094-w2" class="c63-w">States</span></div>
+      <div id="c6s03-sc094-moon" class="c63-abs t-display halate"><span id="c6s03-sc094-w3" class="c63-w">MOON</span></div>
+      <div id="c6s03-sc094-fu" class="c63-abs t-serif-i clean"><span id="c6s03-sc094-w4" class="c63-w">the </span><span id="c6s03-sc094-w5" class="c63-w">future</span></div>
+      <div class="c63-credit t-label">NASA (PD) · TV: RCA CTC-5, Early Television Museum — Wikimedia Commons, CC BY-SA 4.0</div>
+    </div>
+
+    <!-- C6S095 · 513.69–519.85 · 2.5D Aldrin; 50 / 20 years ago (NIGHT) -->
+    <div class="c63-scene" id="c6s03-sc095" data-scene="C6S095">
+      <div id="c6s03-sc095-stage"><div id="c6s03-sc095-cam3">
+        <div class="c63-lay" id="c6s03-sc095-back"><img src="assets/c6/derived/c6s03/aldrin_25d_back.jpg" alt="" /></div>
+        <div class="c63-lay" id="c6s03-sc095-subj"><img src="assets/c6/derived/c6s03/aldrin_25d_subject.png" alt="" /></div>
+        <div class="c63-lay" id="c6s03-sc095-front"><img src="assets/c6/derived/c6s03/aldrin_25d_front.png" alt="" /></div>
+      </div></div>
+      <div id="c6s03-sc095-haze"></div>
+      <div class="c63-scrimb" style="height:360px"></div>
+      <div class="c63-card" id="c6s03-sc095-m1" style="opacity:0"><div class="ph" style="background-image:url('assets/c6/derived/c6s03/melies_trip_to_the_moon_1902_rocket_eye.jpg')"></div></div>
+      <div class="c63-card" id="c6s03-sc095-m2" style="opacity:0"><div class="ph" style="background-image:url('assets/c6/derived/c6s03/destination_moon_1950_lunar_surface.jpg')"></div></div>
+      <div id="c6s03-sc095-l1" class="c63-abs t-label clean"><span id="c6s03-sc095-w4" class="c63-w">50 </span><span id="c6s03-sc095-w5" class="c63-w">years </span><span id="c6s03-sc095-w6" class="c63-w">ago</span></div>
+      <div id="c6s03-sc095-l2" class="c63-abs t-label clean"><span id="c6s03-sc095-w7" class="c63-w">20 </span><span id="c6s03-sc095-w8" class="c63-w">years </span><span id="c6s03-sc095-w9" class="c63-w">ago</span></div>
+      <div id="c6s03-sc095-ci" class="c63-abs t-serif-i clean"><span id="c6s03-sc095-w1" class="c63-w">can't </span><span id="c6s03-sc095-w2" class="c63-w">even </span><span id="c6s03-sc095-w3" class="c63-w">imagine</span></div>
+      <div id="c6s03-sc095-gm" class="c63-abs t-serif-i clean"><span id="c6s03-sc095-w10" class="c63-w">going </span><span id="c6s03-sc095-w11" class="c63-w">to </span><span id="c6s03-sc095-w12" class="c63-w">the </span><span id="c6s03-sc095-w13" class="c63-w">moon</span></div>
+      <div class="c63-credit t-label">NASA AS11-40-5903 (PD) · Méliès, A Trip to the Moon, 1902 (PD) · Destination Moon, 1950 (fair use)</div>
+    </div>
+
+    <!-- C6S096 · 519.85–525.69 · regular flights to the moon (PAPER, Vox layered) -->
+    <div class="c63-scene" id="c6s03-sc096" data-scene="C6S096">
+      <div class="c63-pg"><img class="p1" src="assets/textures/paper_cream_02.jpg" alt="" /><img class="p2" src="assets/textures/paper_fiber_01.jpg" alt="" style="opacity:0.7" /></div>
+      <div id="c6s03-sc096-cam" class="c63-cam" style="transform-origin:1300px 460px">
+        <div class="c63-abs" id="c6s03-sc096-pa"></div>
+        <div class="c63-abs" id="c6s03-sc096-pb"></div>
+        <div id="c6s03-sc096-stack"></div>
+      </div>
+      <div id="c6s03-sc096-t" class="c63-abs t-serif-i c63-ink"><span id="c6s03-sc096-w1" class="c63-w">regular </span><span id="c6s03-sc096-w2" class="c63-w">flights </span><span id="c6s03-sc096-w3" class="c63-w">to </span><span id="c6s03-sc096-w4" class="c63-w">the </span><span id="c6s03-sc096-w5" class="c63-w">moon</span></div>
+      <div class="folds"></div>
+      <div class="c63-credit ink t-label">Destination Moon, 1950 (fair use) · NASA (PD)</div>
+    </div>
+
+    <!-- C6S097 · 525.69–530.65 · Mission Control: the people building the future (NIGHT) -->
+    <div class="c63-scene" id="c6s03-sc097" data-scene="C6S097">
+      <div id="c6s03-sc097-cam" class="c63-cam">
+        <img id="c6s03-sc097-img" src="assets/c6/photos/apollo11_mission_control_s69-39593.jpg" alt="" />
+        <svg id="c6s03-sc097-svg" class="c63-svg"></svg>
+      </div>
+      <div class="c63-scrimt"></div><div class="c63-scrimb" style="height:380px"></div>
+      <div id="c6s03-sc097-pf" class="c63-abs t-serif-i clean"><span id="c6s03-sc097-w1" class="c63-w">part </span><span id="c6s03-sc097-w2" class="c63-w">of </span><span id="c6s03-sc097-w3" class="c63-w">this </span><span id="c6s03-sc097-w4" class="c63-w">future</span></div>
+      <div id="c6s03-sc097-tp" class="c63-abs t-label clean"><span id="c6s03-sc097-w5" class="c63-w">top </span><span id="c6s03-sc097-w6" class="c63-w">people</span></div>
+      <div id="c6s03-sc097-bu" class="c63-abs t-serif-i clean"><span id="c6s03-sc097-w7" class="c63-w">building</span></div>
+      <div class="c63-credit t-label">Mission Control, Apollo 11 — NASA S69-39593 (PD)</div>
+    </div>
+
+    <!-- C6S098–099 · 530.65–541.95 · D15: top guy = secretary general → telecom official (PAPER) -->
+    <div class="c63-scene" id="c6s03-sc098" data-scene="C6S098">
+      <div class="c63-pg"><img class="p1" src="assets/textures/paper_cream_02.jpg" alt="" /><img class="p2 gr" src="assets/textures/paper_graph_01_hires.jpg" alt="" /></div>
+      <div id="c6s03-sc098-cam">
+        <div class="c63-circ cel" id="c6s03-sc098-cck"><div class="ph" style="background-image:url('assets/c6/photos/chiang_ching_kuo_portrait_colour.jpg');background-size:330px auto;background-position:-35px -18px;filter:sepia(0.15)"></div></div>
+        <div class="c63-circ" id="c6s03-sc098-sg"><img class="sil" src="assets/intro/cutouts/silhouette_exec.png" alt="" /></div>
+        <div class="c63-circ" id="c6s03-sc098-tc" style="opacity:0"><div class="ph"></div><img class="sil" src="assets/intro/cutouts/silhouette_exec.png" alt="" /></div>
+        <svg id="c6s03-sc098-svg" viewBox="0 0 2200 1080" style="position:absolute;left:0;top:0;width:2200px;height:1080px;overflow:visible"></svg>
+        <div id="c6s03-sc098-task" class="c63-tag t-serif-i"><span id="c6s03-sc098-w3" class="c63-w">figure </span><span id="c6s03-sc098-w4" class="c63-w">it </span><span id="c6s03-sc098-w5" class="c63-w">out</span></div>
+        <div id="c6s03-sc098-tg" class="c63-abs t-label c63-lab"><span id="c6s03-sc098-w1" class="c63-w">top </span><span id="c6s03-sc098-w2" class="c63-w">guys</span></div>
+        <div id="c6s03-sc098-sgl" class="c63-abs"><span class="c63-lb t-display"><span id="c6s03-sc098-w6" class="c63-w">SECRETARY </span><span id="c6s03-sc098-w7" class="c63-w">GENERAL</span></span></div>
+        <div id="c6s03-sc098-ro" class="c63-abs t-label c63-lab"><span id="c6s03-sc098-w8" class="c63-w">reaches </span><span id="c6s03-sc098-w9" class="c63-w">out</span></div>
+        <div id="c6s03-sc098-tcl" class="c63-abs"><span class="c63-lb t-display"><span id="c6s03-sc098-w10" class="c63-w">TELECOMMUNICATION</span></span></div>
+        <div id="c6s03-sc098-gov" class="c63-abs t-label c63-lab"><span id="c6s03-sc098-w11" class="c63-w">government</span></div>
+      </div>
+      <div class="folds"></div>
+      <div class="c63-credit ink t-label">Portrait: Chiang Ching-kuo (PD) · Telephones: CC0</div>
+    </div>
+
+    <!-- C6S100 · 541.95–547.13 · transistors (NIGHT) -->
+    <div class="c63-scene" id="c6s03-sc100" data-scene="C6S100">
+      <div id="c6s03-sc100-cam" class="c63-cam"><img id="c6s03-sc100-img" src="assets/c2/objects/ck722.jpg" alt="" /></div>
+      <div class="c63-scrimt"></div><div class="c63-scrimb" style="height:480px"></div>
+      <div id="c6s03-sc100-tc" class="c63-abs t-label clean"><span id="c6s03-sc100-w1" class="c63-w">telecommunication</span></div>
+      <div id="c6s03-sc100-tr" class="c63-abs t-display halate" style="opacity:0">TRANSISTORS</div>
+      <div id="c6s03-sc100-nt" class="c63-abs t-serif-i clean"><span id="c6s03-sc100-w2" class="c63-w">new </span><span id="c6s03-sc100-w3" class="c63-w">technology</span></div>
+      <div class="c63-credit t-label">Raytheon CK722 transistor — Wikimedia Commons (CC)</div>
+    </div>
+
+    <!-- C6S101 · 547.13–554.94 · '70s circuits and transistors, new-ish (NIGHT) -->
+    <div class="c63-scene" id="c6s03-sc101" data-scene="C6S101">
+      <div id="c6s03-sc101-cam">
+        <div id="c6s03-sc101-tube"></div>
+        <div id="c6s03-sc101-scr"><video id="c6s03-sc101-vid" src="assets/intro/footage/oscilloscope_fairchild_square_wave.mp4" muted playsinline data-start="145.72" data-duration="8.0" data-media-start="0.0"
+          data-color-grading='{"intensity":1,"adjust":{"saturation":-0.6,"contrast":0.12},"effects":{"chromaticAberration":0.25,"chromaticAngle":0,"scanlines":0.3,"scanlineCount":0.2,"scanlineSoftness":1,"filmArtifacts":0.3}}'></video></div>
+        <img id="c6s03-sc101-frame" src="assets/intro/screens/tektronix_475a_scope_frame.png" alt="" />
+        <div class="c63-card" id="c6s03-sc101-board" style="opacity:0"><div class="ph" style="background-image:url('assets/c2/photos/chm_minuteman_guidance_computer_detail.jpg')"></div></div>
+      </div>
+      <div class="c63-scrimb" style="height:420px"></div>
+      <div class="c63-scrimt" style="height:260px"></div>
+      <div id="c6s03-sc101-70" class="c63-abs t-label clean"><span id="c6s03-sc101-w1" class="c63-w">the </span><span id="c6s03-sc101-w2" class="c63-w">'70s</span></div>
+      <div id="c6s03-sc101-ni" class="c63-abs t-serif-i clean"><span id="c6s03-sc101-w6" class="c63-w">new-ish</span></div>
+      <div id="c6s03-sc101-ct" class="c63-abs t-label clean"><span id="c6s03-sc101-w3" class="c63-w">circuits </span><span id="c6s03-sc101-w4" class="c63-w">and </span><span id="c6s03-sc101-w5" class="c63-w">transistors</span></div>
+      <div class="c63-credit t-label">Tektronix 475A — Wikimedia Commons, CC BY-SA 4.0 · Film: Fairchild, Prelinger Archives · Minuteman guidance computer — CHM (fair use)</div>
+    </div>
+
+    <!-- C6S102 · 554.94–563.10 · reaches out to a random American guy in the country (PAPER, D15 + D10 route) -->
+    <div class="c63-scene" id="c6s03-sc102" data-scene="C6S102">
+      <div class="c63-pg"><img class="p1" src="assets/textures/paper_cream_01.jpg" alt="" /><img class="p2 gr" src="assets/textures/paper_graph_01_hires.jpg" alt="" /></div>
+      <div id="c6s03-sc102-cam" class="c63-cam">
+        <div id="c6s03-sc102-map"><img src="assets/c6/derived/c6s03/pacific_atlas_card.jpg" alt="" /><div class="tx"></div></div>
+        <div class="c63-circ" id="c6s03-sc102-sg"><img class="sil" src="assets/intro/cutouts/silhouette_exec.png" alt="" /></div>
+        <div class="c63-circ" id="c6s03-sc102-tc"><div class="ph"></div><img class="sil" src="assets/intro/cutouts/silhouette_exec.png" alt="" /></div>
+        <svg id="c6s03-sc102-svg" class="c63-svg"></svg>
+        <div class="c63-circ" id="c6s03-sc102-am" style="opacity:0"><img class="sil" src="assets/intro/cutouts/silhouette_exec.png" alt="" /></div>
+        <div id="c6s03-sc102-ro" class="c63-abs t-label c63-ink"><span id="c6s03-sc102-w1" class="c63-w">reaches </span><span id="c6s03-sc102-w2" class="c63-w">out</span></div>
+        <div id="c6s03-sc102-ame" class="c63-abs t-label c63-ink"><span id="c6s03-sc102-w3" class="c63-w">American</span></div>
+      </div>
+      <div id="c6s03-sc102-ic" class="c63-abs t-serif-i c63-ink"><span id="c6s03-sc102-w4" class="c63-w">in </span><span id="c6s03-sc102-w5" class="c63-w">the </span><span id="c6s03-sc102-w6" class="c63-w">country</span></div>
+      <div class="folds"></div>
+      <div class="c63-credit ink t-label">Relief: AWS Terrain Tiles · Natural Earth (PD)</div>
+    </div>
+
+    <!-- C6S103 · 563.10–569.90 · cutting edge in the US: RCA (NIGHT) -->
+    <div class="c63-scene" id="c6s03-sc103" data-scene="C6S103">
+      <div id="c6s03-sc103-bg"></div>
+      <div id="c6s03-sc103-cam"><img id="c6s03-sc103-ad" src="assets/c5/documents/electronics_1965-04-19_rca_transistor_ad.jpg" alt="" /></div>
+      <div class="c63-scriml" style="width:900px"></div>
+      <div id="c6s03-sc103-ce" class="c63-abs t-label clean"><span id="c6s03-sc103-w1" class="c63-w">cutting </span><span id="c6s03-sc103-w2" class="c63-w">edge</span></div>
+      <div id="c6s03-sc103-us" class="c63-abs t-label clean"><span id="c6s03-sc103-w3" class="c63-w">United </span><span id="c6s03-sc103-w4" class="c63-w">States</span></div>
+      <div id="c6s03-sc103-re" class="c63-abs t-serif-i clean"><span id="c6s03-sc103-w5" class="c63-w">researcher</span><br /><span id="c6s03-sc103-w6" class="c63-w">engineer</span></div>
+      <div id="c6s03-sc103-rca"></div>
+      <div class="c63-credit t-label">RCA advertisement, Electronics, 19 Apr 1965 (fair use)</div>
+    </div>
+
+    <!-- C6S104 · 569.90–575.26 · Pan Wen-yuan, an RCA man (NIGHT) -->
+    <div class="c63-scene" id="c6s03-sc104" data-scene="C6S104">
+      <div id="c6s03-sc104-bg"></div>
+      <div id="c6s03-sc104-cam" class="c63-cam">
+        <div class="c63-card" id="c6s03-sc104-card"><div class="ph"></div><div class="ht" style="background-image:url('assets/textures/halftone_01_norm.jpg')"></div></div>
+        <div id="c6s03-sc104-badge"><i></i></div>
+      </div>
+      <div id="c6s03-sc104-nm" class="c63-abs" style="opacity:0"><span class="c63-lb t-display" id="c6s03-sc104-nmb" style="background:var(--bone);color:var(--ink)"><span id="c6s03-sc104-w1" class="c63-w">PAN </span><span id="c6s03-sc104-w2" class="c63-w">WEN-YUAN</span></span></div>
+      <div id="c6s03-sc104-rm" class="c63-abs t-label clean"><span id="c6s03-sc104-w3" class="c63-w">RCA </span><span id="c6s03-sc104-w4" class="c63-w">man</span></div>
+      <div class="c63-credit t-label">Pan Wen-yuan — portrait via Wikipedia (fair use)</div>
+    </div>
+
+    <!-- C6S105 · 575.26–582.14 · annual conferences, every single year, consults with the government (PAPER) -->
+    <div class="c63-scene" id="c6s03-sc105" data-scene="C6S105">
+      <div class="c63-pg"><img class="p1" src="assets/textures/paper_cream_01.jpg" alt="" /><img class="p2 ln" src="assets/textures/paper_lined_01_hires.jpg" alt="" /></div>
+      <div id="c6s03-sc105-cam" class="c63-cam" style="transform-origin:960px 500px">
+        <div class="c63-circ" id="c6s03-sc105-pan"><div class="ph"></div></div>
+        <div class="c63-circ cel" id="c6s03-sc105-gov" style="opacity:0;background:#e6dfcf"><div class="tw"></div></div>
+        <div id="c6s03-sc105-tabs"></div>
+        <svg id="c6s03-sc105-svg" class="c63-svg"></svg>
+        <div id="c6s03-sc105-co" class="c63-abs t-label c63-ink"><span id="c6s03-sc105-w6" class="c63-w">consults</span></div>
+        <div id="c6s03-sc105-gl" class="c63-abs t-label c63-lab"><span id="c6s03-sc105-w7" class="c63-w">government</span></div>
+      </div>
+      <div id="c6s03-sc105-ac" class="c63-abs t-label c63-ink"><span id="c6s03-sc105-w1" class="c63-w">annual </span><span id="c6s03-sc105-w2" class="c63-w">conferences</span></div>
+      <div id="c6s03-sc105-ey" class="c63-abs t-serif-i c63-ink"><span id="c6s03-sc105-w3" class="c63-w">every </span><span id="c6s03-sc105-w4" class="c63-w">single </span><span id="c6s03-sc105-w5" class="c63-w">year</span></div>
+      <div class="folds"></div>
+      <div class="c63-credit ink t-label">Pan Wen-yuan — portrait via Wikipedia (fair use)</div>
+    </div>
+
+    <!-- C6S106 · 582.14–590.78 · old classmates → his name is Fei (PAPER, D15 + burn reveal) -->
+    <div class="c63-scene" id="c6s03-sc106" data-scene="C6S106">
+      <div class="c63-pg"><img class="p1" src="assets/textures/paper_cream_02.jpg" alt="" /><img class="p2 gr" src="assets/textures/paper_graph_01_hires.jpg" alt="" /></div>
+      <div id="c6s03-sc106-cam" class="c63-cam">
+        <div class="c63-circ" id="c6s03-sc106-pan"><div class="ph"></div></div>
+        <div class="c63-circ" id="c6s03-sc106-sg"><svg id="c6s03-sc106-bsvg" viewBox="0 0 260 260"></svg></div>
+        <svg id="c6s03-sc106-svg" class="c63-svg"></svg>
+        <div id="c6s03-sc106-oc" class="c63-abs t-serif-i c63-ink"><span id="c6s03-sc106-w1" class="c63-w">old </span><span id="c6s03-sc106-w2" class="c63-w">classmate</span></div>
+        <div id="c6s03-sc106-sgl" class="c63-abs t-label c63-lab"><span id="c6s03-sc106-w3" class="c63-w">secretary </span><span id="c6s03-sc106-w4" class="c63-w">general</span></div>
+        <div id="c6s03-sc106-fh" class="c63-abs"><span class="c63-lb t-display">FEI HUA</span></div>
+      </div>
+      <div class="folds"></div>
+      <div class="c63-credit ink t-label">Pan Wen-yuan — portrait via Wikipedia (fair use)</div>
+    </div>
+
+    <!-- C6S107 · 590.78–598.01 · breakfast tomorrow (NIGHT) — held into c7 -->
+    <div class="c63-scene" id="c6s03-sc107" data-scene="C6S107">
+      <div id="c6s03-sc107-cam" class="c63-cam">
+        <div id="c6s03-sc107-table"><div class="tx"></div><div class="wd"></div></div>
+        <div class="c63-yt" style="left:520px;top:780px;transform:rotate(-14deg)"></div>
+        <div class="c63-yt" style="left:560px;top:850px;transform:rotate(-10deg)"></div>
+        <div id="c6s03-sc107-bowl"><div class="rim"></div><div class="milk"></div><div class="hl"></div></div>
+        <div class="c63-card" id="c6s03-sc107-c1" style="opacity:0"><div class="ph" style="overflow:hidden"><img src="assets/intro/cutouts/silhouette_exec.png" alt="" /></div></div>
+        <div class="c63-card" id="c6s03-sc107-c2" style="opacity:0"><div class="ph"></div></div>
+        <div class="c63-card" id="c6s03-sc107-c3" style="opacity:0"><div class="ph"></div></div>
+        <div id="c6s03-sc107-note"><img src="assets/textures/paper_cream_02.jpg" alt="" /><div class="ln" style="top:110px"></div><div class="ln" style="top:200px"></div><div class="ln" style="top:250px"></div>
+          <div id="c6s03-sc107-tom" class="c63-abs t-serif-i"><span id="c6s03-sc107-w5" class="c63-w">tomorrow</span></div></div>
+      </div>
+      <div id="c6s03-sc107-pool" class="c63-lamp"></div>
+      <div id="c6s03-sc107-shade"></div>
+      <div id="c6s03-sc107-bf" class="c63-abs t-display halate"><span id="c6s03-sc107-w4" class="c63-w">BREAKFAST</span></div>
+      <div id="c6s03-sc107-all" class="c63-abs t-label clean"><span id="c6s03-sc107-w1" class="c63-w">all </span><span id="c6s03-sc107-w2" class="c63-w">of </span><span id="c6s03-sc107-w3" class="c63-w">them</span></div>
+      <div id="c6s03-sc107-tn" class="c63-abs t-serif-i clean"><span id="c6s03-sc107-w6" class="c63-w">what </span><span id="c6s03-sc107-w7" class="c63-w">Taiwan </span><span id="c6s03-sc107-w8" class="c63-w">needs </span><span id="c6s03-sc107-w9" class="c63-w">to </span><span id="c6s03-sc107-w10" class="c63-w">succeed</span></div>
+      <div class="c63-credit t-label">Pan Wen-yuan — portrait via Wikipedia (fair use)</div>
+    </div>
+
+    <div id="c6s03-flash"></div>
+    <div id="c6s03-grain" class="tx tx-grain" style="background-image:url('assets/textures/grain_01_norm.jpg')"></div>
+    <div id="c6s03-dust" class="tx tx-dust" style="background-image:url('assets/textures/dust_03.jpg')"></div>
+    <div id="c6s03-vig" class="vignette"></div>
+    <audio id="c6s03-vo" class="temp-vo" src="vo_c6.mp3" data-start="0" data-duration="196.6" data-media-start="401.41" data-volume="1"></audio>
+  </div>
+</template>
+</body>
+</html>
