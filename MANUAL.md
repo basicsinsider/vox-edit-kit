@@ -265,6 +265,13 @@ use, attribution optional; never redistribute the files publicly, never use them
   words are spoken — reveal the box on the first word's cue. `.plate` (fx.css) sets `inset:0`: put `inset:auto` FIRST in an inline
   style, before left/top/width. `offsetLeft/Top` of a span inside a `position:relative` block is relative to that block — put the
   markup svg inside the same block. Globes: render offline (orthographic numpy → mp4, `project/c5/gen/c5s02_assets.py globes`).
+- (c5s03 editor) Never name a composition class `hl` (or anything else fx.css defines): fx.css `.hl::before` paints a full yellow highlighter on
+  every element with that class (a row-highlight div showed up from frame 0). A slide transition where the incoming *scene* still has
+  `background: var(--paper)` hides the outgoing shot under a flat colour — put the ground colour on the `.k-shot`, keep `.k-scene` transparent.
+  Lint flags any `getPointAtLength` inside an `onUpdate`: sample the path into an array at build time. Commons TIFF files have JPEG thumbs at
+  `…/thumb/x/xy/Name.tiff/lossy-page1-1920px-Name.tiff.jpg`; keep `,'()` unescaped in the thumb URL (quoting them gives a Wikimedia error page).
+  Esri satellite for any small region (e.g. Taiwan Strait with Kinmen/Matsu): `MK_CACHE=/tmp/x python3 tools/map_tiles.py fetch esri 10 lon0 lat0 lon1 lat1`
+  + stitch (`project/c5/gen/c5s03_assets.py strait`) → `assets/c5/made/strait_esri_z10.jpg` (+ a Taiwan mask from the imagery).
 ### 4.3 Check, look, render
 ```bash
 python3 tools/build_index.py s05            # put one (or several) compositions in index.html
@@ -674,6 +681,7 @@ on action. Use it whenever the narrator quotes someone or introduces a historic 
 - [ ] Smooth long eases, 12 fps. [ ] Cuts on action; whips, no iris. [ ] No photo/clip used > 2× in a chunk.
 
 ## Changelog
+- 2026-10-31 — c5s03 editor: §4.2 gotchas (`.hl` class collision, transparent scene for paper slides, no path measuring in callbacks, Commons TIFF thumbs); Taiwan Strait Esri z10 mosaic + mask (`assets/c5/made/`), helpers `paperSlide`/`pushThrough`/`hemi`/`chair` in `project/c5/gen/c5s03/`.
 - 2026-10-31 — c5s02 editor (C5S043–083): §4.2 gotchas (torn paper = screen texture, ink boxes before their words, `.plate` inset order, offset parents); rendered globe videos (Blue Marble / Black Marble), keyed RCA XL-100 (`assets/c5/screens/`), template + generator `project/c5/gen/c5s02_*`.
 - 2026-10-31 — c5s01 editor: §4.2 gotchas (video ids, stray dot on undrawn arrows, map sea-colour backgrounds, Taiwan landmask includes the Fujian coast); derived c5s01 maps/2.5D layers via `project/c5/gen/c5s01_assets.py`.
 - 2026-10-31 — c3s02 editor: §4.2 gotchas (map-camera img selectors, torn paper as ground, Esri z9 strait mosaic); generator

@@ -9,3 +9,8 @@ Bboxes are in the full-size pixel space (x0,y0,x1,y1), approximate (±20 px).
 | electronics_magazine_1965-04-19_cover.jpg | Electronics (McGraw-Hill) cover, 19 Apr 1965 — colour TV test-pattern monitors (N33a) | https://www.worldradiohistory.com/Archive-Electronics/60s/65/Electronics-1965-04-19.pdf (p.1) | © McGraw-Hill, fair use (credit "Electronics, 1965") | 1965-04-19 | 2418x3328 | masthead "Electronics" 0,0,2418,330 |
 | electronics_1965-04-19_rca_transistor_ad.jpg | RCA full-page ad "How a new kind of RCA transistor will help man land on the Moon" (back cover) (N33b / RCA era ad) | same PDF p.214 | © RCA, fair use | 1965 | 2404x3328 | RCA logo lower-left ≈ 60,2950,380,3080 (check) |
 | electronics_1965-04-19_rca_scope_ad.jpg | RCA "The famous RCA 5-inch scope" half-page ad with RCA meatball logo | same PDF p.143 | © RCA, fair use | 1965 | 2412x3350 | — |
+
+## Added by the c5s03 editor (2026-10-31)
+| file | subject | source URL | licence | date | size |
+|---|---|---|---|---|---|
+| ustdc_taipei_city_map_c1960.jpg | US Taiwan Defense Command map of Taipei City 1:10,000 (US installations, embassies) | https://commons.wikimedia.org/wiki/File:U.S._Taiwan_Defense_Command_(USTDC),_Map,_TAIPEI_CITY,_Scale_1_over_10.000,_presumably_dated_around_1960_according_to_first_and_rough_estimates_by_former_USTDC_personnel.jpg | CC0 (Commons) | c. 1960 | 1920x1524 (thumb of 5007x3974) |

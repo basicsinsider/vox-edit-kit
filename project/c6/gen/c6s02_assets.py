@@ -41,7 +41,7 @@ m.crop((1100, 0, 3840, 2700)).save(P("assets/c6/derived/c6s02/moscow_plan_1917_c
 # ---------- 2. Eurasia atlas crop + USSR outline + route (C6S049) ----------
 E = json.load(open(P("assets/c4/maps/eurasia.json")))
 ex = lambda lon: (lon + 180) * 45.5111 - 7646; ey = lambda lat: (90 - lat) * 45.5111 - 728
-x0, y0, x1, y1 = int(ex(20)), int(ey(74)), int(ex(140)), int(ey(20)); K = 0.75
+x0, y0, x1, y1 = int(ex(5)), int(ey(74)), int(ex(140)), int(ey(20)); K = 0.75
 ea = Image.open(P("assets/c4/maps/eurasia_atlas.jpg")).crop((x0, y0, x1, y1))
 ea = ea.resize((int(ea.width * K), int(ea.height * K)), Image.LANCZOS); ea.save(P("assets/c6/derived/c6s02/eurasia_atlas_crop.jpg"), quality=88)
 tx = lambda lon: (ex(lon) - x0) * K; ty = lambda lat: (ey(lat) - y0) * K

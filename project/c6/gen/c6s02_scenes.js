@@ -127,9 +127,9 @@
     scene("049", 238.92, 244.28);
     ground("paper", S(238.92));
     (function () {
-      gsap.set("#c6s02-sc049-plane", { rotationX: 22, rotationZ: -2 });
+      gsap.set("#c6s02-sc049-plane", { rotationX: 22, rotationZ: -2, scale: 1.18 });
       const cam = $("sc049-cam");
-      gsap.set(cam, { scale: 0.52, x: -180, y: -40 });
+      gsap.set(cam, { scale: 0.48, x: -420, y: -20 });
       const svg = $("sc049-svg"), f = FX.markupDefs(svg, "c6s02-mk49", { boil: 12 });
       svg.setAttribute("viewBox", "0 0 " + PD.euW + " " + PD.euH);
       const fill = el("path", { d: PD.ussr, fill: RED, opacity: 0 }, svg); fill.style.mixBlendMode = "multiply";
@@ -139,14 +139,14 @@
       tl.fromTo(pin, { opacity: 0, scale: 1.8 }, { opacity: 1, scale: 1, duration: 0.4, ease: C(FX.ease.out, 0.4), immediateRender: true }, S(239.62));
       line("sc049-mo", [["Moscow", T(239.64)]]);
       // camera pushes to Moscow, focus hunt as it lands
-      tl.fromTo(cam, { scale: 0.52, x: -180, y: -40 }, { scale: 1.2, x: 960 - PD.moscowEU[0] * 1.2 + 120, y: 540 - PD.moscowEU[1] * 1.2 - 60, duration: 1.0, ease: FX.ease.cam, immediateRender: false }, S(239.45));
+      tl.fromTo(cam, { scale: 0.48, x: -420, y: -20 }, { scale: 1.2, x: 960 - PD.moscowEU[0] * 1.2 + 120, y: 540 - PD.moscowEU[1] * 1.2 - 60, duration: 1.0, ease: FX.ease.cam, immediateRender: false }, S(239.45));
       FX.focusHunt(tl, $("sc049-tilt"), S(240.45), { dur: 0.7 });
       pop("sc049-yc", S(240.62), { dur: 1.0, from: 0.7 });
       line("sc049-ty", [["teenage ", T(240.68)], ["years", T(241.24)]]);
       // the Soviet Union: red outline (1960 borders) + red underline
       ink(svg, PD.ussr, S(242.80), 0.85, { color: RED, width: 7, opacity: 0.9 });   // done 243.65
       tl.to(fill, { attr: { opacity: 0.16 }, duration: 0.7, ease: C(FX.ease.out, 0.7) }, S(242.9));
-      tl.to(cam, { scale: 0.62, x: -60, y: -20, duration: 1.7, ease: FX.ease.cam }, S(242.70));   // CA: still pulling back at the cut
+      tl.to(cam, { scale: 0.62, x: -460, y: -20, duration: 1.7, ease: FX.ease.cam }, S(242.70));   // CA: still pulling back at the cut
       tl.to("#c6s02-sc049-yc", { opacity: 0, y: -40, duration: 0.4, ease: C(FX.ease.in, 0.4) }, S(242.6));
       line("sc049-su", [["Soviet ", T(242.84)], ["Union", T(243.24)]]);
       const ul = $("sc049-ul"), f2 = FX.markupDefs(ul, "c6s02-mk49b", { boil: 4 });

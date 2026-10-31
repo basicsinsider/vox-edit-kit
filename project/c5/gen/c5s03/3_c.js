@@ -23,7 +23,7 @@
       const ch = gated(527.2, 528.4, () => FX.roughDefs(defs, "c5s03-ch110", { freq: 0.045, scale: 7, choke: 0 }));
       const st = $("sc110-st"); st.style.filter = "url(#c5s03-ch110)";
       tl.fromTo(st, { opacity: 0, scale: 1.35 }, { opacity: 0.92, scale: 1, duration: 0.22, ease: "power2.in", immediateRender: true }, T(527.39));
-      FX.chokeSettle(tl, ch, st, T(527.39), 8, 0.45, "none");
+      FX.chokeSettle(tl, ch, st, T(527.39), 8, 0.3, "none");
     })();
     paperSlide($("sc110-shot"), $("sc111-shot"), S(528.33));
 
@@ -91,7 +91,7 @@
       [T(545.07), T(545.31), T(545.55)].forEach((c, i) => rise(words("sc114-bic")[i], c, { dur: 0.7, y: 8 }));
       [T(547.15), T(547.55), T(547.71), T(547.87)].forEach((c, i) => rise(words("sc114-kot")[i], c, { dur: 0.5, y: 8 }));
       const f = gated(547.7, 549.0, () => markDefs(svg, "c5s03-mk114", "0 0 1920 1080", 4));
-      FX.markup.pen(tl, svg, S(547.90), { points: [[440, 470], [485, 520], [580, 400]], dur: 0.3, width: 10, color: INK, filter: f, seed: 1141, jitter: 4 });
+      FX.markup.pen(tl, svg, S(547.80), { points: [[440, 470], [485, 520], [580, 400]], dur: 0.3, width: 10, color: INK, filter: f, seed: 1141, jitter: 4 });
     })();
     whip($("sc114-shot"), $("sc115-shot"), S(548.80), { dir: 1 });
 

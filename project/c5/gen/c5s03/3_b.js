@@ -193,12 +193,12 @@
       FX.markup.pen(tl, mk, S(508.70), { points: [[1098, 552], [1240, 534], [1402, 556]], dur: 0.55, width: 6, color: INK, filter: f, seed: 1072 });
       [T(510.51), T(510.75)].forEach((c, i) => rise(words("sc107-bs")[i], c, { dur: 0.8, y: 10 }));
       pop($("sc107-h1"), T(510.99), 0.6); pop($("sc107-h2"), T(510.99), 0.6);
-      FX.markup.pen(tl, mk, S(512.55), { points: [[290, 366], [460, 352]], dur: 0.2, width: 7, color: RED, filter: f, seed: 1073 });
-      FX.markup.pen(tl, mk, S(512.62), { points: [[1450, 366], [1620, 350]], dur: 0.2, width: 7, color: RED, filter: f, seed: 1074 });
+      FX.markup.pen(tl, mk, S(512.40), { points: [[290, 366], [460, 352]], dur: 0.2, width: 7, color: RED, filter: f, seed: 1073 });
+      FX.markup.pen(tl, mk, S(512.46), { points: [[1450, 366], [1620, 350]], dur: 0.2, width: 7, color: RED, filter: f, seed: 1074 });
       // angry scribbles over both sides (permanent pen boil)
       const zig = (cx, cy, seed) => { const r = FX.rng(seed), p = []; for (let i = 0; i < 9; i++) p.push([cx - 120 + i * 30 + (r() - 0.5) * 16, cy + (i % 2 ? -46 : 46) + (r() - 0.5) * 20]); return p; };
-      FX.markup.pen(tl, mk, S(512.85), { points: zig(380, 360, 1075).map(([x, y]) => [x, y - 110]), dur: 0.35, width: 6, color: INK, filter: f, seed: 1075, jitter: 6 });
-      FX.markup.pen(tl, mk, S(512.90), { points: zig(1540, 360, 1076).map(([x, y]) => [x, y - 110]), dur: 0.35, width: 6, color: INK, filter: f, seed: 1076, jitter: 6 });
+      FX.markup.pen(tl, mk, S(512.60), { points: zig(380, 360, 1075).map(([x, y]) => [x, y - 110]), dur: 0.35, width: 6, color: INK, filter: f, seed: 1075, jitter: 6 });
+      FX.markup.pen(tl, mk, S(512.64), { points: zig(1540, 360, 1076).map(([x, y]) => [x, y - 110]), dur: 0.35, width: 6, color: INK, filter: f, seed: 1076, jitter: 6 });
     })();
     paperSlide($("sc107-shot"), $("sc108-shot"), S(513.77));
 

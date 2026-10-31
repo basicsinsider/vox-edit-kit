@@ -703,7 +703,7 @@
       const l1 = ink(svg, "M2470 960 Q1950 1300 1400 1760", S(150.30), 0.7, { color: CEL, width: 10 });
       tl.to(l1, { attr: { "stroke-dashoffset": -1 }, duration: 0.5, ease: E.in }, S(152.30));
       tl.to($("sc031-tw"), { attr: { "fill-opacity": 0.25 }, duration: 0.5 }, S(152.4));
-      tl.to($("sc031-cnf"), { attr: { "fill-opacity": 0.32, "stroke-opacity": 1 }, duration: 0.6, ease: C(E.out, 0.6) }, S(153.95));
+      tl.to($("sc031-cnf"), { attr: { "fill-opacity": 0.22, "stroke-opacity": 1 }, duration: 0.6, ease: C(E.out, 0.6) }, S(153.95));
       ink(svg, "M2470 900 Q1800 560 1080 640", S(153.99), 0.7, { color: RED, width: 10 });
       FX.focalBlur(tl, $("sc031-blur"), [{ x: 2540, y: 922, r: 520 }, { t: S(151.4), x: 1700, y: 1450, r: 700, dur: 1.5 }, { t: S(153.6), x: 1500, y: 900, r: 900, dur: 1.6 }]);
       show($("sc031-jp"), T(150.17));

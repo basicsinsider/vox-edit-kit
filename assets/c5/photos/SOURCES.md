@@ -28,3 +28,10 @@ All looked at. "PD US gov" = White House / NARA / State Dept work. Commons file 
 | grand_hotel_taipei_1981_balconies.jpg | Grand Hotel (Yuanshan), Taipei — room balconies, 1981 colour slide (C5S022 conference-venue card; venue not named on screen) | https://commons.wikimedia.org/wiki/File:Hotel_room_balconies_at_Grand_Hotel_Taipei_in_1981_(2954315986).jpg | CC BY 2.0 — on-screen credit (Flickr uploader via Commons) | 1981 | 1920x1338 (Commons thumb) |
 | (derived) ../derived/c5s02/eob_office_crop.jpg, kissinger_oval_crop.jpg | crops of nixon_kissinger_eob_poodle.jpg / nixon_kissinger_dpla_25ca.jpg (c5s02 C5S080 / C5S068) | as above | PD US gov | | 2400x1350 / 1920x1080 |
 | (derived) ../derived/c5s02/chiang_cape_crop.jpg | crop of assets/c4/photos/chiang_kaishek_uniform_cape_map_nara.jpg (C5S072) | see assets/c4 SOURCES | PD (NARA) | | 2880x1620 |
+
+## Added by the c5s03 editor (2026-10-31)
+| file | subject | source URL | licence / credit | author, date | size |
+|---|---|---|---|---|---|
+| bezos_iconic_laugh_crop_ccby.jpg | Jeff Bezos, colour (N18) | https://commons.wikimedia.org/wiki/File:Jeff_Bezos%27_iconic_laugh_crop.jpg | CC BY 2.0 — on-screen credit "Steve Jurvetson, CC BY 2.0" | Steve Jurvetson | 1280x1536 (Commons thumb; orig 1500x1800) |
+| nixon_zhou_kissinger_opera_peking_1972.jpg | Nixon, Pat Nixon, Zhou Enlai, Jiang Qing, Rogers, Kissinger at the revolutionary opera, Peking — 🔁 for N05 (Kissinger with Zhou in China) | https://commons.wikimedia.org/wiki/File:President_Richard_Nixon,_Pat_Nixon,_Chou_En-Lai,_Jiang_Qing_(Madame_Mao),_William_Rogers,_Henry_Kissinger,_and_Others_Attend_the_Revolutionary_Opera_Performance_of_The_Red_Detachmen_-_DPLA_-_751fe729e4c1364fd70d6440d60f0273.tiff | PD US gov (White House Photo Office, Nixon Library via DPLA) | WHPO, 22 Feb 1972 | 1920x1318 (from 3059 px tiff) |
+| ustdc_badge.jpg | Badge of the US Taiwan Defense Command (USTDC, 1955–1979) — N25 🔁 | https://commons.wikimedia.org/wiki/File:Badge_of_the_United_States_Taiwan_Defense_Command_(USTDC,_1955-1979).jpg | CC0 (Commons) | — | 960x1301 |
