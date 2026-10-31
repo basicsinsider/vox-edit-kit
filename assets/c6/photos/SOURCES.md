@@ -33,3 +33,9 @@ All looked at. Commons downloads are standard thumbnails (1280/1920/3840) becaus
 | soviet_zis_plant_construction_1931_mixer_workers.jpg | building the ZIS steel plant (Zaporizhzhia, USSR), concrete mixer + workers (C6S052, C6S059) | archive.org Soviet newsreel/chronicle of the ZIS construction, 1931 — **identifier not recorded by the editor who fetched it** (raw `_tmp/c6s02/zis.mp4`, 214 s); frames zis_*.jpg | 1931 Soviet chronicle — PD-old / PD-RU assumed; verify identifier before publishing | Soviet chronicle, 1931 | frame grab |
 | soviet_zis_plant_scaffold_1931.jpg | same film, scaffolding (crop of frame zis_82) | as above | as above | 1931 | 770×420 |
 | soviet_zis_plant_site_1931_panorama.jpg | same film, site panorama | as above | as above | 1931 | frame grab |
+
+### fei_hua_1971.jpg
+- Subject: Fei Hua (費驊), 9 Aug 1971 portrait — used in c6s03 C6S106/107 burn reveal
+- Source: https://commons.wikimedia.org/wiki/File:19710809費驊.jpg (original via upload.wikimedia.org)
+- Licence: CC0 / public domain per Commons file page
+- Size: 204x255 (native; shown small)
