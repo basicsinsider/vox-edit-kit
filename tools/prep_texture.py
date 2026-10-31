@@ -19,7 +19,8 @@ if len(sys.argv) < 3:
 raw, name = pathlib.Path(sys.argv[1]), sys.argv[2]
 root = pathlib.Path(__file__).resolve().parent.parent / "assets/textures"
 (root / "_raw").mkdir(parents=True, exist_ok=True)
-shutil.copy2(raw, root / "_raw" / raw.name)
+if raw.resolve() != (root / "_raw" / raw.name).resolve():  # raw may already sit in _raw/
+    shutil.copy2(raw, root / "_raw" / raw.name)
 
 im = Image.open(raw).convert("RGB")
 im.save(root / f"{name}_hires.jpg", quality=95)
