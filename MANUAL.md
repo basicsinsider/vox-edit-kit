@@ -438,6 +438,15 @@ INSTRUMENTS (no MELODY download — derive it as full − bass − drums − ins
 bare client (list tools / call any tool) for sessions that haven't loaded `.mcp.json`; key from env or `~/.secrets/epidemic_key`. Fallback without the key: Claude lists tracks/stems in `requests/epidemic.md`, Krish
 downloads them into `assets/audio/epidemic/`. VO stays untouched; bed far under the voice.
 
+**Phase-1 tooling (2026-10-31, intro):** downloads through the agent proxy get reset mid-file — `epidemic_fetch.py` now
+resumes with curl (`-C -`, retries) and only accepts a WAV whose size matches its header; re-running finishes broken files.
+SFX: `python3 tools/epidemic_sfx_fetch.py <id> <name> …` → `assets/audio/epidemic/sfx/`. Measure every track with
+`.venv/bin/python tools/audio/epidemic_analyze.py` (LUFS per stem, 1 s short-term curve → quiet/build/peak sections, key
+estimate — the API gives no key) → `assets/audio/epidemic/ANALYSIS.md`; derive MELODY with `tools/audio/epidemic_melody.py`
+(full − other stems; fails when the master is limited, e.g. Anytime Soon). Pick tracks in one key family and put a tempo-free
+drone/pad under the joins; only one rhythmic track at a time. Measure each VO (`vo_intro.mp3` = −24.1 LUFS, not −27.2) and set
+the bed ≈ 14 LU under it. Run heavy audio jobs one at a time (the container OOM-restarts). Worked example: `project/intro/SOUND_PLAN.md`.
+
 ### 10.4 The Taiwan long-form edit (4 h 26 min) — workflow
 - Inputs: `bash input/join.sh` → `input/Final Full Audio.mp3` (VO, 4:26:xx) and `input/Face Cam.mp4` (4:35, 29.97 fps).
   The first ~275.5 s of the full audio **is the face-cam take** (cross-correlation 0.96, face cam = full audio − 0.026 s).
@@ -477,6 +486,52 @@ downloads them into `assets/audio/epidemic/`. VO stays untouched; bed far under 
   placement → assembly/QA). Chunk files: `project/<chunk>/`, compositions `introNN` / `cKsNN`; build with
   `tools/build_master.py --prefix intro --vo vo_intro.mp3 --len 275.06 --timeline assets/audio/intro/timeline.json`.
 
+### 10.6 Markups & call-outs — Chris Moran "How VOX Directs Your Attention" (`references/reels/videos/markups_callouts_youtube.mp4`)
+Goal: guide the eye exactly where the narration is. One call-out at a time; pick the type by the material:
+1. **Two paper layers**: when a document/paper ground is used, stack two paper scans, the top one at ~90 % opacity so the
+   page behind bleeds through (more real than one flat texture).
+2. **Pen / pencil markups** (`FX.markup.pen`): freehand polyline with nudged points — never a clean end-to-end line —
+   ~5 px stroke, `multiply` so it bleeds into the paper and over the print, rough edge ≈ 0.7× stroke width
+   (`FX.markupDefs(svg,id,{boil:4})` — pens boil 4×/s; markers/chalk 12), drawn on in ~1 s with a slight ease (trim paths),
+   whole thing posterized 12 fps. Draw it OUT by trimming the start (`FX.markup.out`). Arrows: same pen, draw-on then out.
+3. **Contrast call-out** (`FX.contrastCallout`): a lifted-blacks veil (faded paper colour) over everything except a
+   feathered region (country, district, paragraph). It appears as a **hard cut**, timed to the peak velocity of an ease-in
+   camera push (cut on the curve), + a short label + texture parented to the camera + a **circuit-breaker "clunk"** SFX.
+4. **Text contrast call-out** (`FX.textCallout`): the paragraph fades to ~20 % while the frame punches in ~10 %, then only
+   the key words return at full strength through a feathered left→right wipe, a beat after the zoom.
+5. **Focal call-out** (`FX.focalBlur`): sharp circle, everything else softly blurred (compound blur by a radial gradient);
+   move the sharp spot across the map/document as the narrator moves on — long, extreme easing.
+6. **Highlighter** (Vox staple, use sparingly): only on **body-size text**, never on a big headline (a real highlighter tip
+   can't cover a header in one stroke); stroke ≈ text x-height (~25 px at 1080p), multiply, constant-ish speed (mild ease, so
+   it reads along), one stroke per line staggered, two displacement passes (small/strong = rough edge, large/weak = wobble).
+7. **Radio-wave rings** (`FX.radioWaves`) from a point on a map (station, factory, city emitting influence): rings thick →
+   thin (sawtooth), optionally on a flattened 3D plane, with a focal blur + light chromatic aberration.
+Sound the call-outs: pen = marker/pencil scratch, contrast cut = circuit-breaker clunk, highlighter = swipe.
+
+### 10.7 Painting-to-print reveal — Lincoln reel (`references/reels/videos/lincoln_newspaper.mp4`, 0–5 s)
+Open full-frame on a **colour painting** of the person (word-by-word serif captions over it), then an eased ~1.2 s
+**pull-back + upward pan** reveals the painting is a picture printed in a **newspaper column**: thin rule frame, small caps
+caption under it ("MR. LINCOLN AND THE FLAG."), then a bold serif **pull-quote** of what the narration quotes, then body
+text and neighbouring columns (sepia newsprint, halftone, slight tilt). The **pull-quote is underlined word by word in sync
+with the spoken quote** (pen underline drawn on per word). The page is a **typeset recreation** (Crimson Pro / Haskoy, our
+palette) — never a fake real masthead/date of an existing paper. Camera keeps a slow pull/drift afterwards; next scene cuts
+on action. Use it whenever the narrator quotes someone or introduces a historic figure with a quote.
+
+### 10.8 Sound design system — Chris Moran "The VOX Sound Design System" (`references/reels/videos/sound_bed_youtube.mp4`)
+- **Library in six folders**: mechanical, tech, tactile, ambient, whooshes, miscellaneous (`assets/audio/sfx/<folder>/`).
+- **Hierarchy & restraint** (overrides "SFX on every object"): in each scene sound only the most important thing that
+  happens (the hero element / the big move); ignore small text and arrows when they'd compete. Bigger, bolder = louder.
+- **Every camera move / push / element entrance gets a (low) whoosh**; stack a texture on top (paper movement under a
+  card, book-slide for a sliding panel, cloth for collapsing panels, stopwatch ticks for a fast chart line, keyboard/click
+  for UI, projector hum for film-themed scenes, a subtle digital texture for pixel effects).
+- **Variation**: never the same sample twice in a row — pitch/rate-shift it (±1–3 semitones) or pick another take.
+- **Timing**: SFX may sit a few frames off the motion (fits the 12 fps stop-motion feel); a scene's first SFX can lead
+  the picture by a few frames (**J-cut**) so the brain is primed.
+- **Ambience** per scene theme, very low (room tone, projector, factory hum, cleanroom air, restaurant murmur).
+- **Levels**: dialogue peaks ≈ −6 dBFS (our VO stays untouched — we measure, never change it), music ≈ −20 dBFS
+  (≈ 12–16 LU under the voice), SFX −10…−20 dB below the VO depending on importance. **Frequency pocket**: a (dynamic) EQ dip
+  on the MUSIC bed in the voice band (≈ 1–4 kHz, −3…−6 dB while he speaks) — "make room for vocals". Never EQ the VO.
+
 ## 9. QA checklist
 - [ ] VO identical to source (same level; no processing). [ ] Every text cue within 0–120 ms before its word.
 - [ ] Only the three fonts. [ ] Palette only; West=vermilion/East=navy. [ ] ≤ 2 accents per frame.
@@ -486,6 +541,10 @@ downloads them into `assets/audio/epidemic/`. VO stays untouched; bed far under 
 - [ ] Smooth long eases, 12 fps. [ ] Cuts on action; whips, no iris. [ ] No photo/clip used > 2× in a chunk.
 
 ## Changelog
+- 2026-10-31 — Krish's reference videos studied: §10.6 markups/call-outs (FX.markup.pen/out, FX.contrastCallout, FX.textCallout,
+  FX.focalBlur, FX.radioWaves, pen boil 4/s), §10.7 painting-to-print newspaper reveal (Lincoln reel), §10.8 sound design system
+  (six folders, hierarchy/restraint, whoosh+texture stacks, variation, J-cuts, levels, frequency pocket).
+- 2026-10-31 — §10.3: Epidemic phase-1 tooling (resumable fetch, SFX fetch, stem analysis, derived melody), intro sound plan.
 - 2026-10-31 — §10.5: paintings/posters as B-roll, vintage grid papers, manuals, per-chunk Pinterest packs, cloud access notes; intro pipeline launched.
 - 2026-10-31 — Krish round 2: §10 added (intentional glow, settle-after-reveal, words↔visual rule, per-video palette
   `lib/palette.css` + Taiwan palette, Vox long-tail easing `FX.ease.*`, whip transitions `FX.whip` replace the iris, cut on
