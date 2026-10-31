@@ -561,6 +561,32 @@ on action. Use it whenever the narrator quotes someone or introduces a historic 
   whoosh + a low generated whoosh; repeated file takes are rate-shifted ±1–3 st. Check: `tools/audio/measure_mix.py --vo
   vo_intro.mp3 --beds assets/audio/intro --len 275.06 --out renders/testmix_intro.wav` (mix vs VO alone < 1 LU).
 
+### 10.9 Long-form rules (Krish, 2026-10-31 evening)
+- **Copyrighted material is allowed** for this channel (used the way YouTube's fair-use guidelines allow: commentary/
+  documentary, short excerpts, transformed with our treatments, credited). So news photos/footage, press photos, company
+  images, book/magazine covers, period ads, real newspaper pages from 1983–87 etc. may be used. Still: never log in, never pay,
+  never strip watermarks; prefer the best quality and the true image; log source + "© owner, fair use" in SOURCES.md and put a
+  small on-screen credit where a credit is customary.
+- **Reuse rule relaxed for the 1-hour build**: try hard for new, unique images, but repeating an image/clip is fine when the
+  story needs it (the "max 2 uses per chunk" rule no longer applies to the long-form chunks c1–c6).
+- **Let animations finish**: the key animation of a scene (route drawing, bars rising, a count, a stamp) must complete and
+  HOLD ≥ 0.5 s (12 frames) before the cut/transition starts. Cut-on-action uses the *camera* move or a secondary motion, never
+  an unfinished key animation. (Krish: "in a few spots the video cuts too quick before the animation finishes" — e.g. the
+  phones shipped to the US.) Editors check every scene's last second in snapshots.
+- **Paper quality**: never upscale a low-res paper scan (the K+E swatches are 780–1616 px) to full frame — use the Texturelabs
+  `_hires` papers for full-frame grounds; small scans only as cards/props at ≤ native size.
+- **Map quality**: Krish disliked the intro's flat grey/beige relief maps. Maps must look rich and sharp at 1080p after the
+  camera push: high-res shaded-relief/atlas styling (Natural Earth II 21600 px class), sharp satellite imagery for close-ups
+  (copyright now allowed — e.g. Esri World Imagery / Google-style imagery with credit), and vintage colour atlas scans for the
+  D10 tilted-map look. The approved s02 satellite US map is the quality bar. See `assets/maps/kit/` (map kit) once built.
+- **Rough cut** of the Silicon Valley section (`work/roughcut/roughcut.mp4`, from Krish's Drive, 600 s): VISUAL reference only —
+  its voiceover is NOT the final one; always cut to `input/Final Full Audio.mp3`. Chunk c1 (full-audio 275.06–877.88) tells the
+  same story as the earlier approved 10-minute edit (templates/full-edit seg01–06, expected/final_edit_720p.mp4), so reuse those
+  scenes' ideas/code, re-timed to the new words and upgraded to the round-2/3 rules and the Taiwan palette.
+- **Long-form workflow**: 6 chunks of ~10 min (`project/chunk_bounds.json`; `vo_cN.mp3` + `transcript_cN.json`, local times 0…600),
+  each its own project folder `project/cN/`, compositions `cNsMM.html` (composition id `cNsMM`), its own render + QA, delivered
+  as `renders/cN/cN_final.mp4` + `review/cN_720p.mp4`. Render chunks separately so a fix never needs a 1-hour re-render.
+
 ## 9. QA checklist
 - [ ] VO identical to source (same level; no processing). [ ] Every text cue within 0–120 ms before its word.
 - [ ] Only the three fonts. [ ] Palette only; West=vermilion/East=navy. [ ] ≤ 2 accents per frame.
@@ -570,6 +596,8 @@ on action. Use it whenever the narrator quotes someone or introduces a historic 
 - [ ] Smooth long eases, 12 fps. [ ] Cuts on action; whips, no iris. [ ] No photo/clip used > 2× in a chunk.
 
 ## Changelog
+- 2026-10-31 — §10.9 long-form rules: copyrighted material allowed (fair use), reuse rule relaxed, animations finish +
+  hold 0.5 s before cuts, no upscaled paper scans, better maps, rough cut = visual ref only, 6×10-min chunk workflow.
 - 2026-10-31 — Intro assembled (66 scenes, 275.06 s), sound pass (Epidemic layered bed, restraint pass), face-cam lip-sync
   check + fix (+0.104 s), final mix = VO at unity + 3 beds (amix normalize=0), VO −24.1 → mix −24.0 LUFS.
 - 2026-10-31 — §10.8: place_sound.py project/Epidemic mode (layered stems, measured VO, restraint pass, variation); intro beds built.
