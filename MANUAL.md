@@ -784,3 +784,21 @@ on action. Use it whenever the narrator quotes someone or introduces a historic 
 - 2026-10-31 — Long-form pipeline (lead): 10-min chunk renders take hours on 4 shared cores — run them **detached** (`setsid nohup … &`), never as a capped background tool call (a 2 h cap killed a c4 render). `tools/build_master.py` writes `index.html` + `compositions/_master/` at the **repo root** (ROOT is resolved through the sandbox symlink) — build, `mv index.html work/qaN/`, `git checkout index.html`. QA = snapshot every 6 s in batches of 8 + contact sheets; sparse frames get a +1 s re-snap before being called a bug (most are builds on their word). Never `pkill -f <pattern>` from a tool shell whose own command line contains the pattern (it kills the shell).
 - 2026-10-31 — c6s01 QA: §4.3 snapshot gotchas (map camera must cover the frame at every keyframe; black last frame after a browser-shutdown failure is a capture glitch).
 - 2026-10-31 — c6s02 finished (35 scenes): fixed raw-seconds `slide()` calls and the pre-burn ring blobs (§4.2), motif CSS aligned with c6s01's masters; sfx.json + NOTES with CCK card/circle, young cards, Moscow plan and isotype exports for c6s03.
+
+## 11. Render process (owner rule, 2026-10-31) — use for EVERY render
+Goal: a 10-min chunk in ≤ 1 hour, and no render ever lost. Owner's rules: **a render is never killed for any reason**; while
+a render runs, nothing else heavy runs (no snapshots, agents' builds, sound jobs) — it gets the whole CPU.
+- Launch: `tools/render_launch.sh c2 597.86 c4 601.44 …` (detached via setsid; never a capped background tool call).
+  Progress: `renders/render_log.txt`. After a container restart: run the same command again — finished segments are skipped.
+- `tools/render_chunk.sh` renders each segment of the assembled master (`work/qaN/index.html`) on its own, with
+  **`-w 3 -q draft --crf 18`** (parallel beginframe capture streamed to an ultrafast encoder). Benchmarks on the 4-core box,
+  heaviest c2 scene: defaults `-w 4` 2.1–3.1 fps · `-w 2` 3.4 · `-w 6` 0.95 · `-w 3 -q draft --crf 18` on a 60 s piece **7.5 fps**.
+  Draft only changes the encoder: a frame compared to a full-quality snapshot is identical in detail (mean diff 5.8/255 = grain).
+- Each segment is then transcoded to x264 medium CRF 18 (draft files are ~3 GB per chunk), concatenated with stream copy,
+  mixed by `tools/final_mix.sh` (VO untouched), and delivered by `tools/deliver.sh`: `review/cN_720p.mp4` +
+  `review/cN_1080p_view.mp4` (< 95 MB, on the working branch) and the full master split into 95 MB parts on the temporary
+  `deliveries` branch (owner-approved), then deleted locally after a verified push.
+- Expected per chunk: ~32 min render + ~10 min transcode/mix/review + delivery push ≈ 50–55 min.
+- Never: `pkill -f` with a pattern your own shell contains; killing a queue's parent (hyperframes cancels the render);
+  rendering while agents run snapshots (it halved the speed).
+- 2026-10-31 — §11 Render process: per-segment, restart-proof, never-kill renders at -w 3 -q draft --crf 18 (7.5 fps vs ~2); tools/render_chunk.sh, render_launch.sh, deliver.sh.
