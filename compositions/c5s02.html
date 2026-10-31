@@ -225,8 +225,10 @@
       const c = add(parent, `<div class="k-card" style="left:${x}px;top:${y}px;width:${w}px;height:${h}px;transform:rotate(${rot || 0}deg);opacity:0">${flag(kind, w, h)}<div class="k-np" style="opacity:0.35"></div></div>`);
       return c;
     }
+    // two paper layers (§10.6.1); paper_torn_01 is a Screen texture (dark ground) → screen blend, light
     function papers(parent, a, b) {
-      add(parent, `<div class="k-p1" style="background-image:url('${TX}${a}_hires.jpg')"></div><div class="k-p2" style="background-image:url('${TX}${b}_hires.jpg');opacity:0.42"></div>`);
+      const st = (n, op) => n === "paper_torn_01" ? `mix-blend-mode:screen;opacity:0.3` : `opacity:${op}`;
+      add(parent, `<div class="k-p1" style="background-image:url('${TX}${a}_hires.jpg');${st(a, 0.85)}"></div><div class="k-p2" style="background-image:url('${TX}${b}_hires.jpg');${st(b, 0.42)}"></div>`);
     }
     function credit(parent, text, inkc) { add(parent, `<div class="k-credit t-label${inkc ? " ink" : ""}">${text}</div>`); }
     function circ(parent, src, x, y, d, ring, imgcss, extra) {

@@ -206,6 +206,16 @@ use, attribution optional; never redistribute the files publicly, never use them
   Timed `<video>` visibility is managed by its `data-start`/`data-duration`, not by CSS opacity: for a hard cut between two clips
   set the second clip's `data-start` at the cut instead of toggling its opacity, and make each clip's `data-duration` reach past
   the scene's whip.
+- SVG filters with the default objectBoundingBox region vanish on perfectly straight horizontal/vertical paths (zero-height or
+  zero-width bbox → empty filter region): don't put `FX.markupDefs`/rough filters on straight `ink()` lines, or set
+  `filterUnits="userSpaceOnUse"` (c2s01 S019/S022 wires were invisible).
+- Fast runtime debugging of a long segment: put the template body + gsap + `lib/fx.js` in one page, `seek()` through the whole
+  timeline in a script and run `chrome-headless-shell --enable-logging=stderr --dump-dom` — console errors with stack traces in
+  seconds (a `null` gsap target froze c2s01 entirely). 0.8.217's snapshot may print `[Bundler] Skipping sub-composition … empty`
+  for a large composition that nevertheless renders — trust the frames, not that line (c2s01).
+- An SVG `filter` (default objectBoundingBox region) on a perfectly horizontal/vertical path renders NOTHING (zero-height bbox):
+  draw rough/pen lines with `FX.markup.pen` (jittered points) or give them a slight slope (c3s01). The intro's feImage burn filter
+  (`burn_b.png`, alpha offset 13 → −2.4) burns an image AWAY; tween the offset −2.4 → 13 to burn it IN (c3s01 C3S039).
 - Timing audit for §10.9 (every scene): dump the timeline in a headless page (`tl.getChildren(true,true,false)` → start/end/targets)
   and list tweens that end < 0.5 s before their scene's whip start / hard cut; then snapshot those scenes' last 0.6 s.
 - Scenes kept at `display:none` outside their window (long segments) have NO layout while the script builds the timeline:
@@ -633,6 +643,9 @@ on action. Use it whenever the narrator quotes someone or introduces a historic 
 - [ ] Smooth long eases, 12 fps. [ ] Cuts on action; whips, no iris. [ ] No photo/clip used > 2× in a chunk.
 
 ## Changelog
+- 2026-10-31 — c3s01 editor: §4.2 gotchas (filters on zero-height paths, burn-in vs burn-away direction); c3s01 built from parts
+  (`project/c3/gen/c3s01/` + `build_c3s01.py`, derived maps/2.5D/halftone via `c3s01_assets.py`).
+- 2026-10-31 — c2s01 editor: §4.2 gotchas (filters on straight paths, headless seek harness, bogus bundler 'empty' warning).
 - 2026-10-31 — c2s03 editor: §4.2 multiply-inside-camera gotcha.
 - 2026-10-31 — c2s02 editor: §4.2 notes (Haskoy lacks "=", puppeteer timeline dump for the hold rule, padding narrow map crops); Esri z16 Stanford-lands mosaic, keyed 1950s RCA TV, Nobel medal cut-out, Terman cut-out added (assets/c2/derived/c2s02/SOURCES.md).
 - 2026-10-31 — c4s03 editor: §4.2 gotchas (display:none scenes break measuring FX, GSAP on SVG `<g>` with a transform attribute, filtered straight pen lines vanish); new assets: Takao 1945 AMS city plan, Kaohsiung harbour Esri z16 aerial (`assets/c4/maps/`), Wufeng Lin family photo, Shenzhen skyline halftone.

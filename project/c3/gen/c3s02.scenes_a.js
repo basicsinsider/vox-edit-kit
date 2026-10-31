@@ -32,7 +32,7 @@
       const J = M.tw_night, cam = $("sc044-cam");
       $("sc044-sea").style.background = `rgb(${J.corner.join(",")})`;
       tl.fromTo(cam, camAt(0.5, 811, 1100), Object.assign(camAt(0.6, 830, 830), { duration: 4.9, ease: E.cam, immediateRender: true }), S(208.0));
-      FX.focusHunt(tl, $("sc044-cam"), S(212.95 - 0.95), { dur: 0.8 });
+      FX.focusHunt(tl, $("sc044-cam"), S(208.60), { dur: 0.8 });
       // dissertation title page (typeset recreation, no seal) slides onto the desk, then away
       const th = $("sc044-thesis");
       tl.fromTo(th, { y: 760, rotation: 6 }, { y: 0, rotation: -2.5, duration: 1.0, ease: C(E.out, 1.0), immediateRender: true }, S(205.94));

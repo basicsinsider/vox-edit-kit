@@ -174,6 +174,10 @@
       cam($("sc086-cam"), { y: 0, scale: 1.02 }, { y: -150, scale: 1.06 }, S(410.86), 4.7, E.cam);
       [T(412.01), T(412.49)].forEach((c, i) => rise(words("sc086-aa")[i], c, { dur: 0.9, y: 12 }));
       [0, 2, 4].forEach((k, i) => tl.fromTo($("sc086-hl" + k), { scaleX: 0 }, { scaleX: 1, duration: 0.4, ease: "sine.inOut", immediateRender: true }, S(412.05) + i * 0.5));
+      // the repeated item is only legible once he says "Taiwan" (focus pull) — the strokes mark it again and again before that
+      const tws = $("sc086-rows").querySelectorAll(".tw");
+      gsap.set(tws, { filter: "blur(5px)", opacity: 0.6 });
+      tl.to(tws, { filter: "blur(0px)", opacity: 1, duration: 0.2, ease: "power1.out" }, T(414.01));
       tl.fromTo($("sc086-worb"), { opacity: 0, scale: 0.85 }, { opacity: 1, scale: 1, duration: 0.35, ease: C(E.out, 0.35), immediateRender: true }, T(414.73));
     })();
     whip($("sc086-shot"), $("sc087-shot"), S(415.43), { dir: -1 });
@@ -211,6 +215,9 @@
       cam($("sc088-cam"), { scale: 1.0, x: 0, y: 0 }, { scale: 1.75, x: -470, y: -430 }, S(418.79), 3.8, E.cam);
       tl.to($("sc088-cam"), { scale: 1.82, x: -500, y: -455, duration: 0.6, ease: "none" }, S(422.59));
       tl.fromTo($("sc088-photo").querySelector(".k-ht"), { backgroundSize: "160px auto" }, { backgroundSize: "260px auto", duration: 4.4, ease: "none", immediateRender: true }, S(418.79));
+      const kw = $("sc088-key").querySelector("span:last-child");
+      gsap.set(kw, { filter: "blur(4px)", opacity: 0.5 });
+      tl.to(kw, { filter: "blur(0px)", opacity: 1, duration: 0.2, ease: "power1.out" }, T(420.81));
       tl.fromTo($("sc088-hl"), { scaleX: 0 }, { scaleX: 1, duration: 0.4, ease: "sine.inOut", immediateRender: true }, S(420.81));
       [T(421.93), T(422.25)].forEach((c, i) => rise(words("sc088-fo")[i], c, { dur: 0.7, y: 10 }));
     })();

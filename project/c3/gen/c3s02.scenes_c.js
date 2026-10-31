@@ -168,7 +168,7 @@
       tl.set($("sc073-cr"), { opacity: 0 }, S(378.90)); tl.set($("sc074-cr"), { opacity: 1 }, S(378.90));
       const mf = gated(378.6, 383.9, () => FX.markupDefs(defs, "c3s02-mk074", { boil: 12 }));
       const x0 = mx(119.45), y0 = my(25.95), x1 = mx(121.55), y1 = my(25.05);
-      FX.markup.pen(tl, s2, S(380.94), { points: [[x0, y0], [(x0 + x1) / 2, Math.min(y0, y1) - 40], [x1 - 30, y1 - 10]], jitter: 6, seed: 7401, dur: 1.2, width: 16, color: YEL, filter: mf, blend: "normal", ease: C(E.inOut, 1.2) });
+      FX.markup.pen(tl, s2, S(380.94), { points: (() => { const q = [], cx = (x0 + x1) / 2 + 40, cy = (y0 + y1) / 2 + 120; for (let i = 0; i <= 8; i++) { const u = i / 8, w = 1 - u; q.push([w * w * x0 + 2 * w * u * cx + u * u * (x1 - 30), w * w * y0 + 2 * w * u * cy + u * u * (y1 - 10)]); } return q; })(), jitter: 6, seed: 7401, dur: 1.2, width: 16, color: YEL, filter: mf, blend: "normal", ease: C(E.inOut, 1.2) });
       FX.markup.pen(tl, s2, S(382.10), { points: [[x1 - 70, y1 - 46], [x1 - 28, y1 - 10], [x1 - 78, y1 + 16]], jitter: 2, seed: 7402, dur: 0.18, width: 16, color: YEL, filter: mf, blend: "normal" });
       tl.fromTo(f, { opacity: 0 }, { opacity: 0.9, duration: 0.3, ease: C(E.out, 0.3), immediateRender: true }, S(382.30));
       rise(words("sc074-fl")[0], T(380.94), { dur: 0.7, y: 10 });

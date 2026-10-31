@@ -255,7 +255,7 @@
         const p = div(box, `left:${x}px;top:${y}px;width:560px;height:760px;background:#ece3cf;box-shadow:0 26px 50px rgba(0,0,0,0.55);transform:rotate(${r}deg);padding:50px 46px`, "q-abs",
           `<div class="t-serif" style="font-size:20px;color:#4a5260;letter-spacing:0.16em;border-bottom:2px solid #4a5260;padding-bottom:10px">PROCEEDINGS</div>
            <div style="height:16px;margin:30px 20px 0;background:rgba(20,27,36,0.55)"></div><div style="height:16px;margin:12px 80px 0;background:rgba(20,27,36,0.55)"></div>
-           <div class="t-label" style="font-size:19px;color:#141b24;text-align:center;margin-top:22px;position:relative"><span style="position:relative;z-index:1">F. E. Terman and W. Y. Pan</span>${i === 2 ? '<span id="c3s01-sc041-hl" class="q-hl" style="left:228px;top:-3px;width:118px;height:26px;filter:url(#c3s01-rhl)"></span>' : ""}</div>
+           <div class="t-label" style="font-size:19px;color:#141b24;text-align:center;margin-top:22px;position:relative"><span style="position:relative;z-index:1">F. E. Terman and W. Y. Pan</span>${i === 2 ? '<span id="c3s01-sc041-hl" class="q-hl" style="left:286px;top:-3px;width:122px;height:26px;filter:url(#c3s01-rhl)"></span>' : ""}</div>
            <div style="display:flex;gap:22px;margin-top:30px">${[0, 1].map(() => `<div style="flex:1">${Array.from({ length: 16 }, (_, k) => `<div style="height:8px;margin-top:14px;background:rgba(20,27,36,0.28);width:${k % 6 === 5 ? 60 : 100}%"></div>`).join("")}</div>`).join("")}</div>`);
         p.style.opacity = 0;
         tl.fromTo(p, { opacity: 0, y: 300, rotation: r + 8 }, { opacity: 1, y: 0, rotation: r, duration: 0.5, ease: C(E.out, 0.5), immediateRender: true }, S(193.37) + i * 2 / 12);
