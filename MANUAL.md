@@ -234,6 +234,14 @@ use, attribution optional; never redistribute the files publicly, never use them
   space (c2s02 `us_night_wide.jpg` = us_night pasted over world_night, sea taken from the world map through the landmask = no seam).
 - `mix-blend-mode: multiply` on a piece inside a transformed/scaled camera div blends only with what is *inside* that div: with no
   opaque ground in the camera, white parts show as white boxes (c2s03 patent figures). Put the paper ground inside the camera (c2s03 editor).
+- (c1s03 editor, 2026-10-31) GSAP `x`/`y` on an SVG `<g>` overwrites its `transform` attribute — pins placed with `transform="translate(…)"`
+  jumped to the origin; animate only `opacity` on such groups (or wrap them). A per-frame SVG trace registered with `FX.onFrame` inside a
+  `gated()` scene did not draw in snapshots — driving it from its own tween's `onUpdate` (phase tweened 0→N) works and is seek-safe.
+  `FX.contrastCallout`'s data-URI mask showed no veil on a 1700×2331 page in a snapshot: an inline SVG veil (evenodd outer rect minus the
+  region, `feGaussianBlur` feather) is a reliable substitute. A strike/underline that must match a word's width: measure the word's
+  `offsetLeft/offsetWidth` in a tween `onUpdate` (fonts are loaded at render time; build-time measurement is wrong).
+- Wikimedia thumbnails: only the standard widths (960/1280/1920/3840, ≤ original) download — any other width (e.g. 2560, 1500) answers
+  HTTP 429 every time, which looks like rate-limiting but is not.
 ### 4.3 Check, look, render
 ```bash
 python3 tools/build_index.py s05            # put one (or several) compositions in index.html
@@ -643,6 +651,7 @@ on action. Use it whenever the narrator quotes someone or introduces a historic 
 - [ ] Smooth long eases, 12 fps. [ ] Cuts on action; whips, no iris. [ ] No photo/clip used > 2× in a chunk.
 
 ## Changelog
+- 2026-10-31 — c1s03 editor: §4.2 gotchas (GSAP x/y on SVG groups, onFrame trace vs tween onUpdate, contrast-callout SVG veil, word-width strikes, Commons thumbnail widths).
 - 2026-10-31 — c3s01 editor: §4.2 gotchas (filters on zero-height paths, burn-in vs burn-away direction); c3s01 built from parts
   (`project/c3/gen/c3s01/` + `build_c3s01.py`, derived maps/2.5D/halftone via `c3s01_assets.py`).
 - 2026-10-31 — c2s01 editor: §4.2 gotchas (filters on straight paths, headless seek harness, bogus bundler 'empty' warning).
