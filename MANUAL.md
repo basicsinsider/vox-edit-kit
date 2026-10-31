@@ -277,6 +277,10 @@ use, attribution optional; never redistribute the files publicly, never use them
   lines and fills ABOVE the blurred copy. Our three fonts have no CJK glyphs — never put Chinese characters in a text element (it renders
   in a fallback font); use the real photo/scan (c6s01 crops the real 莊敬自強 wall slogan). A 3D-tilted map plane shows its rectangle on a
   night ground unless the stage background equals the map's sea colour (sample it; kit `taiwan_night` sea = #131a22).
+- (c6s02 editor) A helper that takes a SEGMENT time (`slide(k, t)`, `whip`, `push`) must get `S(local)`, never the raw LOCAL second — two
+  paper slides fired at 247 s / 318 s of a 199 s segment (the dumped timeline was 318 s long; the transitions never happened). Check
+  `tl.duration()` == `data-duration` in the timeline dump. Burn/char-ring feImage filters: start the alpha offset BELOW the noise range
+  (−15, ring −12.8), not −12.5/−10.3 — at −10.3 the ring layer already shows the highest-noise pixels as orange blobs before the burn.
 ### 4.3 Check, look, render
 ```bash
 python3 tools/build_index.py s05            # put one (or several) compositions in index.html
@@ -292,6 +296,10 @@ Parallel editors: each works in a private sandbox so previews never collide —
 (compositions/, assets/, lib/ are symlinked; edit files in the main compositions/ folder).
 Assembly: `python3 tools/build_master.py --out index.html` mounts segNN at `data-vo-start`, strips each segment's
 `class="temp-vo"` slice, adds one continuous VO and the sound designer's `assets/audio/timeline.json` tracks.
+Snapshot gotchas (c6s01): (a) a map camera with `transform-origin:0 0` must keep `scale ≥ 1920 / mapWidth` (and the same for
+height) at EVERY keyframe — the East Asia crop is 3199 px, so scale 0.55 left dark bars at both edges; recompute x/y to keep the
+framing centre. (b) `snapshot` sometimes ends with "Browser process did not exit after forced shutdown": the PNGs are usually
+written but the contact sheet is not, and the LAST frame can come out black — re-snapshot that time alone before "fixing" anything.
 
 ### 4.4 Sync rule
 Write every cue as `T(<voiceover seconds>)` where `const T = s => s - SCENE_VO_START;`, taking the word's
@@ -769,3 +777,5 @@ on action. Use it whenever the narrator quotes someone or introduces a historic 
 - 2026-10-31 — Added 5 Texturelabs papers (graph, lined, stained, torn/folded, blueprint) to assets/textures (SOURCES.md). How the download works in a browser tool: click the size button (lg), the page POSTs to admin-ajax.php and gets back a `downloadlink` (signed S3 URL, valid 20 min) — fetch that URL. prep_texture.py now accepts a file that is already in `_raw/`.
 - 2026-10-31 — Map kit built: `assets/maps/kit/` (README + _preview.jpg): world 16384 atlas/night relief + Blue Marble 21600 desat; Pacific, East Asia, US, Bay Area, Northeast, Taiwan crops (≥ 5970 px wide) in atlas / night / sat / satdesat, each with .json formula + overlay SVG + landmask; Esri aerials (Hsinchu park z18/z17, Stanford, HP garage, MIT); 3 LOC vintage scans. Tools: `tools/map_tiles.py`, `tools/map_kit.py`. Use these instead of `*_relief_grey` / beige Pacific maps (§10.9).
 - 2026-10-31 — Long-form pipeline (lead): 10-min chunk renders take hours on 4 shared cores — run them **detached** (`setsid nohup … &`), never as a capped background tool call (a 2 h cap killed a c4 render). `tools/build_master.py` writes `index.html` + `compositions/_master/` at the **repo root** (ROOT is resolved through the sandbox symlink) — build, `mv index.html work/qaN/`, `git checkout index.html`. QA = snapshot every 6 s in batches of 8 + contact sheets; sparse frames get a +1 s re-snap before being called a bug (most are builds on their word). Never `pkill -f <pattern>` from a tool shell whose own command line contains the pattern (it kills the shell).
+- 2026-10-31 — c6s01 QA: §4.3 snapshot gotchas (map camera must cover the frame at every keyframe; black last frame after a browser-shutdown failure is a capture glitch).
+- 2026-10-31 — c6s02 finished (35 scenes): fixed raw-seconds `slide()` calls and the pre-burn ring blobs (§4.2), motif CSS aligned with c6s01's masters; sfx.json + NOTES with CCK card/circle, young cards, Moscow plan and isotype exports for c6s03.

@@ -701,8 +701,9 @@
       svg.innerHTML = `<path d="${EA.japan}" fill="${BONE}" fill-opacity="0.18" stroke="${BONE}" stroke-width="3" stroke-opacity="0.8"/>
         <path id="c6s01-sc031-tw" d="${EA.taiwan}" fill="${CEL}" fill-opacity="0" stroke="${CEL}" stroke-width="4"/>
         <path id="c6s01-sc031-cnf" d="${EA.china}" fill="${RED}" fill-opacity="0" stroke="${RED}" stroke-opacity="0" stroke-width="4"/>`;
-      tl.fromTo(cam, { x: 80, y: -170, scale: 0.55 }, { x: 70, y: -175, scale: 0.555, duration: 1.0, ease: "none", immediateRender: true }, S(149.75));
-      tl.to(cam, { x: 30, y: -200, scale: 0.58, duration: 5.6, ease: E.inOut }, S(150.75));
+      // map is 3199 px wide → scale ≥ 0.64 so it always covers 1920 (same framing centre as planned: map ≈ (1600,1290) → (1603,1276))
+      tl.fromTo(cam, { x: -64, y: -286, scale: 0.64 }, { x: -72, y: -292, scale: 0.645, duration: 1.0, ease: "none", immediateRender: true }, S(149.75));
+      tl.to(cam, { x: -114, y: -315, scale: 0.67, duration: 5.6, ease: E.inOut }, S(150.75));
       tl.to($("sc031-tw"), { attr: { "fill-opacity": 0.85 }, duration: 0.5, ease: C(E.out, 0.5) }, S(150.25));
       const l1 = ink(svg, "M2470 960 Q1950 1300 1400 1760", S(150.30), 0.7, { color: CEL, width: 10 });
       tl.to(l1, { attr: { "stroke-dashoffset": -1 }, duration: 0.5, ease: E.in }, S(152.30));
@@ -784,7 +785,8 @@
       [T(175.77), T(176.17), T(176.33), T(176.65), T(176.81), T(176.97), T(177.37)].forEach((c, i) => rise(words("sc036-fw")[i], c, { dur: 0.45, y: 6 }));
       [T(178.33), T(178.73)].forEach((c, i) => rise(words("sc036-ws")[i], c, { dur: 0.6, y: 10 }));
       const mk = $("sc036-mk"), pf = gated(178.2, 181.0, () => FX.markupDefs(mk, "c6s01-mk036", { boil: 4 }));
-      FX.markup.pen(tl, mk, S(178.37), { points: [[160, 1000], [700, 990], [1300, 1004], [1800, 990]], dur: 0.8, width: 7, color: BONE, filter: pf, seed: 362, jitter: 6, blend: "normal" });
+      const wb = box($("sc036-ws"), $("sc036-shot")), wy = wb[1] + wb[3] - 4;   // under "winning side" (svg at shot level, not in the push)
+      FX.markup.pen(tl, mk, S(178.80), { points: [[wb[0] + 4, wy], [wb[0] + wb[2] * 0.5, wy + 5], [wb[0] + wb[2] - 10, wy - 2]], dur: 0.6, width: 7, color: BONE, filter: pf, seed: 362, jitter: 6, blend: "normal" });
     })();
 
     /* =================== C6S037 · 180.95–183.11 · left out hanging =================== */

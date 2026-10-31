@@ -439,6 +439,9 @@
       const dot = el("circle", { cx: B[0], cy: B[1], r: 13, fill: CEL, stroke: "#5f8a74", "stroke-width": 3, opacity: 0 }, rt);
       tl.to(dot, { attr: { opacity: 1 }, duration: 0.15 }, S(336.5));
       Object.assign($("sc065-ch").style, { left: "40px", top: "70px" }); Object.assign($("sc065-tw").style, { left: "240px", top: "236px" });
+      gsap.set(["#c6s02-sc065-ch", "#c6s02-sc065-tw"], { opacity: 0 });   // label chips appear with their words
+      tl.set("#c6s02-sc065-ch", { opacity: 1 }, T(335.82) - L);
+      tl.set("#c6s02-sc065-tw", { opacity: 1 }, T(336.70) - L);
       line("sc065-ch", [["China", T(335.82)]], { dur: 0.4 });
       line("sc065-tw", [["Taiwan", T(336.70)]], { dur: 0.2 });
     })();
@@ -578,6 +581,7 @@
         const d = div("c62-dot", "left:" + (x - 42) + "px;top:" + (y - 42) + "px;width:84px;height:84px;background:" + CEL + ";border:8px solid #6f9a84;opacity:0", box);
         tl.fromTo(d, { opacity: 0, scale: 0.3 }, { opacity: 1, scale: 1, duration: 0.25, ease: C(FX.ease.out, 0.25), immediateRender: true }, S(364.66) + Math.floor(i / 2) / 16);
       });   // done 366.1
+      tl.fromTo("#c6s02-sc070-lgbox", { opacity: 0 }, { opacity: 1, duration: 0.3, ease: C(FX.ease.out, 0.3), immediateRender: true }, S(364.4));
       pop("sc070-lg1", S(364.62), { dur: 0.4 });
       line("sc070-tp", [["Taiwanese ", T(364.70)], ["people", T(365.42)]]);
       line("sc070-al", [["already ", T(366.06)], ["on ", T(366.54)], ["the ", T(366.70)], ["island", T(366.86)]]);
@@ -636,8 +640,8 @@
       line("sc072-c", [["change", T(378.53)]], { dur: 0.6 });
       line("sc072-d", [["down ", T(379.01)], ["the ", T(379.25)], ["line", T(379.33)]], { dur: 0.4 });
       const svg = $("sc072-svg"), f = FX.markupDefs(svg, "c6s02-mk72", { boil: 4 });
-      FX.markup.pen(tl, svg, S(378.98), { points: [[760, 880], [920, 872], [1120, 878], [1260, 870]], width: 7, color: BONE, blend: "normal", filter: f, dur: 0.32, seed: 7201 });
-      FX.markup.pen(tl, svg, S(379.28), { points: [[1222, 840], [1264, 870], [1224, 902]], width: 7, color: BONE, blend: "normal", filter: f, dur: 0.1, seed: 7202 });   // arrow done 379.38, holds 0.5 s; CA = camera push
+      FX.markup.pen(tl, svg, S(378.98), { points: [[880, 880], [1010, 872], [1160, 878], [1290, 870]], width: 7, color: BONE, blend: "normal", filter: f, dur: 0.32, seed: 7201 });
+      FX.markup.pen(tl, svg, S(379.28), { points: [[1252, 840], [1294, 870], [1254, 902]], width: 7, color: BONE, blend: "normal", filter: f, dur: 0.1, seed: 7202 });   // arrow done 379.38, holds 0.5 s; CA = camera push
     })();
 
     /* ============ C6S073 · 379.89–385.17 · the reason … "I don't know where I heard this" (lamp-lit shelf) ============ */
@@ -676,7 +680,7 @@
       tl.fromTo("#c6s02-sc074-n", { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, T(386.29) - L);
       $("sc074-n").innerHTML = '<span class="c62-lbox" id="c6s02-sc074-nb"></span>';
       line("sc074-nb", [["SARAH ", T(386.29)], ["PAINE", T(386.69)]], { dur: 0.5, y: 0 });
-      tl.fromTo("#c6s02-sc074-map", { opacity: 1, x: 900, rotation: 12 }, { x: 0, rotation: 5, duration: 0.8, ease: C(FX.ease.out, 0.8), immediateRender: true }, S(388.9));   // done 389.7
+      tl.fromTo("#c6s02-sc074-map", { opacity: 0, x: 900, rotation: 12 }, { opacity: 1, x: 0, rotation: 5, duration: 0.8, ease: C(FX.ease.out, 0.8), immediateRender: true }, S(388.9));   // done 389.7
       line("sc074-a", [["Asian ", T(389.49)], ["history", T(389.89)]], { dur: 0.35 });
     })();
 
@@ -690,12 +694,12 @@
       svg.innerHTML = `<defs>
         <filter id="c6s02-b76" filterUnits="userSpaceOnUse" x="0" y="0" width="${W}" height="${H}" color-interpolation-filters="sRGB">
           <feImage href="assets/maps/burn_a.png" x="0" y="0" width="${W}" height="${H}" preserveAspectRatio="none" result="n"/>
-          <feColorMatrix id="c6s02-b76m" in="n" type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  12 0 0 0 -12.5" result="t"/>
+          <feColorMatrix id="c6s02-b76m" in="n" type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  12 0 0 0 -15" result="t"/>
           <feComposite in="SourceGraphic" in2="t" operator="in"/></filter>
         <filter id="c6s02-c76" filterUnits="userSpaceOnUse" x="0" y="0" width="${W}" height="${H}" color-interpolation-filters="sRGB">
           <feImage href="assets/maps/burn_a.png" x="0" y="0" width="${W}" height="${H}" preserveAspectRatio="none" result="n"/>
-          <feColorMatrix id="c6s02-c76a" in="n" type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  12 0 0 0 -10.3" result="e"/>
-          <feColorMatrix id="c6s02-c76b" in="n" type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  12 0 0 0 -12.5" result="l"/>
+          <feColorMatrix id="c6s02-c76a" in="n" type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  12 0 0 0 -12.8" result="e"/>
+          <feColorMatrix id="c6s02-c76b" in="n" type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  12 0 0 0 -15" result="l"/>
           <feComposite in="e" in2="l" operator="arithmetic" k1="0" k2="1" k3="-1" k4="0" result="ring"/>
           <feFlood flood-color="#f2b25c" result="fl"/><feComposite in="fl" in2="ring" operator="in" result="r2"/>
           <feComposite in="r2" in2="SourceAlpha" operator="in"/></filter></defs>
@@ -719,8 +723,8 @@
       tl.to(["#c6s02-sc075-wc", "#c6s02-sc075-wr", "#c6s02-sc075-tp"], { opacity: 0, duration: 0.3 }, S(395.9));
       line("sc075-nc", [["not ", T(397.97)], ["China ", T(398.13)], ["anymore", T(398.53)]]);
       const M = (o) => "0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  12 0 0 0 " + o.toFixed(3);
-      const b = { v: -12.5 };
-      tl.fromTo(b, { v: -12.5 }, { v: 1.2, duration: 1.5, ease: C("power1.inOut", 1.5), immediateRender: false, onUpdate: () => { $("b76m").setAttribute("values", M(b.v)); $("c76a").setAttribute("values", M(b.v + 2.2)); $("c76b").setAttribute("values", M(b.v)); } }, S(397.95));   // done 399.45
+      const b = { v: -15 };   // start below the noise range: no ring/red pixels before the burn
+      tl.fromTo(b, { v: -15 }, { v: 1.2, duration: 1.5, ease: C("power1.inOut", 1.5), immediateRender: false, onUpdate: () => { $("b76m").setAttribute("values", M(b.v)); $("c76a").setAttribute("values", M(b.v + 2.2)); $("c76b").setAttribute("values", M(b.v)); } }, S(397.95));   // done 399.45
       tl.to("#c6s02-sc075-cel", { attr: { opacity: 0.2 }, duration: 1.5, ease: "none" }, S(398.0));
       tl.to("#c6s02-sc075-nc", { opacity: 0, duration: 0.3 }, S(399.5));
       // push from the mainland onto Taiwan, focus hunt as it lands
