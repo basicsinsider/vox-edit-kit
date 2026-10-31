@@ -56,3 +56,13 @@ Every file looked at. Fair-use items: documentary commentary, transformed, credi
 - Licence / credit: PD / Harris & Ewing (native 7448x9304)
 - Size: 1920x2398
 
+
+### ray_lyman_wilbur_1929_harris_ewing.jpg (c1s02 editor, 2026-10-31)
+- Subject: Ray Lyman Wilbur (Stanford president, Hoover's trusted friend), 8 Mar 1929 — used UNNAMED in a portrait circle (C1S043)
+- Source: https://commons.wikimedia.org/wiki/File:Ray_Lyman_Wilbur,_3-8-29_LCCN2016843463.jpg (LOC Harris & Ewing / National Photo Co.)
+- Licence / credit: CC0 / public domain · Size: 1920x1543 (Commons thumb of 5288 px original)
+
+### lewis_terman_LOWRES_240.jpg (c1s02 editor, 2026-10-31)
+- Subject: Lewis Madison Terman, studio portrait (round glasses)
+- Source: https://commons.wikimedia.org/wiki/File:Lewis_Madison_Terman.jpg — CC0 / PD
+- Size: 240x300 ONLY — used small (≤ 300 px circles/cards, halftone) in C1S051/052/055; R06 hi-res still missing

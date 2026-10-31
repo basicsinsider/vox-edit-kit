@@ -119,3 +119,14 @@
 - Licence / credit: CC (Commons) — check
 - Author: — · Date: 
 - Size: 1024x1536 · 1024x1536
+
+## Added by c2s01 editor (2026-10-31)
+- (Nobel medal: c2s01 C2S034 uses the same file as c2s02 — `objects/nobel_medal_fleming_1945.jpg` / `derived/c2s02/nobel_medal_cut.png`, Commons CC BY-SA 4.0.)
+### objects/playing_card_ace_{spades,hearts,diamonds,clubs}_19c.jpg
+- Subject: Playing cards, Aces (transformation deck), late 19th century, Cooper Hewitt (CH 18405261 / 18405265 / 18405287 / 18405309)
+- Source: Commons "Playing Card, Ace of …, late 19th century (CH …).jpg" (1280/1920 thumbs of 2121x3031)
+- Licence / credit: CC0 (Cooper Hewitt) · Size: 1120x1600 · Used: C2S006 (N02 aces)
+### objects/glass_bottle_cocacola.jpg
+- Subject: glass soda bottle (Coca-Cola contour bottle, 0.2 l)
+- Source: https://commons.wikimedia.org/wiki/File:15-09-26-RalfR-WLC-0098_-_Coca-Cola_glass_bottle_(Germany).jpg (1280 thumb)
+- Licence / credit: CC0 (Ralf Roletschek) · Size: 1280x2270 · Used: C2S031–032 (N22, modern bottle — closest free match) → cutouts/glass_bottle_cut.png

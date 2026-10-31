@@ -45,3 +45,6 @@
 - Unnamed people (Chiang Kai-shek, Rogers, Zhou Enlai): small t-label ID labels are OK (visual labels of an object on screen),
   kept minimal.
 - UN vote graphic: reuse c4's spec (project/c4/EDIT_NOTES.md, its D06 GA hemicycle scene) so the look matches.
+- Periscope Film clips (assets/c5/footage/*, burned-in "periscopefilm.com" caption): do NOT use them and do not crop/mask the
+  watermark (MANUAL: never strip watermarks). Use stills (Ken-Burns/2.5D), the c3/c4/c6 PD newsreel clips and intro fab
+  footage instead; note any gap. (lead, 2026-10-31)

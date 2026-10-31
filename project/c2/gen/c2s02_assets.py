@@ -26,9 +26,11 @@ bt = Image.open("assets/maps/kit/bay_area_atlas.jpg")
 save(bt.crop((1700, 2000, 4500, 4800)).resize((2100, 2100), Image.LANCZOS), "bay_atlas_sf_stanford.jpg")
 info["bay_atlas_off"] = (1700, 2000, 0.75)
 
-# Stanford aerial z17 -> 0.75
-ae = Image.open("assets/maps/kit/aerial_stanford_z17.jpg")
-save(ae.resize((3264, 2880), Image.LANCZOS), "aerial_stanford_075.jpg")
+# Stanford lands aerial: Esri z16 mosaic made by /tmp script (tools/map_tiles.py fetch esri 16 -122.262 37.372 -122.118 37.468),
+# stitched 7168x5888 then halved -> aerial_stanford_lands_z16_050.jpg (+ .json formula, divide by 2)
+# Stanford Main Quad panorama c.1896 -> panel crop
+qd = Image.open("assets/archival/hoover/stanford_main_quad_panorama_c1896.jpg")
+save(qd.crop((3600, 700, 9900, 3100)).resize((1575, 600), Image.LANCZOS), "quad_panel.jpg")
 
 # USGS quads: 1948 15' (Palo Alto + Mountain View, native crop) and 1953 7.5' (Stanford lands, 0.5)
 q48 = Image.open("assets/c2/maps/usgs_palo_alto_1948_62k.jpg")
@@ -41,9 +43,9 @@ tv = Image.open("assets/c2/objects/rca_victor_tv_1950s_ohio.jpg").convert("RGBA"
 m = Image.new("L", tv.size, 255); d = ImageDraw.Draw(m)
 d.rounded_rectangle((1705, 742, 2368, 1326), radius=150, fill=0)
 m = m.filter(ImageFilter.GaussianBlur(2))
-tv.putalpha(m); s = 0.625
+tv.putalpha(m); s = 0.8
 save(tv.resize((round(tv.width * s), round(tv.height * s)), Image.LANCZOS), "tv_rca_1950s_keyed.png")
-scr = {"x": 1705 * s, "y": 742 * s, "w": (2368 - 1705) * s, "h": (1326 - 742) * s, "radius": 150 * s, "image": "tv_rca_1950s_keyed.png", "size": [2400, 1600]}
+scr = {"x": 1705 * s, "y": 742 * s, "w": (2368 - 1705) * s, "h": (1326 - 742) * s, "radius": 150 * s, "image": "tv_rca_1950s_keyed.png", "size": [3072, 2048]}
 json.dump(scr, open(f"{OUT}/tv_rca_1950s_keyed_screen.json", "w"), indent=1)
 
 # Nobel medal (Fleming's 1945 medal, NMS) -> circular cut-out

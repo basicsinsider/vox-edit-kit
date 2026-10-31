@@ -64,8 +64,8 @@ if not ONLY_TW:
     res["eurasia"]["gdr_clip"] = "M" + "L".join("%.0f %.0f" % lonlat(*p) for p in [(10.9, 55.5), (10.9, 54.0), (10.6, 53.4), (11.0, 52.9), (10.8, 52.2), (10.3, 51.6), (9.9, 51.3), (10.2, 50.6), (10.6, 50.3), (11.4, 50.4), (12.1, 50.3), (16, 50.3), (16, 55.5)]) + "Z"
 
     # Africa (night for C4S013–014, atlas for C4S016), native res
-    box, size = crop(world_n, -20, -37, 55, 38, 1.0, "africa_night.jpg")
-    crop(world_a, -20, -37, 55, 38, 1.0, "africa_atlas.jpg")
+    box, size = crop(world_n, -60, -40, 95, 42, 1.0, "africa_night.jpg")
+    crop(world_a, -60, -40, 95, 42, 1.0, "africa_atlas.jpg")
     af = ["ghana", "guinea", "nigeria", "senegal", "mali", "c_te_d_ivoire", "cameroon", "chad", "niger", "congo", "dem_rep_congo", "gabon",
           "central_african_rep", "madagascar", "somalia", "mauritania", "burkina_faso", "togo", "benin", "tanzania", "uganda", "kenya", "zambia",
           "malawi", "sudan", "s_sudan", "morocco", "tunisia", "algeria", "sierra_leone", "rwanda", "burundi", "libya", "egypt", "ethiopia", "liberia",

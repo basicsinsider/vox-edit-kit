@@ -236,7 +236,6 @@
       tl.fromTo(shot, { y: 1140 }, { y: 0, duration: 0.5, ease: C(E.out, 0.5), immediateRender: false }, S(119.80));   // PS: torn-edge paper slides up over the photo
       tl.set(shot, { maskImage: "none", webkitMaskImage: "none" }, S(120.32));
       ground("paper", S(120.0));
-      warRoom("sc022", { lon: 52, lat: 12, z: 0.66 }, { lon: 58, lat: 11, z: 0.7 }, 7.44, S(120.0));
       [T(122.80), T(123.36)].forEach((c, i) => rise(words("sc022-dw")[i], c, { dur: 0.7, y: 10 }));
       tl.fromTo($("sc022-rocr"), { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.7, ease: C(E.out, 0.7), immediateRender: true }, T(124.96));
       pop($("sc022-ccpb"), T(125.84), 0.7);

@@ -252,3 +252,17 @@
 - Subject: Framework Laptop 13 (2023, AMD Ryzen) — internal mainboard and chips (modern ICs on an everyday board)
 - Source: https://commons.wikimedia.org/wiki/File:Framework_Laptop_13_-_2023_AMD_Ryzen_-_Internal_motherboard_and_component_view.jpg (1920 thumb of 2869)
 - Licence / credit: CC BY 4.0 — on-screen credit "Photo: Wikimedia Commons, CC BY 4.0" · Size: 1920x1446 · Used: C2S108 (N73), crop on the mainboard only
+
+## Added by c2s01 editor (2026-10-31)
+### photos/eniac_classic_shot.jpg
+- Subject: "Classic shot of the ENIAC" (US Army photo, Glen Beck in front, Betty Snyder behind)
+- Source: https://commons.wikimedia.org/wiki/File:Classic_shot_of_the_ENIAC_(full_resolution).jpg (1920 thumb of 2100)
+- Licence / credit: Public domain (US Army) · Size: 1920x1388 · Used: C2S027–028 (N20)
+### photos/stanford_aerial_view_modern.jpg
+- Subject: Aerial view of the Leland Stanford Junior University (Main Quad, Oval) — MODERN (no 1940s–50s aerial reachable)
+- Source: https://commons.wikimedia.org/wiki/File:Aerial_view_of_The_Leland_Stanford_Junior_University.jpg (3840 thumb of 4806)
+- Licence / credit: CC BY 2.0 — on-screen credit "Photo: Wikimedia Commons, CC BY 2.0" · Size: 3840x2108 · Used: C2S011 (N07 substitute)
+### photos/nasa_antenna_crew_c1960.jpg
+- Subject: crew raising a horn/dish antenna in a field (NASA, c.1960) — "radio science" field card
+- Source: https://commons.wikimedia.org/wiki/File:207457main_antenna-331-2426a-516.jpg (1280 thumb of 1500)
+- Licence / credit: CC0 / PD (NASA) · Size: 1280x1345 · Used: C2S007/C2S009 card (N04b)

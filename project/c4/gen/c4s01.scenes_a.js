@@ -7,14 +7,14 @@
       tl.to(cam, { scale: 1.11, duration: 0.3, ease: E.in }, S(0.88));            // punch-in; the veil hard-cuts at its peak speed
       tl.to(cam, { scale: 1.15, duration: 6.4, ease: "none" }, S(1.18));
       tl.to(cam, { scale: 1.42, y: 60, duration: 0.42, ease: E.in }, S(7.58));    // CA: push on into the table top → the top-down diagram
-      FX.contrastCallout(tl, $("sc001-veil"), S(1.14), { ellipse: [1000, 930, 1060, 300], feather: 40, color: "rgba(26,25,23,1)", strength: 0.62 });
+      FX.contrastCallout(tl, $("sc001-veil"), S(1.14), { ellipse: [1000, 975, 1000, 200], feather: 50, color: "rgba(26,25,23,1)", strength: 0.7 });
       const ch = gated(0, 2.0, () => FX.roughDefs(defs, "c4s01-ch001", { freq: 0.04, scale: 7, choke: 0 }));
       $("sc001-veto").style.filter = "url(#c4s01-ch001)";
       tl.fromTo($("sc001-veto"), { opacity: 0, scale: 1.08 }, { opacity: 1, scale: 1, duration: 1.0, ease: C(E.out, 1.0), immediateRender: true }, T(1.14));
       FX.chokeSettle(tl, ch, $("sc001-veto"), T(1.14), 12, 0.6, "blur(0.45px)");
       tl.to($("sc001-veto"), { opacity: 0, duration: 0.5, ease: "power1.in" }, S(5.3));
       const mk = $("sc001-mk"), f = gated(0, 8.1, () => FX.markupDefs(mk, "c4s01-mk001", { boil: 4 }));
-      FX.markup.circle(tl, mk, S(6.30), { cx: 1000, cy: 925, rx: 930, ry: 215, rot: -3, dur: 1.0, color: BONE, width: 7, filter: f, seed: 101 });
+      FX.markup.circle(tl, mk, S(6.30), { cx: 990, cy: 905, rx: 860, ry: 175, rot: -2, dur: 1.0, color: BONE, width: 7, filter: f, seed: 101 });
       [T(6.82), T(7.30)].forEach((c, i) => rise(words("sc001-sc")[i], c, { dur: 0.45, y: 10 }));
     })();
 
@@ -104,7 +104,7 @@
       tl.to(cam, { x: -90, y: -40, z: 230, duration: 0.42, ease: E.in }, S(29.79));       // push; the veil hard-cuts at its peak (30.09)
       tl.to(cam, { x: -110, y: -50, z: 250, duration: 1.8, ease: "none" }, S(30.21));
       FX.focusHunt(tl, $("sc005-stage"), S(30.24), { dur: 0.8 });
-      FX.contrastCallout(tl, $("sc005-veil"), S(30.09), { ellipse: [1240, 905, 250, 120], feather: 30, color: "rgba(26,25,23,1)", strength: 0.66 });
+      FX.contrastCallout(tl, $("sc005-veil"), S(30.09), { ellipse: [1150, 860, 270, 130], feather: 30, color: "rgba(26,25,23,1)", strength: 0.66 });
       rise($("sc005-jur"), T(28.59), { dur: 0.9, y: 12 });
       [T(30.11), T(30.51), T(30.75), T(31.07)].forEach((c, i) => show(words("sc005-who")[i], c));
       show($("sc005-seat"), T(31.39));

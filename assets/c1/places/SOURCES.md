@@ -62,3 +62,8 @@ Every file looked at. Fair-use items: documentary commentary, transformed, credi
 - Licence / credit: PD / Boston Public Library. 960 px — card use only
 - Size: 960x615
 
+
+### white_house_front_view_1929_30.jpg (c1s02 editor, 2026-10-31) — N23 alt
+- Subject: The White House, front (south) view across the lawn, 1929–30
+- Source: https://commons.wikimedia.org/wiki/File:White_House_front_view_1929-30.jpg
+- Licence / credit: CC0 / public domain · Size: 3444x2102 (greyscale; building is small in frame — used as a printed photo card, C1S040)
