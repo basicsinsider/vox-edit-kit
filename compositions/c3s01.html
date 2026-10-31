@@ -1,0 +1,1554 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8" /></head>
+<body>
+<template>
+  <style>
+    /* c3s01 — chunk c3, LOCAL VO 0.00–200.34 (C3S001–C3S042). Source: project/c3/gen/c3s01/*.html → build_c3s01.py */
+    #root { position: absolute; inset: 0; overflow: hidden; background: var(--night); }
+    .q-scene { position: absolute; inset: 0; overflow: hidden; visibility: hidden; opacity: 0; display: none; }
+    .q-night { background: var(--night); }
+    .q-paper { background: var(--paper); }
+    .q-abs { position: absolute; }
+    .q-full { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; }
+    .q-cam { position: absolute; inset: 0; transform-origin: 50% 50%; }
+    .q-p1, .q-p2 { position: absolute; inset: 0; background-size: cover; background-position: center; pointer-events: none; }
+    .q-p1 { opacity: 0.6; mix-blend-mode: multiply; }
+    .q-p2 { opacity: 0.9; mix-blend-mode: multiply; }
+    .q-credit { position: absolute; right: 30px; bottom: 20px; font-size: 13px; letter-spacing: 0.08em; color: rgba(242,237,227,0.6); z-index: 6; }
+    .q-credit.ink { color: rgba(20,27,36,0.6); }
+    .q-mk { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; pointer-events: none; }
+    .q-w { display: inline-block; white-space: pre; opacity: 0; }
+    .q-ink { color: var(--ink); }
+    .q-box { display: inline-block; background: var(--ink); color: var(--paper); padding: 0.1em 0.24em 0.02em; line-height: 1; }
+    .q-vbox { display: inline-block; background: var(--vermilion); color: var(--bone); padding: 0.1em 0.24em 0.02em; line-height: 1; }
+    .q-nbox { display: inline-block; background: var(--navy); color: var(--bone); padding: 0.12em 0.3em 0.04em; line-height: 1; }
+    .q-bbox { display: inline-block; background: var(--bone); color: var(--ink); padding: 0.1em 0.24em 0.02em; line-height: 1; }
+    .q-hl { position: absolute; background: var(--yellow); mix-blend-mode: multiply; transform-origin: 0 50%; opacity: 0.9; }
+    .q-card { position: absolute; background: #efe8d8; box-shadow: 0 26px 60px rgba(20,27,36,0.32); overflow: hidden; }
+    .q-card img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    .q-desk { position: absolute; inset: 0; background: radial-gradient(ellipse 60% 70% at 52% 44%, #3a3128 0%, #1d1915 55%, #0f0e0c 100%); }
+    .q-lamp { position: absolute; inset: 0; background: radial-gradient(ellipse 45% 55% at 50% 44%, rgba(255,214,170,0.22), rgba(255,214,170,0) 70%); mix-blend-mode: screen; pointer-events: none; }
+    .q-scrim-b { position: absolute; left: 0; right: 0; bottom: 0; height: 420px; background: linear-gradient(180deg, rgba(15,19,24,0), rgba(15,19,24,0.82)); }
+    .q-scrim-t { position: absolute; left: 0; right: 0; top: 0; height: 360px; background: linear-gradient(0deg, rgba(15,19,24,0), rgba(15,19,24,0.75)); }
+    .q-veil { position: absolute; inset: 0; opacity: 0; pointer-events: none; }
+    .q-stamp { position: absolute; color: var(--ink); border: 10px solid var(--ink); padding: 8px 28px 0; mix-blend-mode: multiply; opacity: 0; }
+    .q-slip { position: absolute; width: 760px; background: #f3eddf; box-shadow: 0 16px 34px rgba(20,27,36,0.26); padding: 26px 30px 24px 120px; }
+    .q-slip .av { position: absolute; left: 30px; top: 26px; width: 66px; height: 66px; border-radius: 50%; background: #b9b2a3; }
+    .q-slip .ln { height: 10px; background: rgba(20,27,36,0.22); margin: 12px 0 0; border-radius: 3px; }
+    .q-circ { position: absolute; border-radius: 50%; overflow: hidden; background: #d9d2c4; box-shadow: 0 16px 34px rgba(20,27,36,0.28); }
+    .q-circ img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    .q-pin { position: absolute; width: 26px; height: 26px; border-radius: 50%; background: var(--vermilion); box-shadow: 0 6px 8px rgba(0,0,0,0.45), inset -4px -5px 0 rgba(0,0,0,0.25); }
+    .q-cell { position: absolute; width: 88px; height: 96px; border: 2px solid rgba(20,27,36,0.55); color: var(--ink); }
+    .q-cell .n { position: absolute; left: 6px; top: 4px; font-size: 15px; }
+    .q-cell .s { position: absolute; left: 0; right: 0; top: 30px; text-align: center; font-size: 42px; }
+    .q-vc { position: absolute; width: 400px; height: 236px; }
+    .q-vc .f { position: absolute; inset: 0; background: #e9e1cf; border: 4px solid var(--ink); box-shadow: 0 10px 18px rgba(20,27,36,0.22); }
+    .q-vc .d { position: absolute; inset: 0; border: 4px dashed rgba(20,27,36,0.55); opacity: 0; }
+    .q-vc svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+    .q-node { position: absolute; width: 34px; height: 34px; margin: -17px 0 0 -17px; border-radius: 50%; background: var(--ink); opacity: 0; }
+    .q-typed { font-size: 40px; color: var(--ink); letter-spacing: 0.12em; }
+    #c3s01-flash { position: absolute; inset: 0; background: #fbf4e6; opacity: 0; pointer-events: none; z-index: 7; }
+    #c3s01-grain, #c3s01-dust, #c3s01-vig { z-index: 8; }
+  </style>
+  <div id="root" data-composition-id="c3s01" data-vo-start="0.00" data-duration="200.34" data-width="1920" data-height="1080">
+    <svg id="c3s01-defs" width="0" height="0" style="position:absolute"></svg>
+
+    <!-- C3S001 · 0.00–2.32 · "…how big it was" · wafer die macro pulling back -->
+    <div class="q-scene q-night" id="c3s01-sc001" data-scene="C3S001">
+      <div class="q-cam" id="c3s01-sc001-cam">
+        <video id="c3s01-sc001-vid" src="assets/intro/footage/wafer_die_pattern_macro.mp4" muted playsinline data-start="0" data-duration="2.6" data-media-start="3.0"
+          style="position:absolute;left:-40px;top:-60px;width:2000px;height:1200px;object-fit:cover;filter:saturate(0.55) contrast(1.1) brightness(0.8)"
+          data-color-grading='{"effects":{"chromaticAberration":0.12,"chromaticAngle":0}}'></video>
+      </div>
+      <div class="q-scrim-b"></div>
+      <div id="c3s01-sc001-t" class="q-abs t-serif-i clean" style="left:0;width:1920px;top:800px;text-align:center;font-size:120px"><span class="q-w">how </span><span class="q-w" id="c3s01-sc001-big">big</span></div>
+    </div>
+
+    <!-- C3S002 · 2.32–7.04 · "the world wouldn't exist without IC" · curve cut IC → night Earth -->
+    <div class="q-scene q-night" id="c3s01-sc002" data-scene="C3S002">
+      <div class="q-cam" id="c3s01-sc002-wrap" style="transform-origin:38% 30%">
+        <div class="q-full" id="c3s01-sc002-a"><img src="assets/c3/photos/fairchild_micrologic_series_01.jpg" alt="" style="position:absolute;left:-300px;top:-160px;width:2520px;height:1680px;object-fit:cover;filter:saturate(0.45) contrast(1.1) brightness(0.72)" /></div>
+        <div class="q-full" id="c3s01-sc002-b" style="opacity:0;background:#05070a"><div id="c3s01-sc002-globe" class="q-full" style="transform-origin:38% 30%"><img src="assets/c3/maps/black_marble_2012_asia_australia_globe.jpg" alt="" style="position:absolute;left:-180px;top:-640px;width:2320px;height:2320px" /></div></div>
+      </div>
+      <div class="q-scrim-b" style="height:360px"></div>
+      <div id="c3s01-sc002-ic" class="q-abs t-display" style="left:150px;top:150px;font-size:110px"><span class="q-bbox q-w">IC</span></div>
+      <div id="c3s01-sc002-world" class="q-abs t-serif-i halate" style="left:0;width:1920px;top:820px;text-align:center;font-size:150px"><span class="q-w">the </span><span class="q-w">world</span></div>
+      <div class="q-credit t-label" id="c3s01-sc002-cr">Micrologic photo: CC BY 4.0 (Wikimedia Commons) · Earth at night: NASA Black Marble</div>
+    </div>
+
+    <!-- C3S003 · 7.04–10.08 · "This podcast…changing your guys' lives" · IBM 5154 player -->
+    <div class="q-scene q-night" id="c3s01-sc003" data-scene="C3S003">
+      <div class="q-desk"></div>
+      <div class="q-cam" id="c3s01-sc003-cam" style="transform-origin:939px 502px">
+        <div class="q-full" id="c3s01-sc003-mon">
+          <div class="q-abs" style="left:428px;top:113px;width:1022px;height:778px;background:#05090b"></div>
+          <div class="q-abs" id="c3s01-sc003-scr" style="left:428px;top:113px;width:1022px;height:778px;overflow:hidden;background:radial-gradient(ellipse 70% 70% at 50% 45%,#13202a,#070c10);transform-origin:50% 50%">
+            <div class="q-abs t-label" style="left:90px;top:96px;font-size:30px;color:#9fc3e3;letter-spacing:0.3em">Searching Lessons</div>
+            <div class="q-abs" style="left:90px;top:150px;width:840px;height:2px;background:rgba(159,195,227,0.4)"></div>
+            <div id="c3s01-sc003-pod" class="q-abs t-label" style="left:90px;top:200px;font-size:66px;color:#f2ede3"><span class="q-w">this </span><span class="q-w">podcast</span></div>
+            <svg id="c3s01-sc003-wave" class="q-abs" style="left:90px;top:330px;width:840px;height:200px" viewBox="0 0 840 200"></svg>
+            <div class="q-abs" style="left:90px;top:600px;width:840px;height:10px;background:rgba(242,237,227,0.18)"></div>
+            <div class="q-abs" id="c3s01-sc003-bar" style="left:90px;top:600px;width:840px;height:10px;background:#f2ede3;transform-origin:0 50%;transform:scaleX(0.06)"></div>
+            <div class="q-abs t-label" id="c3s01-sc003-tc" style="left:90px;top:630px;font-size:24px;color:rgba(242,237,227,0.75)">0:00:00</div>
+            <div class="q-abs t-label" style="left:730px;top:630px;width:200px;text-align:right;font-size:24px;color:rgba(242,237,227,0.75)">4:26:14</div>
+            <div id="c3s01-sc003-lives" class="q-abs t-serif-i" style="left:560px;top:180px;font-size:96px;color:#f2ede3;opacity:0">lives</div>
+            <div class="q-abs" style="inset:0;background:repeating-linear-gradient(0deg,rgba(0,0,0,0.22) 0 2px,rgba(0,0,0,0) 2px 4px);mix-blend-mode:multiply"></div>
+            <div class="q-abs" style="inset:0;background:radial-gradient(ellipse 60% 40% at 30% 20%,rgba(255,255,255,0.10),rgba(255,255,255,0) 70%)"></div>
+          </div>
+          <img src="assets/intro/screens/ibm_5154_monitor_frame.png" alt="" class="q-full" />
+        </div>
+      </div>
+      <div class="q-abs" id="c3s01-sc003-glow" style="inset:0;background:#f2ede3;opacity:0"></div>
+      <div class="q-credit t-label">IBM 5154 monitor: CC0 (Wikimedia Commons)</div>
+    </div>
+
+    <!-- C3S004 · 10.08–15.68 · "All the videos … wouldn't exist without Silicon Valley" · video cards → pictorial map -->
+    <div class="q-scene q-paper" id="c3s01-sc004" data-scene="C3S004">
+      <div class="q-cam" id="c3s01-sc004-cam">
+        <img src="assets/intro/paintings/stanford_peninsula_map.jpg" alt="" style="position:absolute;left:0;top:-700px;width:1920px;height:2556px;filter:saturate(0.72) contrast(1.05)" />
+      </div>
+      <div class="q-full" id="c3s01-sc004-L" style="clip-path:inset(0 960px 0 0)"><div class="q-paper q-full"></div><div class="q-p1" style="background-image:url('assets/textures/paper_cream_01.jpg')"></div><div class="q-p2" style="background-image:url('assets/textures/paper_fiber_01.jpg');opacity:0.5"></div></div>
+      <div class="q-full" id="c3s01-sc004-R" style="clip-path:inset(0 0 0 960px)"><div class="q-paper q-full"></div><div class="q-p1" style="background-image:url('assets/textures/paper_cream_01.jpg')"></div><div class="q-p2" style="background-image:url('assets/textures/paper_fiber_01.jpg');opacity:0.5"></div></div>
+      <div class="q-full" id="c3s01-sc004-cards"></div>
+      <div id="c3s01-sc004-vid" class="q-abs t-serif-i q-ink" style="left:110px;top:40px;font-size:76px;opacity:0">videos</div>
+      <div id="c3s01-sc004-ex" class="q-abs t-serif-i q-ink" style="left:0;width:1920px;top:960px;text-align:center;font-size:76px"><span class="q-w">wouldn't </span><span class="q-w" id="c3s01-sc004-exist">exist</span></div>
+      <svg id="c3s01-sc004-mk" class="q-mk"></svg>
+      <div id="c3s01-sc004-sv" class="q-abs t-display" style="left:0;width:1920px;top:450px;text-align:center;font-size:150px;filter:drop-shadow(0 18px 30px rgba(20,27,36,0.45))"><span class="q-vbox"><span class="q-w">SILICON </span><span class="q-w">VALLEY</span></span></div>
+      <div class="q-credit ink t-label">Pictorial map of the San Francisco Bay Peninsula (Stanford University) · public domain</div>
+    </div>
+
+    <!-- C3S005 · 15.68–21.43 · "you have silicon to thank" · typeset periodic chart, pen circle on Si -->
+    <div class="q-scene q-paper" id="c3s01-sc005" data-scene="C3S005">
+      <div class="q-p1" style="background-image:url('assets/textures/paper_stained_01_hires.jpg');opacity:0.5"></div>
+      <div class="q-full" style="perspective:1800px;perspective-origin:960px 300px">
+        <div class="q-cam" id="c3s01-sc005-cam" style="transform-origin:1167px 425px">
+          <div id="c3s01-sc005-sheet" class="q-abs" style="left:110px;top:60px;width:1700px;height:960px;background:#efe6d2;box-shadow:0 30px 60px rgba(20,27,36,0.3);transform:rotateX(12deg);transform-origin:50% 100%">
+            <div class="q-p1" style="background-image:url('assets/textures/paper_cream_02.jpg');opacity:0.9"></div>
+            <div class="q-abs t-serif" style="left:0;width:1700px;top:34px;text-align:center;font-size:52px;color:var(--ink);letter-spacing:0.08em">PERIODIC CHART OF THE ELEMENTS</div>
+            <div class="q-abs" style="left:60px;top:106px;width:1580px;height:3px;background:var(--ink)"></div>
+            <div class="q-abs" id="c3s01-sc005-grid" style="left:52px;top:140px;width:1600px;height:780px"></div>
+            <svg id="c3s01-sc005-mk" class="q-mk" style="width:1700px;height:960px"></svg>
+          </div>
+        </div>
+      </div>
+      <div id="c3s01-sc005-card" class="q-vc" style="left:1430px;top:780px;opacity:0;transform:scale(0.6);transform-origin:100% 100%"></div>
+      <div id="c3s01-sc005-enj" class="q-abs t-label q-ink" style="left:1460px;top:720px;width:400px;font-size:28px;opacity:0">enjoyed</div>
+      <div id="c3s01-sc005-si" class="q-abs t-serif-i q-ink" style="left:130px;top:790px;font-size:120px"><span class="q-w">silicon </span></div>
+      <div id="c3s01-sc005-th" class="q-abs t-serif-i q-ink" style="left:130px;top:920px;font-size:76px"><span class="q-w">to </span><span class="q-w">thank</span></div>
+      <div class="folds"></div>
+    </div>
+
+    <!-- C3S006 · 21.43–26.47 · "or IC, integrated circuit… that's how we get Silicon Valley" · IC can → aerial -->
+    <div class="q-scene q-night" id="c3s01-sc006" data-scene="C3S006">
+      <div class="q-cam" id="c3s01-sc006-cam" style="transform-origin:1010px 300px">
+        <img src="assets/c3/photos/fairchild_micrologic_series_04.jpg" alt="" class="q-full" style="object-fit:cover;filter:saturate(0.35) contrast(1.12) brightness(0.7)" />
+      </div>
+      <div class="q-cam" id="c3s01-sc006-aer" style="opacity:0">
+        <img src="assets/c1/places/silicon_valley_aerial_2013.jpg" alt="" class="q-full" style="object-fit:cover;filter:saturate(0.45) contrast(1.12) brightness(0.72)" />
+      </div>
+      <div class="q-scrim-b"></div><div class="q-scrim-t" style="height:260px"></div>
+      <div id="c3s01-sc006-ic" class="q-abs t-display" style="left:120px;top:110px;font-size:110px"><span class="q-bbox q-w">IC</span></div>
+      <div id="c3s01-sc006-int" class="q-abs t-label clean" style="left:126px;top:250px;font-size:44px"><span class="q-w">integrated </span><span class="q-w">circuit</span></div>
+      <div id="c3s01-sc006-sv" class="q-abs t-display halate" style="left:0;width:1920px;top:740px;text-align:center;font-size:190px;opacity:0">SILICON VALLEY</div>
+      <div class="q-credit t-label">Micrologic photo: CC BY 4.0 · Aerial: Patrick Nouhailler, CC BY-SA 2.0 (Wikimedia Commons)</div>
+    </div>
+
+    <!-- C3S007 · 26.47–32.63 · "another argument… debated… I agree with it" · legal pad -->
+    <div class="q-scene q-paper" id="c3s01-sc007" data-scene="C3S007">
+      <div class="q-cam" id="c3s01-sc007-cam" style="inset:-60px 0 -60px 0">
+        <div class="q-p1" style="background-image:url('assets/textures/paper_cream_02.jpg');opacity:0.7"></div>
+        <div class="q-p2" style="background-image:url('assets/textures/paper_lined_01_hires.jpg');opacity:0.9"></div>
+        <div class="q-abs" style="left:150px;top:0;width:4px;height:1200px;background:rgba(224,63,44,0.45)"></div>
+        <div id="c3s01-sc007-arg" class="q-abs t-serif-i q-ink" style="left:220px;top:270px;font-size:124px;filter:url(#c3s01-ch007)"><span class="q-w">another </span><span class="q-w">argument</span></div>
+        <div id="c3s01-sc007-deb" class="q-abs t-serif-i q-ink" style="left:224px;top:480px;font-size:96px"><span class="q-w">debated</span></div>
+        <div id="c3s01-sc007-agr" class="q-abs t-serif-i q-ink" style="left:224px;top:690px;font-size:124px"><span class="q-w">I </span><span class="q-w">agree</span></div>
+        <svg id="c3s01-sc007-mk" class="q-mk" style="height:1200px"></svg>
+      </div>
+      <div class="folds"></div>
+    </div>
+
+    <!-- C3S008 · 32.63–37.19 · "how much of a role did California law play" · US night satellite, contrast call-out -->
+    <div class="q-scene q-night" id="c3s01-sc008" data-scene="C3S008">
+      <div class="q-abs" id="c3s01-sc008-cam" style="left:0;top:0;width:6392px;height:3524px;transform-origin:0 0">
+        <img id="c3s01-sc008-map" src="assets/maps/kit/us_satdesat.jpg" alt="" style="position:absolute;left:0;top:0;width:6392px;height:3524px" />
+        <svg id="c3s01-sc008-svg" style="position:absolute;left:0;top:0;width:6392px;height:3524px;overflow:visible" viewBox="0 0 6392 3524"></svg>
+        <div class="q-veil" id="c3s01-sc008-veil" style="width:6392px;height:3524px;inset:auto;left:0;top:0"></div>
+      </div>
+      <div id="c3s01-sc008-t" class="q-abs t-display halate" style="left:1000px;top:330px;font-size:150px;line-height:0.95"><span class="q-w">CALIFORNIA</span><br /><span class="q-w">LAW</span></div>
+      <div class="q-credit t-label">Imagery: NASA Blue Marble / Esri, Maxar, Earthstar Geographics · vectors: Natural Earth</div>
+    </div>
+
+    <!-- C3S009 · 37.19–42.55 · "California is an exception… across the United States" · vintage atlas fills -->
+    <div class="q-scene q-paper" id="c3s01-sc009" data-scene="C3S009">
+      <div class="q-p1" style="background-image:url('assets/textures/paper_cream_01.jpg')"></div>
+      <div class="q-cam" id="c3s01-sc009-cam" style="transform-origin:960px 560px">
+        <div class="q-abs" style="left:57px;top:52px;width:1806px;height:996px">
+          <img src="assets/c3/derived/c3s01/us_atlas_3840.jpg" alt="" style="position:absolute;inset:0;width:100%;height:100%;mix-blend-mode:multiply;filter:saturate(0.8) contrast(1.02)" />
+          <svg id="c3s01-sc009-svg" style="position:absolute;inset:0;width:100%;height:100%;overflow:visible" viewBox="0 0 6392 3524"></svg>
+        </div>
+      </div>
+      <div class="q-p2" style="background-image:url('assets/textures/paper_fiber_01.jpg');opacity:0.35"></div>
+      <div id="c3s01-sc009-ex" class="q-abs t-serif-i q-ink" style="left:120px;top:830px;font-size:96px;opacity:0">exception</div>
+      <div id="c3s01-sc009-us" class="q-abs t-label q-ink" style="left:0;width:1920px;top:110px;text-align:center;font-size:44px;opacity:0">United States</div>
+      <div class="folds"></div>
+      <div class="q-credit ink t-label">Relief: AWS Terrain Tiles (public domain) · vectors: Natural Earth</div>
+    </div>
+
+    <!-- C3S010 · 42.55–46.71 · "you cannot actually enforce a non-compete inside of California" · redlined agreement -->
+    <div class="q-scene q-paper" id="c3s01-sc010" data-scene="C3S010">
+      <div class="q-p1" style="background-image:url('assets/textures/paper_cream_02.jpg')"></div>
+      <div class="q-cam" id="c3s01-sc010-cam" style="transform-origin:960px 640px">
+        <div id="c3s01-sc010-doc" class="q-abs" style="left:330px;top:40px;width:1260px;height:1100px;background:#f1ead9;box-shadow:0 30px 60px rgba(20,27,36,0.28);transform:rotate(-1deg)">
+          <div class="q-p2" style="background-image:url('assets/textures/paper_cream_01.jpg');opacity:0.9"></div>
+          <div id="c3s01-sc010-dim">
+            <div class="q-abs t-serif" style="left:0;width:1260px;top:60px;text-align:center;font-size:46px;color:var(--ink);letter-spacing:0.14em">EMPLOYMENT AGREEMENT</div>
+            <div class="q-abs" style="left:110px;top:132px;width:1040px;height:3px;background:var(--ink)"></div>
+            <div id="c3s01-sc010-body"></div>
+          </div>
+          <div id="c3s01-sc010-key" class="q-abs t-serif" style="left:110px;top:640px;font-size:40px;color:var(--ink)"><span style="font-weight:700">4.</span> <span id="c3s01-sc010-nc" style="position:relative;font-weight:700">Non-compete.</span></div>
+          <div class="q-hl" id="c3s01-sc010-hl" style="left:158px;top:652px;width:250px;height:34px;filter:url(#c3s01-rhl)"></div>
+          <svg id="c3s01-sc010-mk" class="q-mk" style="width:1260px;height:1100px"></svg>
+        </div>
+      </div>
+      <div id="c3s01-sc010-ce" class="q-abs t-label" style="left:110px;top:60px;font-size:40px"><span class="q-box q-w" style="padding:10px 18px 6px">cannot </span><span class="q-w" style="color:var(--ink)"> enforce</span></div>
+      <div id="c3s01-sc010-ca" class="q-abs t-label" style="left:1430px;top:930px;font-size:38px;opacity:0"><span class="q-vbox" style="padding:10px 18px 6px">California</span></div>
+      <div class="folds"></div>
+    </div>
+
+    <!-- C3S011 · 46.71–50.55 · "not the case outside of it… most important states" · US night map, pins -->
+    <div class="q-scene q-night" id="c3s01-sc011" data-scene="C3S011">
+      <div class="q-abs" id="c3s01-sc011-cam" style="left:0;top:0;width:6392px;height:3524px;transform-origin:0 0">
+        <img src="assets/maps/kit/us_satdesat.jpg" alt="" style="position:absolute;left:0;top:0;width:6392px;height:3524px" />
+        <svg id="c3s01-sc011-svg" style="position:absolute;left:0;top:0;width:6392px;height:3524px;overflow:visible" viewBox="0 0 6392 3524"></svg>
+      </div>
+      <div class="q-scrim-b" style="height:300px"></div>
+      <div id="c3s01-sc011-out" class="q-abs t-label clean" style="left:120px;top:110px;font-size:44px;opacity:0">outside</div>
+      <div id="c3s01-sc011-t" class="q-abs t-serif-i clean" style="left:120px;top:900px;font-size:84px"><span class="q-w">most </span><span class="q-w">important </span><span class="q-w">states</span></div>
+      <div class="q-credit t-label">Imagery: NASA Blue Marble / Esri · vectors: Natural Earth</div>
+    </div>
+
+    <!-- C3S012 · 50.55–54.23 · "how it came about is also an interesting story" · Field's code on a lamp-lit desk -->
+    <div class="q-scene q-night" id="c3s01-sc012" data-scene="C3S012">
+      <div class="q-cam" id="c3s01-sc012-cam" style="transform-origin:760px 540px">
+        <div class="q-desk"></div>
+        <div class="q-abs" style="left:430px;top:110px;width:860px;height:870px;perspective:2200px">
+          <div class="q-abs" style="left:430px;top:0;width:430px;height:700px;box-shadow:0 30px 50px rgba(0,0,0,0.6);transform:rotate(-3deg)">
+            <img src="assets/c3/documents/field_ny_civil_code_1865_title_page.jpg" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 12%;filter:sepia(0.35) brightness(0.92)" />
+          </div>
+          <div id="c3s01-sc012-cover" class="q-abs" style="left:430px;top:0;width:430px;height:700px;transform-origin:0 50%;transform:rotate(-3deg);box-shadow:0 30px 50px rgba(0,0,0,0.6);backface-visibility:hidden">
+            <img src="assets/c3/documents/field_ny_civil_code_1865_cover_spine.jpg" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:brightness(0.85)" />
+          </div>
+        </div>
+        <div class="q-lamp" id="c3s01-sc012-lamp" style="opacity:0"></div>
+      </div>
+      <div id="c3s01-sc012-t" class="q-abs t-serif-i clean" style="left:1340px;top:760px;font-size:76px;line-height:1.05"><span class="q-w">interesting</span><br /><span class="q-w">story</span></div>
+      <div class="q-credit t-label">The Civil Code of the State of New York (1865) · archive.org · public domain</div>
+    </div>
+
+    <!-- C3S013 · 54.23–59.35 · "David Dudley Field wrote a legal code for New York" · Vox layered panels -->
+    <div class="q-scene q-paper" id="c3s01-sc013" data-scene="C3S013">
+      <div class="q-p1" style="background-image:url('assets/textures/paper_cream_01.jpg')"></div>
+      <div class="q-p2" style="background-image:url('assets/textures/paper_fiber_01.jpg');opacity:0.4"></div>
+      <div class="q-cam" id="c3s01-sc013-cam">
+        <div id="c3s01-sc013-p1" class="q-card" style="left:180px;top:200px;width:620px;height:760px;transform:rotate(-4deg);filter:url(#c3s01-rough)"><img src="assets/c3/documents/field_ny_civil_code_1865_title_page.jpg" alt="" style="object-position:50% 14%;filter:sepia(0.25) contrast(1.1)" /></div>
+        <div id="c3s01-sc013-p2" class="q-card" style="left:620px;top:120px;width:820px;height:560px;transform:rotate(3deg);filter:url(#c3s01-rough)"><img src="assets/c3/derived/c3s01/northeast_ny_crop.jpg" alt="" style="object-position:43% 75%;filter:url(#c3s01-tnavy)" /></div>
+        <img id="c3s01-sc013-field" src="assets/c3/cutouts/field_david_dudley_cutout.png" alt="" class="q-abs" style="left:1080px;top:150px;width:860px;filter:url(#c3s01-tink) drop-shadow(0 20px 30px rgba(20,27,36,0.35))" />
+        <div class="q-abs" id="c3s01-sc013-ht" style="left:1080px;top:150px;width:860px;height:946px;background-image:url('assets/textures/halftone_01_norm.jpg');background-size:420px auto;mix-blend-mode:overlay;opacity:0.35;-webkit-mask-image:url('assets/c3/cutouts/field_david_dudley_cutout.png');mask-image:url('assets/c3/cutouts/field_david_dudley_cutout.png');-webkit-mask-size:100% 100%;mask-size:100% 100%"></div>
+      </div>
+      <div id="c3s01-sc013-name" class="q-abs t-display" style="left:110px;top:60px;font-size:84px"><span class="q-box"><span class="q-w">DAVID </span><span class="q-w">DUDLEY </span><span class="q-w">FIELD</span></span></div>
+      <div id="c3s01-sc013-lc" class="q-abs t-serif-i q-ink" style="left:110px;top:900px;font-size:92px"><span class="q-w">legal </span><span class="q-w">code</span></div>
+      <div id="c3s01-sc013-ny" class="q-abs t-label" style="left:760px;top:700px;font-size:40px;opacity:0"><span class="q-nbox">New York</span></div>
+      <div class="folds"></div>
+      <div class="q-credit ink t-label">Portrait: Brady-Handy studio (LOC) · public domain · relief: AWS Terrain Tiles</div>
+    </div>
+
+    <!-- C3S014 · 59.35–63.03 · "New York never actually adopted that code" · NY map + crossed card -->
+    <div class="q-scene q-paper" id="c3s01-sc014" data-scene="C3S014">
+      <div class="q-p1" style="background-image:url('assets/textures/paper_cream_02.jpg')"></div>
+      <div class="q-full" style="perspective:2000px;perspective-origin:960px 200px">
+        <div class="q-abs" id="c3s01-sc014-map" style="left:-120px;top:-60px;width:2160px;height:1436px;transform:rotateX(14deg) rotateZ(-3deg);transform-origin:50% 60%;box-shadow:0 30px 60px rgba(20,27,36,0.3)">
+          <img src="assets/c3/derived/c3s01/northeast_ny_crop.jpg" alt="" style="position:absolute;inset:0;width:100%;height:100%;filter:url(#c3s01-tnavy)" />
+          <div class="q-p2" style="background-image:url('assets/textures/paper_stained_01_hires.jpg');opacity:0.55"></div>
+        </div>
+      </div>
+      <div id="c3s01-sc014-card" class="q-card" style="left:700px;top:180px;width:520px;height:720px;transform:rotate(4deg)">
+        <img src="assets/c3/documents/field_ny_civil_code_1865_title_page.jpg" alt="" style="object-position:50% 14%;filter:sepia(0.25) contrast(1.1)" />
+        <svg id="c3s01-sc014-mk" class="q-mk" style="width:520px;height:720px"></svg>
+      </div>
+      <div id="c3s01-sc014-t" class="q-abs t-label" style="left:110px;top:90px;font-size:46px"><span class="q-w q-box" style="padding:12px 20px 8px">never </span><span class="q-w" style="color:var(--ink)"> adopted</span></div>
+      <div class="q-abs" id="c3s01-sc014-ny" style="left:250px;top:830px;font-size:34px"><span class="q-nbox t-label">New York</span></div>
+      <div class="folds"></div>
+      <div class="q-credit ink t-label">Relief: AWS Terrain Tiles (public domain) · Civil Code of New York, 1865</div>
+    </div>
+
+    <!-- C3S015 · 63.03–68.63 · "California ended up adopting… copy pasted the whole thing" · tilted Rand McNally + route + photocopy -->
+    <div class="q-scene q-paper" id="c3s01-sc015" data-scene="C3S015">
+      <div class="q-p1" style="background-image:url('assets/textures/paper_cream_01.jpg')"></div>
+      <div class="q-full" style="perspective:1700px;perspective-origin:960px 260px">
+        <div class="q-abs" id="c3s01-sc015-plane" style="left:-240px;top:-150px;width:2400px;height:1767px;transform:rotateX(30deg) rotateZ(-6deg);transform-origin:50% 60%">
+          <div class="q-abs" id="c3s01-sc015-trk" style="inset:0">
+            <img src="assets/maps/old/rand_mcnally_railroad_map_us_1920.jpg" alt="" style="position:absolute;inset:0;width:100%;height:100%;filter:saturate(0.85)" />
+            <svg id="c3s01-sc015-svg" style="position:absolute;inset:0;width:100%;height:100%;overflow:visible" viewBox="0 0 3840 2827"></svg>
+          </div>
+        </div>
+      </div>
+      <div class="q-abs" style="left:0;top:0;width:1920px;height:330px;backdrop-filter:blur(5px);-webkit-mask-image:linear-gradient(180deg,#000 30%,transparent);mask-image:linear-gradient(180deg,#000 30%,transparent)"></div>
+      <div id="c3s01-sc015-ca" class="q-abs t-label" style="left:110px;top:90px;font-size:44px;opacity:0"><span class="q-vbox" style="padding:12px 20px 8px">California</span></div>
+      <div id="c3s01-sc015-c1" class="q-card" style="left:1300px;top:340px;width:330px;height:460px;transform:rotate(-3deg);opacity:0">
+        <img src="assets/c3/documents/field_ny_civil_code_1865_title_page.jpg" alt="" style="object-position:50% 14%;filter:sepia(0.25) contrast(1.1)" />
+        <div class="q-abs" id="c3s01-sc015-scan" style="left:-20px;top:0;width:370px;height:40px;background:linear-gradient(180deg,rgba(220,255,235,0),rgba(220,255,235,0.95) 50%,rgba(220,255,235,0));mix-blend-mode:screen;opacity:0"></div>
+      </div>
+      <div id="c3s01-sc015-c2" class="q-card" style="left:1300px;top:340px;width:330px;height:460px;transform:rotate(-3deg);opacity:0">
+        <img src="assets/c3/documents/field_ny_civil_code_1865_title_page.jpg" alt="" style="object-position:50% 14%;filter:sepia(0.25) contrast(1.15) brightness(1.05)" />
+      </div>
+      <div id="c3s01-sc015-cp" class="q-abs t-serif-i q-ink" style="left:110px;top:900px;font-size:96px"><span class="q-w">copy </span><span class="q-w">pasted</span></div>
+      <div class="folds"></div>
+      <div class="q-credit ink t-label">Rand McNally railroad map of the United States, c.1920 · public domain</div>
+    </div>
+
+    <!-- C3S016 · 68.63–75.27 · "one of the laws said … lawful profession" · Cal. Civil Code §1673 page -->
+    <div class="q-scene q-night" id="c3s01-sc016" data-scene="C3S016">
+      <div class="q-desk"></div><div class="q-lamp"></div>
+      <div class="q-full" style="perspective:2000px;perspective-origin:960px 300px">
+        <div class="q-abs" id="c3s01-sc016-cam" style="left:0;top:0;width:1920px;height:1080px;transform-origin:0 0">
+          <div id="c3s01-sc016-page" class="q-abs" style="left:571px;top:-100px;width:777px;height:1206px;transform:rotateX(10deg) rotateZ(1.5deg);transform-origin:50% 100%;box-shadow:0 30px 60px rgba(0,0,0,0.6)">
+            <img src="assets/c3/documents/cal_civil_code_s1673_page246_hart1892.jpg" alt="" style="position:absolute;inset:0;width:100%;height:100%;filter:sepia(0.3) contrast(1.05)" />
+            <div class="q-hl" id="c3s01-sc016-hl" style="left:268px;top:617px;width:180px;height:22px;filter:url(#c3s01-rhl)"></div>
+            <div class="q-veil" id="c3s01-sc016-veil"></div>
+          </div>
+        </div>
+      </div>
+      <div id="c3s01-sc016-t" class="q-abs t-label clean" style="left:110px;top:100px;font-size:46px"><span class="q-w">one </span><span class="q-w">of </span><span class="q-w">the </span><span class="q-w">laws</span></div>
+      <div class="q-credit t-label">Civil Code of the State of California (1872), §1673 · 1892 ed. · archive.org · public domain</div>
+    </div>
+
+    <!-- C3S017 · 75.27–82.10 · "a contract is illegal… you cannot work in this field afterwards" · typed form + stamp -->
+    <div class="q-scene q-paper" id="c3s01-sc017" data-scene="C3S017">
+      <div class="q-p1" style="background-image:url('assets/textures/paper_stained_01_hires.jpg');opacity:0.45"></div>
+      <div class="q-abs" id="c3s01-sc017-cam" style="left:0;top:0;width:1920px;height:1900px">
+        <div id="c3s01-sc017-form" class="q-abs" style="left:260px;top:90px;width:1400px;height:1700px;background:#efe3c6;box-shadow:0 30px 60px rgba(20,27,36,0.3);transform:rotate(-0.8deg)">
+          <div class="q-p2" style="background-image:url('assets/textures/paper_lined_01_hires.jpg');opacity:0.55"></div>
+          <div id="c3s01-sc017-h" class="q-abs t-serif" style="left:0;width:1400px;top:70px;text-align:center;font-size:120px;color:var(--ink);letter-spacing:0.12em;opacity:0">CONTRACT</div>
+          <div class="q-abs" style="left:90px;top:240px;width:1220px;height:3px;background:var(--ink)"></div>
+          <div class="q-abs" style="left:90px;top:250px;width:1220px;height:1px;background:var(--ink)"></div>
+          <div id="c3s01-sc017-lines"></div>
+          <div id="c3s01-sc017-ty" class="q-abs t-label q-typed" style="left:130px;top:1170px;width:1140px;line-height:1.6"><span class="q-w">you </span><span class="q-w">cannot </span><span class="q-w">work </span><span class="q-w">in </span><span class="q-w">this </span><span class="q-w">field </span><span class="q-w">afterwards</span></div>
+        </div>
+        <div id="c3s01-sc017-sw" class="q-abs" style="left:1050px;top:400px;width:600px;height:200px;transform:rotate(-9deg)"><div id="c3s01-sc017-st" class="q-stamp t-display" style="left:0;top:0;font-size:130px;filter:url(#c3s01-ch017)">ILLEGAL</div></div>
+      </div>
+      <div class="folds"></div>
+    </div>
+
+    <!-- C3S018 · 82.10–86.90 · "a Silicon Valley TV show has an episode on this" · Sony Trinitron -->
+    <div class="q-scene q-night" id="c3s01-sc018" data-scene="C3S018">
+      <div class="q-desk" style="background:radial-gradient(ellipse 60% 70% at 40% 50%,#2c2620 0%,#16130f 60%,#0b0a09 100%)"></div>
+      <div class="q-abs" id="c3s01-sc018-tv" style="left:200px;top:70px;width:1280px;height:966px">
+        <div class="q-abs" style="left:302px;top:245px;width:436px;height:423px;background:#040506"></div>
+        <div class="q-abs" id="c3s01-sc018-scr" style="left:302px;top:245px;width:436px;height:423px;overflow:hidden;clip-path:polygon(4px 0,436px 44px,433px 423px,0 361px);transform-origin:50% 50%">
+          <div class="q-abs" style="inset:0;background:radial-gradient(ellipse 70% 60% at 50% 50%,#1d2a22,#07100c)"></div>
+          <div class="q-abs t-display" style="left:0;width:436px;top:150px;text-align:center;font-size:52px;color:#e6f0e8;line-height:0.95;transform:skewY(5deg)">SILICON<br />VALLEY</div>
+          <div class="q-abs" style="inset:0;background:repeating-linear-gradient(0deg,rgba(0,0,0,0.25) 0 2px,rgba(0,0,0,0) 2px 4px)"></div>
+          <div class="q-abs" style="inset:0;background:radial-gradient(ellipse 50% 40% at 30% 25%,rgba(255,255,255,0.14),rgba(255,255,255,0) 70%)"></div>
+        </div>
+        <img src="assets/intro/screens/sony_trinitron_kv1320_frame.png" alt="" class="q-abs" style="left:0;top:0;width:1280px;height:966px" />
+      </div>
+      <div id="c3s01-sc018-tvs" class="q-abs t-label clean" style="left:1360px;top:360px;font-size:48px"><span class="q-w">TV </span><span class="q-w">show</span></div>
+      <div id="c3s01-sc018-ep" class="q-abs t-serif-i clean" style="left:1356px;top:440px;font-size:96px;opacity:0">episode</div>
+      <div class="q-credit t-label">Sony Trinitron KV-1320: CC BY 4.0 (Wikimedia Commons) · show title typeset</div>
+    </div>
+
+    <!-- C3S019 · 86.90–90.74 · "that makes a lot of things possible that we have already talked about" · cork board -->
+    <div class="q-scene q-night" id="c3s01-sc019" data-scene="C3S019">
+      <div class="q-cam" id="c3s01-sc019-cam">
+        <img src="assets/textures/cork_01.jpg" alt="" class="q-full" style="object-fit:cover;filter:brightness(0.62) saturate(0.8)" />
+        <div id="c3s01-sc019-cards"></div>
+        <svg id="c3s01-sc019-str" class="q-mk"></svg>
+        <div id="c3s01-sc019-note" class="q-abs" style="left:820px;top:430px;width:300px;height:170px;background:#f3eddf;box-shadow:0 12px 22px rgba(0,0,0,0.4);transform:rotate(-3deg);opacity:0">
+          <div class="q-abs t-serif-i q-ink" style="left:0;width:300px;top:40px;text-align:center;font-size:64px">possible</div>
+        </div>
+      </div>
+      <div class="q-lamp" style="background:radial-gradient(ellipse 50% 55% at 50% 45%,rgba(255,214,170,0.18),rgba(0,0,0,0) 70%)"></div>
+      <div class="q-abs" style="inset:0;background:radial-gradient(ellipse 70% 70% at 50% 45%,rgba(0,0,0,0) 50%,rgba(0,0,0,0.6))"></div>
+      <div id="c3s01-sc019-t" class="q-abs t-serif-i clean" style="left:0;width:1920px;top:920px;text-align:center;font-size:80px"><span class="q-w">already </span><span class="q-w">talked </span><span class="q-w">about</span></div>
+      <div class="q-credit t-label">Cork texture: Texturelabs / CC BY · archival photos: Stanford / HP</div>
+    </div>
+
+    <!-- C3S020 · 90.74–94.66 · "Fairchild doesn't get born if it wasn't for this law" · founders 1960 -->
+    <div class="q-scene q-night" id="c3s01-sc020" data-scene="C3S020">
+      <img src="assets/c2/photos/fairchild_eight_lobby_1960_wmiller_millersville.jpg" alt="" class="q-full" style="object-fit:cover;filter:blur(26px) brightness(0.35) sepia(0.4);transform:scale(1.2)" />
+      <canvas id="c3s01-sc020-streaks" class="streaks" style="opacity:0.45"></canvas>
+      <div class="q-full" style="perspective:1400px">
+        <div id="c3s01-sc020-card" class="q-abs" style="left:440px;top:200px;width:1040px;height:849px;box-shadow:0 40px 80px rgba(0,0,0,0.7)">
+          <img src="assets/c2/photos/fairchild_eight_lobby_1960_wmiller_millersville.jpg" alt="" style="position:absolute;inset:0;width:100%;height:100%;filter:sepia(0.22) contrast(1.08) brightness(0.9)" />
+          <div class="q-abs" style="inset:0;background-image:url('assets/textures/dust_02.jpg');background-size:cover;mix-blend-mode:screen;opacity:0.25"></div>
+        </div>
+      </div>
+      <div id="c3s01-sc020-f" class="q-abs t-display halate" style="left:0;width:1920px;top:40px;text-align:center;font-size:170px;opacity:0">FAIRCHILD</div>
+      <div id="c3s01-sc020-law" class="q-abs t-label" style="left:0;width:1920px;top:960px;text-align:center;font-size:48px"><span class="q-bbox" style="padding:12px 22px 8px"><span class="q-w">this </span><span class="q-w">law</span></span></div>
+      <div class="q-credit t-label">Photo: Wayne F. Miller / Magnum Photos, 1960 · fair use</div>
+    </div>
+
+    <!-- C3S021–022 · 94.66–105.54 · "many things down the line… like Intel… a lot of things are born" · genealogy on graph paper -->
+    <div class="q-scene q-paper" id="c3s01-sc021" data-scene="C3S021-C3S022">
+      <div class="q-p1" style="background-image:url('assets/textures/paper_cream_01.jpg')"></div>
+      <div class="q-abs" id="c3s01-sc021-cam" style="left:0;top:0;width:1920px;height:2000px;transform-origin:960px 600px">
+        <div class="q-abs" style="inset:-400px -600px;background-image:url('assets/textures/paper_graph_01_hires.jpg');background-size:2120px auto;mix-blend-mode:multiply;opacity:0.85;filter:saturate(0.3) contrast(1.3) brightness(1.06)"></div>
+        <svg id="c3s01-sc021-svg" class="q-mk" style="height:2000px" viewBox="0 0 1920 2000"></svg>
+        <div id="c3s01-sc021-nodes"></div>
+        <div id="c3s01-sc021-fc" class="q-abs t-display" style="left:0;width:1920px;top:140px;text-align:center;font-size:84px;opacity:0"><span class="q-box">FAIRCHILD</span></div>
+        <div id="c3s01-sc021-intel" class="q-abs" style="left:1165px;top:485px;width:250px;height:150px;background:#f3eddf;box-shadow:0 12px 24px rgba(20,27,36,0.25);opacity:0">
+          <img src="assets/c3/logos/intel_logo_1968_2006.png" alt="" style="position:absolute;left:25px;top:24px;width:200px" />
+        </div>
+        <div id="c3s01-sc021-dl" class="q-abs t-serif-i q-ink" style="left:110px;top:250px;font-size:90px"><span class="q-w">down </span><span class="q-w">the </span><span class="q-w">line</span></div>
+        <div id="c3s01-sc021-born" class="q-abs t-serif-i q-ink" style="left:1300px;top:1250px;font-size:200px;opacity:0">born</div>
+      </div>
+      <div class="folds"></div>
+      <div class="q-credit ink t-label">Intel logo (1968): public domain (text logo)</div>
+    </div>
+
+    <!-- C3S023–024 · 105.54–114.66 · "wasn't that big a deal… at the beginning… a bigger role… people want to leave" · dark chart over ghost CA -->
+    <div class="q-scene q-night" id="c3s01-sc023" data-scene="C3S023-C3S024">
+      <div class="q-abs" id="c3s01-sc023-cam" style="left:0;top:0;width:2600px;height:1080px">
+        <svg id="c3s01-sc023-ghost" style="position:absolute;left:300px;top:40px;width:1100px;height:1000px;overflow:visible"></svg>
+        <svg id="c3s01-sc023-svg" style="position:absolute;left:0;top:0;width:2600px;height:1080px;overflow:visible" viewBox="0 0 2600 1080"></svg>
+        <div id="c3s01-sc023-blocks"></div>
+        <div id="c3s01-sc023-beg" class="q-abs t-serif-i clean" style="left:330px;top:900px;font-size:64px;opacity:0">beginning</div>
+        <div id="c3s01-sc023-br" class="q-abs t-serif-i clean" style="left:1380px;top:150px;font-size:96px"><span class="q-w">bigger </span><span class="q-w">role</span></div>
+        <div id="c3s01-sc023-lv" class="q-abs t-label clean" style="left:2010px;top:840px;font-size:44px;opacity:0">leave</div>
+      </div>
+      <div id="c3s01-sc023-arg" class="q-abs t-label clean" style="left:120px;top:90px;font-size:44px;opacity:0">argue</div>
+      <div id="c3s01-sc023-deal" class="q-abs t-serif-i clean" style="left:120px;top:160px;font-size:92px"><span class="q-w">wasn't </span><span class="q-w">that </span><span class="q-w">big </span><span class="q-w">a </span><span class="q-w">deal</span></div>
+    </div>
+
+    <!-- C3S025 · 114.66–120.58 · "maybe it didn't play a role… argue online, but I think it did" · comment slips + pen line -->
+    <div class="q-scene q-paper" id="c3s01-sc025" data-scene="C3S025">
+      <div class="q-p1" style="background-image:url('assets/textures/paper_cream_02.jpg')"></div>
+      <div class="q-p2" style="background-image:url('assets/textures/paper_fiber_01.jpg');opacity:0.45"></div>
+      <div class="q-cam" id="c3s01-sc025-cam">
+        <div id="c3s01-sc025-on" class="q-abs t-label q-ink" style="left:150px;top:80px;font-size:40px;opacity:0"><span class="q-box" style="padding:10px 18px 6px">online</span></div>
+        <div class="q-slip" id="c3s01-sc025-s1" style="left:150px;top:170px;transform:rotate(-1.5deg);opacity:0"><div class="av"></div><div class="t-serif q-ink" style="font-size:52px;line-height:1.1"><span class="q-w">didn't </span><span class="q-w">play </span><span class="q-w">a </span><span class="q-w">role</span></div><div class="ln" style="width:90%"></div><div class="ln" style="width:60%"></div></div>
+        <div class="q-slip" id="c3s01-sc025-s2" style="left:250px;top:420px;transform:rotate(1.2deg);opacity:0"><div class="av" style="background:#a9a294"></div><div class="ln" style="width:95%;margin-top:6px"></div><div class="ln" style="width:80%"></div><div class="ln" style="width:55%"></div></div>
+        <div class="q-slip" id="c3s01-sc025-s3" style="left:180px;top:640px;transform:rotate(-0.6deg);opacity:0"><div class="av" style="background:#c4bdae"></div><div class="ln" style="width:85%;margin-top:6px"></div><div class="ln" style="width:70%"></div></div>
+        <div id="c3s01-sc025-me" class="q-abs t-serif-i q-ink" style="left:1050px;top:400px;font-size:132px;line-height:1"><span class="q-w">I </span><span class="q-w">think </span><span class="q-w">it </span><span class="q-w">did</span></div>
+        <svg id="c3s01-sc025-mk" class="q-mk"></svg>
+      </div>
+      <div class="folds"></div>
+    </div>
+
+    <!-- C3S026 · 120.58–124.98 · "1965 Terman steps down" · odometer + portrait steps down -->
+    <div class="q-scene q-night" id="c3s01-sc026" data-scene="C3S026">
+      <canvas id="c3s01-sc026-streaks" class="streaks" style="opacity:0.55"></canvas>
+      <div class="q-cam" id="c3s01-sc026-cam">
+        <div id="c3s01-sc026-yr" class="q-abs t-display halate" style="left:150px;top:260px;font-size:330px;opacity:0">1965</div>
+        <div id="c3s01-sc026-card" class="q-card" style="left:1130px;top:200px;width:560px;height:546px;background:#e9e0cc;padding:0">
+          <img src="assets/archival/collage/terman_frederick_1955.jpg" alt="" style="filter:sepia(0.45) contrast(1.05) brightness(0.95)" />
+        </div>
+        <div id="c3s01-sc026-tn" class="q-abs t-label" style="left:1130px;top:780px;font-size:44px;opacity:0"><span class="q-vbox" style="padding:12px 20px 8px">Terman</span></div>
+      </div>
+      <div id="c3s01-sc026-sd" class="q-abs t-serif-i clean" style="left:156px;top:640px;font-size:110px"><span class="q-w">steps </span><span class="q-w">down</span></div>
+      <div class="q-credit t-label">Frederick Terman, 1955 · Stanford University Archives · fair use</div>
+    </div>
+
+    <!-- C3S027 · 124.98–129.62 · "He has done everything… how big it's gonna be" · D07 collage -->
+    <div class="q-scene q-paper" id="c3s01-sc027" data-scene="C3S027">
+      <div class="q-p1" style="background-image:url('assets/textures/paper_cream_01.jpg')"></div>
+      <div class="q-p2" style="background-image:url('assets/textures/paper_torn_01_norm.jpg');opacity:0.25;mix-blend-mode:overlay"></div>
+      <div class="q-cam" id="c3s01-sc027-cam">
+        <div class="q-card" id="c3s01-sc027-a" style="left:110px;top:120px;width:640px;height:400px;transform:rotate(-2deg)"><img src="assets/archival/hoover/stanford_inner_quad_west_entrance_c1900.jpg" alt="" style="filter:url(#c3s01-tink)" /></div>
+        <div class="q-card" id="c3s01-sc027-b" style="left:800px;top:90px;width:560px;height:420px;transform:rotate(2deg);background:#e4dccb"><img src="assets/archival/hp/layers/garage.png" alt="" style="object-fit:contain;filter:url(#c3s01-tink)" /></div>
+        <div class="q-card" id="c3s01-sc027-c" style="left:200px;top:580px;width:780px;height:280px;transform:rotate(1deg)"><img src="assets/c2/photos/hp_stanford_industrial_park_plant_exterior_1958.jpg" alt="" style="filter:url(#c3s01-tink)" /></div>
+        <div class="q-card" id="c3s01-sc027-d" style="left:1420px;top:150px;width:380px;height:560px;transform:rotate(-3deg)"><img src="assets/archival/hp/hewlett_william_c1962.jpg" alt="" style="object-position:50% 20%;filter:url(#c3s01-tink)" /></div>
+        <svg id="c3s01-sc027-mk" class="q-mk"></svg>
+        <div id="c3s01-sc027-ev" class="q-abs t-serif-i q-ink" style="left:1060px;top:600px;font-size:110px;opacity:0">everything</div>
+        <div id="c3s01-sc027-hb" class="q-abs t-display" style="left:1100px;top:790px;font-size:130px"><span class="q-box"><span class="q-w">how </span><span class="q-w">big</span></span></div>
+      </div>
+      <div class="folds"></div>
+      <div class="q-credit ink t-label">Stanford quad c.1900 (PD) · HP garage · HP plant 1958 & Bill Hewlett c.1962 © HP, fair use</div>
+    </div>
+
+    <!-- C3S028 · 129.62–136.90 · "in '65… Silicon Valley… growing… important companies" · USGS 1961 quad -->
+    <div class="q-scene q-night" id="c3s01-sc028" data-scene="C3S028">
+      <div class="q-abs" id="c3s01-sc028-cam" style="left:0;top:0;width:3088px;height:2600px;transform-origin:0 0">
+        <img src="assets/c3/derived/c3s01/usgs_palo_alto_1961_crop.jpg" alt="" style="position:absolute;inset:0;width:100%;height:100%;filter:url(#c3s01-tsep) brightness(0.92) contrast(1.1)" />
+        <svg id="c3s01-sc028-mk" style="position:absolute;inset:0;width:100%;height:100%;overflow:visible" viewBox="0 0 3088 2600"></svg>
+      </div>
+      <div class="q-abs" style="inset:0;background:radial-gradient(ellipse 70% 70% at 50% 50%,rgba(15,19,24,0) 45%,rgba(15,19,24,0.8))"></div>
+      <div class="q-scrim-b" style="height:300px"></div>
+      <div id="c3s01-sc028-65" class="q-abs t-display" style="left:110px;top:90px;font-size:110px;opacity:0"><span class="q-bbox">’65</span></div>
+      <div id="c3s01-sc028-gr" class="q-abs t-serif-i clean" style="left:116px;top:250px;font-size:88px;opacity:0">growing</div>
+      <div id="c3s01-sc028-ic" class="q-abs t-serif-i clean" style="left:116px;top:900px;font-size:84px"><span class="q-w">important </span><span class="q-w">companies</span></div>
+      <div class="q-credit t-label">USGS 1:24,000 Palo Alto quadrangle, 1961 · public domain</div>
+    </div>
+
+    <!-- C3S029 · 136.90–142.17 · "Nowhere close to what it's gonna become… a behemoth" · D01 bars -->
+    <div class="q-scene q-paper" id="c3s01-sc029" data-scene="C3S029">
+      <div class="q-p1" style="background-image:url('assets/textures/paper_cream_02.jpg')"></div>
+      <div class="q-p2" style="background-image:url('assets/textures/paper_stained_01_hires.jpg');opacity:0.4"></div>
+      <div class="q-abs" id="c3s01-sc029-cam" style="left:0;top:0;width:1920px;height:1080px;transform-origin:960px 900px">
+        <img src="assets/c3/derived/c3s01/sv2014_halftone.png" alt="" class="q-abs" style="left:0;top:700px;width:1920px;height:1352px;mix-blend-mode:multiply;opacity:0.55;-webkit-mask-image:linear-gradient(180deg,transparent 0,#000 140px);mask-image:linear-gradient(180deg,transparent 0,#000 140px)" />
+        <div class="q-abs" style="left:300px;top:900px;width:1320px;height:4px;background:var(--ink)"></div>
+        <div class="q-abs" id="c3s01-sc029-b1" style="left:520px;top:700px;width:260px;height:200px;background:var(--vermilion);transform-origin:50% 100%;transform:scaleY(0)"></div>
+        <div class="q-abs" id="c3s01-sc029-th" style="left:420px;top:700px;width:1100px;border-top:4px dashed rgba(20,27,36,0.6);opacity:0"></div>
+        <div class="q-abs" id="c3s01-sc029-b2" style="left:1100px;top:-900px;width:260px;height:1800px;background:var(--vermilion);transform-origin:50% 100%;transform:scaleY(0)"></div>
+        <div class="q-abs" style="left:520px;top:690px;width:260px;height:30px;background-image:url('assets/textures/watercolour_edge_mask_01.png');background-size:cover;opacity:0.0"></div>
+        <div id="c3s01-sc029-l1" class="q-abs t-label q-ink" style="left:520px;top:925px;width:260px;text-align:center;font-size:40px;opacity:0">’65</div>
+      </div>
+      <div id="c3s01-sc029-nc" class="q-abs t-serif-i q-ink" style="left:110px;top:70px;font-size:96px"><span class="q-w">Nowhere </span><span class="q-w">close</span></div>
+      <div id="c3s01-sc029-bh" class="q-abs t-display" style="left:1440px;top:420px;font-size:84px;opacity:0"><span class="q-box">BEHEMOTH</span></div>
+      <div class="folds"></div>
+      <div class="q-credit ink t-label">Halftone: Silicon Valley, 2014 — Coolcaesar, CC BY-SA 3.0</div>
+    </div>
+
+    <!-- C3S030 · 142.17–146.65 · "Hoover also gets some credit" · Tarbell portrait painting -->
+    <div class="q-scene q-night" id="c3s01-sc030" data-scene="C3S030">
+      <div class="q-cam" id="c3s01-sc030-cam" style="transform-origin:62% 34%">
+        <img src="assets/c3/paintings/hoover_herbert_tarbell_npg_painting.jpg" alt="" class="q-full" style="object-fit:cover;filter:blur(22px) brightness(0.45);transform:scale(1.2)" />
+        <div class="q-abs" style="left:780px;top:-40px;width:1000px;height:1276px"><div class="plate"><img class="img" src="assets/c3/paintings/hoover_herbert_tarbell_npg_painting.jpg" alt="" style="object-position:50% 20%;filter:contrast(1.05) brightness(0.9)" /><img class="fringe" src="assets/c3/paintings/hoover_herbert_tarbell_npg_painting.jpg" alt="" style="object-position:50% 20%" /></div></div>
+      </div>
+      <div class="q-abs" style="inset:0;background:linear-gradient(90deg,rgba(15,19,24,0.9) 0%,rgba(15,19,24,0.7) 36%,rgba(15,19,24,0) 55%)"></div>
+      <div id="c3s01-sc030-h" class="q-abs t-display halate" style="left:120px;top:330px;font-size:190px;opacity:0">HOOVER</div>
+      <div id="c3s01-sc030-c" class="q-abs t-label clean" style="left:128px;top:560px;font-size:48px;opacity:0">credit</div>
+      <div class="q-credit t-label">Edmund C. Tarbell, Herbert Hoover (1921) · National Portrait Gallery · CC0</div>
+    </div>
+
+    <!-- C3S031 · 146.65–154.81 · "Stanford could not legally… charge tuition… impossible" · R6 bar locked -->
+    <div class="q-scene q-paper" id="c3s01-sc031" data-scene="C3S031">
+      <div class="q-p1" style="background-image:url('assets/textures/paper_cream_01.jpg')"></div>
+      <div class="q-p2" style="background-image:url('assets/textures/paper_fiber_01.jpg');opacity:0.45"></div>
+      <div class="q-cam" id="c3s01-sc031-cam">
+        <div class="q-card" id="c3s01-sc031-q" style="left:110px;top:110px;width:560px;height:360px;transform:rotate(-2deg)"><img src="assets/archival/hoover/stanford_inner_quad_west_entrance_c1900.jpg" alt="" style="filter:url(#c3s01-tink)" /></div>
+        <div class="q-abs t-label q-ink" style="left:120px;top:500px;font-size:30px">Stanford</div>
+        <div id="c3s01-sc031-cnl" class="q-abs t-serif q-ink" style="left:760px;top:140px;font-size:84px"><span class="q-w">could </span><span class="q-w">not </span><span class="q-w" style="font-style:italic;color:var(--vermilion)">legally</span></div>
+        <div id="c3s01-sc031-ct" class="q-abs t-serif q-ink" style="left:760px;top:280px;font-size:56px"><span class="q-w">charge </span><span class="q-w" id="c3s01-sc031-tu" style="position:relative">tuition</span></div>
+        <div class="q-hl" id="c3s01-sc031-hl" style="left:956px;top:310px;width:200px;height:40px;filter:url(#c3s01-rhl)"></div>
+        <div class="q-abs t-label q-ink" style="left:760px;top:600px;font-size:30px">Tuition</div>
+        <div class="q-abs" style="left:960px;top:582px;width:820px;height:70px;border:3px solid rgba(20,27,36,0.6)"></div>
+        <div class="q-abs" id="c3s01-sc031-bar" style="left:963px;top:585px;width:814px;height:64px;background:var(--vermilion);transform-origin:0 50%;transform:scaleX(0)"></div>
+        <svg id="c3s01-sc031-mk" class="q-mk"></svg>
+        <div id="c3s01-sc031-imp" class="q-abs t-serif-i q-ink" style="left:900px;top:760px;font-size:120px;opacity:0">impossible</div>
+      </div>
+      <div class="folds"></div>
+      <div class="q-credit ink t-label">Stanford inner quad, c.1900 · public domain</div>
+    </div>
+
+    <!-- C3S032 · 154.81–159.13 · "history… geopolitics… the Hoover Institution" · Hoover Tower 2.5D -->
+    <div class="q-scene q-night" id="c3s01-sc032" data-scene="C3S032">
+      <div class="q-full" style="perspective:1200px">
+        <div class="q-abs" id="c3s01-sc032-l0" style="inset:0;transform-origin:50% 50%"><img src="assets/c3/derived/c3s01/hoover_tower_sky.jpg" alt="" style="position:absolute;left:-200px;top:-500px;width:2320px;height:3867px;object-fit:cover;filter:saturate(0.4) brightness(0.62) contrast(1.05)" /></div>
+        <canvas id="c3s01-sc032-streaks" class="streaks" style="opacity:0.3"></canvas>
+        <div id="c3s01-sc032-ttl" class="q-abs t-display halate" style="left:90px;top:300px;font-size:140px;line-height:0.95;opacity:0">HOOVER<br />INSTITUTION</div>
+        <div class="q-abs" id="c3s01-sc032-l1" style="inset:0;transform-origin:50% 60%"><img src="assets/c3/derived/c3s01/hoover_tower_fg.png" alt="" style="position:absolute;left:640px;top:-470px;width:1300px;height:2167px;filter:saturate(0.4) brightness(0.66) contrast(1.08)" /></div>
+      </div>
+      <div class="q-scrim-b" style="height:330px"></div>
+      <div id="c3s01-sc032-hi" class="q-abs t-label clean" style="left:120px;top:880px;font-size:44px;opacity:0">history</div>
+      <div id="c3s01-sc032-gp" class="q-abs t-label clean" style="left:500px;top:880px;font-size:44px;opacity:0">geopolitics</div>
+      <div class="q-credit t-label">Hoover Tower, Stanford (2013) · CC BY-SA 3.0 (Wikimedia Commons)</div>
+    </div>
+
+    <!-- C3S033 · 159.13–165.45 · "still going to this day, probably the best… Very good, very good at least" · pen correction -->
+    <div class="q-scene q-paper" id="c3s01-sc033" data-scene="C3S033">
+      <div class="q-p1" style="background-image:url('assets/textures/paper_cream_02.jpg')"></div>
+      <div class="q-p2" style="background-image:url('assets/textures/paper_lined_01_hires.jpg');opacity:0.35"></div>
+      <div class="q-cam" id="c3s01-sc033-cam" style="transform-origin:960px 700px">
+        <div class="q-card" id="c3s01-sc033-ph" style="left:560px;top:70px;width:800px;height:560px;transform:rotate(-1.5deg);border:18px solid #f4efe3"><img src="assets/c3/photos/hoover_tower_01.jpg" alt="" style="object-position:50% 30%;filter:grayscale(1) sepia(0.25) contrast(1.05)" /></div>
+        <div id="c3s01-sc033-td" class="q-abs t-label q-ink" style="left:560px;top:670px;font-size:34px"><span class="q-w">to </span><span class="q-w">this </span><span class="q-w">day</span></div>
+        <div class="q-abs" style="left:560px;top:725px;width:800px;height:2px;background:rgba(20,27,36,0.5)"></div>
+        <div id="c3s01-sc033-best" class="q-abs t-serif-i" style="left:600px;top:760px;font-size:120px;color:var(--ink);opacity:0">best</div>
+        <div id="c3s01-sc033-vg" class="q-abs t-serif-i" style="left:930px;top:770px;font-size:120px;color:var(--ink)"><span class="q-w">very </span><span class="q-w">good</span></div>
+        <svg id="c3s01-sc033-mk" class="q-mk"></svg>
+      </div>
+      <div class="folds"></div>
+      <div class="q-credit ink t-label">Hoover Tower — Wikimedia Commons, CC BY-SA 4.0</div>
+    </div>
+
+    <!-- C3S034 · 165.45–168.57 · "I like their videos… historians" · projector + pull-down screen -->
+    <div class="q-scene q-night" id="c3s01-sc034" data-scene="C3S034">
+      <div class="q-abs" style="inset:0;background:radial-gradient(ellipse 70% 80% at 55% 40%,#1b1916,#0b0a09 75%)"></div>
+      <div class="q-cam" id="c3s01-sc034-cam" style="transform-origin:960px 420px">
+        <div class="q-abs" style="left:560px;top:40px;width:860px;height:26px;background:linear-gradient(180deg,#5a554c,#2a2723);border-radius:13px;box-shadow:0 8px 14px rgba(0,0,0,0.6)"></div>
+        <div class="q-abs" id="c3s01-sc034-scr" style="left:590px;top:58px;width:800px;height:620px;background:#d8d3c8;transform-origin:50% 0;box-shadow:0 20px 40px rgba(0,0,0,0.6)">
+          <div class="q-abs" id="c3s01-sc034-img" style="left:30px;top:30px;width:740px;height:556px;overflow:hidden;clip-path:polygon(0 0,100% 2%,99% 100%,1% 97%);opacity:0">
+            <div class="q-abs" id="c3s01-sc034-weave" style="inset:-10px">
+              <video src="assets/c1/footage/hoover_1929_speaking_closeup.mp4" muted playsinline data-start="165.45" data-duration="3.2" data-media-start="2.0" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:grayscale(1) contrast(1.1) brightness(1.15)" data-color-grading='{"effects":{"chromaticAberration":0.12,"chromaticAngle":0}}'></video>
+            </div>
+          </div>
+          <div class="q-abs" style="left:385px;top:620px;width:30px;height:36px;background:#2a2723;border-radius:0 0 8px 8px"></div>
+        </div>
+        <div class="q-abs" id="c3s01-sc034-beam" style="left:0;top:0;width:1920px;height:1080px;background:conic-gradient(from 200deg at 1700px 1010px,rgba(255,236,200,0) 0deg,rgba(255,236,200,0.10) 20deg,rgba(255,236,200,0.16) 40deg,rgba(255,236,200,0.10) 56deg,rgba(255,236,200,0) 66deg);mix-blend-mode:screen;opacity:0"></div>
+        <div class="q-abs" style="left:1600px;top:930px;width:240px;height:150px;background:linear-gradient(180deg,#2e2b27,#141210);border-radius:14px;box-shadow:0 -4px 20px rgba(255,236,200,0.08)"></div>
+        <div class="q-abs" style="left:1630px;top:820px;width:110px;height:110px;border-radius:50%;border:12px solid #2e2b27"></div>
+        <div class="q-abs" style="left:1740px;top:800px;width:110px;height:110px;border-radius:50%;border:12px solid #2e2b27"></div>
+      </div>
+      <div id="c3s01-sc034-tv" class="q-abs t-label clean" style="left:110px;top:780px;font-size:46px"><span class="q-w">their </span><span class="q-w">videos</span></div>
+      <div id="c3s01-sc034-hi" class="q-abs t-serif-i clean" style="left:104px;top:860px;font-size:100px;opacity:0">historians</div>
+      <div class="q-credit t-label">Herbert Hoover, newsreel 1929 · public domain</div>
+    </div>
+
+    <!-- C3S035 · 168.57–174.17 · "this is the recipe: a great university, company, industrial park, people coming in and out" · index card -->
+    <div class="q-scene q-paper" id="c3s01-sc035" data-scene="C3S035">
+      <div class="q-p1" style="background-image:url('assets/textures/paper_cream_01.jpg')"></div>
+      <div class="q-p2" style="background-image:url('assets/textures/paper_fiber_01.jpg');opacity:0.4"></div>
+      <div class="q-full" style="perspective:2200px">
+        <div class="q-abs" id="c3s01-sc035-card" style="left:260px;top:90px;width:1400px;height:900px;background:#f5f0e3;box-shadow:0 30px 60px rgba(20,27,36,0.3);transform:rotate(-1deg);transform-origin:50% 50%">
+          <div class="q-abs" style="inset:0;background:repeating-linear-gradient(180deg,rgba(0,0,0,0) 0 69px,rgba(29,92,158,0.35) 69px 71px);background-position:0 170px"></div>
+          <div class="q-abs" style="left:0;right:0;top:160px;height:3px;background:rgba(224,63,44,0.55)"></div>
+          <div id="c3s01-sc035-hd" class="q-abs t-label" style="left:70px;top:60px;font-size:72px;color:var(--ink);letter-spacing:0.3em;opacity:0">RECIPE</div>
+          <div class="q-abs t-label" style="left:70px;top:236px;font-size:42px;color:var(--ink);line-height:2"><span class="q-w" id="c3s01-sc035-i1">• a great university</span><br /><span class="q-w" id="c3s01-sc035-i2">• company</span><br /><span class="q-w" id="c3s01-sc035-i3">• industrial </span><span class="q-w" id="c3s01-sc035-i3b">park</span><br /><span class="q-w" id="c3s01-sc035-i4">• people </span><span class="q-w" id="c3s01-sc035-i5">in </span><span class="q-w" id="c3s01-sc035-i6">and </span><span class="q-w" id="c3s01-sc035-i7">out</span></div>
+          <div class="q-card" id="c3s01-sc035-p1" style="left:880px;top:200px;width:230px;height:150px;transform:rotate(3deg);opacity:0"><img src="assets/archival/hoover/stanford_inner_quad_west_entrance_c1900.jpg" alt="" style="filter:url(#c3s01-tink)" /></div>
+          <div class="q-card" id="c3s01-sc035-p2" style="left:1130px;top:240px;width:220px;height:170px;transform:rotate(-4deg);opacity:0"><img src="assets/archival/hp/hewlett_and_packard_together_1960.jpg" alt="" style="filter:url(#c3s01-tink)" /></div>
+          <div class="q-card" id="c3s01-sc035-p3" style="left:920px;top:420px;width:380px;height:140px;transform:rotate(2deg);opacity:0"><img src="assets/c2/photos/hp_stanford_industrial_park_plant_exterior_1958.jpg" alt="" style="filter:url(#c3s01-tink)" /></div>
+          <svg id="c3s01-sc035-mk" class="q-mk" style="width:1400px;height:900px"></svg>
+        </div>
+      </div>
+      <div class="folds"></div>
+      <div class="q-credit ink t-label">Stanford quad c.1900 (PD) · Hewlett & Packard 1960, HP plant 1958 © HP, fair use</div>
+    </div>
+
+    <!-- C3S036 · 174.17–179.37 · "Silicon Valley was built by someone" · blueprint title block -->
+    <div class="q-scene" id="c3s01-sc036" data-scene="C3S036" style="background:#1d3d63">
+      <div class="q-cam" id="c3s01-sc036-cam">
+        <div class="q-abs" style="inset:0;background-image:url('assets/textures/paper_blueprint_01_hires.jpg');background-size:cover;background-position:center"></div>
+        <svg id="c3s01-sc036-svg" class="q-mk"></svg>
+        <div id="c3s01-sc036-sv" class="q-abs t-display" style="left:180px;top:150px;font-size:150px;color:#eaf1f6;letter-spacing:0.02em"><span class="q-w">SILICON </span><span class="q-w">VALLEY</span></div>
+        <div class="q-abs" style="left:1120px;top:650px;width:640px;height:300px;border:4px solid rgba(234,241,246,0.85)"></div>
+        <div class="q-abs" style="left:1120px;top:740px;width:640px;height:3px;background:rgba(234,241,246,0.85)"></div>
+        <div id="c3s01-sc036-bb" class="q-abs t-label" style="left:1150px;top:676px;font-size:44px;color:#eaf1f6;opacity:0">built</div>
+        <div id="c3s01-sc036-so" class="q-abs t-serif-i" style="left:1150px;top:790px;font-size:84px;color:#eaf1f6"><span class="q-w">by </span><span class="q-w">someone</span></div>
+        <div class="q-circ" id="c3s01-sc036-tc" style="left:1560px;top:765px;width:170px;height:170px;border:6px solid var(--vermilion);opacity:0"><img src="assets/archival/collage/terman_frederick_1955.jpg" alt="" style="filter:grayscale(1) contrast(1.1)" /></div>
+      </div>
+    </div>
+
+    <!-- C3S037 · 179.37–182.01 · "we already have a Taiwan connection here" · Pacific night map (motif master, exported to c3s02) -->
+    <div class="q-scene q-night" id="c3s01-sc037" data-scene="C3S037">
+      <div class="q-abs" id="c3s01-sc037-cam" style="left:0;top:0;width:6380px;height:2420px;transform-origin:0 0">
+        <img src="assets/maps/kit/pacific_night.jpg" alt="" style="position:absolute;inset:0;width:6380px;height:2420px;filter:brightness(1.05)" />
+        <svg id="c3s01-sc037-svg" style="position:absolute;left:0;top:0;width:6380px;height:2420px;overflow:visible" viewBox="0 0 6380 2420"></svg>
+      </div>
+      <div id="c3s01-sc037-tw" class="q-abs t-label clean" style="left:330px;top:640px;font-size:46px;opacity:0">Taiwan</div>
+      <div id="c3s01-sc037-cn" class="q-abs t-serif-i clean" style="left:0;width:1920px;top:110px;text-align:center;font-size:110px;opacity:0">connection</div>
+      <div class="q-credit t-label">Relief: AWS Terrain Tiles (public domain) · vectors: Natural Earth</div>
+    </div>
+
+    <!-- C3S038 · 182.01–185.61 · "while Terman was teaching in the 30s before the war" · photo card -->
+    <div class="q-scene q-paper" id="c3s01-sc038" data-scene="C3S038">
+      <div class="q-p1" style="background-image:url('assets/textures/paper_cream_02.jpg')"></div>
+      <div class="q-p2" style="background-image:url('assets/textures/paper_stained_01_hires.jpg');opacity:0.45"></div>
+      <div class="q-cam" id="c3s01-sc038-cam" style="transform-origin:760px 520px">
+        <div class="q-card" id="c3s01-sc038-ph" style="left:420px;top:90px;width:620px;height:877px;transform:rotate(-2deg);border:20px solid #f4efe3"><img src="assets/c1/people/terman_frederick_portrait_c1940s_ieee.jpg" alt="" style="filter:sepia(0.35) contrast(1.05)" /></div>
+        <div id="c3s01-sc038-tag" class="q-abs t-display" style="left:900px;top:760px;font-size:120px;transform:rotate(-6deg);opacity:0"><span class="q-bbox" style="border:5px solid var(--ink)">30s</span></div>
+      </div>
+      <div id="c3s01-sc038-tn" class="q-abs t-display" style="left:1160px;top:200px;font-size:110px;opacity:0"><span class="q-vbox">TERMAN</span></div>
+      <div id="c3s01-sc038-bw" class="q-abs t-serif-i q-ink" style="left:1166px;top:400px;font-size:90px"><span class="q-w">before </span><span class="q-w">the </span><span class="q-w">war</span></div>
+      <div class="folds"></div>
+      <div class="q-credit ink t-label">Frederick Terman, c.1940s · IEEE / ETHW · fair use</div>
+    </div>
+
+    <!-- C3S039 · 185.61–189.85 · "a Taiwanese or Chinese student, Pan Wen-Yuan" · burn reveal portrait -->
+    <div class="q-scene q-night" id="c3s01-sc039" data-scene="C3S039">
+      <canvas id="c3s01-sc039-streaks" class="streaks" style="opacity:0.25"></canvas>
+      <div class="q-cam" id="c3s01-sc039-cam" style="transform-origin:1340px 500px">
+        <div class="q-abs" id="c3s01-sc039-plate" style="left:1080px;top:150px;width:520px;height:646px">
+          <svg id="c3s01-sc039-svg" style="position:absolute;inset:0;width:520px;height:646px;overflow:visible" viewBox="0 0 520 646"></svg>
+        </div>
+      </div>
+      <div id="c3s01-sc039-st" class="q-abs t-label clean" style="left:150px;top:300px;font-size:46px;opacity:0">student</div>
+      <div id="c3s01-sc039-pan" class="q-abs t-display halate" style="left:140px;top:390px;font-size:150px;line-height:0.95"><span class="q-w">PAN </span><br /><span class="q-w">WEN-</span><span class="q-w">YUAN</span></div>
+      <div class="q-credit t-label">Pan Wen-Yuan · photo via Wikipedia · fair use</div>
+    </div>
+
+    <!-- C3S040 + C3S042 · 189.85–193.37 / 197.13–200.34 · Pan–Terman(–Hewlett) diagram (motif master) -->
+    <div class="q-scene q-paper" id="c3s01-sc040" data-scene="C3S040-C3S042">
+      <div class="q-p1" style="background-image:url('assets/textures/paper_cream_01.jpg')"></div>
+      <div class="q-p2" style="background-image:url('assets/textures/paper_fiber_01.jpg');opacity:0.4"></div>
+      <div class="q-cam" id="c3s01-sc040-cam" style="transform-origin:960px 500px">
+        <svg id="c3s01-sc040-svg" class="q-mk"></svg>
+        <div class="q-circ" id="c3s01-sc040-pan" style="left:470px;top:300px;width:220px;height:220px;border:8px solid var(--celadon);opacity:0"><img src="assets/c3/photos/pan_wen_yuan_enwiki.jpg" alt="" style="filter:url(#c3s01-tcel)" /></div>
+        <div class="q-circ" id="c3s01-sc040-ter" style="left:1230px;top:300px;width:220px;height:220px;border:8px solid var(--vermilion);opacity:0"><img src="assets/archival/collage/terman_frederick_1955.jpg" alt="" style="filter:grayscale(1) contrast(1.1)" /></div>
+        <div class="q-circ" id="c3s01-sc040-hew" style="left:850px;top:720px;width:220px;height:220px;border:8px solid var(--ink);opacity:0"><img src="assets/archival/hp/hewlett_william_c1962.jpg" alt="" style="object-position:50% 18%;filter:grayscale(1) contrast(1.1)" /></div>
+        <div class="q-abs t-label q-ink" style="left:430px;top:540px;width:300px;text-align:center;font-size:28px" id="c3s01-sc040-pl">Pan Wen-Yuan</div>
+        <div class="q-abs t-label q-ink" style="left:1190px;top:540px;width:300px;text-align:center;font-size:28px" id="c3s01-sc040-tl">Terman</div>
+        <div id="c3s01-sc040-bs" class="q-abs t-serif-i q-ink" style="left:110px;top:70px;font-size:92px"><span class="q-w">bright </span><span class="q-w">student</span></div>
+        <div id="c3s01-sc040-vc" class="q-abs t-serif-i q-ink" style="left:0;width:1920px;top:250px;text-align:center;font-size:64px"><span class="q-w">very </span><span class="q-w">closely</span></div>
+        <div id="c3s01-sc040-bh" class="q-abs t-label" style="left:760px;top:960px;width:400px;text-align:center;font-size:40px"><span class="q-box" style="padding:10px 18px 6px"><span class="q-w">Bill </span><span class="q-w">Hewlett</span></span></div>
+      </div>
+      <div class="folds"></div>
+      <div class="q-credit ink t-label">Pan Wen-Yuan (Wikipedia, fair use) · Terman 1955 · Bill Hewlett c.1962 © HP, fair use</div>
+    </div>
+
+    <!-- C3S041 · 193.37–197.13 · "co-wrote a lot of papers that Terman published" · papers on a lamp-lit desk -->
+    <div class="q-scene q-night" id="c3s01-sc041" data-scene="C3S041">
+      <div class="q-desk"></div><div class="q-lamp"></div>
+      <div class="q-cam" id="c3s01-sc041-cam" style="transform-origin:1150px 330px">
+        <div id="c3s01-sc041-pages"></div>
+      </div>
+      <div id="c3s01-sc041-cw" class="q-abs t-label clean" style="left:110px;top:120px;font-size:52px"><span class="q-w">co-</span><span class="q-w">wrote</span></div>
+      <div id="c3s01-sc041-pp" class="q-abs t-serif-i clean" style="left:104px;top:200px;font-size:110px;opacity:0">papers</div>
+      <div class="q-credit t-label">Journal pages: typeset recreation (bylines only)</div>
+    </div>
+
+    <!-- global overlays -->
+    <div id="c3s01-flash"></div>
+    <div id="c3s01-grain" class="tx tx-grain" style="background-image:url('assets/textures/grain_01_norm.jpg')"></div>
+    <div id="c3s01-dust" class="tx tx-dust" style="background-image:url('assets/textures/dust_01.jpg')"></div>
+    <div id="c3s01-vig" class="vignette"></div>
+    <audio id="c3s01-vo" class="temp-vo" src="vo_c3.mp3" data-start="0" data-duration="200.34" data-media-start="0.00" data-volume="1"></audio>
+  </div>
+  <script>
+  (function () {
+    const SEG = "c3s01", SEG_START = 0.00, SEG_END = 200.34, DURATION = +(SEG_END - SEG_START).toFixed(2);
+    const T = (s) => +(s - 0.00).toFixed(3);   // TEXT cues (audited) — literal word start; text lands L earlier
+    const S = (s) => +(s - 0.00).toFixed(3);   // STRUCTURAL cues (cuts, camera, objects)
+    const L = 0.06;
+    const tl = gsap.timeline({ paused: true });
+    const $ = (id) => document.getElementById(SEG + "-" + id);
+    const NS = "http://www.w3.org/2000/svg";
+    const defs = $("defs");
+    const E = FX.ease;
+    const C = (e, d) => FX.choppy(e, d, 12);
+    const BONE = "#f2ede3", INK = "#141b24", RED = "#e03f2c", CEL = "#9fc7b2", YEL = "#f2d33b", NAVY = "#1d5c9e";
+    const US = {"alabama": "M4013 2629L4034 2625L4035 2622L4040 2627L4037 2630L4013 2629ZM4027 1996L4303 1997L4348 2278L4355 2291L4357 2308L4372 2338L4368 2351L4379 2359L4362 2376L4362 2392L4353 2415L4354 2435L4362 2444L4363 2458L4356 2490L4356 2502L4364 2513L4368 2527L4091 2527L4092 2532L4088 2548L4098 2561L4112 2570L4113 2578L4107 2590L4108 2596L4116 2602L4109 2606L4102 2617L4105 2620L4085 2627L4048 2630L4055 2625L4060 2628L4073 2625L4074 2621L4058 2606L4055 2595L4059 2587L4058 2578L4055 2573L4047 2569L4042 2574L4034 2617L4028 2618L4028 2614L4021 2609L4006 2611L3998 2408L4038 2009L4032 2005L4027 1996Z", "arizona": "M1202 2298L1204 2295L1222 2293L1222 2289L1228 2282L1229 2273L1223 2257L1208 2257L1203 2249L1206 2225L1201 2220L1204 2213L1201 2207L1208 2206L1222 2188L1222 2170L1226 2168L1222 2153L1224 2140L1221 2138L1232 2124L1235 2113L1254 2103L1264 2093L1260 2082L1237 2067L1238 2060L1228 2033L1219 2026L1210 2012L1213 1984L1209 1981L1217 1976L1217 1968L1214 1948L1206 1928L1208 1913L1205 1908L1202 1888L1208 1879L1199 1864L1198 1850L1217 1842L1224 1842L1225 1845L1239 1843L1245 1854L1253 1860L1262 1859L1273 1836L1273 1729L1806 1729L1806 2483L1590 2483L1192 2328L1192 2312L1202 2298Z", "colorado": "M1806 1197L2551 1197L2552 1730L2474 1729L1806 1729L1806 1197Z", "florida": "M4781 3364L4801 3354L4803 3357L4786 3366L4781 3364ZM4707 3382L4715 3370L4747 3350L4761 3358L4768 3368L4751 3375L4750 3372L4740 3373L4721 3384L4707 3385L4707 3382ZM4686 3386L4701 3383L4691 3390L4686 3389L4686 3386ZM4659 3099L4668 3125L4678 3131L4686 3132L4681 3135L4666 3127L4659 3099ZM4368 2527L4377 2560L4382 2565L4665 2584L4665 2604L4669 2612L4683 2611L4687 2583L4682 2573L4683 2560L4693 2550L4717 2561L4736 2565L4742 2564L4748 2567L4746 2593L4750 2596L4752 2620L4766 2685L4800 2778L4839 2848L4845 2865L4836 2878L4840 2913L4860 2961L4897 3086L4887 3222L4884 3236L4881 3226L4875 3229L4869 3242L4864 3263L4868 3274L4862 3281L4862 3287L4870 3283L4879 3260L4882 3256L4882 3260L4862 3305L4830 3339L4848 3319L4854 3300L4851 3297L4845 3296L4821 3305L4814 3300L4794 3308L4785 3309L4779 3303L4776 3296L4780 3274L4763 3234L4757 3233L4753 3222L4728 3206L4720 3212L4708 3180L4701 3142L4681 3119L4681 3126L4676 3128L4673 3107L4668 3101L4674 3099L4678 3103L4682 3085L4681 3075L4678 3074L4680 3065L4669 3070L4672 3087L4661 3090L4659 3096L4656 3082L4619 3007L4608 2987L4613 2993L4618 2989L4645 2948L4644 2939L4635 2937L4637 2950L4629 2946L4631 2942L4629 2930L4614 2922L4614 2930L4610 2933L4621 2938L4625 2950L4619 2965L4611 2966L4613 2974L4610 2978L4609 2964L4597 2944L4599 2923L4596 2897L4599 2897L4601 2918L4604 2919L4603 2901L4616 2867L4616 2833L4611 2830L4610 2813L4614 2806L4604 2783L4600 2783L4602 2774L4581 2769L4575 2776L4573 2759L4563 2754L4555 2735L4550 2735L4548 2730L4538 2724L4537 2704L4524 2697L4508 2670L4472 2646L4458 2650L4446 2647L4446 2651L4436 2659L4438 2673L4426 2670L4417 2672L4380 2695L4378 2695L4381 2690L4377 2689L4369 2698L4355 2698L4361 2708L4367 2710L4401 2692L4392 2701L4363 2715L4344 2703L4330 2705L4324 2681L4326 2676L4326 2688L4332 2701L4335 2697L4336 2686L4322 2667L4316 2665L4304 2652L4270 2628L4229 2612L4181 2608L4099 2623L4105 2620L4102 2617L4109 2606L4116 2602L4108 2596L4107 2590L4113 2578L4112 2570L4098 2561L4088 2548L4091 2527L4368 2527Z", "georgia": "M4303 1997L4569 1995L4568 2003L4556 2011L4546 2023L4545 2037L4556 2047L4563 2048L4580 2065L4594 2065L4598 2079L4608 2094L4611 2108L4624 2124L4628 2136L4650 2150L4661 2161L4666 2177L4682 2186L4695 2200L4694 2215L4705 2225L4703 2228L4708 2233L4712 2232L4715 2242L4728 2248L4742 2260L4740 2268L4749 2282L4750 2312L4755 2317L4764 2320L4773 2332L4772 2336L4781 2356L4777 2361L4782 2379L4790 2383L4794 2381L4803 2389L4811 2391L4809 2398L4803 2401L4800 2400L4797 2405L4801 2406L4795 2413L4787 2410L4786 2417L4790 2418L4786 2425L4780 2431L4774 2429L4777 2435L4780 2434L4780 2444L4777 2451L4766 2454L4766 2457L4773 2456L4775 2458L4766 2473L4763 2500L4751 2509L4749 2525L4741 2530L4746 2533L4751 2530L4751 2539L4745 2558L4747 2566L4717 2561L4693 2550L4683 2560L4682 2573L4687 2583L4683 2611L4669 2612L4665 2604L4665 2584L4382 2565L4377 2560L4364 2513L4356 2502L4356 2490L4363 2458L4362 2444L4354 2435L4353 2415L4362 2392L4362 2376L4379 2359L4368 2351L4372 2338L4357 2308L4355 2291L4348 2278L4303 1997Z", "indiana": "M4099 1103L4105 1108L4112 1107L4110 1112L4131 1114L4174 1096L4388 1096L4387 1449L4379 1456L4386 1468L4382 1472L4383 1477L4391 1480L4386 1486L4388 1491L4370 1492L4351 1504L4344 1503L4340 1498L4324 1498L4320 1502L4324 1524L4315 1534L4303 1538L4296 1556L4289 1560L4280 1559L4271 1575L4270 1592L4258 1597L4256 1601L4251 1595L4243 1595L4233 1588L4232 1578L4221 1570L4226 1578L4218 1582L4215 1579L4212 1583L4215 1584L4213 1589L4206 1590L4207 1605L4198 1606L4198 1614L4194 1617L4191 1614L4193 1608L4185 1610L4177 1597L4170 1598L4165 1604L4150 1610L4148 1621L4141 1625L4138 1618L4114 1604L4107 1604L4101 1608L4091 1600L4088 1607L4092 1614L4087 1619L4083 1619L4082 1609L4066 1612L4058 1606L4055 1611L4058 1621L4054 1626L4041 1622L4039 1619L4044 1620L4038 1609L4047 1610L4041 1607L4047 1599L4044 1589L4052 1587L4052 1583L4048 1585L4056 1576L4049 1563L4053 1564L4056 1556L4058 1560L4061 1556L4064 1559L4077 1537L4076 1533L4085 1528L4089 1511L4097 1506L4102 1497L4096 1482L4100 1469L4093 1464L4094 1455L4088 1449L4086 1441L4094 1434L4090 1428L4091 1421L4098 1417L4099 1103Z", "kansas": "M2551 1330L3270 1330L3281 1338L3281 1343L3298 1348L3301 1343L3310 1345L3309 1348L3316 1353L3314 1358L3311 1358L3312 1362L3316 1360L3316 1366L3307 1364L3305 1372L3297 1379L3298 1384L3291 1387L3291 1392L3308 1411L3316 1413L3312 1416L3314 1425L3321 1431L3320 1434L3328 1439L3346 1442L3343 1729L2552 1730L2551 1330Z", "maine": "M6126 777L6128 767L6138 777L6132 783L6126 777ZM6078 783L6091 773L6097 789L6093 793L6086 795L6081 792L6082 783L6078 783ZM6076 764L6082 749L6085 747L6087 750L6084 754L6081 766L6077 769L6076 764ZM5891 923L5878 914L5880 901L5861 880L5864 858L5850 624L5858 623L5858 619L5868 624L5870 633L5874 634L5879 625L5878 612L5882 608L5898 614L5898 610L5889 596L5907 576L5925 567L5921 559L5938 546L5940 540L5932 537L5932 529L5941 512L5935 507L5944 488L5960 477L5966 440L6048 338L6068 342L6067 365L6083 375L6102 367L6113 367L6117 361L6138 361L6138 354L6154 352L6163 356L6191 384L6201 390L6202 540L6206 543L6200 547L6205 555L6199 559L6200 575L6209 577L6210 575L6214 581L6221 584L6232 587L6238 585L6241 598L6232 600L6241 615L6234 628L6242 644L6249 648L6254 645L6254 640L6269 644L6276 656L6273 658L6287 677L6287 690L6265 712L6252 718L6253 704L6242 707L6247 714L6242 719L6238 717L6233 724L6224 723L6231 732L6223 738L6216 727L6206 732L6204 725L6194 742L6192 740L6190 746L6188 741L6180 747L6178 744L6174 754L6168 750L6168 745L6160 747L6160 754L6154 762L6158 766L6145 768L6136 764L6130 752L6141 746L6138 741L6132 745L6133 740L6130 740L6128 748L6128 740L6119 747L6118 756L6124 763L6114 777L6117 779L6113 782L6117 788L6115 796L6109 798L6109 781L6102 776L6101 769L6106 763L6099 758L6102 755L6091 756L6091 744L6096 733L6093 731L6085 741L6081 737L6072 741L6078 751L6062 784L6069 788L6064 791L6068 797L6064 802L6054 801L6049 809L6043 809L6042 816L6038 817L6041 807L6037 805L6032 810L6034 803L6027 804L6027 810L6019 820L6014 814L6014 819L6008 823L6003 820L6002 827L5997 822L5992 832L5982 837L5980 828L5973 827L5966 836L5958 836L5956 842L5948 841L5942 860L5937 856L5925 865L5927 873L5920 879L5921 883L5907 888L5900 913L5891 923Z", "massachusetts": "M5936 1156L5952 1158L5959 1156L5964 1148L5970 1160L5966 1165L5953 1165L5936 1156ZM5877 1150L5884 1150L5891 1140L5902 1133L5914 1146L5918 1141L5918 1151L5890 1152L5883 1157L5877 1150ZM5618 965L5828 971L5832 966L5840 966L5840 959L5845 955L5853 957L5856 950L5870 946L5879 948L5883 972L5892 977L5897 972L5902 976L5896 986L5873 991L5878 997L5868 1002L5866 1008L5864 1004L5860 1010L5864 1018L5860 1017L5859 1026L5864 1028L5872 1023L5889 1036L5898 1052L5895 1062L5890 1063L5891 1066L5907 1073L5910 1083L5908 1088L5922 1098L5938 1102L5965 1090L5963 1074L5958 1077L5956 1060L5950 1056L5945 1061L5941 1054L5954 1055L5962 1062L5969 1076L5973 1105L5967 1125L5964 1124L5969 1111L5966 1108L5928 1112L5919 1116L5913 1124L5901 1125L5882 1138L5865 1143L5896 1125L5899 1102L5889 1099L5889 1106L5887 1104L5885 1110L5869 1115L5864 1128L5846 1131L5845 1109L5838 1107L5832 1097L5824 1093L5823 1078L5819 1078L5819 1062L5672 1059L5671 1064L5666 1064L5666 1059L5594 1057L5592 1052L5618 965Z", "minnesota": "M3065 133L3286 133L3286 82L3296 86L3307 84L3321 94L3336 148L3335 162L3352 173L3381 173L3385 180L3427 183L3431 197L3466 193L3466 188L3478 183L3517 183L3545 194L3554 194L3555 199L3548 200L3546 204L3552 208L3568 206L3574 213L3571 216L3583 237L3592 234L3589 224L3594 219L3616 218L3622 223L3621 231L3628 235L3652 240L3653 251L3669 252L3668 260L3702 255L3720 242L3741 233L3746 235L3746 242L3753 244L3750 247L3754 253L3774 250L3776 253L3821 251L3832 254L3836 262L3849 268L3862 263L3880 267L3890 264L3879 270L3875 268L3874 272L3838 288L3778 306L3757 316L3715 346L3678 382L3612 427L3621 438L3613 432L3600 438L3604 441L3599 446L3591 444L3591 522L3587 523L3585 530L3576 529L3572 536L3566 534L3546 546L3538 563L3530 569L3528 588L3545 593L3545 597L3553 606L3553 612L3541 626L3543 651L3536 657L3541 661L3542 673L3536 696L3564 723L3588 726L3597 739L3625 749L3630 754L3635 771L3667 794L3682 798L3702 828L3699 841L3706 864L3148 864L3148 625L3144 618L3123 610L3104 584L3106 579L3124 568L3134 555L3137 524L3132 488L3119 474L3112 448L3111 423L3115 408L3112 409L3108 403L3105 318L3083 273L3082 259L3075 247L3077 229L3072 193L3079 175L3064 138L3065 133Z", "new_jersey": "M5374 1379L5384 1361L5395 1351L5419 1343L5419 1335L5448 1319L5453 1313L5463 1310L5439 1285L5437 1277L5427 1275L5426 1259L5422 1254L5412 1253L5414 1240L5411 1238L5415 1227L5419 1227L5428 1214L5419 1200L5437 1185L5435 1183L5442 1179L5451 1159L5460 1151L5466 1149L5550 1197L5543 1221L5532 1242L5518 1246L5512 1263L5512 1268L5519 1271L5525 1269L5540 1275L5541 1270L5542 1293L5530 1362L5514 1389L5507 1396L5504 1406L5472 1434L5455 1464L5448 1471L5436 1471L5445 1442L5428 1434L5421 1435L5419 1439L5415 1436L5414 1431L5406 1423L5403 1424L5383 1405L5376 1402L5378 1386L5374 1379Z", "north_carolina": "M5356 1870L5363 1873L5368 1886L5362 1886L5363 1880L5356 1870ZM5325 1986L5328 1979L5376 1959L5382 1915L5377 1892L5384 1916L5377 1964L5349 1972L5325 1986ZM4722 1784L4888 1790L5341 1789L5354 1842L5376 1890L5361 1863L5356 1862L5352 1842L5343 1821L5342 1807L5337 1798L5328 1796L5327 1792L5322 1794L5324 1801L5331 1806L5335 1805L5348 1852L5341 1845L5335 1830L5330 1828L5331 1836L5337 1840L5325 1837L5313 1824L5307 1822L5320 1841L5308 1846L5300 1838L5306 1848L5304 1849L5278 1838L5295 1849L5283 1852L5278 1859L5265 1861L5255 1856L5250 1842L5255 1826L5253 1825L5247 1834L5246 1842L5255 1871L5270 1870L5284 1864L5288 1870L5293 1869L5308 1863L5320 1863L5325 1868L5320 1882L5322 1906L5325 1906L5329 1876L5334 1871L5332 1867L5338 1865L5347 1867L5356 1886L5356 1912L5350 1918L5338 1919L5325 1939L5312 1951L5275 1946L5269 1940L5264 1927L5276 1927L5278 1922L5263 1923L5259 1927L5265 1944L5251 1938L5246 1939L5218 1926L5224 1937L5273 1952L5277 1960L5266 1982L5241 2000L5222 1987L5222 1994L5245 2006L5259 1996L5274 1993L5276 1986L5280 1987L5284 1998L5291 1999L5288 1990L5296 1994L5296 2003L5290 2012L5283 2013L5271 2037L5264 2035L5264 2026L5261 2024L5261 2033L5255 2034L5271 2041L5280 2027L5320 1985L5323 1987L5286 2024L5270 2050L5268 2042L5255 2036L5217 2040L5198 2048L5161 2072L5141 2092L5132 2106L5118 2148L5113 2147L5112 2143L5095 2140L5073 2141L5056 2148L4935 2021L4816 2019L4817 2004L4801 1981L4790 1989L4790 1975L4656 1968L4648 1971L4646 1966L4641 1972L4629 1974L4607 1986L4604 1984L4569 1995L4440 1996L4444 1965L4452 1960L4453 1963L4464 1962L4472 1955L4472 1940L4487 1926L4499 1920L4529 1919L4564 1893L4572 1890L4582 1892L4592 1879L4590 1872L4594 1868L4600 1872L4608 1861L4620 1853L4624 1858L4622 1866L4628 1868L4639 1861L4650 1846L4661 1845L4665 1841L4672 1842L4673 1848L4684 1845L4697 1822L4709 1814L4719 1817L4715 1809L4720 1800L4718 1791L4722 1784Z", "north_dakota": "M2339 133L3065 133L3064 138L3079 175L3072 193L3077 229L3075 247L3082 259L3083 273L3105 318L3107 354L3108 403L3112 409L3115 408L3111 423L3111 444L3119 474L3132 488L3136 541L2339 539L2339 133Z", "oklahoma": "M2450 1729L3343 1729L3343 1796L3363 1943L3357 2176L3354 2179L3346 2171L3334 2170L3327 2161L3316 2162L3306 2146L3297 2146L3288 2136L3278 2133L3271 2145L3245 2144L3242 2137L3239 2137L3230 2143L3222 2142L3222 2148L3217 2146L3214 2150L3203 2143L3202 2146L3180 2150L3177 2160L3164 2159L3162 2169L3157 2169L3150 2157L3142 2158L3139 2152L3129 2149L3134 2142L3124 2140L3121 2150L3114 2151L3112 2146L3108 2145L3105 2148L3102 2146L3098 2133L3090 2135L3091 2143L3085 2150L3080 2148L3084 2152L3079 2155L3080 2162L3076 2166L3072 2164L3067 2153L3071 2150L3067 2139L3062 2146L3054 2145L3050 2152L3042 2152L3041 2141L3036 2139L3030 2142L3026 2139L3027 2134L3016 2130L3000 2147L2996 2148L2986 2144L2989 2130L2974 2128L2970 2117L2973 2113L2971 2108L2965 2113L2944 2107L2939 2117L2931 2120L2922 2109L2914 2106L2909 2110L2901 2110L2878 2099L2872 2102L2856 2099L2854 2083L2847 2077L2849 2074L2842 2074L2836 2067L2834 2078L2821 2073L2815 2073L2812 2078L2801 2076L2778 2051L2770 2053L2770 1796L2450 1795L2450 1729Z", "pennsylvania": "M4845 1067L4881 1052L4888 1042L4893 1042L4894 1045L4926 1028L4926 1064L5395 1064L5402 1070L5405 1082L5421 1085L5425 1091L5422 1094L5427 1097L5428 1115L5425 1116L5435 1133L5439 1133L5444 1138L5461 1140L5466 1149L5451 1159L5446 1173L5435 1183L5437 1185L5424 1195L5419 1200L5428 1214L5419 1227L5415 1227L5411 1238L5414 1240L5412 1253L5422 1254L5426 1259L5427 1275L5437 1277L5439 1285L5463 1310L5453 1313L5448 1319L5419 1335L5419 1343L5389 1356L5380 1352L5362 1354L5349 1367L4845 1367L4845 1067Z", "south_dakota": "M2337 665L2339 539L3136 541L3134 555L3124 568L3106 579L3104 584L3123 610L3144 618L3148 625L3148 864L3132 864L3132 871L3140 878L3140 891L3134 892L3136 901L3145 902L3150 915L3147 922L3142 924L3143 936L3138 942L3138 951L3128 962L3129 970L3141 980L3145 990L3144 995L3148 999L3142 1000L3140 996L3131 997L3120 983L3123 977L3111 975L3110 970L3100 966L3095 968L3092 963L3075 961L3067 956L3066 952L3045 949L3042 951L3016 952L2999 949L2993 958L2981 963L2933 938L2930 931L2338 931L2337 665Z", "texas": "M2450 1795L2770 1796L2770 2053L2778 2051L2801 2076L2812 2078L2815 2073L2821 2073L2834 2078L2836 2067L2842 2074L2849 2074L2847 2077L2854 2083L2856 2099L2872 2102L2878 2099L2901 2110L2909 2110L2914 2106L2922 2109L2931 2120L2939 2117L2944 2107L2965 2113L2971 2108L2973 2113L2970 2117L2974 2128L2989 2130L2986 2144L3000 2147L3020 2129L3027 2134L3026 2139L3030 2142L3036 2139L3041 2141L3042 2152L3050 2152L3054 2145L3062 2146L3067 2139L3071 2150L3067 2153L3072 2164L3076 2166L3080 2162L3079 2155L3084 2152L3080 2148L3085 2150L3091 2143L3090 2135L3098 2133L3102 2146L3105 2148L3108 2145L3112 2146L3114 2151L3121 2150L3124 2140L3134 2142L3129 2149L3139 2152L3142 2158L3150 2157L3157 2169L3162 2169L3164 2159L3177 2160L3180 2150L3202 2146L3203 2143L3214 2150L3217 2146L3222 2148L3222 2142L3230 2143L3239 2137L3242 2137L3245 2144L3271 2145L3278 2133L3288 2136L3297 2146L3306 2146L3316 2162L3327 2161L3334 2170L3346 2171L3354 2179L3360 2175L3360 2181L3368 2184L3367 2188L3376 2188L3377 2184L3385 2187L3389 2182L3396 2188L3398 2185L3404 2188L3405 2395L3419 2408L3428 2424L3430 2434L3426 2447L3432 2457L3437 2458L3436 2465L3444 2474L3442 2486L3449 2491L3452 2504L3459 2502L3457 2514L3460 2524L3456 2526L3460 2536L3455 2543L3457 2550L3437 2588L3441 2601L3434 2616L3440 2622L3439 2632L3442 2641L3438 2649L3441 2651L3416 2687L3426 2703L3409 2702L3395 2707L3346 2731L3331 2744L3326 2743L3337 2730L3342 2730L3349 2722L3356 2723L3351 2717L3330 2723L3327 2720L3335 2701L3335 2692L3328 2689L3322 2692L3317 2703L3311 2706L3309 2700L3302 2705L3304 2713L3301 2719L3304 2725L3312 2727L3310 2733L3314 2735L3314 2752L3311 2756L3308 2754L3292 2770L3291 2767L3286 2768L3285 2778L3287 2781L3321 2752L3321 2747L3331 2749L3291 2781L3262 2811L3160 2870L3149 2884L3119 2904L3089 2938L3058 3002L3050 3039L3052 3086L3073 3181L3059 3120L3050 3118L3057 3115L3047 3073L3051 3012L3081 2938L3088 2933L3098 2914L3109 2907L3112 2901L3118 2901L3131 2889L3149 2880L3148 2876L3151 2872L3148 2870L3130 2884L3123 2884L3121 2873L3114 2871L3110 2887L3112 2892L3103 2903L3093 2910L3086 2906L3085 2901L3067 2916L3075 2918L3084 2912L3087 2920L3070 2948L3065 2949L3063 2942L3037 2941L3034 2946L3039 2949L3049 2948L3050 2960L3062 2966L3046 3016L3035 3022L3031 3020L3036 3018L3038 3011L3034 3011L3021 3023L3023 3027L3032 3028L3044 3024L3038 3085L3042 3111L3046 3128L3049 3128L3060 3156L3056 3161L3057 3172L3060 3180L3068 3182L3068 3186L3073 3184L3074 3198L3065 3198L3052 3202L3050 3213L3034 3207L3020 3189L3008 3188L3004 3184L2980 3183L2979 3186L2975 3183L2956 3182L2955 3176L2948 3176L2947 3171L2942 3171L2934 3162L2920 3158L2913 3161L2898 3144L2888 3144L2872 3137L2868 3139L2864 3134L2867 3129L2859 3121L2848 3080L2837 3068L2836 3062L2829 3056L2830 3026L2819 3017L2825 3004L2825 2994L2820 2993L2822 2984L2812 2974L2808 2976L2805 2971L2801 2972L2790 2956L2787 2957L2780 2944L2781 2939L2776 2934L2777 2928L2771 2927L2761 2907L2748 2901L2746 2895L2738 2888L2730 2863L2734 2859L2729 2858L2726 2853L2727 2848L2717 2838L2711 2816L2700 2800L2698 2780L2687 2770L2685 2760L2662 2744L2657 2732L2647 2730L2645 2725L2636 2724L2636 2710L2632 2717L2631 2708L2624 2705L2619 2692L2613 2689L2608 2692L2605 2687L2588 2692L2560 2685L2552 2689L2525 2676L2519 2678L2516 2691L2503 2689L2499 2693L2485 2694L2470 2724L2469 2740L2467 2745L2463 2746L2460 2758L2464 2761L2462 2765L2451 2769L2449 2776L2440 2785L2438 2795L2420 2795L2415 2790L2405 2787L2394 2775L2373 2768L2366 2759L2340 2750L2328 2742L2316 2725L2308 2724L2290 2708L2271 2670L2269 2657L2270 2636L2262 2620L2252 2608L2245 2580L2241 2579L2236 2569L2231 2569L2214 2553L2195 2546L2195 2542L2178 2528L2173 2516L2155 2505L2145 2489L2137 2485L2136 2478L2109 2465L2090 2430L2083 2425L2078 2428L2063 2412L2065 2394L2443 2394L2446 1795L2450 1795Z", "wyoming": "M2337 665L2338 1197L1593 1197L1593 840L1592 665L2337 665Z", "connecticut": "M5594 1057L5666 1059L5666 1064L5671 1064L5672 1059L5774 1061L5775 1118L5774 1142L5770 1142L5771 1151L5768 1154L5758 1152L5739 1157L5732 1154L5730 1158L5694 1164L5682 1161L5679 1164L5672 1162L5657 1165L5656 1158L5632 1177L5627 1175L5618 1181L5607 1183L5609 1186L5605 1189L5594 1191L5576 1199L5569 1184L5595 1169L5588 1158L5594 1057Z", "missouri": "M3221 1252L3405 1254L3651 1248L3656 1256L3663 1258L3662 1262L3668 1269L3672 1269L3673 1275L3684 1280L3674 1306L3676 1325L3684 1340L3681 1347L3690 1359L3689 1366L3709 1382L3713 1390L3718 1391L3728 1406L3751 1422L3758 1432L3762 1451L3759 1455L3764 1472L3773 1480L3781 1476L3785 1468L3792 1468L3823 1483L3822 1490L3813 1500L3816 1515L3796 1551L3797 1568L3826 1594L3835 1601L3841 1600L3842 1603L3838 1606L3840 1612L3848 1612L3852 1608L3872 1624L3871 1629L3887 1637L3891 1651L3886 1652L3887 1658L3897 1676L3895 1683L3890 1685L3886 1691L3893 1697L3892 1702L3902 1718L3901 1724L3910 1730L3914 1727L3909 1722L3914 1720L3924 1733L3931 1734L3927 1749L3923 1750L3923 1755L3929 1759L3928 1762L3922 1762L3920 1767L3925 1773L3922 1777L3919 1785L3914 1787L3907 1778L3902 1779L3894 1800L3889 1799L3892 1792L3890 1786L3882 1786L3881 1789L3886 1798L3884 1806L3888 1812L3886 1817L3876 1817L3876 1821L3885 1828L3868 1828L3866 1831L3877 1839L3878 1846L3869 1851L3868 1859L3864 1862L3795 1863L3801 1850L3826 1826L3828 1811L3820 1806L3819 1796L3343 1796L3346 1442L3328 1439L3320 1434L3321 1431L3314 1425L3312 1416L3316 1413L3308 1411L3291 1392L3291 1387L3298 1384L3297 1379L3305 1372L3307 1364L3316 1366L3316 1360L3312 1362L3311 1358L3314 1358L3316 1353L3309 1348L3310 1345L3301 1343L3298 1348L3288 1346L3286 1342L3281 1343L3281 1338L3258 1324L3261 1314L3252 1306L3251 1297L3237 1288L3233 1271L3228 1267L3228 1263L3233 1258L3229 1256L3228 1260L3221 1259L3221 1252Z", "west_virginia": "M4624 1540L4631 1542L4653 1536L4656 1520L4669 1514L4664 1490L4672 1484L4672 1476L4684 1459L4694 1464L4698 1473L4695 1478L4699 1480L4707 1470L4711 1473L4712 1460L4707 1452L4715 1450L4714 1439L4720 1433L4722 1427L4733 1427L4734 1418L4744 1409L4751 1411L4753 1417L4772 1411L4801 1382L4807 1380L4808 1371L4812 1368L4808 1362L4816 1348L4815 1341L4820 1342L4822 1320L4837 1287L4837 1268L4829 1254L4833 1248L4845 1245L4845 1367L4956 1367L4955 1436L4972 1423L4976 1423L4980 1416L4992 1409L4997 1400L5012 1404L5030 1380L5036 1381L5030 1383L5044 1392L5064 1394L5069 1390L5066 1384L5071 1384L5067 1381L5073 1382L5076 1378L5083 1380L5094 1370L5103 1373L5113 1383L5120 1381L5131 1383L5131 1387L5125 1389L5140 1406L5140 1419L5143 1420L5140 1425L5132 1445L5077 1401L5075 1415L5078 1417L5067 1437L5071 1441L5053 1459L5055 1461L5050 1468L5047 1465L5041 1473L5037 1476L5037 1472L5029 1480L5021 1494L5008 1483L4985 1530L4974 1541L4956 1535L4950 1523L4938 1517L4933 1531L4934 1539L4921 1555L4923 1560L4909 1572L4906 1578L4908 1582L4903 1592L4873 1628L4874 1632L4869 1637L4877 1646L4866 1654L4865 1658L4870 1658L4869 1661L4850 1673L4846 1665L4842 1666L4819 1680L4809 1672L4806 1678L4810 1683L4803 1688L4782 1692L4770 1698L4756 1684L4749 1693L4741 1695L4735 1701L4722 1702L4710 1691L4703 1691L4695 1681L4694 1671L4689 1668L4688 1665L4695 1661L4675 1655L4668 1646L4656 1640L4651 1624L4642 1615L4643 1612L4634 1605L4638 1599L4632 1596L4629 1587L4619 1578L4622 1565L4626 1561L4624 1540Z", "illinois": "M3684 1280L3689 1278L3690 1262L3685 1258L3690 1250L3716 1240L3719 1220L3732 1208L3734 1184L3729 1176L3724 1175L3717 1165L3724 1142L3766 1135L3776 1127L3786 1127L3799 1118L3802 1098L3816 1089L3820 1063L3818 1048L3795 1035L3789 1027L3790 1020L3767 1002L3767 996L4070 999L4066 1024L4070 1036L4082 1054L4090 1084L4099 1103L4098 1417L4091 1421L4090 1428L4094 1434L4086 1441L4088 1449L4094 1455L4093 1464L4100 1469L4096 1482L4102 1497L4097 1506L4089 1511L4085 1528L4076 1533L4077 1537L4064 1559L4061 1556L4058 1560L4056 1556L4053 1564L4049 1563L4056 1576L4048 1585L4052 1583L4052 1587L4044 1589L4047 1599L4041 1607L4047 1610L4038 1609L4044 1620L4039 1619L4041 1622L4045 1623L4031 1641L4034 1653L4042 1660L4039 1666L4016 1670L4010 1676L4004 1672L3997 1678L3993 1691L4003 1709L3999 1719L3988 1719L3962 1704L3943 1698L3934 1706L3924 1719L3922 1725L3928 1731L3924 1733L3914 1720L3909 1722L3914 1727L3910 1730L3901 1724L3902 1718L3892 1702L3893 1697L3886 1691L3890 1685L3895 1683L3897 1676L3887 1658L3886 1652L3891 1651L3887 1637L3871 1629L3872 1624L3852 1608L3848 1612L3840 1612L3838 1606L3842 1603L3841 1600L3835 1601L3826 1594L3797 1568L3796 1551L3816 1515L3813 1500L3822 1490L3823 1483L3792 1468L3785 1468L3781 1476L3773 1480L3764 1472L3759 1455L3762 1451L3758 1432L3751 1422L3728 1406L3718 1391L3713 1390L3709 1382L3689 1366L3690 1359L3681 1347L3684 1340L3676 1325L3674 1306L3684 1280Z", "new_mexico": "M1806 1729L2450 1729L2450 1795L2446 1795L2443 2394L2373 2394L2065 2394L2063 2412L2074 2423L1895 2423L1895 2483L1806 2483L1806 1729Z", "arkansas": "M3343 1796L3819 1796L3820 1806L3828 1811L3826 1826L3801 1850L3795 1863L3864 1862L3872 1872L3872 1877L3863 1874L3859 1880L3867 1884L3858 1888L3855 1894L3849 1896L3845 1894L3839 1899L3842 1906L3850 1906L3851 1910L3841 1915L3844 1927L3835 1920L3832 1921L3830 1928L3833 1933L3829 1941L3826 1931L3817 1939L3816 1944L3821 1945L3821 1940L3827 1944L3824 1954L3818 1956L3819 1961L3827 1965L3823 1970L3828 1977L3816 1980L3813 1992L3803 1990L3802 1996L3809 2002L3809 2007L3790 2017L3788 2010L3784 2010L3787 2030L3782 2032L3780 2021L3775 2030L3777 2035L3785 2035L3786 2038L3780 2044L3776 2042L3776 2036L3772 2039L3777 2056L3772 2062L3775 2072L3765 2078L3765 2085L3761 2085L3762 2079L3755 2079L3753 2082L3756 2087L3746 2092L3745 2100L3739 2096L3735 2099L3749 2106L3744 2110L3738 2106L3734 2110L3742 2118L3739 2125L3730 2126L3733 2131L3728 2132L3727 2128L3719 2134L3728 2137L3721 2146L3724 2153L3730 2156L3726 2159L3714 2158L3713 2164L3717 2167L3722 2166L3725 2171L3720 2174L3712 2167L3704 2172L3714 2178L3715 2182L3704 2186L3709 2194L3704 2203L3710 2201L3710 2195L3716 2198L3714 2204L3706 2208L3710 2210L3717 2209L3720 2200L3722 2204L3714 2214L3718 2229L3719 2225L3723 2223L3724 2226L3719 2232L3719 2243L3709 2242L3707 2247L3716 2254L3711 2260L3405 2258L3404 2188L3398 2185L3396 2188L3389 2182L3385 2187L3377 2184L3371 2189L3367 2188L3368 2184L3360 2181L3360 2175L3357 2176L3363 1943L3343 1796Z", "california": "M788 2197L813 2206L819 2216L818 2221L802 2218L800 2205L793 2203L788 2197ZM788 2257L791 2256L815 2285L807 2287L800 2282L788 2257ZM684 2224L689 2223L700 2231L687 2230L684 2224ZM648 2118L665 2120L672 2125L680 2126L682 2121L690 2124L686 2129L669 2133L653 2131L648 2118ZM613 2128L635 2123L635 2129L642 2130L642 2136L626 2142L613 2128ZM592 2123L600 2118L602 2122L607 2125L592 2123ZM190 1064L639 1065L639 1463L919 1712L1211 1995L1210 2012L1219 2026L1228 2033L1238 2060L1237 2067L1242 2068L1264 2088L1264 2093L1254 2103L1232 2116L1232 2124L1221 2138L1224 2140L1222 2153L1226 2168L1222 2170L1222 2188L1208 2206L1201 2207L1204 2213L1201 2220L1206 2225L1203 2249L1208 2257L1223 2257L1229 2273L1228 2282L1222 2289L1222 2293L1204 2295L1202 2298L946 2323L941 2305L938 2302L932 2305L929 2285L932 2278L924 2245L905 2217L892 2204L882 2200L875 2189L834 2159L833 2165L825 2167L808 2162L807 2158L811 2149L801 2129L794 2123L773 2124L767 2128L732 2115L723 2109L716 2092L686 2073L653 2074L638 2067L624 2065L589 2068L583 2057L570 2051L575 2034L571 2028L574 2014L568 2008L572 1979L565 1972L558 1974L544 1962L548 1947L542 1935L532 1934L515 1910L506 1908L499 1900L497 1891L483 1877L479 1862L471 1859L456 1836L439 1824L432 1798L433 1788L429 1786L433 1777L440 1782L446 1771L449 1755L441 1738L432 1732L429 1735L415 1735L390 1713L383 1703L384 1681L378 1665L371 1660L374 1640L371 1625L383 1621L388 1634L384 1635L388 1650L398 1653L417 1669L421 1668L414 1662L408 1639L400 1633L399 1628L391 1625L394 1616L392 1608L386 1609L380 1601L384 1602L387 1594L394 1595L398 1590L394 1582L384 1577L374 1581L373 1592L378 1598L372 1605L380 1612L373 1610L375 1618L370 1620L356 1609L351 1610L332 1593L318 1596L325 1576L320 1565L323 1563L317 1555L313 1556L306 1536L284 1521L241 1469L246 1455L232 1415L238 1389L229 1352L204 1326L201 1316L193 1313L174 1295L174 1280L169 1272L194 1218L201 1193L196 1189L196 1178L202 1166L206 1139L196 1099L186 1093L190 1084L190 1064Z", "delaware": "M5349 1367L5362 1354L5380 1352L5389 1356L5382 1368L5368 1380L5373 1388L5370 1402L5386 1421L5392 1436L5390 1454L5399 1464L5400 1473L5413 1489L5419 1492L5423 1489L5424 1493L5428 1536L5359 1535L5349 1367Z", "district_of_columbia": "M5208 1472L5216 1464L5230 1477L5216 1491L5216 1480L5208 1472Z", "iowa": "M3148 864L3706 864L3704 870L3708 876L3707 885L3717 889L3722 898L3710 914L3713 944L3718 946L3723 966L3735 973L3760 980L3767 992L3767 1002L3790 1020L3789 1027L3795 1035L3818 1048L3820 1063L3816 1089L3802 1098L3799 1118L3786 1127L3776 1127L3766 1135L3724 1142L3717 1165L3724 1175L3729 1176L3734 1184L3732 1208L3719 1220L3716 1240L3690 1250L3685 1258L3690 1262L3689 1278L3677 1279L3673 1275L3672 1269L3668 1269L3662 1262L3663 1258L3656 1256L3651 1248L3479 1253L3221 1252L3223 1249L3219 1243L3208 1234L3214 1226L3212 1216L3216 1211L3208 1189L3208 1176L3213 1174L3204 1171L3204 1160L3208 1155L3201 1152L3204 1148L3203 1135L3196 1134L3196 1125L3193 1125L3192 1129L3186 1126L3187 1120L3183 1115L3186 1111L3183 1106L3187 1104L3185 1098L3189 1090L3179 1076L3182 1068L3176 1067L3176 1064L3167 1058L3167 1048L3159 1042L3158 1036L3161 1034L3152 1018L3154 1000L3144 995L3145 990L3141 980L3129 970L3128 962L3138 951L3138 942L3143 936L3142 924L3147 922L3150 915L3145 902L3136 901L3134 892L3140 891L3140 878L3132 871L3132 864L3148 864Z", "kentucky": "M3928 1731L3922 1725L3924 1719L3934 1706L3943 1698L3962 1704L3988 1719L3999 1719L4003 1709L3993 1691L3997 1678L4004 1672L4010 1676L4016 1670L4039 1666L4042 1660L4034 1653L4031 1641L4045 1623L4054 1626L4058 1621L4055 1611L4058 1606L4066 1612L4082 1609L4083 1619L4087 1619L4092 1614L4088 1607L4091 1600L4101 1608L4107 1604L4114 1604L4138 1618L4141 1625L4145 1624L4154 1607L4177 1597L4181 1608L4185 1610L4193 1608L4191 1614L4194 1617L4198 1614L4198 1606L4207 1605L4206 1590L4213 1589L4215 1584L4212 1583L4226 1578L4227 1576L4222 1574L4221 1570L4224 1570L4232 1578L4233 1588L4243 1595L4251 1595L4256 1601L4258 1597L4270 1592L4271 1575L4280 1559L4289 1560L4296 1556L4303 1538L4315 1534L4324 1524L4320 1502L4324 1498L4340 1498L4344 1503L4351 1504L4370 1492L4388 1491L4386 1486L4391 1480L4383 1477L4382 1472L4386 1468L4380 1454L4394 1444L4410 1453L4416 1450L4427 1448L4429 1456L4440 1459L4452 1489L4467 1494L4480 1491L4491 1497L4499 1509L4510 1512L4515 1505L4525 1502L4542 1508L4548 1516L4564 1514L4578 1499L4592 1495L4597 1517L4602 1521L4610 1522L4623 1535L4626 1561L4622 1565L4619 1578L4629 1587L4632 1596L4638 1599L4634 1605L4643 1612L4642 1615L4651 1624L4656 1640L4668 1646L4675 1655L4691 1658L4650 1694L4636 1698L4610 1714L4610 1724L4595 1732L4594 1744L4573 1748L4566 1763L4525 1773L4507 1784L4207 1775L4201 1778L4198 1775L4064 1778L4064 1774L4041 1772L4045 1789L4042 1796L3897 1796L3902 1779L3907 1778L3914 1787L3919 1785L3925 1773L3920 1767L3922 1762L3928 1762L3929 1759L3923 1755L3929 1744L3931 1734L3928 1731Z", "maryland": "M5316 1579L5317 1570L5322 1569L5326 1586L5320 1583L5322 1580L5316 1579ZM4956 1367L5349 1367L5359 1535L5428 1536L5408 1592L5367 1597L5364 1603L5350 1600L5338 1607L5340 1591L5347 1588L5340 1588L5345 1578L5337 1577L5333 1581L5331 1578L5333 1571L5343 1568L5336 1561L5341 1548L5336 1551L5333 1563L5330 1563L5326 1554L5330 1553L5330 1547L5326 1546L5320 1566L5319 1562L5309 1564L5299 1553L5300 1548L5291 1531L5298 1529L5300 1524L5297 1525L5294 1520L5297 1515L5308 1512L5309 1516L5324 1521L5318 1513L5305 1507L5299 1498L5297 1501L5293 1499L5292 1506L5290 1505L5291 1493L5298 1483L5303 1488L5306 1487L5305 1472L5302 1471L5296 1476L5291 1476L5291 1481L5287 1483L5288 1471L5294 1460L5297 1465L5305 1467L5309 1463L5307 1457L5311 1451L5305 1452L5305 1461L5301 1459L5302 1452L5297 1444L5307 1421L5315 1414L5326 1414L5322 1411L5329 1403L5325 1403L5330 1389L5316 1392L5314 1397L5320 1403L5303 1416L5300 1413L5303 1406L5300 1403L5297 1423L5294 1412L5289 1411L5291 1422L5288 1422L5286 1426L5290 1429L5279 1437L5265 1428L5271 1439L5281 1446L5280 1456L5285 1462L5276 1467L5279 1471L5271 1481L5274 1487L5267 1494L5271 1500L5271 1524L5286 1548L5282 1553L5277 1552L5280 1557L5287 1556L5284 1562L5292 1578L5292 1591L5282 1582L5280 1575L5277 1576L5276 1582L5264 1568L5242 1564L5238 1550L5236 1548L5234 1552L5237 1562L5229 1557L5218 1537L5198 1548L5193 1545L5191 1532L5195 1523L5208 1513L5206 1506L5216 1500L5216 1491L5230 1477L5216 1464L5208 1472L5204 1468L5193 1465L5194 1459L5171 1453L5165 1447L5165 1440L5171 1433L5162 1428L5160 1423L5140 1419L5140 1406L5125 1389L5131 1387L5131 1383L5120 1381L5113 1383L5103 1373L5094 1370L5083 1380L5076 1378L5073 1382L5067 1381L5071 1384L5066 1384L5069 1390L5064 1394L5044 1392L5030 1383L5036 1381L5030 1380L5012 1404L4997 1400L4992 1409L4980 1416L4976 1423L4972 1423L4955 1436L4956 1367Z", "michigan": "M4405 550L4408 548L4411 555L4436 562L4430 569L4421 567L4405 550ZM4301 586L4307 564L4314 565L4316 584L4308 589L4301 586ZM4254 646L4257 644L4264 647L4262 658L4255 652L4254 646ZM4174 1096L4195 1078L4210 1048L4222 1032L4234 1005L4239 968L4237 929L4204 849L4204 843L4215 826L4212 802L4206 792L4216 782L4233 752L4238 723L4234 706L4252 699L4254 680L4257 676L4262 678L4268 669L4275 673L4282 672L4302 640L4310 637L4311 642L4304 645L4303 650L4307 659L4299 668L4304 666L4304 675L4298 685L4301 696L4304 696L4312 668L4317 666L4314 684L4306 697L4312 698L4326 674L4328 629L4346 618L4377 613L4376 609L4364 607L4358 602L4355 589L4374 570L4366 564L4389 566L4392 560L4425 578L4439 577L4452 581L4461 590L4462 597L4468 600L4481 599L4517 618L4528 618L4540 629L4537 632L4547 647L4552 662L4538 656L4533 660L4534 673L4547 681L4552 703L4547 719L4546 753L4536 762L4526 762L4524 765L4519 790L4509 793L4509 799L4492 800L4488 804L4479 831L4484 842L4490 845L4494 841L4496 846L4508 852L4523 837L4531 834L4528 828L4535 813L4536 819L4544 816L4546 812L4538 809L4547 809L4553 802L4575 797L4578 792L4590 789L4609 799L4619 818L4624 852L4630 873L4632 901L4643 935L4639 941L4638 963L4632 983L4625 991L4619 990L4614 995L4615 988L4611 984L4621 976L4616 973L4603 977L4600 981L4604 989L4598 988L4594 994L4592 1013L4585 1019L4574 1022L4567 1033L4567 1052L4561 1055L4561 1063L4552 1072L4547 1072L4544 1080L4534 1090L4536 1098L4533 1100L4388 1104L4388 1096L4174 1096ZM3915 282L3923 275L3962 259L3990 243L4003 241L4003 244L3987 255L3987 258L3977 264L3942 278L3951 280L3928 289L3922 288L3915 282ZM3791 457L3832 442L3857 423L3895 420L3915 412L3927 401L3946 398L3952 388L3961 380L3987 366L4007 348L4029 338L4070 336L4078 340L4079 346L4053 348L4055 353L4024 372L4022 381L4019 380L4011 389L4009 396L4001 403L3996 421L3999 427L3995 431L4000 431L4008 416L4011 418L4033 404L4018 421L4029 412L4039 410L4068 414L4077 422L4083 421L4091 428L4092 435L4101 446L4114 453L4113 462L4117 465L4143 466L4153 461L4167 473L4174 474L4177 468L4187 474L4186 460L4192 457L4195 461L4192 467L4199 470L4247 442L4251 445L4274 440L4317 442L4340 432L4373 430L4365 439L4365 460L4362 462L4365 468L4375 467L4389 473L4407 468L4411 477L4423 474L4427 467L4434 464L4443 466L4450 461L4461 462L4463 465L4459 476L4462 501L4451 501L4448 509L4461 508L4472 514L4466 519L4476 528L4488 533L4491 529L4496 533L4499 530L4493 518L4519 520L4524 530L4530 534L4526 541L4521 544L4511 539L4499 541L4487 536L4462 535L4434 541L4414 528L4404 525L4401 530L4402 536L4396 539L4400 552L4395 554L4366 530L4334 520L4313 519L4294 537L4273 536L4270 543L4254 537L4232 540L4227 544L4222 560L4217 559L4214 564L4206 566L4204 571L4199 571L4199 576L4194 577L4196 584L4185 576L4189 573L4194 561L4199 562L4205 552L4204 547L4199 546L4192 554L4178 551L4179 557L4172 569L4159 576L4153 554L4149 556L4148 571L4136 577L4120 608L4090 648L4092 652L4084 651L4076 639L4085 616L4081 613L4075 618L4064 620L4062 614L4070 599L4072 586L4067 577L4072 575L4061 565L4052 564L4049 559L4040 561L4034 556L4040 550L4038 542L4022 537L4017 538L4008 533L4003 535L3994 530L3977 534L3976 530L3965 530L3932 514L3822 487L3812 465L3793 461L3791 457Z", "mississippi": "M3966 2627L3972 2626L3986 2631L3966 2627ZM3925 2628L3936 2627L3934 2632L3925 2628ZM3711 2260L3716 2254L3707 2247L3709 2242L3719 2243L3719 2232L3724 2226L3723 2223L3719 2225L3718 2229L3714 2222L3714 2214L3722 2204L3720 2200L3717 2209L3710 2210L3706 2208L3714 2204L3716 2198L3710 2195L3710 2201L3704 2203L3709 2194L3704 2186L3715 2182L3714 2178L3704 2172L3705 2169L3712 2167L3720 2174L3725 2171L3722 2166L3717 2167L3713 2164L3714 2158L3726 2159L3730 2156L3724 2153L3721 2146L3728 2137L3719 2134L3720 2130L3727 2128L3728 2132L3733 2131L3730 2126L3739 2125L3742 2118L3734 2110L3738 2106L3744 2110L3749 2106L3735 2099L3739 2096L3745 2100L3746 2092L3756 2087L3753 2082L3755 2079L3762 2079L3761 2085L3765 2085L3765 2078L3775 2072L3772 2062L3777 2056L3772 2039L3776 2036L3776 2042L3780 2044L3786 2038L3785 2035L3777 2035L3777 2024L3780 2021L3782 2032L3787 2030L3784 2010L3788 2010L3790 2017L3809 2007L3809 2002L3802 1996L4027 1996L4032 2005L4038 2009L3998 2408L4006 2611L3998 2617L3991 2614L3986 2616L3984 2613L3970 2614L3962 2609L3961 2612L3953 2608L3944 2608L3922 2616L3910 2620L3912 2614L3908 2610L3903 2613L3907 2620L3897 2626L3894 2635L3881 2636L3876 2630L3869 2600L3855 2584L3854 2574L3851 2572L3864 2531L3862 2527L3661 2527L3666 2525L3668 2518L3662 2512L3666 2504L3660 2492L3674 2490L3675 2485L3667 2474L3670 2469L3675 2478L3678 2478L3673 2457L3685 2451L3684 2448L3677 2449L3673 2446L3675 2441L3686 2444L3686 2432L3701 2426L3690 2424L3693 2414L3697 2412L3701 2419L3700 2414L3709 2405L3709 2399L3719 2395L3719 2389L3711 2386L3713 2383L3718 2388L3728 2373L3722 2370L3723 2377L3711 2376L3712 2367L3725 2362L3730 2365L3731 2354L3736 2355L3742 2346L3740 2344L3738 2349L3729 2347L3732 2338L3729 2334L3725 2336L3717 2331L3718 2324L3730 2329L3720 2320L3728 2312L3726 2308L3724 2313L3714 2315L3712 2309L3723 2298L3711 2294L3711 2286L3722 2271L3719 2263L3714 2264L3715 2271L3709 2274L3706 2272L3711 2260Z", "montana": "M1060 133L2339 133L2339 665L1592 665L1593 735L1585 732L1573 720L1574 715L1557 698L1554 704L1546 704L1548 708L1542 719L1548 726L1523 724L1510 730L1505 723L1480 729L1461 722L1454 726L1450 738L1441 734L1438 736L1415 731L1408 734L1402 742L1405 748L1401 750L1384 738L1384 728L1376 719L1380 713L1371 695L1358 688L1349 694L1347 689L1336 683L1332 672L1338 670L1337 657L1330 653L1330 650L1324 648L1321 640L1312 631L1302 604L1304 596L1296 596L1299 585L1288 582L1286 574L1280 571L1264 591L1252 592L1251 599L1242 604L1229 590L1220 590L1221 584L1218 580L1225 576L1226 570L1218 562L1225 552L1235 552L1237 547L1232 541L1235 535L1227 532L1226 526L1229 519L1223 515L1224 510L1231 509L1228 496L1233 494L1234 480L1238 473L1236 465L1240 465L1243 444L1228 448L1213 447L1210 442L1212 438L1204 434L1197 439L1194 437L1197 431L1184 424L1178 418L1179 410L1172 403L1167 403L1157 387L1140 374L1137 365L1116 359L1113 352L1091 343L1105 335L1099 334L1097 328L1093 327L1098 320L1094 314L1095 306L1087 298L1084 299L1081 289L1075 286L1060 269L1060 133Z", "new_hampshire": "M5806 663L5817 638L5812 634L5829 625L5835 632L5845 632L5850 624L5864 858L5861 880L5880 901L5878 914L5891 923L5879 948L5870 946L5856 950L5853 957L5845 955L5840 959L5840 966L5832 966L5828 971L5704 967L5700 961L5698 962L5694 951L5697 936L5702 935L5705 930L5703 924L5706 920L5706 897L5711 889L5708 882L5712 855L5718 851L5724 833L5731 828L5733 816L5740 808L5740 799L5749 786L5746 762L5749 755L5773 751L5775 745L5784 743L5798 731L5796 724L5800 723L5801 715L5793 699L5807 677L5802 667L5806 663Z", "new_york": "M5532 1242L5534 1250L5531 1254L5512 1263L5518 1246L5532 1242ZM4926 1028L4959 1009L4970 999L4991 990L5002 972L5023 960L5014 937L5006 933L5006 922L4999 921L5003 912L5000 896L5046 883L5074 881L5135 886L5163 900L5178 894L5225 895L5252 885L5260 876L5282 862L5302 861L5306 845L5302 824L5295 820L5299 814L5304 812L5305 816L5313 812L5305 801L5296 803L5298 800L5292 794L5287 794L5293 772L5300 771L5309 766L5309 761L5336 749L5352 729L5400 687L5436 667L5452 663L5462 666L5610 664L5610 676L5606 687L5611 693L5605 713L5615 739L5611 748L5613 762L5604 773L5600 792L5603 795L5602 807L5606 815L5604 822L5609 828L5600 852L5604 856L5607 848L5614 848L5615 854L5620 857L5615 957L5618 965L5592 1052L5594 1057L5588 1158L5595 1169L5569 1184L5576 1199L5565 1209L5565 1218L5560 1217L5563 1224L5570 1214L5574 1216L5578 1211L5593 1208L5594 1204L5603 1208L5604 1203L5622 1210L5630 1206L5631 1202L5685 1199L5723 1176L5728 1176L5717 1183L5725 1191L5736 1190L5742 1198L5756 1191L5757 1188L5768 1188L5711 1215L5624 1246L5611 1246L5587 1253L5564 1252L5546 1258L5547 1253L5538 1254L5535 1238L5550 1197L5466 1149L5461 1140L5444 1138L5439 1133L5435 1133L5425 1116L5428 1115L5427 1097L5422 1094L5425 1091L5421 1085L5405 1082L5402 1070L5395 1064L4926 1064L4926 1028Z", "ohio": "M4598 1111L4600 1101L4604 1105L4603 1109L4598 1113L4598 1111ZM4388 1104L4533 1100L4533 1102L4541 1106L4546 1104L4570 1115L4588 1129L4595 1126L4598 1119L4604 1125L4611 1125L4611 1129L4622 1140L4636 1146L4686 1128L4700 1133L4715 1132L4764 1096L4845 1067L4845 1245L4833 1248L4829 1254L4837 1268L4837 1287L4822 1320L4820 1342L4815 1341L4816 1348L4808 1362L4812 1368L4808 1371L4807 1380L4801 1382L4772 1411L4753 1417L4751 1411L4744 1409L4734 1418L4733 1427L4722 1427L4720 1433L4717 1434L4714 1439L4715 1450L4707 1452L4712 1460L4711 1473L4707 1470L4699 1480L4695 1478L4698 1473L4694 1464L4684 1459L4672 1476L4672 1484L4664 1490L4669 1514L4656 1520L4653 1536L4631 1542L4624 1540L4623 1535L4610 1522L4602 1521L4597 1517L4592 1495L4578 1499L4564 1514L4548 1516L4542 1508L4525 1502L4515 1505L4510 1512L4499 1509L4491 1497L4480 1491L4467 1494L4452 1489L4440 1459L4429 1456L4427 1448L4410 1453L4394 1444L4387 1449L4388 1104Z", "oregon": "M261 498L269 496L274 502L274 508L280 513L307 507L330 521L340 537L345 578L358 584L398 593L415 587L446 571L454 573L476 568L490 573L497 571L510 576L513 584L526 578L544 580L572 566L580 567L588 573L596 572L617 568L621 564L643 555L674 551L685 542L694 544L732 541L747 532L968 533L984 556L991 556L995 561L1002 562L1008 567L1008 573L1016 585L993 623L988 646L975 662L976 674L973 682L966 693L954 699L942 728L935 734L936 741L933 745L939 753L936 760L941 764L948 761L954 768L962 766L962 772L969 774L970 778L961 787L965 800L956 824L956 1064L190 1064L177 1052L169 1031L167 1006L172 989L169 976L162 966L158 966L154 952L164 931L172 895L170 890L180 879L186 864L197 810L207 710L205 695L217 628L216 600L219 577L219 568L215 564L217 554L214 539L220 535L220 522L213 500L229 511L227 507L239 504L243 507L261 498Z", "tennessee": "M3864 1862L3868 1859L3869 1851L3878 1846L3877 1839L3866 1831L3868 1828L3885 1828L3876 1821L3876 1817L3886 1817L3888 1812L3884 1806L3886 1798L3884 1796L3890 1796L3889 1799L3894 1800L3897 1796L3910 1794L4042 1796L4045 1789L4041 1772L4064 1774L4064 1778L4198 1775L4201 1778L4207 1775L4507 1784L4509 1782L4725 1781L4718 1791L4720 1800L4715 1809L4719 1817L4709 1814L4697 1822L4684 1845L4673 1848L4672 1842L4665 1841L4661 1845L4650 1846L4639 1861L4628 1868L4622 1866L4624 1858L4620 1853L4608 1861L4600 1872L4594 1868L4590 1872L4592 1879L4582 1892L4572 1890L4564 1893L4529 1919L4499 1920L4487 1926L4472 1940L4472 1955L4464 1962L4453 1963L4452 1960L4444 1965L4440 1996L3802 1996L3803 1990L3813 1992L3820 1977L3824 1980L3828 1977L3823 1970L3827 1965L3819 1961L3818 1956L3824 1954L3827 1944L3821 1940L3821 1945L3816 1944L3817 1939L3826 1931L3829 1941L3833 1933L3830 1928L3832 1921L3835 1920L3844 1927L3841 1915L3851 1910L3850 1906L3842 1906L3839 1899L3845 1894L3849 1896L3855 1894L3858 1888L3867 1884L3859 1880L3863 1874L3872 1877L3872 1872L3864 1862Z", "utah": "M1274 1065L1593 1064L1593 1197L1806 1197L1807 1658L1806 1729L1273 1729L1274 1065Z", "virginia": "M5362 1603L5367 1597L5408 1592L5396 1613L5393 1616L5385 1614L5378 1623L5369 1645L5369 1653L5360 1667L5363 1669L5348 1690L5344 1706L5338 1713L5331 1713L5333 1717L5330 1718L5324 1687L5334 1649L5348 1628L5346 1624L5354 1622L5360 1614L5360 1611L5352 1609L5362 1603ZM4691 1658L4695 1661L4688 1665L4689 1668L4694 1671L4695 1681L4703 1691L4710 1691L4722 1702L4735 1701L4741 1695L4749 1693L4756 1684L4770 1698L4782 1692L4803 1688L4810 1683L4806 1678L4809 1672L4819 1680L4842 1666L4846 1665L4850 1673L4869 1661L4870 1658L4865 1658L4866 1654L4877 1646L4869 1637L4874 1632L4873 1628L4903 1592L4908 1582L4906 1578L4909 1572L4923 1560L4921 1555L4934 1539L4933 1531L4938 1517L4950 1523L4956 1535L4974 1541L4985 1530L5008 1483L5021 1494L5029 1480L5037 1472L5037 1476L5041 1473L5047 1465L5050 1468L5055 1461L5053 1459L5071 1441L5067 1437L5078 1417L5075 1415L5077 1401L5132 1445L5143 1420L5160 1423L5162 1428L5171 1433L5165 1440L5165 1447L5171 1453L5194 1459L5193 1465L5204 1468L5216 1480L5216 1500L5206 1506L5206 1512L5199 1514L5194 1512L5185 1536L5186 1545L5192 1552L5211 1547L5216 1543L5219 1546L5217 1555L5224 1562L5224 1568L5250 1578L5261 1576L5272 1592L5290 1603L5302 1611L5300 1618L5294 1621L5295 1636L5290 1642L5296 1644L5288 1648L5276 1640L5272 1644L5264 1627L5250 1618L5236 1600L5231 1596L5230 1600L5248 1623L5261 1630L5269 1647L5280 1648L5283 1652L5295 1654L5289 1658L5289 1662L5296 1660L5298 1665L5300 1678L5297 1688L5282 1676L5279 1680L5289 1693L5274 1696L5276 1700L5285 1699L5284 1708L5289 1706L5296 1712L5298 1718L5294 1729L5281 1733L5277 1725L5261 1713L5262 1708L5257 1700L5246 1704L5234 1694L5226 1698L5230 1702L5241 1703L5247 1709L5250 1709L5253 1702L5257 1724L5265 1726L5275 1735L5275 1743L5289 1739L5293 1744L5292 1734L5298 1734L5316 1741L5327 1739L5341 1789L4888 1790L4754 1786L4722 1784L4725 1781L4696 1780L4694 1783L4509 1782L4525 1773L4566 1763L4573 1748L4594 1744L4595 1732L4610 1724L4610 1714L4636 1698L4650 1694L4691 1658Z", "washington": "M370 351L375 331L380 337L379 344L386 347L378 353L371 355L370 351ZM349 169L351 167L361 180L349 169ZM344 236L355 212L361 211L364 219L372 226L360 227L355 234L349 235L351 238L359 236L364 241L365 252L369 264L372 261L370 253L386 261L389 272L386 279L380 277L376 268L368 270L368 267L361 262L360 245L354 245L344 236ZM322 160L339 167L336 168L322 160ZM298 187L300 183L308 183L315 190L321 191L314 183L328 171L333 171L347 178L340 184L344 191L343 198L339 201L341 209L333 210L327 205L315 205L304 198L298 187ZM294 174L301 176L308 182L294 174ZM956 133L955 478L952 483L960 492L963 506L967 510L961 521L968 533L747 532L732 541L694 544L685 542L674 551L643 555L621 564L617 568L588 573L580 567L572 566L544 580L526 578L518 584L513 584L510 576L476 568L440 573L436 578L398 593L358 584L345 578L340 537L330 521L307 507L280 513L274 508L274 502L269 496L248 496L247 493L242 492L226 500L211 490L204 496L206 448L211 454L211 482L218 482L214 466L219 470L224 461L217 447L231 436L224 432L215 436L217 438L211 438L203 433L198 412L201 411L204 417L228 406L211 400L210 395L200 393L197 396L200 406L194 409L193 381L188 361L179 352L168 301L162 297L161 290L146 281L135 244L143 222L136 217L143 214L215 244L245 244L256 248L260 246L273 247L278 251L293 251L305 242L304 245L315 255L328 254L327 257L333 260L333 266L337 266L338 260L333 256L333 251L345 247L346 250L341 254L344 260L352 252L355 264L349 265L356 279L361 281L352 284L353 288L346 292L343 305L338 306L342 294L340 292L331 309L308 338L303 352L316 352L329 347L330 343L314 350L307 347L323 321L346 309L347 301L353 293L365 285L362 274L370 278L375 300L367 300L372 306L371 312L374 315L374 321L368 325L368 329L374 331L365 356L368 361L362 370L352 361L355 350L349 355L346 362L358 372L350 382L336 365L341 360L341 354L339 351L334 363L337 371L334 377L340 375L344 383L354 385L358 377L363 375L369 357L379 364L383 361L381 356L392 353L381 322L390 318L380 311L386 302L384 292L390 286L393 273L402 270L401 262L387 250L388 241L384 236L378 235L379 238L375 241L386 258L376 249L372 248L369 242L370 233L377 230L383 232L386 228L383 223L372 218L367 212L367 208L356 211L354 208L355 202L350 204L351 200L360 197L369 204L376 203L372 191L379 190L381 186L373 179L371 171L374 166L369 163L362 163L358 168L362 173L354 169L358 162L350 161L350 153L342 147L346 145L344 141L339 139L345 133L956 133Z", "wisconsin": "M4159 618L4162 609L4174 611L4165 626L4159 618ZM3766 409L3781 405L3777 410L3768 412L3766 409ZM3753 396L3766 392L3770 398L3776 394L3776 399L3770 400L3764 406L3753 396ZM3751 428L3769 416L3775 419L3763 423L3765 427L3751 432L3751 428ZM3621 438L3628 442L3641 440L3674 431L3704 417L3711 420L3714 416L3723 415L3732 407L3746 405L3755 414L3741 432L3744 440L3738 444L3734 453L3739 454L3755 446L3757 440L3778 455L3812 465L3822 487L3932 514L3965 530L3976 530L3977 534L3994 530L4003 535L4008 533L4017 538L4022 537L4038 542L4040 550L4034 556L4040 561L4049 559L4052 564L4061 565L4072 575L4067 577L4072 586L4070 599L4062 614L4064 620L4075 618L4081 613L4085 616L4076 639L4084 651L4092 652L4088 668L4073 670L4065 674L4066 680L4050 702L4049 717L4044 723L4056 727L4058 721L4072 713L4090 686L4108 679L4114 683L4112 678L4127 654L4129 643L4142 640L4142 633L4149 626L4157 626L4156 636L4150 637L4150 653L4142 657L4135 669L4136 674L4132 679L4133 682L4126 685L4118 702L4105 725L4097 755L4099 774L4086 784L4082 795L4076 814L4080 841L4061 882L4058 900L4062 922L4059 929L4065 936L4067 953L4073 960L4067 982L4070 999L3767 996L3760 980L3735 973L3723 966L3718 946L3713 944L3710 914L3722 898L3717 889L3707 885L3704 853L3699 841L3702 828L3688 804L3682 798L3667 794L3635 771L3630 754L3625 749L3597 739L3588 726L3564 723L3536 696L3542 673L3541 661L3536 657L3543 651L3541 626L3553 612L3553 606L3545 597L3545 593L3528 588L3530 569L3538 563L3546 546L3566 534L3572 536L3576 529L3585 530L3587 523L3591 522L3591 444L3599 446L3604 441L3600 438L3613 432L3621 438Z", "nebraska": "M2338 931L2930 931L2933 938L2981 963L2993 958L2999 949L3016 952L3057 949L3066 952L3067 956L3075 961L3092 963L3095 968L3100 966L3110 970L3111 975L3123 977L3120 983L3131 997L3154 1000L3152 1018L3161 1034L3158 1036L3159 1042L3167 1048L3167 1058L3172 1060L3171 1062L3182 1068L3179 1076L3189 1090L3185 1098L3187 1104L3183 1106L3186 1111L3183 1115L3187 1120L3186 1126L3192 1129L3193 1125L3196 1125L3196 1134L3203 1135L3204 1148L3201 1152L3208 1155L3204 1160L3204 1171L3213 1174L3208 1176L3208 1189L3216 1211L3212 1216L3214 1226L3208 1234L3223 1249L3221 1259L3228 1260L3229 1256L3233 1258L3228 1263L3228 1267L3233 1271L3237 1288L3251 1297L3252 1306L3261 1314L3258 1324L3270 1330L2551 1330L2551 1197L2338 1197L2338 931Z", "south_carolina": "M4569 1995L4604 1984L4607 1986L4629 1974L4641 1972L4646 1966L4648 1971L4656 1968L4790 1975L4790 1989L4801 1981L4817 2004L4816 2019L4935 2021L5056 2148L5037 2154L5014 2176L4993 2207L4986 2239L4972 2249L4969 2260L4956 2261L4951 2256L4945 2260L4941 2267L4946 2274L4933 2281L4930 2287L4916 2294L4913 2289L4908 2290L4908 2294L4915 2296L4913 2303L4900 2314L4888 2315L4865 2330L4862 2328L4856 2331L4855 2328L4850 2328L4849 2333L4855 2342L4852 2351L4832 2360L4832 2355L4824 2351L4820 2353L4819 2357L4829 2365L4824 2373L4811 2379L4804 2387L4806 2389L4794 2381L4790 2383L4782 2379L4777 2361L4781 2356L4772 2336L4773 2332L4764 2320L4755 2317L4750 2312L4749 2282L4740 2268L4742 2260L4728 2248L4715 2242L4712 2232L4708 2233L4703 2228L4705 2225L4694 2215L4695 2200L4682 2186L4666 2177L4661 2161L4650 2150L4628 2136L4624 2124L4611 2108L4608 2094L4598 2079L4594 2065L4580 2065L4563 2048L4556 2047L4545 2037L4546 2023L4556 2011L4568 2003L4569 1995Z", "idaho": "M968 533L961 521L967 510L963 506L960 492L952 483L955 478L956 133L1060 133L1060 269L1075 286L1081 289L1084 299L1087 298L1095 306L1094 314L1098 320L1093 327L1097 328L1099 334L1105 335L1091 343L1113 352L1116 359L1137 365L1140 374L1157 387L1167 403L1172 403L1179 410L1178 418L1184 424L1197 431L1194 437L1197 439L1204 434L1212 438L1210 442L1213 447L1228 448L1243 444L1240 465L1236 465L1238 473L1234 480L1233 494L1228 496L1231 509L1224 510L1223 515L1229 519L1226 526L1227 532L1235 535L1232 541L1237 547L1235 552L1225 552L1218 562L1226 570L1225 576L1218 580L1221 584L1220 590L1229 590L1242 604L1251 599L1252 592L1264 591L1277 578L1276 573L1286 574L1288 582L1299 585L1296 596L1304 596L1302 604L1307 613L1306 621L1321 640L1324 648L1330 650L1330 653L1337 657L1338 670L1332 672L1336 683L1347 689L1349 694L1358 688L1371 695L1380 713L1376 719L1384 728L1384 738L1401 750L1405 748L1402 742L1408 734L1415 731L1438 736L1441 734L1450 738L1454 726L1461 722L1480 729L1505 723L1510 730L1523 724L1548 726L1542 719L1548 708L1546 704L1554 704L1557 698L1574 715L1573 720L1585 732L1593 735L1593 1064L956 1064L956 824L965 800L961 787L970 778L969 774L962 772L962 766L954 768L948 761L941 764L936 760L939 753L933 745L936 741L935 734L942 728L954 699L966 693L973 682L976 674L975 662L988 646L993 623L1016 585L1008 573L1008 567L1002 562L995 561L991 556L984 556L968 533Z", "nevada": "M639 1065L1274 1065L1273 1836L1262 1859L1253 1860L1245 1854L1239 1843L1225 1845L1224 1842L1217 1842L1198 1850L1201 1859L1199 1864L1208 1879L1202 1888L1205 1908L1208 1913L1206 1928L1214 1948L1217 1968L1217 1976L1209 1981L1213 1984L1211 1995L919 1712L639 1463L639 1065Z", "vermont": "M5610 664L5806 663L5802 667L5807 677L5793 699L5801 715L5800 723L5796 724L5798 731L5784 743L5775 745L5773 751L5749 755L5746 762L5749 786L5740 799L5740 808L5733 816L5731 828L5724 833L5718 851L5712 855L5708 882L5711 889L5706 897L5705 912L5705 930L5697 936L5694 951L5698 962L5700 961L5704 967L5618 965L5615 957L5620 857L5615 854L5614 848L5607 848L5604 856L5600 852L5609 828L5604 822L5606 815L5602 807L5603 795L5600 792L5604 773L5613 762L5611 748L5615 739L5605 713L5611 693L5606 687L5610 676L5610 664Z", "louisiana": "M3954 2653L3961 2669L3955 2692L3960 2670L3954 2653ZM3905 2652L3922 2638L3917 2647L3923 2654L3917 2660L3916 2655L3906 2655L3905 2652ZM3776 2780L3790 2784L3783 2785L3776 2780ZM3620 2714L3630 2709L3650 2716L3653 2719L3641 2730L3619 2717L3620 2714ZM3405 2258L3711 2260L3706 2272L3709 2274L3715 2271L3714 2264L3719 2263L3721 2276L3713 2282L3711 2294L3723 2298L3712 2309L3716 2316L3724 2313L3726 2308L3728 2312L3720 2320L3730 2329L3718 2324L3717 2331L3725 2336L3729 2334L3732 2338L3729 2347L3738 2349L3740 2344L3742 2346L3736 2355L3731 2354L3730 2365L3725 2362L3712 2367L3711 2376L3723 2377L3722 2370L3728 2373L3718 2388L3713 2383L3711 2386L3719 2389L3719 2395L3709 2399L3709 2405L3700 2414L3701 2419L3697 2412L3693 2414L3690 2424L3701 2426L3686 2432L3686 2444L3675 2441L3673 2446L3677 2449L3684 2448L3685 2451L3673 2457L3678 2478L3675 2478L3670 2469L3667 2474L3675 2485L3674 2490L3660 2492L3666 2504L3662 2512L3668 2518L3666 2525L3661 2527L3862 2527L3864 2531L3851 2572L3854 2574L3855 2584L3869 2600L3876 2630L3881 2636L3886 2636L3870 2646L3869 2650L3864 2652L3865 2656L3855 2654L3850 2659L3852 2667L3864 2666L3863 2672L3872 2678L3879 2674L3880 2661L3889 2654L3890 2650L3902 2653L3896 2663L3901 2665L3902 2672L3908 2670L3912 2661L3918 2664L3917 2670L3912 2670L3908 2675L3916 2675L3915 2678L3903 2681L3908 2688L3912 2686L3909 2692L3901 2688L3896 2694L3896 2706L3892 2706L3890 2696L3886 2696L3885 2704L3890 2710L3885 2707L3871 2707L3878 2712L3878 2716L3869 2710L3873 2716L3869 2718L3869 2722L3881 2727L3888 2742L3891 2738L3908 2745L3909 2741L3916 2752L3920 2747L3930 2759L3930 2766L3939 2764L3942 2769L3932 2771L3932 2775L3938 2775L3935 2781L3930 2778L3927 2794L3918 2790L3915 2782L3897 2802L3909 2784L3912 2769L3908 2766L3906 2773L3900 2776L3890 2764L3877 2760L3873 2754L3852 2751L3812 2782L3809 2780L3810 2776L3806 2774L3807 2769L3803 2758L3795 2755L3792 2762L3793 2753L3789 2747L3784 2754L3779 2752L3776 2755L3774 2752L3771 2755L3775 2762L3771 2761L3761 2776L3751 2779L3749 2787L3743 2786L3745 2783L3733 2769L3728 2770L3705 2763L3693 2753L3698 2752L3700 2745L3708 2752L3710 2750L3710 2758L3716 2760L3714 2748L3706 2740L3706 2736L3701 2735L3693 2741L3694 2736L3690 2737L3694 2729L3691 2725L3680 2730L3676 2721L3672 2722L3670 2709L3660 2709L3662 2695L3650 2693L3638 2699L3635 2692L3641 2688L3640 2683L3625 2682L3624 2687L3610 2695L3608 2691L3601 2693L3604 2700L3611 2701L3608 2704L3611 2711L3620 2711L3615 2713L3618 2715L3605 2716L3588 2722L3556 2715L3497 2690L3443 2694L3426 2701L3416 2687L3441 2651L3438 2649L3442 2641L3439 2632L3440 2622L3434 2616L3441 2601L3437 2588L3457 2550L3455 2543L3460 2536L3456 2526L3460 2524L3457 2514L3459 2502L3452 2504L3449 2491L3442 2486L3444 2474L3436 2465L3437 2458L3432 2457L3426 2447L3430 2434L3428 2424L3419 2408L3405 2395L3405 2258Z", "rhode_island": "M5838 1107L5845 1109L5846 1131L5839 1136L5837 1117L5834 1115L5834 1133L5828 1132L5823 1137L5823 1131L5832 1112L5838 1107ZM5817 1136L5819 1121L5821 1133L5817 1136ZM5768 1154L5771 1151L5770 1142L5774 1142L5774 1063L5819 1062L5819 1078L5823 1078L5824 1093L5835 1102L5829 1112L5827 1108L5828 1104L5818 1093L5820 1108L5811 1106L5816 1110L5816 1119L5812 1120L5815 1134L5808 1148L5768 1154Z"};
+    const TW = {"taiwan": "M964 1542L961 1546L959 1550L960 1556L963 1557L960 1561L961 1563L958 1565L958 1571L953 1576L951 1580L952 1583L942 1622L937 1630L932 1635L932 1637L926 1643L922 1649L919 1657L919 1670L917 1672L917 1676L914 1674L912 1674L911 1675L911 1674L911 1668L905 1656L903 1653L897 1651L893 1646L895 1649L894 1648L890 1643L891 1642L887 1631L886 1629L888 1627L886 1626L885 1628L885 1626L882 1626L882 1625L884 1624L883 1623L884 1623L883 1621L885 1614L886 1614L885 1614L886 1612L887 1612L886 1609L887 1606L886 1606L886 1605L888 1594L898 1580L905 1566L909 1563L911 1558L914 1555L916 1555L921 1545L925 1539L940 1533L943 1534L942 1532L943 1529L946 1528L950 1528L955 1533L963 1535L964 1538L968 1540L964 1542ZM949 1670L950 1671L949 1672L946 1670L949 1668L949 1670ZM809 1561L812 1562L812 1565L808 1565L805 1566L804 1563L809 1563L809 1561ZM865 1601L865 1604L863 1604L862 1605L859 1604L862 1604L860 1602L864 1602ZM857 1601L859 1600L858 1603L856 1603L857 1601ZM861 1600L861 1598L862 1599L862 1600ZM881 1608L885 1604L883 1607L881 1608Z"};
+
+    // ---------- shared filters ----------
+    FX.tintDefs(defs, "c3s01-tink", "#1b2028", "#ece4d2");
+    FX.tintDefs(defs, "c3s01-tnavy", "#10304f", "#e9eef0");
+    FX.tintDefs(defs, "c3s01-tsep", "#1f1a14", "#d9c9a8");
+    FX.tintDefs(defs, "c3s01-tcel", "#1c2a24", "#dcefe4");
+    const PEN = FX.markupDefs(defs, "c3s01-pen", { boil: 4 });
+    const MRK = FX.markupDefs(defs, "c3s01-mrk", { boil: 12 });
+    defs.removeAttribute("viewBox");
+    FX.roughDefs(defs, "c3s01-rough", { freq: 0.04, scale: 6 });
+    FX.roughDefs(defs, "c3s01-rhl", { freq: 0.05, scale: 7 });
+    const ch007 = FX.roughDefs(defs, "c3s01-ch007", { freq: 0.035, scale: 8, choke: 0 });
+    const ch017 = FX.roughDefs(defs, "c3s01-ch017", { freq: 0.03, scale: 9, choke: 0 });
+
+    // ---------- helpers ----------
+    function gated(a, b, fn) { const on = FX.onFrame; FX.onFrame = (f) => on(FX.gate(S(a) - 0.1, S(b) + 0.1, f)); try { return fn(); } finally { FX.onFrame = on; } }
+    const inited = {};
+    // scene window: hidden (display none) outside [a, b]; may be called twice for a second window
+    function scene(id, a, b) {
+      const el = $(id);
+      if (!inited[id]) { gsap.set(el, { autoAlpha: 0, display: "none" }); inited[id] = 1; }
+      if (S(a) <= 0) gsap.set(el, { autoAlpha: 1, display: "block" });
+      else tl.fromTo(el, { autoAlpha: 0, display: "none" }, { autoAlpha: 1, display: "block", duration: 0.001, immediateRender: false }, S(a));
+      if (b < SEG_END) tl.set(el, { autoAlpha: 0, display: "none" }, S(b));
+    }
+    function ground(kind, t) {
+      const v = kind === "paper" ? [0.32, 0.14, 0.26] : [1, 0.42, 0.36];
+      tl.set([$("vig"), $("dust"), $("grain")], { opacity: (i) => v[i] }, t);
+    }
+    const show = (el, t) => tl.fromTo(typeof el === "string" ? $(el) : el, { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, t);
+    const rise = (el, t, o) => { o = o || {}; const d = o.dur || 1.0; if (typeof el === "string") el = $(el);
+      tl.fromTo(el, { opacity: 0, y: o.y == null ? 22 : o.y }, { opacity: 1, y: 0, duration: d, ease: C(E.out, d), immediateRender: true }, t); };
+    const pop = (el, t, d, from) => { d = d || 0.8; if (typeof el === "string") el = $(el);
+      tl.fromTo(el, { opacity: 0, scale: from || 0.8 }, { opacity: 1, scale: 1, duration: d, ease: C(E.out, d), immediateRender: true }, t); };
+    const out = (el, t, d) => { if (typeof el === "string") el = $(el); tl.to(el, { opacity: 0, duration: d || 0.3, ease: C(E.in, d || 0.3) }, t); };
+    const words = (id) => $(id).querySelectorAll(".q-w");
+    // word-by-word: times are literal T(word) − L (audited)
+    function wr(id, times, o) { const ws = words(id); times.forEach((t, i) => rise(ws[i], t, Object.assign({ dur: 0.7, y: 14 }, o || {}))); }
+    const whipN = { n: 0 };
+    function whip(a, b, t, o) {
+      o = Object.assign({ dir: 1, vertical: false, flash: false, dur: 0.32 }, o);
+      a = $(a); b = $(b);
+      const k = ++whipN.n, ba = FX.whipDefs(defs, `${SEG}-wa${k}`), bb = FX.whipDefs(defs, `${SEG}-wb${k}`), h = o.dur / 2;
+      tl.set(a, { filter: `url(#${SEG}-wa${k})` }, t - h - 0.01); tl.set(a, { filter: "none" }, t + 0.06);
+      tl.set(b, { filter: `url(#${SEG}-wb${k})` }, t - 0.001); tl.set(b, { filter: "none" }, t + h + 0.02);
+      FX.whip(tl, a, b, t, { dir: o.dir, vertical: o.vertical, dur: o.dur, blurA: ba, blurB: bb });
+      if (o.flash) tl.fromTo($("flash"), { opacity: 0 }, { opacity: 0.85, duration: 0.08, yoyo: true, repeat: 1, ease: "power2.in", immediateRender: false }, t - 0.08);
+    }
+    // paper slide: incoming scene slides over the outgoing one (PS)
+    function slideIn(b, t, o) { o = Object.assign({ from: "bottom", dur: 0.5 }, o); const p = o.from === "bottom" ? { y: 1100 } : o.from === "right" ? { x: 1960 } : { x: -1960 };
+      tl.fromTo($(b), p, { x: 0, y: 0, duration: o.dur, ease: C(E.out, o.dur), immediateRender: false }, t); }
+    function ink(parent, d, t, dur, o) {
+      o = o || {};
+      const p = document.createElementNS(NS, "path");
+      p.setAttribute("d", d); p.setAttribute("fill", o.fill || "none");
+      p.setAttribute("stroke", o.color || INK); p.setAttribute("stroke-width", o.width || 6);
+      p.setAttribute("stroke-linecap", "round"); p.setAttribute("stroke-linejoin", "round");
+      if (o.filter) p.setAttribute("filter", o.filter);
+      if (o.opacity) p.setAttribute("opacity", o.opacity);
+      if (o.blend) p.style.mixBlendMode = o.blend;
+      parent.appendChild(p);
+      const len = p.getTotalLength() || 1;
+      p.setAttribute("stroke-dasharray", `${len} ${len}`); p.setAttribute("stroke-dashoffset", len);
+      tl.fromTo(p, { attr: { "stroke-dashoffset": len } }, { attr: { "stroke-dashoffset": 0 }, duration: dur, ease: o.ease || C(E.out, dur), immediateRender: true }, t);
+      p._len = len; return p;
+    }
+    function el(tag, attrs, parent) { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; }
+    function div(parent, css, cls, html) { const d = document.createElement("div"); if (cls) d.className = cls; d.style.cssText = css; if (html) d.innerHTML = html; parent.appendChild(d); return d; }
+    // numbers of a path "M..L..Z" → bbox
+    function bbox(d) { const n = d.match(/-?\d+\.?\d*/g).map(Number); let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9;
+      for (let i = 0; i < n.length - 1; i += 2) { x0 = Math.min(x0, n[i]); x1 = Math.max(x1, n[i]); y0 = Math.min(y0, n[i + 1]); y1 = Math.max(y1, n[i + 1]); }
+      return { x0, y0, x1, y1, cx: (x0 + x1) / 2, cy: (y0 + y1) / 2, w: x1 - x0, h: y1 - y0 }; }
+    // camera framing for a map plane with transform-origin 0 0: put map point (px,py) at screen (sx,sy) at scale s
+    const frame = (px, py, s, sx, sy) => ({ x: (sx == null ? 960 : sx) - px * s, y: (sy == null ? 540 : sy) - py * s, scale: s });
+
+    // ---------- global textures ----------
+    FX.grain($("grain"), 301);
+    FX.dust($("dust"), 302, 2);
+    gsap.set([$("vig"), $("dust"), $("grain")], { opacity: (i) => [1, 0.42, 0.36][i] });
+
+    /* ============ C3S001 · 0.00–2.32 · "how big it was" ============ */
+    scene("sc001", 0, 2.32);
+    gsap.set($("sc001-cam"), { scale: 1.6 });
+    tl.fromTo($("sc001-cam"), { scale: 1.6 }, { scale: 1.0, duration: 2.32, ease: E.cam, immediateRender: false }, 0);
+    wr("sc001-t", [T(1.52) - L, T(1.68) - L], { dur: 0.3 });
+    tl.fromTo($("sc001-big"), { scale: 1.0 }, { scale: 1.15, duration: 0.3, ease: C(E.out, 0.3), transformOrigin: "0% 80%", immediateRender: false }, S(1.62));
+
+    /* ============ C3S002 · 2.32–7.04 · IC → the world (cutting the curve) ============ */
+    scene("sc002", 2.32, 7.04);
+    FX.curveCut(tl, $("sc002-wrap"), $("sc002-a"), $("sc002-b"), S(2.32), 5.16, { from: 1, to: 2.6 });   // cut at 4.90 (peak velocity)
+    gsap.set($("sc002-globe"), { scale: 0.62 });
+    tl.fromTo($("sc002-globe"), { scale: 0.62, rotation: 0 }, { scale: 0.62, rotation: -3, duration: 2.2, ease: "none", immediateRender: false }, S(4.9));
+    FX.focusHunt(tl, $("sc002-globe"), S(5.6), { dur: 0.8 });
+    wr("sc002-ic", [T(4.56) - L], { dur: 0.3, y: 0 });
+    out("sc002-ic", S(5.15), 0.3);
+    wr("sc002-world", [T(5.28) - L, T(5.44) - L], { dur: 0.8 });
+
+    /* ============ C3S003 · 7.04–10.08 · the podcast on an IBM 5154 ============ */
+    scene("sc003", 7.04, 10.10);
+    ground("night", S(7.04));
+    (function () {
+      tl.fromTo($("sc003-mon"), { x: 380 }, { x: 0, duration: 0.8, ease: E.cam, immediateRender: false }, S(7.04));
+      // CRT power-on
+      tl.fromTo($("sc003-scr"), { scaleY: 0.012, filter: "brightness(3)" }, { scaleY: 1, filter: "brightness(1)", duration: 0.25, ease: "power2.out", immediateRender: true }, S(7.10));
+      // waveform bars (12 fps shimmer)
+      const w = $("sc003-wave"), bars = [], r = FX.rng(301);
+      for (let i = 0; i < 70; i++) { const h = 20 + r() * 150; bars.push(el("rect", { x: i * 12, y: 100 - h / 2, width: 7, height: h, fill: "#9fc3e3", opacity: 0.85 }, w)); }
+      gated(7.0, 10.1, () => FX.onFrame((t) => { const f = Math.floor(t * 12); bars.forEach((b, i) => { const h = 16 + FX.noise2(i * 0.35, f * 0.4, 7) * 170; b.setAttribute("height", h.toFixed(0)); b.setAttribute("y", (100 - h / 2).toFixed(0)); }); }));
+      tl.fromTo($("sc003-bar"), { scaleX: 0.06 }, { scaleX: 0.095, duration: 3, ease: "none", immediateRender: false }, S(7.1));
+      const tc = $("sc003-tc"), st = { v: 1476 };
+      tl.fromTo(st, { v: 1476 }, { v: 1479, duration: 3, ease: "none", immediateRender: false, onUpdate: () => { const v = Math.floor(st.v); tc.textContent = `0:${String(Math.floor(v / 60)).padStart(2, "0")}:${String(v % 60).padStart(2, "0")}`; } }, S(7.1));
+      wr("sc003-pod", [T(7.04) - L, T(7.36) - L], { dur: 0.6 });
+      rise("sc003-lives", T(9.44) - L, { dur: 0.4 });
+      tl.fromTo($("sc003-cam"), { scale: 1 }, { scale: 1.06, duration: 2.5, ease: "none", immediateRender: false }, S(7.1));
+      // push-through into the screen; its glow fills the frame
+      tl.to($("sc003-cam"), { scale: 4.2, duration: 0.48, ease: E.in }, S(9.6));
+      tl.fromTo($("sc003-glow"), { opacity: 0 }, { opacity: 1, duration: 0.42, ease: "power2.in", immediateRender: false }, S(9.66));
+    })();
+
+    /* ============ C3S004 · 10.08–15.68 · video cards → Silicon Valley ============ */
+    scene("sc004", 10.08, 16.5);
+    ground("paper", S(10.08));
+    (function () {
+      const box = $("sc004-cards"), cards = [];
+      for (let r = 0; r < 3; r++) for (let c = 0; c < 3; c++) {
+        const v = div(box, `left:${210 + c * 520}px;top:${160 + r * 270}px;opacity:0`, "q-vc",
+          `<div class="f"></div><div class="d"></div><svg viewBox="0 0 400 236"><path d="M178 84 L228 116 L178 148Z" fill="${INK}"/><rect x="34" y="196" width="332" height="8" fill="rgba(20,27,36,0.25)"/><rect x="34" y="196" width="${60 + ((r * 3 + c) * 37) % 240}" height="8" fill="${INK}"/></svg>`);
+        cards.push(v);
+      }
+      // the paper flash from the screen fades into the paper ground
+      tl.fromTo($("sc004"), { filter: "brightness(1.25)" }, { filter: "brightness(1)", duration: 0.4, ease: "power2.out", immediateRender: false }, S(10.08));
+      cards.forEach((v, i) => tl.fromTo(v, { opacity: 0, scale: 1.12, rotation: (i % 3 - 1) * 2 }, { opacity: 1, scale: 1, rotation: (i % 2 ? 1 : -1) * 0.8, duration: 0.25, ease: C(E.out, 0.25), immediateRender: true }, S(10.58) + i / 12));
+      rise("sc004-vid", T(10.64) - L);
+      // "wouldn't exist": the cards empty out to dashed outlines
+      cards.forEach((v, i) => { tl.to(v.querySelector(".f"), { opacity: 0, duration: 0.25, ease: C(E.in, 0.25) }, S(13.66) + (i % 3) / 12); tl.to(v.querySelector("svg"), { opacity: 0, duration: 0.25 }, S(13.66) + (i % 3) / 12); tl.fromTo(v.querySelector(".d"), { opacity: 0 }, { opacity: 1, duration: 0.25, immediateRender: false }, S(13.66) + (i % 3) / 12); });
+      wr("sc004-ex", [T(13.68) - L, T(14.08) - L], { dur: 0.4 });
+      // pen strike through "exist"
+      const mk = $("sc004-mk");
+      FX.markup.pen(tl, mk, S(14.22), { points: [[968, 1014], [1132, 1006]], dur: 0.3, width: 6, color: INK, filter: PEN });
+      // the paper splits and slides apart: Silicon Valley underneath
+      tl.to([$("sc004-L"), ...cards.filter((_, i) => i % 3 === 0)], { x: -980, duration: 0.6, ease: C(E.inOut, 0.6) }, S(14.66));
+      tl.to([$("sc004-R"), ...cards.filter((_, i) => i % 3 === 2)], { x: 980, duration: 0.6, ease: C(E.inOut, 0.6) }, S(14.66));
+      tl.to(cards.filter((_, i) => i % 3 === 1), { y: -1100, duration: 0.6, ease: C(E.inOut, 0.6) }, S(14.66));
+      tl.to([$("sc004-vid"), $("sc004-ex"), mk], { opacity: 0, duration: 0.25 }, S(14.62));
+      tl.fromTo($("sc004-cam"), { scale: 1.0 }, { scale: 1.08, duration: 2.0, ease: "none", immediateRender: false }, S(14.66));
+      wr("sc004-sv", [T(14.72) - L, T(15.28) - L], { dur: 0.35, y: 10 });
+    })();
+
+    /* ============ C3S005 · 15.68–21.43 · periodic chart, Si circled ============ */
+    scene("sc005", 15.68, 21.48);
+    slideIn("sc005", S(15.68), { dur: 0.7 });
+    (function () {
+      const P = [["H", 1, 1], ["He", 18, 2]];
+      const rows = [
+        [[1, "Li"], [2, "Be"], [13, "B"], [14, "C"], [15, "N"], [16, "O"], [17, "F"], [18, "Ne"]],
+        [[1, "Na"], [2, "Mg"], [13, "Al"], [14, "Si"], [15, "P"], [16, "S"], [17, "Cl"], [18, "Ar"]],
+        "K Ca Sc Ti V Cr Mn Fe Co Ni Cu Zn Ga Ge As Se Br Kr".split(" ").map((s, i) => [i + 1, s]),
+        "Rb Sr Y Zr Nb Mo Tc Ru Rh Pd Ag Cd In Sn Sb Te I Xe".split(" ").map((s, i) => [i + 1, s]),
+        "Cs Ba La Hf Ta W Re Os Ir Pt Au Hg Tl Pb Bi Po At Rn".split(" ").map((s, i) => [i + 1, s]),
+        [[1, "Fr"], [2, "Ra"], [3, "Ac"]],
+      ];
+      const grid = $("sc005-grid"), cells = []; let si = null;
+      const put = (col, row, sym, z) => { const c = div(grid, `left:${(col - 1) * 88.6}px;top:${row * 104}px`, "q-cell", `<span class="n t-label">${z}</span><span class="s t-serif">${sym}</span>`); cells.push(c); if (sym === "Si") si = c; };
+      put(1, 0, "H", 1); put(18, 0, "He", 2);
+      let z = 3;
+      rows.forEach((r, ri) => r.forEach(([col, sym]) => { if (ri === 4 && sym === "Hf") z = 72; put(col, ri + 1, sym, z++); }));
+      si.style.borderWidth = "3px";
+      // video card from C3S004 shrinks into the corner on "enjoyed my videos"
+      $("sc005-card").innerHTML = `<div class="f"></div><svg viewBox="0 0 400 236"><path d="M178 84 L228 116 L178 148Z" fill="${INK}"/><rect x="34" y="196" width="332" height="8" fill="rgba(20,27,36,0.25)"/><rect x="34" y="196" width="140" height="8" fill="${INK}"/></svg>`;
+      tl.fromTo($("sc005-card"), { opacity: 0, scale: 1.4, x: -500, y: -300 }, { opacity: 1, scale: 0.6, x: 0, y: 0, duration: 1.0, ease: C(E.inOut, 1.0), immediateRender: true }, S(18.01));
+      rise("sc005-enj", T(18.07) - L, { dur: 0.8 });
+      out("sc005-card", S(19.6), 0.3); out("sc005-enj", S(19.6), 0.3);
+      // camera push to Si (cam ease), then pen circle + text call-out
+      tl.fromTo($("sc005-cam"), { scale: 1, x: 0, y: 0 }, { scale: 1.6, x: -200, y: -10, duration: 1.7, ease: E.cam, immediateRender: false }, S(18.5));
+      tl.to(cells.filter((c) => c !== si), { opacity: 0.22, duration: 0.6, ease: C(E.out, 0.6) }, S(20.2));
+      FX.markup.pen(tl, $("sc005-mk"), S(20.17), { points: [[1140, 330], [1214, 336], [1226, 410], [1170, 464], [1100, 440], [1092, 360], [1150, 322]], dur: 0.6, width: 7, color: INK, filter: PEN });
+      FX.focusHunt(tl, $("sc005-cam"), S(20.8), { dur: 0.5, a: 3, b: 4 });
+      wr("sc005-si", [T(20.23) - L], { dur: 0.5 });
+      wr("sc005-th", [T(20.95) - L, T(21.11) - L], { dur: 0.3 });
+    })();
+
+    /* ============ C3S006 · 21.43–26.47 · IC → Silicon Valley ============ */
+    whip("sc005", "sc006", S(21.37), { vertical: true, dir: -1 });
+    scene("sc006", 21.37, 26.95);
+    ground("night", S(21.37));
+    (function () {
+      tl.fromTo($("sc006-cam"), { scale: 1.0 }, { scale: 2.4, duration: 3.2, ease: E.cam, immediateRender: false }, S(21.45));
+      // die → street grid: match-dissolve into the aerial, which keeps settling
+      tl.fromTo($("sc006-aer"), { opacity: 0, scale: 1.35 }, { opacity: 1, scale: 1.35, duration: 0.4, ease: "none", immediateRender: false }, S(24.45));
+      tl.to($("sc006-aer"), { scale: 1.0, duration: 1.9, ease: E.cam }, S(24.5));
+      show(words("sc006-ic")[0], T(21.59) - L);
+      wr("sc006-int", [T(22.47) - L, T(23.03) - L], { dur: 0.7 });
+      out("sc006-ic", S(24.4), 0.3); out("sc006-int", S(24.4), 0.3);
+      rise("sc006-sv", T(25.51) - L, { dur: 0.45, y: 16 });
+    })();
+
+    /* ============ C3S007 · 26.47–32.63 · legal pad ============ */
+    scene("sc007", 26.32, 32.63);
+    slideIn("sc007", S(26.32), { dur: 0.5 });
+    ground("paper", S(26.4));
+    (function () {
+      const ws = words("sc007-arg");
+      show(ws[0], T(26.79) - L); show(ws[1], T(27.27) - L);
+      FX.chokeSettle(tl, ch007, $("sc007-arg"), T(26.79) - L, 7, 1.0, "none");
+      wr("sc007-deb", [T(29.35) - L], { dur: 0.8 });
+      const mk = $("sc007-mk");
+      FX.markup.pen(tl, mk, S(29.6), { points: [[226, 600], [560, 594]], dur: 0.45, width: 5, color: INK, filter: PEN });
+      FX.markup.pen(tl, mk, S(30.0), { points: [[232, 616], [548, 612]], dur: 0.4, width: 4, color: INK, filter: PEN, seed: 7 });
+      wr("sc007-agr", [T(31.59) - L, T(31.75) - L], { dur: 0.6 });
+      FX.markup.pen(tl, mk, S(31.75), { points: [[620, 760], [650, 800], [720, 690]], dur: 0.35, width: 9, color: RED, filter: PEN, jitter: 2 });
+      tl.fromTo($("sc007-cam"), { y: 0 }, { y: -30, duration: 5.6, ease: "none", immediateRender: false }, S(26.5));
+      tl.to($("sc007-cam"), { y: -240, duration: 0.3, ease: E.in }, S(32.36));   // tilt continues into the map push (cut on action)
+    })();
+
+    /* ============ C3S008 · 32.63–37.19 · California law (contrast call-out) ============ */
+    scene("sc008", 32.63, 37.3);
+    ground("night", S(32.63));
+    const CA = US.california, caB = bbox(CA);
+    const F_US = frame(3196, 1762, 0.30), F_CA = frame(caB.cx, caB.cy, 0.66, 600, 560);
+    (function () {
+      const svg = $("sc008-svg");
+      const fill = el("path", { d: CA, fill: RED, "fill-opacity": 0.6, opacity: 0 }, svg); fill.style.mixBlendMode = "overlay";
+      el("path", { d: CA, fill: "none", stroke: BONE, "stroke-width": 4, opacity: 0.0, id: "c3s01-sc008-caline" }, svg);
+      gsap.set($("sc008-cam"), F_US);
+      tl.fromTo($("sc008-cam"), F_US, Object.assign({ duration: 3.1, ease: E.cam, immediateRender: false }, F_CA), S(33.5));
+      // contrast call-out: hard cut at the push's peak velocity (35.11)
+      FX.contrastCallout(tl, $("sc008-veil"), S(35.05), { w: 6392, h: 3524, d: CA, feather: 22, color: "rgba(96,100,106,1)", strength: 0.62 });
+      tl.set(fill, { opacity: 1 }, S(35.05));
+      tl.set($("sc008-caline"), { opacity: 0.7 }, S(35.05));
+      FX.focusHunt(tl, $("sc008-map"), S(35.6), { dur: 0.8 });
+      wr("sc008-t", [T(35.11) - L, T(35.83) - L], { dur: 0.6 });
+    })();
+
+    /* ============ C3S009 · 37.19–42.55 · vintage atlas: every state the same, CA the exception ============ */
+    whip("sc008", "sc009", S(37.13), { dir: -1 });
+    scene("sc009", 37.13, 43.0);
+    ground("paper", S(37.13));
+    (function () {
+      const svg = $("sc009-svg");
+      svg.insertAdjacentHTML("afterbegin", `<defs><pattern id="c3s01-hatch" width="34" height="34" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="34" height="34" fill="rgba(20,27,36,0.10)"/><line x1="0" y1="0" x2="0" y2="34" stroke="${INK}" stroke-width="9"/></pattern></defs>`);
+      const st = Object.keys(US).filter((k) => k !== "california").map((k) => ({ k, b: bbox(US[k]) })).sort((a, b) => a.b.cx - b.b.cx);
+      st.forEach((s, i) => {
+        const p = el("path", { d: US[s.k], fill: "url(#c3s01-hatch)", stroke: INK, "stroke-width": 5, opacity: 0 }, svg);
+        tl.fromTo(p, { opacity: 0 }, { opacity: 0.55, duration: 0.001, immediateRender: true }, S(40.95) + Math.floor((i / st.length) * 10) / 12);
+      });
+      const ca = el("path", { d: CA, fill: RED, "fill-opacity": 0.8, stroke: RED, "stroke-width": 8, filter: "url(#c3s01-rough)", opacity: 0 }, svg);
+      ca.style.mixBlendMode = "multiply";
+      tl.fromTo(ca, { opacity: 0 }, { opacity: 1, duration: 0.5, ease: C(E.out, 0.5), immediateRender: true }, S(37.6));
+      tl.fromTo($("sc009-cam"), { scale: 1.15 }, { scale: 1.0, duration: 5.3, ease: E.cam, immediateRender: false }, S(37.19));
+      rise("sc009-ex", T(38.79) - L);
+      rise("sc009-us", T(41.43) - L, { dur: 0.6 });
+    })();
+
+    /* ============ C3S010 · 42.55–46.71 · non-compete struck out ============ */
+    scene("sc010", 42.40, 47.05);
+    slideIn("sc010", S(42.40), { dur: 0.5 });
+    (function () {
+      const body = $("sc010-body");
+      [[180, "1."], [330, "2."], [480, "3."]].forEach(([y, n]) => {
+        div(body, `left:110px;top:${y}px;font-size:34px;color:var(--ink);font-weight:700`, "q-abs t-serif", n);
+        [0, 1, 2].forEach((k) => div(body, `left:${k ? 110 : 160}px;top:${y + 16 + k * 44}px;width:${k === 2 ? 640 : 1040 - (k ? 0 : 50)}px;height:12px;background:rgba(20,27,36,0.32);border-radius:3px`, "q-abs"));
+      });
+      [0, 1, 2].forEach((k) => div($("sc010-doc"), `left:110px;top:${716 + k * 44}px;width:${k === 2 ? 700 : 1040}px;height:12px;background:rgba(20,27,36,0.4);border-radius:3px`, "q-abs"));
+      [880, 924, 968].forEach((y, k) => div(body, `left:110px;top:${y}px;width:${k === 2 ? 520 : 1040}px;height:12px;background:rgba(20,27,36,0.32);border-radius:3px`, "q-abs"));
+      wr("sc010-ce", [T(43.43) - L, T(44.23) - L], { dur: 0.6 });
+      // text call-out: everything dims, the frame punches in on clause 4
+      tl.to($("sc010-dim"), { opacity: 0.25, duration: 0.9, ease: E.out }, S(44.6));
+      tl.fromTo($("sc010-cam"), { scale: 1 }, { scale: 1.1, duration: 1.1, ease: E.cam, immediateRender: false }, S(44.6));
+      tl.fromTo($("sc010-hl"), { scaleX: 0 }, { scaleX: 1, duration: 0.35, ease: C("sine.inOut", 0.35), immediateRender: true }, S(44.81));
+      const mk = $("sc010-mk");
+      FX.markup.pen(tl, mk, S(45.62), { points: [[100, 700], [1160, 820]], dur: 0.22, width: 8, color: INK, filter: PEN });
+      FX.markup.pen(tl, mk, S(45.86), { points: [[1150, 696], [110, 826]], dur: 0.22, width: 8, color: INK, filter: PEN, seed: 9 });
+      pop("sc010-ca", T(46.07) - L, 0.3, 0.9);
+      tl.to($("sc010"), { x: -1960, duration: 0.45, ease: C(E.in, 0.45) }, S(46.58));
+    })();
+
+    /* ============ C3S011 · 46.71–50.55 · most important states enforce ============ */
+    scene("sc011", 46.58, 50.6);
+    slideIn("sc011", S(46.58), { from: "right", dur: 0.45 });
+    ground("night", S(46.7));
+    (function () {
+      const svg = $("sc011-svg");
+      const ca = el("path", { d: CA, fill: RED, "fill-opacity": 0.6 }, svg); ca.style.mixBlendMode = "overlay";
+      gsap.set($("sc011-cam"), F_CA);
+      tl.fromTo($("sc011-cam"), F_CA, Object.assign({ duration: 1.8, ease: E.cam, immediateRender: false }, frame(3196, 1700, 0.30)), S(46.9));
+      tl.to(ca, { attr: { "fill-opacity": 0.18 }, duration: 0.6, ease: C(E.out, 0.6) }, S(47.5));
+      rise("sc011-out", T(47.51) - L, { dur: 0.8 });
+      ["new_york", "massachusetts", "texas", "illinois", "new_jersey"].forEach((k, i) => {
+        const b = bbox(US[k]);
+        const p = el("path", { d: US[k], fill: "rgba(242,237,227,0.16)", stroke: BONE, "stroke-width": 16, opacity: 0 }, svg);
+        p.style.filter = "drop-shadow(0 0 18px rgba(242,237,227,0.7))";
+        const g = el("g", { opacity: 0 }, svg);
+        el("circle", { cx: b.cx + 14, cy: b.cy + 18, r: 34, fill: "rgba(0,0,0,0.45)" }, g);
+        el("circle", { cx: b.cx, cy: b.cy, r: 34, fill: BONE, stroke: INK, "stroke-width": 8 }, g);
+        const t = S(48.81) + i * 2 / 12;
+        tl.fromTo(p, { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, t);
+        tl.fromTo(g, { opacity: 0, scale: 1.6, transformOrigin: `${b.cx}px ${b.cy}px` }, { opacity: 1, scale: 1, duration: 0.3, ease: C(E.out, 0.3), immediateRender: true }, t);
+      });
+      wr("sc011-t", [T(48.87) - L, T(49.35) - L, T(49.91) - L], { dur: 0.5 });
+      tl.fromTo($("sc011-cam"), { x: 1.2 }, { x: -38.8, duration: 1.8, ease: "none", immediateRender: false }, S(48.75));
+    })();
+
+    /* ============ C3S012 · 50.55–54.23 · Field's code on a lamp-lit desk ============ */
+    whip("sc011", "sc012", S(50.49), { dir: 1 });
+    scene("sc012", 50.49, 54.23);
+    (function () {
+      tl.fromTo($("sc012-lamp"), { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, S(50.6));
+      tl.to($("sc012-lamp"), { opacity: 0.6, duration: 1 / 24, yoyo: true, repeat: 1 }, S(50.68));
+      tl.fromTo($("sc012-cam"), { scale: 1.0 }, { scale: 1.1, duration: 3.74, ease: "none", immediateRender: false }, S(50.49));
+      tl.fromTo($("sc012-cover"), { rotationY: 0, transformPerspective: 2200 }, { rotationY: -168, transformPerspective: 2200, duration: 0.7, ease: C(E.inOut, 0.7), immediateRender: true }, S(53.3));
+      wr("sc012-t", [T(53.11) - L, T(53.51) - L], { dur: 0.6 });
+    })();
+
+    /* ============ C3S013 · 54.23–59.35 · David Dudley Field, a legal code for New York ============ */
+    scene("sc013", 54.23, 59.35);
+    ground("paper", S(54.23));
+    (function () {
+      tl.fromTo([$("sc013-field"), $("sc013-ht")], { x: 380, opacity: 0.0 }, { x: 0, opacity: 1, duration: 0.9, ease: C(E.out, 0.9), immediateRender: true }, S(54.23));
+      tl.set($("sc013-ht"), { opacity: 0.35 }, S(55.2));
+      const nm = $("sc013-name").firstElementChild;
+      show(nm, T(55.19) - L);
+      wr("sc013-name", [T(55.19) - L, T(55.67) - L, T(56.39) - L], { dur: 0.5, y: 8 });
+      tl.fromTo($("sc013-p1"), { x: -900, rotation: -12 }, { x: 0, rotation: -4, duration: 0.7, ease: C(E.out, 0.7), immediateRender: true }, S(57.29));
+      wr("sc013-lc", [T(57.35) - L, T(57.75) - L], { dur: 0.6 });
+      tl.fromTo($("sc013-p2"), { y: -800, rotation: 9 }, { y: 0, rotation: 3, duration: 0.6, ease: C(E.out, 0.6), immediateRender: true }, S(58.07));
+      pop("sc013-ny", T(58.15) - L, 0.5, 0.85);
+      tl.fromTo($("sc013-cam"), { x: 0 }, { x: -40, duration: 5.1, ease: "none", immediateRender: false }, S(54.23));
+    })();
+
+    /* ============ C3S014 · 59.35–63.03 · New York never adopted it ============ */
+    scene("sc014", 59.35, 63.1);
+    (function () {
+      tl.fromTo($("sc014-card"), { y: -900, rotation: -6 }, { y: 0, rotation: 4, duration: 0.55, ease: C(E.out, 0.55), immediateRender: true }, S(59.35));
+      pop("sc014-ny", S(59.6), 0.5, 0.85);
+      wr("sc014-t", [T(60.15) - L, T(60.71) - L], { dur: 0.5 });
+      const mk = $("sc014-mk");
+      FX.markup.pen(tl, mk, S(60.71), { points: [[40, 60], [480, 660]], dur: 0.22, width: 12, color: INK, filter: PEN });
+      FX.markup.pen(tl, mk, S(60.97), { points: [[470, 50], [50, 670]], dur: 0.22, width: 12, color: INK, filter: PEN, seed: 5 });
+      tl.to($("sc014-card"), { x: -1500, rotation: -8, duration: 0.5, ease: C(E.in, 0.5) }, S(62.23));
+      tl.fromTo($("sc014-map"), { x: 0 }, { x: 60, duration: 3.6, ease: "none", immediateRender: false }, S(59.35));
+    })();
+
+    /* ============ C3S015 · 63.03–68.63 · copied whole to California ============ */
+    whip("sc014", "sc015", S(62.97), { dir: 1 });
+    scene("sc015", 62.97, 68.7);
+    (function () {
+      const svg = $("sc015-svg");
+      const ny = [3365, 1551], ca = [400, 1810];
+      el("circle", { cx: ny[0], cy: ny[1], r: 26, fill: INK }, svg);
+      const route = ink(svg, `M${ny[0]} ${ny[1]} C 2700 1300, 1600 1250, 900 1560 S 520 1760 ${ca[0]} ${ca[1]}`, S(63.27), 1.6, { width: 46, color: YEL, ease: C("sine.inOut", 1.6), filter: MRK, blend: "multiply", opacity: 0.85 });
+      const cap = el("circle", { cx: ca[0], cy: ca[1], r: 34, fill: RED, opacity: 0 }, svg);
+      tl.fromTo(cap, { opacity: 0, attr: { r: 60 } }, { opacity: 1, attr: { r: 34 }, duration: 0.3, ease: C(E.out, 0.3), immediateRender: true }, S(64.85));
+      tl.fromTo($("sc015-trk"), { x: -420, y: 40 }, { x: 380, y: -40, duration: 2.4, ease: E.cam, immediateRender: false }, S(63.03));
+      pop("sc015-ca", T(63.27) - L, 0.5, 0.9);
+      // the code card arrives in California; a photocopy bar sweeps it and an identical copy slides out
+      tl.fromTo($("sc015-c1"), { opacity: 0, y: -60, scale: 0.9 }, { opacity: 1, y: 0, scale: 1, duration: 0.6, ease: C(E.out, 0.6), immediateRender: true }, S(65.4));
+      tl.fromTo($("sc015-scan"), { opacity: 0, top: -40 }, { opacity: 1, top: 460, duration: 0.5, ease: "none", immediateRender: true }, S(66.33));
+      tl.to($("sc015-scan"), { opacity: 0, duration: 0.1 }, S(66.83));
+      tl.fromTo($("sc015-c2"), { opacity: 0, x: 0, y: 0, rotation: -3 }, { opacity: 1, x: -400, y: 70, rotation: 4, duration: 0.9, ease: C(E.inOut, 0.9), immediateRender: true }, S(66.85));
+      wr("sc015-cp", [T(66.39) - L, T(66.87) - L], { dur: 0.6 });
+    })();
+
+    /* ============ C3S016 · 68.63–75.27 · Cal. Civil Code §1673 ============ */
+    whip("sc015", "sc016", S(68.57), { dir: 1, flash: true });
+    scene("sc016", 68.57, 75.27);
+    ground("night", S(68.57));
+    (function () {
+      const P0 = { x: 0, y: 0, scale: 1 }, P1 = frame(974, 548, 1.7), P2 = frame(974, 548, 1.82);
+      tl.fromTo($("sc016-cam"), P0, Object.assign({ duration: 2.3, ease: E.in, immediateRender: false }, { x: P1.x * 0.6, y: P1.y * 0.6, scale: 1.42 }), S(68.7));
+      tl.to($("sc016-cam"), Object.assign({ duration: 1.0, ease: E.out }, P1), S(71.0));
+      FX.focusHunt(tl, $("sc016-page"), S(71.05), { dur: 0.8 });
+      tl.to($("sc016-cam"), Object.assign({ duration: 3.3, ease: "none" }, P2), S(72.0));
+      FX.contrastCallout(tl, $("sc016-veil"), S(72.4), { w: 777, h: 1206, d: "M70 584 L732 584 L732 690 L70 690 Z", feather: 14, color: "rgba(18,16,13,1)", strength: 0.6 });
+      tl.fromTo($("sc016-hl"), { scaleX: 0 }, { scaleX: 1, duration: 0.45, ease: C("sine.inOut", 0.45), immediateRender: true }, S(73.77));
+      wr("sc016-t", [T(69.91) - L, T(70.15) - L, T(70.23) - L, T(70.39) - L], { dur: 0.5 });
+    })();
+
+    /* ============ C3S017 · 75.27–82.10 · a contract is illegal ============ */
+    scene("sc017", 75.27, 82.95);
+    ground("paper", S(75.27));
+    (function () {
+      const ln = $("sc017-lines");
+      for (let i = 0; i < 9; i++) div(ln, `left:130px;top:${330 + i * 78}px;width:${i % 4 === 3 ? 640 : 1140}px;height:11px;background:rgba(20,27,36,0.3);border-radius:3px`, "q-abs");
+      tl.fromTo($("sc017-form"), { x: 700, rotation: 3 }, { x: 0, rotation: -0.8, duration: 0.7, ease: C(E.out, 0.7), immediateRender: true }, S(75.27));
+      rise("sc017-h", T(75.75) - L, { dur: 0.5 });
+      // ILLEGAL stamp: lands, choke-settles, camera knocks
+      tl.fromTo($("sc017-st"), { opacity: 0, scale: 1.7 }, { opacity: 0.92, scale: 1, duration: 0.18, ease: C("power3.in", 0.18), immediateRender: true }, T(76.47) - L - 0.12);
+      FX.chokeSettle(tl, ch017, $("sc017-st"), T(76.47) - L, 5, 0.6, "none");
+      tl.fromTo($("sc017-cam"), { x: 0 }, { x: 10, duration: 1 / 12, yoyo: true, repeat: 1, ease: "none", immediateRender: false }, S(76.42));
+      tl.fromTo($("sc017-cam"), { y: 0 }, { y: -720, duration: 1.1, ease: E.cam, immediateRender: false }, S(77.4));
+      const ws = words("sc017-ty");
+      [T(78.74) - L, T(78.98) - L, T(79.78) - L, T(80.26) - L, T(80.42) - L, T(80.66) - L, T(81.06) - L].forEach((t, i) => show(ws[i], t));
+      tl.to($("sc017-cam"), { y: -860, duration: 0.6, ease: E.in }, S(82.0));
+    })();
+
+    /* ============ C3S018 · 82.10–86.90 · the Silicon Valley TV show ============ */
+    scene("sc018", 82.10, 86.90);
+    ground("night", S(82.10));
+    (function () {
+      tl.fromTo($("sc018-tv"), { y: 420 }, { y: 0, duration: 0.8, ease: E.cam, immediateRender: false }, S(82.10));
+      tl.fromTo($("sc018-tv"), { scale: 1 }, { scale: 1.05, duration: 4, ease: "none", immediateRender: false, transformOrigin: "40% 45%" }, S(82.9));
+      gsap.set($("sc018-scr"), { scaleY: 0.012, opacity: 0 });
+      tl.fromTo($("sc018-scr"), { scaleY: 0.012, opacity: 1, filter: "brightness(4)" }, { scaleY: 1, opacity: 1, filter: "brightness(1)", duration: 0.25, ease: "power2.out", immediateRender: false }, S(83.94));
+      wr("sc018-tvs", [T(84.74) - L, T(85.06) - L], { dur: 0.6 });
+      rise("sc018-ep", T(85.46) - L, { dur: 0.6 });
+      // CRT off: collapse to a line, then a dot
+      tl.to($("sc018-scr"), { scaleY: 0.01, filter: "brightness(3)", duration: 0.12, ease: "power2.in" }, S(86.6));
+      tl.to($("sc018-scr"), { scaleX: 0.01, duration: 0.1, ease: "power2.in" }, S(86.72));
+      tl.to($("sc018-scr"), { opacity: 0, duration: 0.06 }, S(86.82));
+    })();
+
+    /* ============ C3S019 · 86.90–90.74 · the cork board of what we already covered ============ */
+    scene("sc019", 86.90, 90.80);
+    (function () {
+      tl.fromTo($("sc019"), { filter: "brightness(0)" }, { filter: "brightness(1)", duration: 0.3, ease: "power1.out", immediateRender: false }, S(86.90));
+      tl.set($("sc019"), { filter: "none" }, S(87.25));
+      const box = $("sc019-cards");
+      const C19 = [
+        ["assets/archival/collage/terman_frederick_1955.jpg", 170, 110, 320, 312, -4],
+        ["assets/archival/hp/hewlett_and_packard_together_1960.jpg", 560, 80, 380, 307, 3],
+        ["assets/archival/hp/layers/garage.png", 1280, 100, 380, 318, -2],
+        ["assets/archival/hoover/stanford_inner_quad_west_entrance_c1900.jpg", 230, 560, 440, 290, 2],
+        ["assets/intro/photos/silicon_valley_aerial.jpg", 1240, 560, 440, 293, -3],
+      ];
+      const pins = [];
+      C19.forEach(([src, x, y, w, h, r], i) => {
+        const c = div(box, `left:${x}px;top:${y}px;width:${w}px;height:${h}px;transform:rotate(${r}deg);background:#e4dccb;border:12px solid #f1ebdd;opacity:0`, "q-card", `<img src="${src}" alt="" style="object-fit:${i === 2 ? "contain" : "cover"};filter:grayscale(1) sepia(0.25) contrast(1.05)" />`);
+        const p = div(box, `left:${x + w / 2 - 13}px;top:${y - 6}px;opacity:0`, "q-pin");
+        const t = S(86.95) + i * 2 / 12;
+        tl.fromTo(c, { opacity: 0, scale: 1.12 }, { opacity: 1, scale: 1, duration: 1 / 12, ease: "none", immediateRender: true }, t);
+        tl.fromTo(p, { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, t + 1 / 12);
+        pins.push([x + w / 2, y + 7]);
+      });
+      pop("sc019-note", T(88.90) - L, 0.5, 0.9);
+      const s = $("sc019-str");
+      const order = [0, 1, 2, 4, 3, 0];
+      for (let i = 0; i < order.length - 1; i++) {
+        const [x1, y1] = pins[order[i]], [x2, y2] = pins[order[i + 1]];
+        ink(s, `M${x1} ${y1} Q${(x1 + x2) / 2} ${Math.max(y1, y2) + 70} ${x2} ${y2}`, S(88.9) + i * 0.16, 0.3, { width: 4, color: RED, ease: "none" });
+      }
+      wr("sc019-t", [T(89.70) - L, T(90.02) - L, T(90.18) - L], { dur: 0.4 });
+      tl.fromTo($("sc019-cam"), { scale: 1 }, { scale: 1.15, duration: 3.9, ease: "none", immediateRender: false }, S(86.9));
+    })();
+
+    /* ============ C3S020 · 90.74–94.66 · Fairchild, 1960 ============ */
+    whip("sc019", "sc020", S(90.68), { vertical: true, dir: 1 });
+    scene("sc020", 90.68, 94.66);
+    (function () {
+      gated(90.6, 94.7, () => FX.streaks($("sc020-streaks"), { seed: 2001, speed: 0.4, gain: 0.8 }));
+      tl.fromTo($("sc020-card"), { scale: 1.0, x: -30, rotationY: -4, transformPerspective: 1400 }, { scale: 1.1, x: 30, rotationY: 2, transformPerspective: 1400, duration: 4.0, ease: E.cam, immediateRender: true }, S(90.68));
+      rise("sc020-f", T(90.74) - L, { dur: 1.0 });
+      show($("sc020-law").firstElementChild, T(93.38) - L);
+      $("sc020-law").firstElementChild.style.opacity = 0;
+      wr("sc020-law", [T(93.38) - L, T(93.78) - L], { dur: 0.4, y: 6 });
+    })();
+
+    /* ============ C3S021–022 · 94.66–105.54 · the Fairchild family tree ============ */
+    scene("sc021", 94.66, 105.6);
+    ground("paper", S(94.66));
+    (function () {
+      const svg = $("sc021-svg"), nodes = $("sc021-nodes"), r = FX.rng(2101);
+      const FC = [960, 240], Y1 = 560, X1 = [300, 630, 960, 1290, 1620];
+      ink(svg, `M${FC[0]} ${FC[1]} L${FC[0]} 400`, S(94.7), 0.4, { width: 6 });
+      ink(svg, `M${X1[0]} 400 L${X1[4]} 400`, S(95.0), 0.6, { width: 6, ease: C(E.inOut, 0.6) });
+      const node = (x, y, t, big) => { const n = div(nodes, `left:${x}px;top:${y}px` + (big ? ";width:44px;height:44px;margin:-22px 0 0 -22px" : ""), "q-node"); tl.fromTo(n, { opacity: 0, scale: 1.6 }, { opacity: 1, scale: 1, duration: 1 / 12, ease: "none", immediateRender: true }, t); return n; };
+      X1.forEach((x, i) => { ink(svg, `M${x} 400 L${x} ${Y1 - 30}`, S(96.98) + i * 0.08, 0.6, { width: 6 }); if (x !== 1290) node(x, Y1, S(97.6) + i / 12, true); });
+      // later generations sprout from every node at 12 fps ("a lot of things are born")
+      let t0 = S(104.0), k = 0;
+      const gen = (px, py, depth) => {
+        if (depth > 3) return;
+        const n = depth === 1 ? 3 : 2, y = py + 300;
+        for (let j = 0; j < n; j++) {
+          const span = depth === 1 ? 260 : depth === 2 ? 120 : 56;
+          const x = px + (j - (n - 1) / 2) * span + (r() - 0.5) * 20;
+          const t = t0 + Math.min(9, Math.floor(k++ / 7)) / 12;
+          const p = el("path", { d: `M${px} ${py + 24} C${px} ${py + 150} ${x} ${y - 150} ${x} ${y - 18}`, fill: "none", stroke: INK, "stroke-width": 4, opacity: 0 }, svg);
+          tl.fromTo(p, { opacity: 0 }, { opacity: 0.85, duration: 0.001, immediateRender: true }, t);
+          node(x, y, t + 1 / 12);
+          gen(x, y, depth + 1);
+        }
+      };
+      X1.forEach((x) => gen(x, Y1, 1));
+      show("sc021-fc", S(94.7));
+      wr("sc021-dl", [T(96.98) - L, T(97.22) - L, T(97.30) - L], { dur: 0.6 });
+      pop("sc021-intel", S(98.84), 0.6, 0.6);
+      rise("sc021-born", T(104.02) - L, { dur: 0.8 });
+      const cam = $("sc021-cam");
+      tl.fromTo(cam, { y: 0, scale: 1 }, { y: -120, scale: 1, duration: 2.2, ease: E.cam, immediateRender: false }, S(96.9));
+      tl.to(cam, { y: -192, scale: 0.6, duration: 1.8, ease: E.cam }, S(101.94));
+      tl.to(cam, { y: -210, scale: 0.57, duration: 1.2, ease: "none" }, S(104.3));
+    })();
+
+    /* ============ C3S023–024 · 105.54–114.66 · "wasn't that big a deal" → "a bigger role" ============ */
+    whip("sc021", "sc023", S(105.48), { vertical: true, dir: -1 });
+    scene("sc023", 105.48, 115.2);
+    ground("night", S(105.48));
+    (function () {
+      const g = $("sc023-ghost"), b = bbox(CA);
+      g.setAttribute("viewBox", `${b.x0} ${b.y0} ${b.w} ${b.h}`);
+      el("path", { d: CA, fill: "rgba(242,237,227,0.04)", stroke: BONE, "stroke-width": 6, opacity: 0.16 }, g);
+      const svg = $("sc023-svg");
+      ink(svg, "M200 860 L2440 860", S(105.6), 0.8, { color: BONE, width: 3, opacity: 0.7, ease: C(E.inOut, 0.8) });
+      ink(svg, "M200 860 L200 120", S(105.6), 0.8, { color: BONE, width: 3, opacity: 0.7, ease: C(E.inOut, 0.8) });
+      for (let i = 1; i < 6; i++) el("path", { d: `M200 ${860 - i * 130} L2440 ${860 - i * 130}`, stroke: BONE, "stroke-width": 1, "stroke-dasharray": "6 14", opacity: 0.18 }, svg);
+      ink(svg, "M200 836 C 500 838, 760 834, 1000 830", S(106.0), 2.6, { color: RED, width: 9, ease: "none" });
+      ink(svg, "M210 890 L210 910 L990 910 L990 890", S(108.6), 0.3, { color: BONE, width: 3, opacity: 0.85, ease: C(E.out, 0.3) });
+      rise("sc023-beg", T(108.66) - L, { dur: 0.4 });
+      rise("sc023-arg", T(106.42) - L, { dur: 0.8 });
+      wr("sc023-deal", [T(107.22) - L, T(107.46) - L, T(107.62) - L, T(107.86) - L, T(107.94) - L], { dur: 0.4 });
+      // C3S024: the line takes off; camera tracks right
+      out("sc023-arg", S(109.1), 0.4); out("sc023-deal", S(109.1), 0.4); out("sc023-beg", S(109.1), 0.4);
+      ink(svg, "M1000 830 C 1260 826, 1460 760, 1600 520 S 1820 170 1900 150", S(109.94), 1.0, { color: RED, width: 9, ease: C(E.in, 1.0) });
+      tl.fromTo($("sc023-cam"), { x: 0 }, { x: -620, duration: 1.8, ease: E.cam, immediateRender: false }, S(109.3));
+      wr("sc023-br", [T(110.18) - L, T(110.42) - L], { dur: 0.6 });
+      // big company block → people leave for smaller companies
+      const bl = $("sc023-blocks");
+      div(bl, "left:1960px;top:520px;width:250px;height:250px;border:4px solid #f2ede3;background:rgba(242,237,227,0.06)", "q-abs");
+      const smalls = [[2330, 470], [2330, 620], [2330, 770]];
+      smalls.forEach(([x, y]) => div(bl, `left:${x}px;top:${y}px;width:120px;height:110px;border:3px solid rgba(242,237,227,0.8)`, "q-abs"));
+      const PER = '<svg viewBox="0 0 30 40" width="30" height="40"><circle cx="15" cy="8" r="7" fill="#f2ede3"/><path d="M3 40 V27 Q3 17 15 17 Q27 17 27 27 V40Z" fill="#f2ede3"/></svg>';
+      const ppl = [];
+      for (let i = 0; i < 9; i++) ppl.push(div(bl, `left:${1990 + (i % 3) * 70}px;top:${560 + Math.floor(i / 3) * 65}px;width:30px;height:40px`, "q-abs", PER));
+      [0, 4, 8].forEach((pi, j) => {
+        const p = ppl[pi], sx = 1990 + (pi % 3) * 70, sy = 560 + Math.floor(pi / 3) * 65, [tx, ty] = [smalls[j][0] + 45, smalls[j][1] + 38];
+        const st = { u: 0 }, t = S(112.3) + j * 0.22;
+        tl.fromTo(st, { u: 0 }, { u: 1, duration: 0.6, ease: C(E.inOut, 0.6), immediateRender: true, onUpdate: () => { const x = sx + (tx - sx) * st.u, y = sy + (ty - sy) * st.u - Math.sin(Math.PI * st.u) * 120; p.style.transform = `translate(${(x - sx).toFixed(1)}px, ${(y - sy).toFixed(1)}px)`; } }, t);
+      });
+      rise("sc023-lv", T(112.34) - L, { dur: 0.6 });
+      tl.fromTo($("sc023-cam"), { y: 0 }, { y: -20, duration: 3.5, ease: "none", immediateRender: false }, S(111.1));
+    })();
+
+    /* ============ C3S025 · 114.66–120.58 · online vs "I think it did" ============ */
+    scene("sc025", 114.55, 120.6);
+    slideIn("sc025", S(114.55), { dur: 0.5 });
+    ground("paper", S(114.6));
+    (function () {
+      tl.fromTo($("sc025-s1"), { opacity: 0, scale: 1.08 }, { opacity: 1, scale: 1, duration: 1 / 12, immediateRender: true }, S(115.3));
+      wr("sc025-s1", [T(115.86) - L, T(116.02) - L, T(116.18) - L, T(116.26) - L], { dur: 0.3, y: 6 });
+      tl.fromTo($("sc025-s2"), { opacity: 0, scale: 1.08 }, { opacity: 1, scale: 1, duration: 1 / 12, immediateRender: true }, S(116.9));
+      tl.fromTo($("sc025-s3"), { opacity: 0, scale: 1.08 }, { opacity: 1, scale: 1, duration: 1 / 12, immediateRender: true }, S(117.3));
+      pop("sc025-on", T(117.94) - L, 0.5, 0.9);
+      wr("sc025-me", [T(118.82) - L, T(118.98) - L, T(119.14) - L, T(119.30) - L], { dur: 0.35, y: 8 });
+      const mk = $("sc025-mk");
+      FX.markup.pen(tl, mk, S(119.3), { points: [[1000, 548], [1820, 540]], dur: 0.4, width: 7, color: INK, filter: PEN });
+      FX.markup.pen(tl, mk, S(119.66), { points: [[1010, 568], [1800, 562]], dur: 0.3, width: 6, color: INK, filter: PEN, seed: 8 });
+      tl.to([$("sc025-s1"), $("sc025-s2"), $("sc025-s3"), $("sc025-on")], { opacity: 0.35, duration: 0.6, ease: E.out }, S(118.7));
+      tl.fromTo($("sc025-cam"), { x: 0, y: 0 }, { x: -20, y: -10, duration: 5.9, ease: "none", immediateRender: false }, S(114.66));
+    })();
+
+    /* ============ C3S026 · 120.58–124.98 · 1965, Terman steps down ============ */
+    whip("sc025", "sc026", S(120.52), { dir: 1, flash: true });
+    scene("sc026", 120.52, 124.98);
+    ground("night", S(120.52));
+    (function () {
+      gated(120.4, 125.0, () => FX.streaks($("sc026-streaks"), { seed: 2601, speed: 0.45, gain: 0.9 }));
+      // odometer measures glyph widths: build it while the scene is displayed (MANUAL 4.2)
+      const sc = $("sc026"); sc.style.display = "block";
+      FX.text.odometer(tl, $("sc026-yr"), T(122.34) - L, { dur: 0.55, stagger: 0.04, seed: 26 });
+      sc.style.display = "none";
+      tl.fromTo($("sc026-card"), { x: 500, opacity: 0 }, { x: 0, opacity: 1, duration: 0.9, ease: C(E.out, 0.9), immediateRender: true }, S(120.6));
+      pop("sc026-tn", T(123.46) - L, 0.5, 0.9);
+      tl.to([$("sc026-card"), $("sc026-tn")], { y: 380, opacity: 0.3, duration: 0.43, ease: C(E.inOut, 0.43) }, S(124.02));
+      wr("sc026-sd", [T(124.02) - L, T(124.42) - L], { dur: 0.45 });
+      tl.fromTo($("sc026-cam"), { scale: 1 }, { scale: 1.04, duration: 4.4, ease: "none", immediateRender: false }, S(120.58));
+    })();
+
+    /* ============ C3S027 · 124.98–129.62 · everything he built (D07 collage) ============ */
+    scene("sc027", 124.98, 129.7);
+    ground("paper", S(124.98));
+    (function () {
+      ["a", "b", "c", "d"].forEach((k, i) => tl.fromTo($("sc027-" + k), { y: i % 2 ? -700 : 900, opacity: 1 }, { y: 0, duration: 0.6, ease: C(E.out, 0.6), immediateRender: true }, S(124.98) + i * 0.1));
+      const mk = $("sc027-mk");
+      [[640, 160], [1250, 140], [870, 610], [1700, 200]].forEach(([x, y], i) => FX.markup.pen(tl, mk, S(125.76) + i * 0.15, { points: [[x - 34, y], [x - 8, y + 34], [x + 40, y - 40]], dur: 0.22, width: 10, color: RED, filter: PEN, jitter: 2, seed: 30 + i }));
+      rise("sc027-ev", T(125.78) - L, { dur: 0.9 });
+      show($("sc027-hb").firstElementChild, T(128.66) - L);
+      wr("sc027-hb", [T(128.66) - L, T(128.82) - L], { dur: 0.35, y: 6 });
+      tl.fromTo($("sc027-cam"), { x: 0 }, { x: -40, duration: 4.6, ease: "none", immediateRender: false }, S(124.98));
+    })();
+
+    /* ============ C3S028 · 129.62–136.90 · 1961 USGS quad: important companies ============ */
+    whip("sc027", "sc028", S(129.56), { dir: -1 });
+    scene("sc028", 129.56, 136.90);
+    ground("night", S(129.56));
+    (function () {
+      tl.fromTo($("sc028-cam"), frame(1850, 1450, 0.62), Object.assign({ duration: 7.3, ease: E.cam, immediateRender: true }, frame(1950, 1500, 0.72)), S(129.56));
+      pop("sc028-65", T(129.94) - L, 0.6, 0.9);
+      rise("sc028-gr", T(133.30) - L, { dur: 0.9 });
+      const mk = $("sc028-mk");
+      [[1602, 2108, 150], [1798, 1972, 120], [3020, 1671, 150]].forEach(([x, y, r], i) => FX.markup.circle(tl, mk, S(135.70) + i * 0.12, { cx: x, cy: y, rx: r, ry: r * 0.8, width: 14, color: RED, filter: MRK, dur: 0.35, seed: 280 + i }));
+      wr("sc028-ic", [T(135.78) - L, T(136.18) - L], { dur: 0.4 });
+    })();
+
+    /* ============ C3S029 · 136.90–142.17 · nowhere close: a behemoth ============ */
+    scene("sc029", 136.90, 142.2);
+    ground("paper", S(136.90));
+    (function () {
+      tl.fromTo($("sc029-b1"), { scaleY: 0 }, { scaleY: 1, duration: 0.8, ease: C(E.out, 0.8), immediateRender: true }, S(136.95));
+      rise("sc029-l1", S(137.1), { dur: 0.6 });
+      tl.fromTo($("sc029-th"), { opacity: 0, scaleX: 0, transformOrigin: "0 50%" }, { opacity: 1, scaleX: 1, duration: 0.6, ease: C(E.inOut, 0.6), immediateRender: true }, S(137.6));
+      tl.fromTo($("sc029-b2"), { scaleY: 0 }, { scaleY: 1, duration: 1.5, ease: C(E.inOut, 1.5), immediateRender: true }, S(138.09));
+      tl.fromTo($("sc029-cam"), { y: 0 }, { y: 260, duration: 1.8, ease: E.cam, immediateRender: false }, S(138.3));
+      wr("sc029-nc", [T(138.09) - L, T(138.49) - L], { dur: 0.7 });
+      pop("sc029-bh", T(140.73) - L, 0.6, 0.85);
+      tl.to($("sc029-cam"), { y: 300, duration: 2.0, ease: "none" }, S(140.1));
+    })();
+
+    /* ============ C3S030 · 142.17–146.65 · Hoover gets some credit ============ */
+    whip("sc029", "sc030", S(142.11), { dir: 1, flash: true });
+    scene("sc030", 142.11, 147.2);
+    ground("night", S(142.11));
+    (function () {
+      tl.fromTo($("sc030-cam"), { scale: 1 }, { scale: 1.06, duration: 4.5, ease: "none", immediateRender: false }, S(142.17));
+      rise("sc030-h", T(142.41) - L, { dur: 1.2 });
+      rise("sc030-c", T(143.69) - L, { dur: 0.9 });
+    })();
+
+    /* ============ C3S031 · 146.65–154.81 · Stanford could not charge tuition ============ */
+    scene("sc031", 146.55, 154.85);
+    slideIn("sc031", S(146.55), { dur: 0.5 });
+    ground("paper", S(146.6));
+    (function () {
+      wr("sc031-cnl", [T(148.65) - L, T(148.81) - L, T(149.05) - L], { dur: 0.7 });
+      wr("sc031-ct", [T(149.93) - L, T(150.41) - L], { dur: 0.6 });
+      tl.fromTo($("sc031-hl"), { scaleX: 0 }, { scaleX: 1, duration: 0.4, ease: C("sine.inOut", 0.4), immediateRender: true }, S(150.5));
+      // the tuition bar tries to fill and can't
+      tl.fromTo($("sc031-bar"), { scaleX: 0 }, { scaleX: 0.12, duration: 0.5, ease: C(E.out, 0.5), immediateRender: true }, S(150.95));
+      tl.to($("sc031-bar"), { scaleX: 0, duration: 0.4, ease: C(E.in, 0.4) }, S(151.5));
+      const mk = $("sc031-mk");
+      FX.markup.pen(tl, mk, S(151.95), { points: [[950, 572], [1790, 664]], dur: 0.22, width: 9, color: INK, filter: PEN });
+      FX.markup.pen(tl, mk, S(152.2), { points: [[1780, 568], [960, 666]], dur: 0.22, width: 9, color: INK, filter: PEN, seed: 4 });
+      rise("sc031-imp", T(152.49) - L, { dur: 0.8 });
+      FX.markup.pen(tl, mk, S(152.6), { points: [[900, 905], [1050, 895], [1200, 908], [1420, 896]], dur: 0.5, width: 6, color: INK, filter: PEN, seed: 12 });
+      tl.fromTo($("sc031-cam"), { x: 0 }, { x: -24, duration: 8, ease: "none", immediateRender: false }, S(146.65));
+    })();
+
+    /* ============ C3S032 · 154.81–159.13 · Hoover Institution (2.5D) ============ */
+    whip("sc031", "sc032", S(154.75), { vertical: true, dir: 1 });
+    scene("sc032", 154.75, 159.13);
+    ground("night", S(154.75));
+    (function () {
+      gated(154.7, 159.2, () => FX.streaks($("sc032-streaks"), { seed: 3201, speed: 0.3, gain: 0.7 }));
+      tl.fromTo($("sc032-l0"), { scale: 1.0, y: 0 }, { scale: 1.04, y: 10, duration: 4.4, ease: E.cam, immediateRender: true }, S(154.75));
+      tl.fromTo($("sc032-ttl"), { scale: 1.0 }, { scale: 1.06, duration: 4.4, ease: E.cam, immediateRender: false }, S(154.75));
+      tl.fromTo($("sc032-l1"), { scale: 1.0, y: 0, x: 0 }, { scale: 1.14, y: -50, x: -30, duration: 4.4, ease: E.cam, immediateRender: true }, S(154.75));
+      rise("sc032-hi", T(155.93) - L, { dur: 0.8 });
+      rise("sc032-gp", T(157.05) - L, { dur: 0.8 });
+      rise("sc032-ttl", T(158.17) - L, { dur: 0.45, y: 14 });
+    })();
+
+    /* ============ C3S033 · 159.13–165.45 · "the best… very good, very good at least" ============ */
+    scene("sc033", 159.13, 165.5);
+    ground("paper", S(159.13));
+    (function () {
+      tl.fromTo($("sc033-ph"), { x: 600, rotation: 4 }, { x: 0, rotation: -1.5, duration: 0.7, ease: C(E.out, 0.7), immediateRender: true }, S(159.13));
+      wr("sc033-td", [T(159.93) - L, T(160.09) - L, T(160.25) - L], { dur: 0.5 });
+      // pen writes "best" (left-to-right wipe), strikes it, writes "very good"
+      tl.fromTo($("sc033-best"), { opacity: 1, clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: 0.45, ease: "sine.inOut", immediateRender: true }, T(161.77) - L);
+      FX.markup.pen(tl, $("sc033-mk"), S(163.45), { points: [[590, 840], [860, 826]], dur: 0.2, width: 9, color: INK, filter: PEN });
+      const ws = words("sc033-vg");
+      [T(163.53) - L, T(163.85) - L].forEach((t, i) => tl.fromTo(ws[i], { opacity: 1, clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: 0.35, ease: "sine.inOut", immediateRender: true }, t));
+      tl.fromTo($("sc033-cam"), { scale: 1 }, { scale: 1.05, duration: 6.3, ease: "none", immediateRender: false }, S(159.13));
+    })();
+
+    /* ============ C3S034 · 165.45–168.57 · their videos (projector) ============ */
+    whip("sc033", "sc034", S(165.39), { dir: 1, flash: true });
+    scene("sc034", 165.39, 169.1);
+    ground("night", S(165.39));
+    (function () {
+      tl.fromTo($("sc034-scr"), { scaleY: 0.25 }, { scaleY: 1, duration: 0.5, ease: C(E.out, 0.5), immediateRender: true }, S(165.39));
+      tl.fromTo([$("sc034-beam"), $("sc034-img")], { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, S(165.62));
+      tl.to($("sc034-beam"), { opacity: 0.6, duration: 1 / 24, yoyo: true, repeat: 1 }, S(165.7));
+      gated(165.3, 169.1, () => FX.weave($("sc034-weave"), { amp: 1.8, flicker: 0.06, seed: 34 }));
+      wr("sc034-tv", [T(165.77) - L, T(166.01) - L], { dur: 0.5 });
+      rise("sc034-hi", T(167.61) - L, { dur: 0.5 });
+      tl.fromTo($("sc034-cam"), { scale: 1 }, { scale: 1.04, duration: 3.1, ease: "none", immediateRender: false }, S(165.45));
+    })();
+
+    /* ============ C3S035 · 168.57–174.17 · the recipe card ============ */
+    scene("sc035", 168.45, 174.25);
+    slideIn("sc035", S(168.45), { dur: 0.55 });
+    ground("paper", S(168.5));
+    (function () {
+      show("sc035-hd", T(169.13) - L);
+      [["i1", T(170.49) - L], ["i2", T(171.21) - L], ["i3", T(171.85) - L], ["i3b", T(172.41) - L], ["i4", T(172.97) - L], ["i5", T(173.53) - L], ["i6", T(173.69) - L], ["i7", T(173.85) - L]].forEach(([k, t]) => show($("sc035-" + k), t));
+      [["p1", 170.49], ["p2", 171.21], ["p3", 171.85]].forEach(([k, t]) => tl.fromTo($("sc035-" + k), { opacity: 0, scale: 1.15 }, { opacity: 1, scale: 1, duration: 1 / 12, immediateRender: true }, S(t) - 0.02));
+      const mk = $("sc035-mk");
+      FX.markup.pen(tl, mk, S(173.5), { points: [[640, 470], [760, 470]], dur: 0.2, width: 6, color: INK, filter: PEN });
+      FX.markup.pen(tl, mk, S(173.5) + 0.2, { points: [[740, 455], [762, 470], [740, 486]], dur: 0.1, width: 6, color: INK, filter: PEN, jitter: 1 });
+      FX.markup.pen(tl, mk, S(173.85), { points: [[900, 640], [1020, 640]], dur: 0.2, width: 6, color: INK, filter: PEN, seed: 6 });
+      FX.markup.pen(tl, mk, S(173.85) + 0.2, { points: [[1000, 625], [1022, 640], [1000, 656]], dur: 0.1, width: 6, color: INK, filter: PEN, jitter: 1 });
+      tl.fromTo($("sc035-card"), { y: 0 }, { y: -40, duration: 5.4, ease: "none", immediateRender: false }, S(168.6));
+      // the card flips over → blueprint (cont.)
+      tl.to($("sc035-card"), { rotationY: 90, transformPerspective: 2200, duration: 0.24, ease: E.in }, S(173.98));
+    })();
+
+    /* ============ C3S036 · 174.17–179.37 · Silicon Valley, built by someone (blueprint) ============ */
+    scene("sc036", 174.22, 179.45);
+    (function () {
+      tl.fromTo($("sc036-cam"), { rotationY: -90, transformPerspective: 2200, scale: 1 }, { rotationY: 0, transformPerspective: 2200, scale: 1, duration: 0.35, ease: E.out, immediateRender: false }, S(174.22));
+      tl.to($("sc036-cam"), { scale: 1.05, duration: 4.7, ease: "none" }, S(174.6));
+      const svg = $("sc036-svg"), BL = "rgba(234,241,246,0.85)";
+      ink(svg, "M180 360 C 420 330, 520 520, 760 560 S 1120 470, 1260 600 S 1500 760, 1760 720", S(174.5), 1.5, { color: BL, width: 4, ease: C(E.inOut, 1.5) });
+      ink(svg, "M180 600 C 420 590, 600 760, 860 800 S 1000 940, 1080 1000", S(174.8), 1.2, { color: BL, width: 3, ease: C(E.inOut, 1.2) });
+      ink(svg, "M180 330 L180 300 M180 315 L760 315 M760 300 L760 330", S(175.6), 0.6, { color: BL, width: 3 });
+      ink(svg, "M110 360 L110 600 M95 360 L125 360 M95 600 L125 600", S(175.9), 0.5, { color: BL, width: 3 });
+      wr("sc036-sv", [T(175.61) - L, T(176.17) - L], { dur: 0.6 });
+      rise("sc036-bb", T(176.89) - L, { dur: 0.6 });
+      wr("sc036-so", [T(177.53) - L, T(177.77) - L], { dur: 0.5 });
+      pop("sc036-tc", S(177.75), 0.5, 0.7);
+    })();
+
+    /* ============ C3S037 · 179.37–182.01 · a Taiwan connection (Pacific — motif master for c3s02 C3S046) ============ */
+    whip("sc036", "sc037", S(179.31), { dir: 1, flash: true });
+    scene("sc037", 179.31, 182.01);
+    ground("night", S(179.31));
+    const PAC = { stanford: [6064.5, 993.2], taiwan: [930, 1560], arcCtrl: [3500, 420] };
+    (function () {
+      const svg = $("sc037-svg");
+      const tw = el("path", { d: TW.taiwan, fill: CEL, "fill-opacity": 0.85, stroke: CEL, "stroke-width": 6, opacity: 0 }, svg);
+      tw.style.filter = "drop-shadow(0 0 6px rgba(159,199,178,0.8))";
+      const [sx, sy] = PAC.stanford, [tx, ty] = PAC.taiwan;
+      const pin = el("g", { opacity: 0 }, svg);
+      el("circle", { cx: sx, cy: sy, r: 70, fill: "none", stroke: RED, "stroke-width": 8, opacity: 0.6 }, pin);
+      el("circle", { cx: sx, cy: sy, r: 34, fill: RED, stroke: BONE, "stroke-width": 8 }, pin);
+      tl.fromTo($("sc037-cam"), frame(3497, 1280, 0.40), Object.assign({ duration: 2.9, ease: E.cam, immediateRender: true }, frame(3497, 1300, 0.32)), S(179.31));
+      tl.fromTo(pin, { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, S(179.6));
+      tl.fromTo(tw, { opacity: 0 }, { opacity: 1, duration: 0.3, ease: C(E.out, 0.3), immediateRender: true }, S(180.43));
+      rise("sc037-tw", T(180.49) - L, { dur: 0.4 });
+      ink(svg, `M${sx} ${sy} Q${PAC.arcCtrl[0]} ${PAC.arcCtrl[1]} ${tx + 30} ${ty - 30}`, S(181.07), 0.43, { color: BONE, width: 10, ease: C("sine.inOut", 0.43) });
+      rise("sc037-cn", T(181.13) - L, { dur: 0.35 });
+    })();
+
+    /* ============ C3S038 · 182.01–185.61 · Terman teaching in the 30s ============ */
+    scene("sc038", 182.01, 185.65);
+    ground("paper", S(182.01));
+    (function () {
+      tl.fromTo($("sc038-ph"), { x: -700, rotation: -8 }, { x: 0, rotation: -2, duration: 0.7, ease: C(E.out, 0.7), immediateRender: true }, S(182.01));
+      pop("sc038-tn", T(182.25) - L, 0.6, 0.9);
+      tl.fromTo($("sc038-tag"), { opacity: 0, scale: 1.5 }, { opacity: 1, scale: 1, duration: 0.2, ease: C("power3.in", 0.2), immediateRender: true }, T(184.01) - L);
+      wr("sc038-bw", [T(184.57) - L, T(184.89) - L, T(185.05) - L], { dur: 0.35 });
+      tl.fromTo($("sc038-cam"), { scale: 1 }, { scale: 1.05, duration: 3.6, ease: "none", immediateRender: false }, S(182.01));
+    })();
+
+    /* ============ C3S039 · 185.61–189.85 · Pan Wen-Yuan (burn reveal, celadon edge) ============ */
+    whip("sc038", "sc039", S(185.55), { dir: -1 });
+    scene("sc039", 185.55, 189.85);
+    ground("night", S(185.55));
+    (function () {
+      gated(185.5, 189.9, () => FX.streaks($("sc039-streaks"), { seed: 3901, speed: 0.35, gain: 0.7, tint: [190, 230, 210] }));
+      const s = $("sc039-svg");
+      s.innerHTML = `<defs>
+        <filter id="c3s01-b39" filterUnits="userSpaceOnUse" x="0" y="0" width="520" height="646" color-interpolation-filters="sRGB">
+          <feImage href="assets/maps/burn_b.png" x="0" y="0" width="520" height="646" preserveAspectRatio="none" result="n"/>
+          <feColorMatrix id="c3s01-b39m" in="n" type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  -12 0 0 0 13" result="t"/>
+          <feComposite in="SourceGraphic" in2="t" operator="in"/></filter>
+        <filter id="c3s01-c39" filterUnits="userSpaceOnUse" x="0" y="0" width="520" height="646" color-interpolation-filters="sRGB">
+          <feImage href="assets/maps/burn_b.png" x="0" y="0" width="520" height="646" preserveAspectRatio="none" result="n"/>
+          <feColorMatrix id="c3s01-c39a" in="n" type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  -12 0 0 0 13" result="e"/>
+          <feColorMatrix id="c3s01-c39b" in="n" type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  -12 0 0 0 15.2" result="l"/>
+          <feComposite in="l" in2="e" operator="arithmetic" k1="0" k2="1" k3="-1" k4="0" result="ring"/>
+          <feFlood flood-color="#9fc7b2" result="fl"/><feComposite in="fl" in2="ring" operator="in" result="r2"/>
+          <feGaussianBlur in="r2" stdDeviation="3" result="gl"/>
+          <feMerge><feMergeNode in="gl"/><feMergeNode in="r2"/></feMerge></filter></defs>
+        <g filter="url(#c3s01-b39)"><rect x="0" y="0" width="520" height="646" fill="#e9e1cf"/><image href="assets/c3/photos/pan_wen_yuan_enwiki.jpg" x="24" y="24" width="472" height="587" preserveAspectRatio="xMidYMid slice" filter="url(#c3s01-tcel)"/>
+          <rect x="24" y="24" width="472" height="587" fill="url(#c3s01-ht39)" opacity="0.18"/></g>
+        <rect x="0" y="0" width="520" height="646" fill="#fff" filter="url(#c3s01-c39)"/>`;
+      s.insertAdjacentHTML("afterbegin", `<defs><pattern id="c3s01-ht39" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><circle cx="2.5" cy="2.5" r="1.1" fill="#1c2a24"/></pattern></defs>`);
+      const M = (o) => "0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  -12 0 0 0 " + o.toFixed(3);
+      const b = { v: 13 }, get = (id) => document.getElementById("c3s01-" + id);
+      tl.fromTo(b, { v: 13 }, { v: -2.4, duration: 2.0, ease: C("power1.inOut", 2.0), immediateRender: true, onUpdate: () => { get("b39m").setAttribute("values", M(b.v)); get("c39a").setAttribute("values", M(b.v)); get("c39b").setAttribute("values", M(b.v + 2.2)); } }, S(186.1));
+      tl.fromTo($("sc039-cam"), { scale: 1.0 }, { scale: 1.05, duration: 4.3, ease: "none", immediateRender: false }, S(185.55));
+      FX.focusHunt(tl, $("sc039-plate"), S(188.2), { dur: 0.6, a: 3, b: 4 });
+      rise("sc039-st", T(187.69) - L, { dur: 0.5 });
+      wr("sc039-pan", [T(188.09) - L, T(188.57) - L, T(188.89) - L], { dur: 0.4, y: 16 });
+    })();
+
+    /* ============ C3S040 · 189.85–193.37 · Pan + Terman (diagram motif master; C3S042 below) ============ */
+    scene("sc040", 189.85, 193.40);
+    ground("paper", S(189.85));
+    (function () {
+      pop("sc040-pan", S(189.87), 0.6, 0.7);
+      pop("sc040-ter", S(190.0), 0.6, 0.7);
+      show("sc040-pl", S(189.95)); show("sc040-tl", S(190.1));
+      wr("sc040-bs", [T(190.49) - L, T(190.97) - L], { dur: 0.6 });
+      wr("sc040-vc", [T(191.93) - L, T(192.09) - L], { dur: 0.45 });
+      const svg = $("sc040-svg");
+      ink(svg, "M700 402 L1222 402", S(191.93), 0.6, { width: 6, filter: PEN, ease: C(E.inOut, 0.6) });
+      ink(svg, "M700 420 L1222 420", S(192.0), 0.6, { width: 6, filter: PEN, ease: C(E.inOut, 0.6) });
+      gsap.set($("sc040-hew"), { opacity: 0 }); gsap.set($("sc040-bh"), { opacity: 1 });
+      // push-through into the drawn line
+      tl.fromTo($("sc040-cam"), { scale: 1 }, { scale: 3.6, duration: 0.42, ease: E.in, immediateRender: false }, S(192.98));
+    })();
+
+    /* ============ C3S041 · 193.37–197.13 · co-wrote papers (typeset pages, bylines only) ============ */
+    scene("sc041", 193.37, 197.5);
+    ground("night", S(193.37));
+    (function () {
+      const box = $("sc041-pages");
+      const PG = [[720, 160, -7], [980, 120, 4], [1240, 170, -2]];
+      PG.forEach(([x, y, r], i) => {
+        const p = div(box, `left:${x}px;top:${y}px;width:560px;height:760px;background:#ece3cf;box-shadow:0 26px 50px rgba(0,0,0,0.55);transform:rotate(${r}deg);padding:50px 46px`, "q-abs",
+          `<div class="t-serif" style="font-size:20px;color:#4a5260;letter-spacing:0.16em;border-bottom:2px solid #4a5260;padding-bottom:10px">PROCEEDINGS</div>
+           <div style="height:16px;margin:30px 20px 0;background:rgba(20,27,36,0.55)"></div><div style="height:16px;margin:12px 80px 0;background:rgba(20,27,36,0.55)"></div>
+           <div class="t-label" style="font-size:19px;color:#141b24;text-align:center;margin-top:22px;position:relative"><span style="position:relative;z-index:1">F. E. Terman and W. Y. Pan</span>${i === 2 ? '<span id="c3s01-sc041-hl" class="q-hl" style="left:228px;top:-3px;width:118px;height:26px;filter:url(#c3s01-rhl)"></span>' : ""}</div>
+           <div style="display:flex;gap:22px;margin-top:30px">${[0, 1].map(() => `<div style="flex:1">${Array.from({ length: 16 }, (_, k) => `<div style="height:8px;margin-top:14px;background:rgba(20,27,36,0.28);width:${k % 6 === 5 ? 60 : 100}%"></div>`).join("")}</div>`).join("")}</div>`);
+        p.style.opacity = 0;
+        tl.fromTo(p, { opacity: 0, y: 300, rotation: r + 8 }, { opacity: 1, y: 0, rotation: r, duration: 0.5, ease: C(E.out, 0.5), immediateRender: true }, S(193.37) + i * 2 / 12);
+      });
+      tl.fromTo($("sc041-hl"), { scaleX: 0 }, { scaleX: 1, duration: 0.35, ease: C("sine.inOut", 0.35), immediateRender: true }, S(194.7));
+      wr("sc041-cw", [T(193.77) - L, T(194.09) - L], { dur: 0.45 });
+      rise("sc041-pp", T(194.73) - L, { dur: 0.7 });
+      tl.fromTo($("sc041-cam"), { scale: 1, x: 0, y: 0 }, { scale: 1.35, x: -260, y: 60, duration: 2.6, ease: E.cam, immediateRender: false }, S(194.2));
+    })();
+
+    /* ============ C3S042 · 197.13–200.34 · + Bill Hewlett; light-flash whip hand-off to c3s02 ============ */
+    scene("sc040", 197.0, SEG_END + 1);
+    tl.set($("sc040"), { zIndex: 3 }, S(196.99));
+    slideIn("sc040", S(197.0), { dur: 0.45 });
+    ground("paper", S(197.1));
+    (function () {
+      tl.set([$("sc040-bs"), $("sc040-vc")], { opacity: 0 }, S(197.0));
+      tl.fromTo($("sc040-cam"), { scale: 1.12 }, { scale: 0.96, duration: 2.6, ease: E.cam, immediateRender: false }, S(197.0));
+      pop("sc040-hew", S(198.95), 0.6, 0.7);
+      show($("sc040-bh").firstElementChild, T(198.97) - L);
+      wr("sc040-bh", [T(198.97) - L, T(199.37) - L], { dur: 0.35, y: 6 });
+      ink($("sc040-svg"), "M900 742 L640 512", S(199.2), 0.45, { width: 6, filter: PEN, ease: C(E.inOut, 0.45) });
+      // FW: smear left + brightness ramp to bone (#f2ede3) at 200.34 (c3s02 opens on the bone frame)
+      const wb = FX.whipDefs(defs, "c3s01-wend");
+      tl.set($("sc040"), { filter: "url(#c3s01-wend)" }, S(200.27));
+      const sb = { v: 0 };
+      tl.fromTo(sb, { v: 0 }, { v: 90, duration: 0.07, ease: "power2.in", immediateRender: false, onUpdate: () => wb.setAttribute("stdDeviation", `${sb.v} 0`) }, S(200.27));
+      tl.fromTo($("sc040"), { x: 0, scale: 1 }, { x: -700, scale: 1.18, duration: 0.07, ease: "power3.in", immediateRender: false }, S(200.27));
+      tl.fromTo($("flash"), { opacity: 0 }, { opacity: 1, duration: 0.07, ease: "power2.in", immediateRender: false }, S(200.27));
+    })();
+
+    FX.mount(tl, DURATION);
+    window.__timelines = window.__timelines || {};
+    window.__timelines[SEG] = tl;
+  })();
+  </script>
+</template>
+</body>
+</html>

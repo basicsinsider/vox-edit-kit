@@ -946,13 +946,17 @@
       const cues = [[T(25.38)], [T(26.26), T(26.74)], [T(27.38), T(28.18)], [T(28.98), T(29.54), T(29.94)]];
       C7.forEach(([id, img, lines, rot, st], i) => {
         const d = card(row, "sc007-" + id, 150 + i * 420, 0, rot, img, lines, { imgStyle: st });
-        tl.fromTo(d, { opacity: 0, y: -140, rotation: rot + 7 }, { opacity: 1, y: 0, rotation: rot, duration: 0.5, ease: C(E.out, 0.5), immediateRender: true }, cues[i][0]);
+        // the four empty cards are pinned as the paper slides in; each photo drops into its window on its word
+        const win = d.querySelector(".win");
+        [...win.children].forEach((ch) => tl.fromTo(ch, { opacity: 0, scale: 1.18 }, { opacity: 1, scale: 1, duration: 0.5, ease: C(E.out, 0.5), immediateRender: true }, cues[i][0]));
+        tl.fromTo(d, { y: 0, rotation: rot + 2.5 }, { rotation: rot, duration: 0.4, ease: C(E.out, 0.4), immediateRender: true }, cues[i][0]);
         d.querySelectorAll(".k1-w").forEach((w, j) => show(w, cues[i][j]));
       });
       // card 4: the lattice (bone on ink) — same drawing as C2S008, 1/5.65 scale
       const win = $("sc007-c4-win");
       win.insertAdjacentHTML("afterbegin", '<svg id="' + SEG + '-sc007-lat" viewBox="0 0 340 250" style="position:absolute;inset:0;width:340px;height:250px"></svg>');
       lattice(document.getElementById(SEG + "-sc007-lat"), 34, 0, 6, 10, 7, { width: 1.4, node: 0.09 });
+      tl.fromTo(document.getElementById(SEG + "-sc007-lat"), { opacity: 0, scale: 1.18 }, { opacity: 1, scale: 1, duration: 0.5, ease: C(E.out, 0.5), immediateRender: true }, T(28.98));
     })();
     tl.fromTo($("sc007-cam"), { x: 30 }, { x: -30, duration: 6.4, ease: "none", immediateRender: true }, S(23.95));
     tl.to($("sc007-cam"), Object.assign(at(1600, 415, 5.65), { duration: 0.48, ease: E.in }), S(30.40));   // push-through into the lattice window

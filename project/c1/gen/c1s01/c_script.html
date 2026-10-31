@@ -1,0 +1,708 @@
+  <script>
+  (function () {
+    const SEG = "c1s01", SEG_START = 0.00, SEG_END = 208.43, DURATION = +(SEG_END - SEG_START).toFixed(2);
+    const T = (s) => +(s - 0.00).toFixed(3);   // TEXT cues (audited): literal word start − 0.06, LOCAL c1 seconds
+    const S = (s) => +(s - 0.00).toFixed(3);   // STRUCTURAL cues (cuts, camera, objects)
+    const tl = gsap.timeline({ paused: true });
+    const $ = (id) => document.getElementById(SEG + "-" + id);
+    const NS = "http://www.w3.org/2000/svg";
+    const defs = $("defs");
+    const E = FX.ease;
+    const C = (e, d) => FX.choppy(e, d, 12);           // Vox long-tail ease, posterized to 12 fps
+    const BONE = "#f2ede3", INK = "#141b24", NAVY = "#1d5c9e", SKY = "#9fc3e3", VER = "#e03f2c", YEL = "#f2d33b";
+
+    function gated(a, b, fn) { const on = FX.onFrame; FX.onFrame = (f) => on(FX.gate(S(a) - 0.1, S(b) + 0.1, f)); try { return fn(); } finally { FX.onFrame = on; } }
+    function scene(id, a, b) {
+      if (a <= 0) gsap.set($(id), { autoAlpha: 1 });
+      else tl.fromTo($(id), { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.001, immediateRender: false }, S(a));
+      if (b < SEG_END) tl.set($(id), { autoAlpha: 0 }, S(b));
+    }
+    function ground(kind, t) {
+      const v = kind === "paper" ? [0.32, 0.14, 0.26] : [1, 0.42, 0.36];
+      if (t <= 0) gsap.set([$("vig"), $("dust"), $("grain")], { opacity: (i) => v[i] });
+      else tl.set([$("vig"), $("dust"), $("grain")], { opacity: (i) => v[i] }, t);
+    }
+    const show = (el, t) => tl.fromTo(el, { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, t);
+    const rise = (el, t, o) => { o = o || {}; const d = o.dur || 1.0;
+      tl.fromTo(el, { opacity: 0, y: o.y == null ? 22 : o.y }, { opacity: 1, y: 0, duration: d, ease: C(E.out, d), immediateRender: true }, t); };
+    const fade = (el, t, d) => tl.to(el, { opacity: 0, duration: d || 0.3, ease: "power1.in" }, t);
+    // word-by-word: each child .c1-w rises on its own literal cue
+    const words = (el, cues, o) => { const w = el.querySelectorAll(".c1-w"); cues.forEach((c, i) => rise(w[i], c, Object.assign({ dur: 0.45, y: 12 }, o))); };
+    const whipN = { n: 0 };
+    function whip(a, b, t, o) {
+      o = Object.assign({ dir: 1, vertical: false, flash: false, dur: 0.32 }, o);
+      const k = ++whipN.n, ba = FX.whipDefs(defs, `${SEG}-wa${k}`), bb = FX.whipDefs(defs, `${SEG}-wb${k}`), h = o.dur / 2;
+      tl.set(a, { filter: `url(#${SEG}-wa${k})` }, t - h - 0.01); tl.set(a, { filter: "none" }, t + 0.06);
+      tl.set(b, { filter: `url(#${SEG}-wb${k})` }, t - 0.001); tl.set(b, { filter: "none" }, t + h + 0.02);
+      FX.whip(tl, a, b, t, { dir: o.dir, vertical: o.vertical, dur: o.dur, blurA: ba, blurB: bb });
+      if (o.flash) tl.fromTo($("flash"), { opacity: 0 }, { opacity: 0.85, duration: 0.08, yoyo: true, repeat: 1, ease: "power2.in", immediateRender: false }, t - 0.08);
+    }
+    // push-through (PT): the outgoing shot rushes into the lens with a blur smear; the next shot cuts in at t
+    function pushThrough(shot, t) {
+      tl.fromTo(shot, { scale: 1, filter: "blur(0px)" }, { scale: 1.55, filter: "blur(10px)", duration: 0.26, ease: E.in, immediateRender: false }, t - 0.26);
+    }
+    function ink(parent, d, t, dur, o) {
+      o = o || {};
+      const p = document.createElementNS(NS, "path");
+      p.setAttribute("d", d); p.setAttribute("fill", o.fill || "none");
+      p.setAttribute("stroke", o.color || INK); p.setAttribute("stroke-width", o.width || 6);
+      p.setAttribute("stroke-linecap", "round"); p.setAttribute("stroke-linejoin", "round");
+      if (o.filter) p.setAttribute("filter", o.filter);
+      parent.appendChild(p);
+      const len = p.getTotalLength() || 1;
+      p.setAttribute("stroke-dasharray", `${len} ${len}`); p.setAttribute("stroke-dashoffset", len);
+      tl.fromTo(p, { attr: { "stroke-dashoffset": len } }, { attr: { "stroke-dashoffset": 0 }, duration: dur, ease: o.ease || C(E.out, dur), immediateRender: true }, t);
+      p._len = len; return p;
+    }
+    function stamp(el, t, morph, o) {
+      o = o || {};
+      show(el, t);
+      tl.fromTo(el, { scale: o.from || 1.4 }, { scale: 1, duration: 0.25, ease: "power2.in", immediateRender: true }, t);
+      FX.chokeSettle(tl, morph, el, t, 9, 0.5, "none");
+    }
+
+    // shared filters
+    FX.tintDefs(defs, "c1s01-tint-bp", "#1f4f86", "#eef3f6");
+    FX.tintDefs(defs, "c1s01-tint-ink", "#1b2230", "#ece4d2");
+    FX.tintDefs(defs, "c1s01-tint-night", "#16181b", "#bdb5a6");
+    FX.tintDefs(defs, "c1s01-tint-sep", "#24221f", "#ece3d0");
+    FX.tintDefs(defs, "c1s01-tint-np", "#26231f", "#e8dfca");
+    FX.tintDefs(defs, "c1s01-tint-pp", "#8a8172", "#efe7d5");
+    FX.grain($("grain"), 1101);
+    FX.dust($("dust"), 1102, 2);
+
+    /* =================== C1S001 · 0.00–7.20 · the quote over the orchard painting (§10.7 A) =================== */
+    scene("sc001", 0, 7.20);
+    ground("night", 0);
+    gsap.set($("flash"), { opacity: 1 });
+    tl.fromTo($("flash"), { opacity: 1 }, { opacity: 0, duration: 0.25, ease: E.out, immediateRender: false }, 0.001);   // hand-off: intro IS066's bone flash
+    tl.fromTo($("sc001-cam"), { y: 0, scale: 1.0 }, { y: 120, scale: 1.04, duration: 7.0, ease: E.cam, immediateRender: true }, 0);
+    words($("sc001-q"), [T(1.38), T(1.54), T(2.02), T(2.26), T(2.82), T(3.38), T(3.62), T(4.42), T(5.22), T(5.46), T(6.10), T(6.42)], { dur: 0.4, y: 10 });
+    pushThrough($("sc001-shot"), S(7.20));
+
+    /* =================== C1S002 · 7.20–12.96 · "the rest of the world looked awfully big … is here" (painted globe → valley) =================== */
+    scene("sc002", 7.20, 12.96);
+    (function () {
+      tl.fromTo($("sc002-map"), { x: 140, y: -150 }, { x: -160, y: -160, duration: 1.7, ease: E.cam, immediateRender: true }, S(7.20));
+      tl.fromTo($("sc002-a"), { scale: 0.9 }, { scale: 1.0, duration: 1.7, ease: E.cam, immediateRender: true }, S(7.20));
+      tl.fromTo($("sc002-dot"), { opacity: 0, scale: 0.3 }, { opacity: 1, scale: 1, duration: 0.6, ease: C(E.out, 0.6), immediateRender: true }, S(8.40));
+      tl.set($("sc002-b"), { opacity: 0 }, S(7.20));
+      const mid = FX.curveCut(tl, $("sc002-wrap"), $("sc002-a"), $("sc002-b"), S(9.00), 1.1, { from: 1, to: 6, ease: "expo.inOut" });
+      tl.to($("sc002-wrap"), { scale: 7.0, duration: 12.96 - (mid + 0.55), ease: "none" }, mid + 0.55);
+      FX.focusHunt(tl, $("sc002-bin"), S(10.35), { dur: 0.8 });
+    })();
+    words($("sc002-big"), [T(8.82), T(9.38)], { dur: 0.5 });
+    fade($("sc002-big"), S(9.55), 0.15);
+    words($("sc002-here"), [T(12.02), T(12.34)], { dur: 0.35, y: 14 });
+
+    /* =================== C1S003 · 12.96–21.84 · "a quote from Fred Terman, the father of Silicon Valley … in 1974" (§10.7 B column) =================== */
+    scene("sc003", 12.96, 22.00);
+    ground("paper", S(12.96));
+    (function () {
+      const cam = $("sc003-cam");
+      const at = (cx, cy, z) => ({ x: 960 - cx * z, y: 540 - cy * z, scale: z });
+      // the printed picture fills the frame (continues the aerial), then the eased pull-back + upward pan reveals the column
+      tl.fromTo(cam, at(560, 760, 2.05), Object.assign(at(930, 640, 0.74), { duration: 1.3, ease: E.cam, immediateRender: true }), S(12.96));
+      tl.to(cam, Object.assign(at(1380, 760, 1.0), { duration: 1.6, ease: E.cam }), S(14.30));
+      tl.to(cam, Object.assign(at(1420, 800, 1.06), { duration: 5.9, ease: "none" }), S(15.90));
+      const mk = $("sc003-mk"), f = FX.markupDefs(mk, "c1s01-mk3", { boil: 4 }); mk.setAttribute("viewBox", "0 0 1920 1500");
+      // pen underline per word (vermilion = Terman's Silicon Valley)
+      const U = [[1136, 1258, 1134], [1240, 1440, 1134], [1452, 1520, 1134], [1136, 1380, 1201], [1392, 1640, 1201]];
+      [S(15.90), S(16.06), S(16.54), S(16.78), S(17.58)].forEach((t, i) => {
+        const [x1, x2, y] = U[i];
+        FX.markup.pen(tl, mk, t, { points: [[x1, y], [x2, y + 3]], dur: 0.35, width: 6, color: VER, filter: f, seed: 30 + i, jitter: 3 });
+      });
+      const ch = FX.roughDefs(defs, "c1s01-ch3", { freq: 0.045, scale: 7, choke: 0 });
+      $("sc003-stamp").style.filter = "url(#c1s01-ch3)";
+      stamp($("sc003-stamp"), T(20.18), ch);
+    })();
+    words($("sc003-name"), [T(14.26), T(14.82)], { dur: 0.45, y: 8 });
+    [T(15.86), T(16.02), T(16.50), T(16.74), T(17.54)].forEach((c, i) => rise($("sc003-w" + i), c, { dur: 0.4, y: 10 }));
+    whip($("sc003-shot"), $("sc004-shot"), S(21.84), { dir: 1, vertical: true });
+
+    /* =================== C1S004 · 21.84–28.88 · "one of the greatest human feat anyone has ever achieved" =================== */
+    scene("sc004", 21.68, 28.88);
+    ground("night", S(21.84));
+    gated(21.7, 29.0, () => FX.streaks($("sc004-streaks"), { seed: 404, speed: 0.45, tint: [255, 196, 150], lo: 0.42, gain: 1.0 }));
+    tl.fromTo($("sc004-streaks"), { opacity: 0 }, { opacity: 0.55, duration: 1.4, ease: "power1.out", immediateRender: true }, S(22.0));
+    tl.fromTo($("sc004-cam"), { scale: 1.0 }, { scale: 1.07, duration: 6.7, ease: "none", immediateRender: true }, S(21.84));
+    tl.to($("sc004-cam"), { scale: 1.16, duration: 0.3, ease: E.in }, S(28.58));
+    tl.fromTo($("sc004-g"), { opacity: 0, scale: 1.08, filter: "blur(10px)" }, { opacity: 1, scale: 1, filter: "blur(0.45px)", duration: 1.1, ease: C(E.out, 1.1), immediateRender: true }, T(24.66));
+    words($("sc004-hf"), [T(25.54), T(26.10)], { dur: 0.6 });
+    words($("sc004-ea"), [T(27.70), T(27.94)], { dur: 0.45, y: 8 });
+
+    /* =================== C1S005 · 28.88–34.13 · "put claim to building the Silicon Valley" (blueprint drafting) =================== */
+    scene("sc005", 28.88, 34.40);
+    gsap.set($("sc005"), { zIndex: 3 });
+    ground("paper", S(28.88));
+    tl.fromTo($("sc005-plane"), { x: 0, rotationX: 10 }, { x: -60, rotationX: 7, duration: 5.3, ease: "none", immediateRender: true }, S(28.88));
+    tl.fromTo($("sc005-terman"), { opacity: 0, x: -40 }, { opacity: 0.92, x: 0, duration: 1.4, ease: C(E.out, 1.4), immediateRender: true }, S(29.0));
+    (function () {
+      const svg = $("sc005-svg"), f = FX.markupDefs(svg, "c1s01-mk5", { boil: 4 }); svg.setAttribute("viewBox", "0 0 2160 1240");
+      const L = (pts, t, d, s, w) => FX.markup.pen(tl, svg, t, { points: pts, dur: d, width: w || 3, color: "#eef3f6", filter: f, seed: s, jitter: 2, blend: "normal" });
+      // construction lines: baselines, margins, a centre line and two compass arcs
+      L([[880, 395], [2100, 398]], S(29.4), 1.0, 51); L([[880, 585], [2100, 588]], S(29.8), 1.0, 52);
+      L([[880, 780], [2100, 783]], S(30.2), 1.0, 53); L([[905, 330], [902, 830]], S(30.6), 0.8, 54);
+      L([[1980, 330], [1983, 830]], S(31.0), 0.8, 55); L([[880, 690], [2100, 692]], S(31.4), 1.0, 56);
+      ink(svg, "M1500 860 A120 120 0 0 1 1740 860", S(31.8), 0.6, { color: "#eef3f6", width: 3, filter: f });
+      ink(svg, "M1440 900 L1800 900 M1440 890 L1440 910 M1800 890 L1800 910", S(32.2), 0.6, { color: "#eef3f6", width: 3, filter: f });
+    })();
+    rise($("sc005-bld"), T(32.39), { dur: 0.5, y: 8 });
+    (function () {
+      const ch1 = FX.roughDefs(defs, "c1s01-ch5a", { freq: 0.04, scale: 6, choke: 0 }), ch2 = FX.roughDefs(defs, "c1s01-ch5b", { freq: 0.04, scale: 6, choke: 0 });
+      $("sc005-s1").style.filter = "url(#c1s01-ch5a)"; $("sc005-s2").style.filter = "url(#c1s01-ch5b)";
+      show($("sc005-s1"), T(32.95)); FX.chokeSettle(tl, ch1, $("sc005-s1"), T(32.95), 10, 0.4, "none");
+      show($("sc005-s2"), T(33.51)); FX.chokeSettle(tl, ch2, $("sc005-s2"), T(33.51), 10, 0.25, "none");
+    })();
+    tl.to($("sc005-shot"), { y: -1140, duration: 0.34, ease: E.in }, S(34.05));   // paper slide (PS): the blueprint lifts away, the map is under it
+
+    /* =================== C1S006 · 34.13–38.61 · "before him … not much technical industry in the West" (pictorial map) =================== */
+    scene("sc006", 33.95, 38.61);
+    (function () {
+      const cam = $("sc006-cam");
+      const at = (cx, cy, z) => ({ x: 1260 - 300 - cx * z, y: 810 - 260 - cy * z, scale: z });
+      tl.fromTo(cam, at(1900, 1300, 0.62), Object.assign(at(1880, 1250, 0.66), { duration: 2.7, ease: "none", immediateRender: true }), S(33.95));
+      tl.to(cam, Object.assign(at(1700, 1250, 0.80), { duration: 1.3, ease: E.in }), S(36.70));            // ease-in push: contrast call-out cuts at its peak
+      tl.to(cam, Object.assign(at(1680, 1250, 0.86), { duration: 0.6, ease: "none" }), S(38.0));
+      FX.contrastCallout(tl, $("sc006-veil"), S(37.62), { w: 3840, h: 2469, ellipse: [1640, 1260, 1050, 560], feather: 70, strength: 0.62, color: "rgba(235,228,214,1)" });
+    })();
+    words($("sc006-bh"), [T(34.63), T(35.11)], { dur: 0.5, y: 10 });
+    words($("sc006-ti"), [T(36.31), T(36.87)], { dur: 0.6 });
+    rise($("sc006-west"), T(37.51), { dur: 0.3, y: 10 });
+    words($("sc006-west"), [T(37.51), T(37.67)], { dur: 0.3, y: 0 });
+
+    /* =================== C1S007 · 38.61–46.13 · "after him … so powerful that countries around the world want to copy it" =================== */
+    scene("sc007", 38.61, 46.30);
+    ground("night", S(38.61));
+    (function () {
+      const cam = $("sc007-cam");
+      const at = (cx, cy, z) => ({ x: 960 - cx * z, y: 540 - cy * z, scale: z });
+      tl.fromTo(cam, at(1500, 1150, 0.9), Object.assign(at(1700, 1200, 0.62), { duration: 3.6, ease: E.cam, immediateRender: true }), S(38.61));
+      tl.to(cam, Object.assign(at(3600, 1500, 0.27), { duration: 2.4, ease: E.cam }), S(42.30));
+      tl.to(cam, Object.assign(at(3700, 1520, 0.265), { duration: 1.5, ease: "none" }), S(44.70));
+      tl.fromTo($("sc007-glow"), { opacity: 0, scale: 0.4 }, { opacity: 1, scale: 1, duration: 1.4, ease: C(E.out, 1.4), immediateRender: true }, S(39.0));
+      tl.fromTo($("sc007-core"), { opacity: 0 }, { opacity: 1, duration: 0.6, ease: C(E.out, 0.6), immediateRender: true }, S(39.1));
+      tl.to($("sc007-glow"), { scale: 1.35, duration: 0.9, ease: "sine.inOut", yoyo: true, repeat: 3 }, S(40.6));
+      // blueprint copies fly from the valley to 9 countries (no names) at 12 fps, each lands with a small stamp
+      const P = (lon, lat) => [(lon + 180) * 21.333, (90 - lat) * 21.333];
+      const src = P(-122.1, 37.4);
+      const dst = [P(-0.1, 51.5), P(2.3, 48.9), P(13.4, 52.5), P(34.8, 32.1), P(77.6, 13.0), P(116.4, 39.9), P(139.7, 35.7), P(127.0, 37.6), P(103.8, 1.35)];
+      const box = $("sc007-copies");
+      dst.forEach((d, i) => {
+        box.insertAdjacentHTML("beforeend", `<div class="c1-copy" id="c1s01-sc007-c${i}" style="left:${src[0].toFixed(0)}px; top:${src[1].toFixed(0)}px"><b class="t-label">SILICON VALLEY</b></div>`);
+        const el = document.getElementById("c1s01-sc007-c" + i), t0 = S(42.55) + i * 0.17, dur = 1.3;
+        tl.fromTo(el, { x: 0, y: 0, opacity: 0, scale: 0.6, rotation: 0 }, { opacity: 1, scale: 1.6, duration: 0.2, ease: C(E.out, 0.2), immediateRender: true }, t0);
+        tl.to(el, { x: d[0] - src[0], y: d[1] - src[1], rotation: (i % 2 ? 6 : -6), duration: dur, ease: C(E.inOut, dur) }, t0 + 0.05);
+        tl.to(el, { scale: 2.6, duration: 0.12, ease: "power2.in" }, t0 + 0.05 + dur);
+        tl.to(el, { scale: 2.3, duration: 0.2, ease: C(E.out, 0.2) }, t0 + 0.17 + dur);
+      });
+    })();
+    words($("sc007-ah"), [T(38.87), T(39.27)], { dur: 0.5, y: 8 });
+    fade($("sc007-ah"), S(40.85), 0.25);
+    words($("sc007-pw"), [T(41.03), T(41.35)], { dur: 0.5, y: 14 });
+    fade($("sc007-pw"), S(42.35), 0.25);
+    words($("sc007-cw"), [T(42.55), T(43.27), T(43.75), T(43.91)], { dur: 0.45, y: 10 });
+    words($("sc007-ci"), [T(44.87), T(45.43)], { dur: 0.35, y: 14 });
+    whip($("sc007-shot"), $("sc008-shot"), S(46.13), { dir: 1 });
+
+    /* =================== C1S008 · 46.13–52.45 · "let me just paint you a picture … in October 2026" =================== */
+    scene("sc008", 46.13, 52.45);
+    ground("paper", S(46.13));
+    tl.fromTo($("sc008-stroke"), { clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: 1.1, ease: C(E.out, 1.1), immediateRender: true }, S(47.10));
+    tl.fromTo($("sc008-stroke2"), { clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: 1.0, ease: C(E.out, 1.0), immediateRender: true }, S(47.55));
+    words($("sc008-pp"), [T(47.19), T(47.59), T(47.75), T(47.83)], { dur: 0.5 });
+    FX.text.odometer(tl, $("sc008-oct"), T(50.87), { dur: 0.5, stagger: 0.03, seed: 8 });
+    FX.text.odometer(tl, $("sc008-yr"), T(51.35), { dur: 0.45, stagger: 0.04, seed: 2026 });
+    tl.fromTo($("sc008-shot"), { scale: 1 }, { scale: 1.04, duration: 6.0, ease: "none", immediateRender: false }, S(46.13));
+    tl.to($("sc008-shot"), { scale: 1.12, duration: 0.28, ease: E.in }, S(52.17));   // CA: push into the date
+
+    /* =================== C1S009 · 52.45–56.69 · "12 companies in the United States … worth more than a trillion dollars" (s01) =================== */
+    scene("sc009", 52.45, 56.69);
+    ground("night", S(52.45));
+    gated(52.4, 56.8, () => FX.streaks($("sc009-streaks"), { seed: 31, speed: 0.5, tint: [255, 206, 158], lo: 0.4, gain: 1.05 }));
+    tl.fromTo($("sc009-streaks"), { opacity: 0 }, { opacity: 0.6, duration: 1.0, ease: "power1.out", immediateRender: true }, S(52.45));
+    tl.fromTo($("sc009-leak"), { opacity: 0 }, { opacity: 0.16, duration: 1.2, yoyo: true, repeat: 1, ease: "sine.inOut", immediateRender: false }, S(53.6));
+    tl.fromTo($("sc009-block"), { scale: 0.97 }, { scale: 1.01, duration: 3.9, ease: "none", immediateRender: true }, S(52.45));
+    FX.text.odometer(tl, $("sc009-12"), T(52.39), { dur: 0.6, stagger: 0.08, seed: 12 });
+    tl.fromTo($("sc009-co"), { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, T(52.95));
+    FX.text.fill(tl, $("sc009-co"), T(52.95), { per: 0.03, hold: 0.3, settle: 0.5, cool: BONE });
+    words($("sc009-us"), [T(53.35), T(53.43), T(53.59), T(53.91)], { dur: 0.4, y: 10 });
+    words($("sc009-wm"), [T(54.55), T(54.87), T(55.03)], { dur: 0.35, y: 8 });
+    words($("sc009-tr"), [T(55.19), T(55.35), T(55.91)], { dur: 0.35, y: 10 });
+    // MC: the 12 flies to the kicker position of the chart
+    tl.to($("sc009-right"), { opacity: 0, duration: 0.2 }, S(56.40));
+    tl.to($("sc009-12"), { x: -190, y: -255, scale: 0.36, duration: 0.3, ease: E.inOut }, S(56.39));
+
+    /* =================== C1S010 · 56.69–64.13 · "That number changes … some days less, some days more" (R4 horizontal bars) =================== */
+    scene("sc010", 56.69, 64.13);
+    ground("paper", S(56.69));
+    (function () {
+      const co = [["nvidia", 5.16], ["apple", 5.09], ["microsoft", 3.94], ["alphabet_google", 3.45], ["amazon", 2.63], ["spacex", 1.95], ["broadcom", 1.65], ["meta", 1.60], ["tesla", 1.59], ["LLY", 1.22], ["berkshire_hathaway", 1.16], ["micron", 1.06]];
+      const K = 1250 / 5.16, rows = $("sc010-rows");
+      co.forEach(([k, v], i) => {
+        const src = k === "LLY" ? "assets/maps/eli_lilly_logo.svg" : `assets/logos/${k}.svg`;
+        rows.insertAdjacentHTML("beforeend", `<div class="c1-rk" id="c1s01-sc010-r${i}" style="top:${250 + i * 64}px"><div class="lg"><img src="${src}" alt="" /></div><div class="bar${k === "LLY" ? " east" : ""}" id="c1s01-sc010-b${i}" style="width:${(v * K).toFixed(0)}px"><div class="ht2"></div></div></div>`);
+        const r = document.getElementById("c1s01-sc010-r" + i), b = document.getElementById("c1s01-sc010-b" + i);
+        tl.fromTo(r, { opacity: 0, x: -30 }, { opacity: 1, x: 0, duration: 0.6, ease: C(E.out, 0.6), immediateRender: true }, S(56.72) + Math.floor(i / 2) / 12);
+        tl.fromTo(b, { scaleX: 0 }, { scaleX: 1, duration: 1.2, ease: C(E.out, 1.2), immediateRender: true }, S(56.80) + Math.floor(i / 2) / 12);
+        if (i < 11) tl.to(b, { scaleX: i % 2 ? 0.97 : 1.03, duration: 0.8, ease: C("sine.inOut", 0.8), yoyo: true, repeat: 5 }, S(58.40) + i * 0.06);
+      });
+      const thrX = 414 + K;
+      gsap.set($("sc010-thr"), { left: thrX }); gsap.set($("sc010-thl"), { left: thrX - 90 });
+      tl.fromTo($("sc010-thr"), { scaleY: 0 }, { scaleY: 1, duration: 1.0, ease: C(E.out, 1.0), immediateRender: true }, S(57.40));
+      tl.fromTo($("sc010-thl"), { opacity: 0 }, { opacity: 1, duration: 0.5, immediateRender: true }, S(57.60));
+      // "less": Micron dips behind the line; "more": a ghost 13th bar crosses it
+      tl.to($("sc010-b11"), { scaleX: 0.86, duration: 0.6, ease: C(E.inOut, 0.6) }, S(62.40));
+      gsap.set($("sc010-less"), { left: 414 + 1.06 * K * 0.86 + 30, top: 250 + 11 * 64 + 2 });
+      rise($("sc010-less"), T(62.47), { dur: 0.45, y: 8 });
+      gsap.set($("sc010-ghost"), { top: 250 + 12 * 64 + 14, width: 1.02 * K });
+      tl.fromTo($("sc010-ghost"), { opacity: 0, scaleX: 0 }, { opacity: 1, scaleX: 1, duration: 0.45, ease: C(E.out, 0.45), immediateRender: true }, S(63.62));
+      gsap.set($("sc010-more"), { left: 414 + 1.02 * K + 30, top: 250 + 12 * 64 + 2 });
+      rise($("sc010-more"), T(63.67), { dur: 0.35, y: 8 });
+    })();
+    tl.fromTo($("sc010-kb"), { opacity: 1, scale: 1 }, { opacity: 1, scale: 1, duration: 0.001, immediateRender: true }, S(56.69));
+    rise($("sc010-ch"), T(57.27), { dur: 0.8, y: 12 });
+    words($("sc010-tm"), [T(58.71), T(58.87)], { dur: 0.5, y: 8 });
+    tl.fromTo($("sc010-kb"), { scale: 1.25 }, { scale: 1, duration: 0.6, ease: C(E.out, 0.6), immediateRender: false }, T(60.87));
+    tl.fromTo($("sc010-cam"), { y: 0 }, { y: -40, duration: 7.2, ease: "none", immediateRender: true }, S(56.69));
+    tl.to($("sc010-cam"), { y: -170, rotationX: 8, duration: 0.3, ease: E.in }, S(63.83));   // CA: tilt down toward the base line
+
+    /* =================== C1S011–C1S012 · 64.13–73.89 · 11 of 12 west of the Mississippi; the one holdout, Eli Lilly (s02) =================== */
+    scene("sc011", 64.13, 74.05);
+    ground("night", S(64.13));
+    (function () {
+      const cam = (cx, cy, z) => ({ x: 960 - cx * z, y: 540 - cy * z, scale: z });
+      tl.fromTo($("sc011-cam"), cam(3050, 1640, 0.335), Object.assign(cam(2950, 1600, 0.35), { duration: 4.6, ease: "none", immediateRender: true }), S(64.13));
+      tl.to($("sc011-cam"), Object.assign(cam(4418, 1225, 1.45), { duration: 1.5, ease: E.cam }), S(68.75));
+      FX.focusHunt(tl, $("sc011-drift"), S(70.30), { dur: 0.8 });
+      tl.fromTo($("sc011-fg"), { x: 0, opacity: 1, scale: 1.2 }, { x: -2600, opacity: 0, scale: 1.5, duration: 1.8, ease: E.in, immediateRender: true }, S(64.13));
+      tl.fromTo(".c1-cloud", { x: 0 }, { x: 220, duration: 9.8, ease: "none", immediateRender: true }, S(64.13));
+      // "out of those 12, 11 companies"
+      show($("sc011-n"), T(64.79));
+      tl.fromTo($("sc011-n"), { scale: 1.2 }, { scale: 1, duration: 0.5, ease: C(E.out, 0.5), immediateRender: false }, T(64.79));
+      tl.set($("sc011-n"), { textContent: "11" }, T(65.35));
+      tl.fromTo($("sc011-n"), { scale: 1.2 }, { scale: 1, duration: 0.5, ease: C(E.out, 0.5), immediateRender: false }, T(65.35));
+      rise($("sc011-l"), T(65.91), { dur: 0.5, y: 8 });
+      // West burns in (burn-film reveal + charred ring), pins pop
+      const s = { b: -12.5 }, M = (o) => "0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  12 0 0 0 " + o.toFixed(3);
+      tl.fromTo(s, { b: -12.5 }, { b: 1.2, duration: 1.6, ease: C("power1.inOut", 1.6), immediateRender: false,
+        onUpdate: () => { $("bA").setAttribute("values", M(s.b)); $("cA1").setAttribute("values", M(s.b + 2.2)); $("cA2").setAttribute("values", M(s.b)); } }, S(65.40));
+      tl.fromTo(".c1-mpin", { scale: 0, transformOrigin: "50% 50%" }, { scale: 1, duration: 0.5, stagger: 1 / 12, ease: C(E.out, 0.5), immediateRender: true }, S(65.45));
+      tl.fromTo(".c1-mhalo", { scale: 0.6, opacity: 0.7, transformOrigin: "50% 50%" }, { scale: 1.6, opacity: 0, duration: 1.2, stagger: 1 / 12, ease: "power2.out", immediateRender: true }, S(65.45));
+      rise($("sc011-west"), T(66.71), { dur: 0.7, y: 40 });
+      // river draws on "Mississippi River"
+      tl.to([$("sc011-river"), $("sc011-rglow")], { strokeDashoffset: 0, duration: 1.3, ease: C(E.inOut, 1.3) }, S(67.30));
+      words($("sc011-rl"), [T(67.35), T(68.23)], { dur: 0.45, y: 0 });
+      tl.to([$("sc011-west"), $("sc011-rl"), $("sc011-head")], { opacity: 0, duration: 0.35 }, S(68.70));
+      tl.to($("sc011-cr"), { opacity: 0, duration: 0.3 }, S(70.2));
+      // C1S012 — Indiana (sky on night, halftone + glowing edge), pen circle, the Eli Lilly card
+      words($("sc012-ho"), [T(68.87), T(68.95), T(69.19), T(69.51)], { dur: 0.4, y: 8 });
+      fade($("sc012-ho"), S(70.20), 0.3);
+      tl.fromTo([$("sc012-in"), $("sc012-inedge"), $("sc012-inline")], { opacity: 0 }, { opacity: 1, duration: 0.9, ease: C(E.out, 0.9), immediateRender: true }, S(69.70));
+      tl.fromTo($("sc012-indots"), { opacity: 0 }, { opacity: 0.45, duration: 0.9, ease: C(E.out, 0.9), immediateRender: true }, S(69.80));
+      tl.fromTo("#c1s01-sc011-pin-indy", { scale: 0, transformOrigin: "50% 50%" }, { scale: 1, duration: 0.5, ease: C(E.out, 0.5), immediateRender: true }, S(69.90));
+      tl.fromTo($("sc012-shade"), { opacity: 0 }, { opacity: 1, duration: 0.6, ease: "power1.out", immediateRender: true }, S(70.25));
+      tl.fromTo($("sc012-photo"), { opacity: 0, x: 40 }, { opacity: 1, x: 0, duration: 0.9, ease: C(E.out, 0.9), immediateRender: true }, S(70.25));
+      words($("sc012-name"), [T(70.31), T(70.87)], { dur: 0.5, y: 12 });
+      words($("sc012-what"), [T(71.75), T(72.15)], { dur: 0.45, y: 10 });
+      words($("sc012-where"), [T(72.71)], { dur: 0.35, y: 8 });
+      tl.fromTo($("sc012-cr"), { opacity: 0 }, { opacity: 1, duration: 0.3, immediateRender: true }, S(70.3));
+      const mk = $("sc012-mk"), f = FX.markupDefs(mk, "c1s01-mk12", { boil: 4 });
+      FX.markup.pen(tl, mk, S(72.65), { points: [[700, 470], [735, 535], [690, 600], [600, 610], [530, 560], [540, 485], [620, 455], [712, 480]], dur: 0.55, width: 7, color: BONE, filter: f, seed: 12, blend: "normal" });
+    })();
+    whip($("sc011-shot"), $("sc013-shot"), S(73.89), { dir: -1, vertical: true });
+
+    /* =================== C1S013 · 73.89–78.77 · "not a fair comparison … apples to oranges" =================== */
+    scene("sc013", 73.73, 78.77);
+    ground("paper", S(73.89));
+    gated(73.7, 78.9, () => FX.roughDefs(defs, "c1s01-torn", { freq: 0.05, scale: 7 }));
+    words($("sc013-t"), [T(75.03), T(75.19), T(75.35), T(75.75)], { dur: 0.5 });
+    tl.fromTo($("sc013-ap"), { opacity: 0, y: -70, rotation: -10 }, { opacity: 1, y: 0, rotation: -4, duration: 0.5, ease: C(E.out, 0.5), immediateRender: true }, S(76.93));
+    rise($("sc013-apl"), T(77.43), { dur: 0.4, y: 10 });
+    tl.fromTo($("sc013-or"), { opacity: 0, y: -70, rotation: 10 }, { opacity: 1, y: 0, rotation: 3, duration: 0.42, ease: C(E.out, 0.42), immediateRender: true }, S(77.58));
+    rise($("sc013-orl"), T(78.07), { dur: 0.35, y: 10 });
+    (function () {
+      const mk = $("sc013-mk"), f = FX.markupDefs(mk, "c1s01-mk13", { boil: 4 });
+      const P = (pts, t, d, s) => FX.markup.pen(tl, mk, t, { points: pts, dur: d, width: 9, color: INK, filter: f, seed: s, jitter: 2 });
+      P([[920, 550], [1000, 548]], S(77.95), 0.12, 131); P([[920, 590], [1000, 588]], S(78.05), 0.12, 132); P([[990, 520], [930, 620]], S(78.15), 0.14, 133);
+    })();
+    tl.fromTo($("sc013-shot"), { scale: 1 }, { scale: 1.03, duration: 4.6, ease: "none", immediateRender: false }, S(73.89));
+    pushThrough($("sc013-shot"), S(78.77));
+
+    /* =================== C1S014 · 78.77–86.93 · "rewind a hundred years ago, that equation is … very lopsided" =================== */
+    scene("sc014", 78.77, 86.93);
+    rise($("sc014-rw"), T(79.19), { dur: 0.5, y: 8 });
+    FX.text.count(tl, $("sc014-yr"), S(79.25), 2026, 1926, 1.3, (v) => String(Math.round(v)));
+    tl.fromTo($("sc014-yr"), { x: 0 }, { x: 0, duration: 0.001, immediateRender: true }, S(78.77));
+    words($("sc014-hy"), [T(79.99), T(80.15), T(80.63)], { dur: 0.5 });
+    tl.to([$("sc014-hy"), $("sc014-rw")], { opacity: 0, duration: 0.4 }, S(81.45));
+    tl.to($("sc014-yr"), { scale: 0.42, y: -40, duration: 1.0, ease: C(E.inOut, 1.0) }, S(81.45));
+    rise($("sc014-eq"), T(81.99), { dur: 0.6, y: 8 });
+    (function () {
+      const svg = $("sc014-svg"), px = 960, py = 470, L = 420, H = 170;
+      ink(svg, `M${px} ${py} L${px} 860 M${px - 150} 860 L${px + 150} 860`, S(81.55), 0.8, { color: INK, width: 8 });
+      svg.insertAdjacentHTML("beforeend", `<g id="c1s01-sc014-beam" opacity="0"><path d="M${px - L} ${py} L${px + L} ${py}" stroke="${INK}" stroke-width="10" stroke-linecap="round"/><circle cx="${px}" cy="${py}" r="16" fill="${INK}"/></g>
+        <g id="c1s01-sc014-pl" opacity="0"><path d="M0 0 L-90 ${H} M0 0 L90 ${H}" stroke="${INK}" stroke-width="3"/><path d="M-120 ${H} Q0 ${H + 90} 120 ${H} Z" fill="${VER}" stroke="${INK}" stroke-width="4"/></g>
+        <g id="c1s01-sc014-pr" opacity="0"><path d="M0 0 L-90 ${H} M0 0 L90 ${H}" stroke="${INK}" stroke-width="3"/><path d="M-120 ${H} Q0 ${H + 90} 120 ${H} Z" fill="${NAVY}" stroke="${INK}" stroke-width="4"/></g>`);
+      const beam = svg.querySelector("#c1s01-sc014-beam"), pl = svg.querySelector("#c1s01-sc014-pl"), pr = svg.querySelector("#c1s01-sc014-pr");
+      const st = { a: -3 };
+      const draw = () => { const r = st.a * Math.PI / 180, c = Math.cos(r), s = Math.sin(r);
+        beam.setAttribute("transform", `rotate(${st.a.toFixed(2)} ${px} ${py})`);
+        pl.setAttribute("transform", `translate(${(px - L * c).toFixed(1)} ${(py - L * s).toFixed(1)})`);
+        pr.setAttribute("transform", `translate(${(px + L * c).toFixed(1)} ${(py + L * s).toFixed(1)})`); };
+      draw();
+      tl.fromTo([beam, pl, pr], { attr: { opacity: 0 } }, { attr: { opacity: 1 }, duration: 0.001, immediateRender: true }, S(82.00));
+      tl.fromTo(st, { a: -3 }, { a: 3, duration: 1.2, ease: C("sine.inOut", 1.2), yoyo: true, repeat: 1, onUpdate: draw, immediateRender: false }, S(82.10));
+      tl.to(st, { a: 0, duration: 0.8, ease: C("sine.inOut", 0.8), onUpdate: draw }, S(84.50));
+      tl.to(st, { a: 17, duration: 1.0, ease: C(E.inOut, 1.0), onUpdate: draw }, S(85.55));   // tips hard to the East pan
+    })();
+    (function () {
+      const ch = FX.roughDefs(defs, "c1s01-ch14", { freq: 0.045, scale: 7, choke: 0 });
+      $("sc014-lop").style.filter = "url(#c1s01-ch14)";
+      show($("sc014-lop"), T(85.75)); FX.chokeSettle(tl, ch, $("sc014-lop"), T(85.75), 10, 0.5, "none");
+    })();
+    tl.to($("sc014-shot"), { scale: 1.06, y: -30, duration: 0.3, ease: E.in }, S(86.63));   // CA
+
+    /* =================== C1S015 · 86.93–94.68 · "Roughly 90% of the US GDP … in the east … far east … on the coast" (R1) =================== */
+    scene("sc015", 86.93, 94.68);
+    tl.fromTo($("sc015-cam"), { x: 0 }, { x: -50, duration: 7.75, ease: "none", immediateRender: true }, S(86.93));
+    show($("sc015-box"), T(87.27));
+    FX.text.count(tl, $("sc015-n"), T(87.27), 0, 90, 0.9, (v) => String(Math.round(v)));
+    tl.fromTo($("sc015-e"), { scaleY: 0 }, { scaleY: 1, duration: 1.4, ease: C(E.out, 1.4), immediateRender: true }, S(87.27));
+    tl.fromTo($("sc015-w"), { scaleY: 0 }, { scaleY: 1, duration: 1.0, ease: C(E.out, 1.0), immediateRender: true }, S(87.50));
+    tl.fromTo($("sc015-thr"), { opacity: 1, scaleX: 0 }, { scaleX: 1, duration: 1.0, ease: C(E.out, 1.0), immediateRender: true }, S(88.0));
+    words($("sc015-gdp"), [T(87.91), T(88.07), T(88.15), T(88.55)], { dur: 0.4, y: 8 });
+    words($("sc015-ie"), [T(90.31), T(90.55), T(90.71)], { dur: 0.45, y: 8 });
+    words($("sc015-fe"), [T(91.51), T(91.83), T(92.23)], { dur: 0.4, y: 8 });
+    tl.fromTo($("sc015-h1"), { scaleX: 0 }, { scaleX: 1, duration: 0.3, ease: "sine.inOut", immediateRender: true }, S(91.88));
+    tl.fromTo($("sc015-h2"), { scaleX: 0 }, { scaleX: 1, duration: 0.3, ease: "sine.inOut", immediateRender: true }, S(92.28));
+    tl.fromTo($("sc015-sky"), { opacity: 0, y: 120 }, { opacity: 1, y: 0, duration: 1.0, ease: C(E.out, 1.0), immediateRender: true }, S(93.30));
+    rise($("sc015-co"), T(93.59), { dur: 0.5, y: 8 });
+    tl.to($("sc015-cam"), { x: -40, duration: 0.01 }, S(94.66));   // MC hand-off: the West stub becomes the glowing column
+
+    /* =================== C1S016 · 94.68–99.96 · "And Silicon Valley single handedly has changed that equation a lot." =================== */
+    scene("sc016", 94.68, 100.12);
+    ground("night", S(94.68));
+    tl.fromTo($("sc016-cam"), { scale: 1.0 }, { scale: 1.06, duration: 5.3, ease: "none", immediateRender: true }, S(94.68));
+    gsap.set([$("sc016-w"), $("sc016-e")], { height: 640 });
+    tl.fromTo($("sc016-w"), { scaleY: 80 / 640 }, { scaleY: 1, duration: 1.6, ease: C(E.out, 1.6), immediateRender: true }, S(95.0));
+    tl.to($("sc016-w"), { boxShadow: "0 0 90px 22px rgba(224,63,44,0.6)", duration: 0.9, ease: "sine.inOut", yoyo: true, repeat: 3 }, S(96.6));
+    tl.fromTo($("sc016-e"), { scaleY: 1 }, { scaleY: 0.32, duration: 1.4, ease: C(E.inOut, 1.4), immediateRender: true }, S(97.85));
+    words($("sc016-sv"), [T(95.10), T(95.90)], { dur: 0.7, y: 16 });
+    words($("sc016-sh"), [T(96.46), T(96.94)], { dur: 0.5 });
+    rise($("sc016-ch"), T(97.90), { dur: 0.6, y: 8 });
+    whip($("sc016-shot"), $("sc017-shot"), S(99.96), { dir: 1, vertical: true });
+
+    /* =================== C1S017 · 99.96–105.80 · "how Silicon Valley was birthed, because in the 1920s" (curve cut) =================== */
+    scene("sc017", 99.80, 105.80);
+    gsap.set($("sc017-b"), { scale: 0.556 });
+    tl.set($("sc017-b"), { opacity: 0 }, S(99.80));
+    tl.fromTo($("sc017-wrap"), { scale: 1 }, { scale: 1.04, duration: 3.0, ease: "none", immediateRender: true }, S(99.96));
+    const mid17 = FX.curveCut(tl, $("sc017-wrap"), $("sc017-a"), $("sc017-b"), S(102.95), 1.3, { from: 1.04, to: 2.6, ease: "expo.inOut" });
+    tl.to($("sc017-wrap"), { scale: 2.8, duration: 105.80 - (mid17 + 0.65), ease: "none" }, mid17 + 0.65);
+    gated(103.4, 105.9, () => FX.weave($("sc017-weave"), { amp: 1.4, flicker: 0.05, seed: 1701 }));
+    rise($("sc017-bi"), T(103.34), { dur: 0.6, y: 12 });
+    fade($("sc017-bi"), S(104.40), 0.2);
+    tl.fromTo($("sc017-yr"), { opacity: 0, scale: 1.1, filter: "blur(10px)" }, { opacity: 1, scale: 1, filter: "blur(0px)", duration: 0.7, ease: C(E.out, 0.7), immediateRender: true }, T(104.62));
+    tl.to($("sc017-wrap"), { scale: 3.1, duration: 0.3, ease: E.in }, S(105.50));   // CA
+
+    /* =================== C1S018 · 105.80–112.92 · "a bright young engineer in California … UC Berkeley or … Stanford" (D07 collage) =================== */
+    scene("sc018", 105.80, 113.15);
+    gsap.set($("sc018"), { zIndex: 3 });
+    ground("paper", S(105.80));
+    tl.fromTo($("sc018-cam"), { x: 0 }, { x: -50, duration: 7.1, ease: "none", immediateRender: true }, S(105.80));
+    tl.fromTo($("sc018-g"), { opacity: 0, x: -120, rotation: -9 }, { opacity: 1, x: 0, rotation: -3, duration: 1.0, ease: C(E.out, 1.0), immediateRender: true }, S(105.82));
+    (function () { const b = $("sc018-bye").querySelector(".label-box"); gsap.set(b, { opacity: 0 }); tl.set(b, { opacity: 1 }, T(106.46)); })();
+    words($("sc018-bye"), [T(106.46), T(106.94), T(107.34)], { dur: 0.35, y: 0 });
+    words($("sc018-ca"), [T(108.06)], { dur: 0.6 });
+    tl.fromTo($("sc018-c"), { opacity: 0, y: -90, rotation: 10 }, { opacity: 1, y: 0, rotation: 3, duration: 0.8, ease: C(E.out, 0.8), immediateRender: true }, S(110.10));
+    words($("sc018-ucb"), [T(110.22), T(110.78)], { dur: 0.45, y: 8 });
+    tl.fromTo($("sc018-s"), { opacity: 0, x: 120, rotation: -12 }, { opacity: 1, x: 0, rotation: -4, duration: 0.7, ease: C(E.out, 0.7), immediateRender: true }, S(111.60));
+    (function () {
+      const ch = FX.roughDefs(defs, "c1s01-ch18", { freq: 0.045, scale: 7, choke: 0 });
+      $("sc018-st").style.filter = "url(#c1s01-ch18)";
+      stamp($("sc018-st"), T(112.14), ch);
+    })();
+    tl.to($("sc018-shot"), { y: -1140, duration: 0.34, ease: E.in }, S(112.76));   // PS: the collage sheet lifts away
+
+    /* =================== C1S019 · 112.92–119.80 · "wasn't a powerhouse … Usually Berkeley was, but not Stanford." =================== */
+    scene("sc019", 112.70, 119.80);
+    tl.fromTo($("sc019-cam"), { scale: 1 }, { scale: 1.04, duration: 6.8, ease: "none", immediateRender: true }, S(112.92));
+    gsap.set($("sc019-bb"), { height: 0 }); gsap.set($("sc019-sb"), { height: 0 });
+    tl.to($("sc019-sb"), { height: 150, duration: 1.0, ease: C(E.out, 1.0) }, S(113.30));
+    rise($("sc019-ph"), T(114.38), { dur: 0.8, y: 12 });
+    tl.to($("sc019-bb"), { height: 600, duration: 1.0, ease: C(E.out, 1.0) }, S(117.82));
+    words($("sc019-bw"), [T(117.82), T(118.22)], { dur: 0.4, y: 8 });
+    words($("sc019-ns"), [T(118.70), T(118.86)], { dur: 0.35, y: 8 });
+    (function () {
+      const mk = $("sc019-mk"), f = FX.markupDefs(mk, "c1s01-mk19", { boil: 4 });
+      FX.markup.pen(tl, mk, S(118.78), { points: [[1440, 560], [1530, 640], [1520, 860], [1400, 905], [1290, 860], [1280, 640], [1370, 560], [1450, 572]], dur: 0.5, width: 6, color: VER, filter: f, seed: 19 });
+    })();
+    tl.to($("sc019-cam"), { scale: 1.14, duration: 0.3, ease: E.in }, S(119.50));   // CA
+
+    /* =================== C1S020 · 119.80–125.48 · "you had to leave Western United States" =================== */
+    scene("sc020", 119.80, 125.64);
+    ground("night", S(119.80));
+    gated(119.7, 125.7, () => FX.weave($("sc020-weave"), { amp: 1.2, flicker: 0.04, seed: 2001 }));
+    tl.fromTo($("sc020-cam"), { x: 30, scale: 1.0 }, { x: -70, scale: 1.05, duration: 5.68, ease: "none", immediateRender: true }, S(119.80));
+    rise($("sc020-lv"), T(123.34), { dur: 0.6, y: 14 });
+    words($("sc020-wu"), [T(123.98), T(124.62), T(124.94)], { dur: 0.35, y: 8 });
+    whip($("sc020-shot"), $("sc021-shot"), S(125.48), { dir: 1 });
+
+    /* =================== C1S021 · 125.48–129.88 · "go all the way to the east to New York, New Jersey, Massachusetts" (R10 railroad map) =================== */
+    scene("sc021", 125.48, 129.88);
+    ground("paper", S(125.48));
+    (function () {
+      const cam = $("sc021-cam");
+      const at = (cx, cy, z) => ({ x: 1360 - 400 - cx * z, y: 840 - 300 - cy * z, scale: z });
+      tl.fromTo(cam, at(700, 1720, 0.85), Object.assign(at(3150, 1540, 0.95), { duration: 2.1, ease: E.inOut, immediateRender: true }), S(125.48));
+      tl.to(cam, Object.assign(at(3300, 1530, 1.3), { duration: 1.4, ease: E.cam }), S(127.58));
+      tl.to(cam, Object.assign(at(3310, 1528, 1.34), { duration: 0.9, ease: "none" }), S(128.98));
+      const svg = $("sc021-svg"), f = FX.markupDefs(svg, "c1s01-mk21", { boil: 12 }); svg.setAttribute("viewBox", "0 0 3840 2827");
+      const d = "M358 1797 Q420 1730 497 1677 Q1500 1380 2414 1473 Q2950 1520 3365 1551";
+      const p = ink(svg, d, S(125.55), 1.9, { color: YEL, width: 30, filter: f, ease: E.inOut });
+      p.style.mixBlendMode = "multiply"; p.setAttribute("stroke-opacity", "0.9");
+      [["p1", S(127.50)], ["p2", S(127.98)], ["p3", S(128.70)]].forEach(([k, t]) =>
+        tl.fromTo($("sc021-" + k), { opacity: 0, scale: 0.3 }, { opacity: 1, scale: 1, duration: 0.45, ease: C(E.out, 0.45), immediateRender: true }, t));
+    })();
+    rise($("sc021-east"), T(127.02), { dur: 0.6, y: 12 });
+    words($("sc021-l1"), [T(127.50), T(127.66)], { dur: 0.35, y: 6 });
+    words($("sc021-l2"), [T(127.98), T(128.14)], { dur: 0.35, y: 6 });
+    words($("sc021-l3"), [T(128.70)], { dur: 0.35, y: 6 });
+    pushThrough($("sc021-shot"), S(129.88));
+
+    /* =================== C1S022 · 129.88–135.88 · "major technological companies like Bell Labs, General Electric. Okay?" =================== */
+    scene("sc022", 129.88, 135.88);
+    ground("night", S(129.88));
+    tl.fromTo($("sc022a-cam"), { scale: 1.0 }, { scale: 1.08, duration: 4.4, ease: "none", immediateRender: true }, S(129.88));
+    words($("sc022-mtc"), [T(131.02), T(131.66), T(132.62)], { dur: 0.45, y: 10 });
+    fade($("sc022-mtc"), S(133.05), 0.25);
+    tl.fromTo($("sc022-bll"), { opacity: 0, y: 12 }, { opacity: 0.9, y: 0, duration: 0.5, ease: C(E.out, 0.5), immediateRender: true }, T(133.26));
+    words($("sc022-bl"), [T(133.26), T(133.66)], { dur: 0.4, y: 12 });
+    gsap.set($("sc022b"), { autoAlpha: 0 });
+    whip($("sc022a"), $("sc022b"), S(134.20), { dir: 1, flash: true });
+    tl.fromTo($("sc022b-cam"), { scale: 1.0 }, { scale: 1.05, duration: 1.4, ease: "none", immediateRender: true }, S(134.20));
+    tl.fromTo($("sc022-gel"), { opacity: 0, y: 12 }, { opacity: 0.9, y: 0, duration: 0.5, ease: C(E.out, 0.5), immediateRender: true }, T(134.22));
+    words($("sc022-ge"), [T(134.22), T(134.62)], { dur: 0.35, y: 12 });
+    tl.to($("sc022b-cam"), { scale: 1.16, duration: 0.3, ease: E.in }, S(135.58));   // CA
+
+    /* =================== C1S023 · 135.88–143.72 · "kind of a brain drain … All the smart people were leaving West." (R5 walk) =================== */
+    scene("sc023", 135.88, 143.88);
+    ground("paper", S(135.88));
+    tl.fromTo($("sc023-cam"), { x: 0, scale: 1 }, { x: -40, scale: 1.03, duration: 7.8, ease: "none", immediateRender: true }, S(135.88));
+    tl.fromTo($("sc023-ca"), { attr: { opacity: 0 } }, { attr: { opacity: 0.55 }, duration: 0.8, ease: C(E.out, 0.8), immediateRender: true }, S(136.00));
+    (function () {
+      const box = $("sc023-grads"), N = 14, scr = (x, y) => [160 + x * 0.25, 300 + y * 0.25];
+      const midX = 160 + 3300 * 0.25, r = FX.rng(2300);
+      for (let i = 0; i < N; i++) {
+        const [x0, y0] = scr(700 + (i % 4) * 120 + r() * 40, 1250 + Math.floor(i / 4) * 170 + r() * 40);
+        const [x1, y1] = scr(5250 + (i % 5) * 150 + r() * 40, 900 + Math.floor(i / 5) * 190 + r() * 40);
+        box.insertAdjacentHTML("beforeend", `<div class="c1-grad" id="c1s01-sc023-g${i}" style="left:${x0.toFixed(0)}px; top:${y0.toFixed(0)}px"><img id="c1s01-sc023-gi${i}" src="assets/icons/graduate_ink.svg" alt="" /><img id="c1s01-sc023-gn${i}" src="assets/icons/graduate_navy.svg" alt="" style="opacity:0" /></div>`);
+        const g = $("sc023-g" + i), t0 = S(140.40) + i * 0.05, dur = 2.0, p = (midX - x0) / (x1 - x0);
+        tl.fromTo(g, { opacity: 0, scale: 0.4 }, { opacity: 1, scale: 1, duration: 0.4, ease: C(E.out, 0.4), immediateRender: true }, S(136.40) + Math.floor(i / 2) / 12);
+        tl.to(g, { x: x1 - x0, y: y1 - y0, duration: dur, ease: C("none", dur) }, t0);
+        tl.to(g, { y: "-=8", duration: 1 / 12, yoyo: true, repeat: 23, ease: "none" }, t0);   // stop-motion walk bob
+        tl.set($("sc023-gi" + i), { opacity: 0 }, t0 + p * dur);
+        tl.set($("sc023-gn" + i), { opacity: 1 }, t0 + p * dur);
+      }
+    })();
+    (function () {
+      const c1 = FX.roughDefs(defs, "c1s01-ch23a", { freq: 0.045, scale: 8, choke: 0 }), c2 = FX.roughDefs(defs, "c1s01-ch23b", { freq: 0.045, scale: 8, choke: 0 });
+      $("sc023-b1").style.filter = "url(#c1s01-ch23a)"; $("sc023-b2").style.filter = "url(#c1s01-ch23b)";
+      show($("sc023-b1"), T(138.46)); FX.chokeSettle(tl, c1, $("sc023-b1"), T(138.46), 12, 0.45, "none");
+      show($("sc023-b2"), T(138.94)); FX.chokeSettle(tl, c2, $("sc023-b2"), T(138.94), 12, 0.45, "none");
+    })();
+    words($("sc023-sp"), [T(140.46), T(140.86)], { dur: 0.5 });
+    rise($("sc023-lv"), T(141.58), { dur: 0.5, y: 8 });
+    whip($("sc023-shot"), $("sc024-shot"), S(143.72), { dir: 1 });
+
+    /* =================== C1S024 · 143.72–151.08 · "this setup bothered a lot of people, including Fred Terman, who we'll get to in just a second" =================== */
+    scene("sc024", 143.72, 151.08);
+    ground("night", S(143.72));
+    (function () {
+      const sharp = $("sc024-sharp"), blur = $("sc024-blur");
+      const cl = sharp.cloneNode(true); cl.removeAttribute("id"); cl.querySelectorAll("[id]").forEach((n) => n.removeAttribute("id"));
+      blur.appendChild(cl.firstElementChild); blur.appendChild(cl.firstElementChild);
+      sharp.children[1].classList.add("c1-tcard"); blur.children[1].classList.add("c1-tcard");
+      gsap.set(blur, { opacity: 0 });
+      tl.fromTo(blur, { opacity: 0 }, { opacity: 1, duration: 0.6, ease: "power1.out", immediateRender: true }, S(144.6));
+      FX.focalBlur(tl, blur, [{ x: 610, y: 560, r: 320 }, { t: S(147.20), x: 1460, y: 480, r: 250, dur: 1.2 }]);
+      tl.fromTo($("sc024-cam"), { scale: 1.0, x: 20 }, { scale: 1.05, x: -20, duration: 7.3, ease: "none", immediateRender: true }, S(143.72));
+      tl.to(".c1-tcard", { x: 900, rotation: 14, duration: 0.7, ease: E.in }, S(150.30));
+      tl.to($("sc024-ft"), { x: 900, duration: 0.7, ease: E.in }, S(150.30));
+    })();
+    rise($("sc024-bo"), T(145.58), { dur: 0.8, y: 12 });
+    words($("sc024-ft"), [T(147.58), T(148.06)], { dur: 0.5, y: 10 });
+
+    /* =================== C1S025 · 151.08–159.55 · "another formidable individual … at the top of Stanford … did not like" =================== */
+    scene("sc025", 151.08, 159.71);
+    tl.fromTo($("sc025-p1"), { x: 0 }, { x: -70, duration: 8.5, ease: "none", immediateRender: true }, S(151.08));
+    tl.fromTo($("sc025-p2"), { x: 0, y: 0 }, { x: 40, y: -20, duration: 8.5, ease: "none", immediateRender: true }, S(151.08));
+    tl.fromTo($("sc025-p3"), { x: 0 }, { x: 30, duration: 8.5, ease: "none", immediateRender: true }, S(151.08));
+    tl.fromTo($("sc025-sil"), { y: 520, opacity: 0 }, { y: 0, opacity: 1, duration: 1.6, ease: C(E.out, 1.6), immediateRender: true }, S(151.30));
+    tl.to($("sc025-sil"), { scale: 1.05, duration: 6.4, ease: "none", transformOrigin: "50% 100%" }, S(152.9));
+    words($("sc025-fi"), [T(153.18), T(153.90)], { dur: 0.6 });
+    words($("sc025-ts"), [T(155.58), T(155.90), T(156.69)], { dur: 0.4, y: 8 });
+    words($("sc025-dn"), [T(157.81), T(157.97), T(158.13)], { dur: 0.4, y: 10 });
+    whip($("sc025-shot"), $("sc026-shot"), S(159.55), { dir: 1, flash: true });
+
+    /* =================== C1S026 · 159.55–164.91 · "the future president of the United States, Herbert Hoover" (s06) =================== */
+    scene("sc026", 159.55, 164.91);
+    ground("paper", S(159.55));
+    (function () {
+      const cam = (cx, cy, z) => ({ x: 960 - cx * z, y: 540 - cy * z, scale: z });
+      tl.fromTo($("sc026-tilt"), { rotationX: 20, rotationZ: -4, y: 30 }, { rotationX: 9, rotationZ: -2.5, y: 0, duration: 5.4, ease: E.cam, immediateRender: true }, S(159.55));
+      tl.fromTo($("sc026-cam"), cam(800, 1000, 0.5), Object.assign(cam(790, 960, 0.54), { duration: 0.7, ease: "none", immediateRender: true }), S(159.55));
+      tl.to($("sc026-cam"), Object.assign(cam(470, 330, 1.45), { duration: 1.6, ease: E.in }), S(160.25));   // ease-in push → contrast cut at the peak
+      tl.to($("sc026-cam"), Object.assign(cam(520, 345, 1.56), { duration: 3.1, ease: "none" }), S(161.85));
+      tl.fromTo($("sc026-ht"), { opacity: 0.18 }, { opacity: 0.5, duration: 1.6, ease: "power2.in", immediateRender: true }, S(160.25));
+      tl.fromTo($("sc026-bg"), { scale: 1.0 }, { scale: 1.1, duration: 5.4, ease: "none", immediateRender: true }, S(159.55));
+      FX.contrastCallout(tl, $("sc026-veil"), S(161.62), { w: 1600, h: 1984, ellipse: [520, 280, 520, 95], feather: 26, strength: 0.6, color: "rgba(232,223,202,1)" });
+    })();
+    tl.fromTo($("sc026-shade"), { opacity: 0 }, { opacity: 1, duration: 0.5, ease: "power1.out", immediateRender: true }, S(161.30));
+    words($("sc026-fp"), [T(161.49), T(161.65), T(162.05), T(162.45), T(162.53), T(162.69), T(163.01)], { dur: 0.35, y: 8 });
+    tl.fromTo($("sc026-clip"), { opacity: 0, y: -90, rotation: -9, scale: 1.15 }, { opacity: 1, y: 0, rotation: 2.5, scale: 1, duration: 0.7, ease: C(E.out, 0.7), immediateRender: true }, S(163.20));
+    (function () {
+      const c1 = FX.roughDefs(defs, "c1s01-ch26a", { freq: 0.04, scale: 6, choke: 0 }), c2 = FX.roughDefs(defs, "c1s01-ch26b", { freq: 0.04, scale: 6, choke: 0 });
+      $("sc026-h1").style.filter = "url(#c1s01-ch26a)"; $("sc026-h2").style.filter = "url(#c1s01-ch26b)";
+      show($("sc026-h1"), T(163.49)); FX.chokeSettle(tl, c1, $("sc026-h1"), T(163.49), 9, 0.4, "none");
+      show($("sc026-h2"), T(164.05)); FX.chokeSettle(tl, c2, $("sc026-h2"), T(164.05), 9, 0.3, "none");
+    })();
+    pushThrough($("sc026-shot"), S(164.91));
+
+    /* =================== C1S027 · 164.91–172.75 · "Hoover himself was … in the first class of Stanford in 1891" (2.5D Inner Quad) =================== */
+    scene("sc027", 164.91, 172.75);
+    ground("night", S(164.91));
+    (function () {
+      const P = 1200, Z = { L0: -900, L1: -420, L2: 0, L3: 220 };
+      for (const [k, z] of Object.entries(Z)) gsap.set($("sc027-" + k), { z, scale: (P - z) / P });
+      tl.fromTo($("sc027-world"), { x: 60, z: -40, rotationY: 1.8 }, { x: -50, z: 150, rotationY: -1.4, duration: 6.9, ease: E.cam, immediateRender: true }, S(164.91));
+      tl.to($("sc027-world"), { x: -56, z: 160, duration: 0.95, ease: "none" }, S(171.81));
+      FX.focusHunt(tl, $("sc027-stage"), S(171.95), { dur: 0.75 });
+    })();
+    tl.fromTo($("sc027-card"), { opacity: 0, y: 40, rotation: -8 }, { opacity: 1, y: 0, rotation: -3, duration: 0.9, ease: C(E.out, 0.9), immediateRender: true }, S(165.20));
+    rise($("sc027-ho"), T(165.25), { dur: 0.6, y: 8 });
+    tl.to([$("sc027-card"), $("sc027-ho")], { opacity: 0, x: -40, duration: 0.4, ease: E.in }, S(168.20));
+    words($("sc027-fc"), [T(168.61), T(168.85)], { dur: 0.6 });
+    rise($("sc027-st"), T(169.41), { dur: 0.6, y: 8 });
+    FX.text.odometer(tl, $("sc027-yr"), T(171.41), { dur: 0.6, stagger: 0.05, seed: 1891 });
+    tl.to($("sc027-stage"), { scale: 1.12, duration: 0.3, ease: E.in }, S(172.45));   // CA
+
+    /* =================== C1S028 · 172.75–176.67 · "the campus was still under construction" (steel frame behind the 1896 roofline) =================== */
+    scene("sc028", 172.75, 176.83);
+    gated(172.7, 176.9, () => FX.weave($("sc028-weave"), { amp: 1.5, flicker: 0.05, seed: 2801 }));
+    gsap.set($("sc028-cam"), { transformOrigin: "1000px 210px" });
+    tl.fromTo($("sc028-cam"), { scale: 1.0 }, { scale: 1.22, duration: 3.9, ease: E.cam, immediateRender: true }, S(172.75));
+    words($("sc028-uc"), [T(175.25), T(175.57)], { dur: 0.5 });
+    (function () {
+      const mk = $("sc028-mk"), f = FX.markupDefs(mk, "c1s01-mk28", { boil: 4 });
+      FX.markup.pen(tl, mk, S(175.20), { points: [[1180, 150], [1290, 205], [1200, 262], [1000, 275], [790, 250], [720, 200], [820, 150], [1000, 138], [1190, 160]], dur: 0.7, width: 7, color: BONE, filter: f, seed: 28, blend: "normal" });
+    })();
+    whip($("sc028-shot"), $("sc029-shot"), S(176.67), { dir: -1, vertical: true });
+
+    /* =================== C1S029 · 176.67–181.23 · "there is a joke on Twitter where people say, like back in the day" =================== */
+    scene("sc029", 176.67, 181.23);
+    ground("paper", S(176.67));
+    tl.fromTo($("sc029-tw"), { opacity: 0, y: -120, rotation: -7 }, { opacity: 1, y: 0, rotation: -2, duration: 1.1, ease: C(E.out, 1.1), immediateRender: true }, S(176.75));
+    words($("sc029-k"), [T(178.45), T(178.61), T(178.93), T(179.09)], { dur: 0.4, y: 8 });
+    words($("sc029-tw"), [T(180.53), T(180.69), T(180.85), T(180.93)], { dur: 0.25, y: 6 });
+    tl.fromTo($("sc029-shot"), { scale: 1 }, { scale: 1.03, duration: 4.3, ease: "none", immediateRender: false }, S(176.67));
+    tl.to($("sc029-shot"), { scale: 1.1, x: -40, duration: 0.28, ease: E.in }, S(180.95));   // CA
+
+    /* =================== C1S030 · 181.23–185.79 · "crazy stories of like some guy just not trying all his life" =================== */
+    scene("sc030", 181.23, 185.79);
+    tl.fromTo($("sc030-cam"), { scale: 1.0, x: 30 }, { scale: 1.07, x: 0, duration: 4.3, ease: E.cam, immediateRender: true }, S(181.23));
+    words($("sc030-cs"), [T(181.97), T(182.37)], { dur: 0.6 });
+    (function () {
+      const mk = $("sc030-mk"), f = FX.markupDefs(mk, "c1s01-mk30", { boil: 4 });
+      FX.markup.pen(tl, mk, S(184.15), { points: [[1330, 760], [1370, 860], [1300, 965], [1170, 990], [1060, 940], [1040, 830], [1110, 735], [1250, 715], [1345, 770]], dur: 0.8, width: 7, color: INK, filter: f, seed: 30 });
+    })();
+    gsap.set($("sc030-nt"), { left: 690, top: 960 });
+    words($("sc030-nt"), [T(184.21), T(184.45)], { dur: 0.4, y: 8 });
+    tl.to($("sc030-cam"), { scale: 1.2, duration: 0.28, ease: E.in }, S(185.51));   // HC on the push
+
+    /* =================== C1S031 · 185.79–192.03 · "some flip switches in his mind … I'm gonna go try in my life" =================== */
+    scene("sc031", 185.79, 192.19);
+    ground("night", S(185.79));
+    gsap.set($("sc031-cam"), { transformOrigin: "960px 440px" });
+    tl.fromTo($("sc031-cam"), { scale: 1.0 }, { scale: 1.06, duration: 1.45, ease: "none", immediateRender: true }, S(185.79));
+    tl.set($("sc031-dn"), { opacity: 0 }, S(187.28));
+    tl.set($("sc031-up"), { opacity: 1 }, S(187.28));
+    tl.to($("sc031-cam"), { scale: 1.32, duration: 1.4, ease: E.cam }, S(187.28));
+    tl.fromTo($("sc031-bloom"), { opacity: 0 }, { opacity: 1, duration: 1.2, ease: C(E.out, 1.2), immediateRender: true }, S(187.32));
+    gated(187.2, 192.2, () => FX.streaks($("sc031-streaks"), { seed: 3101, speed: 0.6, tint: [255, 214, 170], lo: 0.35, gain: 1.4 }));
+    tl.fromTo($("sc031-streaks"), { opacity: 0 }, { opacity: 0.7, duration: 1.2, ease: C(E.out, 1.2), immediateRender: true }, S(187.40));
+    words($("sc031-fs"), [T(187.25), T(187.73)], { dur: 0.4, y: 8 });
+    words($("sc031-tr"), [T(189.73), T(189.97), T(190.37), T(190.61)], { dur: 0.4, y: 12 });
+    whip($("sc031-shot"), $("sc032-shot"), S(192.03), { dir: 1 });
+
+    /* =================== C1S032 · 192.03–198.19 · "this golden opportunity of like working at some crazy hedge fund company" =================== */
+    scene("sc032", 192.03, 198.19);
+    tl.fromTo($("sc032-p1"), { x: 0 }, { x: -60, duration: 6.2, ease: "none", immediateRender: true }, S(192.03));
+    tl.fromTo($("sc032-p2"), { x: 0, y: 0 }, { x: 50, y: -15, duration: 6.2, ease: "none", immediateRender: true }, S(192.03));
+    tl.fromTo($("sc032-p3"), { x: 0, scale: 1 }, { x: 25, scale: 1.04, duration: 6.2, ease: "none", immediateRender: true }, S(192.03));
+    FX.text.fill(tl, $("sc032-g1"), T(193.73), { per: 0.04, hold: 0.45, settle: 0.7, cool: BONE });
+    rise($("sc032-g2"), T(194.29), { dur: 0.6, y: 12 });
+    words($("sc032-hf"), [T(196.85), T(197.33)], { dur: 0.45, y: 10 });
+    tl.to([$("sc032-p1"), $("sc032-p2"), $("sc032-p3")], { x: "-=180", duration: 0.3, ease: E.in }, S(197.89));   // CA: panels slide out
+
+    /* =================== C1S033–C1S034 · 198.19–208.43 · the classifieds call-out, crossed out; the tweet returns stamped =================== */
+    scene("sc033", 198.19, SEG_END);
+    ground("paper", S(198.19));
+    (function () {
+      const ads = $("sc033-ads"), r = FX.rng(3300);
+      let h = "";
+      for (let c = 0; c < 5; c++) {
+        let y = 40;
+        while (y < 1180) {
+          const hh = 110 + Math.floor(r() * 170), x = 30 + c * 330;
+          let lines = ""; const n = Math.floor((hh - 50) / 16);
+          for (let k = 0; k < n; k++) lines += `<i style="width:${(70 + r() * 28).toFixed(0)}%"></i>`;
+          h += `<div class="c1-ad" style="left:${x}px; top:${y}px; width:310px; height:${hh}px"><div class="h"></div>${lines}</div>`;
+          y += hh + 14;
+        }
+      }
+      ads.innerHTML = h;
+      const cam = $("sc033-cam");
+      tl.fromTo(cam, { scale: 0.96, x: 0, y: 0 }, { scale: 1.0, duration: 1.0, ease: E.cam, immediateRender: true }, S(198.19));
+      // text call-out: the page fades to ~25 %, the frame punches in ~10 %, then the ad's key words come back
+      tl.fromTo($("sc033-veil"), { opacity: 0 }, { opacity: 0.78, duration: 0.9, ease: E.out, immediateRender: true }, S(199.10));
+      tl.to(cam, { scale: 1.1, duration: 1.1, ease: E.cam }, S(199.10));
+      tl.fromTo($("sc033-ad"), { opacity: 0, scale: 0.94 }, { opacity: 1, scale: 1, duration: 0.6, ease: C(E.out, 0.6), immediateRender: true }, S(199.20));
+      tl.fromTo($("sc033-hl"), { scaleX: 0 }, { scaleX: 1, duration: 0.4, ease: "sine.inOut", immediateRender: true }, S(202.25));
+      // C1S034 — pull back; the ad is crossed out; the tweet slides back in and gets stamped
+      tl.to(cam, { scale: 0.86, x: -230, y: -20, duration: 1.4, ease: E.cam }, S(203.47));
+      const mk = $("sc033-mk"), f = FX.markupDefs(mk, "c1s01-mk34", { boil: 4 });
+      FX.markup.pen(tl, mk, S(204.62), { points: [[610, 340], [900, 560], [1230, 790]], dur: 0.32, width: 12, color: INK, filter: f, seed: 341 });
+      FX.markup.pen(tl, mk, S(204.98), { points: [[1230, 340], [930, 560], [610, 790]], dur: 0.32, width: 12, color: INK, filter: f, seed: 342 });
+      tl.fromTo($("sc034-tw"), { opacity: 0, x: 700, rotation: 12 }, { opacity: 1, x: 0, rotation: 4, duration: 0.9, ease: C(E.out, 0.9), immediateRender: true }, S(206.15));
+      const c1 = FX.roughDefs(defs, "c1s01-ch34", { freq: 0.045, scale: 7, choke: 0 });
+      $("sc034-st").style.filter = "url(#c1s01-ch34)";
+      show($("sc034-st"), T(207.17));
+      tl.fromTo($("sc034-st"), { scale: 1.4 }, { scale: 1, duration: 0.25, ease: "power2.in", immediateRender: true }, T(207.17));
+      FX.chokeSettle(tl, c1, $("sc034-st"), T(207.17), 9, 0.5, "none");
+      show($("sc034-s1"), T(207.17));
+      show($("sc034-s2"), T(207.41));
+    })();
+    words($("sc033-ad").querySelector(".l1"), [T(199.33), T(199.73), T(200.13)], { dur: 0.4, y: 8 });
+    words($("sc033-ad").querySelector(".l2"), [T(200.85)], { dur: 0.4, y: 8 });
+    words($("sc033-ad").querySelector(".l3"), [T(202.21), T(202.69)], { dur: 0.35, y: 6 });
+    show($("sc034-de"), T(204.69));
+    words($("sc034-de"), [T(204.69), T(205.01)], { dur: 0.35, y: 8 });
+    rise($("sc034-meme"), T(206.29), { dur: 0.5, y: 8 });
+    // W↓ hand-off to c1s02: tweet card + crossed ad smear downward from 208.37 (outgoing half of FX.whip; c1s02 lands the incoming half)
+    (function () {
+      const bl = FX.whipDefs(defs, "c1s01-wout");
+      tl.set($("sc033-shot"), { filter: "url(#c1s01-wout)" }, S(208.36));
+      tl.fromTo($("sc033-shot"), { y: 0, scale: 1 }, { y: 700, scale: 1.18, duration: 0.16, ease: "power3.in", immediateRender: false }, S(208.37));
+      const sb = { v: 0 };
+      tl.fromTo(sb, { v: 0 }, { v: 90, duration: 0.16, ease: "power2.in", immediateRender: false, onUpdate: () => bl.setAttribute("stdDeviation", `0 ${sb.v.toFixed(1)}`) }, S(208.37));
+    })();
+
+    FX.mount(tl, DURATION);
+    window.__timelines = window.__timelines || {}; window.__timelines[SEG] = tl;
+  })();
+  </script>
+</template>
+</body>
+</html>
