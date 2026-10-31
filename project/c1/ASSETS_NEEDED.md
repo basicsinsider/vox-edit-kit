@@ -75,7 +75,6 @@ Getty/AP: don't download (watermarks/licensing) — use the Getty-free alternati
 | N34 | ❌ | vintage colour cartoon of an idle man in a hammock/napping (Puck/Judge lithograph, PD) | LOC Puck via Commons | C1S030 (c1s01) | 1 |
 | N35 | ❌ | colour painting of a Quaker meeting (e.g. Egbert van Heemskerck 'Quaker Meeting', 18th c.) | Commons (PD-Art) | C1S036 (c1s02) | 1 |
 | N36 | ❌ | Disney *Fantasia* (1940) poster (© Disney, fair use) + Walt Disney Studios Burbank 1940 photo | Commons (Fantasia 1940 poster is on Commons as PD-not-renewed), archive.org; credit | C1S079, C1S085 (c1s03) | 2 |
-| N37 | ❌ | a portrait illustration of a 'Silicon Valley blueprint'? — no: 1920s architectural blueprint lettering reference (for SC005 typography only) | reference only | reserve | 0 |
 
 ## Documents
 

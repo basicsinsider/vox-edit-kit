@@ -44,7 +44,6 @@ A = {
 "N34": ("❌", "Paintings", "vintage colour cartoon of an idle man in a hammock/napping (Puck/Judge lithograph, PD)", "LOC Puck via Commons"),
 "N35": ("❌", "Paintings", "colour painting of a Quaker meeting (e.g. Egbert van Heemskerck 'Quaker Meeting', 18th c.)", "Commons (PD-Art)"),
 "N36": ("❌", "Paintings", "Disney *Fantasia* (1940) poster (© Disney, fair use) + Walt Disney Studios Burbank 1940 photo", "Commons (Fantasia 1940 poster is on Commons as PD-not-renewed), archive.org; credit"),
-"N37": ("❌", "Paintings", "a portrait illustration of a 'Silicon Valley blueprint'? — no: 1920s architectural blueprint lettering reference (for SC005 typography only)", "reference only"),
 # --- documents / newspapers
 "E40": ("✅", "Documents", "NYT 7 Nov 1928 'HOOVER WINS' front page `assets/archival/newspapers/nyt_1928-11-07_hoover_wins_frontpage.jpg`", "exists (s06)"),
 "R41": ("🔁", "Documents", "Terman 1916 *The Measurement of Intelligence* title page + IQ tables `terman_1916_title_page_HIRES_color.jpg` etc.", "re-download: example-docs/sources/assets_archival.md (archive.org)"),
