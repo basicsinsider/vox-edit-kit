@@ -272,6 +272,11 @@ use, attribution optional; never redistribute the files publicly, never use them
   `…/thumb/x/xy/Name.tiff/lossy-page1-1920px-Name.tiff.jpg`; keep `,'()` unescaped in the thumb URL (quoting them gives a Wikimedia error page).
   Esri satellite for any small region (e.g. Taiwan Strait with Kinmen/Matsu): `MK_CACHE=/tmp/x python3 tools/map_tiles.py fetch esri 10 lon0 lat0 lon1 lat1`
   + stitch (`project/c5/gen/c5s03_assets.py strait`) → `assets/c5/made/strait_esri_z10.jpg` (+ a Taiwan mask from the imagery).
+- (c6s01) `FX.textCallout` sets the mask on `keyEl` at build time (fully hidden until its wipe) — pass a dedicated copy of the key words,
+  never the visible text itself, or dim the other words yourself. `FX.focalBlur`'s blurred copy hides every overlay under it: put pins,
+  lines and fills ABOVE the blurred copy. Our three fonts have no CJK glyphs — never put Chinese characters in a text element (it renders
+  in a fallback font); use the real photo/scan (c6s01 crops the real 莊敬自強 wall slogan). A 3D-tilted map plane shows its rectangle on a
+  night ground unless the stage background equals the map's sea colour (sample it; kit `taiwan_night` sea = #131a22).
 ### 4.3 Check, look, render
 ```bash
 python3 tools/build_index.py s05            # put one (or several) compositions in index.html
@@ -681,6 +686,7 @@ on action. Use it whenever the narrator quotes someone or introduces a historic 
 - [ ] Smooth long eases, 12 fps. [ ] Cuts on action; whips, no iris. [ ] No photo/clip used > 2× in a chunk.
 
 ## Changelog
+- 2026-10-31 — c6s01 editor: §4.2 notes (textCallout keyEl, focalBlur layering, no CJK in text, tilted map plane background); generator `project/c6/gen/` (markup + script + inlined map paths); derived assets `assets/c6/derived/c6s01/` (celadon Taiwan fill PNG, 1971 UN film stills, Kansan page 1800 px); real 莊敬自強 slogan photo (Commons CC BY 2.0).
 - 2026-10-31 — c5s03 editor: §4.2 gotchas (`.hl` class collision, transparent scene for paper slides, no path measuring in callbacks, Commons TIFF thumbs); Taiwan Strait Esri z10 mosaic + mask (`assets/c5/made/`), helpers `paperSlide`/`pushThrough`/`hemi`/`chair` in `project/c5/gen/c5s03/`.
 - 2026-10-31 — c5s02 editor (C5S043–083): §4.2 gotchas (torn paper = screen texture, ink boxes before their words, `.plate` inset order, offset parents); rendered globe videos (Blue Marble / Black Marble), keyed RCA XL-100 (`assets/c5/screens/`), template + generator `project/c5/gen/c5s02_*`.
 - 2026-10-31 — c5s01 editor: §4.2 gotchas (video ids, stray dot on undrawn arrows, map sea-colour backgrounds, Taiwan landmask includes the Fujian coast); derived c5s01 maps/2.5D layers via `project/c5/gen/c5s01_assets.py`.

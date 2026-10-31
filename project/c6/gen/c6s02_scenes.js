@@ -544,7 +544,7 @@
         if (p.ico) div("", "position:absolute;left:65px;top:40px;width:120px;height:120px;background:url('" + p.ico + "') center/contain no-repeat;opacity:0.85", c);
         if (p.ship) c.innerHTML = '<svg viewBox="0 0 90 40" style="position:absolute;left:45px;top:60px;width:160px;height:72px"><path d="M4 22 L86 22 L74 36 L14 36 Z" fill="#141b24"/><rect x="30" y="8" width="26" height="14" fill="#141b24"/><rect x="40" y="0" width="7" height="9" fill="#141b24"/></svg>';
         if (p.road) c.innerHTML = '<svg viewBox="0 0 100 80" style="position:absolute;left:55px;top:40px;width:140px;height:112px"><path d="M30 80 L45 0 L55 0 L70 80 Z" fill="#141b24"/><path d="M50 8 L50 20 M50 32 L50 46 M50 58 L50 74" stroke="#efe7d6" stroke-width="4"/></svg>';
-        if (p.chip) { div("", "position:absolute;left:14px;top:14px;right:14px;bottom:14px;background:url('assets/intro/photos/intel8088_chip.jpg') center/cover;filter:saturate(0.6) contrast(1.05)", c); chipCard = c; }
+        if (p.chip) { div("", "position:absolute;left:14px;top:14px;right:14px;bottom:14px;background:url('assets/c3/photos/fairchild_micrologic_series_01.jpg') center/cover;filter:saturate(0.6) contrast(1.05)", c); chipCard = c; }
         const pn = document.createElement("img"); pn.src = "assets/icons/pin_bone_top.svg"; pn.className = "c62-pin"; pn.style.left = (p.x + 125) + "px"; pn.style.top = (p.y + 8) + "px"; pins.appendChild(pn);
         const t0 = S(357.95) + i * 0.14;
         tl.fromTo(c, { opacity: 0, y: -40 }, { opacity: 1, y: 0, duration: 0.25, ease: C(FX.ease.out, 0.25), immediateRender: true }, t0);

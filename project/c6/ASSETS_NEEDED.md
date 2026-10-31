@@ -86,7 +86,7 @@ N80** portraits of Sun Yun-suan, K. T. Li, Pan Wen-yuan, Fei Hua. 8. **N58** Ten
 | N05 | ❌ | 1971 drafts A/L.632 (US important-question) + A/L.630 (Albania = main resolution), page images ≥ 2400 px | C6S003, C6S004 | UN ODS; record bbox of "important question" for the highlighter |
 | N15 | ❌ | Taiwanese newspaper/textbook page carrying the Bush or walk-out photo | C6S016 | UDN / Central Daily News archives, history textbook scans (© fair use); fallback 🛠 typeset page, no masthead |
 | N17 | ❌ | NYT 26 Oct 1971 front page (+ 1–2 other US papers) | C6S020, C6S022 | TimesMachine preview, archive.org newspaper runs, newspapers.com OCR previews (© fair use) |
-| N31 | ❌ | **莊敬自強 / 處變不驚** — 1971 calligraphy, banner photo or Central Daily News 26 Oct 1971 front page | C6S041 | Academia Historica, CKS Memorial Hall, newspaper archives |
+| N31 | 🔁 `assets/c6/photos/slogan_zhuangjing_ziqiang_taichung_wall.jpg` (real slogan wall, CC BY 2.0; c6s01) | **莊敬自強 / 處變不驚** — 1971 calligraphy, banner photo or Central Daily News 26 Oct 1971 front page | C6S041 | Academia Historica, CKS Memorial Hall, newspaper archives |
 | N37 | ❌ | 1927 newspaper on Chiang's break with the communists | C6S050 | Chronicling America (via tile.loc.gov), archive.org, NYT archive |
 | 🛠 | 🛠 | GA seating plan (V1) — typeset, 1971 member order (public record) | C6S011 | own |
 | 🛠 | 🛠 | Tanzania statement card (paraphrase), Executive-Yuan-style memo (no seals), handwritten breakfast note | C6S021, C6S090–091, C6S107 | own typeset; no fake letterheads/signatures |
