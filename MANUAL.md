@@ -472,7 +472,8 @@ the bed ≈ 14 LU under it. Run heavy audio jobs one at a time (the container OO
   words. A colour painting of a famous figure often beats a B/W photo; pictorial maps (e.g. 1950s illustrated California maps)
   can stand in for maps. PD/CC/free only, logged. Examples Krish sent: illustrated California maps, Wild West poster art,
   a pictorial "Palo Alto — birthplace of Silicon Valley" map.
-- **Vintage grid / ruled paper grounds** (look of Creative Market "Vintage Ruled Grid Paper Textures" — reference only, not
+- **Vintage grid / ruled paper grounds** (Texturelabs `paper_graph_01`, `paper_lined_01`, `paper_stained_01`,
+  `paper_torn_01` (Screen), `paper_blueprint_01` + the look of Creative Market "Vintage Ruled Grid Paper Textures" — reference only, not
   bought, never re-drawn as vector): real scans — archive.org `kecatalog` (K+E Graph Sheets Catalog 1960), old ledgers,
   engineering notebooks, Texturelabs paper. Files in `assets/intro/papers/` (and later a shared `assets/textures/papers/`).
 - **Vintage instruction manuals / datasheets** of the era (archive.org, bitsavers) are prime visuals for tech topics.
@@ -542,6 +543,11 @@ on action. Use it whenever the narrator quotes someone or introduces a historic 
 - [ ] Smooth long eases, 12 fps. [ ] Cuts on action; whips, no iris. [ ] No photo/clip used > 2× in a chunk.
 
 ## Changelog
+- 2026-10-31 — 5 Texturelabs papers added by Krish (assets/textures/paper_{graph,lined,stained,torn,blueprint}_01, SOURCES.md
+  "Added 2026-10-31"). Intro usage: graph → export bar chart IS007–008 (D01) + one intro03 chart; stained (multiply) →
+  profits/crash line chart IS010–011 (D05) and Chang-vs-Tsao bars IS052 (D02); lined → board / "one condition" / approval
+  chain (IS024–027); blueprint → "breaks ground across the street" (IS037–038); torn (Screen) → torn-paper wipe at 185.01 and
+  the historic-images collage IS064 (D07). Rule: two paper layers (top ~90 %), never the same paper in consecutive scenes.
 - 2026-10-31 — Krish's reference videos studied: §10.6 markups/call-outs (FX.markup.pen/out, FX.contrastCallout, FX.textCallout,
   FX.focalBlur, FX.radioWaves, pen boil 4/s), §10.7 painting-to-print newspaper reveal (Lincoln reel), §10.8 sound design system
   (six folders, hierarchy/restraint, whoosh+texture stacks, variation, J-cuts, levels, frequency pocket).

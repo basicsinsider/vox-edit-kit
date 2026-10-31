@@ -29,3 +29,9 @@ Key coordinates (WGS84, from OpenStreetMap via Nominatim, ODbL):
 Not used / rejected: NLSC (Taiwan) aerial orthophoto WMTS — sharp 0.25 m imagery under the Open Government Data License, but
 every tile carries a "NLSC 2025" watermark → rejected (no watermarks). 1876 Imray chart of Formosa (PD) — Taiwan too small on the sheet.
 Overpass API (OSM bulk) is blocked from this session; Nominatim lookups worked.
+
+## Derived by the intro02 editor (2026-10-31)
+- `hsinchu_1945_town_crop.jpg` — crop (1440,1000)-(3840,2350) of the 1945 AMS city plan (town centre), IS038.
+- `world_basemap_desat_2560.jpg` — 2560×1280 downscale of world_basemap_desat.jpg (ghost maps IS025/IS039).
+- `pacific_relief_grey_2850.jpg` — half-size pacific_relief_grey.jpg (x=(lon-110)*15, y=(56-lat)*15), IS028.
+- `taiwan_celadon_fill.png` — taiwan_mask.png as celadon #9fc7b2 alpha fill (IS035 burn fill).

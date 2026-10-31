@@ -51,8 +51,8 @@ copies = {"India": "bangalore", "China": "shenzhen", "Israel": "tel_aviv", "Fran
           "Japan": "tsukuba", "United Kingdom": "london", "Germany": "berlin", "Singapore": "singapore", "United Arab Emirates": "dubai",
           "South Korea": "seoul", "Brazil": None, "Chile": None, "Canada": None, "Malaysia": None, "Nigeria": None, "Kenya": None, "Australia": None}
 missing += [k for k in copies if k not in C]
-data = {"west": "".join(simp(C[k]["d"]) for k in west if k in C),
-        "copies": {k: simp(C[k]["d"], step=1.2) for k in copies if k in C},
+data = {"west": "".join(simp(C[k]["d"], step=1.8) for k in west if k in C),
+        "copies": {k: simp(C[k]["d"], step=2.0) for k in copies if k in C},
         "taiwan": simp(C["Taiwan"]["d"], step=0.2) if "Taiwan" in C else "",
         "places": {k: [round(v["x"] * 0.4, 1), round(v["y"] * 0.4, 1)] for k, v in wj["places"].items()}}
 # country centroids for copies without a named place

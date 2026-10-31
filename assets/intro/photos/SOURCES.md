@@ -4,8 +4,8 @@ All from Wikimedia Commons (thumbnail downloads via tools/commons_thumb.sh). CC-
 
 | file | subject | source page | licence | author | date | original size | file size |
 |---|---|---|---|---|---|---|---|
-| tsao_portrait_vase.jpg | Robert Tsao (曹興誠), modern, white shirt + gold tie beside a Tang-style vase | https://commons.wikimedia.org/wiki/File:Robert_Tsao_%282%29.jpg | Attribution | 國立陽明交通大學秘書處 | 2016-06-23 14:11 | 853x1280 | 1280x1921 |
-| tsao_portrait_studio.jpg | Robert Tsao, modern studio head-and-shoulders, grey background | https://commons.wikimedia.org/wiki/File:%E6%9B%B9%E8%88%88%E8%AA%A0%E9%A1%A7%E5%95%8F.jpg | Attribution | 總統府 | 2024 | 1170x1650 | 1280x1805 |
+| tsao_portrait_cc0.jpg | Robert Tsao (曹興誠), modern, white shirt + gold tie beside a Tang-style vase | https://commons.wikimedia.org/wiki/File:Robert_Tsao_%282%29.jpg | Attribution | 國立陽明交通大學秘書處 | 2016-06-23 14:11 | 853x1280 | 1280x1921 |
+| tsao_advisor_cc0.jpg | Robert Tsao, modern studio head-and-shoulders, grey background | https://commons.wikimedia.org/wiki/File:%E6%9B%B9%E8%88%88%E8%AA%A0%E9%A1%A7%E5%95%8F.jpg | Attribution | 總統府 | 2024 | 1170x1650 | 1280x1805 |
 | tsao_rally_2023.jpg | Robert Tsao speaking at a rally on stage (2023), modern | https://commons.wikimedia.org/wiki/File:%E6%9B%B9%E8%88%88%E8%AA%A0%E5%85%88%E7%94%9F521%E9%9B%86%E6%9C%83%E6%BC%94%E8%AA%AA.jpg | CC BY-SA 4.0 | TMYAO | 2024-05-21 19:24:50 | 3024x4032 | 1920x2560 |
 | chang_1951_mit.jpg | Morris Chang (張忠謀), MIT yearbook 1951, B/W halftone | https://commons.wikimedia.org/wiki/File:Morris_Chang_1951_MIT_yearbook_portrait.jpg | Public domain | unknown | 1951 | 962x1280 | 1280x1703 |
 | chang_and_sophia_cc0.jpg | Morris Chang with wife Sophia Chang, modern, event | https://commons.wikimedia.org/wiki/File:Morris_Chang_and_Sophia.jpg | Public domain | user:peellden | 2010-10-15 | 1000x1494 | 1280x1912 |
@@ -31,9 +31,10 @@ All from Wikimedia Commons (thumbnail downloads via tools/commons_thumb.sh). CC-
 | ibm5150_board_1984_cc0.jpg | IBM PC 5150 motherboard (1984) full of chips, black background | https://commons.wikimedia.org/wiki/File:Ibm5150mobo1984black.jpg | CC0 | Oligopolism | 2021-11-25 14:41:05 | 6300x4200 | 1920x1280 |
 | nanzih_epz_ose_factory.jpg | OSE 華泰電子 chip-packaging factory, Nanzih Export Processing Zone, Kaohsiung (2008 photo of older building) | https://commons.wikimedia.org/wiki/File:Factory_building_of_Orient_Semiconductor_Electronics_Limited_in_Nanzih_Export_Processing_Zone.jpg | CC BY-SA 2.0 | Joe Lewis | 2008-07-08 14:55:54 | 3008x2000 | 1920x1277 |
 | keelung_port_cc0.jpg | Keelung harbour with KEELUNG hillside sign, 2007 | https://commons.wikimedia.org/wiki/File:Keelung_and_CG_ships.jpg | Public domain | Changlc | 2007-01-01 14:27 | 2045x1327 | 1920x1246 |
-
 Notes:
-- "Attribution" = Taiwan Government Open Data / attribution-only licence on the Commons page (tsao_portrait_vase: 國立陽明交通大學秘書處 NYCU Secretariat; tsao_portrait_studio: 總統府 Office of the President) → credit on screen.
-- tsao_portrait_vase, tsao_portrait_studio, chang_1951_mit, chang_and_sophia_cc0 are Commons thumbnails LARGER than the original (server-side upscale) — real resolution = "original size"; use as cards/portraits, not full-frame.
+- **Licence correction:** despite the `_cc0` filenames (kept because plans reference them), "Attribution" = Taiwan Government Open Data / attribution-only licence on the Commons page (tsao_portrait_cc0: 國立陽明交通大學秘書處 NYCU Secretariat; tsao_advisor_cc0: 總統府 Office of the President) → credit on screen.
+- tsao_portrait_cc0, tsao_advisor_cc0, chang_1951_mit, chang_and_sophia_cc0 are Commons thumbnails LARGER than the original (server-side upscale) — real resolution = "original size"; use as cards/portraits, not full-frame.
 - chang_1951_mit is a halftone print: blur ~1.5 px before any further processing.
 - Rejected: Western Electric 2500 colour phones (camera date stamp burned in), Intel 8088 / TSMC Fab 12A / Tsmc factory hsinchu (download refused, 429).
+| naca_groundbreaking_1950s_cc0.jpg | NACA groundbreaking ceremony (five men, ceremonial shovel in sand), 1950s B/W — intro02 IS037 "breaks ground" | https://commons.wikimedia.org/wiki/File:NACA_Groundbreaking_Ceremony_(E-908).jpg | CC0 (NASA) | NASA / NACA | 1950s | 5100x4000 | 1920x1506 |
+| stone_wall_texture_cc0.jpg | rough stone wall, frontal, B/W — intro02 IS033 "stonewalled" (N16) | https://commons.wikimedia.org/wiki/File:Stone_Wall_Texture.jpg | CC0 | Commons user | — | 4000x2666 | 1920x1280 |
