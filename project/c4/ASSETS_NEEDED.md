@@ -92,8 +92,8 @@ Commons/archive.org mirrors; Google News Archive scans; TIME covers at content.t
 | N25b | ❌ | ration queue / empty bowls; a street crowd; a wall of posters (non-specific period) | C4S047 | 1940s | "rice ration line 1940s China", "crowd Taipei 1947" (avoid 228 specifics) | Commons, NARA |
 | N26 | ✅ `c4/photos/green_island_human_rights_park.jpg`, `jingmei_human_rights_park_entrance.jpg` | White Terror memorial: Green Island prison / Jing-Mei detention centre corridor | C4S063–065 | (site) | "Green Island White Terror memorial", "Jing-Mei detention center corridor" | Commons (CC BY — credit) |
 | N26b | ❌ | 1950s KMT rally (portraits, banners) | C4S063 | 1950s | "Kuomintang rally 1950s Taipei" | Commons, Academia Historica |
-| N26c | ❌ | period wooden ballot box | C4S061 | 1950s | "ballot box 1950s" | Commons |
-| N27b | ❌ | 2 colour Great Leap Forward posters | C4S067 | 1958–60 | "Great Leap Forward poster 1958" | chineseposters.net (credit), Commons |
+| N26c | 🔁 `c4/photos/wooden_ballot_box_smithsonian.jpg` (+`derived/c4s02/ballot_box_cutout.png`; generic US box — c4s02) | period wooden ballot box | C4S061 | 1950s | "ballot box 1950s" | Commons |
+| N27b | ✅ `c4/posters/four_pests_campaign_poster_1958.jpg`, `brave_the_wind_and_waves_poster_glf.jpg` (small, cards — c4s02) | 2 colour Great Leap Forward posters | C4S067 | 1958–60 | "Great Leap Forward poster 1958" | chineseposters.net (credit), Commons |
 | N28 | 🔁 `c4/photos/taihoku_imperial_university_staff_1937.jpg` (staff group, small) | Taihoku Imperial University / NTU main building, 1960s NTU Royal Palm Boulevard | C4S070, C4S074 | 1930s / 1960s | "Taihoku Imperial University", "National Taiwan University 1960s" | NTU Library archive, Commons |
 | N28c | ❌ | 1950s Taiwan classroom | C4S070 | 1950s | "Taiwan classroom 1950s" | Face of Free China, Commons |
 | N28d | ❌ | Colour 1960s NTU campus postcard (§10.7 painting-to-print) | C4S076 | 1960s | "台大 明信片 1960" | Commons, postcard archives (fair use) |

@@ -1,0 +1,867 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8" /></head>
+<body>
+<template>
+  <style>
+    /* c3s02 — chunk c3, LOCAL VO 200.34–404.17 (C3S043–C3S077). Source: project/c3/gen/c3s02.src.html + c3s02.scenes_{a,b,c}.js → build_c3s02.py */
+    #root { position: absolute; inset: 0; overflow: hidden; background: var(--night); }
+    .k-scene { position: absolute; inset: 0; overflow: hidden; visibility: hidden; opacity: 0; }
+    .k-shot { position: absolute; inset: 0; overflow: hidden; transform-origin: 50% 50%; }
+    .k-night { background: var(--night); }
+    .k-paper { background: var(--paper); }
+    .k-abs { position: absolute; }
+    .k-p1, .k-p2 { position: absolute; inset: -30px; background-size: cover; background-position: center; pointer-events: none; }
+    .k-p2 { opacity: 0.9; mix-blend-mode: multiply; }
+    .k-credit { position: absolute; right: 30px; bottom: 20px; font-size: 13px; letter-spacing: 0.08em; color: rgba(242,237,227,0.6); z-index: 6; }
+    .k-credit.ink { color: rgba(20,27,36,0.62); }
+    .k-mk { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; pointer-events: none; }
+    .k-w { display: inline-block; white-space: pre; opacity: 0; }
+    .k-ink { color: var(--ink); }
+    .k-redbox { display: inline-block; background: var(--vermilion); color: var(--bone); padding: 0.1em 0.24em 0.02em; line-height: 1; }
+    .k-inkbox { display: inline-block; background: var(--ink); color: var(--paper); padding: 0.1em 0.24em 0.02em; line-height: 1; }
+    .k-celbox { display: inline-block; background: var(--celadon); color: var(--ink); padding: 0.1em 0.24em 0.02em; line-height: 1; }
+    .k-hlbar { position: absolute; background: var(--yellow); mix-blend-mode: multiply; transform-origin: 0 50%; opacity: 0.9; }
+    .k-scrim-b { position: absolute; left: 0; right: 0; bottom: 0; height: 420px; background: linear-gradient(180deg, rgba(15,19,24,0), rgba(15,19,24,0.82)); }
+    .k-scrim-t { position: absolute; left: 0; right: 0; top: 0; height: 360px; background: linear-gradient(0deg, rgba(15,19,24,0), rgba(15,19,24,0.75)); }
+    .k-scrim-l { position: absolute; left: 0; top: 0; bottom: 0; width: 900px; background: linear-gradient(90deg, rgba(15,19,24,0.8), rgba(15,19,24,0)); }
+    .k-mapcam { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
+    .k-mapcam > img { position: absolute; left: 0; top: 0; }
+    .k-mapcam > svg { position: absolute; left: 0; top: 0; overflow: visible; }
+    .k-card { position: absolute; background: #efe8d8; box-shadow: 0 26px 60px rgba(20,27,36,0.32); overflow: hidden; }
+    .k-card img, .k-card video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    .k-ht { position: absolute; inset: 0; background: url('assets/textures/halftone_01_norm.jpg') 0 0 / 420px auto; mix-blend-mode: overlay; opacity: 0.4; pointer-events: none; }
+    .k-pc { position: absolute; background: #efe8d8; padding: 14px 14px 40px; box-shadow: 0 22px 50px rgba(20,27,36,0.32); }
+    .k-pc .in { position: relative; width: 100%; height: 100%; overflow: hidden; }
+    .k-pc img, .k-pc video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    .k-plate { position: absolute; inset: 0; overflow: hidden; }
+    .k-plate .bg { position: absolute; inset: -80px; width: calc(100% + 160px); height: calc(100% + 160px); object-fit: cover; filter: blur(28px) brightness(0.42) grayscale(0.6); }
+    .k-circ { position: absolute; border-radius: 50%; overflow: hidden; background: #ddd5c4; }
+    .k-circ img, .k-circ svg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    .k-desk { position: absolute; inset: 0; background: radial-gradient(ellipse 60% 70% at 52% 44%, #333029 0%, #1b1916 55%, #0e0d0c 100%); }
+    .k-lamp { position: absolute; inset: 0; background: radial-gradient(ellipse 45% 55% at 50% 42%, rgba(255,214,170,0.16), rgba(255,214,170,0) 70%); mix-blend-mode: screen; pointer-events: none; }
+    .k-tape { position: absolute; width: 150px; height: 44px; background: rgba(236,228,206,0.72); box-shadow: 0 2px 6px rgba(0,0,0,0.12); }
+    #c3s02-flash { position: absolute; inset: 0; background: #f2ede3; opacity: 0; pointer-events: none; z-index: 7; }
+    #c3s02-grain, #c3s02-dust, #c3s02-vig { z-index: 8; }
+
+    /* C3S043 dark timeline */
+    #c3s02-sc043-svg { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; }
+    #c3s02-sc043-str { opacity: 0.55; filter: blur(2.5px); }
+    #c3s02-sc043-txt { left: 0; top: 330px; width: 1920px; text-align: center; font-size: 104px; }
+
+    /* C3S044 dissertation card → Taiwan night relief */
+    #c3s02-sc044-sea { position: absolute; inset: 0; background: #11161c; }
+    #c3s02-sc044-cam { width: 1623px; height: 2200px; }
+    #c3s02-sc044-cam > img { width: 1623px; height: 2200px; }
+    #c3s02-sc044-map { filter: brightness(1.25) contrast(1.06); }
+    #c3s02-sc044-fill { opacity: 0; filter: drop-shadow(0 0 6px rgba(159,199,178,0.85)); }
+    #c3s02-sc044-ht { position: absolute; left: 0; top: 0; width: 1623px; height: 2200px; opacity: 0;
+      background: radial-gradient(circle, rgba(111,156,134,0.85) 2.6px, transparent 3.2px) 0 0 / 11px 11px;
+      -webkit-mask-image: url('assets/c3/derived/c3s02/tw_mask.png'); mask-image: url('assets/c3/derived/c3s02/tw_mask.png'); -webkit-mask-size: 100% 100%; mask-size: 100% 100%; mix-blend-mode: multiply; }
+    #c3s02-sc044-thesis { left: 590px; top: 70px; width: 740px; height: 960px; background: #ece5d3; transform: rotate(-2.5deg); padding: 90px 70px; color: var(--ink); text-align: center; }
+    #c3s02-sc044-thesis .p1 { position: absolute; inset: 0; background: url('assets/textures/paper_stained_01.jpg') center / cover; mix-blend-mode: multiply; opacity: 0.6; }
+    #c3s02-sc044-thesis .t { position: relative; font-size: 22px; letter-spacing: 0.22em; line-height: 1.7; }
+    #c3s02-sc044-thesis .bar { position: relative; height: 16px; margin: 14px auto; background: rgba(20,27,36,0.62); border-radius: 2px; }
+    #c3s02-sc044-thesis .s { position: relative; font-size: 24px; line-height: 1.55; opacity: 0.85; }
+    #c3s02-sc044-grad { left: 120px; top: 110px; font-size: 44px; }
+    #c3s02-sc044-mip { left: 120px; top: 830px; font-size: 92px; }
+    #c3s02-sc044-tw { left: 1340px; top: 470px; font-size: 44px; }
+
+    /* C3S045 1943 map of Formosa (tilted) */
+    #c3s02-sc045-stage { position: absolute; inset: 0; perspective: 2400px; perspective-origin: 50% 40%; }
+    #c3s02-sc045-cam { position: absolute; inset: 0; transform-origin: 50% 50%; }
+    #c3s02-sc045-map { position: absolute; left: 330px; top: -40px; width: 1300px; height: 1185px; transform: rotateX(16deg) rotateZ(-4deg); transform-origin: 50% 60%; box-shadow: 0 40px 90px rgba(20,27,36,0.35); background: #e9e0c8; }
+    #c3s02-sc045-map img { position: absolute; inset: 0; width: 100%; height: 100%; filter: sepia(0.18) saturate(0.85) contrast(1.04); mix-blend-mode: multiply; }
+    #c3s02-sc045-mk { position: absolute; left: 0; top: 0; width: 1300px; height: 1185px; overflow: visible; }
+    #c3s02-sc045-nac { left: 110px; top: 120px; font-size: 84px; }
+    #c3s02-sc045-wb { left: 1300px; top: 860px; font-size: 84px; }
+    #c3s02-sc045-amk { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; }
+
+    /* C3S046 Pacific night */
+    #c3s02-sc046-cam { width: 5896px; height: 1760px; }
+    #c3s02-sc046-cam > img { width: 5896px; height: 1760px; }
+    #c3s02-sc046-map { filter: brightness(1.55) contrast(1.08); }
+    #c3s02-sc046-svg { width: 5896px; height: 1760px; }
+
+    /* C3S047 recipe card + focal call-out */
+    #c3s02-sc047-cam { position: absolute; inset: 0; transform-origin: 50% 50%; }
+    #c3s02-sc047-cards { position: absolute; inset: 0; }
+    .k-recipe { position: absolute; left: 360px; top: 170px; width: 1200px; height: 760px; background: #f4efe2; transform: rotate(-1.6deg); box-shadow: 0 30px 70px rgba(20,27,36,0.3); overflow: hidden; }
+    .k-recipe .rl { position: absolute; left: 0; right: 0; height: 2px; background: rgba(60,110,170,0.38); }
+    .k-recipe .ml { position: absolute; top: 0; bottom: 0; left: 120px; width: 2px; background: rgba(210,70,60,0.45); }
+    .k-recipe .hd { position: absolute; left: 160px; top: 46px; font-size: 60px; color: var(--ink); letter-spacing: 0.3em; }
+    .k-recipe .ln { position: absolute; left: 160px; font-size: 50px; color: #26303d; }
+    .k-recipe .chip { position: absolute; width: 200px; height: 140px; background: #efe8d8; padding: 8px; box-shadow: 0 8px 18px rgba(20,27,36,0.28); }
+    .k-recipe .chip img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(1) sepia(0.25) contrast(1.05); }
+    .k-recipe svg { position: absolute; left: 0; top: 0; width: 1200px; height: 760px; overflow: visible; }
+    #c3s02-sc047-blur { position: absolute; inset: 0; filter: blur(7px); }
+    #c3s02-sc047-gb { left: 120px; top: 60px; font-size: 76px; }
+    #c3s02-sc047-wm { left: 1000px; top: 940px; width: 820px; text-align: right; font-size: 76px; }
+
+    /* C3S048 Taiwan satellite + clouds */
+    #c3s02-sc048-sea { position: absolute; inset: 0; background: #0c1016; }
+    #c3s02-sc048-cam { width: 1919px; height: 2600px; }
+    #c3s02-sc048-cam > img { width: 1919px; height: 2600px; }
+    #c3s02-sc048-map { filter: brightness(1.12) contrast(1.05); }
+    .k-cloud { position: absolute; pointer-events: none; }
+    #c3s02-sc048-dark { position: absolute; inset: 0; background: radial-gradient(ellipse 70% 70% at 50% 55%, rgba(8,10,14,0.15), rgba(8,10,14,0.75)); opacity: 0; }
+    #c3s02-sc048-bf { left: 120px; top: 110px; font-size: 40px; }
+    #c3s02-sc048-sit { left: 120px; top: 170px; font-size: 76px; }
+    #c3s02-sc048-tw { left: 0; top: 780px; width: 1920px; text-align: center; font-size: 210px; letter-spacing: 0.04em; }
+
+    /* C3S049 vintage world atlas plate + pins */
+    #c3s02-sc049-cam { position: absolute; inset: 0; transform-origin: 0 0; }
+    #c3s02-sc049-plate { position: absolute; left: 40px; top: 205px; width: 1840px; height: 662px; box-shadow: 0 24px 60px rgba(20,27,36,0.3); background: #dfe3dc; border: 10px solid #f1ead9; outline: 2px solid rgba(20,27,36,0.6); outline-offset: -14px; }
+    #c3s02-sc049-plate img { position: absolute; inset: 0; width: 100%; height: 100%; filter: saturate(0.72) sepia(0.2) contrast(1.02); }
+    #c3s02-sc049-svg { position: absolute; left: 40px; top: 205px; width: 1840px; height: 662px; overflow: visible; }
+    #c3s02-sc049-l1 { left: 110px; top: 70px; font-size: 64px; white-space: nowrap; }
+    #c3s02-sc049-l2 { left: 110px; top: 920px; font-size: 76px; white-space: nowrap; }
+
+    /* C3S050 1960 Taipei footage */
+    #c3s02-sc050-cam { position: absolute; inset: 0; transform-origin: 50% 50%; }
+    #c3s02-sc050-wv { position: absolute; inset: -20px; }
+    #c3s02-sc050-wv video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    #c3s02-sc050-des { left: 0; top: 400px; width: 1920px; text-align: center; font-size: 190px; }
+    #c3s02-sc050-btt { left: 120px; top: 900px; font-size: 80px; }
+
+    /* C3S051 graph-paper line chart (D05) */
+    #c3s02-sc051-cam { position: absolute; left: 0; top: 0; width: 2300px; height: 1080px; transform-origin: 0 0; }
+    #c3s02-sc051-svg { position: absolute; left: 0; top: 0; width: 2300px; height: 1080px; overflow: visible; }
+    #c3s02-sc051-sv { left: 170px; top: 520px; font-size: 32px; color: var(--navy); }
+    #c3s02-sc051-uu { left: 1180px; top: 120px; font-size: 76px; }
+    #c3s02-sc051-tw { left: 170px; top: 600px; font-size: 32px; }
+    #c3s02-sc051-ec { left: 1180px; top: 870px; font-size: 92px; white-space: nowrap; }
+
+    /* C3S052 Kansan front page (tilted, halftone, push) */
+    #c3s02-sc052-bg { position: absolute; inset: -60px; background: url('assets/c3/derived/c3s02/kansan_page.jpg') center 30% / cover; filter: blur(24px) sepia(0.6) brightness(0.32); }
+    #c3s02-sc052-stage { position: absolute; inset: 0; perspective: 2600px; }
+    #c3s02-sc052-cam { position: absolute; left: 0; top: 0; width: 3000px; height: 3146px; transform-origin: 0 0; }
+    #c3s02-sc052-page { position: absolute; left: 0; top: 0; width: 3000px; height: 3146px; transform: rotateX(7deg) rotateY(-5deg) rotate(-1deg); transform-origin: 50% 30%; box-shadow: 0 40px 120px rgba(0,0,0,0.7); background: #ece3cf; overflow: hidden; }
+    #c3s02-sc052-page img { position: absolute; inset: 0; width: 100%; height: 100%; filter: sepia(0.45) contrast(1.06); mix-blend-mode: multiply; }
+    #c3s02-sc052-page .k-ht { background-size: 260px auto; opacity: 0.18; }
+    #c3s02-sc052-mk { position: absolute; left: 0; top: 0; width: 3000px; height: 3146px; overflow: visible; }
+    #c3s02-sc052-ko { left: 0; top: 860px; width: 1920px; text-align: center; font-size: 110px; }
+    #c3s02-sc052-roc { left: 0; top: 990px; width: 1920px; text-align: center; font-size: 46px; }
+
+    /* C3S053 Mao rostrum footage */
+    #c3s02-sc053-cam { position: absolute; inset: 0; transform-origin: 60% 40%; }
+    #c3s02-sc053-cam video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    #c3s02-sc053-tint { position: absolute; inset: 0; background: #e03f2c; mix-blend-mode: soft-light; opacity: 0.42; }
+    #c3s02-sc053-nst { left: 120px; top: 120px; font-size: 80px; }
+    #c3s02-sc053-ch { left: 120px; top: 760px; font-size: 170px; }
+    #c3s02-sc053-ccp { left: 760px; top: 800px; font-size: 120px; }
+
+    /* C3S054 East Asia night: China red, Taiwan drains */
+    #c3s02-sc054-cam, #c3s02-sc073-cam { width: 3600px; height: 3724px; }
+    #c3s02-sc054-cam > img, #c3s02-sc073-cam > img { width: 3600px; height: 3724px; filter: brightness(1.5) contrast(1.08); }
+    #c3s02-sc054-svg, #c3s02-sc073-svg { width: 3600px; height: 3724px; }
+    #c3s02-sc054-ccp { left: 120px; top: 110px; font-size: 64px; }
+    #c3s02-sc054-ch { left: 120px; top: 190px; font-size: 150px; }
+    #c3s02-sc054-no { left: 1240px; top: 300px; font-size: 96px; }
+    #c3s02-sc054-nac { left: 1240px; top: 420px; font-size: 64px; }
+
+    /* C3S055 AP column, text call-out */
+    #c3s02-sc055-cam { position: absolute; inset: 0; transform-origin: 66% 46%; }
+    #c3s02-sc055-col { position: absolute; left: 1080px; top: 30px; width: 680px; height: 1040px; background: #ede5d2; transform: rotate(1.4deg); box-shadow: 0 30px 70px rgba(20,27,36,0.3); overflow: hidden; }
+    #c3s02-sc055-col img { position: absolute; left: 0; top: 0; width: 680px; height: 1040px; filter: sepia(0.35) contrast(1.08); mix-blend-mode: multiply; }
+    #c3s02-sc055-dim { position: absolute; inset: 0; }
+    #c3s02-sc055-key { position: absolute; inset: 0; clip-path: inset(388px 0 474px 0); }
+    #c3s02-sc055-tws { left: 130px; top: 260px; font-size: 92px; }
+    #c3s02-sc055-dne { left: 130px; top: 420px; font-size: 92px; }
+
+    /* C3S056 ROC walk-out press photo */
+    #c3s02-sc056-cam { position: absolute; inset: 0; transform-origin: 70% 40%; }
+    #c3s02-sc056-img { position: absolute; left: 0; top: -100px; width: 1920px; height: 1327px; object-fit: cover; filter: sepia(0.5) contrast(0.92) brightness(0.86); }
+    #c3s02-sc056-nx { left: 120px; top: 820px; font-size: 140px; }
+
+    /* C3S057–058 paper timeline */
+    #c3s02-sc057-cam { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 50% 50%; }
+    #c3s02-sc057-svg { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; }
+    #c3s02-sc057-card { left: 1290px; top: 300px; width: 520px; height: 224px; transform: rotate(2deg); opacity: 0; }
+    #c3s02-sc057-card img { filter: sepia(0.35) contrast(1.05); }
+    #c3s02-sc057-ec { left: 120px; top: 110px; font-size: 84px; }
+    #c3s02-sc058-pres { left: 130px; top: 250px; width: 520px; height: 330px; opacity: 0; transform: rotate(-2deg); }
+    #c3s02-sc058-pres img { filter: grayscale(0.6) sepia(0.35) contrast(1.05); }
+    #c3s02-sc058-bk { left: 760px; top: 110px; font-size: 40px; }
+    #c3s02-sc058-tw { left: 760px; top: 170px; font-size: 92px; }
+    #c3s02-sc058-gov { left: 140px; top: 640px; font-size: 52px; }
+
+    /* C3S059 WWII newsreel */
+    #c3s02-sc059-wv { position: absolute; inset: -20px; }
+    #c3s02-sc059-wv video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: contrast(1.12) brightness(0.92); }
+    #c3s02-sc059-ww { left: 0; top: 410px; width: 1920px; text-align: center; font-size: 210px; }
+
+    /* C3S060 history-book page rewritten */
+    #c3s02-sc060-cam { position: absolute; inset: 0; transform-origin: 46% 40%; }
+    #c3s02-sc060-book { position: absolute; left: 420px; top: 60px; width: 1080px; height: 980px; transform: rotate(-1.2deg); }
+    .k-pg { position: absolute; top: 0; width: 540px; height: 980px; background: #efe7d2; overflow: hidden; }
+    .k-pg .p1 { position: absolute; inset: 0; background: url('assets/textures/paper_cream_01.jpg') center / cover; mix-blend-mode: multiply; opacity: 0.7; }
+    .k-pg .bl { position: absolute; left: 60px; height: 9px; background: rgba(20,27,36,0.45); border-radius: 2px; }
+    #c3s02-sc060-l { left: 0; box-shadow: inset -30px 0 40px rgba(20,27,36,0.18); }
+    #c3s02-sc060-r { left: 540px; box-shadow: inset 30px 0 40px rgba(20,27,36,0.18), 0 30px 70px rgba(20,27,36,0.3); }
+    #c3s02-sc060-ill { position: absolute; left: 60px; top: 150px; width: 420px; height: 407px; }
+    #c3s02-sc060-ill img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(1) sepia(0.3) contrast(1.08); mix-blend-mode: multiply; }
+    #c3s02-sc060-mk { position: absolute; left: 0; top: 0; width: 1080px; height: 980px; overflow: visible; }
+    #c3s02-sc060-ccp { left: 120px; top: 110px; font-size: 72px; }
+    #c3s02-sc060-cs { left: 1100px; top: 900px; width: 760px; text-align: right; font-size: 80px; }
+
+    /* C3S061 OWI poster */
+    #c3s02-sc061-cam { position: absolute; inset: 0; transform-origin: 62% 45%; }
+    #c3s02-sc061-poster { position: absolute; left: 980px; top: 40px; width: 714px; height: 1000px; box-shadow: 0 30px 80px rgba(0,0,0,0.6); }
+    #c3s02-sc061-poster img { width: 100%; height: 100%; object-fit: cover; filter: saturate(0.85) contrast(1.03); }
+    #c3s02-sc061-txt { left: 130px; top: 260px; font-size: 76px; line-height: 1.25; }
+    #c3s02-sc061-mk { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; }
+
+    /* C3S062 Vox layered panels */
+    #c3s02-sc062-cam { position: absolute; inset: 0; transform-origin: 50% 50%; }
+    .k-panel { position: absolute; overflow: hidden; box-shadow: 0 22px 50px rgba(0,0,0,0.5); background: #2a2826; }
+    .k-panel img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    #c3s02-sc062-a { left: 60px; top: 90px; width: 760px; height: 560px; transform: rotate(-4deg); }
+    #c3s02-sc062-a img { filter: url(#c3s02-tint-night); }
+    #c3s02-sc062-b { left: 1150px; top: 520px; width: 700px; height: 470px; transform: rotate(3deg); }
+    #c3s02-sc062-b img { filter: url(#c3s02-tint-night); }
+    #c3s02-sc062-h { left: 470px; top: 170px; width: 1000px; height: 823px; transform: rotate(-1deg); }
+    #c3s02-sc062-h img { filter: sepia(0.35) contrast(1.06) brightness(0.95); }
+    #c3s02-sc062-cp { left: 120px; top: 860px; font-size: 92px; }
+    #c3s02-sc062-aj { left: 1180px; top: 90px; font-size: 92px; }
+
+    /* C3S063 D15 diagram US ↔ CCP */
+    #c3s02-sc063-cam { position: absolute; inset: 0; transform-origin: 50% 50%; }
+    #c3s02-sc063-svg { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; }
+    #c3s02-sc063-us { left: 400px; top: 300px; width: 340px; height: 340px; border: 10px solid var(--navy); }
+    #c3s02-sc063-cn { left: 1180px; top: 300px; width: 340px; height: 340px; border: 10px solid var(--vermilion); }
+    #c3s02-sc063-cn img { filter: url(#c3s02-tint-red); }
+    #c3s02-sc063-usl { left: 330px; top: 680px; width: 480px; text-align: center; font-size: 34px; }
+    #c3s02-sc063-ccp { left: 1110px; top: 676px; width: 480px; text-align: center; font-size: 64px; }
+
+    /* C3S064 Cairo 1943 (depth plate) */
+    #c3s02-sc064-stage { position: absolute; inset: 0; perspective: 1200px; overflow: hidden; }
+    #c3s02-sc064-far { position: absolute; inset: -120px; background: url('assets/c3/derived/c3s02/cairo.jpg') 50% 30% / cover; filter: blur(22px) brightness(0.45) grayscale(1); }
+    #c3s02-sc064-cam { position: absolute; inset: 0; transform-origin: 30% 40%; }
+    #c3s02-sc064-img { position: absolute; left: -40px; top: -160px; width: 2005px; height: 1551px; filter: grayscale(1) sepia(0.22) contrast(1.06); }
+    #c3s02-sc064-mk { position: absolute; left: -40px; top: -160px; width: 2005px; height: 1551px; overflow: visible; }
+    #c3s02-sc064-roc { left: 120px; top: 760px; font-size: 96px; }
+    #c3s02-sc064-nat { left: 120px; top: 890px; font-size: 76px; }
+
+    /* C3S065–066 1945 card → BIG FOUR pillars (D02) */
+    #c3s02-sc065-cam { position: absolute; inset: 0; transform-origin: 50% 60%; }
+    #c3s02-sc065-svg { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; }
+    #c3s02-sc065-card { left: 560px; top: 160px; width: 800px; height: 756px; transform: rotate(-2deg); opacity: 0; }
+    #c3s02-sc065-card img { filter: sepia(0.35) contrast(1.05); }
+    #c3s02-sc065-we { left: 120px; top: 110px; font-size: 84px; }
+    #c3s02-sc065-bf { left: 0; top: 70px; width: 1920px; text-align: center; font-size: 110px; }
+    .k-flag { position: absolute; width: 160px; height: 160px; border: 6px solid var(--bone); box-shadow: 0 0 0 2px rgba(20,27,36,0.5), 0 10px 24px rgba(20,27,36,0.3); opacity: 0; }
+    .k-flag .k-ht { opacity: 0.25; background-size: 200px auto; }
+    #c3s02-sc066-fdr { width: 230px; height: 230px; border: 8px solid var(--ink); opacity: 0; }
+    #c3s02-sc066-us { font-size: 30px; opacity: 0; }
+    #c3s02-sc066-pwo { left: 1220px; top: 330px; font-size: 56px; }
+    #c3s02-sc066-hl { left: -6px; right: -6px; top: 26px; height: 34px; }
+
+    /* C3S067–068 world night */
+    #c3s02-sc067-cam { width: 5200px; height: 2254px; }
+    #c3s02-sc067-cam > img { width: 5200px; height: 2254px; filter: brightness(1.6) contrast(1.08); }
+    #c3s02-sc067-svg { width: 5200px; height: 2254px; }
+    #c3s02-sc067-fp { left: 0; top: 410px; width: 1920px; text-align: center; font-size: 170px; }
+    .k-plab { position: absolute; font-size: 30px; opacity: 0; white-space: nowrap; }
+
+    /* C3S069 UN Charter */
+    #c3s02-sc069-cam { position: absolute; inset: 0; transform-origin: 55% 50%; }
+    #c3s02-sc069-page { left: 820px; top: 110px; width: 900px; height: 675px; transform: rotate(3deg); }
+    #c3s02-sc069-page img { filter: grayscale(1) sepia(0.35) contrast(1.15) brightness(1.05); }
+    #c3s02-sc069-photo { left: 300px; top: 300px; width: 720px; height: 580px; transform: rotate(-3.5deg); }
+    #c3s02-sc069-photo video { filter: grayscale(1) sepia(0.25) contrast(1.1); }
+    #c3s02-sc069-clip { position: absolute; left: 560px; top: 270px; width: 54px; height: 130px; border: 7px solid #8b8f94; border-radius: 26px; transform: rotate(-3.5deg); }
+    #c3s02-sc069-fm { left: 120px; top: 110px; font-size: 80px; }
+    #c3s02-sc069-unc { left: 1140px; top: 860px; font-size: 96px; }
+
+    /* C3S070 Security Council poster */
+    #c3s02-sc070-cam { position: absolute; left: 0; top: 0; width: 2337px; height: 3000px; transform-origin: 0 0; }
+    #c3s02-sc070-img { position: absolute; left: 0; top: 0; width: 2337px; height: 3000px; filter: grayscale(1) sepia(0.2) contrast(1.05) brightness(0.92); }
+    #c3s02-sc070-mk { position: absolute; left: 0; top: 0; width: 2337px; height: 3000px; overflow: visible; }
+    #c3s02-sc070-veto { left: 120px; top: 110px; font-size: 52px; }
+    #c3s02-sc070-ps { left: 120px; top: 180px; font-size: 80px; }
+    #c3s02-sc070-sc { left: 0; top: 820px; width: 1920px; text-align: center; font-size: 150px; white-space: nowrap; }
+
+    /* C3S071 civil-war newsreel */
+    #c3s02-sc071-wv { position: absolute; inset: -20px; }
+    #c3s02-sc071-wv video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: brightness(1.7) contrast(1.15); }
+    #c3s02-sc071-cw { left: 0; top: 420px; width: 1920px; text-align: center; font-size: 220px; }
+
+    /* C3S072 torn face-off poster */
+    #c3s02-sc072-cam { position: absolute; inset: 0; transform-origin: 50% 50%; }
+    .k-half { position: absolute; top: 120px; width: 760px; height: 820px; overflow: hidden; box-shadow: 0 24px 60px rgba(20,27,36,0.3); opacity: 0; }
+    .k-half img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    #c3s02-sc072-l { left: 190px; transform: rotate(-1.5deg); clip-path: polygon(0 0, 100% 0, 96% 12%, 100% 25%, 95% 41%, 99% 57%, 94% 72%, 98% 86%, 95% 100%, 0 100%); }
+    #c3s02-sc072-l img { object-position: 50% 15%; filter: url(#c3s02-tint-cel); }
+    #c3s02-sc072-r { left: 970px; transform: rotate(1.5deg); clip-path: polygon(4% 0, 100% 0, 100% 100%, 3% 100%, 0 88%, 5% 74%, 1% 58%, 6% 43%, 2% 27%, 5% 13%); }
+    #c3s02-sc072-r img { object-position: 50% 30%; filter: url(#c3s02-tint-red); }
+    #c3s02-sc072-rs { left: 0; top: 34px; width: 1920px; text-align: center; font-size: 64px; }
+    #c3s02-sc072-roc { left: 230px; top: 780px; font-size: 96px; }
+    #c3s02-sc072-nat { left: 230px; top: 890px; font-size: 64px; }
+    #c3s02-sc072-com { left: 1030px; top: 890px; font-size: 64px; }
+    #c3s02-sc072-ccp { left: 1030px; top: 780px; font-size: 96px; }
+
+    /* C3S073–074 civil war burn (East Asia) → strait satellite */
+    #c3s02-sc073-n { left: 120px; top: 110px; font-size: 120px; color: var(--yellow); }
+    #c3s02-sc073-yr { left: 230px; top: 150px; font-size: 64px; }
+    #c3s02-sc073-win { left: 120px; top: 880px; font-size: 110px; }
+    #c3s02-sc074-cam { width: 3677px; height: 2872px; opacity: 0; }
+    #c3s02-sc074-cam > img { width: 3677px; height: 2872px; }
+    #c3s02-sc074-map { filter: brightness(1.1) contrast(1.05); }
+    #c3s02-sc074-svg { width: 3677px; height: 2872px; }
+    #c3s02-sc074-fill { opacity: 0; filter: drop-shadow(0 0 6px rgba(159,199,178,0.9)); }
+    #c3s02-sc074-fl { left: 120px; top: 110px; font-size: 52px; }
+    #c3s02-sc074-tw { left: 0; top: 820px; width: 1920px; text-align: center; font-size: 200px; letter-spacing: 0.04em; }
+
+    /* C3S075 arrival photo → 1935 painting */
+    #c3s02-sc075-cam { position: absolute; left: 0; top: 0; width: 3000px; height: 1080px; transform-origin: 0 0; }
+    #c3s02-sc075-ph { left: 220px; top: 250px; width: 640px; height: 480px; transform: rotate(-3deg); }
+    #c3s02-sc075-ph img { filter: grayscale(1) sepia(0.3) contrast(1.1) brightness(1.05); }
+    #c3s02-sc075-pt { left: 1130px; top: 250px; width: 1700px; height: 461px; transform: rotate(1.2deg); }
+    #c3s02-sc075-pt img { filter: saturate(0.85) sepia(0.12); }
+    #c3s02-sc075-ar { left: 260px; top: 800px; font-size: 92px; }
+    #c3s02-sc075-tw { left: 1820px; top: 790px; font-size: 104px; }
+    #c3s02-sc075-mk { position: absolute; left: 0; top: 0; width: 3000px; height: 1080px; overflow: visible; }
+
+    /* C3S076 Chiang in Taiwan → Presidential Office */
+    #c3s02-sc076-cam { position: absolute; inset: 0; transform-origin: 50% 45%; }
+    .k-wv { position: absolute; inset: -20px; }
+    .k-wv video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    #c3s02-sc076-nt { left: 120px; top: 860px; font-size: 92px; }
+    #c3s02-sc076-gov { left: 120px; top: 120px; font-size: 120px; }
+
+    /* C3S077 'recover the mainland' placard + typed caption */
+    #c3s02-sc077-cam { position: absolute; inset: 0; transform-origin: 40% 50%; }
+    #c3s02-sc077-pl { left: 260px; top: 90px; width: 520px; height: 912px; transform: rotate(-2deg); }
+    #c3s02-sc077-pl img { filter: saturate(0.9) contrast(1.05); }
+    #c3s02-sc077-ty { position: absolute; left: 960px; top: 300px; width: 860px; font-size: 64px; color: #26303d; }
+    #c3s02-sc077-ty .row { position: relative; height: 96px; white-space: nowrap; }
+    #c3s02-sc077-mk { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; }
+    #c3s02-sc077-st { left: 960px; top: 700px; font-size: 150px; }
+  </style>
+  <div id="root" data-composition-id="c3s02" data-vo-start="200.34" data-duration="203.83" data-width="1920" data-height="1080">
+    <svg id="c3s02-defs" width="0" height="0" style="position:absolute"></svg>
+
+    <!-- C3S043 · 200.34–205.94 · And a little bit later … a few decades later, after Silicon Valley · dark timeline racing through decades -->
+    <div class="k-scene k-night" id="c3s02-sc043" data-scene="C3S043"><div class="k-shot" id="c3s02-sc043-shot">
+      <canvas id="c3s02-sc043-str" class="streaks"></canvas>
+      <svg id="c3s02-sc043-svg" viewBox="0 0 1920 1080"><g id="c3s02-sc043-axis"></g><g id="c3s02-sc043-dot"></g></svg>
+      <div id="c3s02-sc043-txt" class="k-abs t-serif-i clean"><span class="k-w">a </span><span class="k-w">few </span><span class="k-w">decades </span><span class="k-w">later</span></div>
+    </div></div>
+
+    <!-- C3S044 · 205.94–213.14 · after graduating … one of the most important people in Taiwan · dissertation card → Taiwan relief, celadon fill -->
+    <div class="k-scene k-night" id="c3s02-sc044" data-scene="C3S044"><div class="k-shot" id="c3s02-sc044-shot">
+      <div id="c3s02-sc044-sea"></div>
+      <div id="c3s02-sc044-cam" class="k-mapcam">
+        <img id="c3s02-sc044-map" src="assets/c3/derived/c3s02/tw_night.jpg" alt="" />
+        <img id="c3s02-sc044-fill" src="assets/c3/derived/c3s02/tw_celadon.png" alt="" />
+        <div id="c3s02-sc044-ht"></div>
+        <svg id="c3s02-sc044-svg" viewBox="0 0 1623 2200" style="width:1623px;height:2200px"></svg>
+      </div>
+      <div class="k-desk" id="c3s02-sc044-desk"><div class="k-lamp"></div></div>
+      <div id="c3s02-sc044-thesis" class="k-abs"><div class="p1"></div>
+        <div class="t t-label">Stanford University</div>
+        <div style="height:70px"></div>
+        <div class="bar" style="width:86%"></div><div class="bar" style="width:72%"></div><div class="bar" style="width:54%"></div>
+        <div style="height:60px"></div>
+        <div class="s t-serif">A dissertation submitted to the Department of Electrical Engineering and the Committee on Graduate Study of Stanford University in partial fulfillment of the requirements for the degree of</div>
+        <div style="height:26px"></div>
+        <div class="t t-label">Doctor of Philosophy</div>
+        <div style="height:80px"></div>
+        <div class="s t-serif-i">By</div>
+        <div class="t t-label">Wen-Yuan Pan</div>
+      </div>
+      <div id="c3s02-sc044-grad" class="k-abs t-label clean"><span class="k-w">graduating</span></div>
+      <div class="k-scrim-b" style="height:360px"></div>
+      <div id="c3s02-sc044-mip" class="k-abs t-serif-i clean"><span class="k-w">most </span><span class="k-w">important </span><span class="k-w">people</span></div>
+      <div id="c3s02-sc044-tw" class="k-abs t-label clean"><span class="k-w">Taiwan</span></div>
+      <div class="k-credit t-label" id="c3s02-sc044-cr">Relief: AWS Terrain Tiles / Natural Earth · public domain</div>
+    </div></div>
+
+    <!-- C3S045 · 213.14–216.90 · Which is not a country at this point … but it will become a country · 1943 Japanese map of Formosa -->
+    <div class="k-scene k-paper" id="c3s02-sc045" data-scene="C3S045" style="z-index:2"><div class="k-shot" id="c3s02-sc045-shot">
+      <div class="k-p1" style="background-image:url('assets/textures/paper_stained_01_hires.jpg')"></div>
+      <div class="k-p2" style="background-image:url('assets/textures/paper_cream_01.jpg'); opacity:0.5"></div>
+      <div id="c3s02-sc045-stage"><div id="c3s02-sc045-cam">
+        <div id="c3s02-sc045-map"><img src="assets/c3/derived/c3s02/formosa_1943.jpg" alt="" /><svg id="c3s02-sc045-mk" viewBox="0 0 1300 1185"></svg></div>
+      </div></div>
+      <svg id="c3s02-sc045-amk" class="k-mk"></svg>
+      <div id="c3s02-sc045-nac" class="k-abs t-serif-i k-ink"><span class="k-w">not </span><span class="k-w">a </span><span class="k-w">country</span></div>
+      <div id="c3s02-sc045-wb" class="k-abs t-serif-i k-ink"><span class="k-w">will </span><span class="k-w">become</span></div>
+      <div class="k-credit ink t-label">Map: Japanese aviation map of Formosa, 1943 · public domain</div>
+    </div></div>
+
+    <!-- C3S046 · 216.90–223.46 · He becomes an important person in Taiwan … happening in Silicon Valley right now · Pacific night, radio rings -->
+    <div class="k-scene k-night" id="c3s02-sc046" data-scene="C3S046"><div class="k-shot" id="c3s02-sc046-shot">
+      <div id="c3s02-sc046-cam" class="k-mapcam">
+        <img id="c3s02-sc046-map" src="assets/c3/derived/c3s02/pac_night.jpg" alt="" />
+        <img id="c3s02-sc046-fill" src="assets/c3/derived/c3s02/pac_tw_fill.png" alt="" style="filter:drop-shadow(0 0 6px rgba(159,199,178,0.9))" />
+        <svg id="c3s02-sc046-svg" viewBox="0 0 5896 1760"></svg>
+      </div>
+      <div class="k-plab t-label clean" id="c3s02-sc046-twl"><span class="k-w">Taiwan</span></div>
+      <div class="k-plab t-label clean" id="c3s02-sc046-svl" style="font-size:40px"><span class="k-w">Silicon </span><span class="k-w">Valley</span></div>
+      <div class="k-credit t-label">Relief: AWS Terrain Tiles / Natural Earth · public domain</div>
+    </div></div>
+
+    <!-- C3S047 · 223.46–228.34 · But he's gonna go back and look and see what made it so · recipe card + focal call-out -->
+    <div class="k-scene k-paper" id="c3s02-sc047" data-scene="C3S047"><div class="k-shot" id="c3s02-sc047-shot">
+      <div class="k-p1" style="background-image:url('assets/textures/paper_lined_01_hires.jpg')"></div>
+      <div class="k-p2" style="background-image:url('assets/textures/paper_cream_02.jpg'); opacity:0.55"></div>
+      <div id="c3s02-sc047-cam"><div id="c3s02-sc047-cards"></div><div id="c3s02-sc047-blur"></div></div>
+      <div id="c3s02-sc047-gb" class="k-abs t-serif-i k-ink"><span class="k-w">go </span><span class="k-w">back</span></div>
+      <div id="c3s02-sc047-wm" class="k-abs t-serif-i k-ink"><span class="k-w">what </span><span class="k-w">made </span><span class="k-w">it </span><span class="k-w">so</span></div>
+    </div></div>
+
+    <!-- C3S048 · 228.34–235.94 · before we get into that story, let's look at exactly the situation Taiwan is in · satellite + clouds -->
+    <div class="k-scene k-night" id="c3s02-sc048" data-scene="C3S048"><div class="k-shot" id="c3s02-sc048-shot">
+      <div id="c3s02-sc048-sea"></div>
+      <div id="c3s02-sc048-cam" class="k-mapcam">
+        <img id="c3s02-sc048-map" src="assets/c3/derived/c3s02/tw_sat.jpg" alt="" />
+        <img class="k-cloud" id="c3s02-sc048-sh1" src="assets/maps/clouds/cloud_02_satellite.png" alt="" style="filter:brightness(0) blur(14px);opacity:0.35" />
+        <img class="k-cloud" id="c3s02-sc048-c1" src="assets/maps/clouds/cloud_02_satellite.png" alt="" />
+        <img class="k-cloud" id="c3s02-sc048-c2" src="assets/maps/clouds/cloud_03_satellite.png" alt="" />
+        <img class="k-cloud" id="c3s02-sc048-c3" src="assets/maps/clouds/cloud_01_satellite.png" alt="" />
+      </div>
+      <div id="c3s02-sc048-dark"></div>
+      <div class="k-scrim-b" style="height:360px"></div>
+      <div id="c3s02-sc048-bf" class="k-abs t-label clean"><span class="k-w">before</span></div>
+      <div id="c3s02-sc048-sit" class="k-abs t-serif-i clean"><span class="k-w">the </span><span class="k-w">situation</span></div>
+      <div id="c3s02-sc048-tw" class="k-abs t-display halate"><span class="k-w">TAIWAN</span></div>
+      <div class="k-credit t-label">Imagery: Esri, Maxar, Earthstar Geographics</div>
+    </div></div>
+
+    <!-- C3S049 · 235.94–240.50 · everyone wants Silicon Valley, but why did Taiwan want it? · vintage atlas + pins + circle -->
+    <div class="k-scene k-paper" id="c3s02-sc049" data-scene="C3S049"><div class="k-shot" id="c3s02-sc049-shot">
+      <div class="k-p1" style="background-image:url('assets/textures/paper_torn_01_hires.jpg')"></div>
+      <div class="k-p2" style="background-image:url('assets/textures/paper_fiber_01.jpg'); opacity:0.45"></div>
+      <div id="c3s02-sc049-cam">
+        <div id="c3s02-sc049-plate"><img src="assets/c3/derived/c3s02/world_atlas.jpg" alt="" /></div>
+        <svg id="c3s02-sc049-svg" viewBox="0 0 1840 662"></svg>
+      </div>
+      <div id="c3s02-sc049-l1" class="k-abs t-serif-i k-ink"><span class="k-w">everyone </span><span class="k-w">wants </span><span class="k-w">Silicon </span><span class="k-w">Valley</span></div>
+      <div id="c3s02-sc049-l2" class="k-abs t-display k-ink"><span class="k-w">why </span><span class="k-w">Taiwan</span><span class="k-w">?</span></div>
+      <div class="k-credit ink t-label">Relief: AWS Terrain Tiles / Natural Earth · public domain</div>
+    </div></div>
+
+    <!-- C3S050 · 240.50–244.74 · And why were they so desperate? This is when we come back to Taiwan · 1960 Taipei footage -->
+    <div class="k-scene k-night" id="c3s02-sc050" data-scene="C3S050"><div class="k-shot" id="c3s02-sc050-shot">
+      <div id="c3s02-sc050-cam"><div id="c3s02-sc050-wv">
+        <video id="c3s02-sc050-v" muted playsinline src="assets/intro/footage/taiwan_1960_taipei_north_gate_traffic.mp4" data-start="40.10" data-duration="4.40" data-media-start="0.6"
+          data-color-grading='{"intensity":1,"adjust":{"saturation":-0.6,"contrast":0.1},"effects":{"chromaticAberration":0.12}}'></video>
+      </div></div>
+      <div class="k-scrim-b"></div>
+      <div id="c3s02-sc050-des" class="k-abs t-display halate"><span class="k-w">desperate</span></div>
+      <div id="c3s02-sc050-btt" class="k-abs t-serif-i clean"><span class="k-w">back </span><span class="k-w">to </span><span class="k-w">Taiwan</span></div>
+      <div class="k-credit t-label">Footage: Taipei, 1960 · public domain</div>
+    </div></div>
+
+    <!-- C3S051 · 244.74–253.94 · while Silicon Valley is on the up and up, Taiwan is facing … existential crises · graph paper lines + crisis band -->
+    <div class="k-scene k-paper" id="c3s02-sc051" data-scene="C3S051" style="z-index:2"><div class="k-shot" id="c3s02-sc051-shot">
+      <div class="k-p1" style="background-image:url('assets/textures/paper_graph_01_hires.jpg')"></div>
+      <div class="k-p2" style="background-image:url('assets/textures/paper_fiber_01.jpg'); opacity:0.4"></div>
+      <div id="c3s02-sc051-cam">
+        <svg id="c3s02-sc051-svg" viewBox="0 0 2300 1080"></svg>
+        <div id="c3s02-sc051-sv" class="k-abs t-label"><span class="k-w">Silicon </span><span class="k-w">Valley</span></div>
+        <div id="c3s02-sc051-tw" class="k-abs t-label k-ink"><span class="k-w">Taiwan</span></div>
+      </div>
+      <div id="c3s02-sc051-uu" class="k-abs t-serif-i k-ink"><span class="k-w">up </span><span class="k-w">and </span><span class="k-w">up</span></div>
+      <div id="c3s02-sc051-ec" class="k-abs t-serif k-ink"><span class="k-w">existential </span><span class="k-w">crises</span></div>
+    </div></div>
+
+    <!-- C3S052 · 253.94–261.05 · the UN had just kicked out Taiwan, the Republic of China, as a country · 26 Oct 1971 front page -->
+    <div class="k-scene k-night" id="c3s02-sc052" data-scene="C3S052"><div class="k-shot" id="c3s02-sc052-shot">
+      <div id="c3s02-sc052-bg"></div>
+      <div id="c3s02-sc052-stage"><div id="c3s02-sc052-cam">
+        <div id="c3s02-sc052-page"><img src="assets/c3/derived/c3s02/kansan_page.jpg" alt="" /><div class="k-ht" id="c3s02-sc052-ht"></div><svg id="c3s02-sc052-mk" viewBox="0 0 3000 3146"></svg></div>
+      </div></div>
+      <div class="k-scrim-b" style="height:330px"></div>
+      <div id="c3s02-sc052-ko" class="k-abs t-label clean"><span class="k-w">kicked </span><span class="k-w">out</span></div>
+      <div id="c3s02-sc052-roc" class="k-abs t-serif-i clean"><span class="k-w">Republic </span><span class="k-w">of </span><span class="k-w">China</span></div>
+      <div class="k-credit t-label">University Daily Kansan, 26 Oct 1971 (AP) · KU Libraries · fair use</div>
+    </div></div>
+
+    <!-- C3S053 · 261.05–265.93 · It basically said that there's no such thing. China belongs to the CCP · Mao on the rostrum (newsreel) -->
+    <div class="k-scene k-night" id="c3s02-sc053" data-scene="C3S053"><div class="k-shot" id="c3s02-sc053-shot">
+      <div id="c3s02-sc053-cam" class="k-wv">
+        <video id="c3s02-sc053-v" muted playsinline src="assets/c3/footage/newsreel_1959_mao_rostrum_parade.mp4" data-start="60.53" data-duration="5.10" data-media-start="0"
+          data-color-grading='{"intensity":1,"adjust":{"saturation":-1,"contrast":0.12},"effects":{"chromaticAberration":0.12}}'></video>
+        <div id="c3s02-sc053-tint"></div>
+      </div>
+      <div class="k-scrim-b"></div><div class="k-scrim-t"></div>
+      <div id="c3s02-sc053-nst" class="k-abs t-serif-i clean"><span class="k-w">no </span><span class="k-w">such </span><span class="k-w">thing</span></div>
+      <div id="c3s02-sc053-ch" class="k-abs t-display clean"><span class="k-w">China</span></div>
+      <div id="c3s02-sc053-ccp" class="k-abs t-display"><span class="k-redbox k-w">CCP</span></div>
+      <div class="k-credit t-label">Newsreel: Beijing, 1959 · public domain</div>
+    </div></div>
+
+    <!-- C3S054 · 265.93–272.73 · The CCP is the governing government of China … Taiwan is just nothing. Not a country · East Asia night -->
+    <div class="k-scene k-night" id="c3s02-sc054" data-scene="C3S054"><div class="k-shot" id="c3s02-sc054-shot">
+      <div id="c3s02-sc054-cam" class="k-mapcam">
+        <img src="assets/c3/derived/c3s02/ea_night.jpg" alt="" />
+        <svg id="c3s02-sc054-svg" viewBox="0 0 3600 3724"></svg>
+        <img id="c3s02-sc054-tw" src="assets/c3/derived/c3s02/ea_tw_fill.png" alt="" style="filter:drop-shadow(0 0 6px rgba(159,199,178,0.9))" />
+      </div>
+      <div class="k-scrim-l"></div>
+      <div id="c3s02-sc054-ccp" class="k-abs t-label"><span class="k-redbox k-w">CCP</span></div>
+      <div id="c3s02-sc054-ch" class="k-abs t-display clean"><span class="k-w">China</span></div>
+      <div id="c3s02-sc054-no" class="k-abs t-serif-i clean"><span class="k-w">nothing</span></div>
+      <div id="c3s02-sc054-nac" class="k-abs t-label clean"><span class="k-w">Not </span><span class="k-w">a </span><span class="k-w">country</span></div>
+      <div class="k-credit t-label">Relief: AWS Terrain Tiles / Natural Earth · public domain</div>
+    </div></div>
+
+    <!-- C3S055 · 272.73–277.21 · from a Taiwanese point of view, this was something they did not expect · AP column, text call-out -->
+    <div class="k-scene k-paper" id="c3s02-sc055" data-scene="C3S055" style="z-index:2"><div class="k-shot" id="c3s02-sc055-shot">
+      <div class="k-p1" style="background-image:url('assets/textures/paper_stained_01_hires.jpg')"></div>
+      <div class="k-p2" style="background-image:url('assets/textures/paper_fiber_01.jpg'); opacity:0.5"></div>
+      <div id="c3s02-sc055-cam">
+        <div id="c3s02-sc055-col"><div id="c3s02-sc055-dim"><img src="assets/c3/derived/c3s02/kansan_column.jpg" alt="" /></div><div id="c3s02-sc055-key"><img src="assets/c3/derived/c3s02/kansan_column.jpg" alt="" style="filter:sepia(0.3) contrast(1.25)" /></div><div class="k-ht" style="opacity:0.15"></div></div>
+      </div>
+      <div id="c3s02-sc055-tws" class="k-abs t-display k-ink"><span class="k-inkbox k-w">Taiwanese</span></div>
+      <div id="c3s02-sc055-dne" class="k-abs t-serif-i k-ink"><span class="k-w">did </span><span class="k-w">not </span><span class="k-w">expect</span></div>
+      <div class="k-credit ink t-label">University Daily Kansan, 26 Oct 1971 (AP) · KU Libraries · fair use</div>
+    </div></div>
+
+    <!-- C3S056 · 277.21–280.17 · they didn't know what was gonna happen next · ROC delegation walks out (SCMP photo) -->
+    <div class="k-scene k-night" id="c3s02-sc056" data-scene="C3S056"><div class="k-shot" id="c3s02-sc056-shot">
+      <div id="c3s02-sc056-wv" class="k-wv"><div id="c3s02-sc056-cam" class="k-plate">
+        <img id="c3s02-sc056-img" src="assets/c3/newspapers/scmp_1971-10-27_roc_walkout_photo.png" alt="" />
+      </div></div>
+      <div class="vignette"></div>
+      <div id="c3s02-sc056-nx" class="k-abs t-serif-i clean"><span class="k-w">next</span></div>
+      <div class="k-credit t-label">Photo: South China Morning Post, 27 Oct 1971 · fair use</div>
+    </div></div>
+
+    <!-- C3S057–C3S058 · 280.17–291.29 · to truly understand … existential crisis, … background about Taiwan and how the government there came to be · paper timeline -->
+    <div class="k-scene k-paper" id="c3s02-sc057" data-scene="C3S057-C3S058" style="z-index:2"><div class="k-shot" id="c3s02-sc057-shot">
+      <div class="k-p1" style="background-image:url('assets/textures/paper_lined_01_hires.jpg')"></div>
+      <div class="k-p2" style="background-image:url('assets/textures/paper_cream_01.jpg'); opacity:0.55"></div>
+      <div id="c3s02-sc057-cam">
+        <svg id="c3s02-sc057-svg" viewBox="0 0 1920 1080"><g id="c3s02-sc057-ticks"></g></svg>
+        <div class="k-card" id="c3s02-sc057-card"><img src="assets/c3/derived/c3s02/kansan_headline_card.jpg" alt="" /></div>
+        <div class="k-pc" id="c3s02-sc058-pres"><div class="in"><img src="assets/c3/derived/c3s02/still_presoffice.jpg" alt="" /></div></div>
+      </div>
+      <div id="c3s02-sc057-ec" class="k-abs t-serif-i k-ink"><span class="k-w">existential </span><span class="k-w">crisis</span></div>
+      <div id="c3s02-sc058-bk" class="k-abs t-label k-ink"><span class="k-w">background</span></div>
+      <div id="c3s02-sc058-tw" class="k-abs t-serif-i k-ink"><span class="k-w">Taiwan</span></div>
+      <div id="c3s02-sc058-gov" class="k-abs t-display"><span class="k-inkbox k-w">government</span></div>
+    </div></div>
+
+    <!-- C3S059 · 291.29–294.01 · Our story starts in World War II · Pacific newsreel -->
+    <div class="k-scene k-night" id="c3s02-sc059" data-scene="C3S059"><div class="k-shot" id="c3s02-sc059-shot">
+      <div id="c3s02-sc059-wv"><video id="c3s02-sc059-v" muted playsinline src="assets/c3/footage/newsreel_1945_pacific_carrier_deck_launch.mp4" data-start="90.89" data-duration="3.12" data-media-start="0.3"
+        data-color-grading='{"intensity":1,"adjust":{"saturation":-1,"contrast":0.1},"effects":{"chromaticAberration":0.12,"filmArtifacts":0.3}}'></video></div>
+      <div class="vignette"></div>
+      <div id="c3s02-sc059-ww" class="k-abs t-display halate"><span class="k-w">WORLD </span><span class="k-w">WAR </span><span class="k-w">II</span></div>
+      <div class="k-credit t-label">Universal Newsreel, 1945 · public domain</div>
+    </div></div>
+
+    <!-- C3S060 · 294.01–298.97 · current China, the CCP, has tried to change the story a bit · history-book page rewritten in red pen -->
+    <div class="k-scene k-paper" id="c3s02-sc060" data-scene="C3S060" style="z-index:2"><div class="k-shot" id="c3s02-sc060-shot">
+      <div class="k-p1" style="background-image:url('assets/textures/paper_torn_01_hires.jpg')"></div>
+      <div class="k-p2" style="background-image:url('assets/textures/paper_cream_02.jpg'); opacity:0.5"></div>
+      <div id="c3s02-sc060-cam"><div id="c3s02-sc060-book">
+        <div class="k-pg" id="c3s02-sc060-l"><div class="p1"></div><div id="c3s02-sc060-ill" class="k-abs"><img src="assets/c3/derived/c3s02/ww2_22nd.jpg" alt="" /></div></div>
+        <div class="k-pg" id="c3s02-sc060-r"><div class="p1"></div></div>
+        <svg id="c3s02-sc060-mk" viewBox="0 0 1080 980"></svg>
+      </div></div>
+      <div id="c3s02-sc060-ccp" class="k-abs t-label"><span class="k-redbox k-w">CCP</span></div>
+      <div id="c3s02-sc060-cs" class="k-abs t-serif-i k-ink"><span class="k-w">change </span><span class="k-w">the </span><span class="k-w">story</span></div>
+      <div class="k-credit ink t-label">Photo: US Army Signal Corps, 1944 · public domain</div>
+    </div></div>
+
+    <!-- C3S061 · 298.97–303.53 · they claim that China fought with the United States. Which is true · OWI poster 1942 -->
+    <div class="k-scene k-night" id="c3s02-sc061" data-scene="C3S061"><div class="k-shot" id="c3s02-sc061-shot">
+      <div class="k-plate"><img class="bg" src="assets/c3/posters/owi_this_man_is_your_friend_chinese_1942.jpg" alt="" /></div>
+      <div id="c3s02-sc061-cam"><div id="c3s02-sc061-poster" class="k-abs"><img src="assets/c3/posters/owi_this_man_is_your_friend_chinese_1942.jpg" alt="" /></div></div>
+      <svg id="c3s02-sc061-mk" class="k-mk"></svg>
+      <div id="c3s02-sc061-txt" class="k-abs t-serif-i clean"><span class="k-w t-label" style="font-size:52px">China </span><br /><span class="k-w">fought </span><span class="k-w">with </span><br /><span class="k-w">the United </span><span class="k-w">States</span><br /><span class="k-w" id="c3s02-sc061-true" style="font-size:96px">true</span></div>
+      <div class="k-credit t-label">Poster: US Office of War Information, 1942 · public domain</div>
+    </div></div>
+
+    <!-- C3S062 · 303.53–310.65 · a lot of Chinese people … fought with the United States in World War II against Japan · layered panels -->
+    <div class="k-scene k-night" id="c3s02-sc062" data-scene="C3S062"><div class="k-shot" id="c3s02-sc062-shot">
+      <div class="k-desk"></div>
+      <div id="c3s02-sc062-cam">
+        <div class="k-panel" id="c3s02-sc062-a"><img src="assets/c3/derived/c3s02/ww2_22nd.jpg" alt="" /><div class="k-ht"></div></div>
+        <div class="k-panel" id="c3s02-sc062-b"><img src="assets/c3/photos/cairo_1943_participants.jpg" alt="" /><div class="k-ht"></div></div>
+        <div class="k-panel" id="c3s02-sc062-h"><img src="assets/c3/derived/c3s02/ww2_truck.jpg" alt="" /><div class="k-ht" style="opacity:0.2"></div></div>
+      </div>
+      <div id="c3s02-sc062-cp" class="k-abs t-serif-i clean"><span class="k-w">Chinese </span><span class="k-w">people</span></div>
+      <div id="c3s02-sc062-aj" class="k-abs t-serif-i clean"><span class="k-w">against </span><span class="k-w">Japan</span></div>
+      <div class="k-credit t-label">Photos: US Army Signal Corps, 1943–44 · public domain</div>
+    </div></div>
+
+    <!-- C3S063 · 310.65–317.45 · But it wasn't the CCP that was fighting with the United States … · D15 diagram, link crossed -->
+    <div class="k-scene k-paper" id="c3s02-sc063" data-scene="C3S063" style="z-index:2"><div class="k-shot" id="c3s02-sc063-shot">
+      <div class="k-p1" style="background-image:url('assets/textures/paper_stained_01_hires.jpg')"></div>
+      <div class="k-p2" style="background-image:url('assets/textures/paper_cream_01.jpg'); opacity:0.5"></div>
+      <div id="c3s02-sc063-cam">
+        <svg id="c3s02-sc063-svg" viewBox="0 0 1920 1080"></svg>
+        <div class="k-circ" id="c3s02-sc063-us"><img src="assets/c3/flags/flag_us_48star_1912_1959.png" alt="" /><div class="k-ht" style="opacity:0.22"></div></div>
+        <div class="k-circ" id="c3s02-sc063-cn"><img src="assets/c3/derived/c3s02/mao_circle.jpg" alt="" /></div>
+        <div id="c3s02-sc063-usl" class="k-abs t-label k-ink"><span class="k-w">United </span><span class="k-w">States</span></div>
+        <div id="c3s02-sc063-ccp" class="k-abs t-display"><span class="k-redbox k-w">CCP</span></div>
+      </div>
+    </div></div>
+
+    <!-- C3S064 · 317.45–324.28 · It was the ROC, the nationalists … who fought with the United States against Japan · Cairo 1943 -->
+    <div class="k-scene k-night" id="c3s02-sc064" data-scene="C3S064"><div class="k-shot" id="c3s02-sc064-shot">
+      <div id="c3s02-sc064-stage"><div id="c3s02-sc064-far"></div>
+        <div id="c3s02-sc064-cam"><img id="c3s02-sc064-img" src="assets/c3/derived/c3s02/cairo.jpg" alt="" /><svg id="c3s02-sc064-mk" viewBox="0 0 2005 1551"></svg></div>
+      </div>
+      <div class="k-scrim-b"></div>
+      <div id="c3s02-sc064-roc" class="k-abs t-display"><span class="k-celbox"><span class="k-w">the </span><span class="k-w">ROC</span></span></div>
+      <div id="c3s02-sc064-nat" class="k-abs t-serif-i clean"><span class="k-w">nationalists</span></div>
+      <div class="k-credit t-label">Photo: Cairo Conference, Nov 1943 (US Army) · public domain</div>
+    </div></div>
+
+    <!-- C3S065–C3S066 · 324.28–335.08 · as soon as the war ended, ROC was one of the big four … maintain a post-war order · 1945 card → four pillars -->
+    <div class="k-scene k-paper" id="c3s02-sc065" data-scene="C3S065-C3S066"><div class="k-shot" id="c3s02-sc065-shot">
+      <div class="k-p1" style="background-image:url('assets/textures/paper_lined_01_hires.jpg')"></div>
+      <div class="k-p2" style="background-image:url('assets/textures/paper_cream_02.jpg'); opacity:0.55"></div>
+      <div id="c3s02-sc065-cam">
+        <svg id="c3s02-sc065-svg" viewBox="0 0 1920 1080"></svg>
+        <div class="k-circ k-flag" id="c3s02-sc065-f0"><img src="assets/c3/flags/flag_us_48star_1912_1959.png" alt="" /><div class="k-ht"></div></div>
+        <div class="k-circ k-flag" id="c3s02-sc065-f1"><svg viewBox="15 0 30 30" preserveAspectRatio="xMidYMid slice"><rect width="60" height="30" fill="#012169"/><path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" stroke-width="6"/><path d="M0,0 L60,30 M60,0 L0,30" stroke="#C8102E" stroke-width="2"/><path d="M30,0 v30 M0,15 h60" stroke="#fff" stroke-width="10"/><path d="M30,0 v30 M0,15 h60" stroke="#C8102E" stroke-width="6"/></svg><div class="k-ht"></div></div>
+        <div class="k-circ k-flag" id="c3s02-sc065-f2"><img src="assets/c3/flags/flag_ussr.png" alt="" style="object-position:22% 50%" /><div class="k-ht"></div></div>
+        <div class="k-circ k-flag" id="c3s02-sc065-f3"><img src="assets/c3/flags/flag_roc.png" alt="" style="object-position:20% 50%" /><div class="k-ht"></div></div>
+        <div class="k-circ" id="c3s02-sc066-fdr"><img src="assets/c3/derived/c3s02/fdr_circle.jpg" alt="" /></div>
+        <div class="k-abs t-label k-ink" id="c3s02-sc066-us"><span class="k-w">United </span><span class="k-w">States</span></div>
+        <div class="k-card" id="c3s02-sc065-card"><img src="assets/c3/derived/c3s02/surrender.jpg" alt="" /></div>
+      </div>
+      <div id="c3s02-sc065-we" class="k-abs t-serif-i k-ink"><span class="k-w">war </span><span class="k-w">ended</span></div>
+      <div id="c3s02-sc065-bf" class="k-abs t-display k-ink"><span class="k-w">BIG </span><span class="k-w">FOUR</span></div>
+      <div id="c3s02-sc066-pwo" class="k-abs t-serif-i k-ink"><span style="position:relative;display:inline-block"><span class="k-hlbar k-abs" id="c3s02-sc066-hl"></span><span class="k-w" style="position:relative">post-war </span><span class="k-w" style="position:relative">order</span></span></div>
+      <div class="k-credit ink t-label">Photo: The Sun, Sydney, Aug 1945 (State Library of NSW) · public domain</div>
+    </div></div>
+
+    <!-- C3S067–C3S068 · 335.08–346.20 · the four policemen of the world … United States, the UK, the Soviet Union, and the Republic of China, ROC · world night -->
+    <div class="k-scene k-night" id="c3s02-sc067" data-scene="C3S067-C3S068"><div class="k-shot" id="c3s02-sc067-shot">
+      <div id="c3s02-sc067-cam" class="k-mapcam">
+        <img src="assets/c3/derived/c3s02/world_night.jpg" alt="" />
+        <svg id="c3s02-sc067-svg" viewBox="0 0 5200 2254"></svg>
+      </div>
+      <div class="k-plab t-label clean" id="c3s02-sc067-l0"><span class="k-w">United </span><span class="k-w">States</span></div>
+      <div class="k-plab t-label clean" id="c3s02-sc067-l1"><span class="k-w">UK</span></div>
+      <div class="k-plab t-label clean" id="c3s02-sc067-l2"><span class="k-w">Soviet </span><span class="k-w">Union</span></div>
+      <div class="k-plab t-label clean" id="c3s02-sc067-l3"><span class="k-w">Republic </span><span class="k-w">of </span><span class="k-w">China</span><br /><span class="k-w k-inkbox" style="margin-top:10px;background:var(--bone);color:var(--ink);font-size:44px">ROC</span></div>
+      <div id="c3s02-sc067-fp" class="k-abs t-display halate"><span class="k-w">FOUR </span><span class="k-w">POLICEMEN</span></div>
+      <div class="k-credit t-label">Relief: AWS Terrain Tiles / Natural Earth · public domain</div>
+    </div></div>
+
+    <!-- C3S069 · 346.20–352.84 · the ROC, China was also one of the founding members that had signed the UN Charter · signing footage clipped to the Charter -->
+    <div class="k-scene k-paper" id="c3s02-sc069" data-scene="C3S069" style="z-index:2"><div class="k-shot" id="c3s02-sc069-shot">
+      <div class="k-p1" style="background-image:url('assets/textures/paper_stained_01_hires.jpg')"></div>
+      <div class="k-p2" style="background-image:url('assets/textures/paper_fiber_01.jpg'); opacity:0.5"></div>
+      <div id="c3s02-sc069-cam">
+        <div class="k-pc" id="c3s02-sc069-page"><div class="in"><img src="assets/c3/derived/c3s02/still_charter_book.jpg" alt="" /><div class="k-ht"></div></div></div>
+        <div class="k-pc" id="c3s02-sc069-photo"><div class="in"><video id="c3s02-sc069-v" muted playsinline src="assets/c3/footage/newsreel_1945_un_charter_signing_san_francisco.mp4" data-start="145.80" data-duration="6.70" data-media-start="0"></video><div class="k-ht"></div></div></div>
+        <div id="c3s02-sc069-clip"></div>
+      </div>
+      <div id="c3s02-sc069-fm" class="k-abs t-serif-i k-ink"><span class="k-w">founding </span><span class="k-w">members</span></div>
+      <div id="c3s02-sc069-unc" class="k-abs t-display"><span class="k-inkbox"><span class="k-w">UN </span><span class="k-w">CHARTER</span></span></div>
+      <div class="k-credit ink t-label">Newsreel: UN Charter signing, San Francisco, June 1945 · public domain</div>
+    </div></div>
+
+    <!-- C3S070 · 352.84–359.00 · It had a veto … a permanent seat on the UN Security Council · 1946 Security Council poster, China circled -->
+    <div class="k-scene k-night" id="c3s02-sc070" data-scene="C3S070"><div class="k-shot" id="c3s02-sc070-shot">
+      <div id="c3s02-sc070-cam"><img id="c3s02-sc070-img" src="assets/c3/derived/c3s02/sc_poster.jpg" alt="" /><svg id="c3s02-sc070-mk" viewBox="0 0 2337 3000"></svg></div>
+      <div class="k-scrim-t"></div><div class="k-scrim-b"></div>
+      <div id="c3s02-sc070-veto" class="k-abs t-label clean"><span class="k-w">veto</span></div>
+      <div id="c3s02-sc070-ps" class="k-abs t-serif-i clean"><span class="k-w">permanent </span><span class="k-w">seat</span></div>
+      <div id="c3s02-sc070-sc" class="k-abs t-display halate"><span class="k-w">SECURITY </span><span class="k-w">COUNCIL</span></div>
+      <div class="k-credit t-label">Poster: US Department of State, 1946 (NARA) · public domain</div>
+    </div></div>
+
+    <!-- C3S071 · 359.00–365.40 · as soon as World War II ends, the civil war kicks off in China · 1949 newsreel -->
+    <div class="k-scene k-night" id="c3s02-sc071" data-scene="C3S071"><div class="k-shot" id="c3s02-sc071-shot">
+      <div id="c3s02-sc071-wv"><video id="c3s02-sc071-v" muted playsinline src="assets/c3/footage/newsreel_1949_china_reds_parade_mao_posters.mp4" data-start="158.60" data-duration="6.80" data-media-start="4.0"
+        data-color-grading='{"intensity":1,"adjust":{"saturation":-1,"contrast":0.12},"effects":{"chromaticAberration":0.12,"filmArtifacts":0.35}}'></video></div>
+      <div class="vignette"></div>
+      <div id="c3s02-sc071-cw" class="k-abs t-display halate"><span class="k-w">CIVIL </span><span class="k-w">WAR</span></div>
+      <div class="k-credit t-label">Newsreel: 1949 In Review · public domain</div>
+    </div></div>
+
+    <!-- C3S072 · 365.40–372.76 · it restarts in China … the ROC, the nationalists … the communists, the CCP · torn face-off poster -->
+    <div class="k-scene k-paper" id="c3s02-sc072" data-scene="C3S072" style="z-index:2"><div class="k-shot" id="c3s02-sc072-shot">
+      <div class="k-p1" style="background-image:url('assets/textures/paper_torn_01_hires.jpg')"></div>
+      <div class="k-p2" style="background-image:url('assets/textures/paper_cream_02.jpg'); opacity:0.5"></div>
+      <div id="c3s02-sc072-cam">
+        <div class="k-half" id="c3s02-sc072-l"><img src="assets/c3/derived/c3s02/chiang_poster.jpg" alt="" /><div class="k-ht"></div></div>
+        <div class="k-half" id="c3s02-sc072-r"><img src="assets/c3/derived/c3s02/mao_poster.jpg" alt="" /><div class="k-ht"></div></div>
+      </div>
+      <div id="c3s02-sc072-rs" class="k-abs t-serif-i k-ink"><span class="k-w">restarts</span></div>
+      <div id="c3s02-sc072-roc" class="k-abs t-display"><span class="k-inkbox k-w">ROC</span></div>
+      <div id="c3s02-sc072-nat" class="k-abs t-serif-i" style="color:var(--bone);text-shadow:0 2px 10px rgba(0,0,0,.6)"><span class="k-w">nationalists</span></div>
+      <div id="c3s02-sc072-ccp" class="k-abs t-display"><span class="k-redbox k-w">CCP</span></div>
+      <div id="c3s02-sc072-com" class="k-abs t-serif-i" style="color:var(--bone);text-shadow:0 2px 10px rgba(0,0,0,.6)"><span class="k-w">communists</span></div>
+      <div class="k-credit ink t-label">Portraits: Chiang Kai-shek, Mao Zedong · public domain</div>
+    </div></div>
+
+    <!-- C3S073–C3S074 · 372.76–383.45 · Over the next four years … the communists win … the ROC … flee to the island of Taiwan · burn → strait satellite -->
+    <div class="k-scene k-night" id="c3s02-sc073" data-scene="C3S073-C3S074"><div class="k-shot" id="c3s02-sc073-shot">
+      <div id="c3s02-sc073-cam" class="k-mapcam">
+        <img src="assets/c3/derived/c3s02/ea_night.jpg" alt="" />
+        <svg id="c3s02-sc073-svg" viewBox="0 0 3600 3724"></svg>
+      </div>
+      <div id="c3s02-sc074-cam" class="k-mapcam">
+        <img id="c3s02-sc074-map" src="assets/c3/derived/c3s02/strait_sat.jpg" alt="" />
+        <img id="c3s02-sc074-fill" src="assets/c3/derived/c3s02/strait_tw_fill.png" alt="" />
+        <svg id="c3s02-sc074-svg" viewBox="0 0 3677 2872"></svg>
+      </div>
+      <div class="k-scrim-t" style="height:300px"></div>
+      <div id="c3s02-sc073-n" class="k-abs t-display">0</div>
+      <div id="c3s02-sc073-yr" class="k-abs t-label clean"><span class="k-w">years</span></div>
+      <div id="c3s02-sc073-win" class="k-abs t-serif-i clean"><span class="k-w">win</span></div>
+      <div id="c3s02-sc074-fl" class="k-abs t-label clean"><span class="k-w">flee</span></div>
+      <div id="c3s02-sc074-tw" class="k-abs t-display halate"><span class="k-w">TAIWAN</span></div>
+      <div class="k-credit t-label" id="c3s02-sc073-cr">Relief: AWS Terrain Tiles / Natural Earth · public domain</div>
+      <div class="k-credit t-label" id="c3s02-sc074-cr" style="opacity:0">Imagery: Esri, Maxar, Earthstar Geographics</div>
+    </div></div>
+
+    <!-- C3S075 · 383.45–388.49 · they have arrived at this island, which is Taiwan. It's called Taiwan at that point too · photo card → 1935 painting -->
+    <div class="k-scene k-paper" id="c3s02-sc075" data-scene="C3S075" style="z-index:2"><div class="k-shot" id="c3s02-sc075-shot">
+      <div class="k-p1" style="background-image:url('assets/textures/paper_stained_01_hires.jpg')"></div>
+      <div class="k-p2" style="background-image:url('assets/textures/paper_cream_01.jpg'); opacity:0.5"></div>
+      <div id="c3s02-sc075-cam">
+        <div class="k-pc" id="c3s02-sc075-ph"><div class="in"><img src="assets/c3/derived/c3s02/still_chiang1949.jpg" alt="" /><div class="k-ht"></div></div></div>
+        <div class="k-tape" style="left:460px;top:228px;transform:rotate(-6deg)"></div>
+        <div class="k-pc" id="c3s02-sc075-pt" style="padding:12px"><div class="in"><img src="assets/intro/paintings/taiwan_birdseye_1935.jpg" alt="" /></div></div>
+        <div id="c3s02-sc075-ar" class="k-abs t-serif-i k-ink"><span class="k-w">arrived</span></div>
+        <div id="c3s02-sc075-tw" class="k-abs t-serif-i k-ink"><span class="k-w">Taiwan</span></div>
+        <svg id="c3s02-sc075-mk" viewBox="0 0 3000 1080"></svg>
+      </div>
+      <div class="k-credit ink t-label">Newsreel 1949 · Bird's-eye view of Taiwan, 1935 · public domain</div>
+    </div></div>
+
+    <!-- C3S076 · 388.49–396.89 · they are not Taiwanese … the government that's coming to the island … the government of Taiwan · Chiang 1959 → Presidential Office -->
+    <div class="k-scene k-night" id="c3s02-sc076" data-scene="C3S076"><div class="k-shot" id="c3s02-sc076-shot">
+      <div id="c3s02-sc076-cam">
+        <div class="k-wv" id="c3s02-sc076-w1"><video id="c3s02-sc076-v1" muted playsinline src="assets/c3/footage/newsreel_1959_chiang_and_madame_chiang_walk.mp4" data-start="188.15" data-duration="4.45" data-media-start="0.2"
+          data-color-grading='{"intensity":1,"adjust":{"saturation":-1,"contrast":0.1},"effects":{"chromaticAberration":0.12,"filmArtifacts":0.3}}'></video></div>
+        <div class="k-wv" id="c3s02-sc076-w2" style="opacity:0"><video id="c3s02-sc076-v2" muted playsinline src="assets/intro/footage/taiwan_1960_presidential_office_taipei.mp4" data-start="192.25" data-duration="4.30" data-media-start="0.5"
+          data-color-grading='{"intensity":1,"adjust":{"saturation":-0.6,"contrast":0.1},"effects":{"chromaticAberration":0.12}}'></video></div>
+      </div>
+      <div class="k-scrim-b"></div><div class="k-scrim-t"></div>
+      <div id="c3s02-sc076-nt" class="k-abs t-serif-i clean"><span class="k-w">not </span><span class="k-w">Taiwanese</span></div>
+      <div id="c3s02-sc076-gov" class="k-abs t-display clean"><span class="k-w">government</span></div>
+      <div class="k-credit t-label">Newsreel: Taiwan, 1959 · Taipei, 1960 · public domain</div>
+    </div></div>
+
+    <!-- C3S077 · 396.89–404.17 · temporary problems, temporary inconvenience, but they're still the government of Taiwan · 'recover the mainland' placard -->
+    <div class="k-scene k-paper" id="c3s02-sc077" data-scene="C3S077"><div class="k-shot" id="c3s02-sc077-shot">
+      <div class="k-p1" style="background-image:url('assets/textures/paper_lined_01_hires.jpg')"></div>
+      <div class="k-p2" style="background-image:url('assets/textures/paper_fiber_01.jpg'); opacity:0.5"></div>
+      <div id="c3s02-sc077-cam">
+        <div class="k-pc" id="c3s02-sc077-pl" style="padding:12px 12px 30px"><div class="in"><img src="assets/c3/posters/roc_1960s_slogan_recover_mainland.jpg" alt="" /></div></div>
+        <div class="k-tape" style="left:430px;top:66px;transform:rotate(4deg)"></div>
+        <div id="c3s02-sc077-ty"><div class="row"><span class="t-serif" id="c3s02-sc077-t1">temporary</span> <span class="t-serif" id="c3s02-sc077-t2">problems</span></div><div class="row"><span class="t-serif-i" id="c3s02-sc077-t3" style="margin-left:330px;color:var(--vermilion)">inconvenience</span></div></div>
+        <svg id="c3s02-sc077-mk" class="k-mk"></svg>
+      </div>
+      <div id="c3s02-sc077-st" class="k-abs t-display k-ink"><span class="k-w">still</span></div>
+      <div class="k-credit ink t-label">Placard: Taiwan, 1960s (全力支援前線，準備反攻大陸) · fair use</div>
+    </div></div>
+
+    <!-- global overlays -->
+    <div id="c3s02-flash"></div>
+    <div id="c3s02-grain" class="tx tx-grain" style="background-image:url('assets/textures/grain_01_norm.jpg')"></div>
+    <div id="c3s02-dust" class="tx tx-dust" style="background-image:url('assets/textures/dust_02.jpg')"></div>
+    <div id="c3s02-vig" class="vignette"></div>
+    <audio id="c3s02-vo" class="temp-vo" src="vo_c3.mp3" data-start="0" data-duration="203.83" data-media-start="200.34" data-volume="1"></audio>
+  </div>
+  <script>
+  (function () {
+    const SEG = "c3s02", SEG_START = 200.34, SEG_END = 404.17, DURATION = +(SEG_END - SEG_START).toFixed(2);
+    const T = (s) => +(s - 200.34).toFixed(3);   // TEXT cues (audited) — literal word start − 0.06
+    const S = (s) => +(s - 200.34).toFixed(3);   // STRUCTURAL cues (cuts, camera, objects)
+    const tl = gsap.timeline({ paused: true });
+    const $ = (id) => document.getElementById(SEG + "-" + id);
+    const NS = "http://www.w3.org/2000/svg";
+    const defs = $("defs");
+    const E = FX.ease;
+    const C = (e, d) => FX.choppy(e, d, 12);
+    const BONE = "#f2ede3", INK = "#141b24", RED = "#e03f2c", CEL = "#9fc7b2", YEL = "#f2d33b", PAPER = "#ebe4d6", NAVY = "#1d5c9e";
+    const M = /*__MAPS__*/null;
+
+    function gated(a, b, fn) { const on = FX.onFrame; FX.onFrame = (f) => on(FX.gate(S(a) - 0.1, S(b) + 0.1, f)); try { return fn(); } finally { FX.onFrame = on; } }
+    // scene window (LOCAL c3 seconds): hidden (display none) outside [a, b]
+    function scene(id, a, b) {
+      const el = $(id);
+      gsap.set(el, { autoAlpha: 0, display: "none" });
+      tl.fromTo(el, { autoAlpha: 0, display: "none" }, { autoAlpha: 1, display: "block", duration: 0.001, immediateRender: false }, S(a));
+      if (b < SEG_END) tl.set(el, { autoAlpha: 0, display: "none" }, S(b));
+    }
+    function ground(kind, t) {
+      const v = kind === "paper" ? [0.32, 0.14, 0.26] : [1, 0.42, 0.36];
+      tl.set([$("vig"), $("dust"), $("grain")], { opacity: (i) => v[i] }, t);
+    }
+    const show = (el, t) => tl.fromTo(el, { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, t);
+    const hide = (el, t, d) => tl.to(el, { opacity: 0, duration: d || 0.3, ease: "power1.in" }, t);
+    const rise = (el, t, o) => { o = o || {}; const d = o.dur || 1.0;
+      tl.fromTo(el, { opacity: 0, y: o.y == null ? 22 : o.y }, { opacity: 1, y: 0, duration: d, ease: C(E.out, d), immediateRender: true }, t); };
+    const pop = (el, t, d) => { d = d || 0.8; tl.fromTo(el, { opacity: 0, scale: 0.8 }, { opacity: 1, scale: 1, duration: d, ease: C(E.out, d), immediateRender: true }, t); };
+    const words = (id) => $(id).querySelectorAll(".k-w");
+    // camera: map/canvas px (cx, cy) at screen centre at scale s (transform-origin 0 0)
+    const camAt = (s, cx, cy, sx, sy) => ({ scale: s, x: (sx == null ? 960 : sx) - cx * s, y: (sy == null ? 540 : sy) - cy * s });
+    const whipN = { n: 0 };
+    function whip(a, b, t, o) {
+      o = Object.assign({ dir: 1, vertical: false, flash: false, dur: 0.32 }, o);
+      const k = ++whipN.n, ba = FX.whipDefs(defs, `${SEG}-wa${k}`), bb = FX.whipDefs(defs, `${SEG}-wb${k}`);
+      const h = o.dur / 2;
+      if (o.vertical) { [ba, bb].forEach((n) => n.parentNode.setAttribute("y", "-30%")); [ba, bb].forEach((n) => { n.parentNode.setAttribute("height", "160%"); n.parentNode.setAttribute("x", "-10%"); n.parentNode.setAttribute("width", "120%"); }); }
+      tl.set(a, { filter: `url(#${SEG}-wa${k})` }, t - h - 0.01); tl.set(a, { filter: "none" }, t + 0.06);
+      tl.set(b, { filter: `url(#${SEG}-wb${k})` }, t - 0.001); tl.set(b, { filter: "none" }, t + h + 0.02);
+      FX.whip(tl, a, b, t, { dir: o.dir, vertical: o.vertical, dur: o.dur, blurA: ba, blurB: bb });
+      if (o.flash) tl.fromTo($("flash"), { opacity: 0 }, { opacity: 0.9, duration: 0.08, yoyo: true, repeat: 1, ease: "power2.in", immediateRender: false }, t - 0.08);
+    }
+    // paper slide: the incoming (paper) shot slides in over the outgoing one, 12 fps, slight rotation
+    function slideIn(b, t, o) {
+      o = Object.assign({ from: "right", dur: 0.42 }, o);
+      const v = { right: { x: 2050 }, left: { x: -2050 }, up: { y: 1200 }, down: { y: -1200 } }[o.from];
+      tl.fromTo(b, Object.assign({ rotation: o.from === "left" ? -3 : 3, boxShadow: "0 0 80px rgba(0,0,0,0.6)" }, v),
+        { x: 0, y: 0, rotation: 0, duration: o.dur, ease: C(E.inOut, o.dur), immediateRender: false }, t);
+    }
+    function ink(parent, d, t, dur, o) {
+      o = o || {};
+      const p = document.createElementNS(NS, "path");
+      p.setAttribute("d", d); p.setAttribute("fill", o.fill || "none");
+      p.setAttribute("stroke", o.color || INK); p.setAttribute("stroke-width", o.width || 6);
+      p.setAttribute("stroke-linecap", "round"); p.setAttribute("stroke-linejoin", "round");
+      if (o.filter) p.setAttribute("filter", o.filter);
+      if (o.opacity != null) p.setAttribute("opacity", o.opacity);
+      parent.appendChild(p);
+      const len = p.getTotalLength() || 1;
+      p.setAttribute("stroke-dasharray", `${len} ${len}`); p.setAttribute("stroke-dashoffset", len);
+      tl.fromTo(p, { attr: { "stroke-dashoffset": len } }, { attr: { "stroke-dashoffset": 0 }, duration: dur, ease: o.ease || C(E.out, dur), immediateRender: true }, t);
+      p._len = len; return p;
+    }
+    function pin(svg, x, y, color, r, id) {
+      svg.insertAdjacentHTML("beforeend", `<g id="${id}" opacity="0"><ellipse cx="${x + r * 0.6}" cy="${y + r * 0.5}" rx="${r * 0.9}" ry="${r * 0.35}" fill="rgba(10,12,16,0.45)"/><path d="M${x} ${y} L${x} ${y - r * 2.6}" stroke="#555" stroke-width="${r * 0.25}"/><circle cx="${x}" cy="${y - r * 2.6}" r="${r}" fill="${color}" stroke="${INK}" stroke-width="${r * 0.18}"/><circle cx="${x - r * 0.3}" cy="${y - r * 2.9}" r="${r * 0.28}" fill="rgba(255,255,255,0.55)"/></g>`);
+      return document.getElementById(id);
+    }
+    function typeOn(el, t, per) {
+      const chars = FX.split(el, "chars"); per = per || 1 / 24;
+      chars.forEach((c, i) => tl.fromTo(c, { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, t + i * per));
+      return t + chars.length * per;
+    }
+    // Pan Wen-Yuan circle (no portrait reachable from the cloud: ink silhouette in the motif's celadon ring)
+    const PANSIL = (sz) => `<svg viewBox="0 0 220 220" style="width:${sz}px;height:${sz}px"><circle cx="110" cy="110" r="106" fill="#d9d1bf"/><path d="M110 46c-24 0-40 18-40 42 0 18 9 33 22 40-34 8-56 30-60 70h156c-4-40-26-62-60-70 13-7 22-22 22-40 0-24-16-42-40-42z" fill="${INK}" opacity="0.88"/><circle cx="110" cy="110" r="106" fill="none" stroke="${CEL}" stroke-width="8"/></svg>`;
+
+    FX.tintDefs(defs, "c3s02-tint-night", "#0e1013", "#bdb6a8");
+    FX.tintDefs(defs, "c3s02-tint-red", "#5a1710", "#efe3d0");
+    FX.tintDefs(defs, "c3s02-tint-cel", "#1f3a30", "#e6efe8");
+    defs.insertAdjacentHTML("beforeend", `
+      <pattern id="c3s02-ht-red" width="22" height="22" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="22" height="22" fill="${RED}" opacity="0.5"/><circle cx="11" cy="11" r="6.2" fill="${RED}"/></pattern>
+      <filter id="c3s02-glow" x="-10%" y="-10%" width="120%" height="120%"><feGaussianBlur in="SourceGraphic" stdDeviation="9" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>`);
+    FX.grain($("grain"), 4301);
+    FX.dust($("dust"), 4302, 2);
+
+    /*__SCENES__*/
+
+    FX.mount(tl, DURATION);
+    window.__timelines = window.__timelines || {}; window.__timelines[SEG] = tl;
+  })();
+  </script>
+</template>
+</body>
+</html>

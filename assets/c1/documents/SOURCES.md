@@ -80,3 +80,6 @@ Every file looked at. Fair-use items: documentary commentary, transformed, credi
 - Licence / credit: © fair use, credit
 - Size: 4400x5804
 
+
+## Added by c1s03 editor (2026-10-31)
+| us_1_dollar_silver_certificate_1935.jpg | US $1 silver certificate series 1935 (obverse + reverse scan) — shown small, tinted, never full-size realistic | https://commons.wikimedia.org/wiki/File:US-$1-SC-1935-Fr-1607.jpg | CC BY-SA 4.0 (Commons uploader; design PD) — credit | 3840x3349 |

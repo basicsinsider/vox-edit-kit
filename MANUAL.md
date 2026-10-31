@@ -197,6 +197,15 @@ use, attribution optional; never redistribute the files publicly, never use them
   back to `none` (c4s01 C4S028). Timed `<video>` inside a scene: give it the scene's own start (the whip time), not the beat time.
 - Simplifying closed map rings with Ramer–Douglas–Peucker collapses them to 2 points (first = last point): simplify the two halves
   separately (`project/c4/gen/c4s01_assets.py`). Kit country paths are `M…L…Z` per sub-path — split on `M`, not `Z`.
+- (c4s02 editor) Build every layout-dependent effect (`FX.text.odometer` measures glyph widths) BEFORE hiding scenes with
+  `display:none` — set the `display:none` for out-of-window scenes as the last line before `FX.mount`, or the odometer reels get
+  width 0 and the number never shows. A GSAP tween of x/y/scale on an SVG `<g>` that carries a `transform="translate() scale()"`
+  attribute replaces that attribute (icons collapse to the origin at their raw size) — wrap: animate an outer `<g>`, keep the
+  placement on an inner `<g>`. A path drawn with a markup/rough filter that is perfectly horizontal or vertical has a zero-height
+  (or zero-width) bounding box, so the objectBoundingBox filter region is empty and the stroke vanishes — tilt it by a few px.
+  Timed `<video>` visibility is managed by its `data-start`/`data-duration`, not by CSS opacity: for a hard cut between two clips
+  set the second clip's `data-start` at the cut instead of toggling its opacity, and make each clip's `data-duration` reach past
+  the scene's whip.
 - Timing audit for §10.9 (every scene): dump the timeline in a headless page (`tl.getChildren(true,true,false)` → start/end/targets)
   and list tweens that end < 0.5 s before their scene's whip start / hard cut; then snapshot those scenes' last 0.6 s.
 ### 4.3 Check, look, render
@@ -608,6 +617,9 @@ on action. Use it whenever the narrator quotes someone or introduces a historic 
 - [ ] Smooth long eases, 12 fps. [ ] Cuts on action; whips, no iris. [ ] No photo/clip used > 2× in a chunk.
 
 ## Changelog
+- 2026-10-31 — c4s02 editor (C4S037–069): §4.2 gotchas (odometer needs layout before display:none, SVG `<g>` transform attribute
+  vs GSAP, zero-height filtered pen lines, cut between clips via `data-start`); c4 isotype family `assets/c4/icons/`; template +
+  generator workflow for long segments (`project/c4/gen/c4s02_template.html` → `build_c4s02.py` inlines map data).
 - 2026-10-31 — c4s01 editor: §4.2 gotchas (odometer inside hidden scenes, timed video start = scene start, RDP on closed rings); map crops for
   Eurasia/Africa from the kit world relief (`assets/c4/derived/c4s01/`, generator `project/c4/gen/c4s01_assets.py`).
 - 2026-10-31 — Intro fixes after Krish's review (`project/intro/FIXES.md`): K+E upscaled grid scans → Texturelabs

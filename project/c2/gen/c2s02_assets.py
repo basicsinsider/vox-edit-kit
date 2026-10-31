@@ -65,3 +65,19 @@ save(hp.crop((300, 0, 2100, 2200)).resize((720, 880), Image.LANCZOS), "hp_logo_t
 for src, t, name in [("assets/c2/footage/bell_transistor1953_engineers_at_benches.mp4", 6.0, "engineers_still.jpg")]:
     subprocess.run(["ffmpeg", "-loglevel", "error", "-y", "-ss", str(t), "-i", src, "-frames:v", "1", f"{OUT}/{name}"], check=True)
 json.dump(info, open(f"{OUT}/_info.json", "w"), indent=1)
+
+# C2S043: us_night_3200 padded with the world_night relief (resampled into the US map's squashed plate carrée), feathered seam.
+# wide space: x = (lon+136)*53.333, y = (56-lat)*66.58 ; 4267 x 2464
+wn = Image.open("assets/maps/kit/world_night.jpg")   # x=(lon+180)*45.511, y=(90-lat)*45.511
+L0, L1, A0, A1 = -136, -56, 56, 19
+box = (round((L0 + 180) * 45.511), round((90 - A0) * 45.511), round((L1 + 180) * 45.511), round((90 - A1) * 45.511))
+W2, H2 = round((L1 - L0) * 53.333), round((A0 - A1) * 66.58)
+base = wn.crop(box).resize((W2, H2), Image.LANCZOS)
+usn = Image.open(f"{OUT}/us_night_3200.jpg")
+mk = Image.new("L", usn.size, 0); ImageDraw.Draw(mk).rectangle((60, 60, usn.width - 60, usn.height - 60), fill=255)
+mk = mk.filter(ImageFilter.GaussianBlur(30))
+lm = Image.open("assets/maps/kit/us_landmask.png").convert("L").resize(usn.size, Image.BILINEAR).filter(ImageFilter.GaussianBlur(2))
+from PIL import ImageChops
+mk = ImageChops.multiply(mk, lm)   # sea comes from the world relief everywhere (one sea tone, no seam)
+base.paste(usn, (round((-126 - L0) * 53.333), round((A0 - 50) * 66.58)), mk)
+save(base, "us_night_wide.jpg")

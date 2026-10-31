@@ -56,3 +56,9 @@ Every file looked at. Fair-use items: documentary commentary, transformed, credi
 - Licence / credit: CC BY 2.0 / Seattle Municipal Archives — on-screen credit
 - Size: 1920x1509 (native 3054x2400)
 
+
+### nyse_trading_floor_lc_u9_10548.jpg (c1s01 editor, 2026-10-31)
+- Subject: New York Stock Exchange traders on the floor, c.1960s (U.S. News & World Report collection) — N25 stand-in ("crazy hedge fund company", C1S032)
+- Source: https://commons.wikimedia.org/wiki/File:NY_stock_exchange_traders_floor_LC-U9-10548-6.jpg (LOC LC-U9-10548-6)
+- Licence / credit: CC0 / no known restrictions (LOC)
+- Size: 3840x2543 greyscale

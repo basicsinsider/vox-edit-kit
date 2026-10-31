@@ -1,0 +1,1657 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8" /></head>
+<body>
+<template>
+  <style>
+    #root { position: absolute; inset: 0; overflow: hidden; background: var(--night); }
+    .c3-scene { position: absolute; inset: 0; overflow: hidden; visibility: hidden; opacity: 0; display: none; background: var(--night); }
+    .c3-abs { position: absolute; }
+    .c3-full { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; }
+    .c3-svg { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; pointer-events: none; }
+    .c3-w { display: inline-block; opacity: 0; white-space: pre; }
+    .c3-credit { position: absolute; right: 30px; bottom: 22px; font-size: 13px; letter-spacing: 0.08em; color: rgba(242,237,227,0.55); z-index: 5; }
+    .c3-credit.ink { color: rgba(20,27,36,0.55); }
+    .c3-pg { position: absolute; inset: 0; background: var(--paper); }
+    .c3-pg img { position: absolute; left: 0; top: 0; width: 100%; height: 100%; object-fit: cover; }
+    .c3-pg .p1 { mix-blend-mode: multiply; opacity: 0.6; }
+    .c3-pg .p2 { mix-blend-mode: multiply; opacity: 0.9; filter: saturate(0.25) contrast(0.6) brightness(1.08); }
+    .c3-pg .p2.gr { filter: saturate(0.25) contrast(1.3) brightness(1.06); transform: scale(1.45); }
+    .c3-pg .p2.st { filter: saturate(0.35) contrast(0.8) brightness(1.1); opacity: 0.75; }
+    .c3-ink { color: var(--ink); }
+    .c3-scrimb { position: absolute; left: 0; right: 0; bottom: 0; height: 520px; background: linear-gradient(180deg, rgba(15,19,24,0) 0%, rgba(15,19,24,0.82) 100%); }
+    .c3-scrimt { position: absolute; left: 0; right: 0; top: 0; height: 360px; background: linear-gradient(0deg, rgba(15,19,24,0) 0%, rgba(15,19,24,0.75) 100%); }
+    .c3-print { position: absolute; background-repeat: no-repeat; box-shadow: 0 30px 60px rgba(0,0,0,0.55), 0 0 0 10px #e9e1cf; }
+    .c3-blur { position: absolute; background-repeat: no-repeat; filter: blur(9px) brightness(0.55); }
+    .c3-circ { position: absolute; border-radius: 50%; overflow: hidden; background-repeat: no-repeat; box-shadow: 0 14px 28px rgba(20,27,36,0.28); }
+    .c3-boxink { display: inline-block; background: var(--ink); color: var(--paper); padding: 10px 18px 6px; }
+    .c3-stamp { position: absolute; border: 10px solid var(--ink); color: var(--ink); padding: 14px 34px 4px; mix-blend-mode: multiply; opacity: 0; }
+    /* the "problem" card (C2S087 hand-off; rebuilt here — see NOTES) */
+    .c3-pcard { position: absolute; width: 520px; height: 360px; background: #efe6d2; box-shadow: 0 22px 44px rgba(0,0,0,0.45); overflow: hidden; }
+    .c3-pcard img.tx { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; mix-blend-mode: multiply; opacity: 0.85; }
+    .c3-pcard svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+    #c2s03-grain, #c2s03-dust, #c2s03-vig { z-index: 20; }
+    #c2s03-flash { position: absolute; inset: 0; background: #fff6e6; opacity: 0; z-index: 25; pointer-events: none; }
+
+    /* S088 */
+    #c2s03-sc088-cam { position: absolute; inset: 0; transform-origin: 1010px 560px; }
+    #c2s03-sc088-photo { position: absolute; left: 0; top: -448px; width: 1920px; height: 1920px; filter: url(#c2s03-tint-night) brightness(0.9) contrast(1.15); }
+    #c2s03-sc088-sky { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(8,12,20,0.9) 0%, rgba(10,16,26,0.65) 40%, rgba(10,16,26,0.1) 52%, rgba(10,14,20,0.35) 100%); }
+    #c2s03-sc088-glow { position: absolute; inset: 0; mix-blend-mode: screen; }
+    .c3-win { position: absolute; height: 52px; border-radius: 4px; background: radial-gradient(ellipse 60% 60% at 50% 50%, rgba(255,214,150,0.95), rgba(255,170,90,0.35) 60%, rgba(255,150,80,0) 100%); filter: blur(3px); }
+    #c2s03-sc088-card { left: 1180px; top: 130px; transform: rotate(4deg); }
+    #c2s03-sc088-pin { position: absolute; left: 1410px; top: 104px; width: 54px; }
+    #c2s03-sc088-k { left: 110px; top: 110px; font-size: 40px; }
+    #c2s03-sc088-s { left: 110px; top: 820px; font-size: 104px; }
+
+    /* S089 */
+    #c2s03-sc089-cam { position: absolute; inset: 0; transform-origin: 1228px 395px; }
+    .c3-panel { position: absolute; background-size: cover; background-position: center; box-shadow: 0 30px 60px rgba(0,0,0,0.6); }
+    #c2s03-sc089-pa { left: -120px; top: -80px; width: 1100px; height: 900px; transform: rotate(-5deg); filter: url(#c2s03-tint-night) blur(2px); opacity: 0.5; }
+    #c2s03-sc089-pb { left: 1300px; top: 520px; width: 900px; height: 700px; transform: rotate(4deg); filter: url(#c2s03-tint-night) blur(1.5px); opacity: 0.45; }
+    #c2s03-sc089-print, #c2s03-sc089-fb { left: 600px; top: 70px; width: 1240px; height: 953px; background-size: 1240px auto; background-position: 0 -139.5px; }
+    #c2s03-sc089-print { filter: sepia(0.25) contrast(1.08) brightness(0.92); }
+    #c2s03-sc089-fb { filter: sepia(0.25) blur(8px) brightness(0.5); box-shadow: none; }
+    #c2s03-sc089-n { left: 110px; top: 610px; font-size: 38px; line-height: 1.35; }
+    #c2s03-sc089-t { left: 110px; top: 720px; font-size: 96px; }
+
+    /* S090 */
+    #c2s03-sc090-cam { position: absolute; inset: 0; transform-origin: 760px 540px; }
+    #c2s03-sc090-page { position: absolute; left: 300px; top: 40px; width: 780px; height: 997px; box-shadow: 0 26px 50px rgba(20,27,36,0.35); transform: rotate(-3deg); filter: sepia(0.3) saturate(0.55); }
+    #c2s03-sc090-sell { left: 1200px; top: 250px; font-size: 38px; line-height: 1.5; }
+    #c2s03-sc090-bet { left: 1200px; top: 560px; font-size: 118px; line-height: 0.95; }
+
+    /* S091 */
+    .c3-port { position: absolute; left: 572px; top: 0; width: 776px; height: 1080px; background-size: 776px auto; background-position: 0 0; background-repeat: no-repeat; }
+    #c2s03-sc091-base { filter: brightness(0.5) contrast(1.05); }
+    #c2s03-sc091-lit { filter: sepia(0.35) brightness(1.12) contrast(1.08); clip-path: inset(0 50% 0 0); opacity: 0; }
+    #c2s03-sc091-shade { position: absolute; left: 960px; top: 0; width: 400px; height: 1080px; background: linear-gradient(90deg, rgba(8,10,14,0.55), rgba(8,10,14,0.96)); opacity: 0; }
+    #c2s03-sc091-div { position: absolute; left: 959px; top: 0; width: 3px; height: 1080px; background: var(--bone); opacity: 0; transform-origin: 50% 0; }
+    #c2s03-sc091-b { left: 110px; top: 430px; font-size: 104px; }
+    #c2s03-sc091-n { left: 1400px; top: 470px; font-size: 34px; line-height: 1.6; }
+
+    /* S092 */
+    #c2s03-sc092-cam { position: absolute; inset: 0; transform-origin: 1100px 420px; }
+    #c2s03-sc092-cam .plate .img, #c2s03-sc092-cam .plate .fringe { filter: saturate(0.7) brightness(0.85) contrast(1.05); }
+    #c2s03-sc092-cam .plate .fringe { filter: saturate(0.7) brightness(0.85) blur(7px); }
+    #c2s03-sc092-nm { left: 110px; top: 740px; font-size: 190px; }
+    #c2s03-sc092-boss { left: 120px; top: 950px; font-size: 38px; }
+
+    /* S093-094 org chart */
+    #c2s03-sc093-cam { position: absolute; inset: 0; transform-origin: 960px 500px; }
+    .c3-ec { width: 160px; height: 160px; border: 6px solid #8b857a; background-color: #d8d0c0; background-size: 1600px auto; filter: grayscale(1) contrast(1.1) sepia(0.15); }
+    .c3-ec .back { position: absolute; inset: 0; border-radius: 50%; background: repeating-linear-gradient(45deg, #9a948a 0 6px, #8d877d 6px 12px); opacity: 0; }
+    #c2s03-sc093-sh { left: 850px; top: 70px; width: 220px; height: 220px; border: 8px solid var(--ink); background-color: #d8d0c0; background-size: 384px auto; background-position: -81px -71px; filter: grayscale(1) contrast(1.1) sepia(0.15); }
+    #c2s03-sc093-l1 { left: 0; width: 1920px; text-align: center; top: 800px; font-size: 34px; }
+    #c2s03-sc093-l2 { left: 0; width: 1920px; text-align: center; top: 870px; font-size: 92px; }
+    #c2s03-sc093-eight { left: 0; width: 1920px; text-align: center; top: 820px; font-size: 170px; }
+    #c2s03-sc093-quit { left: 760px; top: 380px; font-size: 170px; transform: rotate(-9deg); }
+
+    /* S095 2.5D */
+    #c2s03-sc095-stage { position: absolute; inset: 0; perspective: 1200px; perspective-origin: 960px 520px; }
+    #c2s03-sc095-cam { position: absolute; inset: 0; transform-style: preserve-3d; }
+    .c3-lay { position: absolute; inset: 0; transform-origin: 50% 50%; }
+    .c3-lay img { position: absolute; left: -96px; top: -496px; width: 2112px; height: 2112px; }
+    #c2s03-sc095-back img { filter: blur(5px) brightness(0.42) sepia(0.35) contrast(1.05); }
+    #c2s03-sc095-front img { filter: sepia(0.25) contrast(1.12) brightness(0.95); -webkit-mask-image: linear-gradient(180deg, #000 80%, transparent 96%); mask-image: linear-gradient(180deg, #000 80%, transparent 96%); }
+    #c2s03-sc095-title { position: absolute; left: 0; width: 1920px; top: 210px; text-align: center; font-size: 172px; }
+    #c2s03-sc095-haze { position: absolute; inset: 0; background: radial-gradient(ellipse 70% 50% at 50% 35%, rgba(255,214,170,0.10), rgba(0,0,0,0) 70%); mix-blend-mode: screen; }
+
+    /* S096 */
+    #c2s03-sc096-cal { position: absolute; left: 240px; top: 200px; width: 560px; height: 680px; }
+    .c3-calp { position: absolute; left: 0; top: 70px; width: 560px; height: 610px; background: #ede4d0; box-shadow: 0 18px 36px rgba(0,0,0,0.45); transform-origin: 50% 0; overflow: hidden; }
+    .c3-calp i { position: absolute; left: 50px; right: 50px; height: 2px; background: rgba(20,27,36,0.18); }
+    .c3-calp b { position: absolute; left: 50px; top: 60px; width: 180px; height: 22px; background: rgba(20,27,36,0.55); }
+    #c2s03-sc096-head { position: absolute; left: -10px; top: 0; width: 580px; height: 90px; background: #2a2f38; border-radius: 6px; box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
+    #c2s03-sc096-k { left: 110px; top: 90px; font-size: 40px; }
+    #c2s03-sc096-bld { left: 880px; top: 170px; width: 900px; height: 600px; background-size: cover; background-position: center; filter: grayscale(0.75) sepia(0.25) brightness(0.85) contrast(1.05); }
+    #c2s03-sc096-logo { left: 740px; top: 80px; width: 250px; height: 250px; border: 6px solid var(--bone); background-color: #3a3a38; background-size: 880px auto; background-position: -95px -117px; filter: grayscale(1) brightness(1.15) contrast(1.2); }
+    #c2s03-sc096-fs { left: 110px; top: 800px; font-size: 92px; line-height: 0.95; }
+
+    /* S097 map */
+    #c2s03-sc097-tilt { position: absolute; inset: 0; perspective: 1700px; perspective-origin: 960px 300px; }
+    #c2s03-sc097-plane { position: absolute; inset: 0; transform-origin: 960px 600px; }
+    #c2s03-sc097-cam { position: absolute; left: 0; top: 0; width: 2700px; height: 1900px; transform-origin: 0 0; }
+    #c2s03-sc097-map { position: absolute; left: 0; top: 0; width: 2700px; height: 1900px; filter: sepia(0.45) saturate(0.45) contrast(1.05) brightness(1.02); }
+    #c2s03-sc097-paperon { position: absolute; left: 0; top: 0; width: 2700px; height: 1900px; background-size: cover; mix-blend-mode: multiply; opacity: 0.45; }
+    #c2s03-sc097-svg { position: absolute; left: 0; top: 0; width: 2700px; height: 1900px; overflow: visible; }
+    .c3-npin { position: absolute; width: 74px; height: 74px; margin: -37px 0 0 -37px; border-radius: 50%; background: var(--ink); color: var(--paper); text-align: center; line-height: 80px; font-size: 44px; box-shadow: 0 8px 16px rgba(20,27,36,0.4); border: 4px solid var(--paper); opacity: 0; }
+    .c3-tag { position: absolute; background: rgba(235,228,214,0.92); box-shadow: 0 10px 24px rgba(20,27,36,0.2); }
+    #c2s03-sc097-t1 { left: 96px; top: 70px; width: 640px; height: 100px; }
+    #c2s03-sc097-d { left: 130px; top: 96px; font-size: 44px; }
+    #c2s03-sc097-t2 { left: 96px; top: 860px; width: 820px; height: 130px; opacity: 0; }
+    #c2s03-sc097-l { left: 130px; top: 870px; font-size: 92px; }
+
+    /* S098 timeline */
+    #c2s03-sc098-band { position: absolute; left: 200px; top: 440px; width: 1520px; height: 130px; background: var(--ink); transform-origin: 0 50%; opacity: 0.88; }
+    #c2s03-sc098-bandtx { position: absolute; left: 200px; top: 440px; width: 1520px; height: 130px; background-size: cover; mix-blend-mode: screen; opacity: 0.18; transform-origin: 0 50%; }
+    #c2s03-sc098-tok { left: 140px; top: 385px; width: 240px; height: 240px; border: 6px solid var(--paper); background-color: #3a3a38; background-size: 845px auto; background-position: -89px -111px; filter: grayscale(1) brightness(1.15) contrast(1.2); }
+    #c2s03-sc098-acq { left: 1330px; top: 250px; font-size: 76px; transform: rotate(-7deg); }
+    #c2s03-sc098-mp { left: 200px; top: 700px; font-size: 104px; }
+    #c2s03-sc098-lt { left: 210px; top: 840px; font-size: 64px; }
+
+    /* S099 */
+    #c2s03-sc099-cam { position: absolute; inset: 0; transform-origin: 960px 560px; }
+    #c2s03-sc099-bg { left: -100px; top: -100px; width: 2120px; height: 1280px; background-size: cover; background-position: center 60%; filter: blur(18px) brightness(0.32) sepia(0.3); position: absolute; }
+    #c2s03-sc099-print, #c2s03-sc099-fb { left: 340px; top: 110px; width: 1240px; height: 940px; background-size: 1240px auto; background-position: 0 -77.5px; }
+    #c2s03-sc099-print { filter: sepia(0.25) contrast(1.08) brightness(0.95); }
+    #c2s03-sc099-fb { filter: sepia(0.25) blur(7px) brightness(0.45); box-shadow: none; }
+    #c2s03-sc099-k { left: 110px; top: 34px; font-size: 36px; }
+    #c2s03-sc099-ny { position: absolute; inset: 0; opacity: 0; background: var(--night); }
+    #c2s03-sc099-nyp { left: 860px; top: 50px; width: 960px; height: 980px; background-size: 960px auto; background-position: 0 0; filter: sepia(0.2) contrast(1.1) brightness(0.92); }
+    #c2s03-sc099-rn { left: 110px; top: 340px; font-size: 150px; line-height: 0.92; }
+    #c2s03-sc099-bn { left: 116px; top: 680px; font-size: 84px; }
+
+    /* S100 cards */
+    #c2s03-sc100-cam { position: absolute; inset: 0; transform-origin: 620px 560px; }
+    #c2s03-sc100-pc { left: 250px; top: 330px; transform: rotate(-3deg) scale(1.25); transform-origin: 0 0; }
+    #c2s03-sc100-ny { position: absolute; left: 820px; top: 160px; width: 580px; height: 352px; background: #f2ecdf; padding: 16px; box-shadow: 0 22px 44px rgba(20,27,36,0.35); transform: rotate(4deg); }
+    #c2s03-sc100-ny div { width: 100%; height: 100%; background-size: cover; background-position: center; filter: sepia(0.25) contrast(1.05); }
+    #c2s03-sc100-clip { position: absolute; left: 832px; top: 140px; width: 60px; height: 130px; overflow: visible; }
+    #c2s03-sc100-s { left: 1440px; top: 220px; font-size: 40px; line-height: 1.5; }
+    #c2s03-sc100-tr { left: 1440px; top: 520px; font-size: 40px; }
+    #c2s03-sc100-h { left: 1440px; top: 640px; font-size: 104px; }
+
+    /* footage */
+    .c3-weave { position: absolute; inset: -16px; }
+    .c3-vid { position: absolute; left: 0; top: -180px; width: 1920px; height: 1440px; object-fit: cover; }
+    #c2s03-sc101-k { left: 110px; top: 100px; font-size: 44px; }
+    #c2s03-sc101-s { left: 110px; top: 820px; font-size: 112px; }
+
+    /* S102 split */
+    #c2s03-sc102-left { position: absolute; left: 0; top: 0; width: 960px; height: 1080px; background-size: cover; background-position: center 30%; filter: grayscale(0.85) sepia(0.3) contrast(1.08) brightness(0.85); clip-path: inset(0 100% 0 0); }
+    #c2s03-sc102-chip { position: absolute; left: 452px; top: 18px; width: 900px; height: 900px; border-radius: 50%; background-size: cover; background-position: center; filter: saturate(0.5) contrast(1.05); }
+    #c2s03-sc102-div { position: absolute; left: 0; top: 0; width: 4px; height: 1080px; background: var(--bone); opacity: 0; box-shadow: 0 0 14px rgba(0,0,0,0.6); }
+    #c2s03-sc102-ws { left: 1100px; top: 960px; font-size: 40px; }
+    #c2s03-sc102-bh { left: 110px; top: 900px; font-size: 104px; }
+
+    /* S103-104 patent */
+    #c2s03-sc103-cam { position: absolute; inset: 0; transform-origin: 960px 420px; }
+    #c2s03-sc103-sheet { position: absolute; left: 160px; top: -150px; width: 900px; height: 1322px; background: #f6f2ea; box-shadow: 0 24px 48px rgba(20,27,36,0.3); transform: rotate(-2deg); }
+    #c2s03-sc103-sheet img { position: absolute; inset: 0; width: 100%; height: 100%; mix-blend-mode: multiply; }
+    .c3-fig { position: absolute; background-image: url('assets/c2/documents/us2981877_noyce_sheet2.png'); background-size: 900px 1322px; background-repeat: no-repeat; mix-blend-mode: multiply; opacity: 0; }
+    #c2s03-sc103-lamp { position: absolute; left: 1290px; top: -40px; width: 340px; height: 120px; border-radius: 0 0 170px 170px; background: radial-gradient(ellipse 50% 70% at 50% 0%, rgba(255,232,180,0.95), rgba(255,200,120,0) 70%); opacity: 0; }
+    #c2s03-sc103-beam { position: absolute; left: 1150px; top: 40px; width: 620px; height: 720px; clip-path: polygon(38% 0, 62% 0, 100% 100%, 0 100%); background: linear-gradient(180deg, rgba(255,226,170,0.55), rgba(255,226,170,0.12)); mix-blend-mode: multiply; opacity: 0; }
+    #c2s03-sc103-rays { position: absolute; left: 1150px; top: 40px; width: 620px; height: 720px; clip-path: polygon(38% 0, 62% 0, 100% 100%, 0 100%); opacity: 0; mix-blend-mode: soft-light; }
+    #c2s03-sc103-mask { position: absolute; left: 1240px; top: 300px; width: 440px; height: 264px; background: rgba(20,27,36,0.82); box-shadow: 0 12px 24px rgba(20,27,36,0.35); opacity: 0; overflow: hidden; }
+    #c2s03-sc103-mask div { position: absolute; inset: 10px; background-image: url('assets/c2/documents/us2981877_noyce_sheet2.png'); background-size: 795px auto; background-position: -175px -195px; filter: invert(1); mix-blend-mode: screen; }
+    #c2s03-sc103-photo { position: absolute; left: 1150px; top: 690px; width: 640px; height: 330px; background: #d9c7a4; box-shadow: 0 18px 36px rgba(20,27,36,0.35); overflow: hidden; }
+    #c2s03-sc103-photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; mix-blend-mode: multiply; opacity: 0.7; }
+    #c2s03-sc103-dev { position: absolute; left: 40px; top: 20px; width: 560px; height: 290px; background-image: url('assets/c2/documents/us2981877_noyce_sheet2.png'); background-size: 1010px auto; background-position: -220px -250px; mix-blend-mode: multiply; filter: sepia(1) brightness(0.55) contrast(2); opacity: 0; }
+    #c2s03-sc103-light { left: 1650px; top: 110px; font-size: 40px; }
+    #c2s03-sc103-pp { left: 1150px; top: 1010px; font-size: 52px; }
+    #c2s03-sc103-lock { position: absolute; left: 470px; top: 150px; width: 980px; height: 640px; border: 8px solid var(--ink); opacity: 0; }
+    #c2s03-sc103-all { left: 0; width: 1920px; text-align: center; top: 850px; font-size: 140px; }
+
+    /* S105 */
+    #c2s03-sc105-ic { left: 0; width: 1920px; top: 800px; text-align: center; font-size: 150px; }
+
+    /* S106 */
+    #c2s03-sc106-cam { position: absolute; inset: 0; transform-origin: 960px 500px; }
+    #c2s03-sc106-page { position: absolute; left: 440px; top: 26px; width: 1040px; height: 1074px; box-shadow: 0 24px 48px rgba(20,27,36,0.3); transform: rotate(1.5deg); filter: sepia(0.25) contrast(1.02); }
+    #c2s03-sc106-tag { left: 96px; top: 850px; width: 1060px; height: 140px; }
+    #c2s03-sc106-t { left: 130px; top: 862px; font-size: 92px; }
+
+    /* S107 index card */
+    #c2s03-sc107-card { position: absolute; left: 330px; top: 140px; width: 1260px; height: 780px; background: #f3eee3; box-shadow: 0 26px 50px rgba(20,27,36,0.32); transform: rotate(-1.5deg); overflow: hidden; }
+    #c2s03-sc107-card img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; mix-blend-mode: multiply; filter: saturate(0.4) contrast(1.1); }
+    #c2s03-sc107-ne { left: 110px; top: 70px; font-size: 120px; }
+    #c2s03-sc107-an { left: 110px; top: 330px; font-size: 104px; }
+    #c2s03-sc107-db { left: 820px; top: 470px; font-size: 44px; }
+
+    /* S108 */
+    #c2s03-sc108-img { position: absolute; left: -390px; top: -180px; width: 2880px; height: 2169px; filter: saturate(0.55) brightness(0.72) contrast(1.12); }
+    #c2s03-sc108-e { left: 110px; top: 110px; font-size: 104px; }
+    #c2s03-sc108-ic { left: 116px; top: 250px; font-size: 44px; }
+
+    /* S109 cards */
+    .c3-ocard { position: absolute; width: 480px; height: 600px; background: #f3ede0; box-shadow: 0 24px 46px rgba(20,27,36,0.3); padding: 30px; }
+    .c3-ocard .ph { width: 420px; height: 420px; background-repeat: no-repeat; filter: grayscale(0.75) sepia(0.2) contrast(1.05); }
+    .c3-ocard .lb { position: absolute; left: 30px; top: 490px; width: 420px; text-align: center; font-size: 34px; color: var(--ink); }
+    #c2s03-sc109-a { left: 220px; top: 220px; transform: rotate(-2.5deg); }
+    #c2s03-sc109-b { left: 1220px; top: 220px; transform: rotate(2deg); }
+    #c2s03-sc109-up { left: 840px; top: 250px; width: 240px; text-align: center; font-size: 34px; }
+
+    /* S110-111 */
+    #c2s03-sc110-p { left: 110px; top: 100px; font-size: 44px; }
+    #c2s03-sc110-wk { left: 110px; top: 800px; font-size: 140px; }
+    #c2s03-sc111-cam { position: absolute; inset: 0; transform-origin: 1180px 520px; }
+    #c2s03-sc111-img { position: absolute; left: -200px; top: -150px; width: 2400px; height: 1600px; filter: saturate(0.55) brightness(0.72) contrast(1.15); }
+    #c2s03-sc111-b { left: 110px; top: 900px; font-size: 48px; }
+
+    /* S112 */
+    #c2s03-sc112-cam { position: absolute; inset: 0; transform-origin: 1160px 480px; }
+    #c2s03-sc112-img { position: absolute; left: 0; top: -175px; width: 1920px; height: 1430px; filter: grayscale(0.55) brightness(0.62) contrast(1.25); }
+    #c2s03-sc112-ins { left: 0; width: 1920px; top: 380px; text-align: center; font-size: 260px; }
+
+    /* S113-114 ranked bars */
+    .c3-bar { position: absolute; width: 150px; bottom: 180px; height: 0; background: var(--ink); opacity: 0.86; }
+    .c3-bar.ic { background: var(--vermilion); opacity: 0.95; }
+    .c3-bc { width: 170px; height: 170px; border: 6px solid var(--ink); background-color: #e8e0cf; background-size: cover; background-position: center; filter: grayscale(1) contrast(1.15) sepia(0.15); opacity: 0; }
+    .c3-bc.ic { border-color: var(--vermilion); filter: grayscale(0.4) contrast(1.1); }
+    #c2s03-sc113-base { position: absolute; left: 220px; top: 900px; width: 1480px; height: 4px; background: var(--ink); }
+    #c2s03-sc113-d { left: 110px; top: 70px; font-size: 96px; }
+    #c2s03-sc113-r { left: 116px; top: 190px; font-size: 40px; }
+    #c2s03-sc113-im { left: 116px; top: 190px; font-size: 40px; }
+    #c2s03-sc113-up { left: 1300px; top: 70px; font-size: 120px; }
+
+    /* S115 */
+    #c2s03-sc115-img { position: absolute; left: -96px; top: -54px; width: 2112px; height: 1188px; }
+    #c2s03-sc115-i { left: 110px; top: 100px; font-size: 44px; }
+    #c2s03-sc115-h { left: 0; width: 1920px; text-align: center; top: 900px; font-size: 100px; }
+
+    /* S116-117 */
+    #c2s03-sc116-cam { position: absolute; left: 0; top: 0; width: 1920px; height: 2400px; }
+    #c2s03-sc116-svg { position: absolute; left: 0; top: 0; width: 1920px; height: 2400px; overflow: visible; }
+    #c2s03-sc116-n { left: 430px; top: 150px; }
+    #c2s03-sc116-n .k { display: inline-block; background: var(--yellow); color: var(--ink); font-size: 110px; padding: 14px 24px 0; line-height: 1; }
+    #c2s03-sc116-tm { left: 870px; top: 200px; font-size: 40px; }
+    #c2s03-sc116-tl { left: 1000px; top: 910px; font-size: 54px; }
+    #c2s03-sc116-m { left: 1180px; top: 150px; font-size: 170px; }
+    #c2s03-sc116-ml { left: 1040px; top: 360px; font-size: 76px; }
+
+    /* S118 zeros */
+    #c2s03-sc118-list { position: absolute; left: 560px; top: 0; width: 3000px; }
+    .c3-row { height: 104px; font-size: 80px; line-height: 104px; color: var(--bone); white-space: nowrap; }
+    #c2s03-sc118-fade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(15,19,24,1) 0%, rgba(15,19,24,0) 30%, rgba(15,19,24,0) 62%, rgba(15,19,24,1) 92%); }
+    #c2s03-sc118-band { position: absolute; left: 0; right: 0; top: 476px; height: 112px; border-top: 2px solid rgba(242,237,227,0.25); border-bottom: 2px solid rgba(242,237,227,0.25); }
+    #c2s03-sc118-c { left: 110px; top: 100px; font-size: 44px; }
+    #c2s03-sc118-i { left: 110px; top: 880px; font-size: 96px; }
+
+    /* S119-120 */
+    #c2s03-sc119-world { position: absolute; inset: 0; }
+    #c2s03-sc119-flip { position: absolute; left: 580px; top: 230px; width: 760px; height: 520px; perspective: 1600px; }
+    .c3-face { position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden; background: #f3eee3; box-shadow: 0 26px 50px rgba(20,27,36,0.32); overflow: hidden; }
+    .c3-face img.tx { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; mix-blend-mode: multiply; filter: saturate(0.4) contrast(1.1); }
+    #c2s03-sc119-win { position: absolute; left: 70px; top: 70px; width: 620px; height: 380px; background: #d9d4cb; overflow: hidden; box-shadow: inset 0 0 0 3px rgba(20,27,36,0.6); }
+    #c2s03-sc119-win img { position: absolute; left: 60px; top: -40px; width: 520px; filter: grayscale(1) contrast(1.15); }
+    #c2s03-sc119-clip { position: absolute; left: 600px; top: 190px; width: 70px; height: 150px; overflow: visible; }
+    #c2s03-sc119-back { transform: rotateY(180deg); }
+    #c2s03-sc119-cell { position: absolute; left: 150px; top: 40px; width: 460px; height: 440px; border: 6px solid var(--ink); }
+    #c2s03-sc119-si { left: 0; width: 460px; text-align: center; top: 70px; font-size: 270px; color: var(--ink); }
+    #c2s03-sc119-sil { left: 0; width: 1920px; text-align: center; top: 130px; font-size: 44px; }
+    #c2s03-sc119-sc { left: 0; width: 1920px; text-align: center; top: 820px; font-size: 76px; }
+    #c2s03-sc119-hlw { position: relative; display: inline-block; isolation: isolate; }
+    #c2s03-sc119-hl { position: absolute; left: -10px; right: -10px; top: 30px; height: 44px; background: var(--yellow); mix-blend-mode: multiply; transform-origin: 0 50%; transform: scaleX(0); z-index: -1; filter: url(#c2s03-rough-hl); }
+
+    /* S121-122 */
+    #c2s03-sc121-word { position: absolute; left: 0; width: 1920px; top: 300px; text-align: center; font-size: 210px; color: var(--bone); }
+    #c2s03-sc121-word span { display: inline-block; }
+    #c2s03-sc121-ce { left: 0; width: 1920px; text-align: center; top: 620px; font-size: 44px; }
+    #c2s03-sc121-sl { left: 0; width: 1920px; text-align: center; top: 730px; font-size: 130px; }
+    #c2s03-sc122-svg { opacity: 0; }
+    #c2s03-sc122-streaks { opacity: 0; }
+    #c2s03-sc122-k1 { left: 110px; top: 80px; font-size: 40px; }
+    #c2s03-sc122-k2 { left: 110px; top: 150px; font-size: 40px; }
+    #c2s03-sc122-el { left: 110px; top: 950px; font-size: 84px; }
+
+    /* S123 scope */
+    #c2s03-sc123-cam { position: absolute; inset: 0; transform-origin: 903px 461px; }
+    #c2s03-sc123-tube { position: absolute; left: 551px; top: 174px; width: 704px; height: 574px; background: radial-gradient(ellipse 70% 70% at 50% 50%, #18241f, #070b09); border-radius: 26px; }
+    #c2s03-sc123-scr { position: absolute; left: 551px; top: 174px; width: 704px; height: 574px; border-radius: 26px; overflow: hidden; transform-origin: 50% 50%; }
+    #c2s03-sc123-frame { position: absolute; left: 0; top: 34px; width: 1920px; height: 1013px; filter: brightness(0.8) contrast(1.05); }
+    .c3-sg { position: absolute; font-size: 28px; color: var(--bone); text-shadow: 0 0 10px rgba(242,237,227,0.8); opacity: 0; }
+    #c2s03-sc123-fr { left: 24px; top: 20px; font-size: 30px; }
+
+    /* S124 punch card */
+    #c2s03-sc124-cam { position: absolute; inset: 0; transform-origin: 960px 560px; }
+    #c2s03-sc124-card { position: absolute; left: 330px; top: 250px; width: 1500px; height: 672px; transform: rotate(-2deg); filter: drop-shadow(0 24px 30px rgba(20,27,36,0.35)); }
+    #c2s03-sc124-card img { position: absolute; inset: 0; width: 100%; height: 100%; filter: saturate(0.18) sepia(0.35) brightness(1.04) contrast(1.05); }
+    .c3-hole { position: absolute; width: 9px; height: 22px; background: rgba(20,27,36,0.88); opacity: 0; }
+    #c2s03-sc124-c { left: 110px; top: 70px; font-size: 40px; }
+    #c2s03-sc124-e { left: 110px; top: 130px; font-size: 40px; }
+    #c2s03-sc124-z { left: 330px; top: 960px; font-size: 76px; }
+    #c2s03-sc124-io { left: 1000px; top: 960px; font-size: 76px; }
+
+    /* S125 */
+    #c2s03-sc125-cam { position: absolute; inset: 0; transform-origin: 1300px 500px; }
+    #c2s03-sc125-q { position: absolute; left: 820px; top: -40px; width: 1160px; height: 1163px; filter: grayscale(0.6) brightness(0.85) contrast(1.1); }
+    #c2s03-sc125-sand { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; }
+    #c2s03-sc125-s { left: 110px; top: 200px; font-size: 44px; }
+    #c2s03-sc125-g { left: 110px; top: 290px; font-size: 92px; line-height: 1; }
+    #c2s03-sc125-ab { left: 110px; top: 560px; font-size: 130px; }
+
+    /* S126 wafers */
+    .c3-waf { position: absolute; border-radius: 50%; background-image: url('assets/intro/photos/wafer_12in.jpg'); background-size: cover; background-position: center; filter: grayscale(0.5) contrast(1.1); box-shadow: 0 8px 16px rgba(20,27,36,0.3); opacity: 0; }
+    #c2s03-sc126-h { left: 110px; top: 300px; font-size: 84px; }
+    #c2s03-sc126-sc { left: 110px; top: 560px; font-size: 220px; }
+
+    /* S127-128 */
+    #c2s03-sc127-world { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 960px 540px; }
+    #c2s03-sc127-die { position: absolute; left: -4800px; top: -3748px; width: 11520px; height: 8576px; filter: grayscale(0.55) brightness(0.62) contrast(1.25); }
+    #c2s03-sc127-aer { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: hidden; }
+    #c2s03-sc127-aer img { position: absolute; left: -40px; top: -160px; width: 2000px; height: 1408px; filter: saturate(0.5) brightness(0.55) contrast(1.15) sepia(0.15); }
+    #c2s03-sc127-dieov { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; background-size: 1920px auto; background-position: center; mix-blend-mode: overlay; opacity: 0; }
+    #c2s03-sc127-dusk { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(10,14,22,0.88) 0%, rgba(10,14,22,0.35) 45%, rgba(10,14,22,0.55) 100%); }
+    #c2s03-sc127-bloom { position: absolute; left: 260px; top: 220px; width: 1400px; height: 420px; background: radial-gradient(ellipse 50% 50% at 50% 50%, rgba(255,170,110,0.28), rgba(255,120,60,0) 70%); mix-blend-mode: screen; opacity: 0; }
+    #c2s03-sc127-sign { position: absolute; left: 0; width: 1920px; top: 330px; text-align: center; font-size: 190px; }
+    #c2s03-sc127-sign .lw { display: inline-block; position: relative; white-space: pre; }
+    #c2s03-sc127-sign .lt { display: inline-block; color: transparent; -webkit-text-stroke: 3px rgba(242,237,227,0.8); opacity: 0; white-space: pre; }
+    #c2s03-sc127-sign .lh { position: absolute; left: 0; top: 0; opacity: 0; white-space: pre; }
+    #c2s03-sc127-streaks { opacity: 0.35; }
+    #c2s03-sc127-bi { left: 110px; top: 100px; font-size: 44px; z-index: 3; }
+    #c2s03-sc127-hb { left: 110px; top: 860px; font-size: 120px; z-index: 3; }
+  </style>
+  <div id="root" data-composition-id="c2s03" data-vo-start="403.13" data-duration="194.73" data-width="1920" data-height="1080">
+    <svg id="c2s03-defs" width="0" height="0" style="position:absolute"></svg>
+
+    <!-- C2S088 · 403.13–407.69 · the "problem" card pinned at the lab, night (NIGHT) -->
+    <div class="c3-scene" id="c2s03-sc088" data-scene="C2S088">
+      <div id="c2s03-sc088-cam">
+        <img id="c2s03-sc088-photo" src="assets/c2/photos/chm_shockley_lab_mountain_view_c1960.jpg" alt="" />
+        <div id="c2s03-sc088-sky"></div>
+        <div id="c2s03-sc088-glow"></div>
+        <div class="c3-pcard" id="c2s03-sc088-card"></div>
+        <img id="c2s03-sc088-pin" src="assets/icons/pin_bone_top.svg" alt="" />
+      </div>
+      <div class="c3-scrimb"></div>
+      <div id="c2s03-sc088-k" class="c3-abs t-label clean"><span id="c2s03-sc088-w1" class="c3-w">solve </span><span id="c2s03-sc088-w2" class="c3-w">this </span><span id="c2s03-sc088-w3" class="c3-w">problem</span></div>
+      <div id="c2s03-sc088-s" class="c3-abs t-serif-i clean"><span id="c2s03-sc088-w4" class="c3-w">smart </span><span id="c2s03-sc088-w5" class="c3-w">people</span></div>
+      <div class="c3-credit t-label">Photo: Shockley Semiconductor Laboratory, c.1960 — Computer History Museum (fair use)</div>
+    </div>
+
+    <!-- C2S089 · 407.69–411.05 · Shockley and his team (Vox layered + focal call-out) -->
+    <div class="c3-scene" id="c2s03-sc089" data-scene="C2S089">
+      <div id="c2s03-sc089-cam">
+        <div class="c3-panel" id="c2s03-sc089-pa" style="background-image:url('assets/c2/photos/chm_shockley_nobel_toast_1956.jpg')"></div>
+        <div class="c3-panel" id="c2s03-sc089-pb" style="background-image:url('assets/c2/photos/chm_shockley_lab_mountain_view_c1960.jpg')"></div>
+        <div class="c3-print" id="c2s03-sc089-print" style="background-image:url('assets/c2/photos/chm_shockley_nobel_toast_1956.jpg')"></div>
+        <div class="c3-print" id="c2s03-sc089-fb" style="background-image:url('assets/c2/photos/chm_shockley_nobel_toast_1956.jpg')"></div>
+      </div>
+      <div id="c2s03-sc089-n" class="c3-abs t-label clean"><span id="c2s03-sc089-w1" class="c3-w">William </span><br /><span id="c2s03-sc089-w2" class="c3-w">Shockley</span></div>
+      <div id="c2s03-sc089-t" class="c3-abs t-serif-i clean"><span id="c2s03-sc089-w3" class="c3-w">his </span><span id="c2s03-sc089-w4" class="c3-w">team</span></div>
+      <div class="c3-credit t-label">Photo: Shockley Semiconductor staff, 1956 — Computer History Museum (fair use)</div>
+    </div>
+
+    <!-- C2S090 · 411.05–415.69 · Shockley Transistor sales literature (PAPER) -->
+    <div class="c3-scene" id="c2s03-sc090" data-scene="C2S090">
+      <div class="c3-pg"><img class="p1" src="assets/textures/paper_cream_01.jpg" alt="" /><img class="p2 st" src="assets/textures/paper_stained_01_hires.jpg" alt="" /></div>
+      <div id="c2s03-sc090-cam">
+        <img id="c2s03-sc090-page" src="assets/c2/documents/shockley_4layer_diode_brochure_p1.jpg" alt="" />
+        <svg id="c2s03-sc090-mk" class="c3-svg"></svg>
+      </div>
+      <div id="c2s03-sc090-sell" class="c3-abs t-label c3-ink"><span id="c2s03-sc090-w1" class="c3-w">selling </span><br /><span id="c2s03-sc090-w2" class="c3-w">transistors</span></div>
+      <div id="c2s03-sc090-bet" class="c3-abs t-serif-i c3-ink"><span id="c2s03-sc090-w3" class="c3-w">better</span><br /><span id="c2s03-sc090-w4" class="c3-w">solution</span></div>
+      <svg id="c2s03-sc090-ul" class="c3-svg"></svg>
+      <div class="folds"></div>
+      <div class="c3-credit ink t-label">Brochure: Shockley Transistor Corp., c.1959 (fair use)</div>
+    </div>
+
+    <!-- C2S091 · 415.69–420.01 · split-light portrait -->
+    <div class="c3-scene" id="c2s03-sc091" data-scene="C2S091">
+      <div class="c3-port" id="c2s03-sc091-base" style="background-image:url('assets/c2/photos/shockley_stanford_painter.jpg')"></div>
+      <div class="c3-port" id="c2s03-sc091-lit" style="background-image:url('assets/c2/photos/shockley_stanford_painter.jpg')"></div>
+      <div id="c2s03-sc091-shade"></div>
+      <div id="c2s03-sc091-div"></div>
+      <div id="c2s03-sc091-b" class="c3-abs t-serif-i clean" style="opacity:0">brilliant</div>
+      <div id="c2s03-sc091-n" class="c3-abs t-label clean"><span id="c2s03-sc091-w1" class="c3-w">not </span><span id="c2s03-sc091-w2" class="c3-w">a </span><br /><span id="c2s03-sc091-w3" class="c3-w">good </span><span id="c2s03-sc091-w4" class="c3-w">boss</span></div>
+      <div class="c3-credit t-label">Photo: Chuck Painter / Stanford News Service, CC BY 3.0</div>
+    </div>
+
+    <!-- C2S092 · 420.01–422.25 · Fuseli, The Nightmare -->
+    <div class="c3-scene" id="c2s03-sc092" data-scene="C2S092">
+      <div id="c2s03-sc092-cam"><div class="plate"><img class="img" src="assets/c2/paintings/fuseli_the_nightmare_1781.jpg" alt="" /><img class="fringe" src="assets/c2/paintings/fuseli_the_nightmare_1781.jpg" alt="" /></div></div>
+      <div class="c3-scrimb"></div>
+      <div id="c2s03-sc092-nm" class="c3-abs t-serif-i halate" style="opacity:0"><span id="c2s03-sc092-nmw" style="display:inline-block;filter:url(#c2s03-ch92)">nightmare</span></div>
+      <div id="c2s03-sc092-boss" class="c3-abs t-label clean" style="opacity:0">boss</div>
+      <div class="c3-credit t-label">Henry Fuseli, The Nightmare, 1781 — Detroit Institute of Arts (public domain)</div>
+    </div>
+
+    <!-- C2S093–094 · 422.25–431.05 · org chart: Shockley + eight; they quit (PAPER) -->
+    <div class="c3-scene" id="c2s03-sc093" data-scene="C2S093-094">
+      <div class="c3-pg"><img class="p1" src="assets/textures/paper_cream_02.jpg" alt="" /><img class="p2" src="assets/textures/paper_fiber_01.jpg" alt="" /></div>
+      <div id="c2s03-sc093-cam">
+        <svg id="c2s03-sc093-svg" class="c3-svg"></svg>
+        <div class="c3-circ" id="c2s03-sc093-sh" style="background-image:url('assets/c2/photos/shockley_stanford_painter.jpg');opacity:0"></div>
+        <div id="c2s03-sc093-row"></div>
+      </div>
+      <div id="c2s03-sc093-l1" class="c3-abs t-label c3-ink"><span id="c2s03-sc093-w1" class="c3-w">best </span><span id="c2s03-sc093-w2" class="c3-w">scientists </span><span id="c2s03-sc093-w3" class="c3-w">in </span><span id="c2s03-sc093-w4" class="c3-w">the </span><span id="c2s03-sc093-w5" class="c3-w">country</span></div>
+      <div id="c2s03-sc093-l2" class="c3-abs t-serif-i c3-ink"><span id="c2s03-sc093-w6" class="c3-w">couldn't </span><span id="c2s03-sc093-w7" class="c3-w">really </span><span id="c2s03-sc093-w8" class="c3-w">stand </span><span id="c2s03-sc093-w9" class="c3-w">him</span></div>
+      <div id="c2s03-sc093-eight" class="c3-abs t-display c3-ink" style="opacity:0">eight</div>
+      <div id="c2s03-sc093-quit" class="c3-stamp t-display"><span id="c2s03-sc093-qw" style="display:inline-block;filter:url(#c2s03-ch94)">QUIT</span></div>
+      <div class="folds"></div>
+      <div class="c3-credit ink t-label">Photos: Chuck Painter / Stanford News Service (CC BY 3.0) · Wayne Miller / Magnum Photos (fair use)</div>
+    </div>
+
+    <!-- C2S095 · 431.05–433.45 · 2.5D: the Traitorous Eight -->
+    <div class="c3-scene" id="c2s03-sc095" data-scene="C2S095">
+      <div id="c2s03-sc095-stage"><div id="c2s03-sc095-cam">
+        <div class="c3-lay" id="c2s03-sc095-back"><img src="assets/c2/photos/chm_fairchild_eight_lobby_1960_wmiller.jpg" alt="" /></div>
+        <div class="c3-lay" id="c2s03-sc095-tl"><div id="c2s03-sc095-title" class="t-display halate"><span id="c2s03-sc095-w1" class="c3-w">Traitorous </span><span id="c2s03-sc095-w2" class="c3-w">Eight</span></div></div>
+        <div class="c3-lay" id="c2s03-sc095-front"><img src="assets/c2/derived/c2s03/eight_people_cut.png" alt="" /></div>
+      </div></div>
+      <div id="c2s03-sc095-haze"></div>
+      <div class="c3-credit t-label">Photo: Wayne Miller / Magnum Photos, 1960 (fair use)</div>
+    </div>
+
+    <!-- C2S096 · 433.45–437.68 · the very next day → Fairchild Semiconductor -->
+    <div class="c3-scene" id="c2s03-sc096" data-scene="C2S096">
+      <div id="c2s03-sc096-cal">
+        <div class="c3-calp" id="c2s03-sc096-p2"><b></b><i style="top:160px"></i><i style="top:250px"></i><i style="top:340px"></i><i style="top:430px"></i><i style="top:520px"></i></div>
+        <div class="c3-calp" id="c2s03-sc096-p1"><b></b><i style="top:160px"></i><i style="top:250px"></i><i style="top:340px"></i><i style="top:430px"></i><i style="top:520px"></i></div>
+        <div id="c2s03-sc096-head"></div>
+      </div>
+      <div id="c2s03-sc096-k" class="c3-abs t-label clean"><span id="c2s03-sc096-w1" class="c3-w">the </span><span id="c2s03-sc096-w2" class="c3-w">very </span><span id="c2s03-sc096-w3" class="c3-w">next </span><span id="c2s03-sc096-w4" class="c3-w">day</span></div>
+      <div class="c3-print" id="c2s03-sc096-bld" style="background-image:url('assets/c2/photos/fairchild_bldg_844_charleston.jpg');opacity:0"></div>
+      <div class="c3-circ" id="c2s03-sc096-logo" style="background-image:url('assets/c2/photos/chm_fairchild_eight_lobby_1960_wmiller.jpg');opacity:0"></div>
+      <div id="c2s03-sc096-fs" class="c3-abs t-display clean"><span id="c2s03-sc096-w5" class="c3-w">Fairchild</span><br /><span id="c2s03-sc096-w6" class="c3-w">Semiconductor</span></div>
+      <div class="c3-credit t-label" id="c2s03-sc096-cr" style="opacity:0">844 E. Charleston Rd — Wikimedia Commons · Flying-F logo: Wayne Miller / Magnum (fair use)</div>
+    </div>
+
+    <!-- C2S097 · 437.68–442.16 · R10/D14 old map, yellow marker route (PAPER) -->
+    <div class="c3-scene" id="c2s03-sc097" data-scene="C2S097">
+      <div class="c3-pg"><img class="p1" src="assets/textures/paper_cream_01.jpg" alt="" /></div>
+      <div id="c2s03-sc097-tilt"><div id="c2s03-sc097-plane"><div id="c2s03-sc097-cam">
+        <img id="c2s03-sc097-map" src="assets/c2/derived/c2s03/mv1961_crop.jpg" alt="" />
+        <div id="c2s03-sc097-paperon" style="background-image:url('assets/textures/paper_cream_02.jpg')"></div>
+        <svg id="c2s03-sc097-svg" viewBox="0 0 2700 1900"></svg>
+        <div class="c3-npin t-display" id="c2s03-sc097-p1" style="left:931px;top:1484px">1</div>
+        <div class="c3-npin t-display" id="c2s03-sc097-p2" style="left:1112px;top:548px">2</div>
+      </div></div></div>
+      <div class="c3-tag" id="c2s03-sc097-t1"></div>
+      <div id="c2s03-sc097-d" class="c3-abs t-label c3-ink"><span id="c2s03-sc097-w1" class="c3-w">down </span><span id="c2s03-sc097-w2" class="c3-w">the </span><span id="c2s03-sc097-w3" class="c3-w">road</span></div>
+      <div class="c3-tag" id="c2s03-sc097-t2"></div>
+      <div id="c2s03-sc097-l" class="c3-abs t-serif-i c3-ink"><span id="c2s03-sc097-w4" class="c3-w">a </span><span id="c2s03-sc097-w5" class="c3-w">very </span><span id="c2s03-sc097-w6" class="c3-w">long </span><span id="c2s03-sc097-w7" class="c3-w">time</span></div>
+      <div class="folds"></div>
+      <div class="c3-credit ink t-label">Map: USGS Mountain View 7.5' quadrangle, 1961 (public domain)</div>
+    </div>
+
+    <!-- C2S098 · 442.16–448.00 · D05 era band + "acquired" stamp (GRID) -->
+    <div class="c3-scene" id="c2s03-sc098" data-scene="C2S098">
+      <div class="c3-pg"><img class="p1" src="assets/textures/paper_cream_02.jpg" alt="" /><img class="p2 gr" src="assets/textures/paper_graph_01_hires.jpg" alt="" style="object-position:30% 60%" /></div>
+      <div id="c2s03-sc098-band"></div>
+      <div id="c2s03-sc098-bandtx" style="background-image:url('assets/textures/paper_fiber_01.jpg')"></div>
+      <svg id="c2s03-sc098-svg" class="c3-svg"></svg>
+      <div class="c3-circ" id="c2s03-sc098-tok" style="background-image:url('assets/c2/photos/chm_fairchild_eight_lobby_1960_wmiller.jpg');opacity:0"></div>
+      <div id="c2s03-sc098-acq" class="c3-stamp t-display"><span id="c2s03-sc098-aw" style="display:inline-block;filter:url(#c2s03-ch98)">ACQUIRED</span></div>
+      <div id="c2s03-sc098-mp" class="c3-abs t-serif-i c3-ink"><span id="c2s03-sc098-w1" class="c3-w">major </span><span id="c2s03-sc098-w2" class="c3-w">player</span></div>
+      <div id="c2s03-sc098-lt" class="c3-abs t-serif-i c3-ink"><span id="c2s03-sc098-w3" class="c3-w">for </span><span id="c2s03-sc098-w4" class="c3-w">a </span><span id="c2s03-sc098-w5" class="c3-w">very </span><span id="c2s03-sc098-w6" class="c3-w">long </span><span id="c2s03-sc098-w7" class="c3-w">time</span></div>
+      <div class="folds"></div>
+    </div>
+
+    <!-- C2S099 · 448.00–454.40 · focal call-out along the eight → Robert Noyce -->
+    <div class="c3-scene" id="c2s03-sc099" data-scene="C2S099">
+      <div id="c2s03-sc099-cam">
+        <div id="c2s03-sc099-bg" style="background-image:url('assets/c2/photos/chm_fairchild_eight_lobby_1960_wmiller.jpg')"></div>
+        <div class="c3-print" id="c2s03-sc099-print" style="background-image:url('assets/c2/photos/chm_fairchild_eight_lobby_1960_wmiller.jpg')"></div>
+        <div class="c3-print" id="c2s03-sc099-fb" style="background-image:url('assets/c2/photos/chm_fairchild_eight_lobby_1960_wmiller.jpg')"></div>
+      </div>
+      <div class="c3-scrimt" style="height:200px"></div>
+      <div id="c2s03-sc099-k" class="c3-abs t-label clean"><span id="c2s03-sc099-w1" class="c3-w">one </span><span id="c2s03-sc099-w2" class="c3-w">of </span><span id="c2s03-sc099-w3" class="c3-w">these </span><span id="c2s03-sc099-w4" class="c3-w">eight</span></div>
+      <div id="c2s03-sc099-ny">
+        <div class="c3-print" id="c2s03-sc099-nyp" style="background-image:url('assets/c2/photos/chm_noyce_fairchild_gm_1962.jpg')"></div>
+      </div>
+      <div id="c2s03-sc099-rn" class="c3-abs t-display halate"><span id="c2s03-sc099-w5" class="c3-w">Robert</span><br /><span id="c2s03-sc099-w6" class="c3-w">Noyce</span></div>
+      <div id="c2s03-sc099-bn" class="c3-abs t-serif-i clean"><span id="c2s03-sc099-w7" class="c3-w">Bob </span><span id="c2s03-sc099-w8" class="c3-w">Noyce</span></div>
+      <div class="c3-credit t-label" id="c2s03-sc099-cr1">Photo: Wayne Miller / Magnum Photos, 1960 (fair use)</div>
+      <div class="c3-credit t-label" id="c2s03-sc099-cr2" style="opacity:0;background:var(--night)">Photo: Robert Noyce, 1962 — Computer History Museum (fair use)</div>
+    </div>
+
+    <!-- C2S100 · 454.40–459.04 · Noyce's card clips onto the problem card (PAPER) -->
+    <div class="c3-scene" id="c2s03-sc100" data-scene="C2S100">
+      <div class="c3-pg"><img class="p1" src="assets/textures/paper_cream_01.jpg" alt="" /><img class="p2 st" src="assets/textures/paper_stained_01_hires.jpg" alt="" style="object-position:70% 30%" /></div>
+      <div id="c2s03-sc100-cam">
+        <div class="c3-pcard" id="c2s03-sc100-pc"></div>
+        <div id="c2s03-sc100-ny"><div style="background-image:url('assets/c2/photos/noyce_1959_motherboard.png')"></div></div>
+        <svg id="c2s03-sc100-clip" viewBox="0 0 60 130"></svg>
+      </div>
+      <div id="c2s03-sc100-s" class="c3-abs t-label c3-ink"><span id="c2s03-sc100-w1" class="c3-w c3-boxink">solved</span><br /><span id="c2s03-sc100-w2" class="c3-w">the </span><span id="c2s03-sc100-w3" class="c3-w">problem</span></div>
+      <div id="c2s03-sc100-tr" class="c3-abs t-label c3-ink"><span id="c2s03-sc100-w4" class="c3-w">transistors</span></div>
+      <div id="c2s03-sc100-h" class="c3-abs t-serif-i c3-ink"><span id="c2s03-sc100-w5" class="c3-w">headaches</span></div>
+      <div class="folds"></div>
+      <div class="c3-credit ink t-label">Photo: Robert Noyce, 1959 — Intel (fair use)</div>
+    </div>
+
+    <!-- C2S101 · 459.04–465.04 · silicon slice (Fairchild film) -->
+    <div class="c3-scene" id="c2s03-sc101" data-scene="C2S101">
+      <div class="c3-weave" id="c2s03-sc101-wv"><div id="c2s03-sc101-cam" class="c3-full">
+        <video id="c2s03-sc101-vid" class="c3-vid" src="assets/intro/footage/wafer_closeup_purple.mp4" muted playsinline data-start="55.91" data-duration="6.0" data-media-start="1.5"
+          data-color-grading='{"intensity":1,"adjust":{"saturation":-0.45,"contrast":0.08},"effects":{"chromaticAberration":0.12,"chromaticAngle":0}}'></video>
+      </div></div>
+      <div class="c3-scrimb" style="height:420px"></div>
+      <div id="c2s03-sc101-k" class="c3-abs t-label clean" style="opacity:0">print</div>
+      <div id="c2s03-sc101-s" class="c3-abs t-serif-i clean"><span id="c2s03-sc101-w1" class="c3-w">silicon </span><span id="c2s03-sc101-w2" class="c3-w">slice</span></div>
+      <div class="c3-credit t-label">Film: Fairchild Semiconductor, 1960s — Prelinger Archives</div>
+    </div>
+
+    <!-- C2S102 · 465.04–468.48 · split: by hand vs printed -->
+    <div class="c3-scene" id="c2s03-sc102" data-scene="C2S102">
+      <div id="c2s03-sc102-chip" style="background-image:url('assets/c2/photos/chm_2n1613_planar_transistor_micrograph.jpg')"></div>
+      <div id="c2s03-sc102-left" style="background-image:url('assets/c2/photos/hp_1958_subassembly_line_wiring.jpg')"></div>
+      <div id="c2s03-sc102-div"></div>
+      <div class="c3-scrimb" style="height:360px"></div>
+      <div id="c2s03-sc102-ws" class="c3-abs t-label clean"><span id="c2s03-sc102-w1" class="c3-w">whole </span><span id="c2s03-sc102-w2" class="c3-w">setup</span></div>
+      <div id="c2s03-sc102-bh" class="c3-abs t-serif-i clean"><span id="c2s03-sc102-w3" class="c3-w">by </span><span id="c2s03-sc102-w4" class="c3-w">hands</span></div>
+      <div class="c3-credit t-label">Photos: Hewlett-Packard 1958 (fair use) · Fairchild 2N1613 planar transistor — Computer History Museum (fair use)</div>
+    </div>
+
+    <!-- C2S103–104 · 468.48–477.12 · Noyce's patent: light + photographic paper → all together (PAPER) -->
+    <div class="c3-scene" id="c2s03-sc103" data-scene="C2S103-104">
+      <div class="c3-pg"><img class="p1" src="assets/textures/paper_cream_02.jpg" alt="" /><img class="p2" src="assets/textures/paper_fiber_01.jpg" alt="" /></div>
+      <div id="c2s03-sc103-cam">
+        <div id="c2s03-sc103-sheet"><img src="assets/c2/documents/us2981877_noyce_sheet2.png" alt="" /></div>
+        <div id="c2s03-sc103-beam"></div>
+        <canvas id="c2s03-sc103-rays" class="streaks"></canvas>
+        <div id="c2s03-sc103-lamp"></div>
+        <div id="c2s03-sc103-photo"><img src="assets/textures/paper_cream_02.jpg" alt="" /><div id="c2s03-sc103-dev"></div></div>
+        <div id="c2s03-sc103-mask"><div></div></div>
+        <div class="c3-fig" id="c2s03-sc103-f3"></div>
+        <div class="c3-fig" id="c2s03-sc103-f4"></div>
+        <div class="c3-fig" id="c2s03-sc103-f5"></div>
+        <div id="c2s03-sc103-lock"></div>
+      </div>
+      <div id="c2s03-sc103-light" class="c3-abs t-label c3-ink" style="opacity:0">light</div>
+      <div id="c2s03-sc103-pp" class="c3-abs t-serif-i c3-ink"><span id="c2s03-sc103-w1" class="c3-w">photographic </span><span id="c2s03-sc103-w2" class="c3-w">paper</span></div>
+      <div id="c2s03-sc103-all" class="c3-abs t-display c3-ink"><span id="c2s03-sc103-w3" class="c3-w">all </span><span id="c2s03-sc103-w4" class="c3-w">together</span></div>
+      <div class="folds"></div>
+      <div class="c3-credit ink t-label">R. N. Noyce, US Patent 2,981,877 (public domain)</div>
+    </div>
+
+    <!-- C2S105 · 477.12–479.84 · the integrated circuit (Fairchild film) -->
+    <div class="c3-scene" id="c2s03-sc105" data-scene="C2S105">
+      <div class="c3-weave" id="c2s03-sc105-wv"><div id="c2s03-sc105-cam" class="c3-full">
+        <video id="c2s03-sc105-vid" class="c3-vid" src="assets/intro/footage/wafer_die_pattern_macro.mp4" muted playsinline data-start="73.99" data-duration="2.72" data-media-start="2.0"
+          data-color-grading='{"intensity":1,"adjust":{"saturation":-0.35,"contrast":0.1},"effects":{"chromaticAberration":0.12,"chromaticAngle":0}}'></video>
+      </div></div>
+      <div class="c3-scrimb"></div>
+      <div id="c2s03-sc105-ic" class="c3-abs t-display halate"><span id="c2s03-sc105-w1" class="c3-w">integrated </span><span id="c2s03-sc105-w2" class="c3-w">circuit</span></div>
+      <div class="c3-credit t-label">Film: Fairchild Semiconductor, 1960s — Prelinger Archives</div>
+    </div>
+
+    <!-- C2S106 · 479.84–485.28 · IC literature + pen question marks (PAPER) -->
+    <div class="c3-scene" id="c2s03-sc106" data-scene="C2S106">
+      <div class="c3-pg"><img class="p1" src="assets/textures/paper_cream_01.jpg" alt="" /><img class="p2 st" src="assets/textures/paper_stained_01_hires.jpg" alt="" style="object-position:20% 80%" /></div>
+      <div id="c2s03-sc106-cam">
+        <img id="c2s03-sc106-page" src="assets/c2/documents/edn_jul1961_micrologic_elements_p1.jpg" alt="" />
+        <svg id="c2s03-sc106-mk" class="c3-svg"></svg>
+      </div>
+      <div class="c3-tag" id="c2s03-sc106-tag"></div>
+      <div id="c2s03-sc106-t" class="c3-abs t-serif-i c3-ink"><span id="c2s03-sc106-w1" class="c3-w">not </span><span id="c2s03-sc106-w2" class="c3-w">a </span><span id="c2s03-sc106-w3" class="c3-w">good </span><span id="c2s03-sc106-w4" class="c3-w">explanation</span></div>
+      <div class="folds"></div>
+      <div class="c3-credit ink t-label">EDN, July 1961 — "Micrologic Elements" (fair use)</div>
+    </div>
+
+    <!-- C2S107 · 485.28–491.76 · index card, pen arrow down (GRID / lined) -->
+    <div class="c3-scene" id="c2s03-sc107" data-scene="C2S107">
+      <div class="c3-pg"><img class="p1" src="assets/textures/paper_cream_02.jpg" alt="" /></div>
+      <div id="c2s03-sc107-card">
+        <img src="assets/textures/paper_lined_01_hires.jpg" alt="" />
+        <div id="c2s03-sc107-ne" class="c3-abs t-serif-i c3-ink"><span id="c2s03-sc107-w1" class="c3-w">not </span><span id="c2s03-sc107-w2" class="c3-w">an </span><span id="c2s03-sc107-w3" class="c3-w">engineer</span></div>
+        <div id="c2s03-sc107-an" class="c3-abs t-serif-i c3-ink" style="opacity:0">analogies</div>
+        <div id="c2s03-sc107-db" class="c3-abs t-label c3-ink"><span id="c2s03-sc107-w4" class="c3-w">down </span><span id="c2s03-sc107-w5" class="c3-w">below</span></div>
+        <svg id="c2s03-sc107-mk" viewBox="0 0 1260 780" style="position:absolute;inset:0;width:100%;height:100%;overflow:visible"></svg>
+      </div>
+      <div class="folds"></div>
+    </div>
+
+    <!-- C2S108 · 491.76–494.80 · ICs everyone knows (NIGHT) -->
+    <div class="c3-scene" id="c2s03-sc108" data-scene="C2S108">
+      <img id="c2s03-sc108-img" src="assets/c2/photos/framework_laptop13_motherboard_2023.jpg" alt="" />
+      <div class="c3-scrimt" style="height:420px"></div>
+      <div id="c2s03-sc108-e" class="c3-abs t-serif-i clean" style="opacity:0">everyone</div>
+      <div id="c2s03-sc108-ic" class="c3-abs t-label clean"><span id="c2s03-sc108-w1" class="c3-w">integrated </span><span id="c2s03-sc108-w2" class="c3-w">circuits</span></div>
+      <div class="c3-credit t-label">Photo: Framework Laptop 13 mainboard — Wikimedia Commons, CC BY 4.0</div>
+    </div>
+
+    <!-- C2S109 · 494.80–500.67 · D01 variation: transistor → upgrade → IC (PAPER) -->
+    <div class="c3-scene" id="c2s03-sc109" data-scene="C2S109">
+      <div class="c3-pg"><img class="p1" src="assets/textures/paper_cream_01.jpg" alt="" /><img class="p2" src="assets/textures/paper_fiber_01.jpg" alt="" /></div>
+      <div class="c3-ocard" id="c2s03-sc109-a"><div class="ph" style="background-image:url('assets/c2/objects/ck722.jpg');background-size:1600px auto;background-position:-560px -260px"></div><div class="lb t-label"><span id="c2s03-sc109-w2" class="c3-w">transistors</span></div></div>
+      <div class="c3-ocard" id="c2s03-sc109-b"><div class="ph" style="background-image:url('assets/c2/photos/chm_micrologic_dime_life_1961.jpg');background-size:640px auto;background-position:-160px -160px"></div><div class="lb t-label"><span id="c2s03-sc109-w3" class="c3-w">integrated </span><span id="c2s03-sc109-w4" class="c3-w">circuit</span></div></div>
+      <svg id="c2s03-sc109-svg" class="c3-svg"></svg>
+      <div id="c2s03-sc109-up" class="c3-abs t-label c3-ink" style="opacity:0">upgrade</div>
+      <div class="folds"></div>
+      <div class="c3-credit ink t-label">Photos: Raytheon CK722 — Wikimedia Commons (CC) · Micrologic, LIFE 1961 — CHM (fair use)</div>
+    </div>
+
+    <!-- C2S110 · 500.67–506.59 · probe needles test the printed wiring → square wave -->
+    <div class="c3-scene" id="c2s03-sc110" data-scene="C2S110">
+      <div class="c3-weave" id="c2s03-sc110-wv"><div id="c2s03-sc110-cam" class="c3-full">
+        <video id="c2s03-sc110-vid" class="c3-vid" src="assets/intro/footage/wafer_probe_needles.mp4" muted playsinline data-start="97.54" data-duration="5.13" data-media-start="2.0"
+          data-color-grading='{"intensity":1,"adjust":{"saturation":-0.4,"contrast":0.08},"effects":{"chromaticAberration":0.12,"chromaticAngle":0}}'></video>
+        <video id="c2s03-sc110-osc" class="c3-vid" src="assets/intro/footage/oscilloscope_fairchild_square_wave.mp4" muted playsinline data-start="102.67" data-duration="0.79" data-media-start="3.0"
+          data-color-grading='{"intensity":1,"adjust":{"saturation":-0.4,"contrast":0.08},"effects":{"chromaticAberration":0.14,"chromaticAngle":0}}'></video>
+      </div></div>
+      <div class="c3-scrimt"></div><div class="c3-scrimb" style="height:380px"></div>
+      <div id="c2s03-sc110-p" class="c3-abs t-label clean"><span id="c2s03-sc110-w1" class="c3-w">printing </span><span id="c2s03-sc110-w2" class="c3-w">the </span><span id="c2s03-sc110-w3" class="c3-w">wirings</span></div>
+      <div id="c2s03-sc110-wk" class="c3-abs t-serif-i clean" style="opacity:0">work</div>
+      <div class="c3-credit t-label">Film: Fairchild Semiconductor, 1960s — Prelinger Archives</div>
+    </div>
+
+    <!-- C2S111 · 506.59–509.79 · a computer board full of chips -->
+    <div class="c3-scene" id="c2s03-sc111" data-scene="C2S111">
+      <div id="c2s03-sc111-cam"><img id="c2s03-sc111-img" src="assets/intro/photos/ibm5150_board_1984_cc0.jpg" alt="" /></div>
+      <div class="c3-scrimb" style="height:360px"></div>
+      <div id="c2s03-sc111-b" class="c3-abs t-label clean"><span id="c2s03-sc111-w1" class="c3-w">build </span><span id="c2s03-sc111-w2" class="c3-w">computers</span></div>
+      <div class="c3-credit t-label">Photo: IBM PC 5150 mainboard (CC0)</div>
+    </div>
+
+    <!-- C2S112 · 509.79–514.03 · extreme zoom into a die: insane -->
+    <div class="c3-scene" id="c2s03-sc112" data-scene="C2S112">
+      <div id="c2s03-sc112-cam"><img id="c2s03-sc112-img" src="assets/c2/objects/intel_4004_layout.jpg" alt="" /></div>
+      <div class="c3-scrimb" style="height:1080px;opacity:0.5"></div>
+      <div id="c2s03-sc112-ins" class="c3-abs t-display halate" style="opacity:0">insane</div>
+      <div class="c3-credit t-label">Intel 4004 layout, 1971 — Wikimedia Commons, CC BY-SA</div>
+    </div>
+
+    <!-- C2S113–114 · 514.03–527.31 · D02 ranked bars topped with invention circles (PAPER) -->
+    <div class="c3-scene" id="c2s03-sc113" data-scene="C2S113-114">
+      <div class="c3-pg"><img class="p1" src="assets/textures/paper_cream_02.jpg" alt="" /><img class="p2 st" src="assets/textures/paper_stained_01_hires.jpg" alt="" style="object-position:60% 40%" /></div>
+      <div id="c2s03-sc113-base"></div>
+      <div id="c2s03-sc113-bars"></div>
+      <svg id="c2s03-sc113-mk" class="c3-svg"></svg>
+      <div id="c2s03-sc113-d" class="c3-abs t-serif-i c3-ink" style="opacity:0">debates</div>
+      <div id="c2s03-sc113-r" class="c3-abs t-label c3-ink"><span id="c2s03-sc113-w1" class="c3-w">rank </span><span id="c2s03-sc113-w2" class="c3-w">in </span><span id="c2s03-sc113-w3" class="c3-w">inventions</span></div>
+      <div id="c2s03-sc113-im" class="c3-abs t-label c3-ink" style="opacity:0">impact</div>
+      <div id="c2s03-sc113-up" class="c3-abs t-display c3-ink"><span id="c2s03-sc113-w4" class="c3-w">up </span><span id="c2s03-sc113-w5" class="c3-w">there</span></div>
+      <div class="folds"></div>
+      <div class="c3-credit ink t-label">Engravings: Gutenberg 1890, Watt 1782 (LOC), Edison patent 1880, Bell 1877 (LOC) — public domain · Micrologic — CHM (fair use)</div>
+    </div>
+
+    <!-- C2S115 · 527.31–531.31 · Earth at night -->
+    <div class="c3-scene" id="c2s03-sc115" data-scene="C2S115">
+      <img id="c2s03-sc115-img" src="assets/c2/maps/black_marble_city_lights_2012.jpg" alt="" />
+      <div id="c2s03-sc115-i" class="c3-abs t-label clean" style="opacity:0">impact</div>
+      <div id="c2s03-sc115-h" class="c3-abs t-serif-i clean"><span id="c2s03-sc115-w1" class="c3-w">all </span><span id="c2s03-sc115-w2" class="c3-w">the </span><span id="c2s03-sc115-w3" class="c3-w">humans</span></div>
+      <div class="c3-credit t-label">Black Marble 2012 — NASA Earth Observatory / Suomi NPP, CC BY 2.0</div>
+    </div>
+
+    <!-- C2S116–117 · 531.31–542.67 · D05 plunging cost line (GRID) -->
+    <div class="c3-scene" id="c2s03-sc116" data-scene="C2S116-117">
+      <div class="c3-pg"><img class="p1" src="assets/textures/paper_cream_01.jpg" alt="" /><img class="p2 gr" src="assets/textures/paper_graph_01_hires.jpg" alt="" style="object-position:70% 30%" /></div>
+      <div id="c2s03-sc116-cam">
+        <svg id="c2s03-sc116-svg" viewBox="0 0 1920 2400"></svg>
+        <div id="c2s03-sc116-n" class="c3-abs t-display" style="opacity:0"><span class="k" id="c2s03-sc116-nv">0</span></div>
+        <div id="c2s03-sc116-tm" class="c3-abs t-label c3-ink"><span id="c2s03-sc116-w1" class="c3-w">times </span><span id="c2s03-sc116-w2" class="c3-w">more</span></div>
+        <div id="c2s03-sc116-tl" class="c3-abs t-label"><span id="c2s03-sc116-w3" class="c3-w c3-boxink">100,000 </span><span id="c2s03-sc116-w4" class="c3-w c3-boxink">times </span><span id="c2s03-sc116-w5" class="c3-w c3-boxink">less</span></div>
+      </div>
+      <div id="c2s03-sc116-m" class="c3-abs t-display c3-ink" style="opacity:0">millions</div>
+      <div id="c2s03-sc116-ml" class="c3-abs t-serif-i c3-ink"><span id="c2s03-sc116-w6" class="c3-w">millions </span><span id="c2s03-sc116-w7" class="c3-w">of </span><span id="c2s03-sc116-w8" class="c3-w">times </span><span id="c2s03-sc116-w9" class="c3-w">less</span></div>
+      <div class="folds"></div>
+    </div>
+
+    <!-- C2S118 · 542.67–550.75 · D12 dark list: zeros you can't imagine -->
+    <div class="c3-scene" id="c2s03-sc118" data-scene="C2S118">
+      <div id="c2s03-sc118-band"></div>
+      <div id="c2s03-sc118-list" class="t-display"></div>
+      <div id="c2s03-sc118-fade"></div>
+      <div id="c2s03-sc118-c" class="c3-abs t-label clean"><span id="c2s03-sc118-w1" class="c3-w">cost </span><span id="c2s03-sc118-w2" class="c3-w">dropped</span></div>
+      <div id="c2s03-sc118-i" class="c3-abs t-serif-i clean"><span id="c2s03-sc118-w3" class="c3-w">can't </span><span id="c2s03-sc118-w4" class="c3-w">even </span><span id="c2s03-sc118-w5" class="c3-w">imagine</span></div>
+    </div>
+
+    <!-- C2S119–120 · 550.75–559.36 · back on track: the silicon card → periodic-table cell (PAPER) -->
+    <div class="c3-scene" id="c2s03-sc119" data-scene="C2S119-120">
+      <div class="c3-pg"><img class="p1" src="assets/textures/paper_cream_02.jpg" alt="" /><img class="p2" src="assets/textures/paper_fiber_01.jpg" alt="" /></div>
+      <div id="c2s03-sc119-world">
+        <div id="c2s03-sc119-flip">
+          <div class="c3-face" id="c2s03-sc119-front"><img class="tx" src="assets/textures/paper_lined_01_hires.jpg" alt="" /><div id="c2s03-sc119-win"><img src="assets/c2/cutouts/polysilicon_rod_cut.png" alt="" /></div></div>
+          <div class="c3-face" id="c2s03-sc119-back"><img class="tx" src="assets/textures/paper_cream_01.jpg" alt="" /><div id="c2s03-sc119-cell"><div id="c2s03-sc119-si" class="c3-abs t-display">Si</div></div></div>
+          <svg id="c2s03-sc119-clip" viewBox="0 0 70 150"></svg>
+        </div>
+      </div>
+      <div id="c2s03-sc119-sil" class="c3-abs t-label c3-ink" style="opacity:0">silicon</div>
+      <div id="c2s03-sc119-sc" class="c3-abs t-serif-i c3-ink" style="opacity:0"><span id="c2s03-sc119-hlw"><span id="c2s03-sc119-hl"></span>semiconductor</span></div>
+      <div class="folds"></div>
+      <div class="c3-credit ink t-label">Photo: polycrystalline silicon — Wikimedia Commons (CC)</div>
+    </div>
+
+    <!-- C2S121–122 · 559.36–572.64 · SEMI | CONDUCTOR → lattice -->
+    <div class="c3-scene" id="c2s03-sc121" data-scene="C2S121-122">
+      <canvas id="c2s03-sc122-streaks" class="streaks"></canvas>
+      <svg id="c2s03-sc122-svg" class="c3-svg" viewBox="0 0 1920 1080"></svg>
+      <div id="c2s03-sc121-word" class="t-display"><span id="c2s03-sc121-a">semi</span><span id="c2s03-sc121-h" style="opacity:0">-</span><span id="c2s03-sc121-b">conductor</span></div>
+      <div id="c2s03-sc121-ce" class="c3-abs t-label clean"><span id="c2s03-sc121-w1" class="c3-w">conduct </span><span id="c2s03-sc121-w2" class="c3-w">electricity</span></div>
+      <div id="c2s03-sc121-sl" class="c3-abs t-serif-i clean" style="opacity:0">semi-ly</div>
+      <div id="c2s03-sc122-k1" class="c3-abs t-label clean"><span id="c2s03-sc122-w1" class="c3-w">sometimes </span><span id="c2s03-sc122-w2" class="c3-w">it </span><span id="c2s03-sc122-w3" class="c3-w">can</span></div>
+      <div id="c2s03-sc122-k2" class="c3-abs t-label clean"><span id="c2s03-sc122-w4" class="c3-w">sometimes </span><span id="c2s03-sc122-w5" class="c3-w">it </span><span id="c2s03-sc122-w6" class="c3-w">can't</span></div>
+      <div id="c2s03-sc122-el" class="c3-abs t-serif-i clean"><span id="c2s03-sc122-w7" class="c3-w">the </span><span id="c2s03-sc122-w8" class="c3-w">elements</span></div>
+    </div>
+
+    <!-- C2S123 · 572.64–576.16 · Tektronix 475A: stop, go, stop, go -->
+    <div class="c3-scene" id="c2s03-sc123" data-scene="C2S123">
+      <div id="c2s03-sc123-cam">
+        <div id="c2s03-sc123-tube"></div>
+        <div id="c2s03-sc123-scr">
+          <svg id="c2s03-sc123-svg" viewBox="0 0 704 574" style="position:absolute;inset:0;width:704px;height:574px;overflow:visible"></svg>
+          <div id="c2s03-sc123-fr" class="c3-abs t-label clean" style="opacity:0">freedom</div>
+          <div class="c3-sg t-label" id="c2s03-sc123-g1" style="left:396px;top:434px">stop</div>
+          <div class="c3-sg t-label" id="c2s03-sc123-g2" style="left:478px;top:100px">go</div>
+          <div class="c3-sg t-label" id="c2s03-sc123-g3" style="left:546px;top:434px">stop</div>
+          <div class="c3-sg t-label" id="c2s03-sc123-g4" style="left:616px;top:100px">go</div>
+        </div>
+        <img id="c2s03-sc123-frame" src="assets/intro/screens/tektronix_475a_scope_frame.png" alt="" />
+      </div>
+      <div class="c3-credit t-label">Photo: Tektronix 475A — Wikimedia Commons, CC BY-SA 4.0</div>
+    </div>
+
+    <!-- C2S124 · 576.16–582.56 · IBM punched card: zeros and ones in and out (PAPER) -->
+    <div class="c3-scene" id="c2s03-sc124" data-scene="C2S124">
+      <div class="c3-pg"><img class="p1" src="assets/textures/paper_cream_01.jpg" alt="" /><img class="p2 st" src="assets/textures/paper_stained_01_hires.jpg" alt="" style="object-position:40% 70%" /></div>
+      <div id="c2s03-sc124-cam"><div id="c2s03-sc124-card"><img src="assets/c2/documents/punch_card_80col.jpg" alt="" /><div id="c2s03-sc124-holes"></div></div></div>
+      <div id="c2s03-sc124-c" class="c3-abs t-label c3-ink" style="opacity:0">computers</div>
+      <div id="c2s03-sc124-e" class="c3-abs t-label c3-ink" style="opacity:0">electricity</div>
+      <div id="c2s03-sc124-z" class="c3-abs t-serif-i c3-ink"><span id="c2s03-sc124-w1" class="c3-w">zeros </span><span id="c2s03-sc124-w2" class="c3-w">and </span><span id="c2s03-sc124-w3" class="c3-w">ones</span></div>
+      <div id="c2s03-sc124-io" class="c3-abs t-serif-i c3-ink"><span id="c2s03-sc124-w4" class="c3-w">in </span><span id="c2s03-sc124-w5" class="c3-w">and </span><span id="c2s03-sc124-w6" class="c3-w">out</span></div>
+      <div class="folds"></div>
+      <div class="c3-credit ink t-label">80-column punched card — Wikimedia Commons</div>
+    </div>
+
+    <!-- C2S125 · 582.56–588.00 · quartz; abundant material -->
+    <div class="c3-scene" id="c2s03-sc125" data-scene="C2S125">
+      <div id="c2s03-sc125-cam"><img id="c2s03-sc125-q" src="assets/c2/objects/quartz_tibet.jpg" alt="" /></div>
+      <svg id="c2s03-sc125-sand" viewBox="0 0 1920 1080"></svg>
+      <div id="c2s03-sc125-s" class="c3-abs t-label clean" style="opacity:0">silicon</div>
+      <div id="c2s03-sc125-g" class="c3-abs t-serif-i clean"><span id="c2s03-sc125-w1" class="c3-w">very </span><span id="c2s03-sc125-w2" class="c3-w">good </span><br /><span id="c2s03-sc125-w3" class="c3-w">material</span></div>
+      <div id="c2s03-sc125-ab" class="c3-abs t-serif-i clean" style="opacity:0">abundant</div>
+      <div class="c3-credit t-label">Photo: quartz crystal — Wikimedia Commons, CC BY-SA</div>
+    </div>
+
+    <!-- C2S126 · 588.00–591.44 · D03 wafers multiply: scale (GRID / blueprint) -->
+    <div class="c3-scene" id="c2s03-sc126" data-scene="C2S126">
+      <div class="c3-pg"><img class="p1" src="assets/textures/paper_cream_02.jpg" alt="" /><img class="p2 gr" src="assets/textures/paper_blueprint_01_hires.jpg" alt="" style="filter:saturate(0.3) contrast(0.9) brightness(1.15);opacity:0.55" /></div>
+      <div id="c2s03-sc126-grid"></div>
+      <div id="c2s03-sc126-h" class="c3-abs t-serif-i c3-ink"><span id="c2s03-sc126-w1" class="c3-w">hard </span><span id="c2s03-sc126-w2" class="c3-w">to </span><span id="c2s03-sc126-w3" class="c3-w">get</span></div>
+      <div id="c2s03-sc126-sc" class="c3-abs t-display c3-ink" style="opacity:0">scale</div>
+      <div class="folds"></div>
+    </div>
+
+    <!-- C2S127–128 · 591.44–597.86 · SILICON VALLEY lights up → pull back onto a die -->
+    <div class="c3-scene" id="c2s03-sc127" data-scene="C2S127-128">
+      <div id="c2s03-sc127-world">
+        <img id="c2s03-sc127-die" src="assets/c2/objects/intel_4004_layout.jpg" alt="" />
+        <div id="c2s03-sc127-aer">
+          <img src="assets/intro/photos/silicon_valley_2014.jpg" alt="" />
+          <div id="c2s03-sc127-dusk"></div>
+          <canvas id="c2s03-sc127-streaks" class="streaks"></canvas>
+          <div id="c2s03-sc127-bloom"></div>
+          <div id="c2s03-sc127-sign" class="t-display"></div>
+          <div id="c2s03-sc127-dieov" style="background-image:url('assets/c2/objects/intel_4004_layout.jpg')"></div>
+        </div>
+      </div>
+      <div id="c2s03-sc127-bi" class="c3-abs t-label clean"><span id="c2s03-sc127-w1" class="c3-w">big </span><span id="c2s03-sc127-w2" class="c3-w">invention</span></div>
+      <div id="c2s03-sc127-hb" class="c3-abs t-serif-i clean"><span id="c2s03-sc127-w3" class="c3-w">how </span><span id="c2s03-sc127-w4" class="c3-w">big</span></div>
+      <div class="c3-credit t-label">Photo: Silicon Valley 2014, Coolcaesar, CC BY-SA 3.0 · Intel 4004 layout — CC BY-SA</div>
+    </div>
+
+    <!-- global overlays -->
+    <div id="c2s03-flash"></div>
+    <div id="c2s03-grain" class="tx tx-grain" style="background-image:url('assets/textures/grain_01_norm.jpg')"></div>
+    <div id="c2s03-dust" class="tx tx-dust" style="background-image:url('assets/textures/dust_02.jpg')"></div>
+    <div id="c2s03-vig" class="vignette"></div>
+    <audio id="c2s03-vo" class="temp-vo" src="vo_c2.mp3" data-start="0" data-duration="194.73" data-media-start="403.13" data-volume="1"></audio>
+  </div>
+  <script>
+  (function () {
+    const SEG = "c2s03", SEG_START = 403.13, SEG_END = 597.86, DURATION = +(SEG_END - SEG_START).toFixed(2);
+    const T = (s) => +(s - SEG_START).toFixed(3);   // TEXT cues (audited) — LOCAL chunk seconds
+    const S = T;                                     // STRUCTURAL cues (not audited)
+    const L = 0.06;
+    const tl = gsap.timeline({ paused: true });
+    const $ = (id) => document.getElementById(SEG + "-" + id);
+    const NS = "http://www.w3.org/2000/svg";
+    const C = (e, d) => FX.choppy(e, d, 12);
+    const defs = $("defs");
+    const INK = "#141b24", RED = "#e03f2c", BONE = "#f2ede3", YEL = "#f2d33b", GREY = "#8b857a";
+
+    // ---------- shared filters ----------
+    FX.tintDefs(defs, "c2s03-tint-night", "#070b12", "#c9d3dc");
+    FX.roughDefs(defs, "c2s03-rough-hl", { freq: 0.05, scale: 7 });
+    const ch92 = FX.roughDefs(defs, "c2s03-ch92", { freq: 0.035, scale: 8, choke: 0 });
+    const ch94 = FX.roughDefs(defs, "c2s03-ch94", { freq: 0.04, scale: 6, choke: 0 });
+    const ch98 = FX.roughDefs(defs, "c2s03-ch98", { freq: 0.04, scale: 6, choke: 0 });
+    const blurs = {};
+    ["090","091","092","093","095","098","099","102","103","107","108","109","110","112","113","118","119","121","124","125","126","127"].forEach((k) => { blurs[k] = FX.whipDefs(defs, "c2s03-wb" + k); });
+
+    // ---------- helpers ----------
+    function scene(k, a, b) {
+      const e = $("sc" + k);
+      if (a <= SEG_START + 0.001) gsap.set(e, { display: "block", autoAlpha: 1 });
+      else tl.fromTo(e, { display: "none", autoAlpha: 0 }, { display: "block", autoAlpha: 1, duration: 0.001, immediateRender: false }, S(a));
+      if (b < SEG_END) tl.set(e, { display: "none", autoAlpha: 0 }, S(b));
+      return e;
+    }
+    function rise(id, t, o) {
+      o = o || {}; const e = typeof id === "string" ? $(id) : id; const d = o.dur || 0.9;
+      tl.fromTo(e, { opacity: 0, y: o.y == null ? 18 : o.y }, { opacity: 1, y: 0, duration: d, ease: C(FX.ease.out, d), immediateRender: true }, t);
+    }
+    function pop(id, t, o) {
+      o = o || {}; const e = typeof id === "string" ? $(id) : id; const d = o.dur || 1.0;
+      tl.fromTo(e, { opacity: 0, scale: o.from || 0.6 }, { opacity: 1, scale: 1, duration: d, ease: C(FX.ease.out, d), immediateRender: true }, t);
+    }
+    function out(id, t, d) { const e = typeof id === "string" ? $(id) : id; tl.to(e, { opacity: 0, duration: d || 0.3, ease: C(FX.ease.in, d || 0.3) }, t); }
+    function ground(kind, t) {
+      const v = kind === "paper" ? [0.32, 0.14, 0.24] : [1, 0.42, 0.36];
+      if (t <= 0) gsap.set(["#c2s03-vig", "#c2s03-dust", "#c2s03-grain"], { opacity: (i) => v[i] });
+      else tl.set(["#c2s03-vig", "#c2s03-dust", "#c2s03-grain"], { opacity: (i) => v[i] }, t);
+    }
+    function whip(ka, kb, t, o) {
+      o = Object.assign({ dir: 1, vertical: false }, o);
+      const a = $("sc" + ka), b = $("sc" + kb);
+      tl.set(a, { filter: "url(#c2s03-wb" + ka + ")" }, t - 0.17);
+      tl.set(b, { filter: "url(#c2s03-wb" + kb + ")" }, t - 0.001);
+      FX.whip(tl, a, b, t, Object.assign({ blurA: blurs[ka], blurB: blurs[kb] }, o));
+      tl.set(b, { filter: "none" }, t + 0.2);
+      tl.set(a, { filter: "none", x: 0, y: 0, scale: 1 }, t + 0.1);
+    }
+    function flash(t) { tl.fromTo("#c2s03-flash", { opacity: 0 }, { opacity: 0.85, duration: 0.08, ease: "power2.in", immediateRender: false }, t - 0.08); tl.to("#c2s03-flash", { opacity: 0, duration: 0.22, ease: "power2.out" }, t); }
+    // paper slide: incoming scene slides over the outgoing one (12 fps), landing at t
+    function slide(kb, t, from) {
+      const b = $("sc" + kb), d = 0.45;
+      const v = from === "right" ? { x: 1960, y: 0 } : from === "left" ? { x: -1960, y: 0 } : { x: 0, y: 1120 };
+      tl.fromTo(b, { x: v.x, y: v.y, boxShadow: "0 0 60px rgba(0,0,0,0.6)" }, { x: 0, y: 0, duration: d, ease: C(FX.ease.inOut, d), immediateRender: false }, t - d);
+      tl.set(b, { boxShadow: "none" }, t + 0.05);
+    }
+    // push-through: outgoing punches in toward (ox, oy) and the incoming settles from a larger scale
+    function push(ka, kb, t, ox, oy) {
+      const a = $("sc" + ka), b = $("sc" + kb);
+      tl.fromTo(a, { scale: 1, transformOrigin: ox + "px " + oy + "px" }, { scale: 2.8, duration: 0.34, ease: FX.ease.in, immediateRender: false }, t - 0.34);
+      tl.fromTo(a, { filter: "blur(0px)" }, { filter: "blur(6px)", duration: 0.34, ease: "power2.in", immediateRender: false }, t - 0.34);
+      tl.fromTo(b, { scale: 1.35, transformOrigin: "960px 540px" }, { scale: 1, duration: 0.8, ease: FX.ease.cam, immediateRender: false }, t);
+      tl.set(a, { scale: 1, filter: "none" }, t + 0.05);
+    }
+    function ink(parent, d, t, dur, o) {
+      o = o || {};
+      const p = document.createElementNS(NS, "path");
+      p.setAttribute("d", d); p.setAttribute("fill", o.fill || "none");
+      p.setAttribute("stroke", o.color || INK); p.setAttribute("stroke-width", o.width || 6);
+      p.setAttribute("stroke-linecap", "round"); p.setAttribute("stroke-linejoin", "round");
+      if (o.filter) p.setAttribute("filter", o.filter);
+      if (o.opacity) p.setAttribute("opacity", o.opacity);
+      if (o.blend) p.style.mixBlendMode = o.blend;
+      parent.appendChild(p);
+      const len = p.getTotalLength() || 1;
+      p.setAttribute("stroke-dasharray", len + " " + len); p.setAttribute("stroke-dashoffset", len);
+      tl.fromTo(p, { attr: { "stroke-dashoffset": len } }, { attr: { "stroke-dashoffset": 0 }, duration: dur, ease: o.ease || C(FX.ease.inOut, dur), immediateRender: true }, t);
+      return p;
+    }
+    function el(tag, attrs, parent) { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; }
+    function gated(a, b, fn) { const o = FX.onFrame; FX.onFrame = (f) => o(FX.gate(S(a) - 0.1, S(b) + 0.1, f)); try { fn(); } finally { FX.onFrame = o; } }
+    // the "problem" card: missile cutaway outline covered in ✗ marks (C2S087's drawing, shrunk)
+    function problemCard(box, seed) {
+      box.innerHTML = '<img class="tx" src="assets/textures/paper_cream_01.jpg" alt="" />';
+      const svg = el("svg", { viewBox: "0 0 520 360" }, box);
+      el("path", { d: "M70 180 L120 150 L380 150 Q450 150 480 180 Q450 210 380 210 L120 210 Z M120 150 L80 105 L150 150 M120 210 L80 255 L150 210 M380 150 L400 125 M380 210 L400 235", fill: "none", stroke: INK, "stroke-width": 3, "stroke-linejoin": "round" }, svg);
+      el("path", { d: "M150 150 L150 210 M220 150 L220 210 M300 150 L300 210", stroke: INK, "stroke-width": 2, opacity: 0.6 }, svg);
+      const r = FX.rng(seed);
+      for (let i = 0; i < 110; i++) {
+        const x = 130 + r() * 300, y = 158 + r() * 46, s = 3.2;
+        el("path", { d: `M${(x - s).toFixed(1)} ${(y - s).toFixed(1)} L${(x + s).toFixed(1)} ${(y + s).toFixed(1)} M${(x + s).toFixed(1)} ${(y - s).toFixed(1)} L${(x - s).toFixed(1)} ${(y + s).toFixed(1)}`, stroke: INK, "stroke-width": 1.6, opacity: 0.85 }, svg);
+      }
+      return svg;
+    }
+    function paperclip(svg, color) {
+      el("path", { d: "M18 120 L18 28 Q18 8 34 8 Q50 8 50 28 L50 104 Q50 116 40 116 Q30 116 30 104 L30 36", fill: "none", stroke: color, "stroke-width": 6, "stroke-linecap": "round" }, svg);
+    }
+
+    // ---------- global textures ----------
+    FX.grain($("grain"), 301);
+    FX.dust($("dust"), 302, 2);
+    ground("night", 0);
+
+    /* ============ C2S088 · 403.13–407.69 · problem card pinned at the lab (night) ============ */
+    scene("088", 403.13, 407.69);
+    (function () {
+      problemCard($("sc088-card"), 8801);
+      // lit windows (warm, flicker) along the building's window band
+      const g = $("sc088-glow"), wins = [];
+      [[200, 150], [430, 110], [700, 140], [880, 90], [1020, 120], [1230, 160], [1470, 110], [1700, 140]].forEach(([x, w], i) => {
+        const d = document.createElement("div"); d.className = "c3-win"; d.style.left = x + "px"; d.style.top = (520 + (i % 2) * 6) + "px"; d.style.width = w + "px"; g.appendChild(d); wins.push(d);
+      });
+      gated(403.13, 407.69, () => FX.onFrame((t) => { const f = Math.floor(t * 12); wins.forEach((d, i) => { d.style.opacity = (0.75 + 0.25 * FX.noise1(f * 0.7 + i * 13, 88)).toFixed(3); }); }));
+      tl.fromTo("#c2s03-sc088-cam", { scale: 1.0 }, { scale: 1.05, duration: 4.2, ease: "none", immediateRender: true }, 0);
+      // the card arrives from below (C2S087's slide-up continues) and is pinned
+      tl.fromTo("#c2s03-sc088-card", { y: 900, rotation: 10 }, { y: 0, rotation: 4, duration: 1.2, ease: C(FX.ease.out, 1.2), immediateRender: true }, 0);
+      tl.fromTo("#c2s03-sc088-pin", { opacity: 0, y: -60, scale: 1.4 }, { opacity: 1, y: 0, scale: 1, duration: 0.25, ease: C("power2.out", 0.25), immediateRender: true }, S(404.85));
+      tl.to("#c2s03-sc088-card", { y: 6, duration: 1 / 12, yoyo: true, repeat: 1 }, S(405.05));
+      rise("sc088-w1", T(404.25) - L);
+      rise("sc088-w2", T(404.65) - L);
+      rise("sc088-w3", T(404.89) - L);
+      rise("sc088-w4", T(406.25) - L);
+      rise("sc088-w5", T(406.65) - L);
+      // cut on action: push toward the lit windows
+      tl.to("#c2s03-sc088-cam", { scale: 1.6, duration: 0.42, ease: FX.ease.in }, S(407.27));
+    })();
+
+    /* ============ C2S089 · 407.69–411.05 · Shockley and his team ============ */
+    scene("089", 407.69, 411.05);
+    (function () {
+      tl.fromTo("#c2s03-sc089-cam", { scale: 1.22 }, { scale: 1.0, duration: 1.4, ease: FX.ease.cam, immediateRender: false }, S(407.69));
+      tl.to("#c2s03-sc089-cam", { scale: 1.04, duration: 1.9, ease: "none" }, S(409.1));
+      tl.fromTo("#c2s03-sc089-pa", { x: 0 }, { x: 60, duration: 3.4, ease: "none", immediateRender: false }, S(407.69));
+      tl.fromTo("#c2s03-sc089-pb", { x: 0 }, { x: -50, duration: 3.4, ease: "none", immediateRender: false }, S(407.69));
+      const fb = $("sc089-fb");
+      FX.focalBlur(tl, fb, [{ x: 628, y: 325, r: 130 }, { t: S(408.97) - 0.05, x: 620, y: 470, r: 900, dur: 1.4 }]);
+      rise("sc089-w1", T(407.69) - L);
+      rise("sc089-w2", T(408.09) - L);
+      rise("sc089-w3", T(408.97) - L);
+      rise("sc089-w4", T(409.13) - L);
+    })();
+
+    /* ============ C2S090 · 411.05–415.69 · Shockley Transistor brochure (paper) ============ */
+    slide("090", 411.05, "bottom");
+    scene("090", 410.60, 415.75);
+    ground("paper", S(410.75));
+    (function () {
+      tl.fromTo("#c2s03-sc090-cam", { scale: 1.0 }, { scale: 1.07, duration: 4.6, ease: "none", immediateRender: false }, S(411.05));
+      const mk = $("sc090-mk"); const f = FX.markupDefs(mk, "c2s03-mk90", { boil: 4 });
+      // pen circle round the product name on the page ("selling transistors")
+      FX.markup.pen(tl, mk, S(412.3), { points: [[420, 560], [560, 520], [820, 540], [880, 600], [760, 650], [480, 640], [410, 590], [440, 548]], width: 6, color: INK, filter: f, dur: 0.9, seed: 9001 });
+      rise("sc090-w1", T(411.85) - L);
+      rise("sc090-w2", T(412.17) - L);
+      rise("sc090-w3", T(414.81) - L);
+      rise("sc090-w4", T(415.05) - L);
+      const ul = $("sc090-ul"); const f2 = FX.markupDefs(ul, "c2s03-mk90b", { boil: 4 });
+      FX.markup.pen(tl, ul, T(415.05) - L, { points: [[1196, 795], [1420, 790], [1640, 800]], width: 6, color: INK, filter: f2, dur: 0.22, seed: 9002 });   // §10.9: done 415.21
+    })();
+
+    /* ============ C2S091 · 415.69–420.01 · brilliant / not a good boss ============ */
+    whip("090", "091", S(415.69), { dir: 1, vertical: true });
+    scene("091", 415.69, 420.07);
+    ground("night", S(415.69));
+    (function () {
+      tl.fromTo(["#c2s03-sc091-base", "#c2s03-sc091-lit"], { scale: 1.06 }, { scale: 1.0, duration: 4.3, ease: FX.ease.cam, immediateRender: false }, S(415.69));
+      tl.fromTo("#c2s03-sc091-div", { opacity: 0, scaleY: 0 }, { opacity: 0.8, scaleY: 1, duration: 0.8, ease: C(FX.ease.out, 0.8), immediateRender: true }, S(416.4));
+      tl.fromTo("#c2s03-sc091-lit", { opacity: 0 }, { opacity: 1, duration: 0.6, ease: C(FX.ease.out, 0.6), immediateRender: true }, S(417.55));
+      rise("sc091-b", T(417.61) - L);
+      tl.fromTo("#c2s03-sc091-shade", { opacity: 0 }, { opacity: 1, duration: 0.4, ease: C(FX.ease.out, 0.4), immediateRender: true }, S(419.0));   // done 419.4
+      rise("sc091-w1", T(419.05) - L, { dur: 0.6 });
+      rise("sc091-w2", T(419.21) - L, { dur: 0.6 });
+      rise("sc091-w3", T(419.37) - L, { dur: 0.5 });
+      rise("sc091-w4", T(419.53) - L, { dur: 0.4 });
+    })();
+
+    /* ============ C2S092 · 420.01–422.25 · The Nightmare ============ */
+    whip("091", "092", S(420.01), { dir: 1 });
+    flash(S(420.01));
+    scene("092", 420.01, 422.25);
+    (function () {
+      tl.fromTo("#c2s03-sc092-cam", { scale: 1.0 }, { scale: 1.09, duration: 2.3, ease: "none", immediateRender: false }, S(420.01));
+      tl.fromTo("#c2s03-sc092-nm", { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, T(420.09) - L);
+      FX.chokeSettle(tl, ch92, $("sc092-nmw"), T(420.09) - L, 7, 0.5);   // settled 420.62
+      rise("sc092-boss", T(420.97) - L, { dur: 0.6 });
+    })();
+
+    /* ============ C2S093–094 · 422.25–431.05 · org chart → eight quit ============ */
+    slide("093", 422.25, "right");
+    scene("093", 421.80, 431.16);
+    ground("paper", S(422.0));
+    (function () {
+      const svg = $("sc093-svg"), row = $("sc093-row");
+      const FACES = [[68, 410], [133, 478], [248, 465], [362, 460], [425, 438], [497, 405], [585, 477], [688, 460]];
+      const xs = FACES.map((_, i) => 960 + (i - 3.5) * 205);
+      const circs = FACES.map(([fx, fy], i) => {
+        const d = document.createElement("div"); d.className = "c3-circ c3-ec";
+        d.style.left = (xs[i] - 80) + "px"; d.style.top = "560px";
+        d.style.backgroundImage = "url('assets/c2/photos/chm_fairchild_eight_lobby_1960_wmiller.jpg')";
+        d.style.backgroundPosition = (74 - fx * 2) + "px " + (74 - (fy + 10) * 2) + "px";
+        d.style.opacity = 0;
+        const bk = document.createElement("div"); bk.className = "back"; d.appendChild(bk);
+        row.appendChild(d); return d;
+      });
+      // lines: Shockley → bus → each scientist
+      pop("sc093-sh", S(422.5), { dur: 0.9, from: 0.7 });
+      const trunk = ink(svg, "M960 296 L960 470", S(423.0), 0.35, { width: 5 });
+      const bus = ink(svg, "M" + xs[0] + " 470 L" + xs[7] + " 470", S(423.3), 0.5, { width: 5 });
+      const drops = xs.map((x, i) => ink(svg, "M" + x + " 470 L" + x + " 556", S(423.75) + i * 0.04, 0.25, { width: 5 }));
+      circs.forEach((d, i) => pop(d, S(423.8) + i * 0.06, { dur: 0.6, from: 0.5 }));   // chart done 424.5
+      rise("sc093-w1", T(423.77) - L);
+      rise("sc093-w2", T(424.09) - L);
+      rise("sc093-w3", T(424.89) - L);
+      rise("sc093-w4", T(425.13) - L);
+      rise("sc093-w5", T(425.29) - L);
+      tl.fromTo("#c2s03-sc093-cam", { scale: 1.0 }, { scale: 1.04, duration: 6.0, ease: "none", immediateRender: false }, S(422.25));
+      // they turn their backs (12 fps flip)
+      circs.forEach((d, i) => {
+        const t0 = S(427.13) + i * 0.05;
+        tl.to(d, { scaleX: 0, duration: 0.25, ease: C("power1.in", 0.25) }, t0);
+        tl.set(d.querySelector(".back"), { opacity: 1 }, t0 + 0.25);
+        tl.to(d, { scaleX: 1, duration: 0.25, ease: C("power1.out", 0.25) }, t0 + 0.25);
+      });
+      rise("sc093-w6", T(427.13) - L);
+      rise("sc093-w7", T(427.53) - L);
+      rise("sc093-w8", T(427.77) - L);
+      rise("sc093-w9", T(428.09) - L);
+      // C2S094 — lines snap, "eight", bunch together, QUIT
+      tl.to(["#c2s03-sc093-l1", "#c2s03-sc093-l2"], { opacity: 0, duration: 0.25 }, S(428.75));
+      tl.to(drops.concat([bus]), { opacity: 0, duration: 1 / 12 }, S(429.13));
+      circs.forEach((d, i) => tl.to(d, { y: 24, rotation: (i % 2 ? 4 : -4), duration: 0.25, ease: C("power2.out", 0.25) }, S(429.13)));
+      rise("sc093-eight", T(429.13) - L, { dur: 0.7 });
+      circs.forEach((d, i) => tl.to(d, { x: (960 + (i - 3.5) * 118) - xs[i], duration: 0.6, ease: C(FX.ease.inOut, 0.6) }, S(429.85)));
+      circs.forEach((d, i) => tl.to(d, { x: "+=1300", duration: 0.75, ease: C(FX.ease.in, 0.75) }, S(430.3) + (7 - i) * 0.02));
+      tl.fromTo("#c2s03-sc093-quit", { opacity: 0, scale: 1.35 }, { opacity: 0.92, scale: 1, duration: 0.1, ease: "power2.in", immediateRender: true }, T(430.65) - L);
+      FX.chokeSettle(tl, ch94, $("sc093-qw"), T(430.65) - L, 3, 0.1);
+    })();
+
+    /* ============ C2S095 · 431.05–433.45 · 2.5D Traitorous Eight ============ */
+    whip("093", "095", S(431.10), { dir: 1 });
+    scene("095", 431.10, 433.45);
+    ground("night", S(431.10));
+    (function () {
+      const P = 1200;
+      [["#c2s03-sc095-back", -320], ["#c2s03-sc095-tl", -160], ["#c2s03-sc095-front", 0]].forEach(([id, z]) => gsap.set(id, { z, scale: (P - z) / P }));
+      tl.fromTo("#c2s03-sc095-cam", { z: 0, x: 40, rotationY: 1.5 }, { z: 150, x: -60, rotationY: -1.5, duration: 2.6, ease: FX.ease.cam, immediateRender: false }, S(431.10));
+      rise("sc095-w1", T(431.85) - L, { dur: 0.8, y: 30 });
+      rise("sc095-w2", T(432.81) - L, { dur: 0.6, y: 30 });   // done 433.35 — CA on the dolly
+    })();
+
+    /* ============ C2S096 · 433.45–437.68 · the very next day → Fairchild ============ */
+    scene("096", 433.45, 437.68);
+    (function () {
+      tl.fromTo("#c2s03-sc096-cal", { x: -60, scale: 1.08 }, { x: 0, scale: 1, duration: 1.0, ease: FX.ease.cam, immediateRender: false }, S(433.45));
+      rise("sc096-w1", T(433.93) - L, { dur: 0.6 });
+      rise("sc096-w2", T(434.01) - L, { dur: 0.6 });
+      rise("sc096-w3", T(434.25) - L, { dur: 0.6 });
+      rise("sc096-w4", T(434.49) - L, { dur: 0.6 });
+      // tear-off flip (12 fps): the top page lifts over the header and drops away
+      tl.to("#c2s03-sc096-p1", { rotationX: 85, y: -40, duration: 0.25, ease: C("power2.in", 0.25), transformPerspective: 900 }, S(434.22));
+      tl.to("#c2s03-sc096-p1", { y: 900, rotation: -12, opacity: 0, duration: 0.3, ease: C(FX.ease.in, 0.3) }, S(434.47));   // done 434.77
+      // Fairchild: calendar slides out, building + Flying-F come in
+      tl.to(["#c2s03-sc096-cal", "#c2s03-sc096-k"], { x: -1300, duration: 0.6, ease: C(FX.ease.in, 0.6) }, S(435.3));
+      tl.fromTo("#c2s03-sc096-bld", { opacity: 0, x: 500 }, { opacity: 1, x: 0, duration: 1.0, ease: C(FX.ease.out, 1.0), immediateRender: true }, S(435.6));
+      tl.set("#c2s03-sc096-cr", { opacity: 1 }, S(435.6));
+      pop("sc096-logo", S(435.9), { dur: 0.8, from: 0.5 });   // settles 436.7
+      rise("sc096-w5", T(435.69) - L);
+      rise("sc096-w6", T(436.49) - L);
+      tl.fromTo("#c2s03-sc096-bld", { scale: 1 }, { scale: 1.04, duration: 1.8, ease: "none", immediateRender: false }, S(436.6));
+    })();
+
+    /* ============ C2S097 · 437.68–442.16 · down the road (map) ============ */
+    slide("097", 437.68, "bottom");
+    scene("097", 437.23, 442.16);
+    ground("paper", S(437.4));
+    (function () {
+      gsap.set("#c2s03-sc097-plane", { rotationX: 20, rotationZ: -4, scale: 1.15 });
+      const cam = $("sc097-cam");
+      gsap.set(cam, { x: -60, y: -470 });
+      tl.fromTo(cam, { x: -60, y: -470, scale: 1 }, { x: -100, y: -500, scale: 1.04, duration: 3.8, ease: "none", immediateRender: false }, S(437.23));
+      pop("sc097-p1", S(437.70), { dur: 0.5, from: 1.8 });
+      pop("sc097-p2", S(437.85), { dur: 0.5, from: 1.8 });
+      const svg = $("sc097-svg"); const f = FX.markupDefs(svg, "c2s03-mk97", { boil: 12 });
+      svg.setAttribute("viewBox", "0 0 2700 1900");
+      ink(svg, "M931 1484 L1000 1330 L1085 1150 L1150 990 L1195 820 L1190 650 L1125 552", S(438.22), 0.68, { color: YEL, width: 30, filter: f, opacity: 0.85, blend: "multiply", ease: C("sine.inOut", 0.68) });   // done 438.9
+      rise("sc097-w1", T(438.24) - L, { dur: 0.6 });
+      rise("sc097-w2", T(438.48) - L, { dur: 0.6 });
+      rise("sc097-w3", T(438.56) - L, { dur: 0.6 });
+      // "a very long time": the camera tilts so the road stretches toward the horizon (continues into C2S098)
+      tl.to("#c2s03-sc097-plane", { rotationX: 52, duration: 1.0, ease: FX.ease.cam }, S(441.3));
+      tl.to(cam, { y: -260, duration: 1.0, ease: FX.ease.cam }, S(441.3));
+      tl.fromTo("#c2s03-sc097-t2", { opacity: 0 }, { opacity: 1, duration: 0.2, immediateRender: true }, T(441.52) - L - 0.05);
+      rise("sc097-w4", T(441.52) - L, { dur: 0.5 });
+      rise("sc097-w5", T(441.60) - L, { dur: 0.5 });
+      rise("sc097-w6", T(441.76) - L, { dur: 0.4 });
+      rise("sc097-w7", T(441.84) - L, { dur: 0.3 });
+    })();
+
+    /* ============ C2S098 · 442.16–448.00 · era band + acquired ============ */
+    scene("098", 442.16, 448.06);
+    (function () {
+      tl.fromTo(["#c2s03-sc098-band", "#c2s03-sc098-bandtx"], { scaleX: 0 }, { scaleX: 1, duration: 1.15, ease: C(FX.ease.inOut, 1.15), immediateRender: true }, S(442.16));
+      tl.fromTo("#c2s03-sc098-tok", { opacity: 1, x: 0 }, { x: 1520, duration: 1.15, ease: C(FX.ease.inOut, 1.15), immediateRender: true }, S(442.16));
+      tl.fromTo("#c2s03-sc098-acq", { opacity: 0, scale: 1.35 }, { opacity: 0.92, scale: 1, duration: 0.12, ease: "power2.in", immediateRender: true }, T(443.44) - L);
+      FX.chokeSettle(tl, ch98, $("sc098-aw"), T(443.44) - L, 3, 0.12);
+      const svg = $("sc098-svg");
+      // bracket under the whole band ("major player for a very long time")
+      ink(svg, "M200 600 L200 630 L1720 630 L1720 600", S(446.6), 0.55, { width: 5 });   // done 447.15
+      rise("sc098-w1", T(446.64) - L);
+      rise("sc098-w2", T(446.88) - L);
+      rise("sc098-w3", T(447.20) - L, { dur: 0.6 });
+      rise("sc098-w4", T(447.36) - L, { dur: 0.6 });
+      rise("sc098-w5", T(447.44) - L, { dur: 0.5 });
+      rise("sc098-w6", T(447.60) - L, { dur: 0.4 });
+      rise("sc098-w7", T(447.76) - L, { dur: 0.3 });
+    })();
+
+    /* ============ C2S099 · 448.00–454.40 · one of these eight → Robert Noyce ============ */
+    whip("098", "099", S(448.00), { dir: -1 });
+    scene("099", 448.00, 454.40);
+    ground("night", S(448.00));
+    (function () {
+      tl.fromTo("#c2s03-sc099-cam", { scale: 1.0 }, { scale: 1.05, duration: 4.2, ease: "none", immediateRender: false }, S(448.0));
+      const fb = $("sc099-fb");
+      const F = [[105, 558], [206, 663], [384, 643], [561, 636], [659, 601], [770, 550], [907, 662], [1066, 636]];
+      const keys = [{ x: F[0][0], y: F[0][1], r: 105 }];
+      F.slice(1).forEach((p, i) => keys.push({ t: S(449.28) + i * 0.24, x: p[0], y: p[1], r: 105, dur: 0.26 }));
+      keys.push({ t: S(451.1), x: F[3][0], y: F[3][1] - 10, r: 125, dur: 0.9 });   // lands on Noyce 452.0
+      tl.fromTo(fb, { opacity: 0 }, { opacity: 1, duration: 0.4, immediateRender: true }, S(448.9));
+      FX.focalBlur(tl, fb, keys);
+      rise("sc099-w1", T(449.28) - L, { dur: 0.6 });
+      rise("sc099-w2", T(449.44) - L, { dur: 0.6 });
+      rise("sc099-w3", T(449.60) - L, { dur: 0.6 });
+      rise("sc099-w4", T(449.76) - L, { dur: 0.6 });
+      // hard cut on action to the Noyce portrait
+      tl.set("#c2s03-sc099-ny", { opacity: 1 }, S(452.24));
+      tl.set(["#c2s03-sc099-k", "#c2s03-sc099-cr1"], { opacity: 0 }, S(452.24));
+      tl.set("#c2s03-sc099-cr2", { opacity: 1 }, S(452.24));
+      tl.fromTo("#c2s03-sc099-nyp", { scale: 1.08 }, { scale: 1.0, duration: 2.1, ease: FX.ease.cam, immediateRender: false }, S(452.24));
+      rise("sc099-w5", T(452.24) - L, { dur: 0.8 });
+      rise("sc099-w6", T(452.80) - L, { dur: 0.8 });
+      rise("sc099-w7", T(453.44) - L, { dur: 0.5 });
+      rise("sc099-w8", T(453.68) - L, { dur: 0.5 });
+    })();
+
+    /* ============ C2S100 · 454.40–459.04 · Noyce clips onto the problem card ============ */
+    slide("100", 454.40, "bottom");
+    scene("100", 453.95, 459.04);
+    ground("paper", S(454.1));
+    (function () {
+      const card = $("sc100-pc"); problemCard(card, 8801);
+      const tsvg = card.querySelector("svg");
+      tl.fromTo("#c2s03-sc100-ny", { x: 500, y: -500, rotation: 14 }, { x: 0, y: 0, rotation: 4, duration: 0.9, ease: C(FX.ease.out, 0.9), immediateRender: true }, S(454.45));
+      const clip = $("sc100-clip"); paperclip(clip, "#6d6a64");
+      tl.fromTo(clip, { opacity: 0, y: -30 }, { opacity: 1, y: 0, duration: 0.17, ease: C("power2.out", 0.17), immediateRender: true }, S(454.9));   // done 455.1
+      rise("sc100-w1", T(454.88) - L);
+      rise("sc100-w2", T(455.28) - L);
+      rise("sc100-w3", T(455.44) - L);
+      rise("sc100-w4", T(457.04) - L);
+      // headache tangle (pen scribble) over the missile, drawn on
+      const r = FX.rng(10001), pts = [];
+      for (let i = 0; i < 26; i++) pts.push([150 + r() * 250, 140 + r() * 90]);
+      const f = FX.markupDefs(tsvg, "c2s03-mk100", { boil: 4 });
+      tsvg.setAttribute("viewBox", "0 0 520 360");
+      FX.markup.pen(tl, tsvg, S(457.10), { points: pts, width: 3.5, color: INK, filter: f, dur: 1.2, seed: 10002 });   // done 458.3
+      rise("sc100-w5", T(458.40) - L, { dur: 0.6 });
+      tl.fromTo("#c2s03-sc100-cam", { scale: 1.0 }, { scale: 1.05, duration: 4.2, ease: "none", immediateRender: false }, S(454.4));
+    })();
+
+    /* ============ C2S101 · 459.04–465.04 · silicon slice ============ */
+    push("100", "101", S(459.04), 560, 560);
+    scene("101", 459.04, 465.04);
+    ground("night", S(459.04));
+    (function () {
+      gated(459.04, 465.04, () => FX.weave($("sc101-wv"), { amp: 1.2, flicker: 0.03, seed: 101 }));
+      tl.fromTo("#c2s03-sc101-cam", { scale: 1.0 }, { scale: 1.08, duration: 6.0, ease: "none", immediateRender: false }, S(459.04));
+      rise("sc101-k", T(461.68) - L);
+      rise("sc101-w1", T(463.12) - L);
+      rise("sc101-w2", T(463.84) - L);
+    })();
+
+    /* ============ C2S102 · 465.04–468.48 · split: by hand | printed ============ */
+    scene("102", 465.04, 468.54);
+    (function () {
+      // match cut: the planar transistor's rings sit where the wafer's edge was
+      tl.fromTo("#c2s03-sc102-chip", { scale: 1.06 }, { scale: 1.0, duration: 0.5, ease: FX.ease.cam, immediateRender: false }, S(465.04));
+      const st = { x: 0 }, left = $("sc102-left"), dv = $("sc102-div");
+      const upd = () => { left.style.clipPath = "inset(0 " + (960 - st.x).toFixed(1) + "px 0 0)"; dv.style.left = (st.x - 2).toFixed(1) + "px"; };
+      upd();
+      tl.set(dv, { opacity: 1 }, S(465.50));
+      tl.fromTo(st, { x: 0 }, { x: 960, duration: 0.95, ease: C(FX.ease.inOut, 0.95), immediateRender: false, onUpdate: upd }, S(465.52));   // done 466.47
+      tl.to("#c2s03-sc102-chip", { x: 540, y: 72, scale: 0.94, duration: 0.95, ease: C(FX.ease.inOut, 0.95) }, S(465.52));
+      tl.to("#c2s03-sc102-chip", { scale: 0.98, duration: 2.0, ease: "none" }, S(466.47));
+      rise("sc102-w1", T(466.16) - L);
+      rise("sc102-w2", T(466.48) - L);
+      rise("sc102-w3", T(467.68) - L);
+      rise("sc102-w4", T(467.84) - L);
+    })();
+
+    /* ============ C2S103–104 · 468.48–477.12 · patent: light + photographic paper → all together ============ */
+    whip("102", "103", S(468.48), { dir: -1, vertical: true });
+    scene("103", 468.48, 477.12);
+    ground("paper", S(468.48));
+    (function () {
+      tl.fromTo("#c2s03-sc103-cam", { scale: 1.0 }, { scale: 1.04, duration: 5.2, ease: "none", immediateRender: false }, S(468.48));
+      gated(470.4, 474.0, () => FX.streaks($("sc103-rays"), { seed: 1031, speed: 0.6, xfreq: 0.16, gain: 1.2, tint: [255, 226, 170] }));
+      pop("sc103-mask", S(469.9), { dur: 0.8, from: 0.85 });
+      tl.fromTo(["#c2s03-sc103-lamp", "#c2s03-sc103-beam"], { opacity: 0 }, { opacity: 1, duration: 1 / 12, immediateRender: true }, S(470.50));
+      tl.fromTo("#c2s03-sc103-rays", { opacity: 0 }, { opacity: 0.9, duration: 1 / 12, immediateRender: true }, S(470.50));
+      rise("sc103-light", T(470.56) - L);
+      tl.fromTo("#c2s03-sc103-photo", { x: 760 }, { x: 0, duration: 0.6, ease: C(FX.ease.out, 0.6), immediateRender: true }, S(471.85));
+      rise("sc103-w1", T(472.00) - L);
+      tl.fromTo("#c2s03-sc103-dev", { opacity: 0 }, { opacity: 0.95, duration: 0.8, ease: C("power1.inOut", 0.8), immediateRender: true }, S(472.40));   // done 473.2
+      rise("sc103-w2", T(473.04) - L);
+      // C2S104 — the separate parts lift off the sheet and slide together into one piece
+      const SC = 900 / 2320, sx = 160, sy = -150;   // sheet scale + position (rotation ignored for the lift)
+      const figs = [["f3", 600, 570, 1220, 730], ["f4", 600, 1520, 1220, 360], ["f5", 520, 2100, 1480, 460]];
+      figs.forEach(([k, x, y, w, h]) => {
+        const e = $("sc103-" + k);
+        Object.assign(e.style, { left: (sx + x * SC) + "px", top: (sy + y * SC) + "px", width: (w * SC) + "px", height: (h * SC) + "px", backgroundPosition: (-x * SC) + "px " + (-y * SC) + "px" });
+      });
+      tl.to(["#c2s03-sc103-lamp", "#c2s03-sc103-beam", "#c2s03-sc103-rays", "#c2s03-sc103-mask", "#c2s03-sc103-light", "#c2s03-sc103-pp"], { opacity: 0, duration: 0.3 }, S(473.80));
+      tl.to("#c2s03-sc103-photo", { x: 900, duration: 0.5, ease: C(FX.ease.in, 0.5) }, S(473.80));
+      tl.to("#c2s03-sc103-sheet", { opacity: 0.25, duration: 0.4 }, S(473.95));
+      tl.set(["#c2s03-sc103-f3", "#c2s03-sc103-f4", "#c2s03-sc103-f5"], { opacity: 1 }, S(473.95));
+      // spread apart first (lift), then converge (12 fps), lock with a click
+      tl.to("#c2s03-sc103-f3", { x: 380, y: 120, rotation: -3, duration: 0.4, ease: C(FX.ease.out, 0.4) }, S(474.0));
+      tl.to("#c2s03-sc103-f4", { x: 1000, y: -100, rotation: 4, duration: 0.4, ease: C(FX.ease.out, 0.4) }, S(474.0));
+      tl.to("#c2s03-sc103-f5", { x: 300, y: 260, rotation: -2, duration: 0.4, ease: C(FX.ease.out, 0.4) }, S(474.0));
+      // converge: all three centred inside one frame (left 470, top 150, 980×640)
+      tl.to("#c2s03-sc103-f3", { x: 960 - (sx + 600 * SC + 1220 * SC / 2), y: 330 - (sy + 570 * SC + 730 * SC / 2), rotation: 0, scale: 1.55, duration: 1.4, ease: C(FX.ease.inOut, 1.4) }, S(474.55));
+      tl.to("#c2s03-sc103-f4", { x: 960 - (sx + 600 * SC + 1220 * SC / 2), y: 560 - (sy + 1520 * SC + 360 * SC / 2), rotation: 0, scale: 1.55, duration: 1.4, ease: C(FX.ease.inOut, 1.4) }, S(474.55));
+      tl.to("#c2s03-sc103-f5", { x: 960 - (sx + 520 * SC + 1480 * SC / 2), y: 700 - (sy + 2100 * SC + 460 * SC / 2), rotation: 0, scale: 1.1, opacity: 0.55, duration: 1.4, ease: C(FX.ease.inOut, 1.4) }, S(474.55));   // done 475.95
+      tl.fromTo("#c2s03-sc103-lock", { opacity: 0, scale: 1.08 }, { opacity: 1, scale: 1, duration: 0.17, ease: C("power2.out", 0.17), immediateRender: true }, S(475.95));
+      rise("sc103-w3", T(475.76) - L);
+      rise("sc103-w4", T(476.08) - L, { dur: 0.6 });
+    })();
+
+    /* ============ C2S105 · 477.12–479.84 · the integrated circuit ============ */
+    push("103", "105", S(477.12), 960, 380);
+    scene("105", 477.12, 479.84);
+    ground("night", S(477.12));
+    (function () {
+      tl.fromTo("#c2s03-sc105-cam", { scale: 1.0 }, { scale: 1.06, duration: 2.8, ease: "none", immediateRender: false }, S(477.12));
+      FX.focusHunt(tl, $("sc105-cam"), S(477.6), { dur: 0.8 });
+      rise("sc105-w1", T(478.40) - L, { dur: 0.8 });
+      rise("sc105-w2", T(479.12) - L, { dur: 0.5 });   // done 479.56
+    })();
+
+    /* ============ C2S106 · 479.84–485.28 · not a good explanation ============ */
+    scene("106", 479.84, 485.28);
+    ground("paper", S(479.84));
+    (function () {
+      tl.fromTo("#c2s03-sc106-cam", { scale: 1.12, x: -40 }, { scale: 1.0, x: 0, duration: 1.2, ease: FX.ease.cam, immediateRender: false }, S(479.84));
+      tl.to("#c2s03-sc106-cam", { scale: 1.04, duration: 4.2, ease: "none" }, S(481.04));
+      rise("sc106-tag", S(481.3), { dur: 0.5, y: 10 });
+      rise("sc106-w1", T(481.52) - L, { dur: 0.6 });
+      rise("sc106-w2", T(481.68) - L, { dur: 0.6 });
+      rise("sc106-w3", T(481.76) - L, { dur: 0.6 });
+      rise("sc106-w4", T(481.92) - L, { dur: 0.6 });
+      const mk = $("sc106-mk"); const f = FX.markupDefs(mk, "c2s03-mk106", { boil: 4 });
+      const q = (cx, cy, s) => [[cx - 30 * s, cy - 40 * s], [cx - 20 * s, cy - 72 * s], [cx + 12 * s, cy - 80 * s], [cx + 36 * s, cy - 60 * s], [cx + 30 * s, cy - 30 * s], [cx + 4 * s, cy - 10 * s], [cx, cy + 22 * s]];
+      [[760, 260, 1.4], [1180, 420, 1.1], [980, 660, 1.25]].forEach(([x, y, s], i) => {
+        FX.markup.pen(tl, mk, S(482.70) + i * 0.6, { points: q(x, y, s), width: 7, color: INK, filter: f, dur: 0.42, seed: 10600 + i });
+        const dot = el("circle", { cx: x, cy: y + 52 * s, r: 7, fill: INK, opacity: 0 }, mk);
+        tl.set(dot, { opacity: 1 }, S(482.70) + i * 0.6 + 0.48);   // last one done 484.38
+      });
+    })();
+
+    /* ============ C2S107 · 485.28–491.76 · not an engineer / down below ============ */
+    slide("107", 485.28, "bottom");
+    scene("107", 484.83, 491.82);
+    (function () {
+      rise("sc107-w1", T(485.28) - L, { dur: 0.6 });
+      rise("sc107-w2", T(485.52) - L, { dur: 0.6 });
+      rise("sc107-w3", T(485.68) - L);
+      tl.fromTo("#c2s03-sc107-card", { scale: 1.0 }, { scale: 1.05, duration: 6.4, ease: "none", immediateRender: false }, S(485.28));
+      const mk = $("sc107-mk"); const f = FX.markupDefs(mk, "c2s03-mk107", { boil: 4 });
+      mk.setAttribute("viewBox", "0 0 1260 780");
+      // pen tick under "engineer" while he says he tries his best
+      FX.markup.pen(tl, mk, S(486.6), { points: [[440, 230], [640, 238], [860, 226]], width: 6, color: INK, filter: f, dur: 0.7, seed: 10701 });
+      rise("sc107-an", T(490.16) - L, { dur: 0.7 });
+      rise("sc107-w4", T(490.80) - L, { dur: 0.5 });
+      rise("sc107-w5", T(491.04) - L, { dur: 0.4 });
+      FX.markup.pen(tl, mk, S(490.78), { points: [[1100, 440], [1110, 560], [1102, 690]], width: 8, color: RED, filter: f, dur: 0.28, seed: 10702 });
+      FX.markup.pen(tl, mk, S(491.06), { points: [[1050, 630], [1102, 694], [1158, 628]], width: 8, color: RED, filter: f, dur: 0.16, seed: 10703 });   // done 491.22
+    })();
+
+    /* ============ C2S108 · 491.76–494.80 · everyone knows ============ */
+    whip("107", "108", S(491.76), { dir: 1, vertical: true });
+    scene("108", 491.76, 494.80);
+    ground("night", S(491.76));
+    (function () {
+      tl.fromTo("#c2s03-sc108-img", { x: 0 }, { x: -220, duration: 3.3, ease: "none", immediateRender: false }, S(491.76));
+      rise("sc108-e", T(492.40) - L);
+      rise("sc108-w1", T(493.44) - L);
+      rise("sc108-w2", T(493.92) - L);
+    })();
+
+    /* ============ C2S109 · 494.80–500.67 · upgrade: transistor → IC ============ */
+    scene("109", 494.80, 500.73);
+    ground("paper", S(494.80));
+    (function () {
+      tl.fromTo("#c2s03-sc109-a", { x: -700, rotation: -9 }, { x: 0, rotation: -2.5, duration: 1.2, ease: C(FX.ease.out, 1.2), immediateRender: true }, S(494.80));
+      tl.fromTo("#c2s03-sc109-b", { opacity: 0, x: 600, rotation: 8 }, { opacity: 1, x: 0, rotation: 2, duration: 1.0, ease: C(FX.ease.out, 1.0), immediateRender: true }, S(497.6));   // done 498.6
+      const svg = $("sc109-svg");
+      const th = el("path", { d: "M960 200 L960 900", stroke: INK, "stroke-width": 4, "stroke-dasharray": "14 12", opacity: 0 }, svg);
+      tl.to(th, { opacity: 0.6, duration: 0.3 }, S(497.4));
+      rise("sc109-up", T(498.03) - L, { dur: 0.6 });
+      const f = FX.markupDefs(svg, "c2s03-mk109", { boil: 4 });
+      FX.markup.pen(tl, svg, S(498.03), { points: [[700, 560], [830, 500], [1000, 500], [1150, 540]], width: 8, color: INK, filter: f, dur: 0.5, seed: 10901 });
+      FX.markup.pen(tl, svg, S(498.55), { points: [[1110, 492], [1156, 542], [1096, 574]], width: 8, color: INK, filter: f, dur: 0.15, seed: 10902 });   // done 498.7
+      tl.to("#c2s03-sc109-b", { boxShadow: "0 24px 46px rgba(20,27,36,0.3), 0 0 0 8px #e03f2c", duration: 0.3 }, S(499.6));
+      rise("sc109-w2", T(498.75) - L, { dur: 0.6 });
+      rise("sc109-w3", T(499.63) - L, { dur: 0.6 });
+      rise("sc109-w4", T(500.27) - L, { dur: 0.3 });
+    })();
+
+    /* ============ C2S110 · 500.67–506.59 · printing the wirings → it works ============ */
+    whip("109", "110", S(500.67), { dir: -1 });
+    flash(S(500.67));
+    scene("110", 500.67, 506.59);
+    ground("night", S(500.67));
+    (function () {
+      gated(500.67, 506.59, () => FX.weave($("sc110-wv"), { amp: 1.0, flicker: 0.025, seed: 110 }));
+      tl.fromTo("#c2s03-sc110-cam", { scale: 1.0 }, { scale: 1.07, duration: 5.9, ease: "none", immediateRender: false }, S(500.67));
+      rise("sc110-w1", T(502.99) - L);
+      rise("sc110-w2", T(503.39) - L);
+      rise("sc110-w3", T(503.47) - L);
+      tl.set("#c2s03-sc110-p", { opacity: 0 }, S(505.80));
+      rise("sc110-wk", T(506.27) - L, { dur: 0.3 });
+    })();
+
+    /* ============ C2S111 · 506.59–509.79 · build computers ============ */
+    scene("111", 506.59, 509.79);
+    (function () {
+      tl.fromTo("#c2s03-sc111-img", { x: 0 }, { x: -260, duration: 3.2, ease: "none", immediateRender: false }, S(506.59));
+      rise("sc111-w1", T(507.95) - L);
+      rise("sc111-w2", T(508.27) - L);
+    })();
+
+    /* ============ C2S112 · 509.79–514.03 · insane ============ */
+    push("111", "112", S(509.79), 1180, 520);
+    scene("112", 509.79, 514.09);
+    (function () {
+      tl.fromTo("#c2s03-sc112-cam", { scale: 1.0 }, { scale: 2.6, duration: 2.4, ease: FX.ease.cam, immediateRender: false }, S(509.85));
+      tl.to("#c2s03-sc112-cam", { scale: 2.75, duration: 1.8, ease: "none" }, S(512.25));
+      FX.focusHunt(tl, $("sc112-cam"), S(512.3), { dur: 0.7 });
+      tl.fromTo("#c2s03-sc112-ins", { opacity: 0, scale: 1.1 }, { opacity: 1, scale: 1, duration: 0.7, ease: C(FX.ease.out, 0.7), immediateRender: true }, T(512.91) - L);   // done 513.55
+    })();
+
+    /* ============ C2S113–114 · 514.03–527.31 · ranked bars ============ */
+    whip("112", "113", S(514.03), { dir: 1 });
+    scene("113", 514.03, 527.31);
+    ground("paper", S(514.03));
+    (function () {
+      const bars = $("sc113-bars");
+      const X = [360, 660, 960, 1260, 1560];
+      const items = [
+        { img: "assets/c2/paintings/gutenberg_press_engraving_1890.jpg", h: 520, pos: "62% 40%" },
+        { img: "assets/c2/paintings/watt_steam_engine_1782_engraving.jpg", h: 430, pos: "50% 45%" },
+        { img: "assets/c2/documents/edison_lamp_patent_223898_1880.jpg", h: 470, pos: "50% 28%" },
+        { img: "assets/c2/paintings/bell_telephone_lyceum_salem_1877.jpg", h: 380, pos: "58% 50%" },
+        { img: "assets/c2/photos/chm_micrologic_dime_life_1961.jpg", h: 300, pos: "50% 75%", ic: true },
+      ];
+      const B = items.map((it, i) => {
+        const b = document.createElement("div"); b.className = "c3-bar" + (it.ic ? " ic" : ""); b.style.left = (X[i] - 75) + "px"; bars.appendChild(b);
+        const c = document.createElement("div"); c.className = "c3-circ c3-bc" + (it.ic ? " ic" : ""); c.style.backgroundImage = "url('" + it.img + "')"; c.style.backgroundPosition = it.pos;
+        c.style.left = (X[i] - 85) + "px"; c.style.top = "0px"; bars.appendChild(c);
+        gsap.set(c, { y: 900 - 180 }); return { b, c, h: it.h, x: X[i] };
+      });
+      // bars rise left→right (12 fps), circles ride the tops
+      B.forEach((o, i) => {
+        const t0 = S(514.45) + i * 0.18, d = 1.0;
+        tl.fromTo(o.b, { height: 0 }, { height: o.h, duration: d, ease: C(FX.ease.out, d), immediateRender: true }, t0);
+        tl.fromTo(o.c, { y: 900 - 180, opacity: 0 }, { y: 900 - o.h - 185, opacity: 1, duration: d, ease: C(FX.ease.out, d), immediateRender: true }, t0);
+      });   // done 516.17
+      const swap = (i, j, t) => {
+        const xi = B[i].x, xj = B[j].x, d = 0.5;
+        [[B[i], xj - xi], [B[j], xi - xj]].forEach(([o, dx]) => tl.to([o.b, o.c], { x: "+=" + dx, duration: d, ease: C(FX.ease.inOut, d) }, t));
+        const tmp = B[i].x; B[i].x = B[j].x; B[j].x = tmp;
+      };
+      swap(0, 2, S(516.4));
+      swap(1, 3, S(517.4));   // done 517.9
+      rise("sc113-d", T(515.87) - L);
+      rise("sc113-w1", T(518.35) - L);
+      rise("sc113-w2", T(518.83) - L, { dur: 0.6 });
+      rise("sc113-w3", T(519.07) - L);
+      // C2S114 — impact; the IC bar climbs "up there"
+      tl.to("#c2s03-sc113-r", { opacity: 0, duration: 0.25 }, S(520.5));
+      rise("sc113-im", T(520.83) - L);
+      const ic = B[4];
+      tl.to(ic.b, { height: 640, duration: 1.2, ease: C(FX.ease.inOut, 1.2) }, S(525.0));
+      tl.to(ic.c, { y: 900 - 640 - 185, duration: 1.2, ease: C(FX.ease.inOut, 1.2) }, S(525.0));   // done 526.2
+      rise("sc113-w4", T(526.67) - L, { dur: 0.5 });
+      rise("sc113-w5", T(526.91) - L, { dur: 0.3 });
+      const mk = $("sc113-mk"); const f = FX.markupDefs(mk, "c2s03-mk113", { boil: 4 });
+      FX.markup.circle(tl, mk, S(526.62), { cx: 1560, cy: 900 - 640 - 100, rx: 130, ry: 120, rot: -8, width: 7, color: RED, filter: f, dur: 0.35, seed: 11301 });   // done 526.97
+    })();
+
+    /* ============ C2S115 · 527.31–531.31 · all the humans ============ */
+    scene("115", 527.31, 531.31);
+    ground("night", S(527.31));
+    (function () {
+      tl.fromTo("#c2s03-sc115-img", { y: 140, scale: 1.0, rotation: -1.5 }, { y: 0, scale: 1.08, rotation: 1.2, duration: 4.0, ease: FX.ease.cam, immediateRender: false }, S(527.31));
+      rise("sc115-i", T(527.95) - L);
+      rise("sc115-w1", T(530.27) - L, { dur: 0.6 });
+      rise("sc115-w2", T(530.43) - L, { dur: 0.6 });
+      rise("sc115-w3", T(530.67) - L, { dur: 0.6 });
+    })();
+
+    /* ============ C2S116–117 · 531.31–542.67 · plunging cost line ============ */
+    slide("116", 531.31, "bottom");
+    scene("116", 530.86, 542.67);
+    ground("paper", S(531.0));
+    (function () {
+      const svg = $("sc116-svg"), cam = $("sc116-cam");
+      ink(svg, "M300 140 L300 2300", S(531.4), 0.9, { width: 4 });
+      ink(svg, "M300 330 L1820 330", S(531.6), 0.9, { width: 2, opacity: 0.35 });
+      const dotA = el("circle", { cx: 360, cy: 330, r: 14, fill: INK, opacity: 0 }, svg);
+      tl.fromTo(dotA, { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, S(534.2));
+      tl.fromTo("#c2s03-sc116-n", { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, T(534.27) - L);
+      FX.text.count(tl, $("sc116-nv"), T(534.27) - L, 0, 100000, 0.8);
+      rise("sc116-w1", T(535.31) - L);
+      rise("sc116-w2", T(535.71) - L);
+      ink(svg, "M360 330 C 700 340, 900 420, 1100 640 S 1400 840, 1560 870", S(535.8), 1.6, { width: 7, ease: "none" });   // done 537.4
+      const dotB = el("circle", { cx: 1560, cy: 870, r: 12, fill: INK, opacity: 0 }, svg);
+      tl.set(dotB, { opacity: 1 }, S(537.4));
+      rise("sc116-w3", T(536.59) - L, { dur: 0.6 });
+      rise("sc116-w4", T(537.31) - L, { dur: 0.6 });
+      rise("sc116-w5", T(537.63) - L, { dur: 0.5 });
+      // C2S117 — the axis keeps going; the line falls off the bottom
+      tl.to(cam, { y: -560, duration: 1.3, ease: FX.ease.cam }, S(539.0));
+      rise("sc116-m", T(540.11) - L, { dur: 0.8 });
+      ink(svg, "M1560 870 C 1620 1100, 1660 1500, 1700 2350", S(540.4), 1.5, { width: 7, ease: C("power2.in", 1.5) });   // done 541.9
+      tl.to(cam, { y: -1180, duration: 1.4, ease: FX.ease.in }, S(541.3));   // falls with the line, continues into the cut
+      rise("sc116-w6", T(541.15) - L, { dur: 0.6 });
+      rise("sc116-w7", T(541.47) - L, { dur: 0.5 });
+      rise("sc116-w8", T(541.55) - L, { dur: 0.5 });
+      rise("sc116-w9", T(541.87) - L, { dur: 0.4 });
+    })();
+
+    /* ============ C2S118 · 542.67–550.75 · a factor you can't imagine ============ */
+    scene("118", 542.67, 550.81);
+    ground("night", S(542.67));
+    (function () {
+      const list = $("sc118-list"), N = 48;
+      for (let i = 0; i < N; i++) {
+        const z = "1" + "0".repeat(i);
+        const s = z.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        const r = document.createElement("div"); r.className = "c3-row"; r.textContent = s; list.appendChild(r);
+      }
+      // continues the downward fall from C2S117, then scrolls (accelerating) and freezes
+      tl.fromTo(list, { y: 900 }, { y: 476, duration: 0.8, ease: FX.ease.cam, immediateRender: false }, S(542.67));
+      tl.to(list, { y: 476 - 3 * 104, duration: 2.6, ease: "none" }, S(542.9));
+      tl.to(list, { y: 476 - 40 * 104, duration: 4.7, ease: FX.ease.in }, S(545.5));
+      tl.to(list, { y: 476 - 41 * 104, duration: 0.5, ease: FX.ease.out }, S(550.2));
+      rise("sc118-w1", T(544.91) - L);
+      rise("sc118-w2", T(545.47) - L);
+      rise("sc118-w3", T(549.15) - L, { dur: 0.6 });
+      rise("sc118-w4", T(549.63) - L, { dur: 0.6 });
+      rise("sc118-w5", T(549.95) - L, { dur: 0.6 });
+    })();
+
+    /* ============ C2S119–120 · 550.75–559.36 · back on track: the silicon card ============ */
+    whip("118", "119", S(550.75), { dir: -1, dist: 900 });
+    scene("119", 550.75, 559.42);
+    ground("paper", S(550.75));
+    (function () {
+      const clip = $("sc119-clip"); paperclip(clip, RED);
+      tl.fromTo("#c2s03-sc119-world", { x: 260 }, { x: 0, duration: 1.0, ease: FX.ease.cam, immediateRender: false }, S(550.75));
+      tl.fromTo("#c2s03-sc119-flip", { scale: 1.0 }, { scale: 1.04, duration: 3.0, ease: "none", immediateRender: false }, S(551.0));
+      // the red clip pops off (12 fps)
+      tl.to(clip, { y: -160, x: 90, rotation: 40, opacity: 0, duration: 0.4, ease: C(FX.ease.out, 0.4) }, S(553.92));
+      // flip to the periodic-table cell
+      const fr = $("sc119-front"), bk = $("sc119-back");
+      tl.fromTo([fr, bk], { rotationY: (i) => (i ? 180 : 0) }, { rotationY: (i) => (i ? 360 : 180), duration: 0.6, ease: C(FX.ease.inOut, 0.6), immediateRender: true }, S(556.05));   // done 556.65
+      rise("sc119-sil", T(556.16) - L, { dur: 0.6 });
+      rise("sc119-sc", T(558.24) - L, { dur: 0.6 });
+      tl.fromTo("#c2s03-sc119-hl", { scaleX: 0 }, { scaleX: 1, duration: 0.32, ease: C("sine.inOut", 0.32), immediateRender: true }, S(558.24));   // done 558.56
+    })();
+
+    /* ============ C2S121–122 · 559.36–572.64 · semi | conductor → lattice ============ */
+    whip("119", "121", S(559.36), { dir: 1 });
+    flash(S(559.36));
+    scene("121", 559.36, 572.64);
+    ground("night", S(559.36));
+    (function () {
+      rise("sc121-word", S(559.36), { dur: 0.6, y: 0 });
+      tl.to("#c2s03-sc121-a", { x: -90, color: RED, duration: 0.6, ease: C(FX.ease.out, 0.6) }, T(562.40) - L);
+      tl.to("#c2s03-sc121-b", { x: 90, duration: 0.6, ease: C(FX.ease.out, 0.6) }, T(562.40) - L);
+      tl.fromTo("#c2s03-sc121-h", { opacity: 0 }, { opacity: 1, x: -90, color: RED, duration: 0.001, immediateRender: true }, T(562.40) - L);
+      rise("sc121-w1", T(563.84) - L);
+      rise("sc121-w2", T(564.24) - L);
+      rise("sc121-sl", T(565.60) - L, { dur: 0.6 });
+      // the letters dissolve into the lattice
+      tl.to(["#c2s03-sc121-word", "#c2s03-sc121-ce", "#c2s03-sc121-sl"], { opacity: 0, filter: "blur(10px)", scale: 1.06, duration: 0.5, ease: C(FX.ease.in, 0.5) }, S(566.3));
+      const svg = $("sc122-svg");
+      tl.fromTo(svg, { opacity: 0 }, { opacity: 1, duration: 0.6, ease: C(FX.ease.out, 0.6), immediateRender: true }, S(566.5));
+      tl.fromTo("#c2s03-sc122-streaks", { opacity: 0 }, { opacity: 0.35, duration: 0.6, immediateRender: true }, S(566.5));
+      gated(566.3, 572.7, () => FX.streaks($("sc122-streaks"), { seed: 1221, speed: 0.4, gain: 0.7, tint: [210, 220, 230] }));
+      const COLS = 11, ROWS = 5, X0 = 210, Y0 = 300, D = 150;
+      const g = el("g", {}, svg);
+      for (let r = 0; r < ROWS; r++) el("path", { d: "M" + X0 + " " + (Y0 + r * D) + " L" + (X0 + (COLS - 1) * D) + " " + (Y0 + r * D), stroke: BONE, "stroke-width": 1.5, opacity: 0.45 }, g);
+      for (let c = 0; c < COLS; c++) el("path", { d: "M" + (X0 + c * D) + " " + Y0 + " L" + (X0 + c * D) + " " + (Y0 + (ROWS - 1) * D), stroke: BONE, "stroke-width": 1.5, opacity: 0.3 }, g);
+      for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) el("circle", { cx: X0 + c * D, cy: Y0 + r * D, r: 17, fill: "#1b222b", stroke: BONE, "stroke-width": 2 }, g);
+      const dots = [];
+      for (let r = 0; r < ROWS; r++) for (let k = 0; k < 4; k++) dots.push({ e: el("circle", { cx: 0, cy: Y0 + r * D, r: 6, fill: BONE }, svg), r, ph: k / 4 + r * 0.13 });
+      const W = (COLS - 1) * D;
+      // flow: on from 567.44, stops at 568.64 (frozen, dimmed), resumes 572.30 (cut on action)
+      const pos = (t) => { const a = S(567.44), b = S(568.64), c = S(572.30); if (t < a) return 0; if (t < b) return (t - a) * 0.55; if (t < c) return (b - a) * 0.55; return (b - a) * 0.55 + (t - c) * 0.55; };
+      gated(566.5, 572.7, () => FX.onFrame((t) => {
+        const p = pos(t), live = (t >= S(567.44) && t < S(568.64)) || t >= S(572.30);
+        dots.forEach((o) => { const u = ((o.ph + p) % 1); o.e.setAttribute("cx", (X0 + u * W).toFixed(1)); o.e.setAttribute("opacity", t < S(567.40) ? 0 : (live ? 1 : 0.3)); });
+      }));
+      // two different atoms (the elements) drop into the lattice
+      const dA = el("circle", { cx: X0 + 3 * D, cy: Y0 + 1 * D, r: 22, fill: RED, opacity: 0 }, svg);
+      const dB = el("circle", { cx: X0 + 7 * D, cy: Y0 + 3 * D, r: 22, fill: BONE, opacity: 0 }, svg);
+      tl.fromTo(dA, { opacity: 1, attr: { cy: -60 } }, { attr: { cy: Y0 + 1 * D }, duration: 0.3, ease: C(FX.ease.out, 0.3), immediateRender: false }, S(571.78));
+      tl.fromTo(dB, { opacity: 1, attr: { cy: -60 } }, { attr: { cy: Y0 + 3 * D }, duration: 0.3, ease: C(FX.ease.out, 0.3), immediateRender: false }, S(571.84));   // done 572.14
+      tl.set([dA, dB], { opacity: 0 }, S(566.0));
+      rise("sc122-w1", T(566.96) - L, { dur: 0.6 });
+      rise("sc122-w2", T(567.28) - L, { dur: 0.6 });
+      rise("sc122-w3", T(567.44) - L, { dur: 0.6 });
+      rise("sc122-w4", T(568.16) - L, { dur: 0.6 });
+      rise("sc122-w5", T(568.56) - L, { dur: 0.5 });
+      rise("sc122-w6", T(568.64) - L, { dur: 0.5 });
+      rise("sc122-w7", T(571.68) - L, { dur: 0.6 });
+      rise("sc122-w8", T(571.84) - L, { dur: 0.6 });
+    })();
+
+    /* ============ C2S123 · 572.64–576.16 · stop, go, stop, go ============ */
+    scene("123", 572.64, 576.50);
+    (function () {
+      const svg = $("sc123-svg");
+      for (let i = 1; i < 10; i++) el("path", { d: "M" + (i * 70.4) + " 0 L" + (i * 70.4) + " 574", stroke: BONE, "stroke-width": 1, opacity: 0.12 }, svg);
+      for (let i = 1; i < 8; i++) el("path", { d: "M0 " + (i * 71.75) + " L704 " + (i * 71.75), stroke: BONE, "stroke-width": 1, opacity: 0.12 }, svg);
+      const cp = el("clipPath", { id: "c2s03-cp123" }, svg); const cr = el("rect", { x: 0, y: 0, width: 0, height: 574 }, cp);
+      const X = (t) => ((t - 573.0) / 3.3) * 704;
+      const e = [574.80, 575.20, 575.52, 575.84].map(X);
+      const d = "M0 287 L" + e[0] + " 287 L" + e[0] + " 420 L" + e[1] + " 420 L" + e[1] + " 150 L" + e[2] + " 150 L" + e[2] + " 420 L" + e[3] + " 420 L" + e[3] + " 150 L704 150";
+      el("path", { d, fill: "none", stroke: "#dfe9e0", "stroke-width": 4, "clip-path": "url(#c2s03-cp123)", style: "filter: drop-shadow(0 0 6px rgba(223,233,224,0.9))" }, svg);
+      tl.fromTo(cr, { attr: { width: 0 } }, { attr: { width: 704 }, duration: 3.3, ease: "none", immediateRender: true }, S(573.0));
+      // CRT power-on
+      tl.fromTo("#c2s03-sc123-scr", { scaleY: 0.012, opacity: 1 }, { scaleY: 1, duration: 0.22, ease: "power2.out", immediateRender: true }, S(572.66));
+      tl.fromTo("#c2s03-sc123-tube", { filter: "brightness(3)" }, { filter: "brightness(1)", duration: 0.3, immediateRender: true }, S(572.66));
+      tl.fromTo("#c2s03-sc123-cam", { scale: 1.12 }, { scale: 1.0, duration: 1.2, ease: FX.ease.cam, immediateRender: false }, S(572.64));
+      tl.to("#c2s03-sc123-cam", { scale: 1.05, duration: 2.4, ease: "none" }, S(573.84));
+      rise("sc123-fr", T(573.84) - L, { dur: 0.6 });
+      tl.fromTo("#c2s03-sc123-g1", { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, T(574.80) - L);
+      tl.fromTo("#c2s03-sc123-g2", { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, T(575.20) - L);
+      tl.fromTo("#c2s03-sc123-g3", { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, T(575.52) - L);
+      tl.fromTo("#c2s03-sc123-g4", { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, T(575.84) - L);
+      ["g1", "g2", "g3"].forEach((k, i) => tl.to("#c2s03-sc123-" + k, { opacity: 0.45, duration: 0.2 }, S([575.2, 575.52, 575.84][i]) - L));
+    })();
+
+    /* ============ C2S124 · 576.16–582.56 · punched card ============ */
+    push("123", "124", S(576.50), 903, 461);
+    scene("124", 576.50, 582.62);
+    ground("paper", S(576.50));
+    (function () {
+      const holes = $("sc124-holes"), K = 1500 / 3080, r = FX.rng(12401), H = [];
+      for (let c = 14; c < 80; c++) {
+        const n = 1 + (r() < 0.35 ? 1 : 0);
+        for (let k = 0; k < n; k++) {
+          const row = Math.floor(r() * 10);
+          const h = document.createElement("div"); h.className = "c3-hole";
+          h.style.left = ((152 + c * 35.34) * K - 4.5).toFixed(1) + "px"; h.style.top = ((340 + row * 102.7) * K - 11).toFixed(1) + "px";
+          holes.appendChild(h); H.push([h, c]);
+        }
+      }
+      H.forEach(([h, c]) => tl.set(h, { opacity: 1 }, S(579.8) + Math.floor(((c - 14) / 66) * 1.5 * 12) / 12));   // done 581.3
+      tl.fromTo("#c2s03-sc124-cam", { x: -120 }, { x: 60, duration: 6.1, ease: "none", immediateRender: false }, S(576.50));
+      rise("sc124-c", T(577.04) - L);
+      rise("sc124-e", T(579.12) - L);
+      rise("sc124-w1", T(579.84) - L, { dur: 0.6 });
+      rise("sc124-w2", T(580.16) - L, { dur: 0.6 });
+      rise("sc124-w3", T(580.32) - L, { dur: 0.6 });
+      rise("sc124-w4", T(580.80) - L, { dur: 0.6 });
+      rise("sc124-w5", T(580.96) - L, { dur: 0.6 });
+      rise("sc124-w6", T(581.12) - L, { dur: 0.6 });
+    })();
+
+    /* ============ C2S125 · 582.56–588.00 · silicon: very good, abundant ============ */
+    whip("124", "125", S(582.56), { dir: -1, vertical: true });
+    scene("125", 582.56, 588.00);
+    ground("night", S(582.56));
+    (function () {
+      tl.fromTo("#c2s03-sc125-cam", { scale: 1.0 }, { scale: 1.08, duration: 5.5, ease: "none", immediateRender: false }, S(582.56));
+      rise("sc125-s", T(583.36) - L);
+      rise("sc125-w1", T(584.32) - L);
+      rise("sc125-w2", T(584.64) - L);
+      rise("sc125-w3", T(585.12) - L);
+      rise("sc125-ab", T(586.64) - L);
+      // sand pours into a pile (graphic treatment — no sand footage in the kit)
+      const svg = $("sc125-sand"), rr = FX.rng(12501), G = [];
+      for (let i = 0; i < 140; i++) G.push({ e: el("circle", { cx: 0, cy: 0, r: (1.5 + rr() * 2.2).toFixed(1), fill: "#d9cdb4", opacity: 0 }, svg), x: 1400 + (rr() - 0.5) * 24, ph: rr(), sp: 0.9 + rr() * 0.4 });
+      const pile = el("ellipse", { cx: 1400, cy: 1000, rx: 0, ry: 0, fill: "#b9ab90", opacity: 0.9 }, svg);
+      gated(586.4, 588.1, () => FX.onFrame((t) => {
+        const tt = t - S(586.45); if (tt < 0) { G.forEach((g) => g.e.setAttribute("opacity", 0)); pile.setAttribute("rx", 0); return; }
+        const tq = Math.floor(tt * 12) / 12;
+        G.forEach((g) => { const y = ((g.ph + tq * g.sp * 1.6) % 1) * 1000; const vis = y < tq * 1600; g.e.setAttribute("cx", g.x.toFixed(1)); g.e.setAttribute("cy", y.toFixed(1)); g.e.setAttribute("opacity", vis ? 0.85 : 0); });
+        const k = Math.min(1, tq / 1.4); pile.setAttribute("rx", (300 * Math.sqrt(k)).toFixed(1)); pile.setAttribute("ry", (60 * Math.sqrt(k)).toFixed(1));
+      }));
+    })();
+
+    /* ============ C2S126 · 588.00–591.44 · scale: wafers multiply ============ */
+    scene("126", 588.00, 591.50);
+    ground("paper", S(588.00));
+    (function () {
+      const grid = $("sc126-grid");
+      const AX = 900, AY = 200, SZ = 640;
+      const mk = (x, y, s) => { const d = document.createElement("div"); d.className = "c3-waf"; d.style.left = x + "px"; d.style.top = y + "px"; d.style.width = s + "px"; d.style.height = s + "px"; grid.appendChild(d); return d; };
+      const levels = [1, 2, 4, 8].map((n) => { const s = SZ / n, g = []; for (let r = 0; r < n; r++) for (let c = 0; c < n; c++) g.push(mk(AX + c * s + s * 0.06, AY + r * s + s * 0.06, s * 0.88)); return g; });
+      // match cut from the sand pile: the first wafer lands flat, then stands up
+      tl.fromTo(levels[0], { opacity: 1, scaleY: 0.2, y: 280 }, { scaleY: 1, y: 0, duration: 1.0, ease: C(FX.ease.out, 1.0), immediateRender: true }, S(588.00));
+      [589.8, 590.15, 590.5].forEach((t, i) => {
+        tl.set(levels[i], { opacity: 0 }, S(t));
+        tl.fromTo(levels[i + 1], { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.25, ease: C(FX.ease.out, 0.25), immediateRender: true }, S(t));
+      });   // done 590.75
+      rise("sc126-w1", T(589.28) - L, { dur: 0.6 });
+      rise("sc126-w2", T(589.60) - L, { dur: 0.5 });
+      rise("sc126-w3", T(589.76) - L, { dur: 0.5 });
+      rise("sc126-sc", T(590.64) - L, { dur: 0.6 });
+    })();
+
+    /* ============ C2S127–128 · 591.44–597.86 · Silicon Valley → a die ============ */
+    whip("126", "127", S(591.44), { dir: 1 });
+    flash(S(591.44));
+    scene("127", 591.44, 597.86);
+    ground("night", S(591.44));
+    (function () {
+      const sign = $("sc127-sign"), A = [], Bv = [];
+      "SILICON VALLEY".split("").forEach((ch, i) => {
+        const w = document.createElement("span"); w.className = "lw"; const o = document.createElement("span"); o.className = "lt"; o.textContent = ch;
+        const h = document.createElement("span"); h.className = "lh halate"; h.textContent = ch; w.appendChild(o); w.appendChild(h); sign.appendChild(w);
+        (i < 7 ? A : i > 7 ? Bv : []).push([o, h]);
+      });
+      gated(591.4, 597.9, () => FX.streaks($("sc127-streaks"), { seed: 1271, speed: 0.45, gain: 0.9 }));
+      tl.fromTo("#c2s03-sc127-aer img", { scale: 1.0 }, { scale: 1.06, duration: 2.8, ease: "none", immediateRender: false }, S(591.44));
+      // unlit outline (C2S080 motif) appears on its word, then each letter flickers on (neon) — hero halate
+      const light = (letters, t0) => {
+        tl.fromTo(letters.map((p) => p[0]), { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, t0);
+        letters.forEach(([o, h], i) => {
+          const t = t0 + 0.04 + i * 0.05;
+          tl.fromTo(h, { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, t);
+          tl.set(h, { opacity: 0.3 }, t + 1 / 24); tl.set(h, { opacity: 1 }, t + 2 / 24);
+          tl.set(o, { opacity: 0 }, t + 2 / 24);
+        });
+      };
+      light(A, T(592.80) - L);
+      light(Bv, T(593.52) - L);   // last letter lit 593.81
+      tl.fromTo("#c2s03-sc127-bloom", { opacity: 0 }, { opacity: 1, duration: 0.6, ease: C(FX.ease.out, 0.6), immediateRender: true }, S(592.8));
+      // C2S128 — pull back: the valley turns out to be printed on a chip die (still moving at the end)
+      const W = $("sc127-world");
+      tl.fromTo(W, { scale: 1.0 }, { scale: 0.2, duration: 4.4, ease: "power1.inOut", immediateRender: false }, S(594.24));
+      tl.fromTo("#c2s03-sc127-dieov", { opacity: 0 }, { opacity: 0.55, duration: 2.0, immediateRender: true }, S(594.6));
+      rise("sc127-w1", T(595.44) - L);
+      rise("sc127-w2", T(595.68) - L);
+      rise("sc127-w3", T(597.20) - L, { dur: 0.6 });
+      rise("sc127-w4", T(597.36) - L, { dur: 0.5 });
+    })();
+
+    FX.mount(tl, DURATION);
+    window.__timelines = window.__timelines || {};
+    window.__timelines[SEG] = tl;
+  })();
+  </script>
+</template>
+</body>
+</html>
