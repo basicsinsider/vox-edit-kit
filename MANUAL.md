@@ -187,6 +187,13 @@ use, attribution optional; never redistribute the files publicly, never use them
   with a hand polygon (PIL `ImageDraw.polygon` on a gridded preview) and multiply a halftone's alpha by the cut-out alpha.
 - Gate any FX helper that registers per-frame work (`FX.streaks`, `FX.weave`, `FX.roughDefs` boil) to its scene window by wrapping
   `FX.onFrame` while calling it: `const on = FX.onFrame; FX.onFrame = f => on(FX.gate(a, b, f)); FX.streaks(...); FX.onFrame = on;` (intro01).
+- Timed media (`<video data-start …>`, esp. `class="clip"` face cams) becomes visible at its own `data-start` even inside a scene
+  that is still `visibility:hidden` — when you move a cut later, move the clip's `data-start` AND `data-media-start` by the same
+  delta (lip sync unchanged), and lengthen `data-duration` of clips that ended at the old cut (they go black) (intro fixes).
+- `FX.markupDefs(svg, …)` resets the svg's viewBox to `0 0 1920 1080`; on a larger camera svg set your viewBox again after it
+  (intro01 IS011's arrow was drawn off-frame for the whole first render).
+- Timing audit for §10.9 (every scene): dump the timeline in a headless page (`tl.getChildren(true,true,false)` → start/end/targets)
+  and list tweens that end < 0.5 s before their scene's whip start / hard cut; then snapshot those scenes' last 0.6 s.
 ### 4.3 Check, look, render
 ```bash
 python3 tools/build_index.py s05            # put one (or several) compositions in index.html
@@ -596,6 +603,11 @@ on action. Use it whenever the narrator quotes someone or introduces a historic 
 - [ ] Smooth long eases, 12 fps. [ ] Cuts on action; whips, no iris. [ ] No photo/clip used > 2× in a chunk.
 
 ## Changelog
+- 2026-10-31 — Intro fixes after Krish's review (`project/intro/FIXES.md`): K+E upscaled grid scans → Texturelabs
+  `paper_graph_01_hires` (≤ native); all 66 scenes audited for §10.9 (≈45 timing fixes; IS006 telephone now rides the route and
+  holds in the US; IS028 plane lands before the whip); map kit re-projected into the old pixel spaces
+  (`project/intro/gen/intro_maps_kit.py` → `assets/intro/derived/maps/`) for IS006/016/028/035/045/048–050/053/055;
+  §4.2 gotchas: timed clips ignore hidden scenes, `FX.markupDefs` resets the viewBox, timeline-dump timing audit.
 - 2026-10-31 — §10.9 long-form rules: copyrighted material allowed (fair use), reuse rule relaxed, animations finish +
   hold 0.5 s before cuts, no upscaled paper scans, better maps, rough cut = visual ref only, 6×10-min chunk workflow.
 - 2026-10-31 — Intro assembled (66 scenes, 275.06 s), sound pass (Epidemic layered bed, restraint pass), face-cam lip-sync
