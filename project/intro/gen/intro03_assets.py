@@ -12,14 +12,14 @@ def crop(src, box, out, size=None, q=88):
 
 # portraits
 crop("photos/chang_2018.jpg", (330, 0, 1290, 1280), "chang_poster.jpg", (840, 1120))
-crop("photos/tsao_portrait_studio.jpg", (40, 60, 1240, 1660), "tsao_poster.jpg", (840, 1120))
+crop(next(p for p in ["photos/tsao_advisor_cc0.jpg", "photos/tsao_portrait_studio.jpg"] if (A / p).exists()), (40, 60, 1240, 1660), "tsao_poster.jpg", (840, 1120))
 crop("photos/chang_award.jpg", (1050, 60, 1430, 440), "chang_circle.jpg", (420, 420))
 crop("photos/tsao_rally_2023.jpg", (780, 560, 1130, 910), "tsao_circle.jpg", (420, 420))
 
 # world maps: beige (paper) + dark (night) grades of the NASA desat basemap at 0.4 scale
 w = Image.open(A / "maps/world_basemap_desat.jpg").convert("L").resize((4320, 2160), Image.LANCZOS)
 w = ImageEnhance.Contrast(w).enhance(1.15)
-beige = ImageOps.colorize(w, black="#6f6656", white="#efe6d2", mid="#c9bea6"); beige.save(O / "world_beige.jpg", quality=86)
+beige = ImageOps.colorize(w, black="#9a8f78", white="#f1e9d7", mid="#d6caaf"); beige.save(O / "world_beige.jpg", quality=86)
 dark = ImageOps.colorize(w, black="#07090c", white="#8d9296", mid="#2b3036"); dark.save(O / "world_dark.jpg", quality=86)
 
 # simplified country paths (scale 0.4)
@@ -36,6 +36,7 @@ def simp(d, s=0.4, step=0.9):
             if last is None or abs(x - last[0]) + abs(y - last[1]) > step * 2.2:
                 keep.append((x, y)); last = (x, y)
         if len(keep) < 3: continue
+        if any(abs(keep[i][0] - keep[i - 1][0]) > 400 for i in range(1, len(keep))): continue  # antimeridian wrap
         xs = [p[0] for p in keep]; ys = [p[1] for p in keep]
         if (max(xs) - min(xs)) * (max(ys) - min(ys)) < 30: continue
         out.append("M" + " L".join(f"{x:.0f},{y:.0f}" for x, y in keep) + "Z")
@@ -78,3 +79,7 @@ print("missing:", missing, "bytes:", (O / "data.json").stat().st_size)
 for f, t in [("taiwan_1960_taipei_boulevard_high_angle", 4), ("taiwan_1960_taipei_north_gate_traffic", 3), ("taiwan_1960_sun_moon_lake", 5)]:
     subprocess.run(["ffmpeg", "-loglevel", "error", "-y", "-ss", str(t), "-i", str(A / f"footage/{f}.mp4"), "-frames:v", "1", "-q:v", "3", str(O / f"{f}.jpg")], check=True)
 print("ok")
+
+# alpha version of the Taiwan land mask (CSS mask-image uses alpha; the source mask is greyscale L)
+m = Image.open(A / "maps/taiwan_mask.png").convert("L").resize((1240, 1520), Image.LANCZOS)
+rgba = Image.new("RGBA", m.size, (255, 255, 255, 0)); rgba.putalpha(m); rgba.save(O / "taiwan_mask_alpha.png")

@@ -1,0 +1,1007 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8" /></head>
+<body>
+<template>
+  <style>
+    #root { position: absolute; inset: 0; overflow: hidden; background: var(--night); }
+    .i1-scene { position: absolute; inset: 0; overflow: hidden; visibility: hidden; opacity: 0; }
+    .i1-shot { position: absolute; inset: 0; overflow: hidden; transform-origin: 50% 50%; }
+    .i1-night { background: var(--night); }
+    .i1-paper { background: var(--paper); }
+    .i1-abs { position: absolute; }
+    .i1-p1, .i1-p2 { position: absolute; inset: 0; background-size: cover; background-position: center; pointer-events: none; }
+    .i1-p2 { opacity: 0.9; mix-blend-mode: multiply; }
+    .i1-credit { position: absolute; right: 30px; bottom: 20px; font-size: 13px; letter-spacing: 0.08em; color: rgba(242,237,227,0.6); }
+    .i1-credit.ink { color: rgba(20,27,36,0.6); }
+    .i1-mk { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; pointer-events: none; }
+    .i1-box { display: inline-block; background: var(--navy); color: var(--bone); padding: 0.08em 0.22em 0.02em; line-height: 1; }
+    .i1-ink { color: var(--ink); }
+    .i1-w { display: inline-block; white-space: pre; opacity: 0; }
+    .i1-blue { color: var(--navy); }
+    .i1-hlbar { position: absolute; background: var(--yellow); mix-blend-mode: multiply; transform-origin: 0 50%; opacity: 0.9; }
+    .i1-card { position: absolute; background: #efe8d8; box-shadow: 0 26px 60px rgba(20,27,36,0.32); overflow: hidden; }
+    .i1-scrim-b { position: absolute; left: 0; right: 0; bottom: 0; height: 460px; background: linear-gradient(180deg, rgba(15,19,24,0), rgba(15,19,24,0.82)); }
+    #intro01-flash { position: absolute; inset: 0; background: #fbf4e6; opacity: 0; pointer-events: none; z-index: 7; }
+
+    /* IS001 */
+    #intro01-sc001-streaks { opacity: 0; filter: blur(2.5px); }
+    #intro01-sc001-blk { position: absolute; inset: 0; transform-origin: 50% 50%; }
+    #intro01-sc001-yr { position: absolute; left: 0; top: 380px; width: 1920px; text-align: center; font-size: 300px; }
+
+    /* IS002 */
+    #intro01-sc002-cam { position: absolute; inset: 0; transform-origin: 1610px 700px; }
+    .i1-panel { position: absolute; overflow: hidden; box-shadow: 0 22px 50px rgba(20,27,36,0.35); background: #d8d0bf; }
+    #intro01-sc002-tw { left: 1190px; top: 70px; width: 540px; height: 640px; transform: rotate(-3deg); }
+    #intro01-sc002-tw .rel, #intro01-sc002-tw .fill { position: absolute; left: -70px; top: -20px; width: 563px; height: 690px; }
+    #intro01-sc002-tw .rel { background: url('assets/intro/maps/taiwan_relief_grey.jpg') 0 0 / 100% 100%; filter: grayscale(1) brightness(1.15) contrast(0.9); }
+    #intro01-sc002-tw .fill { background: var(--celadon); -webkit-mask: url('assets/intro/maps/taiwan_mask.png') 0 0 / 100% 100%; mask: url('assets/intro/maps/taiwan_mask.png') 0 0 / 100% 100%; mix-blend-mode: multiply; opacity: 0.9; }
+    #intro01-sc002-chip { left: 1420px; top: 540px; width: 440px; height: 340px; transform: rotate(4deg); background: #111; }
+    #intro01-sc002-chip video { position: absolute; left: -60px; top: -40px; width: 560px; height: 420px; object-fit: cover; }
+    #intro01-sc002-ts { position: absolute; left: 640px; top: 120px; width: 820px; height: 960px; overflow: hidden;
+      -webkit-mask-image: linear-gradient(180deg, #000 78%, transparent 100%); mask-image: linear-gradient(180deg, #000 78%, transparent 100%); }
+    #intro01-sc002-ts img, #intro01-sc002-ts .ht { position: absolute; left: -160px; top: -150px; width: 1000px; height: 1501px; }
+    #intro01-sc002-ts img { filter: url(#intro01-tint-blue) contrast(1.25) brightness(0.92); }
+    #intro01-sc002-ts .ht { background: url('assets/textures/halftone_01_norm.jpg') 0 0 / 520px auto; mix-blend-mode: overlay; opacity: 0.55;
+      -webkit-mask: url('assets/intro/made/tsao_layers/tsao.png') 0 0 / 100% 100%; mask: url('assets/intro/made/tsao_layers/tsao.png') 0 0 / 100% 100%; }
+    #intro01-sc002-name { position: absolute; left: 130px; top: 250px; }
+    #intro01-sc002-name .i1-box { font-size: 120px; display: table; margin-bottom: 16px; opacity: 0; }
+    #intro01-sc002-ceo { position: absolute; left: 136px; top: 600px; font-size: 44px; opacity: 0; }
+    #intro01-sc002-umc { position: absolute; left: 120px; top: 700px; width: 500px; height: 170px; background: #f1ebde; transform: rotate(-2deg); box-shadow: 0 18px 40px rgba(20,27,36,0.3); }
+    #intro01-sc002-umc img { position: absolute; left: 40px; top: 42px; width: 420px; }
+
+    /* IS003 / IS004 */
+    .i1-fab { position: absolute; left: 0; top: -40px; width: 1920px; height: 1440px; object-fit: cover; }
+    #intro01-sc003-weave, #intro01-sc004-weave { position: absolute; inset: -14px; }
+    #intro01-sc003-cam, #intro01-sc004-cam { position: absolute; inset: 0; transform-origin: 60% 30%; }
+    #intro01-sc004-still { filter: saturate(0.85); }
+    #intro01-sc004-streaks { opacity: 0; filter: blur(2.5px);
+      -webkit-mask-image: radial-gradient(ellipse 34% 52% at 74% 30%, #000 30%, transparent 100%); mask-image: radial-gradient(ellipse 34% 52% at 74% 30%, #000 30%, transparent 100%); }
+    #intro01-sc004-ins { left: 150px; top: 690px; font-size: 170px; opacity: 0; }
+
+    /* IS005 */
+    #intro01-sc005-wrap { position: absolute; inset: 0; transform-origin: 960px 540px; }
+    #intro01-sc005-a, #intro01-sc005-b { position: absolute; inset: 0; }
+    #intro01-sc005-wafer { position: absolute; left: 347px; top: 94px; width: 1190px; height: 893px; object-fit: cover; transform-origin: 613px 446px;
+      -webkit-mask-image: radial-gradient(circle 405px at 51.5% 50%, #000 95%, transparent 100%); mask-image: radial-gradient(circle 405px at 51.5% 50%, #000 95%, transparent 100%); }
+    #intro01-sc005-glow { position: absolute; left: 480px; top: 60px; width: 960px; height: 960px; border-radius: 50%; background: radial-gradient(circle, rgba(159,195,227,0.0) 52%, rgba(159,195,227,0.22) 60%, rgba(159,195,227,0) 72%); }
+    #intro01-sc005-globe { position: absolute; left: 556px; top: 136px; width: 809px; height: 809px; }
+    #intro01-sc005-ind { left: 140px; top: 900px; font-size: 40px; }
+    #intro01-sc005-world { left: 0; top: 820px; width: 1920px; text-align: center; font-size: 170px; }
+
+    /* IS006 */
+    #intro01-sc006-stage { position: absolute; inset: 0; perspective: 1700px; perspective-origin: 50% 40%; }
+    #intro01-sc006-plane { position: absolute; left: -400px; top: -300px; width: 2720px; height: 1680px; transform: rotateX(28deg) rotateZ(-8deg); transform-origin: 50% 50%; overflow: hidden; background: #d6cfbe; }
+    #intro01-sc006-cam { position: absolute; left: 400px; top: 300px; width: 5700px; height: 1440px; transform-origin: 0 0; }
+    #intro01-sc006-base { position: absolute; left: 0; top: 0; width: 5700px; height: 1440px; }
+    #intro01-sc006-fm { position: absolute; left: 248.7px; top: 900px; width: 220.2px; height: 184.2px; filter: saturate(0.75) sepia(0.15);
+      -webkit-mask-image: radial-gradient(ellipse 50% 50% at 50% 50%, #000 70%, transparent 100%); mask-image: radial-gradient(ellipse 50% 50% at 50% 50%, #000 70%, transparent 100%); }
+    #intro01-sc006-fill { position: absolute; left: 276px; top: 915px; width: 93px; height: 114px; opacity: 0; }
+    #intro01-sc006-svg { position: absolute; left: 0; top: 0; width: 5700px; height: 1440px; overflow: visible; }
+    #intro01-sc006-phone { position: absolute; left: 356px; top: 790px; width: 210px; transform-origin: 30% 100%; opacity: 0; }
+    #intro01-sc006-tex { position: absolute; inset: 0; background: url('assets/textures/paper_cream_02.jpg') center / cover; mix-blend-mode: multiply; opacity: 0.6; }
+    #intro01-sc006-far { position: absolute; left: 0; right: 0; top: 0; height: 420px; backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px);
+      -webkit-mask-image: linear-gradient(180deg, #000 20%, transparent 100%); mask-image: linear-gradient(180deg, #000 20%, transparent 100%); }
+    #intro01-sc006-tw { left: 140px; top: 120px; font-size: 54px; opacity: 0; color: var(--ink); }
+    #intro01-sc006-twu { position: absolute; left: 0; right: 0.18em; bottom: -10px; height: 9px; background: var(--celadon); transform-origin: 0 50%; }
+    #intro01-sc006-tel { left: 140px; top: 860px; font-size: 92px; opacity: 0; }
+    #intro01-sc006-us { left: 1080px; top: 130px; width: 720px; text-align: right; font-size: 54px; }
+
+    /* IS007 / IS008 */
+    #intro01-sc007-cam { position: absolute; inset: 0; transform-origin: 1290px 300px; }
+    .i1-bar { position: absolute; bottom: 150px; width: 250px; transform-origin: 50% 100%; background: #8fbca5;
+      -webkit-mask: url('assets/textures/watercolour_edge_mask_01.png') top / 100% 40px no-repeat, linear-gradient(#000, #000) 0 38px / 100% 100% no-repeat;
+      mask: url('assets/textures/watercolour_edge_mask_01.png') top / 100% 40px no-repeat, linear-gradient(#000, #000) 0 38px / 100% 100% no-repeat; }
+    .i1-bar .ht { position: absolute; inset: 0; background: url('assets/textures/halftone_01_norm.jpg') 0 0 / 300px auto; mix-blend-mode: multiply; opacity: 0.35; }
+    #intro01-sc007-a { left: 300px; height: 130px; }
+    #intro01-sc007-b { left: 640px; height: 780px; }
+    #intro01-sc007-thr { position: absolute; left: 120px; right: 120px; top: 792px; border-top: 6px dashed var(--ink); opacity: 0; transform-origin: 0 50%; }
+    #intro01-sc007-base { position: absolute; left: 120px; right: 120px; top: 930px; height: 4px; background: var(--ink); }
+    #intro01-sc007-phone { position: absolute; left: 1010px; top: 470px; width: 760px; }
+    #intro01-sc007-4 { left: 250px; top: 670px; width: 350px; text-align: center; font-size: 96px; }
+    #intro01-sc007-4 .s { font-size: 44px; }
+    #intro01-sc007-yr { left: 300px; top: 950px; width: 250px; text-align: center; font-size: 30px; opacity: 0; }
+    #intro01-sc007-lb { left: 1060px; top: 160px; font-size: 150px; white-space: nowrap; }
+    #intro01-sc007-lb .label-box { padding: 0.08em 0.24em 0.02em; }
+    #intro01-sc007-lb .m { font-size: 64px; margin-left: 0.25em; letter-spacing: 0; }
+    #intro01-sc008-box { left: 230px; top: 150px; font-size: 400px; transform-origin: 30% 50%; }
+    #intro01-sc008-box .label-box { color: var(--yellow); padding: 0.06em 0.18em 0; }
+    #intro01-sc008-inc { left: 250px; top: 650px; font-size: 44px; opacity: 0; color: var(--ink); }
+    #intro01-sc008-12 { left: 1100px; top: 250px; font-size: 140px; color: var(--ink); }
+    #intro01-sc008-ticks { position: absolute; left: 1100px; top: 520px; width: 640px; height: 120px; overflow: visible; }
+
+    /* IS009 */
+    #intro01-sc009 { z-index: 3; }
+    #intro01-sc009-desk { position: absolute; inset: 0; background: radial-gradient(ellipse 60% 70% at 55% 42%, #3a3128 0%, #1d1915 55%, #0f0e0c 100%); }
+    #intro01-sc009-lamp { position: absolute; inset: 0; background: radial-gradient(ellipse 45% 55% at 58% 40%, rgba(255,214,170,0.22), rgba(255,214,170,0) 70%); mix-blend-mode: screen; }
+    #intro01-sc009-cam { position: absolute; inset: 0; transform-origin: 1390px 500px; }
+    #intro01-sc009-film { position: absolute; left: 150px; top: 210px; width: 780px; height: 600px; background: #ebe3d3; padding: 22px 22px 70px; transform: rotate(-3deg); box-shadow: 0 30px 70px rgba(0,0,0,0.6); }
+    #intro01-sc009-film .in { position: relative; width: 100%; height: 100%; overflow: hidden; background: #111; }
+    #intro01-sc009-film img, #intro01-sc009-film video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: sepia(0.25) saturate(0.7) contrast(1.05); }
+    #intro01-sc009-ds { position: absolute; left: 1010px; top: 90px; width: 760px; height: 900px; background: #ece5d6; transform: rotate(2.5deg); box-shadow: 0 30px 80px rgba(0,0,0,0.6); padding: 50px 56px; }
+    #intro01-sc009-ds .tex { position: absolute; inset: 0; background: url('assets/textures/paper_cream_01.jpg') center / cover; mix-blend-mode: multiply; opacity: 0.7; }
+    #intro01-sc009-ds .logo { width: 300px; display: block; }
+    #intro01-sc009-ds .rule { height: 4px; background: var(--ink); margin: 26px 0 30px; }
+    #intro01-sc009-ds .ln { height: 10px; background: rgba(20,27,36,0.32); margin: 0 0 14px; border-radius: 2px; }
+    #intro01-sc009-chip { position: absolute; left: 160px; top: 300px; width: 440px; height: 360px; overflow: visible; }
+    #intro01-sc009-ph { left: 230px; top: 860px; font-size: 84px; opacity: 0; }
+
+    /* IS010-IS011 chart */
+    #intro01-sc010-cam { position: absolute; left: 0; top: 0; width: 3000px; height: 1400px; transform-origin: 0 0; }
+    #intro01-sc010-band { position: absolute; left: 820px; top: 120px; width: 400px; height: 790px; background: rgba(160,140,110,0.22); transform-origin: 50% 100%; }
+    #intro01-sc010-axis { position: absolute; left: 100px; top: 910px; width: 2800px; height: 3px; background: rgba(20,27,36,0.7); }
+    .i1-gl { position: absolute; left: 100px; width: 2800px; height: 1px; background: rgba(20,27,36,0.13); }
+    #intro01-sc010-svg { position: absolute; left: 0; top: 0; width: 3000px; height: 1400px; overflow: visible; }
+    #intro01-sc010-ffy { left: 820px; top: 130px; width: 400px; text-align: center; font-size: 40px; color: var(--ink); }
+    #intro01-sc010-stamp { left: 1250px; top: 300px; font-size: 110px; color: var(--ink); border: 9px solid var(--ink); padding: 6px 26px 0; transform: rotate(-8deg); opacity: 0; filter: url(#intro01-ch010); }
+    #intro01-sc010-prof { left: 1300px; top: 470px; font-size: 56px; opacity: 0; color: var(--ink); }
+    #intro01-sc011-pb { left: 1720px; top: 120px; font-size: 44px; color: var(--ink); }
+    #intro01-sc011-us { left: 2040px; top: 190px; font-size: 44px; color: var(--navy); }
+
+    /* IS012 */
+    #intro01-sc012-weave { position: absolute; inset: -14px; }
+    #intro01-sc012-cam { position: absolute; inset: 0; transform-origin: 70% 60%; }
+    #intro01-sc012-vid { position: absolute; left: 0; top: -150px; width: 1920px; height: 1440px; object-fit: cover; }
+    #intro01-sc012-dim { position: absolute; inset: 0; background: rgba(10,12,15,0.32); }
+    #intro01-sc012-cf { left: 120px; top: 110px; font-size: 46px; }
+    #intro01-sc012-icon { position: absolute; left: 1430px; top: 640px; width: 170px; height: 170px; opacity: 0; transform-origin: 50% 50%; }
+    #intro01-sc012-op { left: 1300px; top: 840px; width: 440px; text-align: center; font-size: 72px; }
+
+    /* IS013 */
+    #intro01-sc013-title { left: 170px; top: 120px; font-size: 92px; color: var(--ink); }
+    #intro01-sc013-title i { font-style: italic; }
+    .i1-row { position: absolute; left: 190px; height: 88px; width: 1500px; }
+    .i1-row svg { position: absolute; left: -10px; top: -4px; width: 96px; height: 96px; }
+    .i1-row .bar { position: absolute; left: 120px; top: 27px; height: 34px; background: var(--navy); opacity: 0.85; transform-origin: 0 50%; }
+    #intro01-sc013-any { left: 1320px; top: 320px; font-size: 40px; color: var(--ink); opacity: 0; }
+    #intro01-sc013-dem { left: 1320px; top: 380px; font-size: 64px; color: var(--ink); }
+
+    /* IS014 idea card (motif: exported to intro02) */
+    #intro01-sc014 { z-index: 3; }
+    #intro01-sc014-card { position: absolute; left: 300px; top: 100px; width: 1320px; height: 860px; transform: rotate(-1.5deg); background: #eee7d6; box-shadow: 0 30px 70px rgba(20,27,36,0.35); overflow: hidden; }
+    #intro01-sc014-card .g1 { position: absolute; inset: 0; background: url('assets/textures/paper_cream_02.jpg') center / cover; mix-blend-mode: multiply; opacity: 0.7; }
+    #intro01-sc014-card .g2 { position: absolute; inset: 0; background: url('assets/intro/papers/ke1960_cross_section_green_norm.jpg') 0 0 / 1320px auto repeat-y; mix-blend-mode: multiply; opacity: 0.55; }
+    #intro01-sc014-sk { position: absolute; left: 0; top: 0; width: 1320px; height: 860px; overflow: visible; }
+    #intro01-sc014-stamp { position: absolute; left: 1010px; top: 70px; font-size: 92px; color: var(--navy); border: 8px solid var(--navy); padding: 4px 22px 0; transform: rotate(7deg); opacity: 0; filter: url(#intro01-ch014); mix-blend-mode: multiply; }
+    #intro01-sc014-nc { position: absolute; left: 140px; top: 690px; font-size: 64px; color: var(--ink); }
+    #intro01-sc014-nc .hw { position: relative; display: inline-block; }
+
+    /* IS015 dictionary */
+    #intro01-sc015-stage { position: absolute; inset: 0; perspective: 2200px; }
+    #intro01-sc015-cam { position: absolute; left: 0; top: 0; width: 1400px; height: 1800px; transform-origin: 0 0; }
+    #intro01-sc015-page { position: absolute; left: 0; top: 0; width: 1400px; height: 1800px; background: #e9e0cb; padding: 70px 80px; color: #2a2622; transform: rotateY(-10deg) rotateX(6deg) rotate(-2deg); transform-origin: 50% 40%; box-shadow: 0 40px 90px rgba(20,27,36,0.35); }
+    #intro01-sc015-page .gw { display: flex; justify-content: space-between; font-size: 26px; border-bottom: 2px solid #2a2622; padding-bottom: 10px; margin-bottom: 26px; }
+    #intro01-sc015-page .cols { display: flex; gap: 56px; }
+    #intro01-sc015-page .col { flex: 1; font-size: 31px; line-height: 1.32; text-align: justify; }
+    #intro01-sc015-page p { margin: 0 0 18px; }
+    #intro01-sc015-page b { font-weight: 700; }
+    #intro01-sc015-page .ht { position: absolute; inset: 0; background: url('assets/textures/halftone_01_norm.jpg') 0 0 / 400px auto; mix-blend-mode: overlay; opacity: 0.25; }
+    #intro01-sc015-page .tx { position: absolute; inset: 0; background: url('assets/textures/newsprint_01.jpg') center / cover; mix-blend-mode: multiply; opacity: 0.45; }
+    #intro01-sc015-hlw { position: relative; display: inline-block; }
+    #intro01-sc015-hl { left: -6px; right: -6px; top: 8px; bottom: 2px; }
+    #intro01-sc015-card { position: absolute; left: 110px; top: 300px; width: 760px; padding: 40px 46px 46px; background: #f1ebde; box-shadow: 0 24px 60px rgba(20,27,36,0.35); transform: rotate(-1.5deg); }
+    #intro01-sc015-pp { font-size: 62px; line-height: 1.05; color: var(--ink); }
+    #intro01-sc015-or { font-size: 36px; color: var(--ink-soft); margin: 18px 0 0; opacity: 0; }
+    #intro01-sc015-fd { font-size: 170px; color: var(--ink); line-height: 0.95; opacity: 0; filter: url(#intro01-ch015); }
+
+    /* IS016 world */
+    #intro01-sc016-cam { position: absolute; left: 0; top: 0; width: 3840px; height: 1920px; transform-origin: 0 0; }
+    #intro01-sc016-cam img { position: absolute; inset: 0; width: 3840px; height: 1920px; filter: brightness(0.62) contrast(1.1); }
+    #intro01-sc016-pin { position: absolute; left: 3180px; top: 677px; width: 60px; height: 60px; border-radius: 50%; border: 7px solid var(--bone); opacity: 0; }
+    #intro01-sc016-sweep { position: absolute; left: -540px; top: -960px; width: 3000px; height: 3000px; border-radius: 50%; mix-blend-mode: screen;
+      background: conic-gradient(from 0deg, rgba(159,195,227,0) 0deg, rgba(159,195,227,0) 300deg, rgba(159,195,227,0.30) 358deg, rgba(159,195,227,0) 360deg); }
+    #intro01-sc016-txt { left: 0; top: 820px; width: 1920px; text-align: center; font-size: 120px; }
+
+    /* IS017 2.5D */
+    #intro01-sc017-stage { position: absolute; inset: 0; perspective: 1200px; perspective-origin: 50% 50%; background: #17130f; }
+    #intro01-sc017-cam { position: absolute; inset: 0; transform-style: preserve-3d; transform-origin: 50% 50%; }
+    .i1-L { position: absolute; inset: 0; transform-origin: 50% 50%; }
+    .i1-L img { position: absolute; }
+    #intro01-sc017-bdb { left: -260px; top: -500px; width: 2440px; filter: blur(22px) brightness(0.5) saturate(0.7); }
+    #intro01-sc017-bd { left: 563px; top: -100px; width: 794px; filter: brightness(0.62) saturate(0.75);
+      -webkit-mask-image: linear-gradient(90deg, transparent, #000 18%, #000 82%, transparent); mask-image: linear-gradient(90deg, transparent, #000 18%, #000 82%, transparent); }
+    #intro01-sc017-ts { left: 563px; top: -100px; width: 794px; filter: saturate(0.85) contrast(1.04); }
+    #intro01-sc017-vs { left: 563px; top: -100px; width: 794px; filter: saturate(0.8) brightness(0.92) blur(1.5px); }
+    #intro01-sc017-fut { position: absolute; left: 1215px; top: 300px; font-size: 150px; white-space: nowrap; }
+    #intro01-sc017-shade { position: absolute; inset: 0; background: linear-gradient(0deg, rgba(14,12,10,0.7) 0%, rgba(14,12,10,0) 32%); }
+    #intro01-sc017-name { left: 140px; top: 170px; font-size: 96px; opacity: 0; }
+    #intro01-sc017-gi { left: 140px; top: 830px; font-size: 104px; }
+
+    /* IS018 */
+    #intro01-sc018-weave { position: absolute; inset: -14px; }
+    #intro01-sc018-cam { position: absolute; inset: 0; transform-origin: 55% 45%; }
+    #intro01-sc018-vid { position: absolute; left: 0; top: -150px; width: 1920px; height: 1440px; object-fit: cover; }
+    #intro01-sc018-l1 { left: 120px; top: 800px; font-size: 76px; }
+    #intro01-sc018-l2 { left: 126px; top: 910px; font-size: 34px; opacity: 0; }
+
+    /* IS019 ledger timeline */
+    #intro01-sc019-cam { position: absolute; inset: 0; transform-origin: 50% 55%; }
+    #intro01-sc019-svg { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; }
+    #intro01-sc019-logo { position: absolute; left: 230px; top: 470px; width: 300px; opacity: 0; }
+    #intro01-sc019-dot { position: absolute; left: 352px; top: 622px; width: 36px; height: 36px; border-radius: 50%; background: var(--navy); box-shadow: 0 0 0 8px rgba(29,92,158,0.18); }
+    #intro01-sc019-nb { left: 0; top: 200px; width: 1920px; text-align: center; font-size: 110px; color: var(--ink); }
+    #intro01-sc019-ago { left: 0; top: 780px; width: 1920px; text-align: center; font-size: 64px; color: var(--ink); }
+
+    /* IS020 compass */
+    #intro01-sc020-svg { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; }
+    #intro01-sc020-rose { transform-origin: 960px 540px; }
+    #intro01-sc020-card { position: absolute; left: 650px; top: 308px; width: 620px; height: 465px; background: #e8e1d2; padding: 14px; box-shadow: 0 30px 80px rgba(0,0,0,0.65); transform-origin: 50% 50%; filter: url(#intro01-rough20); }
+    #intro01-sc020-card .ph { position: relative; width: 100%; height: 100%; overflow: hidden; }
+    #intro01-sc020-card img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 45%; filter: url(#intro01-tint-blue2) contrast(1.05); }
+    #intro01-sc020-card .ht { position: absolute; inset: 0; background: url('assets/textures/halftone_01_norm.jpg') 0 0 / 300px auto; mix-blend-mode: overlay; opacity: 0.5; }
+    #intro01-sc020-ts { left: 140px; top: 130px; font-size: 64px; opacity: 0; }
+    #intro01-sc020-perm { left: 144px; top: 230px; font-size: 34px; opacity: 0; }
+    #intro01-sc020-re { left: 0; top: 860px; width: 1920px; text-align: center; font-size: 150px; opacity: 0; filter: url(#intro01-ch020); }
+
+    /* IS021 */
+    #intro01-sc021-plate { position: absolute; inset: 0; transform-origin: 50% 55%; }
+    #intro01-sc021-plate .img, #intro01-sc021-plate .fringe { object-position: 50% 40%; filter: saturate(0.9) contrast(1.05) brightness(0.92); }
+    #intro01-sc021-plate .fringe { filter: saturate(0.9) contrast(1.05) brightness(0.92) blur(7px); }
+    #intro01-sc021-ub { left: 110px; top: 110px; font-size: 110px; }
+
+    /* IS022 D06 board semicircle (motif master — exported to intro02) */
+    #intro01-sc022-sheet { position: absolute; left: 0; top: 0; width: 1920px; height: 1500px; }
+    #intro01-sc022-sheet .i1-p1, #intro01-sc022-sheet .i1-p2 { background-size: 1920px 1500px; }
+    #intro01-sc022-title { position: absolute; left: 0; top: 150px; width: 1920px; text-align: center; font-size: 76px; color: var(--ink); }
+    #intro01-sc022-title i { font-style: italic; color: var(--navy); }
+    #intro01-sc022-svg { position: absolute; left: 0; top: 0; width: 1920px; height: 1500px; overflow: visible; }
+    #intro01-sc022-alm { position: absolute; left: 1390px; top: 470px; font-size: 72px; color: var(--ink); opacity: 0; }
+    #intro01-sc022-yesw { position: absolute; left: 760px; top: 560px; width: 400px; height: 220px; }
+    #intro01-sc022-yesh { position: absolute; inset: 0; border-radius: 20px; background: rgba(20,27,36,0.35); filter: blur(22px); transform: translate(34px, 70px) scale(0.9); opacity: 0; }
+    #intro01-sc022-yes { position: absolute; inset: 0; border: 12px solid var(--ink); color: var(--ink); font-size: 150px; line-height: 186px; text-align: center; transform: rotate(-8deg); opacity: 0; filter: url(#intro01-ch022); background: rgba(235,228,214,0.0); }
+
+    #intro01-grain { z-index: 8; }
+    #intro01-dust { z-index: 8; }
+    #intro01-vig { z-index: 8; }
+  </style>
+  <div id="root" data-composition-id="intro01" data-vo-start="0" data-duration="92.13" data-width="1920" data-height="1080">
+    <svg id="intro01-defs" width="0" height="0" style="position:absolute"></svg>
+
+    <!-- IS001 · 0.00–1.12 · "In 1983," · night title -->
+    <div class="i1-scene i1-night" id="intro01-sc001" data-scene="IS001"><div class="i1-shot" id="intro01-sc001-shot">
+      <canvas id="intro01-sc001-streaks" class="streaks"></canvas>
+      <div id="intro01-sc001-blk"><div id="intro01-sc001-yr" class="t-display halate">1983</div></div>
+    </div></div>
+
+    <!-- IS002 · 1.12–5.28 · Robert Tsao, CEO of Taiwanese chip company UMC · paper, Vox layered -->
+    <div class="i1-scene i1-paper" id="intro01-sc002" data-scene="IS002"><div class="i1-shot" id="intro01-sc002-shot">
+      <div class="i1-p1" style="background-image:url('assets/textures/paper_cream_01.jpg')"></div>
+      <div class="i1-p2" style="background-image:url('assets/textures/paper_cream_02.jpg')"></div>
+      <div id="intro01-sc002-cam">
+        <div class="i1-panel" id="intro01-sc002-tw"><div class="rel"></div><div class="fill"></div></div>
+        <div class="i1-panel" id="intro01-sc002-chip"><video id="intro01-sc002-vid" src="assets/intro/footage/wafer_die_pattern_macro.mp4" muted playsinline data-start="1.12" data-duration="4.16" data-media-start="2.0"></video></div>
+        <div id="intro01-sc002-ts"><img src="assets/intro/made/tsao_layers/tsao.png" alt="" /><div class="ht"></div></div>
+        <div id="intro01-sc002-name"><div class="i1-box t-display" id="intro01-sc002-rob">ROBERT</div><div class="i1-box t-display" id="intro01-sc002-tsao">TSAO</div></div>
+        <div id="intro01-sc002-ceo" class="t-label i1-ink">CEO</div>
+        <div id="intro01-sc002-umc"><img src="assets/intro/logos/UMC-Logo.png" alt="" /></div>
+      </div>
+      <div class="i1-credit ink t-label">Photo: NYCU Secretariat / Wikimedia Commons</div>
+    </div></div>
+
+    <!-- IS003 · 5.28–7.68 · was walking around his factory floor · archival footage -->
+    <div class="i1-scene i1-night" id="intro01-sc003" data-scene="IS003"><div class="i1-shot" id="intro01-sc003-shot">
+      <div id="intro01-sc003-weave"><div id="intro01-sc003-cam">
+        <video id="intro01-sc003-vid" class="i1-fab" src="assets/intro/footage/fab_floor_manager_walks_rows.mp4" muted playsinline data-start="5.28" data-duration="2.42" data-media-start="0.5"
+          data-color-grading='{"adjust":{"saturation":-0.25,"contrast":0.06},"effects":{"chromaticAberration":0.12,"chromaticAngle":0}}'></video>
+      </div></div>
+    </div></div>
+
+    <!-- IS004 · 7.68–10.16 · This is when he has a unique insight · freeze + streaks -->
+    <div class="i1-scene i1-night" id="intro01-sc004" data-scene="IS004"><div class="i1-shot" id="intro01-sc004-shot">
+      <div id="intro01-sc004-weave"><div id="intro01-sc004-cam">
+        <img id="intro01-sc004-still" class="i1-fab" src="assets/intro/made/fab_walk_freeze_2p9.jpg" alt="" />
+        <canvas id="intro01-sc004-streaks" class="streaks"></canvas>
+        <img id="intro01-sc004-man" class="i1-fab" src="assets/intro/cutouts/fab_walker_cutout.png" alt="" />
+      </div></div>
+      <div id="intro01-sc004-ins" class="i1-abs t-serif-i halate">insight</div>
+    </div></div>
+
+    <!-- IS005 · 10.16–15.52 · …his industry and the future of the world · curve cut wafer → globe -->
+    <div class="i1-scene i1-night" id="intro01-sc005" data-scene="IS005"><div class="i1-shot" id="intro01-sc005-shot">
+      <div id="intro01-sc005-wrap">
+        <div id="intro01-sc005-a"><video id="intro01-sc005-wafer" src="assets/intro/footage/wafer_closeup_purple.mp4" muted playsinline data-start="10.16" data-duration="3.6" data-media-start="0.5"
+          data-color-grading='{"adjust":{"saturation":-0.75,"contrast":0.1},"effects":{"chromaticAberration":0.12,"chromaticAngle":0}}'></video></div>
+        <div id="intro01-sc005-b"><div id="intro01-sc005-glow"></div><img id="intro01-sc005-globe" src="assets/intro/made/globe_blue_marble_desat.png" alt="" /></div>
+      </div>
+      <div id="intro01-sc005-ind" class="i1-abs t-label clean"><span class="i1-w">his </span><span class="i1-w">industry</span></div>
+      <div id="intro01-sc005-world" class="i1-abs t-display halate"><span class="i1-w">the </span><span class="i1-w">world</span></div>
+      <div class="i1-credit t-label" id="intro01-sc005-cr" style="opacity:0">Globe: NASA Blue Marble</div>
+    </div></div>
+
+    <!-- IS006 · 15.52–20.48 · Taiwan's exports of telephones to the United States · D10 tilted vintage map -->
+    <div class="i1-scene i1-paper" id="intro01-sc006" data-scene="IS006"><div class="i1-shot" id="intro01-sc006-shot">
+      <div id="intro01-sc006-stage"><div id="intro01-sc006-plane"><div id="intro01-sc006-cam">
+        <img id="intro01-sc006-base" src="assets/intro/made/pacific_beige.jpg" alt="" />
+        <img id="intro01-sc006-fm" src="assets/intro/maps/formosa_1943_japanese_aviation_map.jpg" alt="" />
+        <img id="intro01-sc006-fill" src="assets/intro/made/taiwan_celadon_wash.png" alt="" />
+        <svg id="intro01-sc006-svg" viewBox="0 0 5700 1440"></svg>
+        <img id="intro01-sc006-phone" src="assets/intro/cutouts/phone_pushbutton_halftone.png" alt="" />
+      </div><div id="intro01-sc006-tex"></div></div></div>
+      <div id="intro01-sc006-far"></div>
+      <div id="intro01-sc006-tw" class="i1-abs t-label">Taiwan<div id="intro01-sc006-twu"></div></div>
+      <div id="intro01-sc006-tel" class="i1-abs t-serif-i i1-ink">telephones</div>
+      <div id="intro01-sc006-us" class="i1-abs t-label i1-ink"><span class="i1-w">United </span><span class="i1-w">States</span></div>
+    </div></div>
+
+    <!-- IS007 · 20.48–24.88 · 4 million → 24 million · D01 bars on graph paper -->
+    <div class="i1-scene i1-paper" id="intro01-sc007" data-scene="IS007"><div class="i1-shot" id="intro01-sc007-shot">
+      <div class="i1-p1" style="background-image:url('assets/textures/paper_cream_01.jpg')"></div>
+      <div class="i1-p2" style="background-image:url('assets/textures/paper_graph_01.jpg'); mix-blend-mode:normal"></div>
+      <div id="intro01-sc007-cam">
+        <div id="intro01-sc007-thr"></div>
+        <div class="i1-bar" id="intro01-sc007-a"><div class="ht"></div></div>
+        <div class="i1-bar" id="intro01-sc007-b"><div class="ht"></div></div>
+        <div id="intro01-sc007-base"></div>
+        <img id="intro01-sc007-phone" src="assets/intro/cutouts/phone_pushbutton_halftone.png" alt="" />
+        <div id="intro01-sc007-4" class="i1-abs t-display i1-ink"><span class="i1-w">4 </span><span class="i1-w s">million</span></div>
+        <div id="intro01-sc007-yr" class="i1-abs t-label i1-ink">a year</div>
+        <div id="intro01-sc007-lb" class="i1-abs"><span class="label-box" id="intro01-sc007-box" style="opacity:0"><span id="intro01-sc007-n">4</span><span class="m t-serif-i i1-w" id="intro01-sc007-m">million</span></span></div>
+      </div>
+    </div></div>
+
+    <!-- IS008 · 24.88–28.08 · That was a 6x increase in just 12 months · punched-in label box -->
+    <div class="i1-scene i1-paper" id="intro01-sc008" data-scene="IS008"><div class="i1-shot" id="intro01-sc008-shot">
+      <div class="i1-p1" style="background-image:url('assets/textures/paper_cream_01.jpg')"></div>
+      <div class="i1-p2" style="background-image:url('assets/textures/paper_graph_01.jpg'); mix-blend-mode:normal; background-size:2900px auto; background-position:35% 20%"></div>
+      <div id="intro01-sc008-box" class="i1-abs"><span class="label-box" id="intro01-sc008-lb" style="opacity:0"><span id="intro01-sc008-n">1</span>×</span></div>
+      <div id="intro01-sc008-inc" class="i1-abs t-label">increase</div>
+      <div id="intro01-sc008-12" class="i1-abs t-serif-i"><span class="i1-w">12 </span><span class="i1-w">months</span></div>
+      <svg id="intro01-sc008-ticks" viewBox="0 0 640 120"></svg>
+    </div></div>
+
+    <!-- IS009 · 28.08–31.92 · And UMC was making the chips inside those phones · lamp-lit desk + datasheet -->
+    <div class="i1-scene i1-night" id="intro01-sc009" data-scene="IS009"><div class="i1-shot" id="intro01-sc009-shot">
+      <div id="intro01-sc009-desk"></div>
+      <div id="intro01-sc009-cam">
+        <div id="intro01-sc009-film"><div class="in">
+          <img src="assets/intro/made/pushbutton_phone_1970_hand_f3p3.jpg" alt="" />
+          <video id="intro01-sc009-vid" src="assets/intro/footage/pushbutton_phone_1970_hand.mp4" muted playsinline data-start="28.08" data-duration="2.3" data-media-start="1.0"></video>
+        </div></div>
+        <div id="intro01-sc009-ds"><div class="tex"></div>
+          <img class="logo" src="assets/intro/logos/UMC-Logo.png" alt="" />
+          <div class="rule"></div>
+          <div class="ln" style="width:92%"></div><div class="ln" style="width:84%"></div><div class="ln" style="width:88%"></div><div class="ln" style="width:60%"></div>
+          <svg id="intro01-sc009-chip" viewBox="0 0 440 360"></svg>
+          <div style="position:absolute; left:56px; right:56px; top:720px"><div class="ln" style="width:90%"></div><div class="ln" style="width:94%"></div><div class="ln" style="width:72%"></div></div>
+        </div>
+        <svg id="intro01-sc009-mk" class="i1-mk"></svg>
+      </div>
+      <div id="intro01-sc009-lamp"></div>
+      <div id="intro01-sc009-ph" class="i1-abs t-serif-i clean">phones</div>
+    </div></div>
+
+    <!-- IS010–IS011 · 31.92–40.40 · record profits in its first full year / the phone boom died, UMC's sales died with it · D05 line chart -->
+    <div class="i1-scene i1-paper" id="intro01-sc010" data-scene="IS010-IS011"><div class="i1-shot" id="intro01-sc010-shot">
+      <div class="i1-p1" style="background-image:url('assets/textures/paper_cream_02.jpg')"></div>
+      <div class="i1-p2" style="background-image:url('assets/textures/paper_stained_01.jpg'); opacity:0.6"></div>
+      <div id="intro01-sc010-cam">
+        <div class="i1-gl" style="top:310px"></div><div class="i1-gl" style="top:510px"></div><div class="i1-gl" style="top:710px"></div>
+        <div id="intro01-sc010-band"></div>
+        <div id="intro01-sc010-axis"></div>
+        <svg id="intro01-sc010-svg" viewBox="0 0 3000 1400"></svg>
+        <div id="intro01-sc010-ffy" class="i1-abs t-serif-i"><span class="i1-w">first </span><span class="i1-w">full </span><span class="i1-w">year</span></div>
+        <div id="intro01-sc010-stamp" class="i1-abs t-display">RECORD</div>
+        <div id="intro01-sc010-prof" class="i1-abs t-serif-i">profits</div>
+        <div id="intro01-sc011-pb" class="i1-abs t-label"><span class="i1-w">phone </span><span class="i1-w">boom</span></div>
+        <div id="intro01-sc011-us" class="i1-abs t-label"><span class="i1-w">UMC's </span><span class="i1-w">sales</span></div>
+        <svg id="intro01-sc011-mk" class="i1-mk" style="width:3000px;height:1400px" viewBox="0 0 3000 1400"></svg>
+      </div>
+    </div></div>
+
+    <!-- IS012 · 40.40–47.28 · as a chip factory, it made no sense to make chips just for one product · footage + markups -->
+    <div class="i1-scene i1-night" id="intro01-sc012" data-scene="IS012"><div class="i1-shot" id="intro01-sc012-shot">
+      <div id="intro01-sc012-weave"><div id="intro01-sc012-cam">
+        <video id="intro01-sc012-vid" src="assets/intro/footage/fab_hk_workers_microscope_rows_a.mp4" muted playsinline data-start="40.40" data-duration="6.88" data-media-start="0.2"
+          data-color-grading='{"adjust":{"saturation":-0.3,"contrast":0.08},"effects":{"chromaticAberration":0.12,"chromaticAngle":0}}'></video>
+      </div></div>
+      <div id="intro01-sc012-dim"></div>
+      <svg id="intro01-sc012-mk" class="i1-mk"></svg>
+      <svg id="intro01-sc012-icon" viewBox="0 0 100 100"></svg>
+      <div class="i1-scrim-b" style="height:300px"></div>
+      <div id="intro01-sc012-cf" class="i1-abs t-label clean"><span class="i1-w">chip </span><span class="i1-w">factory</span></div>
+      <div id="intro01-sc012-op" class="i1-abs t-serif-i clean"><span class="i1-w">one </span><span class="i1-w">product</span></div>
+    </div></div>
+
+    <!-- IS013 · 47.28–53.12 · much more profitable … anything that was in demand · D04 horizontal bars -->
+    <div class="i1-scene i1-paper" id="intro01-sc013" data-scene="IS013"><div class="i1-shot" id="intro01-sc013-shot">
+      <div class="i1-p1" style="background-image:url('assets/textures/paper_cream_01.jpg')"></div>
+      <div class="i1-p2" style="background-image:url('assets/textures/paper_fiber_01.jpg'); opacity:0.5"></div>
+      <div id="intro01-sc013-title" class="i1-abs t-serif"><span class="i1-w">much </span><span class="i1-w">more </span><span class="i1-w"><i class="i1-blue">profitable</i></span></div>
+      <div id="intro01-sc013-rows"></div>
+      <div id="intro01-sc013-any" class="i1-abs t-label">anything</div>
+      <div id="intro01-sc013-dem" class="i1-abs t-serif-i"><span class="i1-w">in </span><span class="i1-w">demand</span></div>
+    </div></div>
+
+    <!-- IS014 · 53.12–58.05 · at this point in 1983, this was a novel concept · Tsao's idea card (motif) -->
+    <div class="i1-scene i1-paper" id="intro01-sc014" data-scene="IS014"><div class="i1-shot" id="intro01-sc014-shot">
+      <div class="i1-p1" style="background-image:url('assets/textures/paper_cream_02.jpg')"></div>
+      <div class="i1-p2" style="background-image:url('assets/textures/paper_fiber_01.jpg'); opacity:0.45"></div>
+      <div id="intro01-sc014-card">
+        <div class="g1"></div><div class="g2"></div>
+        <svg id="intro01-sc014-sk" viewBox="0 0 1320 860"></svg>
+        <div id="intro01-sc014-stamp" class="t-display">1983</div>
+        <div id="intro01-sc014-nc" class="t-serif-i"><span class="i1-w">a </span><span class="hw"><span class="i1-hlbar" id="intro01-sc014-h1" style="left:-4px;right:6px;top:20px;bottom:6px"></span><span class="i1-w" style="position:relative">novel </span></span><span class="hw"><span class="i1-hlbar" id="intro01-sc014-h2" style="left:-4px;right:-4px;top:20px;bottom:6px"></span><span class="i1-w" style="position:relative">concept</span></span></div>
+      </div>
+    </div></div>
+
+    <!-- IS015 · 58.05–63.49 · no such thing as a pure play chip factory or foundry · dictionary page -->
+    <div class="i1-scene i1-paper" id="intro01-sc015" data-scene="IS015"><div class="i1-shot" id="intro01-sc015-shot">
+      <div class="i1-p1" style="background-image:url('assets/textures/paper_cream_01.jpg'); filter:brightness(0.82)"></div>
+      <div id="intro01-sc015-stage"><div id="intro01-sc015-cam"><div id="intro01-sc015-page">
+        <div class="gw t-label"><span>Foundation</span><span>587</span><span>Fountain</span></div>
+        <div class="cols">
+          <div class="col t-serif">
+            <p><b>Foun·da·tion</b>, <i>n.</i> The act of founding, fixing, establishing, or beginning to erect. That upon which anything is founded; that on which anything stands, and by which it is supported.</p>
+            <p><b>Found·er</b>, <i>n.</i> One who founds, establishes, and erects; one who lays a foundation; an author; one from whom anything originates. — One who founds; one who casts metals in various forms; a caster.</p>
+            <p><b>Found·er·y</b>, <i>n.</i> Same as Foundry.</p>
+            <p><b>Found·ling</b>, <i>n.</i> A deserted or exposed infant; a child found without a parent or owner.</p>
+          </div>
+          <div class="col t-serif">
+            <p><span id="intro01-sc015-hlw"><span class="i1-hlbar" id="intro01-sc015-hl"></span><b style="position:relative">Found·ry</b></span>, <i>n.</i> 1. The act, art, or business of casting metals. 2. The buildings and works occupied for casting metals.</p>
+            <p><b>Fount</b>, <i>n.</i> A fountain; a spring. — A complete set of printing type of one size and style.</p>
+            <p><b>Foun·tain</b>, <i>n.</i> A spring of water issuing from the earth. The source from which anything proceeds, or from which anything is supplied continuously; origin; source.</p>
+            <p><b>Foun·tain·head</b>, <i>n.</i> A spring from which a stream flows; the head or source of a stream.</p>
+          </div>
+        </div>
+        <div class="tx"></div><div class="ht" id="intro01-sc015-ht"></div>
+      </div></div></div>
+      <div id="intro01-sc015-card">
+        <div id="intro01-sc015-pp" class="t-serif"><span class="i1-w">pure-</span><span class="i1-w">play </span><span class="i1-w">chip </span><span class="i1-w">factory</span></div>
+        <div id="intro01-sc015-fd" class="t-display">foundry</div>
+      </div>
+    </div></div>
+
+    <!-- IS016 · 63.49–65.17 · It just didn't exist in the world · empty world map, radar sweep -->
+    <div class="i1-scene i1-night" id="intro01-sc016" data-scene="IS016"><div class="i1-shot" id="intro01-sc016-shot">
+      <div id="intro01-sc016-cam"><img src="assets/intro/made/world_desat_3840.jpg" alt="" /><div id="intro01-sc016-pin"></div></div>
+      <div id="intro01-sc016-sweep"></div>
+      <div id="intro01-sc016-txt" class="i1-abs t-display clean"><span class="i1-w">didn't </span><span class="i1-w">exist</span></div>
+      <div class="i1-credit t-label">Basemap: NASA Blue Marble</div>
+    </div></div>
+
+    <!-- IS017 · 65.17–69.09 · But Tsao could see the future … good idea · 2.5D #1 -->
+    <div class="i1-scene i1-night" id="intro01-sc017" data-scene="IS017"><div class="i1-shot" id="intro01-sc017-shot">
+      <div id="intro01-sc017-stage"><div id="intro01-sc017-cam">
+        <div class="i1-L" id="intro01-sc017-L0"><img id="intro01-sc017-bdb" src="assets/intro/made/tsao_layers/backdrop.jpg" alt="" /><img id="intro01-sc017-bd" src="assets/intro/made/tsao_layers/backdrop.jpg" alt="" /></div>
+        <div class="i1-L" id="intro01-sc017-L1"><div id="intro01-sc017-fut" class="t-serif-i clean"><span class="i1-w">the </span><span class="i1-w">future</span></div></div>
+        <div class="i1-L" id="intro01-sc017-L2"><img id="intro01-sc017-ts" src="assets/intro/made/tsao_layers/tsao.png" alt="" /></div>
+        <div class="i1-L" id="intro01-sc017-L3"><img id="intro01-sc017-vs" src="assets/intro/made/tsao_layers/vase.png" alt="" /></div>
+      </div></div>
+      <div id="intro01-sc017-shade"></div>
+      <div id="intro01-sc017-name" class="i1-abs t-display"><span class="i1-box">TSAO</span></div>
+      <div id="intro01-sc017-gi" class="i1-abs t-display clean"><span class="i1-w">good </span><span class="i1-w">idea</span></div>
+      <div class="i1-credit t-label">Photo: NYCU Secretariat / Wikimedia Commons</div>
+    </div></div>
+
+    <!-- IS018 · 69.09–72.93 · he goes to his board of directors to ask for their permission · boardroom footage -->
+    <div class="i1-scene i1-night" id="intro01-sc018" data-scene="IS018"><div class="i1-shot" id="intro01-sc018-shot">
+      <div id="intro01-sc018-weave"><div id="intro01-sc018-cam">
+        <video id="intro01-sc018-vid" src="assets/intro/footage/boardroom_blackboard_meeting_a.mp4" muted playsinline data-start="69.09" data-duration="3.84" data-media-start="7.2"
+          data-color-grading='{"adjust":{"saturation":-0.25,"contrast":0.06},"effects":{"chromaticAberration":0.12,"chromaticAngle":0}}'></video>
+      </div></div>
+      <div class="i1-scrim-b"></div>
+      <div id="intro01-sc018-l1" class="i1-abs t-serif-i clean"><span class="i1-w">his </span><span class="i1-w">board </span><span class="i1-w">of </span><span class="i1-w">directors</span></div>
+      <div id="intro01-sc018-l2" class="i1-abs t-label clean">permission</div>
+    </div></div>
+
+    <!-- IS019 · 72.93–77.65 · UMC was still a pretty new business … launched just a year ago · ledger timeline -->
+    <div class="i1-scene i1-paper" id="intro01-sc019" data-scene="IS019"><div class="i1-shot" id="intro01-sc019-shot">
+      <div class="i1-p1" style="background-image:url('assets/textures/paper_cream_02.jpg')"></div>
+      <div class="i1-p2" style="background-image:url('assets/textures/paper_lined_01.jpg'); filter:grayscale(0.7) brightness(1.08); background-position:50% 30%"></div>
+      <div id="intro01-sc019-cam">
+        <svg id="intro01-sc019-svg" viewBox="0 0 1920 1080"></svg>
+        <img id="intro01-sc019-logo" src="assets/intro/logos/UMC-Logo.png" alt="" />
+        <div id="intro01-sc019-dot"></div>
+        <div id="intro01-sc019-nb" class="i1-abs t-serif-i"><span class="i1-w">new </span><span class="i1-w">business</span></div>
+        <div id="intro01-sc019-ago" class="i1-abs t-serif-i"><span class="i1-w">a </span><span class="i1-w">year </span><span class="i1-w">ago</span></div>
+      </div>
+    </div></div>
+
+    <!-- IS020 · 77.65–82.29 · Tsao needed their permission to reorient the whole thing · compass + rotating UMC building -->
+    <div class="i1-scene i1-night" id="intro01-sc020" data-scene="IS020"><div class="i1-shot" id="intro01-sc020-shot">
+      <svg id="intro01-sc020-svg" viewBox="0 0 1920 1080"><g id="intro01-sc020-rose"></g></svg>
+      <div id="intro01-sc020-card"><div class="ph"><img src="assets/intro/photos/umc_fab8ab.jpg" alt="" /><div class="ht"></div></div></div>
+      <div id="intro01-sc020-ts" class="i1-abs t-display"><span class="i1-box">Tsao</span></div>
+      <div id="intro01-sc020-perm" class="i1-abs t-label clean">permission</div>
+      <div id="intro01-sc020-re" class="i1-abs t-display clean">reorient</div>
+      <div class="i1-credit t-label">Photo: ABOVE THE SKY, CC BY-SA 4.0</div>
+    </div></div>
+
+    <!-- IS021 · 82.29–85.09 · He knew this was going to be an uphill battle · Titian, Sisyphus -->
+    <div class="i1-scene i1-night" id="intro01-sc021" data-scene="IS021"><div class="i1-shot" id="intro01-sc021-shot">
+      <div id="intro01-sc021-plate"><div class="plate"><img class="img" src="assets/intro/paintings/sisyphus_titian_prado.jpg" alt="" /><img class="fringe" src="assets/intro/paintings/sisyphus_titian_prado.jpg" alt="" /></div></div>
+      <svg id="intro01-sc021-mk" class="i1-mk"></svg>
+      <div id="intro01-sc021-ub" class="i1-abs t-serif-i clean"><span class="i1-w">uphill </span><span class="i1-w">battle</span></div>
+    </div></div>
+
+    <!-- IS022 · 85.09–92.13 · the board was pretty excited … almost told him yes · D06 semicircle (motif master) -->
+    <div class="i1-scene i1-paper" id="intro01-sc022" data-scene="IS022"><div class="i1-shot" id="intro01-sc022-shot">
+      <div id="intro01-sc022-sheet">
+        <div class="i1-p1" style="background-image:url('assets/textures/paper_cream_01.jpg')"></div>
+        <div class="i1-p2" style="background-image:url('assets/textures/paper_cream_02.jpg')"></div>
+        <div id="intro01-sc022-title" class="t-serif"><span class="i1-w">the </span><span class="i1-w">board </span><span class="i1-w">was </span><span class="i1-w">pretty </span><span class="i1-w"><i>excited</i></span></div>
+        <svg id="intro01-sc022-svg" viewBox="0 0 1920 1500"></svg>
+        <div id="intro01-sc022-alm" class="t-serif-i">almost</div>
+        <div id="intro01-sc022-yesw"><div id="intro01-sc022-yesh"></div><div id="intro01-sc022-yes" class="t-display">YES</div></div>
+      </div>
+    </div></div>
+
+    <!-- global overlays -->
+    <div id="intro01-flash"></div>
+    <div id="intro01-grain" class="tx tx-grain" style="background-image:url('assets/textures/grain_01_norm.jpg')"></div>
+    <div id="intro01-dust" class="tx tx-dust" style="background-image:url('assets/textures/dust_01.jpg')"></div>
+    <div id="intro01-vig" class="vignette"></div>
+    <audio id="intro01-vo" class="temp-vo" src="vo_intro.mp3" data-start="0" data-duration="92.13" data-media-start="0" data-volume="1"></audio>
+  </div>
+  <script>
+  (function () {
+    const SEG = "intro01", SEG_START = 0, SEG_END = 92.13, DURATION = +(SEG_END - SEG_START).toFixed(2);
+    const T = (s) => +(s - SEG_START).toFixed(3);   // TEXT cues (audited) — literal word start − 0.06
+    const S = (s) => +(s - SEG_START).toFixed(3);   // STRUCTURAL cues (cuts, camera, objects)
+    const tl = gsap.timeline({ paused: true });
+    const $ = (id) => document.getElementById(SEG + "-" + id);
+    const NS = "http://www.w3.org/2000/svg";
+    const defs = $("defs");
+    const E = FX.ease;
+    const C = (e, d) => FX.choppy(e, d, 12);           // Vox long-tail ease, posterized to 12 fps
+    const BONE = "#f2ede3", INK = "#141b24", NAVY = "#1d5c9e", SKY = "#9fc3e3", CEL = "#9fc7b2";
+
+    // register per-frame work only inside [a,b] (keeps a 92 s segment fast)
+    function gated(a, b, fn) { const on = FX.onFrame; FX.onFrame = (f) => on(FX.gate(S(a) - 0.1, S(b) + 0.1, f)); try { return fn(); } finally { FX.onFrame = on; } }
+    function scene(id, a, b) {
+      tl.fromTo($(id), { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.001, immediateRender: false }, S(a));
+      if (b < SEG_END) tl.set($(id), { autoAlpha: 0 }, S(b));
+    }
+    function ground(kind, t) {
+      const v = kind === "paper" ? [0.32, 0.14, 0.26] : [1, 0.42, 0.36];
+      tl.set([$("vig"), $("dust"), $("grain")], { opacity: (i) => v[i] }, t);
+    }
+    const show = (el, t) => tl.fromTo(el, { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, t);
+    const rise = (el, t, o) => { o = o || {}; const d = o.dur || 1.0;
+      tl.fromTo(el, { opacity: 0, y: o.y == null ? 22 : o.y }, { opacity: 1, y: 0, duration: d, ease: C(E.out, d), immediateRender: true }, t); };
+    // whip between two shots (FX.whip) — the blur filter is only attached during the whip
+    const whipN = { n: 0 };
+    function whip(a, b, t, o) {
+      o = Object.assign({ dir: 1, vertical: false, flash: false, dur: 0.32 }, o);
+      const k = ++whipN.n, ba = FX.whipDefs(defs, `${SEG}-wa${k}`), bb = FX.whipDefs(defs, `${SEG}-wb${k}`), h = o.dur / 2;
+      tl.set(a, { filter: `url(#${SEG}-wa${k})` }, t - h - 0.01); tl.set(a, { filter: "none" }, t + 0.06);
+      tl.set(b, { filter: `url(#${SEG}-wb${k})` }, t - 0.001); tl.set(b, { filter: "none" }, t + h + 0.02);
+      FX.whip(tl, a, b, t, { dir: o.dir, vertical: o.vertical, dur: o.dur, blurA: ba, blurB: bb });
+      if (o.flash) tl.fromTo($("flash"), { opacity: 0 }, { opacity: 0.85, duration: 0.08, yoyo: true, repeat: 1, ease: "power2.in", immediateRender: false }, t - 0.08);
+    }
+    // hand-drawn rough stroke drawn on (trim paths)
+    function ink(parent, d, t, dur, o) {
+      o = o || {};
+      const p = document.createElementNS(NS, "path");
+      p.setAttribute("d", d); p.setAttribute("fill", "none");
+      p.setAttribute("stroke", o.color || INK); p.setAttribute("stroke-width", o.width || 6);
+      p.setAttribute("stroke-linecap", "round"); p.setAttribute("stroke-linejoin", "round");
+      if (o.filter) p.setAttribute("filter", o.filter);
+      if (o.dash) p.dataset.dash = o.dash;
+      parent.appendChild(p);
+      const len = p.getTotalLength() || 1;
+      p.setAttribute("stroke-dasharray", `${len} ${len}`); p.setAttribute("stroke-dashoffset", len);
+      tl.fromTo(p, { attr: { "stroke-dashoffset": len } }, { attr: { "stroke-dashoffset": 0 }, duration: dur, ease: o.ease || C(E.out, dur), immediateRender: true }, t);
+      p._len = len; return p;
+    }
+    // pictograms (our own graphics) — stroke icons in a 100×100 box
+    const PICTO = {
+      phone: '<path d="M18 40 Q18 22 50 22 Q82 22 82 40 L72 44 L66 34 L34 34 L28 44 Z"/><path d="M24 50 L76 50 L84 82 L16 82 Z"/><circle cx="40" cy="62" r="2.6"/><circle cx="50" cy="62" r="2.6"/><circle cx="60" cy="62" r="2.6"/><circle cx="40" cy="72" r="2.6"/><circle cx="50" cy="72" r="2.6"/><circle cx="60" cy="72" r="2.6"/>',
+      tv: '<rect x="14" y="26" width="72" height="52" rx="8"/><path d="M38 12 L50 26 L62 12"/><path d="M30 86 L70 86"/>',
+      calc: '<rect x="24" y="12" width="52" height="76" rx="6"/><rect x="32" y="20" width="36" height="16"/><path d="M34 48 h6 M47 48 h6 M60 48 h6 M34 60 h6 M47 60 h6 M60 60 h6 M34 72 h6 M47 72 h6 M60 72 h6"/>',
+      pc: '<rect x="16" y="14" width="68" height="48" rx="4"/><rect x="24" y="22" width="52" height="32"/><path d="M40 62 L36 74 L64 74 L60 62"/><rect x="18" y="78" width="64" height="10" rx="2"/>',
+      watch: '<circle cx="50" cy="50" r="22"/><path d="M38 31 L40 12 L60 12 L62 31 M38 69 L40 88 L60 88 L62 69 M50 38 L50 50 L58 56"/>',
+      game: '<path d="M22 38 Q50 30 78 38 Q90 42 88 66 Q86 80 74 76 Q66 66 50 66 Q34 66 26 76 Q14 80 12 66 Q10 42 22 38 Z"/><path d="M30 48 v12 M24 54 h12"/><circle cx="66" cy="50" r="3"/><circle cx="74" cy="58" r="3"/>',
+      factory: '<path d="M10 86 L10 46 L30 34 L30 46 L50 34 L50 46 L70 34 L70 18 L82 18 L82 86 Z"/><path d="M22 66 h10 M42 66 h10 M62 66 h10"/>',
+    };
+    const picto = (k, color, w) => `<g fill="none" stroke="${color}" stroke-width="${w || 5}" stroke-linecap="round" stroke-linejoin="round">${PICTO[k]}</g>`;
+
+    // shared filters
+    FX.tintDefs(defs, "intro01-tint-blue", "#0f2a4a", "#efe6d4");
+    FX.tintDefs(defs, "intro01-tint-blue2", "#0e2440", "#cfdcea");
+    gated(77.6, 82.4, () => FX.roughDefs(defs, "intro01-rough20", { freq: 0.03, scale: 6 }));
+    FX.grain($("grain"), 101);
+    FX.dust($("dust"), 102, 2);
+
+    /* =================== IS001 · 0.00–1.12 · "In 1983," =================== */
+    scene("sc001", 0, 1.12);
+    ground("night", 0);
+    gated(0, 1.2, () => FX.streaks($("sc001-streaks"), { seed: 31, speed: 0.5, tint: [255, 206, 158], lo: 0.4, gain: 1.05 }));
+    tl.fromTo($("sc001-streaks"), { opacity: 0 }, { opacity: 0.6, duration: 0.6, ease: "power1.out", immediateRender: true }, 0);
+    tl.fromTo($("sc001-blk"), { scale: 1.0 }, { scale: 1.04, duration: 1.12, ease: "none", immediateRender: true }, 0);
+    FX.text.odometer(tl, $("sc001-yr"), T(0.26), { dur: 0.42, stagger: 0.04, seed: 1983 });
+    whip($("sc001-shot"), $("sc002-shot"), S(1.12), { dir: 1, flash: true });
+
+    /* =================== IS002 · 1.12–5.28 · Robert Tsao, CEO of Taiwanese chip company UMC =================== */
+    scene("sc002", 1.12, 5.28);
+    ground("paper", S(1.12));
+    tl.fromTo($("sc002-cam"), { x: 0, scale: 1 }, { x: -40, duration: 3.9, ease: "none", immediateRender: true }, S(1.12));
+    tl.to($("sc002-cam"), { scale: 1.3, duration: 0.26, ease: E.in }, S(5.02));
+    tl.fromTo($("sc002-ts"), { x: 60, opacity: 0 }, { x: 0, opacity: 1, duration: 1.2, ease: C(E.out, 1.2), immediateRender: true }, S(1.14));
+    rise($("sc002-rob"), T(1.06), { dur: 0.9, y: 18 });
+    rise($("sc002-tsao"), T(1.54), { dur: 0.9, y: 18 });
+    rise($("sc002-ceo"), T(2.34), { dur: 0.8, y: 12 });
+    const slideIn = (el, t, dx, dy, r0, r1) => tl.fromTo(el, { x: dx, y: dy, rotation: r0, opacity: 0 }, { x: 0, y: 0, rotation: r1, opacity: 1, duration: 1.1, ease: C(E.out, 1.1), immediateRender: true }, t);
+    slideIn($("sc002-tw"), S(2.90), 260, -80, 4, -3);
+    slideIn($("sc002-chip"), S(3.62), 300, 120, 10, 4);
+    slideIn($("sc002-umc"), T(4.34), -220, 60, -8, -2);
+
+    /* =================== IS003 · 5.28–7.68 · was walking around his factory floor =================== */
+    scene("sc003", 5.28, 7.68);
+    ground("night", S(5.28));
+    gated(5.2, 7.8, () => FX.weave($("sc003-weave"), { amp: 0.6, flicker: 0.025, seed: 301 }));
+    tl.fromTo($("sc003-cam"), { scale: 1.0 }, { scale: 1.06, duration: 2.4, ease: "none", immediateRender: true }, S(5.28));
+
+    /* =================== IS004 · 7.68–10.16 · This is when he has a unique insight =================== */
+    scene("sc004", 7.68, 10.16);
+    gated(7.6, 10.3, () => FX.weave($("sc004-weave"), { amp: 0.6, flicker: 0.02, seed: 302 }));
+    // the freeze holds the last frame of IS003 (same geometry: cam continues 1.06 → 1.09)
+    tl.fromTo($("sc004-cam"), { scale: 1.06 }, { scale: 1.09, duration: 2.48, ease: "none", immediateRender: true }, S(7.68));
+    tl.fromTo($("sc004-still"), { filter: "saturate(0.85) brightness(1)" }, { filter: "saturate(0) brightness(0.4)", duration: 1.0, ease: C(E.out, 1.0), immediateRender: true }, S(7.72));
+    gated(8.7, 10.3, () => FX.streaks($("sc004-streaks"), { seed: 47, speed: 0.6, tint: [255, 214, 170], lo: 0.3, gain: 1.7 }));
+    tl.fromTo($("sc004-streaks"), { opacity: 0 }, { opacity: 1, duration: 1.0, ease: C(E.out, 1.0), immediateRender: true }, S(8.74));
+    const ch004 = FX.roughDefs(defs, "intro01-ch004", { freq: 0.04, scale: 6, choke: 0 });
+    $("sc004-ins").style.filter = "url(#intro01-ch004)";
+    show($("sc004-ins"), T(9.22));
+    FX.chokeSettle(tl, ch004, $("sc004-ins"), T(9.22), 12, 0.6, "blur(0.45px)");
+    whip($("sc004-shot"), $("sc005-shot"), S(10.16), { dir: 1, vertical: true });
+
+    /* =================== IS005 · 10.16–15.52 · …change the future of his industry and the future of the world =================== */
+    scene("sc005", 10.16, 15.52);
+    tl.fromTo($("sc005-wafer"), { scale: 1.0 }, { scale: 1.06, duration: 3.0, ease: "none", immediateRender: true }, S(10.16));
+    tl.set($("sc005-b"), { opacity: 0 }, S(10.16));
+    [T(12.66), T(12.90)].forEach((c, i) => show($("sc005-ind").children[i], c));
+    tl.to($("sc005-ind"), { opacity: 0, duration: 0.25 }, S(13.45));
+    const mid5 = FX.curveCut(tl, $("sc005-wrap"), $("sc005-a"), $("sc005-b"), S(13.18), 0.84, { from: 1, to: 1.6, ease: "expo.inOut" });
+    tl.fromTo($("sc005-cr"), { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: false }, mid5);
+    tl.to($("sc005-wrap"), { scale: 1.68, duration: 1.4, ease: E.cam }, mid5 + 0.42);
+    tl.fromTo($("sc005-globe"), { rotation: 0 }, { rotation: -6, duration: 2.0, ease: "none", immediateRender: false }, mid5);
+    FX.focusHunt(tl, $("sc005-globe"), S(14.40), { dur: 0.7 });
+    [T(14.58), T(14.74)].forEach((c, i) => rise($("sc005-world").children[i], c, { dur: 1.0, y: 16 }));
+    tl.to($("sc005-world"), { opacity: 0, duration: 0.2 }, S(15.22));
+    tl.to($("sc005-wrap"), { scale: 3.2, duration: 0.36, ease: E.in }, S(15.16));   // push on into the map plane → cut on action
+
+    /* =================== IS006 · 15.52–20.48 · Taiwan's exports of telephones to the United States (D10) =================== */
+    scene("sc006", 15.52, 20.48);
+    ground("paper", S(15.52));
+    (function () {
+      const cam = $("sc006-cam");
+      // centre of the plane (pacific px) at zoom z — the plane box is 2720×1680, its centre is (1360, 840)
+      const at = (cx, cy, z) => ({ x: 1360 - 400 - cx * z, y: 840 - 300 - cy * z, scale: z });
+      tl.fromTo(cam, at(318, 985, 7.2), Object.assign(at(330, 975, 6.2), { duration: 1.6, ease: E.cam, immediateRender: true }), S(15.52));
+      tl.to(cam, Object.assign(at(720, 900, 1.25), { duration: 1.8, ease: E.cam }), S(16.95));
+      tl.to(cam, Object.assign(at(820, 880, 1.18), { duration: 1.2, ease: "none" }), S(18.75));
+      tl.to($("sc006-fm"), { opacity: 0, duration: 1.0, ease: "power1.inOut" }, S(17.3));
+      tl.to(cam, Object.assign(at(3150, 700, 0.95), { duration: 1.1, ease: E.cam }), S(19.55));
+      tl.to(cam, Object.assign(at(3550, 690, 0.95), { duration: 0.4, ease: E.in }), S(20.3));
+      // Taiwan → celadon
+      tl.fromTo($("sc006-fill"), { opacity: 0 }, { opacity: 0.85, duration: 0.8, ease: C(E.out, 0.8), immediateRender: true }, S(17.46));
+      rise($("sc006-tw"), T(17.46), { dur: 1.0, y: 14 });
+      tl.fromTo($("sc006-twu"), { scaleX: 0 }, { scaleX: 1, duration: 0.6, ease: C(E.out, 0.6), immediateRender: true }, S(17.6));
+      // telephone pops on Taiwan
+      tl.fromTo($("sc006-phone"), { opacity: 0, scale: 0.4, y: 30 }, { opacity: 1, scale: 1, y: 0, duration: 1.0, ease: C(E.out, 1.0), immediateRender: true }, S(18.90));
+      rise($("sc006-tel"), T(18.90), { dur: 1.0, y: 16 });
+      tl.to([$("sc006-tw"), $("sc006-tel")], { opacity: 0, duration: 0.3 }, S(19.6));
+      // dashed ink route Taiwan → San Francisco, drawn on through a mask; celadon dot travels
+      const svg = $("sc006-svg");
+      const d = "M352 935 Q2050 120 3828 546";
+      svg.innerHTML = `<defs><mask id="intro01-rm" maskUnits="userSpaceOnUse" x="0" y="0" width="5700" height="1440"><path id="intro01-rmp" d="${d}" fill="none" stroke="#fff" stroke-width="40"/></mask></defs>
+        <path d="${d}" fill="none" stroke="${INK}" stroke-width="9" stroke-dasharray="28 22" stroke-linecap="round" mask="url(#intro01-rm)"/>
+        <circle id="intro01-sc006-dot" r="16" fill="${CEL}" stroke="${INK}" stroke-width="4" opacity="0"/>
+        <circle cx="3828" cy="546" r="14" fill="${INK}" opacity="0" id="intro01-sc006-sf"/>`;
+      const mp = svg.querySelector("#intro01-rmp"), L = mp.getTotalLength();
+      mp.setAttribute("stroke-dasharray", `${L} ${L}`);
+      const st = { p: 0 };
+      const draw = () => { mp.setAttribute("stroke-dashoffset", (L * (1 - st.p)).toFixed(1)); const q = mp.getPointAtLength(L * st.p), dot = svg.querySelector("#intro01-sc006-dot"); dot.setAttribute("cx", q.x.toFixed(1)); dot.setAttribute("cy", q.y.toFixed(1)); dot.setAttribute("opacity", st.p > 0 && st.p < 1 ? 1 : 0); };
+      draw();
+      tl.fromTo(st, { p: 0 }, { p: 1, duration: 1.2, ease: E.inOut, onUpdate: draw, immediateRender: false }, S(19.70));
+      tl.fromTo(svg.querySelector("#intro01-sc006-sf"), { attr: { opacity: 0 } }, { attr: { opacity: 1 }, duration: 0.001, immediateRender: true }, S(20.2));
+      [T(19.66), T(20.10)].forEach((c, i) => show($("sc006-us").children[i], c));
+    })();
+    whip($("sc006-shot"), $("sc007-shot"), S(20.48), { dir: 1 });
+
+    /* =================== IS007 · 20.48–24.88 · went from 4 million units a year to 24 million units (D01) =================== */
+    scene("sc007", 20.48, 24.88);
+    tl.fromTo($("sc007-a"), { scaleY: 0 }, { scaleY: 1, duration: 1.0, ease: C(E.out, 1.0), immediateRender: true }, S(20.90));
+    [T(20.90), T(21.30)].forEach((c, i) => show($("sc007-4").children[i], c));
+    tl.fromTo($("sc007-thr"), { opacity: 1, scaleX: 0 }, { scaleX: 1, duration: 1.0, ease: C(E.out, 1.0), immediateRender: true }, S(21.5));
+    rise($("sc007-yr"), T(22.26), { dur: 0.8, y: 10 });
+    tl.fromTo($("sc007-b"), { scaleY: 130 / 780 }, { scaleY: 1, duration: 1.4, ease: C(E.out, 1.4), immediateRender: true }, S(23.06));
+    show($("sc007-box"), T(23.06));
+    FX.text.count(tl, $("sc007-n"), T(23.06), 4, 24, 0.7);
+    show($("sc007-m"), T(23.78));
+    tl.fromTo($("sc007-cam"), { scale: 1 }, { scale: 1.7, duration: 0.3, ease: E.in, immediateRender: false }, S(24.60));
+
+    /* =================== IS008 · 24.88–28.08 · That was a 6x increase in just 12 months =================== */
+    scene("sc008", 24.88, 28.08);
+    tl.fromTo($("sc008-box"), { scale: 1.18 }, { scale: 1.0, duration: 1.2, ease: E.cam, immediateRender: true }, S(24.88));
+    show($("sc008-lb"), S(24.88));
+    FX.text.count(tl, $("sc008-n"), T(25.46), 1, 6, 0.6);
+    rise($("sc008-inc"), T(26.34), { dur: 0.9, y: 12 });
+    [T(27.06), T(27.46)].forEach((c, i) => show($("sc008-12").children[i], c));
+    (function () {
+      const svg = $("sc008-ticks");
+      svg.insertAdjacentHTML("beforeend", `<path d="M0 100 L640 100" stroke="${INK}" stroke-width="4" opacity="0.8"/>`);
+      for (let k = 0; k < 12; k++) {
+        const x = 20 + k * 54;
+        svg.insertAdjacentHTML("beforeend", `<rect id="intro01-tk${k}" x="${x}" y="30" width="16" height="66" fill="${INK}" opacity="0"/>`);
+        tl.fromTo(document.getElementById("intro01-tk" + k), { attr: { opacity: 0 } }, { attr: { opacity: 1 }, duration: 0.001, immediateRender: true }, S(27.06) + k / 12);
+      }
+    })();
+    whip($("sc008-shot"), $("sc009-shot"), S(28.08), { dir: -1, vertical: true });
+
+    /* =================== IS009 · 28.08–31.92 · And UMC was making the chips inside those phones =================== */
+    scene("sc009", 28.08, 32.14);
+    ground("night", S(28.08));
+    (function () {
+      const chip = $("sc009-chip");
+      let g = `<rect x="110" y="40" width="220" height="280" rx="10" fill="#1d2129"/><circle cx="150" cy="70" r="9" fill="#3a404b"/>`;
+      for (let k = 0; k < 9; k++) { const y = 62 + k * 28; g += `<rect x="84" y="${y}" width="26" height="12" fill="#8d8f94"/><rect x="330" y="${y}" width="26" height="12" fill="#8d8f94"/>`; }
+      chip.innerHTML = g;
+    })();
+    tl.fromTo($("sc009-desk"), { opacity: 0.4 }, { opacity: 1, duration: 0.25, ease: "power1.out", immediateRender: true }, S(28.08));
+    tl.fromTo($("sc009-ds"), { x: 900, rotation: 9 }, { x: 0, rotation: 2.5, duration: 1.1, ease: C(E.out, 1.1), immediateRender: true }, T(28.34));
+    tl.fromTo($("sc009-cam"), { scale: 1 }, { scale: 1.32, duration: 0.6, ease: E.in, immediateRender: true }, S(29.5));
+    tl.to($("sc009-cam"), { scale: 1.36, duration: 1.8, ease: "none" }, S(30.1));
+    FX.focusHunt(tl, $("sc009-cam"), S(30.12), { dur: 0.7 });
+    (function () {
+      const mk = $("sc009-mk"), f = FX.markupDefs(mk, "intro01-mk9", { boil: 4 });
+      FX.markup.circle(tl, mk, S(29.80), { cx: 1395, cy: 570, rx: 210, ry: 230, rot: -4, dur: 0.8, color: SKY, width: 8, filter: f, seed: 9 });
+      FX.markup.arrow(tl, mk, S(30.40), { x1: 1160, y1: 620, x2: 800, y2: 560, bend: -70, dur: 0.7, color: SKY, width: 8, filter: f });
+    })();
+    rise($("sc009-ph"), T(31.22), { dur: 0.6, y: 12 });
+    tl.to($("sc009-shot"), { y: -1120, duration: 0.34, ease: E.in }, S(31.80));   // paper slide: the desk slides up, the chart paper is under it
+
+    /* =================== IS010–IS011 · 31.92–40.40 · record profits / the phone boom died … =================== */
+    scene("sc010", 31.80, 40.40);
+    ground("paper", S(32.0));
+    (function () {
+      const svg = $("sc010-svg"), mk = $("sc011-mk");
+      const fpen = FX.markupDefs(mk, "intro01-mk11", { boil: 4 });
+      // UMC (blue): steep rise to a record in the first full year
+      ink(svg, "M120 860 L280 852 L440 846 L600 820 L720 760 L820 640 L900 500 L980 380 L1080 290 L1180 250", S(31.95), 0.7, { color: NAVY, width: 9, ease: E.inOut });
+      svg.insertAdjacentHTML("beforeend", `<circle id="intro01-sc010-pk" cx="1180" cy="250" r="16" fill="${NAVY}" stroke="#ebe4d6" stroke-width="5"/>`);
+      tl.fromTo(svg.querySelector("#intro01-sc010-pk"), { scale: 0, transformOrigin: "50% 50%" }, { scale: 1, duration: 0.6, ease: C(E.out, 0.6), immediateRender: true }, S(32.6));
+      tl.fromTo($("sc010-band"), { opacity: 0, scaleY: 0 }, { opacity: 1, scaleY: 1, duration: 1.0, ease: C(E.out, 1.0), immediateRender: true }, S(33.4));
+      const ch = FX.roughDefs(defs, "intro01-ch010", { freq: 0.045, scale: 7, choke: 0 });
+      show($("sc010-stamp"), T(32.58));
+      tl.fromTo($("sc010-stamp"), { scale: 1.35 }, { scale: 1, duration: 0.25, ease: "power2.in", immediateRender: true }, T(32.58));
+      FX.chokeSettle(tl, ch, $("sc010-stamp"), T(32.58), 9, 0.5, "none");
+      rise($("sc010-prof"), T(33.06), { dur: 0.8, y: 10 });
+      [T(33.94), T(34.18), T(34.66)].forEach((c, i) => show($("sc010-ffy").children[i], c));
+      // IS011 — camera slides right; the phone boom (ink) peaks over the band and drops; UMC follows
+      const cam = $("sc010-cam");
+      tl.fromTo(cam, { x: 0, y: 0 }, { x: -620, duration: 1.6, ease: E.cam, immediateRender: true }, S(35.12));
+      ink(svg, "M120 880 L300 875 L480 860 L640 800 L760 660 L860 470 L960 300 L1080 200 L1200 172 L1400 166 L1600 172 L1700 176", S(35.40), 1.1, { color: INK, width: 7, ease: E.inOut });
+      [T(36.58), T(36.98)].forEach((c, i) => show($("sc011-pb").children[i], c));
+      ink(svg, "M1700 176 L1760 360 L1810 620 L1850 900 L1880 1300", S(37.40), 0.45, { color: INK, width: 7, ease: E.in });
+      tl.to(cam, { x: -1080, duration: 1.4, ease: E.cam }, S(37.80));
+      tl.to([$("sc010-stamp"), $("sc010-prof"), $("sc010-ffy")], { opacity: 0, duration: 0.4 }, S(37.7));
+      ink(svg, "M1180 250 L1400 250 L1600 254 L1800 262 L2000 268", S(37.95), 1.0, { color: NAVY, width: 9, ease: E.inOut });
+      [T(38.02), T(38.82)].forEach((c, i) => show($("sc011-us").children[i], c));
+      ink(svg, "M2000 268 L2050 420 L2100 660 L2140 940 L2170 1340", S(39.40), 0.5, { color: NAVY, width: 9, ease: E.in });
+      FX.markup.pen(tl, mk, S(39.46), { points: [[2200, 300], [2240, 470], [2275, 690], [2295, 820]], dur: 0.6, width: 6, color: INK, filter: fpen, seed: 11 });
+      FX.markup.pen(tl, mk, S(39.96), { points: [[2250, 770], [2295, 830], [2342, 772]], dur: 0.25, width: 6, color: INK, filter: fpen, seed: 12, jitter: 2 });
+      tl.to(cam, { y: -380, duration: 0.5, ease: E.in }, S(39.95));   // follow the fall → cut on action
+    })();
+
+    /* =================== IS012 · 40.40–47.28 · as a chip factory, it made no sense to make chips just for one product =================== */
+    scene("sc012", 40.40, 47.28);
+    ground("night", S(40.40));
+    gated(40.3, 47.4, () => FX.weave($("sc012-weave"), { amp: 0.6, flicker: 0.025, seed: 1201 }));
+    tl.fromTo($("sc012-cam"), { scale: 1.0 }, { scale: 1.08, duration: 6.9, ease: "none", immediateRender: true }, S(40.40));
+    [T(42.34), T(42.74)].forEach((c, i) => show($("sc012-cf").children[i], c));
+    (function () {
+      const mk = $("sc012-mk"), f = FX.markupDefs(mk, "intro01-mk12");
+      const tx = 1515, ty = 700;
+      [[220, 300, 120], [700, 420, -90], [520, 820, 90], [1050, 250, -60], [1100, 900, 70]].forEach(([x, y, b], i) =>
+        FX.markup.arrow(tl, mk, S(45.10) + i * 0.12, { x1: x, y1: y, x2: tx - 110 + (i % 2) * 30, y2: ty + (i - 2) * 26, bend: b, dur: 0.8, color: BONE, width: 7, head: 26, filter: f }));
+      $("sc012-icon").innerHTML = picto("phone", BONE, 6);
+      tl.fromTo($("sc012-icon"), { opacity: 0, scale: 0.5 }, { opacity: 1, scale: 1, duration: 0.8, ease: C(E.out, 0.8), immediateRender: true }, S(46.10));
+      FX.markup.cross(tl, mk, S(46.70), { x: 1000, y: 600, s: 150, dur: 0.16, color: BONE, width: 14, filter: f });
+    })();
+    [T(46.10), T(46.42)].forEach((c, i) => show($("sc012-op").children[i], c));
+    whip($("sc012-shot"), $("sc013-shot"), S(47.28), { dir: 1 });
+
+    /* =================== IS013 · 47.28–53.12 · much more profitable … anything that was in demand (D04) =================== */
+    scene("sc013", 47.28, 53.12);
+    ground("paper", S(47.28));
+    [T(48.50), T(48.66), T(48.90)].forEach((c, i) => show($("sc013-title").children[i], c));
+    (function () {
+      const rows = $("sc013-rows"), kinds = ["phone", "tv", "calc", "pc", "watch", "game"], W = [300, 820, 560, 960, 470, 700];
+      kinds.forEach((k, i) => {
+        rows.insertAdjacentHTML("beforeend", `<div class="i1-row" id="intro01-sc013-r${i}" style="top:${300 + i * 112}px"><svg viewBox="0 0 100 100">${picto(k, INK, 5)}</svg><div class="bar" style="width:${W[i]}px"></div></div>`);
+        const r = $("sc013-r" + i), bar = r.querySelector(".bar");
+        if (i === 0) {
+          tl.fromTo(r, { opacity: 0, x: -40 }, { opacity: 1, x: 0, duration: 0.9, ease: C(E.out, 0.9), immediateRender: true }, S(47.40));
+          tl.fromTo(bar, { scaleX: 0 }, { scaleX: 1, duration: 1.2, ease: C(E.out, 1.2), immediateRender: true }, S(47.60));
+        } else {
+          tl.fromTo(r, { opacity: 0, x: -30 }, { opacity: 1, x: 0, duration: 0.8, ease: C(E.out, 0.8), immediateRender: true }, S(51.22) + (i - 1) / 12);
+          tl.fromTo(bar, { scaleX: 0 }, { scaleX: 1, duration: 1.5, ease: C(E.out, 1.5), immediateRender: true }, S(52.02) + (i - 1) / 12);
+        }
+      });
+    })();
+    rise($("sc013-any"), T(51.22), { dur: 0.8, y: 10 });
+    [T(52.02), T(52.26)].forEach((c, i) => show($("sc013-dem").children[i], c));
+    tl.fromTo($("sc013-shot"), { scale: 1 }, { scale: 1.04, duration: 5.9, ease: "none", immediateRender: false, transformOrigin: "40% 50%" }, S(47.28));
+
+    /* =================== IS014 · 53.12–58.05 · at this point in 1983, this was a novel concept (idea card) =================== */
+    scene("sc014", 53.12, 58.30);
+    tl.fromTo($("sc014-card"), { y: 40, rotation: -3 }, { y: 0, rotation: -1.5, duration: 1.2, ease: E.cam, immediateRender: true }, S(53.12));
+    (function () {
+      const sk = $("sc014-sk"), f = FX.markupDefs(sk, "intro01-mk14", { boil: 4 });
+      const P = (pts, t, d, s) => FX.markup.pen(tl, sk, t, { points: pts, dur: d, width: 5, color: "#3a4150", filter: f, seed: s });
+      // factory (pencil) → arrows → products
+      P([[140, 560], [140, 340], [240, 280], [240, 340], [340, 280], [340, 340], [440, 280], [440, 170], [500, 170], [500, 560], [140, 560]], S(53.30), 1.0, 141);
+      [[300, 610, 150, 940], [400, 650, 200, 1180], [500, 690, 200, 1060]].length;
+      const prods = ["phone", "tv", "calc", "pc", "game"];
+      prods.forEach((k, i) => {
+        const y = 110 + i * 115, x = 900;
+        P([[530, 390], [700, 390 + (y + 40 - 390) * 0.55], [x - 30, y + 50]], S(55.0) + i * 0.16, 0.6, 150 + i);
+        sk.insertAdjacentHTML("beforeend", `<g id="intro01-sc014-p${i}" transform="translate(${x} ${y})" opacity="0">${picto(k, "#3a4150", 4.5)}</g>`);
+        tl.fromTo(document.getElementById("intro01-sc014-p" + i), { attr: { opacity: 0 } }, { attr: { opacity: 1 }, duration: 0.001, immediateRender: true }, S(55.5) + i * 0.16);
+      });
+    })();
+    const ch014 = FX.roughDefs(defs, "intro01-ch014", { freq: 0.045, scale: 7, choke: 0 });
+    show($("sc014-stamp"), T(54.74));
+    tl.fromTo($("sc014-stamp"), { scale: 1.3 }, { scale: 1, duration: 0.2, ease: "power2.in", immediateRender: true }, T(54.74));
+    FX.chokeSettle(tl, ch014, $("sc014-stamp"), T(54.74), 8, 0.5, "none");
+    (function () {
+      const nc = $("sc014-nc"), w = nc.querySelectorAll(".i1-w");
+      [T(56.34), T(56.58), T(57.06)].forEach((c, i) => show(w[i], c));
+      tl.fromTo($("sc014-h1"), { scaleX: 0 }, { scaleX: 1, duration: 0.32, ease: "sine.inOut", immediateRender: true }, S(56.66));
+      tl.fromTo($("sc014-h2"), { scaleX: 0 }, { scaleX: 1, duration: 0.4, ease: "sine.inOut", immediateRender: true }, S(57.12));
+    })();
+    tl.fromTo($("sc014-shot"), { scale: 1 }, { scale: 1.035, duration: 4.7, ease: "none", immediateRender: false }, S(53.12));
+    tl.to($("sc014-shot"), { y: -1120, duration: 0.36, ease: E.in }, S(57.88));   // paper slide up → dictionary page underneath
+
+    /* =================== IS015 · 58.05–63.49 · pure play chip factory or foundry, as we know of today =================== */
+    scene("sc015", 57.88, 63.49);
+    (function () {
+      const cam = $("sc015-cam");
+      const at = (cx, cy, z) => ({ x: 1340 - cx * z, y: 540 - cy * z, scale: z });
+      tl.fromTo(cam, at(700, 700, 0.62), Object.assign(at(720, 560, 0.7), { duration: 3.4, ease: "none", immediateRender: true }), S(57.88));
+      tl.to(cam, Object.assign(at(1010, 230, 1.35), { duration: 0.9, ease: E.cam }), S(61.30));
+      tl.to(cam, Object.assign(at(1020, 236, 1.42), { duration: 1.3, ease: "none" }), S(62.2));
+      tl.fromTo($("sc015-ht"), { opacity: 0.2 }, { opacity: 0.5, duration: 1.0, ease: "none", immediateRender: true }, S(61.3));
+      FX.focusHunt(tl, $("sc015-stage"), S(62.20), { dur: 0.75 });
+      tl.fromTo($("sc015-hl"), { scaleX: 0 }, { scaleX: 1, duration: 0.4, ease: "sine.inOut", immediateRender: true }, S(61.62));
+    })();
+    tl.fromTo($("sc015-card"), { y: 60, opacity: 0 }, { y: 0, opacity: 1, duration: 1.0, ease: C(E.out, 1.0), immediateRender: true }, S(59.3));
+    [T(59.67), T(60.07), T(60.47), T(60.79)].forEach((c, i) => show($("sc015-pp").children[i], c));
+    const ch015 = FX.roughDefs(defs, "intro01-ch015", { freq: 0.04, scale: 7, choke: 0 });
+    show($("sc015-fd"), T(61.51));
+    FX.chokeSettle(tl, ch015, $("sc015-fd"), T(61.51), 12, 0.6, "none");
+    whip($("sc015-shot"), $("sc016-shot"), S(63.49), { dir: 1, flash: true });
+
+    /* =================== IS016 · 63.49–65.17 · It just didn't exist in the world =================== */
+    scene("sc016", 63.49, 65.17);
+    ground("night", S(63.49));
+    (function () {
+      const cam = $("sc016-cam");
+      const at = (cx, cy, z) => ({ x: 960 - cx * z, y: 540 - cy * z, scale: z });
+      tl.fromTo(cam, at(1920, 900, 0.56), Object.assign(at(2050, 860, 0.6), { duration: 1.2, ease: "none", immediateRender: true }), S(63.49));
+      tl.to(cam, Object.assign(at(3210, 707, 7), { duration: 0.5, ease: E.in }), S(64.70));
+      tl.fromTo($("sc016-sweep"), { rotation: -80 }, { rotation: 200, duration: 1.7, ease: "none", immediateRender: true }, S(63.49));
+      tl.fromTo($("sc016-pin"), { opacity: 0, scale: 0.4 }, { opacity: 1, scale: 1, duration: 0.3, ease: C(E.out, 0.3), immediateRender: true }, S(64.79));
+      tl.to($("sc016-pin"), { opacity: 0, scale: 1.8, duration: 0.3, ease: "power1.in" }, S(65.0));
+    })();
+    [T(63.83), T(64.23)].forEach((c, i) => show($("sc016-txt").children[i], c));
+    tl.to($("sc016-txt"), { opacity: 0, duration: 0.15 }, S(64.95));
+
+    /* =================== IS017 · 65.17–69.09 · But Tsao could see the future … good idea (2.5D) =================== */
+    scene("sc017", 65.17, 69.09);
+    (function () {
+      const P = 1200, Z = { "L0": -500, "L1": -160, "L2": 0, "L3": 230 };
+      for (const [k, z] of Object.entries(Z)) gsap.set($("sc017-" + k), { z, scale: (P - z) / P });
+      tl.fromTo($("sc017-cam"), { x: 50, z: -40, rotationY: 1.8 }, { x: -30, z: 150, rotationY: -1.2, duration: 2.8, ease: E.cam, immediateRender: true }, S(65.17));
+      tl.to($("sc017-cam"), { x: -40, z: 162, duration: 1.2, ease: "none" }, S(67.97));
+      FX.focusHunt(tl, $("sc017-stage"), S(68.0), { dur: 0.75 });
+    })();
+    rise($("sc017-name"), T(65.35), { dur: 0.9, y: 14 });
+    [T(66.39), T(66.55)].forEach((c, i) => rise($("sc017-fut").children[i], c, { dur: 0.9, y: 14 }));
+    [T(68.15), T(68.39)].forEach((c, i) => show($("sc017-gi").children[i], c));
+    whip($("sc017-shot"), $("sc018-shot"), S(69.09), { dir: -1 });
+
+    /* =================== IS018 · 69.09–72.93 · he goes to his board of directors to ask for their permission =================== */
+    scene("sc018", 69.09, 72.93);
+    gated(69.0, 73.0, () => FX.weave($("sc018-weave"), { amp: 0.6, flicker: 0.025, seed: 1801 }));
+    tl.fromTo($("sc018-cam"), { scale: 1.0 }, { scale: 1.05, duration: 3.84, ease: "none", immediateRender: true }, S(69.09));
+    [T(69.99), T(70.15), T(70.39), T(70.55)].forEach((c, i) => show($("sc018-l1").children[i], c));
+    rise($("sc018-l2"), T(72.15), { dur: 0.6, y: 8 });
+    tl.to($("sc018-cam"), { x: -120, duration: 0.3, ease: E.in }, S(72.66));   // move with the presenter's gesture → cut on action
+
+    /* =================== IS019 · 72.93–77.65 · UMC was still a pretty new business … just a year ago =================== */
+    scene("sc019", 72.93, 77.65);
+    ground("paper", S(72.93));
+    (function () {
+      const svg = $("sc019-svg");
+      ink(svg, "M170 640 L1760 640", S(72.93), 0.9, { color: INK, width: 5 });
+      ink(svg, "M370 610 L370 670", S(73.2), 0.2, { color: INK, width: 5 });
+      ink(svg, "M1500 600 L1500 680", S(76.40), 0.25, { color: INK, width: 6 });
+      ink(svg, "M372 730 Q372 756 400 756 L910 756 Q934 756 940 778 Q946 756 970 756 L1472 756 Q1500 756 1500 730", S(76.70), 0.6, { color: INK, width: 4 });
+    })();
+    rise($("sc019-logo"), T(72.87), { dur: 0.9, y: 14 });
+    tl.fromTo($("sc019-dot"), { x: -160, scale: 0.6 }, { x: 0, scale: 1, duration: 0.8, ease: C(E.out, 0.8), immediateRender: true }, S(72.93));
+    tl.to($("sc019-dot"), { x: 1130, duration: 1.9, ease: C(E.inOut, 1.9) }, S(74.50));
+    [T(74.47), T(74.71)].forEach((c, i) => show($("sc019-nb").children[i], c));
+    [T(76.87), T(76.92), T(77.19)].forEach((c, i) => show($("sc019-ago").children[i], c));
+    tl.fromTo($("sc019-cam"), { scale: 1 }, { scale: 1.04, duration: 4.7, ease: "none", immediateRender: true }, S(72.93));
+    whip($("sc019-shot"), $("sc020-shot"), S(77.65), { dir: 1, vertical: true });
+
+    /* =================== IS020 · 77.65–82.29 · Tsao needed their permission to reorient the whole thing =================== */
+    scene("sc020", 77.65, 82.29);
+    ground("night", S(77.65));
+    (function () {
+      const g = $("sc020-rose"), cx = 960, cy = 540;
+      let s = `<g fill="none" stroke="${BONE}" opacity="0.8">`;
+      [420, 400, 330, 318].forEach((r, i) => s += `<circle cx="${cx}" cy="${cy}" r="${r}" stroke-width="${i % 2 ? 1.5 : 3}"/>`);
+      for (let k = 0; k < 64; k++) { const a = k / 64 * Math.PI * 2, r1 = k % 8 === 0 ? 372 : k % 4 === 0 ? 384 : 392; s += `<path d="M${(cx + Math.cos(a) * r1).toFixed(1)} ${(cy + Math.sin(a) * r1).toFixed(1)} L${(cx + Math.cos(a) * 400).toFixed(1)} ${(cy + Math.sin(a) * 400).toFixed(1)}" stroke-width="2"/>`; }
+      s += `</g>`;
+      const star = (n, R, r, rot, fill, op) => { let d = ""; for (let k = 0; k < n * 2; k++) { const a = rot + k / (n * 2) * Math.PI * 2 - Math.PI / 2, rr = k % 2 ? r : R; d += (k ? "L" : "M") + (cx + Math.cos(a) * rr).toFixed(1) + " " + (cy + Math.sin(a) * rr).toFixed(1); } return `<path d="${d}Z" fill="${fill}" stroke="${BONE}" stroke-width="2" opacity="${op}"/>`; };
+      s += star(8, 300, 70, Math.PI / 8, "rgba(242,237,227,0.05)", 0.55) + star(4, 470, 60, 0, "rgba(242,237,227,0.10)", 0.9);
+      s += `<path d="M960 70 L986 120 L960 108 L934 120 Z" fill="${BONE}" opacity="0.9"/>`;
+      g.innerHTML = s;
+      const parts = [...g.querySelectorAll("circle, path")];
+      parts.forEach((p, i) => tl.fromTo(p, { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, S(77.70) + Math.floor(i / 12) / 12));
+      tl.fromTo(g, { rotation: 20, svgOrigin: "960 540" }, { rotation: 0, svgOrigin: "960 540", duration: 1.6, ease: E.cam, immediateRender: true }, S(77.65));
+      tl.to(g, { rotation: -25, svgOrigin: "960 540", duration: 1.8, ease: C(E.inOut, 1.8) }, S(80.39));
+    })();
+    tl.fromTo($("sc020-card"), { scale: 0.85, opacity: 0, rotation: 0 }, { scale: 1, opacity: 1, duration: 1.1, ease: C(E.out, 1.1), immediateRender: true }, S(77.80));
+    rise($("sc020-ts"), T(78.15), { dur: 0.9, y: 12 });
+    rise($("sc020-perm"), T(79.35), { dur: 0.8, y: 10 });
+    const ch020 = FX.roughDefs(defs, "intro01-ch020", { freq: 0.04, scale: 7, choke: 0 });
+    show($("sc020-re"), T(80.39));
+    FX.chokeSettle(tl, ch020, $("sc020-re"), T(80.39), 12, 0.6, "none");
+    tl.to($("sc020-card"), { rotation: 90, duration: 1.6, ease: C(E.inOut, 1.6) }, S(80.45));
+    tl.to($("sc020-card"), { rotation: 118, scale: 1.25, duration: 0.3, ease: E.in }, S(81.99));   // keeps turning → cut on action
+
+    /* =================== IS021 · 82.29–85.09 · He knew this was going to be an uphill battle =================== */
+    scene("sc021", 82.29, 85.09);
+    tl.fromTo($("sc021-plate"), { rotation: -9, scale: 1.12 }, { rotation: 0, scale: 1.0, duration: 1.1, ease: E.cam, immediateRender: true }, S(82.29));
+    tl.to($("sc021-plate"), { scale: 1.05, duration: 1.7, ease: "none" }, S(83.39));
+    (function () {
+      const mk = $("sc021-mk"), f = FX.markupDefs(mk, "intro01-mk21", { boil: 4 });
+      FX.markup.pen(tl, mk, S(83.0), { points: [[700, 1000], [980, 900], [1260, 760], [1520, 600]], dur: 0.9, width: 9, color: BONE, filter: f, seed: 21, blend: "normal" });
+      FX.markup.pen(tl, mk, S(83.85), { points: [[1440, 590], [1525, 598], [1500, 680]], dur: 0.25, width: 9, color: BONE, filter: f, seed: 22, jitter: 2, blend: "normal" });
+    })();
+    [T(83.83), T(84.31)].forEach((c, i) => show($("sc021-ub").children[i], c));
+    whip($("sc021-shot"), $("sc022-shot"), S(85.09), { dir: 1, flash: true });
+
+    /* =================== IS022 · 85.09–92.13 · the board was pretty excited … almost told him yes (D06) =================== */
+    scene("sc022", 85.09, SEG_END);
+    ground("paper", S(85.09));
+    (function () {
+      const svg = $("sc022-svg"), cx = 960, cy = 900, R = [235, 340], N = [5, 7];
+      // dashed guide arc
+      svg.insertAdjacentHTML("beforeend", `<path id="intro01-sc022-guide" d="M${cx - 400} ${cy} A400 400 0 0 1 ${cx + 400} ${cy}" fill="none" stroke="${INK}" stroke-width="2" stroke-dasharray="6 10" opacity="0.35"/>`);
+      const gp = svg.querySelector("#intro01-sc022-guide");
+      tl.fromTo(gp, { opacity: 0 }, { opacity: 0.35, duration: 0.8, ease: C(E.out, 0.8), immediateRender: true }, S(85.3));
+      svg.insertAdjacentHTML("beforeend", `<path d="M${cx - 470} ${cy + 40} L${cx + 470} ${cy + 40}" stroke="${INK}" stroke-width="3" opacity="0.6"/>`);
+      const seats = [];
+      R.forEach((r, row) => { for (let k = 0; k < N[row]; k++) { const a = Math.PI - k / (N[row] - 1) * Math.PI; seats.push({ a, x: cx + Math.cos(a) * r, y: cy - Math.sin(a) * r }); } });
+      seats.sort((p, q) => q.a - p.a || p.x - q.x);   // clockwise from the left
+      seats.forEach((s, i) => {
+        svg.insertAdjacentHTML("beforeend", `<circle id="intro01-seat${i}" cx="${s.x.toFixed(1)}" cy="${s.y.toFixed(1)}" r="27" fill="#9a958c"/>`);
+        const c = document.getElementById("intro01-seat" + i);
+        tl.fromTo(c, { attr: { r: 0 } }, { attr: { r: 27 }, duration: 0.25, ease: C(E.out, 0.25), immediateRender: true }, S(86.31) + i / 12);
+        tl.to(c, { attr: { fill: NAVY }, duration: 0.001 }, S(87.51) + i / 12);
+      });
+    })();
+    [T(86.31), T(86.55), T(86.95), T(87.19), T(87.51)].forEach((c, i) => show($("sc022-title").children[i], c));
+    rise($("sc022-alm"), T(89.75), { dur: 0.9, y: 12 });
+    const ch022 = FX.roughDefs(defs, "intro01-ch022", { freq: 0.045, scale: 8, choke: 0 });
+    show($("sc022-yes"), T(90.55));
+    tl.fromTo($("sc022-yesw"), { scale: 1.6, y: -60 }, { scale: 1.22, y: -40, duration: 0.9, ease: C(E.out, 0.9), immediateRender: true }, T(90.55));
+    tl.fromTo($("sc022-yesh"), { opacity: 0 }, { opacity: 1, duration: 0.6, ease: C(E.out, 0.6), immediateRender: true }, S(90.60));
+    FX.chokeSettle(tl, ch022, $("sc022-yes"), T(90.55), 9, 0.5, "none");
+    tl.to($("sc022-yesw"), { y: -52, duration: 0.7, ease: "sine.inOut", yoyo: true, repeat: 1 }, S(91.45));   // hovers, never lands
+    tl.fromTo($("sc022-sheet"), { y: 0 }, { y: -180, duration: 0.23, ease: "power2.in", immediateRender: false }, S(91.90));   // tilt down → intro02
+
+    FX.mount(tl, DURATION);
+    window.__timelines = window.__timelines || {}; window.__timelines[SEG] = tl;
+  })();
+  </script>
+</template>
+</body>
+</html>

@@ -7,3 +7,5 @@
 | fab_walk_freeze_2p9.jpg | still at 2.9 s of ../footage/fab_floor_manager_walks_rows.mp4 (IS004 freeze frame) | footage | as the footage |
 | pushbutton_phone_1970_hand_f3p3.jpg | still at 3.3 s of ../footage/pushbutton_phone_1970_hand.mp4 (IS009 hold frame) | footage | as the footage |
 | tsao_layers/{backdrop.jpg,tsao.png,vase.png} | 2.5D layer set (IS017): backdrop = subject filled by normalised blur; tsao/vase split by hand polygon from ../cutouts/tsao_vase_cutout.png | ../photos/tsao_portrait_vase.jpg | Attribution — NYCU Secretariat (credit on screen) |
+| pacific_beige.jpg | vintage beige version of the Pacific relief (same 5700×1440 px space, 30 px/deg: x=(lon-110)*30, y=(56-lat)*30): land = relief shading × paper beige, sea = faded grey-beige, inked coastline | ../maps/pacific_relief_grey.jpg + pacific_land_mask.png (AWS Terrain Tiles, PD) | PD |
+| taiwan_celadon_wash.png | celadon watercolour wash of Taiwan's main island (from taiwan_mask.png, 620×760; place over taiwan_relief space scaled) | ../maps/taiwan_mask.png + paper noise | PD / own |

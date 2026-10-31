@@ -157,6 +157,8 @@ use, attribution optional; never redistribute the files publicly, never use them
 - No Math.random/Date. Use `FX.rng(seed)`, `FX.noise2`. Per-frame procedural effects register with
   `FX.onFrame(fn)` *before* `FX.mount` (mount captures and resets the list per composition).
 - Use `fromTo` with explicit start values; `immediateRender:true` for instant "appear" sets.
+- A show/hide placed at timeline time **0** with `tl.fromTo`/`tl.set` may not render on frame 0 — set the initial state with
+  `gsap.set(...)` outside the timeline (found by the intro02 editor, 2026-10-31).
 - Opacity < 1 on a `preserve-3d` container flattens 3D (backface shows mirrored) — dim children instead.
 - CSS `inset:` after `left/top` overrides them. Order matters.
 - Never centre with CSS `transform: translateX(-50%)` on an element GSAP also moves — GSAP rewrites `transform` and the
