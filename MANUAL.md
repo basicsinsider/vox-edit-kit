@@ -27,7 +27,8 @@ feedback, update the relevant section and add a line to the Changelog at the bot
    overpowers the voice (§7).
 9. **On-screen text follows the voiceover exactly — no fact-checking.** Show stats and claims as narrated.
    Only fix ASR spelling of names (the analyst's corrections list).
-10. Show the user 4–10 s samples first; only build the full edit after they approve.
+10. Show the user 4–10 s samples first; only build the full edit after they approve. (Taiwan long-form, 2026-10-31: the
+    style is approved — Krish wants each chunk delivered whole, **no key-scene samples** in between.)
 
 ---
 
