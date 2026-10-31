@@ -260,6 +260,11 @@ use, attribution optional; never redistribute the files publicly, never use them
   camera shows past the image edge, give the scene the map's own sea colour (`taiwan_night` sea = rgb(19,26,34)) instead of brightening
   the map with a CSS filter. `taiwan_landmask.png` also covers the Fujian (PRC) coast in its NW corner — cut lon < 120.05°, lat > 24.9°
   before filling Taiwan celadon (`project/c5/gen/c5s01_assets.py`).
+- (c5s02 editor) `paper_torn_01*` is a Screen texture (dark ground): as a multiply paper layer it turns a PAPER scene dark brown —
+  blend it `screen` at ~0.3 or use another paper. An `.k-inkbox`/`.label-box` wrapping word spans shows its filled box before the
+  words are spoken — reveal the box on the first word's cue. `.plate` (fx.css) sets `inset:0`: put `inset:auto` FIRST in an inline
+  style, before left/top/width. `offsetLeft/Top` of a span inside a `position:relative` block is relative to that block — put the
+  markup svg inside the same block. Globes: render offline (orthographic numpy → mp4, `project/c5/gen/c5s02_assets.py globes`).
 ### 4.3 Check, look, render
 ```bash
 python3 tools/build_index.py s05            # put one (or several) compositions in index.html
@@ -669,6 +674,7 @@ on action. Use it whenever the narrator quotes someone or introduces a historic 
 - [ ] Smooth long eases, 12 fps. [ ] Cuts on action; whips, no iris. [ ] No photo/clip used > 2× in a chunk.
 
 ## Changelog
+- 2026-10-31 — c5s02 editor (C5S043–083): §4.2 gotchas (torn paper = screen texture, ink boxes before their words, `.plate` inset order, offset parents); rendered globe videos (Blue Marble / Black Marble), keyed RCA XL-100 (`assets/c5/screens/`), template + generator `project/c5/gen/c5s02_*`.
 - 2026-10-31 — c5s01 editor: §4.2 gotchas (video ids, stray dot on undrawn arrows, map sea-colour backgrounds, Taiwan landmask includes the Fujian coast); derived c5s01 maps/2.5D layers via `project/c5/gen/c5s01_assets.py`.
 - 2026-10-31 — c3s02 editor: §4.2 gotchas (map-camera img selectors, torn paper as ground, Esri z9 strait mosaic); generator
   `project/c3/gen/c3s02_assets.py` + `build_c3s02.py` (src + scenes_{a,b,c}.js → compositions/c3s02.html).

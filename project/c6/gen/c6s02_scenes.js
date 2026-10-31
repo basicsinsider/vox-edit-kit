@@ -28,6 +28,7 @@
       line("sc043-dn", [["Chiang Kai-shek's", T(211.32)]]);
       // the son's card slides out from behind the father's (12 fps), camera trucks right with it
       const dad = ["#c6s02-sc043-dad", "#c6s02-sc043-tp1", "#c6s02-sc043-tp2", "#c6s02-sc043-dn"];
+      tl.to(["#c6s02-sc043-k", "#c6s02-sc043-e"], { opacity: 0, duration: 0.3 }, S(212.3));
       tl.to(dad, { x: -440, duration: 1.2, ease: C(FX.ease.inOut, 1.2) }, S(212.62));
       tl.fromTo("#c6s02-sc043-son", { x: 0, rotation: 2.5 }, { x: 560, rotation: 3.5, duration: 1.2, ease: C(FX.ease.out, 1.2), immediateRender: false }, S(212.70));
       tl.to("#c6s02-sc043-cam", { x: -120, duration: 1.8, ease: FX.ease.cam }, S(212.7));
