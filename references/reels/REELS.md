@@ -55,3 +55,16 @@ maps DcTljpCgNNJ · typo DfFNu8XAHWL · news DUJWPrqCYGX · texture DbBSCjjgbTw 
 brollclips Dcm63HBAHzT · collage DQpMiV_Cdpr · textanim DLTLw1DpgwE · oldfootage Da3YpRipHuF · imgtrans DaDhDFjAysT ·
 hq DZFqNzwAqVa · twofive DQu3nYiCepd · rough DMjAWcFJYqo · sounddesign DLnuz5ZJ6Ys · newanim (markups) DMixnWEpuhj
 (all https://www.instagram.com/reel/<id>/)
+
+## Round 2 (2026-10-31) — studied copies in work/refs2 (not committed; re-download with Agent Reach)
+- **ease** (`DLQ4Wp9pqv3`): "Vox animations look so clean: a layer of chromatic aberration over everything; frame rate cut
+  to ~12 (posterize time); really smooth ease-ins over a long period, one to two seconds; almost never solid colours,
+  everything mapped to a texture." Graph editor: speed spikes to ~230 %/s within 2 frames, then decays over ~1 s → FX.ease.out.
+- **transitions** (`DdEHRimiG8Q`, Studio Znak "Whip Transitions"): 5 cuts in 6 s — horizontal whip with heavy motion blur
+  (≈5 frames blurred), a straight cut on action, a bright light-flash whip, a smear-push into a close-up, another whip.
+- **cuts** (`DOb0h6VCSpM`): "cutting on action — drop the cut in the middle of the motion; the moving element masks the
+  edit; cut wide→tight mid-climb of a bar; on stillness the cut is jarring. Punch in and out (2×/1×) to extend scenes."
+- **dslr** (`DLdy8b5JpHC`): "focus hunting — mimics a DSLR refocusing; adjustment layer with fast box blur, keyframes
+  0 px → 4 px → 6 px → 0 px; most effective when something zooms on screen or there's fast motion."
+- YouTube (blocked from cloud, via fetch relay): Chris Moran — "How VOX Directs Your Attention" (`CqHb6bVoxgI`, 24 min),
+  "The VOX Sound Design System" (`UgVgzSZVu-8`, 12:48).

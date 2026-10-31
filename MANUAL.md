@@ -215,7 +215,7 @@ bars, pops; keep camera moves smooth. `FX.split(el,'chars'|'words')`.
 | 6 | Sound | §7 | — |
 | 7 | Textures | §3.3 | all |
 | 8 | Light streaks | `FX.streaks(canvas,{seed,speed,xfreq,lo,hi,gamma,tint,gain})` — fractal noise squashed into vertical streaks, evolving, levels crushed; canvas `blur(2.5px)`, opacity 0.3–0.7, screen | s01 |
-| 9 | Shutter transition (+ click SFX) | `FX.iris(svg, {close:0.16, hold:2/24, open:0.28}).at(tl, cutTime)` (the default 0.2 s opening barely reads); swap shots exactly at the closed iris; shutter SFX ~0.15 s before (`<audio id="sNN-sfx-k" src="assets/audio/sfx/camera_shutter_mech*.wav" data-volume="0.3">`); a second, faster iris (`close:0.1, open:0.12`) for words < 0.6 s apart (New York → New Jersey); dark scrim at the bottom/top of bright plates so labels read | s05 |
+| 9 | ~~Shutter~~ → **whip** (§10.1.6; Krish dislikes the iris) | was: `FX.iris(svg, {close:0.16, hold:2/24, open:0.28}).at(tl, cutTime)` (the default 0.2 s opening barely reads); swap shots exactly at the closed iris; shutter SFX ~0.15 s before (`<audio id="sNN-sfx-k" src="assets/audio/sfx/camera_shutter_mech*.wav" data-volume="0.3">`); a second, faster iris (`close:0.1, open:0.12`) for words < 0.6 s apart (New York → New Jersey); dark scrim at the bottom/top of bright plates so labels read | s05 |
 | 10 | Vox layered backgrounds | 2–3 related images tinted with `FX.tintDefs(svg,id,dark,light)` (blacks→dark grey, whites slightly bright), offset/rotated panels with shadows, newsprint overlay, each drifting at its own speed; subject on top | s09 |
 | 11 | Footage inside a vintage TV | transparent-screen TV PNG (`assets/textures/tv_frame_01.png`, screen bbox in `tv_frame_01_screen.json`), video under it with `data-color-grading='{"intensity":1,"adjust":{"saturation":-1,"contrast":0.1},"effects":{"chromaticAberration":0.35,"chromaticAngle":0,"scanlines":0.4,"scanlineCount":0.17,"scanlineSoftness":1,"crtCurvature":0.35,"filmArtifacts":0.45}}'` (keys: `npx --yes hyperframes@0.8.217 media-treatment --capability retro-glitch --json`); a black "tube" div behind the screen so the hole is dark before power-on; CRT power-on (scaleY 0.012→1 + white flash); glass glare. **Vary the TV** (find other sets, wood consoles, portable, 1930s radio-cabinet) | s04 |
 | 12 | Collage / timelines | paper ground; photos tinted to the palette (`FX.tintDefs` ink→paper), halftone multiply, torn edges (`FX.roughDefs`), cards pinned with 12 fps stop-motion, timeline axis + travelling dot; Stanford→MIT swaps | s08 |
@@ -369,13 +369,83 @@ other scenes while you wait.
 exact same score byte-for-byte in about a minute (setup.sh does this). The placed beds (`assets/audio/bed/`) are
 built per project by `tools/audio/place_sound.py`.
 
+## 10. Krish's round-2 rules (2026-10-31) — apply to every new edit
+
+### 10.1 Critique of the rebuilt samples (fix everywhere)
+1. **Glow (halation) is used intentionally.** `.halate` only on the ONE hero title or key number of a night scene
+   (e.g. "12", "1891", "PALO ALTO"). Kickers, labels, captions, sub-lines and word-by-word narration lines use `.clean`
+   (crisp bone + soft legibility shadow). Paper scenes never glow. If two things glow in one frame, one is wrong.
+2. **Rough/boiling text must settle.** The roughen + 12 fps boil is a *reveal*, not a state: use
+   `FX.chokeSettle(tl, morph, el, t, from, dur, cleanFilter)` — the edge boils while it chokes in, then the element
+   gets a clean filter one 12 fps step later. Only permanent boil: hand-drawn markups and torn paper edges.
+3. **Every visual matches the words being spoken at that moment.** No "mood" visuals over a line that says something
+   else (e.g. a title card over "I don't think I need to tell you much"). Rhetorical/filler lines get a visual that serves
+   the sentence they belong to, the narrator on camera (intro only), or the previous image held — never an unrelated scene.
+   The edit plan names, for every shot, the exact words it covers and why that image fits them; QA reads the contact sheet
+   with the transcript under each frame (§9).
+4. **One palette per video, researched for that story** — `lib/palette.css` (loaded after fx.css by build_index /
+   build_master; same token names so every effect keeps working). Swatch + meaning in `references/palette_<video>.png`.
+   Current video (Taiwan chips): red = TSMC/Morris Chang, blue = UMC/Robert Tsao (their real brand colours), celadon =
+   Taiwan itself, yellow = highlighter/key number, everyone else neutral. Max two accents per frame.
+5. **Smooth Vox easing everywhere** (reel `DLQ4Wp9pqv3`, studied in `references/reels/REELS.md` → *ease*):
+   velocity jumps up at once and decays over a long tail — entrances 1.0–1.6 s, moves 1.2–2 s, still posterized to 12 fps.
+   Use `FX.ease.out` (entrances/pops), `FX.ease.inOut` (A→B moves), `FX.ease.in` (exits), `FX.ease.cam` (camera, never
+   posterized), always wrapped: `ease: FX.choppy(FX.ease.out, dur, 12)`. Banned from now on: `back.out` overshoots,
+   `power2/3.out` under 0.6 s for anything bigger than a label, `expo.inOut` for anything but the cutting-the-curve zoom.
+   Same reel: Vox keeps a light chromatic aberration over everything (photos/footage: `data-color-grading`
+   `effects.chromaticAberration` 0.1–0.15) and never uses flat solid colour — every fill sits under a texture.
+6. **No iris shutter any more.** Image-to-image transitions are **whips** (reel `DdEHRimiG8Q`): `FX.whipDefs(svg,id)` on each
+   shot + `FX.whip(tl, a, b, t, {dir, vertical, blurA, blurB})` — ~0.32 s, outgoing smears off with heavy directional blur,
+   incoming smears in from the same direction and lands sharp; both overscale so the frame is never empty; whoosh SFX.
+   The same reel also uses (a) a **hard cut on action** between two moving shots and (b) a **light-flash whip** (the smear
+   passes through a bright frame) — vary the three. Never the same transition twice in a row.
+7. **Better screens for footage.** Don't reuse the four museum TVs by default. Pick the screen for the story and era:
+   1980s Taiwan → Tatung TVs (Taiwanese maker), Sony Trinitron, IBM PC 5150 / Apple II / terminal CRTs, cleanroom monitors,
+   oscilloscopes, VCR-era sets, projector screens. Prefer real PD/CC photos with the screen keyed transparent
+   (`*_screen.json`), TVs first because they look best, but anything with a screen that fits the line is allowed.
+
+### 10.2 New techniques (from Krish's reference posts)
+- **Cut on action** (`DOb0h6VCSpM`): every cut lands while something is moving — a bar rising, a camera push, a card
+  sliding — so the eye is tracking motion and doesn't see the edit. Punch in (1× → 2×) / out mid-move to extend a scene.
+  Never cut on a still frame. Plan each scene's last 6 frames as motion that the next scene continues.
+- **DSLR focus hunting** (`DLdy8b5JpHC`): `FX.focusHunt(tl, el, t, {dur:0.8})` = box blur 0 → 4 → 6 → 0 px, right after a
+  fast zoom or big move lands (photo cards, maps after a push, 2.5D dolly stops). Adds spatial realism; once per scene max.
+- **Markups/callouts deep dive** (YouTube `CqHb6bVoxgI`, Chris Moran "How VOX Directs Your Attention") and **Vox sound
+  design system** (YouTube `UgVgzSZVu-8`) — YouTube blocks the cloud IP; requested through the fetch relay
+  (`requests/fetch.json`). Notes go here once studied.
+
+### 10.3 Sound (round 2): Epidemic Sound, layered
+Krish has an Epidemic Sound subscription: the **entire music bed comes from Epidemic Sound** (SFX may also come from other
+free sources). Vibe reference: "Melting Glass" (Epidemic) — documentary, textural. Never one music track: build the bed in
+layers (e.g. pad/drone + pulse + melodic layer + texture, using Epidemic **stems**), entering/leaving with the story beats.
+Claude never logs in: Claude lists the tracks/stems (title, artist, link, which stems, timestamps) in
+`requests/epidemic.md`; Krish downloads them into `assets/audio/epidemic/`. VO stays untouched; bed far under the voice.
+
+### 10.4 The Taiwan long-form edit (4 h 26 min) — workflow
+- Inputs: `bash input/join.sh` → `input/Final Full Audio.mp3` (VO, 4:26:xx) and `input/Face Cam.mp4` (4:35, 29.97 fps).
+  The first ~275.5 s of the full audio **is the face-cam take** (cross-correlation 0.96, face cam = full audio − 0.026 s).
+  Intro VO = full audio 0–275.5 (`-c copy`); face-cam video is synced at media offset +0.026 s.
+- **Intro rules:** narrator NOT on camera for the first 10 s (VO + edit only). After that the edit still dominates; the
+  face cam may appear only for **1–3 s at a time, a few times**, on lines where he addresses the viewer.
+- Chunks: intro (~4.6 min), then the rest in **10-minute chunks**; each chunk is approved before the next. Krish sends
+  Pinterest references per chunk → rebuild each with §6.1.
+- **Within one chunk, never use the same photo or clip more than twice** unless the story truly needs it (track usage
+  in the chunk's ASSETS list).
+- ASR name fixes so far: Robert Tsao (ASR "Robot Cao", "Sao", "Xiao"), Morris Chang, TSMC, UMC, Hsinchu Science Park
+  ("Shin Shu Park"), host "Sam", show "Searching Lessons" (check spelling with Krish).
+
 ## 9. QA checklist
 - [ ] VO identical to source (same level; no processing). [ ] Every text cue within 0–120 ms before its word.
 - [ ] Only the three fonts. [ ] Palette only; West=vermilion/East=navy. [ ] ≤ 2 accents per frame.
 - [ ] Every effect + reference layout used; no repeat back-to-back. [ ] On-screen claims match the narration.
 - [ ] Textures subtle. [ ] SFX on objects, quiet. [ ] Credits for CC-BY assets.
+- [ ] Every shot matches the words under it (§10.1.3). [ ] Glow only on the hero element. [ ] No boil after a reveal.
+- [ ] Smooth long eases, 12 fps. [ ] Cuts on action; whips, no iris. [ ] No photo/clip used > 2× in a chunk.
 
 ## Changelog
+- 2026-10-31 — Krish round 2: §10 added (intentional glow, settle-after-reveal, words↔visual rule, per-video palette
+  `lib/palette.css` + Taiwan palette, Vox long-tail easing `FX.ease.*`, whip transitions `FX.whip` replace the iris, cut on
+  action, DSLR focus hunt `FX.focusHunt`, better screens, Epidemic layered bed, long-form intro/chunk workflow).
 - 2026-10-30 — Rebuild test (new cloud session): all 11 samples rebuilt from the docs (originals in `_approved/`). Learned
   and fixed: pin every CLI call to 0.8.217 (`render_samples.sh` used the newest release; s11 added to its defaults);
   current skill names (§1); Commons API 429 in cloud sessions (§1); sync audit only sees literal `T()` cues + word-by-word
