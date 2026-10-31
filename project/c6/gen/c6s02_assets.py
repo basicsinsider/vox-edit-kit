@@ -116,7 +116,7 @@ paths["fmOutline"] = dstr([simp(poly, 4.0)])
 # ---------- 7. stills / crops ----------
 Image.open(P("_tmp/c6s02/cck_cut.png")).save(P("assets/c6/derived/c6s02/cck_cutout.png"))
 kt = Image.open(P("assets/c6/photos/chiang_ching_kuo_with_li_kwoh_ting_print.jpg")).convert("RGB")
-w, h = kt.size; crop = kt.crop((int(w * 0.53), int(h * 0.33), int(w * 0.86), int(h * 0.62)))
+w, h = kt.size; crop = kt.crop((985, 830, 1425, 1420))
 ImageOps.autocontrast(ImageOps.grayscale(crop), cutoff=1).save(P("assets/c6/derived/c6s02/kt_li_crop.jpg"), quality=92)
 Image.open(P("_tmp/c6s02/steps_5.jpg")).save(P("assets/c6/derived/c6s02/roc_generals_steps_1961_still.jpg"), quality=92)
 Image.open(P("_tmp/c6s02/po_crowd.jpg")).save(P("assets/c6/derived/c6s02/presidential_office_rally_1961_still.jpg"), quality=92)
