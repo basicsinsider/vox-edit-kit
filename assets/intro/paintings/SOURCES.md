@@ -10,3 +10,5 @@ All from Wikimedia Commons (thumbnail downloads via tools/commons_thumb.sh). CC-
 | twa_new_york_1958_klein.jpg | "New York – Fly TWA", David Klein, 1958 (Times Square, airliner) | https://commons.wikimedia.org/wiki/File:TWA_New_York_Travel_Poster_%281958%29._David_Klein_Full-Bleed_Poster.jpg | Public domain | Klein, David, 1918-2005 | [ca. 1960] | 1864x2940 | 1280x2019 |
 | delta_new_york_1960s.jpg | "New York City – Delta Air Lines" illustrated travel poster (1960s/1973) | https://commons.wikimedia.org/wiki/File:1960s_Delta_in_New_York_ad.jpg | Public domain | Delta Air Lines | 1973 | 2400x3032 | 1920x2426 |
 | nyc_airports_wpa_1937.jpg | "City of New York Municipal Airports", WPA poster ca. 1937 | https://commons.wikimedia.org/wiki/File:New_York_City_municipal_airports%2C_WPA_poster%2C_ca._1937.jpg | Public domain | Harry Herzog for the Works Progress Administration[1] | 1936 | 9046x11422 | 1920x2424 |
+
+Not added by gatherer A (owner must log): sisyphus_titian_prado.jpg.

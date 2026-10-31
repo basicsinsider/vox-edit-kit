@@ -20,3 +20,5 @@ Rejected: cutout from chang_2018.jpg (microphone left a hole across his chin/tie
 | chang_2018_cutout.png | the crop above | `hyperframes remove-background` (mic hole — only used to make the matte below) |
 | silhouette_exec.png / silhouette_exec_night.png | matte of the cut-out, holes filled (scipy binary_fill_holes), filled #141b24 (paper) / #2a2e33 (night) | N38 grey executive silhouette — same pixel space as chang_2018_crop.jpg so the burn reveal lines up |
 | tsao_rally_figure.png | photos/tsao_rally_2023.jpg crop 600,560 → 690×1390, remove-background, white-shirt bystander keyed out, cut at the waist (900 px) | IS033 stonewall cut-out |
+
+Not added by gatherer A (another agent made these; owner must log): chang_2018_crop.jpg, chang_2018_cutout.png, phone_pushbutton_cutout.png, phone_pushbutton_halftone.png, silhouette_exec.png, silhouette_exec_night.png, tsao_rally_figure.png, tsao_rally_head.jpg.

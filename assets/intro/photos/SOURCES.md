@@ -38,3 +38,5 @@ Notes:
 - Rejected: Western Electric 2500 colour phones (camera date stamp burned in), Intel 8088 / TSMC Fab 12A / Tsmc factory hsinchu (download refused, 429).
 | naca_groundbreaking_1950s_cc0.jpg | NACA groundbreaking ceremony (five men, ceremonial shovel in sand), 1950s B/W — intro02 IS037 "breaks ground" | https://commons.wikimedia.org/wiki/File:NACA_Groundbreaking_Ceremony_(E-908).jpg | CC0 (NASA) | NASA / NACA | 1950s | 5100x4000 | 1920x1506 |
 | stone_wall_texture_cc0.jpg | rough stone wall, frontal, B/W — intro02 IS033 "stonewalled" (N16) | https://commons.wikimedia.org/wiki/File:Stone_Wall_Texture.jpg | CC0 | Commons user | — | 4000x2666 | 1920x1280 |
+
+Not added by gatherer A (another agent put these here; its owner must log them): naca_groundbreaking_1950s_cc0.jpg, stone_wall_texture_cc0.jpg.
