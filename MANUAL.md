@@ -475,6 +475,9 @@ the bed ≈ 14 LU under it. Run heavy audio jobs one at a time (the container OO
   **graphics behind him**: `npx --yes hyperframes@0.8.217 remove-background clip.mp4 -o fg.webm -b bg.webm` (≈0.7 fps on
   CPU; clean matte incl. mic) → layer order: room plate (bg.webm) → our chart/map/newspaper with the usual animations →
   narrator (fg.webm) → text.
+  **Lip sync:** clips cut from the 29.97 fps face cam to 24 fps came out 2–3 frames late (picture behind voice). Measured by
+  correlating frame-to-frame motion of the face region in the render vs the source; fixed with +0.104 s on every face-cam
+  `data-media-start`. Always run that check after a render (script in the intro QA notes) — target 0 ± 1 frame.
 - **Spelling:** on screen always the accurate spelling of every name/place, even when the narrator mispronounces it.
 - Chunks: intro (~4.6 min), then the rest in **10-minute chunks**; each chunk is approved before the next. Krish sends
   Pinterest references per chunk → rebuild each with §6.1.
@@ -567,6 +570,8 @@ on action. Use it whenever the narrator quotes someone or introduces a historic 
 - [ ] Smooth long eases, 12 fps. [ ] Cuts on action; whips, no iris. [ ] No photo/clip used > 2× in a chunk.
 
 ## Changelog
+- 2026-10-31 — Intro assembled (66 scenes, 275.06 s), sound pass (Epidemic layered bed, restraint pass), face-cam lip-sync
+  check + fix (+0.104 s), final mix = VO at unity + 3 beds (amix normalize=0), VO −24.1 → mix −24.0 LUFS.
 - 2026-10-31 — §10.8: place_sound.py project/Epidemic mode (layered stems, measured VO, restraint pass, variation); intro beds built.
 - 2026-10-31 — intro01 editor: §4.2 lint template-literal selectors, CSS masks inside 3D planes, object cut-outs by polygon, gating FX helpers per scene.
 - 2026-10-31 — intro03 editor: §4.2 gotchas (greyscale masks need alpha for CSS mask-image, antimeridian country paths, lint on letterSpacing tweens / font-family in credits).
