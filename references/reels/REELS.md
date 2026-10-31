@@ -64,4 +64,3 @@ Added by Krish on 2026-10-31 as extra style references. Watch them (or sample fr
 | `markups_callouts_youtube.mp4` | https://www.youtube.com/watch?v=CqHb6bVoxgI | 24:08, 720p | markups and callouts (circles, arrows, boxes — MANUAL #20 / s11) |
 | `sound_bed_youtube.mp4` | https://www.youtube.com/watch?v=UgVgzSZVu-8 | 12:48, 720p | sound design and the sound bed (MANUAL §7) |
 | `lincoln_newspaper.mp4` | https://www.instagram.com/reel/DfI2zsIMAm_/ | 0:57, 540×960 | newspaper and headline treatment (#5 / s06) |
-| `afd_history_vimeo.mp4` | https://vimeo.com/135196643 ("L'histoire d'une institution : l'AFD", Nicolas Lichtlé, 4:30) | — | **not in the repo yet**: Vimeo only serves this file to signed-in users. Krish will add it; until then, watch it in a browser if you can. |
