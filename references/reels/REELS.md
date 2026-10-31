@@ -68,3 +68,12 @@ hq DZFqNzwAqVa · twofive DQu3nYiCepd · rough DMjAWcFJYqo · sounddesign DLnuz5
   0 px → 4 px → 6 px → 0 px; most effective when something zooms on screen or there's fast motion."
 - YouTube (blocked from cloud, via fetch relay): Chris Moran — "How VOX Directs Your Attention" (`CqHb6bVoxgI`, 24 min),
   "The VOX Sound Design System" (`UgVgzSZVu-8`, 12:48).
+
+## Reference videos (full files, `references/reels/videos/`)
+Added by Krish on 2026-10-31 as extra style references. Watch them (or sample frames + `hyperframes transcribe`) when the task touches their topic.
+
+| file | source | length | what it's for |
+|---|---|---|---|
+| `markups_callouts_youtube.mp4` | https://www.youtube.com/watch?v=CqHb6bVoxgI | 24:08, 720p | markups and callouts (circles, arrows, boxes — MANUAL #20 / s11) |
+| `sound_bed_youtube.mp4` | https://www.youtube.com/watch?v=UgVgzSZVu-8 | 12:48, 720p | sound design and the sound bed (MANUAL §7) |
+| `lincoln_newspaper.mp4` | https://www.instagram.com/reel/DfI2zsIMAm_/ | 0:57, 540×960 | newspaper and headline treatment (#5 / s06) |
