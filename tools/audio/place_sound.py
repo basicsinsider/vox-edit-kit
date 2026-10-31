@@ -8,9 +8,17 @@
   assets/audio/bed/music_cuesheet.json  the cue sheet actually rendered
   assets/audio/bed/sfx_placements.json  every marker -> sound, take, start, gain (for audit)
 
-Run:  .venv/bin/python tools/audio/place_sound.py
+Run:  .venv/bin/python tools/audio/place_sound.py            (legacy 600 s edit, synthesized score)
+Epidemic project mode (MANUAL §10.3 / §10.8), e.g. the intro:
+      .venv/bin/python tools/audio/place_sound.py --vo vo_intro.mp3 --transcript transcript_intro.json --len 275.06 \
+          --markers 'compositions/intro0*.sfx.json' --cues project/intro/music_cuesheet.json --out assets/audio/intro
+  -> <out>/music_bed.wav, sfx.wav, ambience.wav, timeline.json, music_report.json, sfx_placements.json,
+     sfx_hierarchy.json (the §10.8 restraint pass: which editor markers were kept / dropped and why).
+  The VO loudness is MEASURED (bed = VO − bed_lu_under_vo); layers are Epidemic stems read in windows.
 The VO is only READ (to find its pauses); it is never processed or written.
 """
+import argparse
+import shutil
 import glob
 import json
 import os
@@ -32,7 +40,11 @@ from loudness import integrated_lufs                   # noqa: E402
 LEN = 600.0
 N = int(LEN * SR)
 BED = os.path.join(AUDIO, "bed")
-FFMPEG = os.path.expanduser("~/.local/bin/ffmpeg")
+FFMPEG = shutil.which("ffmpeg") or os.path.expanduser("~/.local/bin/ffmpeg")
+VO_FILE = "vo10.mp3"
+WORDS_FILE = "transcript.json"
+SUFFIX = "_600s"
+EPIDEMIC = False
 PY = sys.executable
 VO_LUFS = -27.2
 MUSIC_TARGET = -41.0          # integrated music bed loudness (~14 LU under the VO)
@@ -42,7 +54,7 @@ MUSIC_TARGET = -41.0          # integrated music bed loudness (~14 LU under the 
 def vo_activity():
     with tempfile.TemporaryDirectory() as td:
         p = os.path.join(td, "vo.wav")
-        subprocess.run([FFMPEG, "-v", "error", "-y", "-i", os.path.join(ROOT, "vo10.mp3"), "-ar", "48000", p], check=True)
+        subprocess.run([FFMPEG, "-v", "error", "-y", "-i", os.path.join(ROOT, VO_FILE), "-ar", "48000", p], check=True)
         x, _ = sf.read(p, always_2d=True)
     h = int(0.02 * SR)
     n = len(x) // h
@@ -76,7 +88,7 @@ def vo_activity():
 
 
 def words():
-    return json.load(open(os.path.join(ROOT, "transcript.json")))
+    return json.load(open(os.path.join(ROOT, WORDS_FILE)))
 
 
 def density_windows(ws, win=10.0):
@@ -225,6 +237,59 @@ def build_music(act, pauses, dens):
     return x, s_smp
 
 
+def speech_env(act):
+    """0..1 speech envelope per sample (attack 50 ms, release 300 ms) from the 20 ms VO activity frames."""
+    fr = act.astype(float)
+    s = np.zeros_like(fr)
+    for k in range(len(fr)):
+        prev = s[k - 1] if k else 0.0
+        c = 0.02 / (0.05 if fr[k] > prev else 0.30)
+        s[k] = prev + (fr[k] - prev) * min(c, 1.0)
+    tf = np.arange(len(s)) * 0.02 + 0.01
+    return np.interp(np.arange(N) / SR, tf, s)
+
+
+def build_music_epidemic(sheet, act, pauses):
+    """Layered Epidemic bed (MANUAL §10.3): sum the cue-sheet layers, frequency pocket in the voice band while he speaks
+    (§10.8: −4.5 dB @ 2.5 kHz, −2.5 dB @ 1.2 kHz), small lifts in VO pauses ≥ 0.6 s, normalise to VO − bed_lu_under_vo,
+    then add the stingers. Writes <out>/music_bed.wav + music_report.json."""
+    import epidemic_bed as E
+    os.makedirs(BED, exist_ok=True)
+    x, rep = E.build_layers(sheet, LEN, VO_LUFS)
+    s_smp = speech_env(act)
+    carved = peaking(peaking(x, 2500, -4.5, 0.7), 1200, -2.5, 1.0)
+    x = x * (1 - s_smp[:, None]) + carved * s_smp[:, None]
+    del carved
+    ts = np.arange(N) / SR
+    pts = [(0.0, 0.0)]
+    for a, b in pauses:
+        L = b - a
+        if a < 0.5 or b > LEN - 0.4:
+            continue
+        lift = 2.5 if L >= 1.2 else 1.5
+        r = min(0.5, max(0.1, (L - 0.45) / 2))
+        up, dn = a + 0.15 + r, b - 0.3
+        if dn <= up:
+            up = dn = (a + b) / 2
+        pts += [(a + 0.15, 0.0), (up, lift), (dn, lift), (b - 0.05, 0.0)]
+    pts.append((LEN, 0.0))
+    pts.sort()
+    x = x * db(np.interp(ts, [p[0] for p in pts], [p[1] for p in pts]))[:, None]
+    target = VO_LUFS - float(sheet.get("bed_lu_under_vo", 14.0))
+    x *= db(target - integrated_lufs(x))
+    x = E.place_stingers(sheet, x, LEN, VO_LUFS, target)
+    pk = np.abs(x).max()
+    if pk > db(-1.0):
+        x *= db(-1.0) / pk
+    out = os.path.join(BED, "music_bed.wav")
+    sf.write(out, x, SR, subtype="PCM_24")
+    json.dump(dict(vo_lufs=VO_LUFS, target_lufs=target, layers=rep, pauses_lifted=len(pauses)),
+              open(os.path.join(BED, "music_report.json"), "w"), indent=1)
+    print(f"music: {out}  LUFS {integrated_lufs(x):.1f} (target {target:.1f})  peak {20*np.log10(np.abs(x).max()):.1f} dBFS"
+          f"  layers {len(rep)}")
+    return x, s_smp
+
+
 # =============================================================== SFX
 LIB = os.path.join(AUDIO, "sfx")
 _cache = {}
@@ -272,16 +337,96 @@ GAIN = {
     "air_swell": (0.06, 0.08), "shutter": (0.09, 0.11), "projector_click": (0.06, 0.08), "film_burn": (0.07, 0.09),
     "burn_crackle": (0.08, 0.10), "crt_click": (0.07, 0.09), "crt_off": (0.06, 0.08), "boom_low": (0.14, 0.18),
     "lamp_click": (0.06, 0.08), "gate_creak": (0.05, 0.07), "chime_soft": (0.05, 0.07), "tone_blip": (0.025, 0.03),
+    # Epidemic-era types (SOUND_PLAN §4)
+    "whip": (0.08, 0.10), "riser": (0.07, 0.09), "phone_ring": (0.05, 0.07), "phone_dial": (0.05, 0.07),
+    "plane_pass": (0.08, 0.10), "teletype": (0.05, 0.07), "focus_hunt": (0.05, 0.065),
 }
 LOWTYPES = {"boom_low", "stamp_thud"}
 SFX_TRIM_DB = -3.0   # this VO is quiet (speech peaks ~ -16 dBFS): trims the table so SFX sit ~20 dB under local VO peaks
-AMBTYPES = {"projector_loop", "crt_hum", "wind"}
+AMBTYPES = {"projector_loop", "crt_hum", "wind", "factory_hum", "crowd_room"}
+
+
+def epi(name, start=0.0, dur=None):
+    import epidemic_bed as E
+    return E.read_window(E.sfx_path(name), start, dur)
+
+
+def render_epidemic(m, i, rng):
+    """Epidemic Sound SFX for the new types (and better booms). None = fall through to the synthesized library."""
+    ty, d, note = m["type"], m.get("dur"), m.get("note", "").lower()
+    seed = 20000 + i
+    if ty == "whip":
+        nm = ["whoosh_swoosh_light", "whoosh_swoosh_wide", "whoosh_soft"][i % 3]
+        y = epi(nm)
+        low = st(G.whoosh(0.5, seed, 150, 1200, 0.6))          # §10.8: a LOW whoosh under every move
+        lk = loudest(y)
+        buf = np.zeros((max(len(y), len(low) + int(max(0.0, lk - loudest(low)) * SR)) + 10, 2))
+        buf[:len(y)] += y / (np.abs(y).max() + 1e-9)
+        o = int(max(0.0, lk - loudest(low)) * SR)
+        buf[o:o + len(low)] += 0.5 * low / (np.abs(low).max() + 1e-9)
+        return buf, lk, f"epi:{nm} + low whoosh gen#{seed}"
+    if ty == "boom_low":
+        if any(k in note for k in ("morris", "biggest")):
+            nm = "boom_dark_cinematic_low_hit"
+        elif any(k in note for k in ("condition", "'one'", "tsmc", "superpower", "slams")):
+            nm = "boom_cinematic_deep"
+        elif any(k in note for k in ("died", "sub only")):
+            nm = "boom_sub_bass_clean_01"
+        else:
+            return None
+        y = epi(nm, 0.0, 4.0 if nm == "boom_sub_bass_clean_01" else None)
+        y = fade(y, 0.0, 1.0)
+        return y, onset(y), f"epi:{nm}"
+    if ty == "riser":
+        y = epi("riser_reverse_cymbal_short")
+        return y, loudest(y), "epi:riser_reverse_cymbal_short (ends on t)"
+    if ty == "phone_ring":
+        nm = "phone_ring_04"
+        y = epi(nm)
+        o = onset(y)
+        y = fade(y[int(o * SR):int((o + 2.2) * SR)], 0.0, 0.4)
+        return y, 0.0, f"epi:{nm} (one ring)"
+    if ty == "phone_dial":
+        y = fade(epi("phone_pushbutton_dial_pickup", float(rng.uniform(5, 40)), d or 1.0), 0.01, 0.1)
+        return y, 0.0, "epi:phone_pushbutton_dial_pickup (excerpt)"
+    if ty == "plane_pass":
+        nm = "jet_pass_overhead_01" if i % 2 == 0 else "jet_pass_long_distant"
+        full = epi(nm)
+        lk = loudest(full)
+        span = max(d or 1.0, 1.0) + 5.0
+        a = max(0.0, lk - span / 2)
+        y = fade(full[int(a * SR):int((a + span) * SR)], 1.5, 1.5)
+        return y, (lk - a) - (d or 1.0) / 2, f"epi:{nm} (peak mid-move)"
+    if ty == "teletype":
+        y = fade(epi("telegraph_antique", 2.0, d or 2.0), 0.05, 0.3)
+        return y, 0.0, "epi:telegraph_antique"
+    if ty == "focus_hunt":
+        nm = ["camera_focus_nikon_d3100", "lens_autofocus_f4_01", "lens_autofocus_f4_03"][i % 3]
+        y = epi(nm)
+        return y, onset(y), f"epi:{nm}"
+    if ty == "paper_slide" and m.get("level") == "normal" and "drop" not in note:
+        nm = ["paper_slide_wood_table", "paper_slide_wood_table_04"][i % 2]
+        y = epi(nm)
+        return y, onset(y), f"epi:{nm}"
+    return None
+
+
+def rate_shift(y, semis):
+    """Pitch/rate variation (§10.8: never the same sample twice in a row)."""
+    r = 2 ** (semis / 12)
+    n = int(len(y) / r)
+    xi = np.arange(n) * r
+    return np.stack([np.interp(xi, np.arange(len(y)), y[:, c]) for c in range(y.shape[1])], 1)
 
 
 def render_event(m, i, rng, wdir):
     """Return (stereo sound, seconds from file start to the sync point, label)."""
     t, ty, d, note = m["t"], m["type"], m.get("dur"), m.get("note", "").lower()
     seed = 10000 + i
+    if EPIDEMIC:
+        r = render_epidemic(m, i, rng)
+        if r is not None:
+            return r
     if ty in ("whoosh_soft", "whoosh", "whoosh_big"):
         base = {"whoosh_soft": (0.45, 400, 3000, 0.55), "whoosh": (0.8, 300, 2600, 0.62),
                 "whoosh_big": (1.3, 220, 2200, 0.65)}[ty]
@@ -429,6 +574,7 @@ def build_sfx_and_amb(markers, scenes, act, vo):
     rng = np.random.default_rng(2026)
     log = []
     wdir = False
+    last_files = []
     for i, m in enumerate(markers):
         ty = m["type"]
         quiet = any(k in m.get("note", "").lower() for k in ("very quiet", "very soft", "very low"))
@@ -439,6 +585,14 @@ def build_sfx_and_amb(markers, scenes, act, vo):
             wdir = True if ("left" in nt and "right" not in nt) else (False if "right" in nt else not wdir)
         y, sync, label = render_event(m, i, rng, wdir and ty.startswith("whoosh"))
         y = st(y)
+        if EPIDEMIC and "gen#" not in label:
+            base = label.split(" ")[0]
+            if base in last_files[-2:]:
+                semis = float(rng.choice([-1, 1]) * rng.uniform(1.0, 3.0))
+                y = rate_shift(y, semis)
+                sync /= 2 ** (semis / 12)
+                label += f" ({semis:+.1f} st)"
+            last_files.append(base)
         y = peak_norm(y, -6.0)
         g = GAIN[ty][1 if m.get("level") == "normal" else 0] * (db(-6) if quiet else 1.0) * db(SFX_TRIM_DB)
         if ty not in LOWTYPES:
@@ -449,6 +603,9 @@ def build_sfx_and_amb(markers, scenes, act, vo):
         a0, a1 = max(int((start - 0.3) * SR), 0), min(int((start + len(y) / SR + 0.3) * SR), len(vabs))
         vloc = vabs[a0:a1].max() if a1 > a0 else 0.0
         rel, floor = (-14.0, -24.0) if ty in LOWTYPES else (-20.0, -30.0)
+        if EPIDEMIC:   # §10.8: SFX −10…−20 dB under the VO by importance (hero/normal vs the rest)
+            hero = m.get("level") == "normal" or ty in ("boom_low", "riser", "plane_pass")
+            rel = (-10.0 if hero else -14.0) if ty in LOWTYPES else (-12.0 if hero else -18.0)
         allowed = max(vloc * db(rel), db(floor)) if vloc > db(-30) else db(floor)
         pk = np.abs(y).max() * g
         if pk > allowed:
@@ -488,6 +645,25 @@ def build_sfx_and_amb(markers, scenes, act, vo):
         elif m["type"] == "crt_hum":
             g = 0.009
             loop_seg("crt_hum_loop_6s", m["t"], m["t"] + d, g, 0.2, 0.3)
+        elif m["type"] in ("factory_hum", "crowd_room"):
+            n_ = m.get("note", "").lower()
+            if m["type"] == "factory_hum":
+                nm = "factory_machine_room_electronics_hum" if any(k in n_ for k in ("fab", "cleanroom", "microscope")) \
+                    else "factory_hum_light_activity_01"
+                rel = -26.0
+            else:
+                nm = "restaurant_crowded_distant_01" if any(k in n_ for k in ("restaurant", "dinner")) \
+                    else "office_aircon_people_quiet"
+                rel = -25.0
+            y = epi(nm, float(rng.uniform(5, 40)), d + 0.6)
+            g = db(VO_LUFS + rel - integrated_lufs(y)) * (db(-4) if quiet else 1.0)   # felt, not heard (≈ −50 LUFS)
+            y = fade(y, min(0.8, d / 3), min(1.2, d / 3))
+            i0 = int(m["t"] * SR)
+            k_ = min(len(y), N - i0)
+            amb[i0:i0 + k_] += g * y[:k_]
+            g = round(float(g), 4)
+            amb_log.append(dict(t=m["t"], type=m["type"], dur=d, gain=g, file=nm))
+            continue
         else:
             g = 0.05 if d < 3 else 0.035
             loop_seg("wind_air_loop_30s", m["t"], m["t"] + d, g, min(0.6, d / 3), min(0.8, d / 3))
@@ -503,7 +679,7 @@ def build_sfx_and_amb(markers, scenes, act, vo):
             loop_seg("wind_air_loop_30s", a, b, 0.03, 1.0, 1.0)
             amb_log.append(dict(t=a, type="wind_bed", dur=round(b - a, 2), gain=0.03))
     amb = fade(amb, 0.5, 1.2)
-    for nm, x in (("sfx_600s.wav", sfx), ("ambience_600s.wav", amb)):
+    for nm, x in ((f"sfx{SUFFIX}.wav", sfx), (f"ambience{SUFFIX}.wav", amb)):
         sf.write(os.path.join(BED, nm), x, SR, subtype="PCM_24")
         print(f"{nm}: peak {20*np.log10(np.abs(x).max()+1e-12):.1f} dBFS  LUFS {integrated_lufs(x):.1f}")
     json.dump({"sfx": log, "ambience": amb_log}, open(os.path.join(BED, "sfx_placements.json"), "w"), indent=1)
@@ -524,18 +700,60 @@ def scenes_from_notes():
     return out
 
 
+def measure_lufs(path):
+    r = subprocess.run([FFMPEG, "-hide_banner", "-nostats", "-i", path, "-af", "ebur128", "-f", "null", "-"],
+                       capture_output=True, text=True).stderr
+    return float([l for l in r.splitlines() if l.strip().startswith("I:")][-1].split()[1])
+
+
 if __name__ == "__main__":
+    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("--vo", default="vo10.mp3")
+    ap.add_argument("--transcript", default="transcript.json")
+    ap.add_argument("--len", type=float, default=600.0)
+    ap.add_argument("--markers", default="compositions/seg0*.sfx.json")
+    ap.add_argument("--cues", default=None, help="JSON cue sheet of Epidemic layers (enables Epidemic mode)")
+    ap.add_argument("--out", default="assets/audio/bed")
+    ap.add_argument("--no-hierarchy", action="store_true", help="place every marker (skip the §10.8 restraint pass)")
+    a = ap.parse_args()
+    VO_FILE, WORDS_FILE, LEN = a.vo, a.transcript, a.len
+    N = int(LEN * SR)
+    BED = os.path.join(ROOT, a.out)
+    os.makedirs(BED, exist_ok=True)
+    EPIDEMIC = a.cues is not None
     markers = []
-    for f in sorted(glob.glob(os.path.join(ROOT, "compositions", "seg0*.sfx.json"))):
+    for f in sorted(glob.glob(os.path.join(ROOT, a.markers))):
         markers += json.load(open(f))
     markers.sort(key=lambda m: m["t"])
     unknown = {m["type"] for m in markers} - set(GAIN) - AMBTYPES
     assert not unknown, unknown
     act, pauses, vo = vo_activity()
-    dens = density_windows(words())
-    build_music(act, pauses, dens)
-    build_sfx_and_amb(markers, scenes_from_notes(), act, vo)
-    tl = [dict(id=i, src=f"assets/audio/bed/{f}", start=0, duration=LEN, media_start=0, volume=1.0)
-          for i, f in (("bed-music", "music_bed_600s.wav"), ("bed-sfx", "sfx_600s.wav"), ("bed-amb", "ambience_600s.wav"))]
-    json.dump(tl, open(os.path.join(AUDIO, "timeline.json"), "w"), indent=1)
-    print(f"{len(markers)} markers placed; timeline.json written")
+    if not EPIDEMIC:                                   # legacy 600 s edit
+        dens = density_windows(words())
+        build_music(act, pauses, dens)
+        build_sfx_and_amb(markers, scenes_from_notes(), act, vo)
+        tl = [dict(id=i, src=f"assets/audio/bed/{f}", start=0, duration=LEN, media_start=0, volume=1.0)
+              for i, f in (("bed-music", "music_bed_600s.wav"), ("bed-sfx", "sfx_600s.wav"),
+                           ("bed-amb", "ambience_600s.wav"))]
+        json.dump(tl, open(os.path.join(AUDIO, "timeline.json"), "w"), indent=1)
+        print(f"{len(markers)} markers placed; timeline.json written")
+        sys.exit()
+    SUFFIX = ""
+    VO_LUFS = measure_lufs(os.path.join(ROOT, VO_FILE))
+    SFX_TRIM_DB = -3.0 + (VO_LUFS + 27.2)          # the table was tuned for a −27.2 LUFS VO
+    print(f"VO {VO_FILE}: {VO_LUFS:.1f} LUFS (measured, untouched); {len(markers)} markers; {len(pauses)} pauses")
+    import epidemic_bed as E
+    if not a.no_hierarchy:
+        kept, dropped = E.hierarchy(markers)
+        json.dump(dict(total=len(markers), kept=len(kept), dropped=dropped, kept_markers=kept),
+                  open(os.path.join(BED, "sfx_hierarchy.json"), "w"), indent=1)
+        print(f"hierarchy (§10.8): kept {len(kept)} / {len(markers)} markers, dropped {len(dropped)}")
+        markers = kept
+    sheet = json.load(open(os.path.join(ROOT, a.cues)))
+    build_music_epidemic(sheet, act, pauses)
+    build_sfx_and_amb(markers, [(0.0, LEN, "PAPER", set())], act, vo)
+    rel = os.path.relpath(BED, ROOT)
+    tl = [dict(id=i, src=f"{rel}/{f}", start=0, duration=LEN, media_start=0, volume=1.0)
+          for i, f in (("bed-music", "music_bed.wav"), ("bed-sfx", "sfx.wav"), ("bed-amb", "ambience.wav"))]
+    json.dump(tl, open(os.path.join(BED, "timeline.json"), "w"), indent=1)
+    print(f"{len(markers)} markers placed; {rel}/timeline.json written")
