@@ -12,6 +12,9 @@ feedback, update the relevant section and add a line to the Changelog at the bot
 
 ## 0. What the user wants (non-negotiables)
 
+- **Never assume — test.** Every assumption (a tool flag, a file's contents, a time estimate, "it's done", "it looks right") is checked with at least a small test before acting on it or reporting it (owner rule, 2026-10-31).
+- **A running render is never killed**, for any reason (owner rule). Render process: §11.
+
 1. Documentary/explainer edit over a narrated voiceover. 1920×1080, 24 fps.
 2. **Never touch the voiceover.** No EQ, compression, gain, noise reduction or re-timing. Unity gain.
    Delivered samples carry the original MP3 frames (stream copy); full edits mix the bed *under* it.

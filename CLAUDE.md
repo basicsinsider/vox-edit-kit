@@ -13,6 +13,8 @@ Read, in order, before doing anything:
    decisions, asset list) — copy their format for new projects.
 
 Hard rules (details in MANUAL §0):
+- Never assume anything — always test it, even with a tiny check, before relying on it or telling the user (owner rule).
+- Never kill a running render, for any reason; renders follow MANUAL §11.
 - Never alter the voiceover audio (no EQ/compression/gain/normalising). On-screen text says exactly what the
   narrator says — no fact-checking; only fix ASR misspellings of names.
 - Fonts: only Cooper Hewitt, Haskoy, Crimson Pro (`assets/fonts`). Palette: `lib/fx.css :root` only.
