@@ -380,7 +380,7 @@ Text lands 0–120 ms **before** the listed time (default −0.06). These are th
 | C5B103 | `real China` @**496.01**–496.25 · `fake` @**497.53** |
 | C5B104 | `UN seat` @**498.89**–499.21 · `walk between` @**501.21**–501.61 · `two demands` @**502.01**–502.17 · `compromise` @**503.05** |
 | C5B105 | `Jeff Bezos` @**504.33**–504.57 · `compromise` @**506.01** · `is` @**506.57** · `never` @**506.73** · `a` @**506.97** · `good` @**507.05** · `solution` @**507.21** |
-| C5B106 | `both sides` @**510.57**–510.81 · `happy` @**511.05** · `pissed off` @**513.21**–513.45 |
+| C5B106 | `both sides` @**510.57**–510.81 · `happy` @**511.05** |
 | C5B107 | `pick which side` @**516.01**–516.97 · `the CCP` @**519.85**–520.09 |
 | C5B108 | `United Nations` @**523.37**–523.69 |
 | C5B109 | `once again` @**525.45**–525.61 · `China` @**526.33** · `officially` @**527.45** |
@@ -428,8 +428,8 @@ espionage suspense, the secret trip is the set-piece of the chunk) → why the U
 ## 7. "Visual must show" — one line per beat
 
 Krish's rule (MANUAL §10.1.3): every visual matches the exact words under it. No face cam (narrator off camera after the intro).
-Palette for c5 (DECISIONS #1): celadon = Taiwan; US / China / CCP / USSR = neutral codes (outline / solid ink / hatched); red and blue
-stay reserved for TSMC/Chang and UMC/Tsao (absent from this chunk); yellow = highlighter + one key number.
+Palette for c5 (lead's cross-chunk decision, DECISIONS #1): red = PRC / CCP / Communist bloc (USSR hatched red), celadon = Taiwan / ROC,
+navy = the US and allies when a contrast is needed, everyone else neutral; yellow = highlighter + one key number.
 
 | id | time | visual must show (literal match to the words) |
 |---|---|---|

@@ -25,12 +25,14 @@ Shot-by-shot plan for chunk c5. Read with `project/LONGFORM.md`, `MANUAL.md` (§
 - **Glow**: `.halate` only on the scene's **hero** (marked "hero halate"). Everything else `.clean`. Paper/grid never glow.
 - **Ref** = Krish's intro pack `D01–D15` (`references/style-images/intro/`), original refs `R1–R12` (`references/style-images/1–12`,
   stills in `expected/layouts/`) — always as VARIATIONS — or a **NEW** idea named in the scene (Pinterest-style, described in §11.3).
-- **Palette** (`lib/palette.css`; mapping for this chunk in DECISIONS #1): **celadon** `#9fc7b2` = Taiwan / ROC / Taiwanese government ·
-  **US** = neutral outline (ink stroke on paper / bone stroke on night) + monochrome halftone flag · **China / PRC / CCP** = solid
-  ink-charcoal (`--ink`) with halftone · **Soviet Union** = hatched `--ink-soft` · **yellow** = highlighter + the one key number of a scene
-  (`9 to 10%`, `2 days`, `an hour`, `2` (two times)) · **red and blue are NOT used** (TSMC/Chang, UMC/Tsao are absent from this chunk —
-  the code must stay pure). Flags are always monochrome halftone prints (no red fields). Archival colour posters/paintings are muted
-  (saturation −0.5) and never get a red graphic on top.
+- **Palette** (`lib/palette.css`; **lead's cross-chunk colour decision**, LONGFORM.md end; DECISIONS #1) — c5 is a political chunk:
+  **red** `--vermilion` = **PRC / CCP / the Communist bloc** (China, Mao, the USSR as hatched red) · **celadon** `#9fc7b2` = **Taiwan / ROC /
+  Taiwanese government** · **navy** `#1d5c9e` (sky `#9fc3e3` on night) = **the United States and its allies, only when a contrast is
+  needed** (US vs China/USSR) — otherwise the US stays neutral (outline) · everyone else neutral (ink / bone / grey: India, Pakistan, GI/TI/RCA,
+  Terman, the UN) · **yellow** = highlighter + the one key number of a scene (`9 to 10%`, `2 days`, `an hour`, `2` two times). TSMC/UMC
+  don't appear in c5, so red-TSMC never meets red-PRC. **Max two accents per frame** (e.g. red + celadon on the UN seat diagrams, red + navy
+  on the Cold-War triangle). Flags are single-colour halftone prints in their code colour (US navy, PRC red, ROC ink — its own red field would
+  break the code). Cultural Revolution posters/Mao paintings keep their red (it IS the PRC code), lightly muted.
 - **Maps** only from `assets/maps/kit/` (`M..`) — rich relief / sharp satellite / vintage colour atlas; never the flat grey relief. Satellite
   credit (Esri/NASA) 13 px bottom-right.
 - **Assets**: true images first (copyrighted OK — fair use, credited, logged with "© owner, fair use"); a photo/clip may repeat when the
@@ -72,11 +74,11 @@ Music: layered bed enters soft (pad + light pulse, Melting Glass family); small 
 ### C5S004 · 7.23–14.35 · C5B002,C5B003 · PAPER · `c5s01`
 - **Words** "A lot of products like Christmas lights, radios, washers, umbrellas, textiles, they were all made in Taiwan."  **Why** Five products named, one per word → a collage of real period ads/photos pinned one per word, then the whole set stamped 'made in Taiwan'.
 - **FX** #12 collage (12 fps pinning, torn edges) + rubber stamp (FX.chokeSettle) · **Ref** D07 variation (moonshine-ad collage → product-ad collage, landscape, five cards + one typographic box)
-- **Visual** Cards pin in at 12 fps on paper_stained_01 (two layers): Christmas lights box/ad, transistor radio ad, washing machine ad, umbrella, textile bolts (N31a–e, tinted ink→paper, halftone multiply). Each card's caption is a t-label box. @13.31 an ink rubber stamp MADE IN TAIWAN lands across the set (rough edge settles one step later).
+- **Visual** Cards pin in at 12 fps on paper_stained_01 (two layers): Christmas lights box/ad, transistor radio ad, washing machine ad, umbrella, textile bolts (N31a–e, tinted ink→paper, halftone multiply). Each card's caption is a t-label box. @13.31 an ink rubber stamp lands across the set three times, one word per hit — MADE @13.31, IN @13.63, TAIWAN @13.79 — (rough edge settles one 12 fps step later).
 - **Assets** N31a–e, E13
 - **Text** `Christmas lights` word-by-word `Christmas` @8.35 `lights` @8.75 (t-label box) · `radios` @9.23 (t-label box) · `washers` @10.03 (t-label box) · `umbrellas` @11.07 (t-label box) · `textiles` @11.87 (t-label box) · `made in Taiwan` word-by-word `made` @13.31 `in` @13.63 `Taiwan` @13.79 (stamp, Haskoy 800 ink)
-- **Camera** slow pull-out 1.10→1.00 as cards fill the frame · **Key anim done** @13.69 · **Out** `W↑` vertical whip up @14.35
-- **SFX** 8.33 paper_slide (lights) · 9.21 paper_slide (radio) · 10.01 paper_slide (washer) · 11.05 paper_slide (umbrella) · 11.85 paper_slide (textiles) · 13.29 stamp_thud (MADE IN TAIWAN) · 14.28 whoosh (whip up)
+- **Camera** slow pull-out 1.10→1.00 as cards fill the frame; the camera keeps moving through the cut · **Key anim done** @13.85 · **Out** `CA` cut on action @14.35
+- **SFX** 8.33 paper_slide (lights) · 9.21 paper_slide (radio) · 10.01 paper_slide (washer) · 11.05 paper_slide (umbrella) · 11.85 paper_slide (textiles) · 13.29 stamp_thud (MADE IN TAIWAN) · 14.30 paper_slide (cut on the pull-out)
 
 ### C5S005 · 14.35–20.59 · C5B004 · GRID · `c5s01`
 - **Words** "And because of that, Taiwanese economy grows almost nearly 9 to 10% every single year,"  **Why** 'economy grows 9 to 10 % every single year' → a bar per year, every bar landing in the same 9–10 % band.
@@ -84,7 +86,7 @@ Music: layered bed enters soft (pad + light pulse, Melting Glass family); small 
 - **Visual** K+E graph sheet (ke1960_10x10_grid_black_hires, multiply) on paper_cream. ~16 ink-celadon bars rise left→right at 12 fps (stagger 0.12 s), all stopping inside a shaded 9–10 % band (dashed lines). Halftone cut-out of a Taiwan factory roof (from N39) across the base. No years, no axis numbers.
 - **Assets** N39 (halftone base), E13
 - **Text** `Taiwanese economy` word-by-word `Taiwanese` @15.31 `economy` @16.19 (t-serif title, ink) · `9 to 10%` word-by-word `9` @18.19 `to` @18.51 `10%` @18.67 (.label-box YELLOW key number (count 0→9, then 'to 10%')) · `every single year` word-by-word `every` @19.47 `single` @19.71 `year` @20.11 (t-label)
-- **Camera** slow drift right; bars finish @19.6 · **Key anim done** @19.90 · **Out** `CA` cut on action @20.59
+- **Camera** slow drift right; bars finish @19.6 · **Key anim done** @19.90 · **Out** `PS` paper slide / torn-paper wipe @20.59
 - **SFX** 16.80 dot_ticks (bars rise, 2.5 s) · 18.17 counter_ticks (9 to 10%)
 
 ### C5S006 · 20.59–23.63 · C5B005 · GRID · `c5s01`
@@ -366,9 +368,9 @@ Music: drop the melodic layer on "Mao Zedong" 171.37; dark drone under 176–191
 - **SFX** 158.45 paper_slide · 163.70 whoosh (whip west to China)
 
 ### C5S036 · 163.77–170.65 · C5B036 · NIGHT · `c5s01`
-- **Words** "because things that like China may have a bigger economy because it's just a bigger landmass, bigger population at this point."  **Why** 'China may have a bigger economy … bigger landmass, bigger population' → China (ink) vs Taiwan (celadon) on a rich relief map, then population dots.
-- **FX** #3 map (region fill + halftone + glow) + isotype dots (D03/R5 idea) · **Ref** R12 variation (China filled ink-charcoal with halftone + bone glowing edge, not red — red is TSMC only)
-- **Visual** M01 East Asia hi-res relief (map kit). China fills ink-charcoal + halftone @166.17; Taiwan celadon. @168.65 small bone dots stream into each (many into China, a few into Taiwan) — proportional, no numbers.
+- **Words** "because things that like China may have a bigger economy because it's just a bigger landmass, bigger population at this point."  **Why** 'China may have a bigger economy … bigger landmass, bigger population' → China (red) vs Taiwan (celadon) on a rich relief map, then population dots.
+- **FX** #3 map (region fill + halftone + glow) + isotype dots (D03/R5 idea) · **Ref** R12 variation (China filled red with halftone + glowing edge — exactly the R12 look; red = PRC per the lead's colour decision)
+- **Visual** M01 East Asia hi-res relief (map kit). China fills red (`--vermilion`) + halftone + soft glow @166.17; Taiwan celadon. @168.65 small bone dots stream into each (many into China, a few into Taiwan) — proportional, no numbers.
 - **Assets** M01
 - **Text** `bigger economy` word-by-word `bigger` @166.17 `economy` @166.49 (t-label) · `bigger landmass` word-by-word `bigger` @167.61 `landmass` @167.93 (t-label) · `bigger population` word-by-word `bigger` @168.65 `population` @169.05 (t-label)
 - **Camera** slow push toward the strait · **Key anim done** @170.00 · **Out** `CA` cut on action @170.65
@@ -386,7 +388,7 @@ Music: drop the melodic layer on "Mao Zedong" 171.37; dark drone under 176–191
 ### C5S038 · 176.30–179.66 · C5B038 · PAPER · `c5s01`
 - **Words** "The country, China, the country. You know, the cultural revolution happens."  **Why** 'the cultural revolution happens' → a real Cultural Revolution poster (painting as B-roll), muted.
 - **FX** #16 poster plate + #18 rough title (chokeSettle) · **Ref** Pinterest idea: 'propaganda poster on a wall, peeled corner'
-- **Visual** N23 colour poster (muted: saturation −0.5, sepia warm) pasted on a paper wall, one corner peeling; title types in.
+- **Visual** N23 colour poster (keeps its red — red = PRC — slightly muted −0.25, warm) pasted on a paper wall, one corner peeling; title types in.
 - **Assets** N23
 - **Text** `cultural revolution` word-by-word `cultural` @178.14 `revolution` @178.62 (t-display 110px ink (chokeSettle))
 - **Camera** slow tilt down · **Key anim done** @179.10 · **Out** `PS` paper slide / torn-paper wipe @179.66
@@ -422,7 +424,7 @@ Music: drop the melodic layer on "Mao Zedong" 171.37; dark drone under 176–191
 ### C5S042 · 191.10–194.22 · C5B041 · NIGHT · `c5s01`
 - **Words** "All the while Taiwan is taking a different direction."  **Why** 'All the while Taiwan is taking a different direction' → 1960s Taipei streets with a celadon arrow bending away (up) from the ink one.
 - **FX** #1 footage + #19 arrows · **Ref** —
-- **Visual** E07 Taipei boulevard (high angle); two markup arrows: ink one points down-left (China), celadon one bends up-right (Taiwan).
+- **Visual** E07 Taipei boulevard (high angle); two markup arrows: a red one points down-left (China), celadon one bends up-right (Taiwan).
 - **Assets** E07
 - **Text** `different direction` word-by-word `different` @193.02 `direction` @193.42 (t-serif-i .clean)
 - **Camera** slow push · **Key anim done** @193.56 · **Out** `FW` light-flash whip @194.22
@@ -444,7 +446,7 @@ Music: hit + silence on "shock" 199.50; low pulse under Nixon/Kissinger; hero st
 ### C5S044 · 200.06–205.82 · C5B043 · PAPER · `c5s02`
 - **Words** "A shock which is famously named the China shock. And it starts with the United States, unfortunately."  **Why** 'famously named the China shock … starts with the United States' → the name as a torn-newsprint title, then the US.
 - **FX** #18 rough type on torn newsprint + #12 torn edges · **Ref** Pinterest idea: 'torn newspaper headline letters'
-- **Visual** paper_torn_01 (Screen) + newsprint_01 two layers; 'CHINA SHOCK' assembled from torn newsprint letters (chokeSettle); @204.22 a monochrome halftone US flag (G13) slides in under it.
+- **Visual** paper_torn_01 (Screen) + newsprint_01 two layers; 'CHINA SHOCK' assembled from torn newsprint letters (chokeSettle); @204.22 a navy halftone US flag (G13) slides in under it.
 - **Assets** G13, E13
 - **Text** `China shock` word-by-word `China` @202.22 `shock` @202.62 (t-display 200px ink (torn letters)) · `United States` word-by-word `United` @204.22 `States` @204.62 (t-label)
 - **Camera** slow push · **Key anim done** @205.16 · **Out** `W→` whip right @205.82
@@ -489,7 +491,7 @@ Music: hit + silence on "shock" 199.50; low pulse under Nixon/Kissinger; hero st
 ### C5S049 · 222.46–227.66 · C5B048 · NIGHT · `c5s02`
 - **Words** "knows Kissinger just has crazy amount of influence on the president and the policy of the United States."  **Why** 'Kissinger just has crazy amount of influence on the president and the policy of the United States' → thick influence flows from Kissinger to the president and to US policy.
 - **FX** #2 Sankey flows + ghost map · **Ref** D11 variation (dark Sankey over a ghost US map; flows from one person instead of a budget)
-- **Visual** Ghost US map at 12 %; Kissinger node (N01 circle) left; two thick bone flows draw right into 'the president' (Nixon circle, N07) and 'policy' bar.
+- **Visual** Ghost US map at 12 %; Kissinger node (N01 circle) left; two thick bone flows draw right (neutral, no accent) into 'the president' (Nixon circle, N07) and 'policy' bar.
 - **Assets** N01, N07
 - **Text** `influence` @224.94 (t-serif-i .clean) · `the president` word-by-word `the` @225.42 `president` @225.50 (t-label) · `policy` @226.22 (t-label)
 - **Camera** slow push · **Key anim done** @227.00 · **Out** `CA` cut on action @227.66
@@ -520,7 +522,7 @@ Music: ticking/pulse stem (Formations-like) from 227.66; near-silence under "beh
 ### C5S052 · 236.38–242.03 · C5B051 · NIGHT · `c5s02`
 - **Words** "Maybe India was paying attention because, you know, US uh US uh Official going to Pakistan,"  **Why** 'Maybe India was paying attention … US official going to Pakistan' → India watches Pakistan (radio-wave rings).
 - **FX** #3 map + §10.6.7 radio waves + #20 · **Ref** R11-style region fills on a satellite base
-- **Visual** M03 South Asia satellite (map kit). India ink-soft hatched; Pakistan outlined bone; rings pulse from Delhi toward Pakistan.
+- **Visual** M03 South Asia satellite (map kit). India hatched neutral grey; Pakistan outlined bone; rings pulse from Delhi toward Pakistan.
 - **Assets** M03
 - **Text** `India` @236.78 (t-label) · `Pakistan` @241.39 (t-label)
 - **Camera** slow push · **Key anim done** @241.40 · **Out** continuous (same layout, camera moves on — no cut) @242.03
@@ -610,7 +612,7 @@ Music: ticking/pulse stem (Formations-like) from 227.66; near-silence under "beh
 ### C5S062 · 279.47–284.03 · C5B061 · GRID · `c5s02`
 - **Words** "A lot of first here, by the way. US has never made official contact with the communist China."  **Why** 'A lot of first here … US has never made official contact with the communist China' → two halftone flags joined for the first time by a line.
 - **FX** #2 diagram + #18 stamp · **Ref** D15 variation (two nodes, one first link)
-- **Visual** Grid paper; US flag (G13, halftone ink) left, PRC flag (G13, halftone ink — no red) right; 'never' stamp in the gap; @283.0 the dashed line connects.
+- **Visual** Grid paper; US flag (G13, navy halftone) left, PRC flag (G13, red halftone) right; 'never' stamp in the gap; @283.0 the dashed line connects.
 - **Assets** G13
 - **Text** `first` @279.79 (t-label) · `never` @281.47 (stamp) · `official contact` word-by-word `official` @281.95 `contact` @282.35 (t-label)
 - **Camera** slow push · **Key anim done** @283.37 · **Out** `W↓` vertical whip down @284.03
@@ -627,7 +629,7 @@ Music: ticking/pulse stem (Formations-like) from 227.66; near-silence under "beh
 
 ### C5S064 · 287.63–291.07 · C5B063 · NIGHT · `c5s02`
 - **Words** "He's taking a Pakistani plane so people don't find out where he's going."  **Why** 'He's taking a Pakistani plane so people don't find out where he's going' → detective board: plane card → '?'.
-- **FX** #12 board (lamp pool) + string (ink, not red) · **Ref** R9 variation (cork board, lamp pool — strings in bone/ink thread, not red)
+- **FX** #12 board (lamp pool) + string (ink thread — red is the PRC code) · **Ref** R9 variation (cork board, lamp pool — strings in bone/ink thread, since red now means PRC)
 - **Visual** E12 cork; N44 plane card (second use, different crop) pinned; ink thread draws to a card with '?'.
 - **Assets** E12, N44
 - **Text** `Pakistani plane` word-by-word `Pakistani` @288.51 `plane` @289.23 (t-label) · `where he's going` word-by-word `where` @290.43 `he's` @290.59 `going` @290.83 (t-serif-i .clean (? card))
@@ -740,7 +742,7 @@ Music: cut the pulse on "big shock" 329.18; sparse drone; gentle question on "wh
 ### C5S076 · 347.50–353.02 · C5B075,C5B076 · NIGHT · `c5s02`
 - **Words** "just never gonna talk to the communist. China is a communist. So why would US do that? Well,"  **Why** 'never gonna talk to the communist. China is a communist. So why would US do that?' → a wall rises between the US and communist China; '?'.
 - **FX** #12 + 12 fps wall build + #13 · **Ref** Pinterest idea: 'wall between two flags'
-- **Visual** Night: halftone US flag left, PRC flag right (G13, bone halftone). E11 stone-wall texture blocks stack between them @347.66; 'why would US do that?' word by word.
+- **Visual** Night: US flag (navy halftone) left, PRC flag (red halftone) right (G13). E11 stone-wall texture blocks stack between them @347.66; 'why would US do that?' word by word.
 - **Assets** G13, E11
 - **Text** `never` @347.66 (t-label) · `communist` @348.62 (t-label) · `why` @351.10 (t-serif-i) · `would` @351.34 · `US` @351.66 · `do` @352.06
 - **Camera** slow push · **Key anim done** @352.30 · **Out** `CA` cut on action @353.02
@@ -761,8 +763,8 @@ Music: steady mid-tempo ostinato from 361.50; lift on "Kissinger diplomacy" 381.
 
 ### C5S078 · 361.50–368.63 · C5B077 · PAPER · `c5s02`
 - **Words** "But he believed, including with Kissinger, he believed that the Soviet Union was the big Evil, you know the big evil empire."  **Why** 'he believed … the Soviet Union was the big evil empire' → world map: the USSR hatched, labelled.
-- **FX** #3 map + leader-line labels · **Ref** R11 variation (muted beige world map, hatched region, leader-line label, big serif)
-- **Visual** M06 beige world map; USSR hatched ink-soft draws in; leader-line label; small Nixon + Kissinger circles at the US.
+- **FX** #3 map + leader-line labels · **Ref** R11 variation (muted beige world map, red-hatched region (Communist bloc), leader-line label, big serif)
+- **Visual** M06 beige world map; USSR hatched red (light) draws in; leader-line label; small Nixon + Kissinger circles at the US.
 - **Assets** M06, N07, N01
 - **Text** `Kissinger` @363.18 (small circle label) · `Soviet Union` word-by-word `Soviet` @364.70 `Union` @365.02 (leader label) · `big evil empire` word-by-word `big` @367.19 `evil` @367.43 `empire` @367.83 (t-serif-i 80px ink)
 - **Camera** slow push east · **Key anim done** @368.00 · **Out** continuous (same layout, camera moves on — no cut) @368.63
@@ -771,7 +773,7 @@ Music: steady mid-tempo ostinato from 361.50; lift on "Kissinger diplomacy" 381.
 ### C5S079 · 368.63–376.39 · C5B078 · PAPER · `c5s02`
 - **Words** "And at this point, Soviet Union and China were, you know, not too friendly, even though both of them are communists. They had actually fought a war."  **Why** 'Soviet Union and China … not too friendly … They had actually fought a war' → zoom to the Sino-Soviet border; clash point flares.
 - **FX** #3 map zoom + §10.6.7 rings + #20 callout · **Ref** R11 continued → border close-up
-- **Visual** Same map, China fills ink-charcoal; camera zooms to the Ussuri border; rings burst at the 1969 clash site @375.35 (small card N67 optional).
+- **Visual** Same map, China fills red solid; camera zooms to the Ussuri border; rings burst at the 1969 clash site @375.35 (small card N67 optional).
 - **Assets** M06, N67
 - **Text** `China` @371.03 (leader label) · `not too friendly` word-by-word `not` @371.99 `too` @372.15 `friendly` @372.31 (t-serif-i) · `fought a war` word-by-word `fought` @375.35 `a` @375.75 `war` @375.91 (t-label)
 - **Camera** zoom (cam ease) then FX.focusHunt · **Key anim done** @375.73 · **Out** `W↑` vertical whip up @376.39
@@ -789,7 +791,7 @@ Music: steady mid-tempo ostinato from 361.50; lift on "Kissinger diplomacy" 381.
 ### C5S081 · 382.63–389.11 · C5B080 · PAPER · `c5s02`
 - **Words** "where they're trying to peel China away from the Soviet Union, weaken Soviet Union even more, because China is a big country."  **Why** 'peel China away from the Soviet Union, weaken Soviet Union … China is a big country' → triangle diagram, China peeled off the USSR.
 - **FX** #2 diagram + paper-peel + scale · **Ref** D15 variation (triangle: US, Soviet Union, China; paper ground)
-- **Visual** Three circles (G09): US (halftone flag), Soviet Union (hatched), China (ink). China's circle peels off the USSR like a sticker @383.59; USSR circle shrinks @385.91; China circle grows @388.47.
+- **Visual** Three circles (G09): US (navy ring + halftone flag), Soviet Union (red hatched), China (red solid). China's circle peels off the USSR like a sticker @383.59; USSR circle shrinks @385.91; China circle grows @388.47.
 - **Assets** G09, G13
 - **Text** `peel` @383.59 (t-label) · `weaken` @385.91 (t-label) · `big country` word-by-word `big` @388.47 `country` @388.71 (t-serif-i)
 - **Camera** slow push · **Key anim done** @388.50 · **Out** continuous (same layout, camera moves on — no cut) @389.11
@@ -829,7 +831,7 @@ Music: thin under 399–415; rewind texture 415.43; tension drums low under the 
 ### C5S085 · 405.11–411.11 · C5B084 · NIGHT · `c5s03`
 - **Words** "But for China, every time US wants anything, China wants give up support of Taiwan."  **Why** 'every time US wants anything, China wants give up support of Taiwan' → flows: US → China 'wants anything', China → back 'give up support of Taiwan'.
 - **FX** #2 Sankey + ghost map · **Ref** D11 variation (two opposing flows over a ghost Pacific map)
-- **Visual** Ghost Pacific (M01 15 %). Bone flow US→China 'anything'; return flow China→US splits off a thin celadon strand labelled 'support of Taiwan' that snaps.
+- **Visual** Ghost Pacific (M01 15 %). Bone (neutral) flow US→China 'anything'; red return flow China→US splits off a thin celadon strand labelled 'support of Taiwan' that snaps.
 - **Assets** M01
 - **Text** `anything` @407.99 (flow label) · `give up` word-by-word `give` @409.67 `up` @409.99 (t-label) · `support of Taiwan` word-by-word `support` @410.15 `of` @410.47 `Taiwan` @410.63 (t-label)
 - **Camera** slow push · **Key anim done** @410.50 · **Out** `PS` paper slide / torn-paper wipe @411.11
@@ -865,7 +867,7 @@ Music: thin under 399–415; rewind texture 415.43; tension drums low under the 
 ### C5S089 · 423.19–427.27 · C5B088 · NIGHT · `c5s03`
 - **Words** "is there were two times when Mao **Zedong's** China tried invading Taiwan."  **Why** 'two times when Mao Zedong's China tried invading Taiwan' → satellite of the Strait, two numbered thrusts.
 - **FX** #3 satellite map + #19 arrows + #13 · **Ref** D14 variation (satellite + outlined districts + marker routes) — ink arrows
-- **Visual** M04 Taiwan Strait satellite (map kit, Esri credit); two ink arrows from the Fujian coast numbered 1, 2 (yellow key number 'two').
+- **Visual** M04 Taiwan Strait satellite (map kit, Esri credit); two red arrows (PRC) from the Fujian coast numbered 1, 2 (yellow key number 'two'); Taiwan left in natural satellite colour here (max two accents).
 - **Assets** M04
 - **Text** `two times` word-by-word `two` @423.83 `times` @423.99 (t-display YELLOW key number '2') · `Mao Zedong's China` word-by-word `Mao` @424.39 `Zedong's` @424.79 `China` @425.59 (t-label) · `invading` @426.23 (t-label)
 - **Camera** slow push · **Key anim done** @426.60 · **Out** continuous (same layout, camera moves on — no cut) @427.27
@@ -874,7 +876,7 @@ Music: thin under 399–415; rewind texture 415.43; tension drums low under the 
 ### C5S090 · 427.27–430.86 · C5B089 · NIGHT · `c5s03`
 - **Words** "Like he launched some attacks on the islands that are close to you. The mainland"  **Why** 'attacks on the islands that are close to … the mainland' → zoom to Kinmen/Matsu hugging the coast; shelling bursts.
 - **FX** #3 zoom + §10.6.3 contrast call-out + §10.6.7 rings · **Ref** D14 continued
-- **Visual** Zoom to Kinmen (and inset Matsu); contrast call-out isolates the islands; small burst rings.
+- **Visual** Zoom to Kinmen (and inset Matsu); contrast call-out isolates the islands; small red burst rings from the mainland side.
 - **Assets** M04
 - **Text** `the islands` word-by-word `the` @428.63 `islands` @428.71 (t-label (map labels Kinmen / Matsu small)) · `the mainland` word-by-word `the` @430.22 `mainland` @430.30 (t-label)
 - **Camera** zoom then FX.focusHunt · **Key anim done** @430.30 · **Out** `PS` paper slide / torn-paper wipe @430.86
@@ -883,7 +885,7 @@ Music: thin under 399–415; rewind texture 415.43; tension drums low under the 
 ### C5S091 · 430.86–434.06 · C5B090 · PAPER · `c5s03`
 - **Words** "and you know if he succeeds, he would probably keep moving forward."  **Why** 'if he succeeds, he would probably keep moving forward' → a 1950s newspaper explainer map; the arrow keeps going toward Taiwan.
 - **FX** #3 vintage newspaper map + #19 dashed arrow · **Ref** R10 variation (old printed map, marker route) — Pinterest idea: '1950s newspaper war map'
-- **Visual** N60 1950s newspaper map of the Formosa Strait (fair use) as a card; a dashed ink arrow continues from the islands across to Taiwan.
+- **Visual** N60 1950s newspaper map of the Formosa Strait (fair use) as a card; a dashed red arrow continues from the islands across to Taiwan.
 - **Assets** N60
 - **Text** `keep moving forward` word-by-word `keep` @433.10 `moving` @433.26 `forward` @433.58 (t-serif-i ink)
 - **Camera** track along the arrow · **Key anim done** @433.40 · **Out** `W↑` vertical whip up @434.06
@@ -959,7 +961,7 @@ Music: dark pad on "worst dreams" 456.86; light pizzicato/pulse under the seat d
 ### C5S099 · 467.02–473.18 · C5B098 · PAPER · `c5s03`
 - **Words** "basically saying, Hey, let's kick out Taiwan, let's give that Chinese seat to the CCP. That vote is coming up."  **Why** 'kick out Taiwan, give that Chinese seat to the CCP. That vote is coming up' → the 'CHINA' nameplate: Taiwan's chip slides out, CCP's in.
 - **FX** #16 cut-out + #12 + 12 fps swaps · **Ref** Pinterest idea: 'nameplate on a desk, swapped'
-- **Visual** N48 UN 'CHINA' nameplate (cut-out, halftone) on paper; celadon Taiwan chip slides off @468.38, ink CCP chip slides on @470.86; 'coming up' tab.
+- **Visual** N48 UN 'CHINA' nameplate (cut-out, halftone) on paper; celadon Taiwan chip slides off @468.38, red CCP chip slides on @470.86; 'coming up' tab.
 - **Assets** N48
 - **Text** `kick out Taiwan` word-by-word `kick` @468.38 `out` @468.62 `Taiwan` @468.78 (t-label) · `Chinese seat` word-by-word `Chinese` @469.82 `seat` @470.22 (t-serif-i) · `CCP` @470.86 (t-label) · `coming up` word-by-word `coming` @472.38 `up` @472.70 (t-label)
 - **Camera** slow push · **Key anim done** @472.60 · **Out** `PS` paper slide / torn-paper wipe @473.18
@@ -968,7 +970,7 @@ Music: dark pad on "worst dreams" 456.86; light pizzicato/pulse under the seat d
 ### C5S100 · 473.18–478.38 · C5B099 · PAPER · `c5s03`
 - **Words** "And the US is saying that, hey, we we we are not against China coming into the UN."  **Why** 'we are not against China coming into the UN' → two-seat diagram: China's seat added beside Taiwan's.
 - **FX** #2 diagram (two seats) + #13 · **Ref** NEW ref: 'two-seat diagram' (D06 mini, two chairs)
-- **Visual** G08 two seat icons; China's dashed seat fills ink @476.62.
+- **Visual** G08 two seat icons; China's dashed seat fills red @476.62.
 - **Assets** G08
 - **Text** `not against` word-by-word `not` @475.74 `against` @475.98 (t-label) · `China` @476.62 (t-label) · `into the UN` word-by-word `into` @477.50 `the` @477.74 `UN` @477.82 (t-label)
 - **Camera** static · **Key anim done** @477.80 · **Out** `CA` cut on action @478.38
@@ -986,7 +988,7 @@ Music: dark pad on "worst dreams" 456.86; light pizzicato/pulse under the seat d
 ### C5S102 · 484.78–490.25 · C5B101 · NIGHT · `c5s03`
 - **Words** "Taiwan says keep CCP out. CCP says, give me the seat, keep Taiwan out."  **Why** 'Taiwan says keep CCP out. CCP says, give me the seat, keep Taiwan out' → Vox split screen: each side's demand.
 - **FX** #10 split screen + #13 word-by-word · **Ref** Pinterest idea: 'Vox split-screen claims'
-- **Visual** Left: Chiang (N13 crop, celadon edge); right: Mao (N12 crop, ink edge); each demand typed under its leader.
+- **Visual** Left: Chiang (N13 crop, celadon edge); right: Mao (N12 crop, red edge); each demand typed under its leader.
 - **Assets** N13, N12
 - **Text** `Taiwan says` word-by-word `Taiwan` @484.78 `says` @485.34 (t-label) · `keep CCP out` word-by-word `keep` @485.74 `CCP` @486.06 `out` @486.70 (t-serif-i) · `give me the seat` word-by-word `give` @488.25 `me` @488.49 `the` @488.65 `seat` @488.73 (t-serif-i) · `keep Taiwan out` word-by-word `keep` @489.21 `Taiwan` @489.53 `out` @489.93 (t-serif-i)
 - **Camera** halves drift apart · **Key anim done** @489.70 · **Out** continuous (same layout, camera moves on — no cut) @490.25
@@ -1004,7 +1006,7 @@ Music: dark pad on "worst dreams" 456.86; light pizzicato/pulse under the seat d
 ### C5S104 · 493.45–498.17 · C5B103 · PAPER · `c5s03`
 - **Words** "No, both of them to this very point say they are real China, the other party is the fake China."  **Why** 'both of them … say they are real China, the other party is the fake China' → two flag prints stamped REAL / FAKE.
 - **FX** #18 stamps (chokeSettle) + #12 · **Ref** Pinterest idea: 'rubber stamps on two documents'
-- **Visual** G13 ROC and PRC flags (halftone, ink) as prints; each gets 'REAL CHINA' then the other gets 'FAKE'.
+- **Visual** G13 ROC flag (ink halftone) and PRC flag (red halftone) as prints; each gets 'REAL CHINA' then the other gets 'FAKE'.
 - **Assets** G13
 - **Text** `real China` word-by-word `real` @496.01 `China` @496.25 (stamp) · `fake` @497.53 (stamp FAKE)
 - **Camera** small punch-ins · **Key anim done** @497.51 · **Out** `W↑` vertical whip up @498.17
@@ -1031,16 +1033,16 @@ Music: dark pad on "worst dreams" 456.86; light pizzicato/pulse under the seat d
 ### C5S107 · 507.69–513.77 · C5B106 · GRID · `c5s03`
 - **Words** "US is trying to land this compromise, where they're trying to make both sides happy, when in reality both sides are just getting more pissed off."  **Why** 'make both sides happy … both sides are just getting more pissed off' → diagram: US in the middle; 'happy' crossed out; angry scribbles on both sides.
 - **FX** #2 diagram + #19 scribbles · **Ref** D15 variation (three nodes in a row: Taiwan – US – CCP)
-- **Visual** Grid paper; Taiwan (celadon), US (outline), CCP (ink); 'happy' tags pop then get crossed; boiling scribbles over both side nodes.
+- **Visual** Grid paper; Taiwan (celadon), US (neutral outline), CCP (red); 'happy' tags pop then get crossed; boiling angry scribbles over both side nodes @512.9 (no text on 'pissed off' — the scribbles say it).
 - **Assets** G09
-- **Text** `both sides` word-by-word `both` @510.57 `sides` @510.81 (t-label) · `happy` @511.05 (t-serif-i (crossed @512.6)) · `pissed off` word-by-word `pissed` @513.21 `off` @513.45 (t-label)
+- **Text** `both sides` word-by-word `both` @510.57 `sides` @510.81 (t-label) · `happy` @511.05 (t-serif-i (crossed @512.6))
 - **Camera** slow push · **Key anim done** @513.20 · **Out** `PS` paper slide / torn-paper wipe @513.77
 - **SFX** 511.03 pop_soft · 512.60 pencil_scribble
 
 ### C5S108 · 513.77–520.89 · C5B107 · PAPER · `c5s03`
 - **Words** "Now, unfortunately, US does kind of pick which side it favors more, and that side is the CCP."  **Why** 'US does kind of pick which side it favors more, and that side is the CCP' → a balance scale tipping to the CCP side.
 - **FX** #16 engraving cut-out + 12 fps tilt · **Ref** Pinterest idea: 'engraved balance scale'
-- **Visual** N53 PD balance-scale engraving; Taiwan chip (celadon) on one pan, CCP chip (ink) on the other; US weight drops on the CCP pan @519.29.
+- **Visual** N53 PD balance-scale engraving; Taiwan chip (celadon) on one pan, CCP chip (red) on the other; US weight drops on the CCP pan @519.29.
 - **Assets** N53
 - **Text** `pick which side` word-by-word `pick` @516.01 `which` @516.65 `side` @516.97 (t-serif-i ink) · `the CCP` word-by-word `the` @519.85 `CCP` @520.09 (t-label)
 - **Camera** tilt · **Key anim done** @520.23 · **Out** `FW` light-flash whip @520.89
@@ -1071,7 +1073,7 @@ Music: build from "United Nations" 523.37; steady pulse under Bush 532–565; th
 ### C5S111 · 528.33–532.81 · C5B110 · PAPER · `c5s03`
 - **Words** "And this actually plays a big part into how the countries vote."  **Why** 'plays a big part into how the countries vote' → UN member dots waver.
 - **FX** D06 dots (12 fps) · **Ref** D06 variation (dots waver between grey shades; no counts)
-- **Visual** G11 semicircle; dots flicker grey ↔ ink as the camera drifts.
+- **Visual** G11 semicircle; dots flicker grey ↔ red/navy (undecided) as the camera drifts.
 - **Assets** G11
 - **Text** `countries vote` word-by-word `countries` @531.53 `vote` @532.09 (t-serif-i ink)
 - **Camera** drift · **Key anim done** @532.15 · **Out** `W↓` vertical whip down @532.81
@@ -1179,7 +1181,7 @@ Music: build from "United Nations" 523.37; steady pulse under Bush 532–565; th
 ### C5S123 · 588.72–592.48 · C5B123 · PAPER · `c5s03`
 - **Words** "That's all to say that US allies are already kinda unsure."  **Why** 'US allies are already kinda unsure' → UN dots of US allies flicker.
 - **FX** D06 dots + .hl · **Ref** D06 variation (US allies ringed, flickering)
-- **Visual** G11 semicircle; a group of dots ringed 'US allies' flicker grey↔ink at 12 fps.
+- **Visual** G11 semicircle; a group of dots ringed 'US allies' flicker navy ↔ grey at 12 fps (US allies wavering).
 - **Assets** G11
 - **Text** `US allies` word-by-word `US` @589.84 `allies` @590.16 (t-label) · `unsure` @591.60 (t-serif-i ink)
 - **Camera** drift · **Key anim done** @591.82 · **Out** `FW` light-flash whip @592.48
@@ -1219,8 +1221,8 @@ Music: build from "United Nations" 523.37; steady pulse under Bush 532–565; th
 | §10.6 call-outs (contrast / text / focal / radio waves / highlighter) | 012, 051, 052, 057, 060, 072, 075, 077, 079, 090, 116 (11) |
 | §10.7 painting-to-print reveal | 106, 117, 122 (3) |
 | FX.focusHunt | 003, 012, 017, 033, 046, 079, 083, 090, 095, 112, 124 (11) |
-| whips / flash whips | W ×40, FW ×11 (directions vary) |
-| cut on action / push-through / paper slide / match cut / continuous | CA ×35, PT ×5, PS ×22, MC ×1, cont ×10 |
+| whips / flash whips | W ×39, FW ×11 (directions vary) |
+| cut on action / push-through / paper slide / match cut / continuous | CA ×35, PT ×5, PS ×23, MC ×1, cont ×10 |
 | iris | none ✔ |
 
 ### 11.2 Reference layouts used (all as VARIATIONS)
@@ -1266,7 +1268,7 @@ D01–D15: **all 15 used** (several twice, each time varied). R1/R6/R8 are cover
 | Rubber stamps REAL / FAKE | C5S104 | two halftone flag prints, each stamped by the other side |
 | Circus poster under a spotlight | C5S105 | PD tightrope lithograph lit by a lamp pool — "walk between the two demands" |
 | Engraved balance scale | C5S108 | PD engraving cut-out; chips on pans; US weight drops on the CCP side |
-| Detective board (R9 variant) with ink thread | C5S064–C5S065 | the secret trip's "evidence": plane, clipping, struck schedule, Pakistan — strings in bone/ink (red reserved) |
+| Detective board (R9 variant) with ink thread | C5S064–C5S065 | the secret trip's "evidence": plane, clipping, struck schedule, Pakistan — strings in bone/ink (red = PRC code) |
 | Declassified memo with highlighted lines | C5S060 | the real Kissinger–Zhou memcon, two paper layers, text call-out |
 | VHS rewind on a Trinitron | C5S087 | "I forgot to mention" → tape rewinds with tracking lines, back to the 1950s |
 | Night-lights globe | C5S063 | NASA Black Marble — "while the world doesn't know" — a faint route over the Himalayas |
@@ -1285,7 +1287,7 @@ D01–D15: **all 15 used** (several twice, each time varied). R1/R6/R8 are cover
 Longest same-ground run (PAPER+GRID counted together): **3** ✔ (rule ≤ 3).
 
 ### 11.5 Transitions in order (never the same type twice in a row)
-W→, CA, FW, W↑, CA, W→, CA, PS, W←, PT, CA, W→, CA, W↑, PS, CA, PS, W↓, FW, CA, PS, W←, CA, W↑, CA, W↓, FW, PT, W→, CA, cont, W↑, CA, FW, W→, CA, W↓, PS, CA, PS, W→, FW, PS, W→, CA, W↓, cont, W→, CA, W←, CA, cont, PS, cont, W↑, PS, W→, MC, PS, W←, CA, W↓, CA, cont, W→, CA, PT, W↓, PS, FW, CA, W→, CA, PS, W↓, CA, W→, cont, W↑, CA, cont, W→, FW, CA, PS, W←, FW, CA, cont, PS, W↑, cont, CA, W↓, FW, PS, CA, PT, PS, CA, W→, cont, PS, W↑, CA, W→, PS, FW, CA, PS, W↓, CA, PS, W→, CA, PT, W↓, CA, W→, PS, CA, PS, FW, CA ✔
+W→, CA, FW, CA, PS, W→, CA, PS, W←, PT, CA, W→, CA, W↑, PS, CA, PS, W↓, FW, CA, PS, W←, CA, W↑, CA, W↓, FW, PT, W→, CA, cont, W↑, CA, FW, W→, CA, W↓, PS, CA, PS, W→, FW, PS, W→, CA, W↓, cont, W→, CA, W←, CA, cont, PS, cont, W↑, PS, W→, MC, PS, W←, CA, W↓, CA, cont, W→, CA, PT, W↓, PS, FW, CA, W→, CA, PS, W↓, CA, W→, cont, W↑, CA, cont, W→, FW, CA, PS, W←, FW, CA, cont, PS, W↑, cont, CA, W↓, FW, PS, CA, PT, PS, CA, W→, cont, PS, W↑, CA, W→, PS, FW, CA, PS, W↓, CA, PS, W→, CA, PT, W↓, CA, W→, PS, CA, PS, FW, CA ✔
 
 ### 11.6 Verification
 | check | result |
@@ -1300,7 +1302,14 @@ W→, CA, FW, W↑, CA, W→, CA, PS, W←, PT, CA, W→, CA, W↑, PS, CA, PS, 
 | cohesive with the intro | ✔ same grounds (night / paper / real grid papers), same D-pack layouts, same title/halation style, Tatung + Trinitron screens, celadon Taiwan, whips + cut on action, word-by-word serif captions |
 
 ### 11.7 Palette check
-Celadon = Taiwan only (C5S002, 010, 015–016, 019, 021, 025–026, 034, 036, 042, 053, 069, 084–086, 089–093, 099–101, 104, 107–108, 114). No red, no blue anywhere. Yellow key numbers: `9 to 10%` (C5S005), `2 days` (C5S056), `an hour` (C5S069), `2` two times (C5S089); yellow marker route C5S093 (D14 look) and highlighters elsewhere. Max two accents per frame (celadon + yellow).
+| colour | meaning | scenes |
+|---|---|---|
+| celadon | Taiwan / ROC | 002, 005, 010, 012, 015, 016, 019, 023, 024, 025, 026, 031, 034, 036, 042, 053, 069, 084, 085, 086, 093, 099, 102, 107, 108, 114 |
+| red | PRC / CCP / Communist bloc | 036, 038, 042, 062, 064, 076, 078, 079, 081, 085, 089, 090, 091, 099, 100, 102, 104, 107, 108, 111 |
+| navy | US / allies (contrast only) | 044, 062, 076, 081, 111, 123 |
+| yellow | highlighter / key number / marker route | 005, 012, 026, 055, 056, 060, 069, 070, 086, 088, 089, 093, 113, 115 |
+
+No blue-UMC / red-TSMC anywhere in c5. Every frame ≤ 2 accents (checked per scene: red+celadon, red+navy, celadon+yellow, red+yellow).
 
 ## 12. Open questions (defaults in DECISIONS.md)
 1. "RAC" at 32.03 → shown as **RCA** (default) — Krish/lead listen once to confirm.
@@ -1309,7 +1318,7 @@ Celadon = Taiwan only (C5S002, 010, 015–016, 019, 021, 025–026, 034, 036, 04
 3. Map labels "Kinmen" / "Matsu" as small geographic labels although he says only "the islands" (default: yes, small t-label).
 4. The announcement (C5B068): narrator says Kissinger will go to meet Mao; the footage is Nixon's real 15 July 1971 address → default: show
    the real footage, captions = his words (no fact-checking).
-5. Cultural Revolution colour posters (red-heavy) → default: muted (−0.5 saturation), no red graphics on top; OK?
+5. Cultural Revolution colour posters / Mao painting keep their red (red = PRC per the lead's colour decision), lightly muted — OK?
 6. Jeff Bezos "quote" is the narrator's paraphrase → default: show his words as a pull-quote with the caption "JEFF BEZOS" (no quotation
    marks around a claimed exact quote? — default: quotation marks kept, it is how he presents it).
 7. UN dots / seat motif must match c3/c4's UN vote graphics → lead to pass c4's motif spec to the c5s03 editor.
