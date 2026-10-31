@@ -651,6 +651,7 @@ on action. Use it whenever the narrator quotes someone or introduces a historic 
 - [ ] Smooth long eases, 12 fps. [ ] Cuts on action; whips, no iris. [ ] No photo/clip used > 2× in a chunk.
 
 ## Changelog
+- 2026-10-31 — c3s03 editor: when cropping a kit raster for a region, y = (lat1 − lat)·k, i.e. `(y_world/45.5111 − 90 + lat1)·k` (a sign slip put Africa's borders off the imagery); keep the CSS size of a map `<img>`/svg in step with a regenerated crop; compute map-path centres numerically from the `d` string (getBBox returns 0 inside `display:none` scenes). New derived maps: Blue Marble Asia/Africa crops in `assets/c3/derived/c3s03/`.
 - 2026-10-31 — c1s03 editor: §4.2 gotchas (GSAP x/y on SVG groups, onFrame trace vs tween onUpdate, contrast-callout SVG veil, word-width strikes, Commons thumbnail widths).
 - 2026-10-31 — c3s01 editor: §4.2 gotchas (filters on zero-height paths, burn-in vs burn-away direction); c3s01 built from parts
   (`project/c3/gen/c3s01/` + `build_c3s01.py`, derived maps/2.5D/halftone via `c3s01_assets.py`).
