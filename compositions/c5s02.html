@@ -136,7 +136,8 @@
     const rise = (el, t, o) => { o = o || {}; const d = o.dur || 1.0;
       tl.fromTo(el, { opacity: 0, y: o.y == null ? 22 : o.y }, { opacity: 1, y: 0, duration: d, ease: C(E.out, d), immediateRender: true }, t); };
     const pop = (el, t, d, s0) => { d = d || 0.8; tl.fromTo(el, { opacity: 0, scale: s0 || 0.8 }, { opacity: 1, scale: 1, duration: d, ease: C(E.out, d), immediateRender: true }, t); };
-    const say = (blk, cues, o) => cues.forEach((c, i) => rise(blk.w[i], c, Object.assign({ dur: 0.7, y: 12 }, o || {})));
+    const say = (blk, cues, o) => { const bx = blk.w[0].closest(".k-inkbox, .label-box"); if (bx) show(bx, cues[0]);
+      cues.forEach((c, i) => rise(blk.w[i], c, Object.assign({ dur: 0.7, y: 12 }, o || {}))); };
     const cam = (el, t, to, dur, ease) => tl.to(el, Object.assign({ duration: dur, ease: ease || E.cam }, to), t);
     const camFrom = (el, t, from, to, dur, ease) => tl.fromTo(el, from, Object.assign({ duration: dur, ease: ease || E.cam, immediateRender: true }, to), t);
     // camera transform (origin 0 0) that centres map point (x, y) at screen (sx, sy) with scale s
@@ -241,7 +242,7 @@
         <div class="k-abs" style="left:7%;top:6%;width:86%;height:13%;filter:blur(3px)"><div style="height:42%;background:rgba(20,27,36,0.75);margin-bottom:6%"></div><div style="height:42%;width:70%;background:rgba(20,27,36,0.75)"></div></div>
         <div class="k-abs" style="left:7%;top:23%;width:86%;height:2px;background:rgba(20,27,36,0.5)"></div>
         <div class="k-greek k-dim" style="left:7%;top:27%;width:86%;height:16%"></div>
-        <div class="k-abs t-serif k-ink k-key" style="left:7%;top:45%;width:92%;font-size:${Math.round(w / 23)}px;white-space:nowrap">${keyHtml}</div>
+        <div class="k-abs t-serif k-ink k-key" style="left:7%;top:45%;width:92%;font-size:${Math.round(w / 19)}px;white-space:nowrap">${keyHtml}</div>
         <div class="k-greek k-dim" style="left:7%;top:57%;width:86%;height:30%"></div>
         <div class="k-greek k-dim" style="left:7%;top:89%;width:50%;height:6%"></div></div>`);
       return c;
@@ -326,8 +327,8 @@
       const p2 = add(c, `<div class="k-card" style="left:1110px;top:90px;width:740px;height:440px;transform:rotate(3deg)"><img src="${D2}eob_office_crop.jpg" style="left:0;top:0;width:740px;height:440px;filter:url(#${SEG}-tint-night)"/><div class="k-ht"></div></div>`);
       const nx = add(c, `<div class="k-card" style="left:600px;top:150px;width:680px;height:800px;transform:rotate(-1deg);border:14px solid #e9e1cf"><img src="${PH}nixon_official_portrait_nara530679.jpg" style="left:-40px;top:-30px;width:740px;height:874px;filter:saturate(0.55) contrast(1.06) sepia(0.12)"/><div class="k-ht" style="opacity:0.25"></div></div>`);
       add(sh, `<div class="k-scrim-b"></div>`);
-      const nm = txt(sh, "t-display clean", "left:1300px;top:640px;font-size:130px", "Nixon");
-      const ad = txt(sh, "t-label clean", "left:1306px;top:790px;font-size:40px", "administration");
+      const nm = txt(sh, "t-display clean", "left:1340px;top:640px;font-size:130px", "Nixon");
+      const ad = txt(sh, "t-label clean", "left:1346px;top:790px;font-size:40px", "administration");
       tl.fromTo(p1, { x: -260, opacity: 0 }, { x: 0, opacity: 1, duration: 1.1, ease: C(E.out, 1.1), immediateRender: true }, S(205.84));
       tl.fromTo(p2, { x: 260, opacity: 0 }, { x: 0, opacity: 1, duration: 1.1, ease: C(E.out, 1.1), immediateRender: true }, S(205.95));
       tl.fromTo(nx, { y: 240, opacity: 0 }, { y: 0, opacity: 1, duration: 1.2, ease: C(E.out, 1.2), immediateRender: true }, S(206.10));
@@ -344,7 +345,7 @@
     (function () {
       const sh = shot("sc046");
       const c = add(sh, `<div class="k-full" id="${SEG}-sc046-cam" style="transform-origin:62% 40%"></div>`);
-      const im = add(c, `<img src="${PH}kissinger_portrait_1973_official.jpg" style="position:absolute;left:740px;top:-170px;width:1220px;height:1500px;object-fit:cover;filter:url(#${SEG}-tint-cool) contrast(1.05)"/>`);
+      const im = add(c, `<img src="${PH}kissinger_portrait_1973_official.jpg" style="position:absolute;left:740px;top:-170px;width:1220px;height:1500px;object-fit:cover;filter:url(#${SEG}-tint-cool) contrast(1.05);-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 22%);mask-image:linear-gradient(90deg,transparent 0,#000 22%)"/>`);
       add(sh, `<div class="k-scrim-l"></div>`);
       const nsa = txt(sh, "t-label clean", "left:140px;top:500px;font-size:34px", "national security advisor");
       const h1 = txt(sh, "t-display halate", "left:130px;top:570px;font-size:140px;line-height:1", "Henry");
@@ -416,7 +417,7 @@
       const f2 = ink(fl, "M455 565 C 900 565, 1100 725, 1478 725", S(224.98), 1.2, { color: BONE, width: 64, opacity: 0.3, ease: C(E.inOut, 1.2) });
       ink(fl, "M455 520 C 900 520, 1100 330, 1495 325", S(224.88), 1.2, { color: BONE, width: 3, opacity: 0.9, ease: C(E.inOut, 1.2) });
       ink(fl, "M455 565 C 900 565, 1100 725, 1478 725", S(224.98), 1.2, { color: BONE, width: 3, opacity: 0.9, ease: C(E.inOut, 1.2) });
-      const inf = txt(c, "t-serif-i clean", "left:780px;top:520px;font-size:78px", "influence");
+      const inf = txt(c, "t-serif-i clean", "left:800px;top:395px;font-size:78px", "influence");
       say(inf, [T(224.88)], { dur: 0.9 });
       pop(nix, T(225.36), 0.8);
       const pr = txt(c, "t-label clean", "left:1440px;top:445px;width:320px;text-align:center;font-size:30px", "the president");
@@ -470,8 +471,8 @@
       const ix = 160 + 1095, iy = -40 + 920;     // item centre in camera space
       cam(c, S(234.15), look(ix, iy, 1.75, 960, 560), 1.5);
       const mk = mkSvg(c, "sc051-mk", 231.5, 236.5, 4);
-      FX.markup.circle(tl, mk, S(235.05), { cx: ix, cy: iy, rx: 175, ry: 150, rot: -5, dur: 0.55, color: INK, width: 6, filter: mk._f, seed: 511 });
-      const tt = txt(c, "t-label", `left:${ix - 160}px;top:${iy + 165}px;font-size:24px`, "this trip");
+      FX.markup.circle(tl, mk, S(235.05), { cx: ix, cy: iy, rx: 215, ry: 175, rot: -5, dur: 0.55, color: INK, width: 6, filter: mk._f, seed: 511 });
+      const tt = txt(c, "t-label", `left:${ix - 160}px;top:${iy + 185}px;font-size:24px`, "this trip");
       tt.querySelectorAll(".k-w").forEach((s) => s.classList.add("k-ink"));
       say(tt, [T(235.52), T(235.76)], { dur: 0.45, y: 6 });
       credit(sh, "Typeset page (recreation, no real masthead)", true);
@@ -559,9 +560,10 @@
         const y = 250 + i * 104;
         const row = add(c, `<div class="k-abs" style="left:200px;top:${y}px;width:880px;height:90px;opacity:0;border-bottom:2px solid rgba(242,237,227,0.18)">
           <div class="k-abs" style="left:0;top:28px;width:110px;height:26px;background:rgba(242,237,227,0.55);filter:blur(4px)"></div>
-          <div class="k-abs t-serif clean" style="left:160px;top:6px;font-size:54px">public event</div>
+          <div class="k-abs t-serif clean" style="left:160px;top:6px;font-size:54px;opacity:0">public event</div>
           <div class="k-abs" style="left:560px;top:30px;width:${200 + (i * 37) % 90}px;height:22px;background:rgba(242,237,227,0.35);filter:blur(5px)"></div></div>`);
-        tl.fromTo(row, { opacity: 0, x: -30 }, { opacity: 1, x: 0, duration: 0.5, ease: C(E.out, 0.5), immediateRender: true }, T(254.61) + i / 12);
+        tl.fromTo(row, { opacity: 0, x: -30 }, { opacity: 1, x: 0, duration: 0.8, ease: C(E.out, 0.8), immediateRender: true }, S(252.95) + i / 12);
+        show(row.querySelector(".t-serif"), T(254.61) + i / 12);
         FX.markup.pen(tl, mk, S(254.95) + i * 0.13, { points: [[340, y + 48], [700, y + 44 + (i % 2) * 6], [1000, y + 50]], dur: 0.25, width: 7, color: BONE, filter: mk._f, seed: 560 + i, jitter: 5, blend: "normal" });
       }
       const two = add(c, `<div class="k-abs t-display" style="left:1250px;top:300px;font-size:210px;white-space:nowrap"><span class="k-inkbox" style="color:${YEL}"><span class="k-w">2 </span><span class="k-w">DAYS</span></span></div>`);
@@ -664,7 +666,7 @@
       FX.contrastCallout(tl, veil, S(272.05), { w: 1200, h: 1557, d: "M170 915 L1150 915 L1150 1015 L170 1015 Z", feather: 22, color: "rgba(239,233,220,1)", strength: 0.8 });
       const hb = (x, y, w, t, d) => { const b = add(pg, `<div class="k-hl" style="left:${x}px;top:${y}px;width:${w}px;height:22px"></div>`); tl.fromTo(b, { scaleX: 0 }, { scaleX: 1, duration: d, ease: "sine.inOut", immediateRender: true }, t); };
       hb(396, 937, 170, T(273.41), 0.4);
-      hb(880, 963, 232, T(275.09), 0.55);
+      hb(880, 963, 232, T(275.09), 0.35);
       const tag = (x, y, text) => txt(pg, "t-label", `left:${x}px;top:${y}px;font-size:24px;color:${INK}`, text);
       const ft = tag(300, 1030, "future trip"), tp = tag(380, 880, "the president"), vc = tag(900, 1000, "visits China");
       say(ft, [T(272.21), T(272.53)], { dur: 0.5, y: 6 });

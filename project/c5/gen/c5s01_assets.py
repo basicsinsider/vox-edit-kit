@@ -25,6 +25,8 @@ W, H = int(tw.width * s), int(tw.height * s)
 tw.resize((W, H), Image.LANCZOS).save(O + "taiwan_night_half.jpg", quality=90)
 Image.open(K + "taiwan_atlas.jpg").convert("RGB").resize((W, H), Image.LANCZOS).save(O + "taiwan_atlas_half.jpg", quality=90)
 m = Image.open(K + "taiwan_landmask.png").convert("L").resize((W, H), Image.LANCZOS)
+# drop the Fujian (PRC) coast that falls inside the crop (lon < 120.05, lat > 24.9) — only Taiwan is celadon
+ImageDraw.Draw(m).rectangle([0, 0, int((120.05 - 119.3) * 1119.352 * s), int((25.4 - 24.9) * 1222 * s)], fill=0)
 fill = Image.new("RGB", (W, H), CEL)
 ht = dots((W, H), 9)
 fill = ImageChops.multiply(fill, Image.merge("RGB", [ht.point(lambda v: 170 + v // 3)] * 3))
@@ -34,6 +36,8 @@ edge = m.filter(ImageFilter.FIND_EDGES).filter(ImageFilter.MaxFilter(5)).filter(
 g = Image.new("RGB", (W, H), CEL); g.putalpha(edge.point(lambda v: min(255, v * 3)))
 g.save(O + "taiwan_celadon_glow.png")
 
+import sys
+if "--taiwan-only" in sys.argv: raise SystemExit(0)
 # 2) East Asia night (half res) + China red halftone fill + Taiwan celadon fill (rasterised overlay paths)
 ea = Image.open(K + "east_asia_night.jpg").convert("RGB")
 s2 = 0.5

@@ -242,6 +242,14 @@ use, attribution optional; never redistribute the files publicly, never use them
   `offsetLeft/offsetWidth` in a tween `onUpdate` (fonts are loaded at render time; build-time measurement is wrong).
 - Wikimedia thumbnails: only the standard widths (960/1280/1920/3840, ≤ original) download — any other width (e.g. 2560, 1500) answers
   HTTP 429 every time, which looks like rate-limiting but is not.
+- A CSS rule like `#cam > img { width: Wpx; height: Hpx }` for a map camera also catches every overlay `<img>` inside it (fills,
+  clouds) and stretches them to the basemap size (c3s02: a Taiwan fill covered half the Pacific, clouds showed hard seams) — scope
+  it with `> img:first-child` or an id. Sat-desat plates narrower than the frame: feather the left/right edges with a mask gradient
+  and paint the ground with the plate's corner colour.
+- `paper_torn_01_hires` is a dark Screen-blend texture: as a full-frame `k-p1` ground it turns the scene black (ink text unreadable).
+- Taiwan-Strait close-ups sharper than the kit's east_asia crop (128 px/deg): fetch Esri z9 tiles
+  (`tools/map_tiles.py fetch esri 9 115.5 20.4 125.6 27.6`, ~180 tiles) and mosaic in web mercator; re-project the kit landmask with
+  lon/lat per pixel (`project/c3/gen/c3s02_assets.py`).
 ### 4.3 Check, look, render
 ```bash
 python3 tools/build_index.py s05            # put one (or several) compositions in index.html
@@ -651,6 +659,8 @@ on action. Use it whenever the narrator quotes someone or introduces a historic 
 - [ ] Smooth long eases, 12 fps. [ ] Cuts on action; whips, no iris. [ ] No photo/clip used > 2× in a chunk.
 
 ## Changelog
+- 2026-10-31 — c3s02 editor: §4.2 gotchas (map-camera img selectors, torn paper as ground, Esri z9 strait mosaic); generator
+  `project/c3/gen/c3s02_assets.py` + `build_c3s02.py` (src + scenes_{a,b,c}.js → compositions/c3s02.html).
 - 2026-10-31 — c3s03 editor: when cropping a kit raster for a region, y = (lat1 − lat)·k, i.e. `(y_world/45.5111 − 90 + lat1)·k` (a sign slip put Africa's borders off the imagery); keep the CSS size of a map `<img>`/svg in step with a regenerated crop; compute map-path centres numerically from the `d` string (getBBox returns 0 inside `display:none` scenes). New derived maps: Blue Marble Asia/Africa crops in `assets/c3/derived/c3s03/`.
 - 2026-10-31 — c1s03 editor: §4.2 gotchas (GSAP x/y on SVG groups, onFrame trace vs tween onUpdate, contrast-callout SVG veil, word-width strikes, Commons thumbnail widths).
 - 2026-10-31 — c3s01 editor: §4.2 gotchas (filters on zero-height paths, burn-in vs burn-away direction); c3s01 built from parts

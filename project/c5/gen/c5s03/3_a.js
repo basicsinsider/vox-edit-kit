@@ -151,7 +151,7 @@
       ink(svg, "M270 500 C 700 690, 1250 690, 1760 520", S(408.60), 1.0, { color: RED, width: 44, cap: "butt", opacity: 0.9, ease: C(E.inOut, 1.0) });
       [T(409.61), T(409.93)].forEach((c, i) => rise(words("sc085-give")[i], c, { dur: 0.7, y: 10 }));
       // the celadon strand snaps on "give up" — both halves retract from the break
-      [sA, sB].forEach((p, i) => tl.to(p, { attr: { "stroke-dashoffset": p._len }, y: 26, duration: 0.42, ease: C(E.in, 0.42) }, S(409.70) + i * 0.04));
+      [sA, sB].forEach((p, i) => tl.to(p, { attr: { "stroke-dashoffset": p._len * 0.55 }, y: 26, duration: 0.42, ease: C(E.in, 0.42) }, S(409.70) + i * 0.04));
       const sp = svgEl(svg, "g", { opacity: 0 });
       sp.innerHTML = `<path d="M925 835 L905 810 M955 835 L975 808 M940 885 L940 912" stroke="${BONE}" stroke-width="5" stroke-linecap="round"/>`;
       tl.fromTo(sp, { attr: { opacity: 0 } }, { attr: { opacity: 1 }, duration: 0.001, immediateRender: true }, S(409.72));
@@ -169,7 +169,7 @@
       for (let i = 0; i < 7; i++) {
         let f = ""; let x = 90;
         while (x < 560) { const w = 60 + r() * 120; f += `<div class="k-filler" style="left:${x}px;top:${52}px;width:${Math.min(w, 600 - x)}px"></div>`; x += w + 18; }
-        rows.insertAdjacentHTML("beforeend", `<div class="k-row" style="top:${70 + i * 140}px"><div class="n t-serif">${i + 1}.</div>${f}<div class="k-hlbar hl" id="c5s03-sc086-hl${i}"></div><div class="tw t-serif" style="position:absolute">Taiwan</div></div>`);
+        rows.insertAdjacentHTML("beforeend", `<div class="k-row" style="top:${70 + i * 140}px"><div class="n t-serif">${i + 1}.</div>${f}<div class="k-hlbar rowhl" id="c5s03-sc086-hl${i}"></div><div class="tw t-serif" style="position:absolute">Taiwan</div></div>`);
       }
       cam($("sc086-cam"), { y: 0, scale: 1.02 }, { y: -150, scale: 1.06 }, S(410.86), 4.7, E.cam);
       [T(412.01), T(412.49)].forEach((c, i) => rise(words("sc086-aa")[i], c, { dur: 0.9, y: 12 }));

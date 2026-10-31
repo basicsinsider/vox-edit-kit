@@ -80,3 +80,12 @@ centre ("PF# id timecode / www.periscopefilm.com"). Not removed (MANUAL: never s
   + _screen.json, N37, N39, N42, N43, N48, N52–N54, N65–N67, TI logo / GI 1970s emblem** — not reached / Commons rate-limited
   (TI and GI-1970s files on Commons: "TI logo from back of TI-55 calculator (21472570186).jpg", "General Instrument 1970s emblem.svg").
 - No cutouts made (none requested at this stage; do them one at a time when editors pick the plates).
+
+## Added by the c5s02 editor (2026-10-31)
+| id | file | subject | scenes | licence / credit |
+|---|---|---|---|---|
+| N36 (🔁) | screens/rca_xl100_frame.png + _screen.json | RCA XL-100 (1970s) colour TV, screen keyed | 067 | CC BY-SA 3.0 (see screens/SOURCES.md) |
+| M02 | made/c5s02_globe_was_pak.mp4 | rendered satellite globe Washington → Pakistan (route + pin baked) from kit `world_satdesat_21600.jpg` | 050 | NASA Blue Marble (PD) |
+| M05 | made/c5s02_globe_night_route.mp4 | rendered night-lights globe, dotted Pakistan → Beijing path, from NASA Black Marble 2016 3 km (`https://eoimages.gsfc.nasa.gov/images/imagerecords/144000/144898/BlackMarble_2016_3km.jpg`, raw in _tmp only) | 063 | NASA (PD) |
+| M03/M06/N66/N65 | derived/c5s02/*.jpg | crops of the map kit: South Asia sat strip, Asia atlas, beige world + NE Asia, Pacific atlas half, US night, Peking on the 1943 Milrose map; photo crops (EOB office, Kissinger Oval Office, Chiang cape) | 049–079 | as the kit / photo sources |
+Generator: `project/c5/gen/c5s02_assets.py` (globes | maps | tv | paths).

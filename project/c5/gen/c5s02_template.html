@@ -136,7 +136,8 @@
     const rise = (el, t, o) => { o = o || {}; const d = o.dur || 1.0;
       tl.fromTo(el, { opacity: 0, y: o.y == null ? 22 : o.y }, { opacity: 1, y: 0, duration: d, ease: C(E.out, d), immediateRender: true }, t); };
     const pop = (el, t, d, s0) => { d = d || 0.8; tl.fromTo(el, { opacity: 0, scale: s0 || 0.8 }, { opacity: 1, scale: 1, duration: d, ease: C(E.out, d), immediateRender: true }, t); };
-    const say = (blk, cues, o) => cues.forEach((c, i) => rise(blk.w[i], c, Object.assign({ dur: 0.7, y: 12 }, o || {})));
+    const say = (blk, cues, o) => { const bx = blk.w[0].closest(".k-inkbox, .label-box"); if (bx) show(bx, cues[0]);
+      cues.forEach((c, i) => rise(blk.w[i], c, Object.assign({ dur: 0.7, y: 12 }, o || {}))); };
     const cam = (el, t, to, dur, ease) => tl.to(el, Object.assign({ duration: dur, ease: ease || E.cam }, to), t);
     const camFrom = (el, t, from, to, dur, ease) => tl.fromTo(el, from, Object.assign({ duration: dur, ease: ease || E.cam, immediateRender: true }, to), t);
     // camera transform (origin 0 0) that centres map point (x, y) at screen (sx, sy) with scale s
@@ -241,7 +242,7 @@
         <div class="k-abs" style="left:7%;top:6%;width:86%;height:13%;filter:blur(3px)"><div style="height:42%;background:rgba(20,27,36,0.75);margin-bottom:6%"></div><div style="height:42%;width:70%;background:rgba(20,27,36,0.75)"></div></div>
         <div class="k-abs" style="left:7%;top:23%;width:86%;height:2px;background:rgba(20,27,36,0.5)"></div>
         <div class="k-greek k-dim" style="left:7%;top:27%;width:86%;height:16%"></div>
-        <div class="k-abs t-serif k-ink k-key" style="left:7%;top:45%;width:92%;font-size:${Math.round(w / 23)}px;white-space:nowrap">${keyHtml}</div>
+        <div class="k-abs t-serif k-ink k-key" style="left:7%;top:45%;width:92%;font-size:${Math.round(w / 19)}px;white-space:nowrap">${keyHtml}</div>
         <div class="k-greek k-dim" style="left:7%;top:57%;width:86%;height:30%"></div>
         <div class="k-greek k-dim" style="left:7%;top:89%;width:50%;height:6%"></div></div>`);
       return c;
@@ -559,9 +560,10 @@
         const y = 250 + i * 104;
         const row = add(c, `<div class="k-abs" style="left:200px;top:${y}px;width:880px;height:90px;opacity:0;border-bottom:2px solid rgba(242,237,227,0.18)">
           <div class="k-abs" style="left:0;top:28px;width:110px;height:26px;background:rgba(242,237,227,0.55);filter:blur(4px)"></div>
-          <div class="k-abs t-serif clean" style="left:160px;top:6px;font-size:54px">public event</div>
+          <div class="k-abs t-serif clean" style="left:160px;top:6px;font-size:54px;opacity:0">public event</div>
           <div class="k-abs" style="left:560px;top:30px;width:${200 + (i * 37) % 90}px;height:22px;background:rgba(242,237,227,0.35);filter:blur(5px)"></div></div>`);
-        tl.fromTo(row, { opacity: 0, x: -30 }, { opacity: 1, x: 0, duration: 0.5, ease: C(E.out, 0.5), immediateRender: true }, T(254.61) + i / 12);
+        tl.fromTo(row, { opacity: 0, x: -30 }, { opacity: 1, x: 0, duration: 0.8, ease: C(E.out, 0.8), immediateRender: true }, S(252.95) + i / 12);
+        show(row.querySelector(".t-serif"), T(254.61) + i / 12);
         FX.markup.pen(tl, mk, S(254.95) + i * 0.13, { points: [[340, y + 48], [700, y + 44 + (i % 2) * 6], [1000, y + 50]], dur: 0.25, width: 7, color: BONE, filter: mk._f, seed: 560 + i, jitter: 5, blend: "normal" });
       }
       const two = add(c, `<div class="k-abs t-display" style="left:1250px;top:300px;font-size:210px;white-space:nowrap"><span class="k-inkbox" style="color:${YEL}"><span class="k-w">2 </span><span class="k-w">DAYS</span></span></div>`);
@@ -664,7 +666,7 @@
       FX.contrastCallout(tl, veil, S(272.05), { w: 1200, h: 1557, d: "M170 915 L1150 915 L1150 1015 L170 1015 Z", feather: 22, color: "rgba(239,233,220,1)", strength: 0.8 });
       const hb = (x, y, w, t, d) => { const b = add(pg, `<div class="k-hl" style="left:${x}px;top:${y}px;width:${w}px;height:22px"></div>`); tl.fromTo(b, { scaleX: 0 }, { scaleX: 1, duration: d, ease: "sine.inOut", immediateRender: true }, t); };
       hb(396, 937, 170, T(273.41), 0.4);
-      hb(880, 963, 232, T(275.09), 0.55);
+      hb(880, 963, 232, T(275.09), 0.35);
       const tag = (x, y, text) => txt(pg, "t-label", `left:${x}px;top:${y}px;font-size:24px;color:${INK}`, text);
       const ft = tag(300, 1030, "future trip"), tp = tag(380, 880, "the president"), vc = tag(900, 1000, "visits China");
       say(ft, [T(272.21), T(272.53)], { dur: 0.5, y: 6 });

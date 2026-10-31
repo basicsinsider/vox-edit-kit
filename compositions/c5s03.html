@@ -62,11 +62,11 @@
 
     /* C5S085 flows over a ghost Pacific */
     #c5s03-sc085-cam { position: absolute; inset: 0; transform-origin: 50% 50%; }
-    #c5s03-sc085-map { position: absolute; left: -40px; top: 180px; width: 2000px; height: 759px; opacity: 0.22; filter: grayscale(0.4); }
+    #c5s03-sc085-map { position: absolute; left: -40px; top: 180px; width: 2000px; height: 759px; opacity: 0.38; filter: grayscale(0.4); }
     #c5s03-sc085-svg { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; }
     #c5s03-sc085-us { left: 1590px; top: 330px; font-size: 40px; }
     #c5s03-sc085-cn { left: 150px; top: 330px; font-size: 40px; }
-    #c5s03-sc085-any { left: 840px; top: 260px; font-size: 64px; }
+    #c5s03-sc085-any { left: 840px; top: 170px; font-size: 64px; }
     #c5s03-sc085-give { left: 690px; top: 760px; font-size: 40px; }
     #c5s03-sc085-sot { left: 690px; top: 820px; font-size: 40px; }
 
@@ -77,8 +77,8 @@
     .k-row { position: absolute; left: 80px; right: 80px; height: 120px; border-bottom: 2px solid rgba(20,27,36,0.18); }
     .k-row .n { position: absolute; left: 0; top: 40px; font-size: 40px; color: rgba(20,27,36,0.75); }
     .k-row .tw { position: absolute; right: 0; top: 34px; font-size: 48px; color: var(--ink); }
-    .k-row .hl { position: absolute; right: -10px; top: 46px; width: 182px; height: 40px; }
-    #c5s03-sc086-aa { left: 0; top: 40px; width: 1920px; text-align: center; font-size: 96px; color: var(--ink); }
+    .k-row .rowhl { position: absolute; right: -10px; top: 46px; width: 182px; height: 40px; }
+    #c5s03-sc086-aa { left: 70px; top: 860px; font-size: 80px; color: var(--ink); text-shadow: 0 0 18px rgba(235,228,214,0.9); }
     #c5s03-sc086-wor { left: 1290px; top: 820px; font-size: 64px; transform: rotate(-3deg); }
 
     /* C5S087 Trinitron rewind */
@@ -430,9 +430,9 @@
       <div class="k-p1" style="background-image:url('assets/textures/paper_stained_01_hires.jpg')"></div>
       <div id="c5s03-sc086-cam">
         <div id="c5s03-sc086-sheet"><div class="tx2"></div><div id="c5s03-sc086-rows"></div></div>
-        <div id="c5s03-sc086-aa" class="k-abs t-serif-i"><span class="k-w">always </span><span class="k-w">asking</span></div>
         <div id="c5s03-sc086-wor" class="k-abs t-display"><span class="k-celbox" id="c5s03-sc086-worb" style="opacity:0">worried</span></div>
       </div>
+      <div id="c5s03-sc086-aa" class="k-abs t-serif-i"><span class="k-w">always </span><span class="k-w">asking</span></div>
       <div class="k-folds"></div>
     </div></div>
 
@@ -1059,7 +1059,7 @@
       ink(svg, "M270 500 C 700 690, 1250 690, 1760 520", S(408.60), 1.0, { color: RED, width: 44, cap: "butt", opacity: 0.9, ease: C(E.inOut, 1.0) });
       [T(409.61), T(409.93)].forEach((c, i) => rise(words("sc085-give")[i], c, { dur: 0.7, y: 10 }));
       // the celadon strand snaps on "give up" — both halves retract from the break
-      [sA, sB].forEach((p, i) => tl.to(p, { attr: { "stroke-dashoffset": p._len }, y: 26, duration: 0.42, ease: C(E.in, 0.42) }, S(409.70) + i * 0.04));
+      [sA, sB].forEach((p, i) => tl.to(p, { attr: { "stroke-dashoffset": p._len * 0.55 }, y: 26, duration: 0.42, ease: C(E.in, 0.42) }, S(409.70) + i * 0.04));
       const sp = svgEl(svg, "g", { opacity: 0 });
       sp.innerHTML = `<path d="M925 835 L905 810 M955 835 L975 808 M940 885 L940 912" stroke="${BONE}" stroke-width="5" stroke-linecap="round"/>`;
       tl.fromTo(sp, { attr: { opacity: 0 } }, { attr: { opacity: 1 }, duration: 0.001, immediateRender: true }, S(409.72));
@@ -1077,7 +1077,7 @@
       for (let i = 0; i < 7; i++) {
         let f = ""; let x = 90;
         while (x < 560) { const w = 60 + r() * 120; f += `<div class="k-filler" style="left:${x}px;top:${52}px;width:${Math.min(w, 600 - x)}px"></div>`; x += w + 18; }
-        rows.insertAdjacentHTML("beforeend", `<div class="k-row" style="top:${70 + i * 140}px"><div class="n t-serif">${i + 1}.</div>${f}<div class="k-hlbar hl" id="c5s03-sc086-hl${i}"></div><div class="tw t-serif" style="position:absolute">Taiwan</div></div>`);
+        rows.insertAdjacentHTML("beforeend", `<div class="k-row" style="top:${70 + i * 140}px"><div class="n t-serif">${i + 1}.</div>${f}<div class="k-hlbar rowhl" id="c5s03-sc086-hl${i}"></div><div class="tw t-serif" style="position:absolute">Taiwan</div></div>`);
       }
       cam($("sc086-cam"), { y: 0, scale: 1.02 }, { y: -150, scale: 1.06 }, S(410.86), 4.7, E.cam);
       [T(412.01), T(412.49)].forEach((c, i) => rise(words("sc086-aa")[i], c, { dur: 0.9, y: 12 }));

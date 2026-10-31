@@ -1,0 +1,717 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8" /></head>
+<body>
+<template>
+  <style>
+    /* c6s01 — chunk c6, LOCAL VO 0.00–201.96 (C6S001–C6S041). Source: project/c6/gen/c6s01.markup.html + c6s01.script.js → build_c6s01.py */
+    #root { position: absolute; inset: 0; overflow: hidden; background: var(--night); }
+    .k-scene { position: absolute; inset: 0; overflow: hidden; visibility: hidden; opacity: 0; }
+    .k-shot { position: absolute; inset: 0; overflow: hidden; transform-origin: 50% 50%; }
+    .k-night { background: var(--night); }
+    .k-paper { background: var(--paper); }
+    .k-abs { position: absolute; }
+    .k-cam { position: absolute; inset: 0; transform-origin: 50% 50%; }
+    .k-p1, .k-p2 { position: absolute; inset: 0; background-size: cover; background-position: center; pointer-events: none; }
+    .k-p2 { opacity: 0.9; mix-blend-mode: multiply; }
+    .k-credit { position: absolute; right: 30px; bottom: 20px; font-size: 13px; letter-spacing: 0.08em; color: rgba(242,237,227,0.62); z-index: 6; }
+    .k-credit.ink { color: rgba(20,27,36,0.62); }
+    .k-mk { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; pointer-events: none; }
+    .k-w { display: inline-block; white-space: pre; opacity: 0; }
+    .k-ink { color: var(--ink); }
+    .k-redbox { display: inline-block; background: var(--vermilion); color: var(--bone); padding: 0.1em 0.24em 0.02em; line-height: 1; }
+    .k-inkbox { display: inline-block; background: var(--ink); color: var(--paper); padding: 0.1em 0.24em 0.02em; line-height: 1; }
+    .k-celrule { position: relative; display: inline-block; }
+    .k-celrule .u { position: absolute; left: 0; right: 0; bottom: -10px; height: 8px; background: var(--celadon); transform-origin: 0 50%; transform: scaleX(0); }
+    .k-hlbar { position: absolute; background: var(--yellow); mix-blend-mode: multiply; transform-origin: 0 50%; opacity: 0.92; }
+    .k-scrim-b { position: absolute; left: 0; right: 0; bottom: 0; height: 440px; background: linear-gradient(180deg, rgba(15,19,24,0), rgba(15,19,24,0.85)); }
+    .k-scrim-t { position: absolute; left: 0; right: 0; top: 0; height: 380px; background: linear-gradient(0deg, rgba(15,19,24,0), rgba(15,19,24,0.78)); }
+    .k-veil { position: absolute; inset: 0; opacity: 0; pointer-events: none; }
+    .k-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    .k-fringe { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: blur(8px);
+      -webkit-mask-image: radial-gradient(ellipse 62% 60% at 50% 46%, transparent 45%, #000 100%); mask-image: radial-gradient(ellipse 62% 60% at 50% 46%, transparent 45%, #000 100%); }
+    .k-card { position: absolute; background: #efe8d8; box-shadow: 0 26px 60px rgba(20,27,36,0.32); overflow: hidden; }
+    .k-card img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    .k-card .ht { position: absolute; inset: 0; background: url('assets/textures/halftone_01_norm.jpg') 0 0 / 380px auto; mix-blend-mode: overlay; opacity: 0.4; }
+    .k-desk { position: absolute; inset: 0; background: radial-gradient(ellipse 60% 70% at 52% 44%, #3a3128 0%, #1d1915 55%, #0f0e0c 100%); }
+    .k-lamp { position: absolute; inset: 0; background: radial-gradient(ellipse 45% 55% at 52% 42%, rgba(255,214,170,0.20), rgba(255,214,170,0) 70%); mix-blend-mode: screen; pointer-events: none; }
+    .k-stamp { position: absolute; color: var(--ink); border: 8px solid var(--ink); padding: 6px 22px 0; mix-blend-mode: multiply; opacity: 0; }
+    .k-page { position: absolute; background: #ece5d6; box-shadow: 0 24px 60px rgba(0,0,0,0.55); overflow: hidden; }
+    .k-page .tx2 { position: absolute; inset: 0; background: url('assets/textures/paper_fiber_01.jpg') center / cover; mix-blend-mode: multiply; opacity: 0.7; }
+    .k-ln { position: absolute; height: 9px; background: rgba(20,27,36,0.28); border-radius: 2px; }
+    .k-film { position: absolute; background: #0b0a09; box-shadow: 0 0 90px rgba(0,0,0,0.75); overflow: hidden; }
+    .k-film video, .k-film img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    .k-film::after { content: ""; position: absolute; inset: 0; box-shadow: inset 0 0 70px rgba(0,0,0,0.85); border-radius: 18px; }
+    .k-mapcam { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
+    .k-mapcam img, .k-mapcam svg { position: absolute; left: 0; top: 0; }
+    .k-tape { position: absolute; width: 120px; height: 38px; background: rgba(159,199,178,0.82); mix-blend-mode: multiply; }
+    .k-flash { position: absolute; inset: 0; background: #fbf4e6; opacity: 0; pointer-events: none; z-index: 7; }
+    #c6s01-flash { position: absolute; inset: 0; background: #fbf4e6; opacity: 0; pointer-events: none; z-index: 7; }
+    #c6s01-grain, #c6s01-dust, #c6s01-vig { z-index: 8; }
+
+    /* C6S011 seating plan */
+    .k-seat { position: absolute; width: 132px; height: 34px; background: #f4eee0; border: 2px solid rgba(20,27,36,0.55); color: var(--ink); font-size: 13px; letter-spacing: 0.08em; text-align: center; line-height: 31px; transform-origin: 50% 100%; white-space: nowrap; overflow: hidden; }
+    .k-seat.roc { background: var(--celadon); border-color: var(--ink); font-size: 15px; }
+    /* C6S028 dominoes */
+    .k-dom { position: absolute; width: 96px; height: 188px; background: linear-gradient(90deg, #e9e2d2, #f6f1e5 40%, #d8d0bf); border-radius: 10px; box-shadow: 10px 14px 18px rgba(0,0,0,0.55); transform-origin: 85% 100%; }
+    .k-dom::before { content: ""; position: absolute; left: 10px; right: 10px; top: 92px; height: 4px; background: rgba(20,27,36,0.6); }
+    .k-dom i { position: absolute; width: 16px; height: 16px; border-radius: 50%; background: #1a1c20; }
+    .k-dom.tw { box-shadow: inset 0 0 0 7px var(--celadon), 10px 14px 18px rgba(0,0,0,0.55); }
+    /* C6S030 bars */
+    .k-bar { position: absolute; bottom: 230px; width: 150px; background: #3d4652; transform-origin: 50% 100%; }
+    .k-bar .wc { position: absolute; left: 0; right: 0; top: -14px; height: 28px; background: inherit; -webkit-mask-image: url('assets/textures/watercolour_edge_mask_01.png'); mask-image: url('assets/textures/watercolour_edge_mask_01.png'); -webkit-mask-size: 100% 100%; mask-size: 100% 100%; }
+    .k-disc { position: absolute; width: 130px; height: 130px; border-radius: 50%; border: 6px solid var(--ink); overflow: hidden; background: #e8e1d2; }
+    .k-disc svg { width: 100%; height: 100%; }
+    /* C6S041 scroll */
+    .k-rod { position: absolute; width: 34px; height: 340px; border-radius: 17px; background: linear-gradient(90deg, #3b2a1c, #7a5a3c 45%, #2b1e14); box-shadow: 0 16px 30px rgba(20,27,36,0.45); }
+  </style>
+  <div id="root" data-composition-id="c6s01" data-vo-start="0" data-duration="201.96" data-width="1920" data-height="1080">
+    <svg id="c6s01-defs" width="0" height="0" style="position:absolute"></svg>
+
+    <!-- C6S001 · 0.00–2.48 · Taiwan doesn't know this, too. So · GA 1971, delegates seated, sharp → soft -->
+    <div class="k-scene k-night" id="c6s01-sc001" data-scene="C6S001"><div class="k-shot" id="c6s01-sc001-shot">
+      <div class="k-cam" id="c6s01-sc001-cam">
+        <video id="c6s01-sc001-vid" class="k-img" src="assets/c6/footage/un1971_us_desk.mp4" muted playsinline data-start="0" data-duration="2.6" data-media-start="0"
+          data-color-grading='{"intensity":1,"adjust":{"saturation":-0.55,"contrast":0.08},"effects":{"chromaticAberration":0.12,"chromaticAngle":0,"filmArtifacts":0.3}}'></video>
+      </div>
+      <div class="k-credit t-label">Film: UN, 25 Oct 1971</div>
+    </div></div>
+
+    <!-- C6S002 · 2.48–8.64 · George Bush tries another hail mary … he has done this before · Vox layered (IS002 variation) -->
+    <div class="k-scene k-paper" id="c6s01-sc002" data-scene="C6S002"><div class="k-shot" id="c6s01-sc002-shot">
+      <div class="k-p1" style="background-image:url('assets/textures/paper_cream_01.jpg')"></div>
+      <div class="k-p2" style="background-image:url('assets/textures/paper_fiber_01.jpg'); opacity:0.5"></div>
+      <div class="k-cam" id="c6s01-sc002-cam">
+        <div class="k-card" id="c6s01-sc002-field" style="left:760px; top:120px; width:1000px; height:430px; transform:rotate(2deg); background:#d9d2c0">
+          <svg id="c6s01-sc002-fsvg" viewBox="0 0 1000 430" style="position:absolute;inset:0;width:100%;height:100%"></svg>
+          <div class="ht"></div>
+        </div>
+        <div id="c6s01-sc002-stack" style="position:absolute; left:1010px; top:560px; width:560px; height:430px"></div>
+        <div class="k-card" id="c6s01-sc002-bush" style="left:150px; top:130px; width:560px; height:780px; transform:rotate(-2.5deg)">
+          <img src="assets/c5/photos/bush_un_swearing_in_1971_nara194352.jpg" alt="" style="object-position:58% 26%; transform:scale(2.1); transform-origin:58% 24%; filter:url(#c6s01-tint-ink) contrast(1.05)" />
+          <div class="ht"></div>
+        </div>
+        <div id="c6s01-sc002-name" class="k-abs t-display" style="left:150px; top:880px; font-size:58px"><span class="k-inkbox" style="opacity:0" id="c6s01-sc002-nameb">GEORGE H. W. BUSH</span></div>
+        <svg id="c6s01-sc002-mk" class="k-mk"></svg>
+        <div id="c6s01-sc002-hm" class="k-abs t-serif-i k-ink" style="left:900px; top:150px; font-size:104px"><span class="k-w">Hail </span><span class="k-w">Mary</span></div>
+        <div id="c6s01-sc002-dtb" class="k-abs t-label k-ink" style="left:1020px; top:1000px; font-size:34px"><span class="k-w">done </span><span class="k-w">this </span><span class="k-w">before</span></div>
+      </div>
+      <div class="k-credit ink t-label">Photo: NARA (White House, 1971)</div>
+    </div></div>
+
+    <!-- C6S003 · 8.64–13.69 · pass a resolution before the main resolution · lamp-lit desk -->
+    <div class="k-scene k-night" id="c6s01-sc003" data-scene="C6S003"><div class="k-shot" id="c6s01-sc003-shot">
+      <div class="k-desk"></div>
+      <div class="k-cam" id="c6s01-sc003-cam" style="transform-origin:60% 55%">
+        <div class="k-page" id="c6s01-sc003-main" style="left:300px; top:70px; width:760px; height:982px; transform:rotate(-3deg)">
+          <img src="assets/c4/documents/un_draft_A-L630_1971_expel.jpg" alt="" style="position:absolute;inset:0;width:100%;height:100%;filter:sepia(0.4) contrast(1.05) brightness(0.95);mix-blend-mode:multiply" />
+        </div>
+        <div class="k-page" id="c6s01-sc003-small" style="left:960px; top:330px; width:560px; height:640px; transform:rotate(4deg); background:#efe9dc">
+          <div class="tx2"></div>
+          <div class="k-ln" style="left:50px; top:52px; width:260px; height:16px; background:rgba(20,27,36,0.6)"></div>
+          <div class="k-ln" style="left:50px; top:110px; width:420px"></div><div class="k-ln" style="left:50px; top:140px; width:460px"></div>
+          <div class="k-ln" style="left:50px; top:200px; width:440px"></div><div class="k-ln" style="left:50px; top:230px; width:380px"></div>
+          <div class="k-ln" style="left:50px; top:260px; width:450px"></div><div class="k-ln" style="left:50px; top:320px; width:300px"></div>
+          <div id="c6s01-sc003-res" class="k-abs t-label k-ink" style="left:50px; top:420px; font-size:40px; opacity:0">resolution</div>
+        </div>
+        <div id="c6s01-sc003-bef" class="k-abs t-serif-i clean" style="left:1500px; top:180px; font-size:96px; opacity:0">before</div>
+        <div id="c6s01-sc003-main-l" class="k-abs t-display" style="left:330px; top:900px; font-size:64px"><span class="k-inkbox" id="c6s01-sc003-mb" style="opacity:0"><span class="k-w">main </span><span class="k-w">resolution</span></span></div>
+      </div>
+      <div class="k-lamp"></div>
+      <div class="k-credit t-label">UN document A/L.630 (1971)</div>
+    </div></div>
+
+    <!-- C6S004 · 13.69–21.13 · this Taiwan question is an important question … just a majority · highlighter + text call-out -->
+    <div class="k-scene k-paper" id="c6s01-sc004" data-scene="C6S004"><div class="k-shot" id="c6s01-sc004-shot">
+      <div class="k-p1" style="background-image:url('assets/textures/paper_stained_01_hires.jpg')"></div>
+      <div class="k-p2" style="background-image:url('assets/textures/paper_cream_02.jpg'); opacity:0.88"></div>
+      <div class="k-cam" id="c6s01-sc004-cam" style="transform-origin:50% 48%">
+        <div id="c6s01-sc004-dim">
+          <div class="k-ln" style="left:260px; top:126px; width:420px; height:18px; background:rgba(20,27,36,0.5)"></div>
+          <div class="k-ln" style="left:260px; top:200px; width:1300px"></div><div class="k-ln" style="left:260px; top:250px; width:1240px"></div>
+          <div class="k-ln" style="left:260px; top:300px; width:1340px"></div><div class="k-ln" style="left:260px; top:350px; width:900px"></div>
+          <div class="k-ln" style="left:260px; top:640px; width:1280px"></div><div class="k-ln" style="left:260px; top:690px; width:1320px"></div>
+          <div class="k-ln" style="left:260px; top:740px; width:1100px"></div><div class="k-ln" style="left:260px; top:790px; width:760px"></div>
+        </div>
+        <div class="k-hlbar" id="c6s01-sc004-hl" style="left:776px; top:470px; width:652px; height:44px; transform:scaleX(0)"></div>
+        <div id="c6s01-sc004-line" class="k-abs t-serif k-ink" style="left:260px; top:430px; font-size:66px; white-space:nowrap">
+          <span class="k-celrule" id="c6s01-sc004-tq"><span class="k-w">Taiwan </span><span class="k-w">question</span><span class="u" id="c6s01-sc004-tqu"></span></span>
+        </div>
+        <div id="c6s01-sc004-iq" class="k-abs t-serif k-ink" style="left:260px; top:430px; font-size:66px; white-space:nowrap; opacity:0">
+          <span style="opacity:0">Taiwan question </span><span class="k-w">is </span><span class="k-w">an </span><span class="k-w">important </span><span class="k-w">question</span>
+        </div>
+        <div id="c6s01-sc004-maj" class="k-abs t-serif k-ink" style="left:1240px; top:860px; font-size:96px; opacity:0">majority</div>
+        <svg id="c6s01-sc004-mk" class="k-mk"></svg>
+      </div>
+    </div></div>
+
+    <!-- C6S005 · 21.13–25.29 · You need two thirds to decide any kind of resolution · D01 threshold chart (grid) -->
+    <div class="k-scene k-paper" id="c6s01-sc005" data-scene="C6S005"><div class="k-shot" id="c6s01-sc005-shot">
+      <div class="k-p1" style="background-image:url('assets/textures/paper_graph_01_hires.jpg')"></div>
+      <div class="k-p2" style="background-image:url('assets/textures/paper_cream_01.jpg'); opacity:0.35"></div>
+      <div class="k-cam" id="c6s01-sc005-cam" style="transform-origin:50% 40%">
+        <img src="assets/c4/cutouts/un_emblem.svg" alt="" style="position:absolute; left:1240px; top:560px; width:520px; opacity:0.16; filter:grayscale(1)" />
+        <div id="c6s01-sc005-bars"></div>
+        <svg id="c6s01-sc005-svg" class="k-mk"></svg>
+        <div id="c6s01-sc005-23" class="k-abs t-display" style="left:180px; top:110px; font-size:220px"><span class="k-inkbox" id="c6s01-sc005-23b" style="opacity:0; color:var(--yellow)">2/3</span></div>
+        <div id="c6s01-sc005-tt" class="k-abs t-label k-ink" style="left:190px; top:370px; font-size:34px; opacity:0">two thirds</div>
+        <div id="c6s01-sc005-res" class="k-abs t-label k-ink" style="left:1160px; top:930px; font-size:36px; opacity:0">resolution</div>
+      </div>
+    </div></div>
+
+    <!-- C6S006 · 25.29–29.77 · people are first voting … important question or not · GA 1971 vote board -->
+    <div class="k-scene k-night" id="c6s01-sc006" data-scene="C6S006"><div class="k-shot" id="c6s01-sc006-shot">
+      <div class="k-cam" id="c6s01-sc006-cam" style="transform-origin:50% 40%">
+        <div id="c6s01-sc006-weave" class="k-abs" style="inset:0">
+          <video id="c6s01-sc006-vid" class="k-img" src="assets/c6/footage/un1971_vote_hall_pan_to_board.mp4" muted playsinline data-start="25.29" data-duration="4.6" data-media-start="0.8"
+            data-color-grading='{"intensity":1,"adjust":{"saturation":-0.45,"contrast":0.1},"effects":{"chromaticAberration":0.13,"chromaticAngle":0,"filmArtifacts":0.35}}'></video>
+        </div>
+      </div>
+      <div class="k-scrim-b"></div>
+      <div id="c6s01-sc006-fv" class="k-abs t-label clean" style="left:120px; top:820px; font-size:42px"><span class="k-w">first </span><span class="k-w">voting</span></div>
+      <div id="c6s01-sc006-iq" class="k-abs t-serif-i clean" style="left:120px; top:880px; font-size:92px"><span class="k-w">important </span><span class="k-w">question?</span></div>
+      <div class="k-credit t-label">Film: UN, 25 Oct 1971</div>
+    </div></div>
+
+    <!-- C6S007–C6S008 · 29.77–38.09 · US does not have a majority · China has more than enough votes · D06 hemicycle -->
+    <div class="k-scene k-paper" id="c6s01-sc007" data-scene="C6S007-C6S008"><div class="k-shot" id="c6s01-sc007-shot">
+      <div class="k-p1" style="background-image:url('assets/textures/paper_stained_01_hires.jpg')"></div>
+      <div class="k-p2" style="background-image:url('assets/textures/paper_fiber_01.jpg'); opacity:0.45"></div>
+      <div class="k-cam" id="c6s01-sc007-cam" style="transform-origin:50% 70%">
+        <svg id="c6s01-sc007-svg" class="k-mk" viewBox="0 0 1920 1080"></svg>
+        <div id="c6s01-sc007-us" class="k-abs t-label" style="left:250px; top:960px; font-size:44px; color:var(--navy); opacity:0">US</div>
+        <div id="c6s01-sc007-nm" class="k-abs t-label k-ink" style="left:840px; top:200px; width:420px; text-align:center; font-size:34px"><span class="k-w">not </span><span class="k-w">majority</span></div>
+        <div id="c6s01-sc007-cn" class="k-abs t-display" style="left:1500px; top:930px; font-size:64px"><span class="k-redbox" id="c6s01-sc007-cnb" style="opacity:0">CHINA</span></div>
+      </div>
+      <div id="c6s01-sc007-ttl" class="k-abs t-serif k-ink" style="left:120px; top:90px; font-size:72px"><span class="k-w">In </span><span class="k-w">that </span><span class="k-w t-serif-i">vote</span></div>
+      <div id="c6s01-sc007-mte" class="k-abs t-serif-i k-ink" style="left:1180px; top:100px; font-size:64px"><span class="k-w">more </span><span class="k-w">than </span><span class="k-w">enough </span><span class="k-w">votes</span></div>
+    </div></div>
+
+    <!-- C6S009 · 38.09–41.69 · as soon as that vote comes to the floor in just a few minutes · GA floor + pen clock -->
+    <div class="k-scene k-night" id="c6s01-sc009" data-scene="C6S009"><div class="k-shot" id="c6s01-sc009-shot">
+      <div class="k-cam" id="c6s01-sc009-cam">
+        <img class="k-img" src="assets/c6/derived/c6s01/un1971_hall_wide.jpg" alt="" style="filter:saturate(0.5) contrast(1.08) brightness(0.85)" />
+        <img class="k-fringe" src="assets/c6/derived/c6s01/un1971_hall_wide.jpg" alt="" style="filter:saturate(0.5) brightness(0.8) blur(9px)" />
+      </div>
+      <div class="k-scrim-b"></div>
+      <svg id="c6s01-sc009-mk" class="k-mk"></svg>
+      <div id="c6s01-sc009-fl" class="k-abs t-label clean" style="left:120px; top:860px; font-size:42px"><span class="k-w">the </span><span class="k-w">floor</span></div>
+      <div id="c6s01-sc009-fm" class="k-abs t-serif-i clean" style="left:120px; top:920px; font-size:84px"><span class="k-w">a </span><span class="k-w">few </span><span class="k-w">minutes</span></div>
+      <div class="k-credit t-label">Film: UN, 25 Oct 1971</div>
+    </div></div>
+
+    <!-- C6S010 · 41.69–45.45 · Taiwan is getting kicked out. China is officially in the United Nations · vote board, contrast call-out -->
+    <div class="k-scene k-night" id="c6s01-sc010" data-scene="C6S010"><div class="k-shot" id="c6s01-sc010-shot">
+      <div class="k-cam" id="c6s01-sc010-cam" style="transform-origin:832px 580px">
+        <img class="k-img" src="assets/c5/made/un1971_vote_board_still.jpg" alt="" style="filter:saturate(0.6) contrast(1.06) brightness(0.92)" />
+        <div class="k-veil" id="c6s01-sc010-veil"></div>
+      </div>
+      <div class="k-scrim-t"></div>
+      <div id="c6s01-sc010-tw" class="k-abs t-label clean" style="left:120px; top:100px; font-size:44px; opacity:0"><span style="display:inline-block;width:30px;height:30px;background:var(--celadon);margin-right:16px;vertical-align:-3px" id="c6s01-sc010-chip"></span>Taiwan</div>
+      <div id="c6s01-sc010-ko" class="k-abs t-serif-i clean" style="left:120px; top:160px; font-size:80px"><span class="k-w">kicked </span><span class="k-w">out</span></div>
+      <div id="c6s01-sc010-cn" class="k-abs t-display halate" style="left:0; top:610px; width:1920px; text-align:center; font-size:230px; opacity:0; text-shadow:0 0 1px rgba(255,236,220,0.9),0 0 8px rgba(224,63,44,0.7),0 0 24px rgba(224,63,44,0.45),0 0 52px rgba(224,63,44,0.25)">CHINA</div>
+      <div id="c6s01-sc010-oi" class="k-abs t-label clean" style="left:0; top:860px; width:1920px; text-align:center; font-size:40px"><span class="k-w">officially </span><span class="k-w">in </span><span class="k-w">the </span><span class="k-w">United </span><span class="k-w">Nations</span></div>
+      <div class="k-credit t-label">Film: UN, 25 Oct 1971</div>
+    </div></div>
+
+    <!-- C6S011 · 45.45–49.53 · everyone can see … Taiwan can see what's about to happen · V1 seating plan -->
+    <div class="k-scene k-paper" id="c6s01-sc011" data-scene="C6S011"><div class="k-shot" id="c6s01-sc011-shot">
+      <div class="k-p1" style="background-image:url('assets/textures/paper_cream_02.jpg')"></div>
+      <div class="k-p2" style="background-image:url('assets/textures/paper_fiber_01.jpg'); opacity:0.55"></div>
+      <div class="k-cam" id="c6s01-sc011-cam" style="transform-origin:960px 610px">
+        <div id="c6s01-sc011-seats" class="k-abs" style="inset:0"></div>
+        <svg id="c6s01-sc011-mk" class="k-mk"></svg>
+        <div id="c6s01-sc011-tw" class="k-abs t-label k-ink" style="left:900px; top:690px; width:120px; text-align:center; font-size:30px"><span class="k-celrule" id="c6s01-sc011-twr" style="opacity:0">Taiwan<span class="u" id="c6s01-sc011-twu"></span></span></div>
+      </div>
+      <div id="c6s01-sc011-ev" class="k-abs t-serif-i k-ink" style="left:120px; top:80px; font-size:92px; opacity:0">everyone</div>
+    </div></div>
+
+    <!-- C6S012 · 49.53–54.49 · Taiwan just walks up to the front, officially just withdraws · 2.5D #1 -->
+    <div class="k-scene k-night" id="c6s01-sc012" data-scene="C6S012"><div class="k-shot" id="c6s01-sc012-shot">
+      <div id="c6s01-sc012-stage" class="k-abs" style="inset:0; perspective:1200px; perspective-origin:50% 45%; background:#100e0c">
+        <div id="c6s01-sc012-cam" class="k-abs" style="inset:0; transform-style:preserve-3d">
+          <div class="k-abs" id="c6s01-sc012-far" style="inset:-160px; transform:translateZ(-600px) scale(1.5)"><img class="k-img" src="assets/c6/derived/c6s01/un1971_hall_wide.jpg" alt="" style="filter:saturate(0.4) brightness(0.55) blur(3px)" /></div>
+          <div class="k-abs" id="c6s01-sc012-mid" style="left:430px; top:150px; width:1060px; height:733px; transform:translateZ(-80px) rotateY(-4deg); box-shadow:0 30px 80px rgba(0,0,0,0.7); background:#e9e2d2">
+            <img src="assets/c3/newspapers/scmp_1971-10-27_roc_walkout_photo.png" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:sepia(0.35) contrast(0.92) brightness(0.98) blur(0.6px)" />
+          </div>
+          <div class="k-abs" id="c6s01-sc012-near" style="left:-200px; right:-200px; bottom:-120px; height:420px; transform:translateZ(260px); background:radial-gradient(ellipse 50% 80% at 18% 100%, #050404 40%, rgba(5,4,4,0) 75%), radial-gradient(ellipse 45% 70% at 88% 100%, #050404 45%, rgba(5,4,4,0) 75%); filter:blur(6px)"></div>
+        </div>
+      </div>
+      <div class="k-abs" style="inset:0; background:linear-gradient(180deg, rgba(255,220,180,0.06), rgba(0,0,0,0) 40%), radial-gradient(ellipse 30% 60% at 60% 0%, rgba(255,226,190,0.10), rgba(0,0,0,0) 70%); mix-blend-mode:screen"></div>
+      <div class="k-scrim-b"></div>
+      <div id="c6s01-sc012-wf" class="k-abs t-label clean" style="left:120px; top:90px; font-size:42px"><span class="k-w">walks </span><span class="k-w">up </span><span class="k-w">to </span><span class="k-w">the </span><span class="k-w">front</span></div>
+      <div id="c6s01-sc012-wd" class="k-abs t-display halate" style="left:0; top:770px; width:1920px; text-align:center; font-size:200px; opacity:0">WITHDRAWS</div>
+      <div id="c6s01-sc012-un" class="k-abs t-label clean" style="left:0; top:960px; width:1920px; text-align:center; font-size:40px"><span class="k-w">from </span><span class="k-w">the </span><span class="k-w">United </span><span class="k-w">Nations</span></div>
+      <div class="k-credit t-label">Photo: South China Morning Post, 27 Oct 1971 · fair use</div>
+    </div></div>
+
+    <!-- C6S013 · 54.49–58.41 · after they withdraw, I think people are crying · film of the delegates -->
+    <div class="k-scene k-night" id="c6s01-sc013" data-scene="C6S013"><div class="k-shot" id="c6s01-sc013-shot">
+      <div class="k-abs" style="inset:0; background:radial-gradient(ellipse 60% 60% at 50% 45%, #2a2622, #0b0a09 80%)"></div>
+      <div id="c6s01-sc013-weave" class="k-abs" style="inset:0">
+        <div class="k-film" style="left:260px; top:80px; width:1400px; height:880px; border-radius:22px">
+          <video id="c6s01-sc013-vid" src="assets/c5/made/un1971_us_desk_slow.mp4" muted playsinline data-start="54.49" data-duration="4.0" data-media-start="0"
+            data-color-grading='{"intensity":1,"adjust":{"saturation":-1,"contrast":0.12},"effects":{"chromaticAberration":0.14,"chromaticAngle":0,"filmArtifacts":0.5}}'></video>
+        </div>
+      </div>
+      <div class="k-scrim-b"></div>
+      <div id="c6s01-sc013-wd" class="k-abs t-label clean" style="left:120px; top:840px; font-size:42px; opacity:0">withdraw</div>
+      <div id="c6s01-sc013-cr" class="k-abs t-serif-i clean" style="left:120px; top:900px; font-size:104px; opacity:0">crying</div>
+      <div class="k-credit t-label">Film: UN, 25 Oct 1971</div>
+    </div></div>
+
+    <!-- C6S014 · 58.41–65.21 · some of the people from the Taiwanese delegation are crying … the future · D07 collage -->
+    <div class="k-scene k-paper" id="c6s01-sc014" data-scene="C6S014"><div class="k-shot" id="c6s01-sc014-shot">
+      <div class="k-p1" style="background-image:url('assets/textures/paper_cream_01.jpg')"></div>
+      <div class="k-p2" style="background-image:url('assets/textures/paper_stained_01_hires.jpg'); opacity:0.6"></div>
+      <div class="k-cam" id="c6s01-sc014-cam">
+        <div class="k-card" id="c6s01-sc014-c1" style="left:140px; top:170px; width:520px; height:600px; transform:rotate(-4deg)"><img src="assets/c3/derived/c3s03/un_1950_roc_delegate_last.jpg" alt="" style="object-position:40% 30%; filter:url(#c6s01-tint-ink)" /><div class="ht"></div></div>
+        <div class="k-card" id="c6s01-sc014-c2" style="left:700px; top:130px; width:520px; height:600px; transform:rotate(2deg)"><img src="assets/c6/derived/c6s01/un1971_delegates_seated.jpg" alt="" style="object-position:30% 70%; transform:scale(1.5); transform-origin:30% 75%; filter:url(#c6s01-tint-ink)" /><div class="ht"></div></div>
+        <div class="k-card" id="c6s01-sc014-c3" style="left:1260px; top:190px; width:520px; height:600px; transform:rotate(-1.5deg)"><img src="assets/c3/newspapers/scmp_1971-10-27_roc_walkout_photo.png" alt="" style="object-position:62% 40%; transform:scale(1.6); transform-origin:62% 40%; filter:sepia(0.3) contrast(0.95) blur(0.5px)" /><div class="ht"></div></div>
+        <div class="k-tape" style="left:350px; top:150px; transform:rotate(-6deg)"></div>
+        <div class="k-tape" style="left:900px; top:112px; transform:rotate(4deg)"></div>
+        <div class="k-tape" style="left:1470px; top:172px; transform:rotate(-3deg)"></div>
+      </div>
+      <div id="c6s01-sc014-td" class="k-abs t-label k-ink" style="left:140px; top:850px; font-size:40px"><span class="k-w">Taiwanese </span><span class="k-w">delegation</span></div>
+      <div id="c6s01-sc014-cr" class="k-abs t-serif-i k-ink" style="left:140px; top:900px; font-size:96px; opacity:0">crying</div>
+      <div id="c6s01-sc014-fu" class="k-abs t-serif-i k-ink" style="left:1240px; top:880px; font-size:96px"><span class="k-w">the </span><span class="k-w">future</span></div>
+      <div class="k-credit ink t-label">UN film 1950 / 1971 · SCMP 27 Oct 1971 · fair use</div>
+    </div></div>
+
+    <!-- C6S015 · 65.21–72.64 · George H. W. Bush just sitting there with his head in his hands · contrast call-out -->
+    <div class="k-scene k-night" id="c6s01-sc015" data-scene="C6S015"><div class="k-shot" id="c6s01-sc015-shot">
+      <div class="k-cam" id="c6s01-sc015-cam" style="transform-origin:40% 40%">
+        <img class="k-img" src="assets/c6/photos/bush_george_un_us_desk_1971_nara186386.jpg" alt="" style="object-position:50% 30%; filter:sepia(0.15) contrast(1.06) brightness(0.92)" />
+        <div class="k-veil" id="c6s01-sc015-veil"></div>
+        <svg id="c6s01-sc015-mk" class="k-mk"></svg>
+      </div>
+      <div class="k-scrim-b"></div>
+      <div id="c6s01-sc015-nm" class="k-abs t-display" style="left:120px; top:90px; font-size:62px"><span class="k-inkbox" id="c6s01-sc015-nmb" style="opacity:0; background:var(--bone); color:var(--ink)"><span class="k-w">GEORGE </span><span class="k-w">H. W. </span><span class="k-w">BUSH</span></span></div>
+      <div id="c6s01-sc015-hh" class="k-abs t-serif-i clean" style="left:1150px; top:720px; font-size:84px"><span class="k-w">head </span><span class="k-w">in </span><span class="k-w">his </span><span class="k-w">hands</span></div>
+      <div id="c6s01-sc015-wo" class="k-abs t-label clean" style="left:1150px; top:850px; font-size:42px"><span class="k-w">walking </span><span class="k-w">out</span></div>
+      <div class="k-credit t-label">Photo: NARA (US Mission to the UN, 1971)</div>
+    </div></div>
+
+    <!-- C6S016 · 72.64–76.48 · One of the most famous pictures, probably in Taiwan, they still remember · photo in print, pull-back -->
+    <div class="k-scene k-paper" id="c6s01-sc016" data-scene="C6S016"><div class="k-shot" id="c6s01-sc016-shot">
+      <div class="k-p1" style="background-image:url('assets/textures/paper_fiber_01.jpg')"></div>
+      <div class="k-cam" id="c6s01-sc016-cam" style="transform-origin:0 0">
+        <div class="k-page" id="c6s01-sc016-page" style="left:0; top:0; width:1920px; height:2200px; background:#e8e0cd; box-shadow:none">
+          <div class="k-abs" style="inset:0; background:url('assets/textures/newsprint_01.jpg') center / cover; mix-blend-mode:multiply; opacity:0.55"></div>
+          <div class="k-abs" style="left:120px; right:120px; top:140px; height:6px; background:var(--ink)"></div>
+          <div class="k-abs" style="left:120px; right:120px; top:156px; height:2px; background:var(--ink)"></div>
+          <div id="c6s01-sc016-cols" class="k-abs" style="inset:0"></div>
+          <div class="k-abs" id="c6s01-sc016-pic" style="left:560px; top:320px; width:1000px; height:792px; border:3px solid var(--ink); overflow:hidden; background:#ddd">
+            <img src="assets/c6/photos/bush_george_un_us_desk_1971_nara186386.jpg" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 30%;filter:grayscale(1) sepia(0.25) contrast(1.15)" />
+            <div class="k-abs" style="inset:0; background:url('assets/textures/halftone_01_norm.jpg') 0 0 / 260px auto; mix-blend-mode:overlay; opacity:0.55" id="c6s01-sc016-ht"></div>
+          </div>
+        </div>
+      </div>
+      <div id="c6s01-sc016-mf" class="k-abs t-label k-ink" style="left:120px; top:90px; font-size:42px"><span class="k-w">most </span><span class="k-w">famous </span><span class="k-w">pictures</span></div>
+      <div id="c6s01-sc016-tw" class="k-abs t-display k-ink" style="left:120px; top:860px; font-size:110px"><span class="k-celrule" id="c6s01-sc016-twr" style="opacity:0">Taiwan<span class="u" id="c6s01-sc016-twu"></span></span></div>
+      <div id="c6s01-sc016-sr" class="k-abs t-serif-i k-ink" style="left:1100px; top:900px; font-size:84px"><span class="k-w">still </span><span class="k-w">remember</span></div>
+      <div class="k-credit ink t-label">Photo: NARA · page: typeset recreation</div>
+    </div></div>
+
+    <!-- C6S017 · 76.48–80.00 · a lot of African countries, especially Tanzania · Africa satellite + contrast call-out -->
+    <div class="k-scene k-night" id="c6s01-sc017" data-scene="C6S017"><div class="k-shot" id="c6s01-sc017-shot">
+      <div class="k-mapcam" id="c6s01-sc017-cam" style="width:5400px; height:3024px">
+        <img src="assets/c3/derived/c3s03/africa_satdesat.jpg" alt="" style="width:5400px; height:3024px; filter:brightness(1.05) contrast(1.05)" />
+        <svg id="c6s01-sc017-svg" viewBox="0 0 5400 3024" style="width:5400px; height:3024px; overflow:visible"></svg>
+        <div class="k-veil" id="c6s01-sc017-veil" style="width:5400px; height:3024px; right:auto; bottom:auto"></div>
+        <svg id="c6s01-sc017-pin" viewBox="0 0 5400 3024" style="width:5400px; height:3024px; overflow:visible"></svg>
+      </div>
+      <div class="k-scrim-t"></div>
+      <div id="c6s01-sc017-ac" class="k-abs t-label clean" style="left:120px; top:100px; font-size:44px"><span class="k-w">African </span><span class="k-w">countries</span></div>
+      <div id="c6s01-sc017-tz" class="k-abs t-display" style="left:1180px; top:620px; font-size:72px"><span class="k-inkbox" id="c6s01-sc017-tzb" style="opacity:0; background:var(--bone); color:var(--ink)">TANZANIA</span></div>
+      <div class="k-credit t-label">NASA Blue Marble · Natural Earth</div>
+    </div></div>
+
+    <!-- C6S018 · 80.00–84.16 · dancing, basically trying to rub it into the Taiwanese delegation that they lost · celebration film -->
+    <div class="k-scene k-night" id="c6s01-sc018" data-scene="C6S018"><div class="k-shot" id="c6s01-sc018-shot">
+      <div class="k-cam" id="c6s01-sc018-cam">
+        <div id="c6s01-sc018-weave" class="k-abs" style="inset:0">
+          <video id="c6s01-sc018-vid" class="k-img" src="assets/c6/footage/un1971_celebration_delegate_clapping.mp4" muted playsinline data-start="80.00" data-duration="4.3" data-media-start="0.2"
+            data-color-grading='{"intensity":1,"adjust":{"saturation":-0.35,"contrast":0.1},"effects":{"chromaticAberration":0.14,"chromaticAngle":0,"filmArtifacts":0.4}}'></video>
+        </div>
+      </div>
+      <div class="k-scrim-b"></div>
+      <div id="c6s01-sc018-da" class="k-abs t-serif-i clean" style="left:120px; top:110px; font-size:110px; opacity:0">dancing</div>
+      <div id="c6s01-sc018-rb" class="k-abs t-label clean" style="left:120px; top:880px; font-size:44px"><span class="k-w">rub </span><span class="k-w">it </span><span class="k-w">into</span></div>
+      <div id="c6s01-sc018-lo" class="k-abs t-serif-i clean" style="left:1500px; top:860px; font-size:110px; opacity:0">lost</div>
+      <div class="k-credit t-label">Film: UN, 25 Oct 1971</div>
+    </div></div>
+
+    <!-- C6S019 · 84.16–88.64 · this is happening all before the main vote … withdrawn and they're dancing · ledger timeline -->
+    <div class="k-scene k-paper" id="c6s01-sc019" data-scene="C6S019"><div class="k-shot" id="c6s01-sc019-shot">
+      <div class="k-p1" style="background-image:url('assets/textures/paper_lined_01_hires.jpg'); background-size:1920px auto"></div>
+      <div class="k-p2" style="background-image:url('assets/textures/paper_cream_02.jpg'); opacity:0.3"></div>
+      <div class="k-cam" id="c6s01-sc019-cam" style="width:2600px">
+        <svg id="c6s01-sc019-svg" viewBox="0 0 2600 1080" style="position:absolute;left:0;top:0;width:2600px;height:1080px;overflow:visible"></svg>
+        <div class="k-abs t-display k-ink" id="c6s01-sc019-wd" style="left:330px; top:300px; font-size:56px; opacity:0"><span class="k-celrule" style="padding:0 6px">withdrawn<span class="u" id="c6s01-sc019-wdu"></span></span></div>
+        <div class="k-stamp t-display" id="c6s01-sc019-ck" style="left:560px; top:430px; font-size:72px; border-color:var(--celadon); color:#4f7f68; transform:rotate(-8deg)">&#10003;</div>
+        <div class="k-card" id="c6s01-sc019-th" style="left:1000px; top:250px; width:300px; height:230px; transform:rotate(3deg); opacity:0"><img src="assets/c6/derived/c6s01/un1971_dancing_still.jpg" alt="" style="filter:url(#c6s01-tint-ink)" /><div class="ht"></div></div>
+        <div class="k-abs t-display k-ink" id="c6s01-sc019-dn" style="left:1020px; top:500px; font-size:56px; opacity:0">dancing</div>
+        <div class="k-abs" id="c6s01-sc019-mvb" style="left:1700px; top:300px; width:620px; height:200px; border:5px dashed rgba(20,27,36,0.45)"></div>
+        <div class="k-abs t-serif-i k-ink" id="c6s01-sc019-mv" style="left:1740px; top:340px; font-size:84px; opacity:0.95"><span class="k-w">the </span><span class="k-w">main </span><span class="k-w">vote</span></div>
+        <div class="k-abs t-label k-ink" id="c6s01-sc019-bf" style="left:1520px; top:700px; font-size:40px; opacity:0">before</div>
+      </div>
+    </div></div>
+
+    <!-- C6S020 · 88.64–92.24 · this becomes such a big deal that Tanzania tries to walk this back · newspaper pile -->
+    <div class="k-scene k-night" id="c6s01-sc020" data-scene="C6S020"><div class="k-shot" id="c6s01-sc020-shot">
+      <div class="k-desk" style="filter:brightness(0.8)"></div>
+      <div class="k-cam" id="c6s01-sc020-cam" style="transform-origin:50% 60%">
+        <div class="k-page" id="c6s01-sc020-p1" style="left:200px; top:60px; width:900px; height:1127px; transform:rotate(-6deg)"><img src="assets/c3/newspapers/scmp_1971-10-27_roc_walkout_photo.png" alt="" style="position:absolute;left:0;top:240px;width:100%;filter:sepia(0.4);mix-blend-mode:multiply" /><div class="k-ln" style="left:40px;top:60px;width:820px;height:40px;background:rgba(20,27,36,0.75)"></div><div class="k-ln" style="left:40px;top:130px;width:600px;height:28px;background:rgba(20,27,36,0.6)"></div><div class="tx2"></div></div>
+        <div class="k-page" id="c6s01-sc020-p2" style="left:780px; top:-40px; width:900px; height:1127px; transform:rotate(4deg)"><img src="assets/c6/derived/c6s01/kansan_1971-10-26_1800.jpg" alt="" style="position:absolute;inset:0;width:100%;height:100%;filter:sepia(0.35) contrast(1.08);mix-blend-mode:multiply" /></div>
+      </div>
+      <div class="k-lamp"></div>
+      <div id="c6s01-sc020-bd" class="k-abs t-label clean" style="left:120px; top:880px; font-size:44px"><span class="k-w">big </span><span class="k-w">deal</span></div>
+      <div id="c6s01-sc020-tz" class="k-abs t-display" style="left:120px; top:940px; font-size:64px"><span class="k-inkbox" id="c6s01-sc020-tzb" style="opacity:0; background:var(--bone); color:var(--ink)">TANZANIA</span></div>
+      <div id="c6s01-sc020-wb" class="k-abs t-serif-i clean" style="left:1240px; top:930px; font-size:80px"><span class="k-w">walk </span><span class="k-w">this </span><span class="k-w">back</span></div>
+      <div class="k-credit t-label">University Daily Kansan, 26 Oct 1971 · SCMP 27 Oct 1971 · fair use</div>
+    </div></div>
+
+    <!-- C6S021 · 92.24–96.88 · we weren't celebrating that they're crying or … kicked out · typed statement (paraphrased) -->
+    <div class="k-scene k-paper" id="c6s01-sc021" data-scene="C6S021"><div class="k-shot" id="c6s01-sc021-shot">
+      <div class="k-p1" style="background-image:url('assets/textures/paper_stained_01_hires.jpg')"></div>
+      <div class="k-cam" id="c6s01-sc021-cam">
+        <div class="k-page" id="c6s01-sc021-card" style="left:330px; top:130px; width:1260px; height:820px; transform:rotate(-1.2deg); background:#efe8d6; box-shadow:0 30px 70px rgba(20,27,36,0.35)">
+          <div class="k-abs" style="inset:0; background:url('assets/textures/paper_cream_02.jpg') center / cover; mix-blend-mode:multiply; opacity:0.9"></div>
+          <div class="k-abs" style="left:70px; right:70px; top:60px; height:60px; border-bottom:4px double var(--ink)"></div>
+          <div class="k-abs t-display" style="left:90px; top:200px; font-size:76px; color:#2a3140; letter-spacing:0.02em; line-height:1.25">
+            <div id="c6s01-sc021-l1"><span class="k-w">we </span><span class="k-w">weren't </span><span class="k-w">celebrating</span></div>
+            <div id="c6s01-sc021-l2"><span class="k-w">… crying</span></div>
+            <div id="c6s01-sc021-l3"><span class="k-w">… kicked </span><span class="k-w">out</span></div>
+          </div>
+          <div id="c6s01-sc021-att" class="k-abs t-serif-i k-ink" style="left:90px; top:660px; font-size:44px; opacity:0">— Tanzania (paraphrased)</div>
+        </div>
+      </div>
+    </div></div>
+
+    <!-- C6S022 · 96.88–102.08 · We weren't dancing, we were just standing up … very, very big deal · pen + focal blur -->
+    <div class="k-scene k-night" id="c6s01-sc022" data-scene="C6S022"><div class="k-shot" id="c6s01-sc022-shot">
+      <div class="k-cam" id="c6s01-sc022-cam">
+        <video id="c6s01-sc022-vid" class="k-img" src="assets/c6/footage/un1971_celebration_delegate_clapping.mp4" muted playsinline data-start="96.88" data-duration="5.3" data-media-start="3.6"
+          data-color-grading='{"intensity":1,"adjust":{"saturation":-0.35,"contrast":0.1},"effects":{"chromaticAberration":0.14,"chromaticAngle":0,"filmArtifacts":0.4}}'></video>
+        <div id="c6s01-sc022-blur" class="k-abs" style="inset:0; backdrop-filter:blur(9px); -webkit-backdrop-filter:blur(9px)"></div>
+        <svg id="c6s01-sc022-mk" class="k-mk"></svg>
+      </div>
+      <div class="k-scrim-t"></div>
+      <div id="c6s01-sc022-wd" class="k-abs t-serif-i clean" style="left:120px; top:90px; font-size:92px"><span class="k-w">weren't </span><span class="k-w">dancing</span></div>
+      <div id="c6s01-sc022-su" class="k-abs t-label clean" style="left:1260px; top:120px; font-size:44px"><span class="k-w">standing </span><span class="k-w">up?</span></div>
+      <div id="c6s01-sc022-strips" class="k-abs" style="inset:0"></div>
+      <div id="c6s01-sc022-vb" class="k-abs t-label clean" style="left:0; top:960px; width:1920px; text-align:center; font-size:44px"><span class="k-w">very, </span><span class="k-w">very </span><span class="k-w">big </span><span class="k-w">deal</span></div>
+      <div class="k-credit t-label">Film: UN, 25 Oct 1971 · Kansan 26 Oct 1971</div>
+    </div></div>
+
+    <!-- C6S023–C6S024 · 102.08–116.64 · this quote from George H. W. Bush … we lost the vote because of the visit … Kissinger … to China · §10.7 -->
+    <div class="k-scene k-paper" id="c6s01-sc023" data-scene="C6S023-C6S024"><div class="k-shot" id="c6s01-sc023-shot">
+      <div class="k-abs" style="inset:0; background:#2a2520"></div>
+      <div class="k-cam" id="c6s01-sc023-cam" style="transform-origin:0 0">
+        <div class="k-page" id="c6s01-sc023-page" style="left:0; top:0; width:3000px; height:2700px; background:#e9e1cf; box-shadow:none">
+          <div class="k-abs" style="inset:0; background:url('assets/textures/newsprint_01.jpg') center / 1500px auto; mix-blend-mode:multiply; opacity:0.5"></div>
+          <div class="k-abs" style="inset:0; background:url('assets/textures/paper_cream_02.jpg') center / cover; mix-blend-mode:multiply; opacity:0.85"></div>
+          <div id="c6s01-sc023-cols" class="k-abs" style="inset:0"></div>
+          <div class="k-abs" style="left:1000px; top:300px; width:1000px; height:1260px; border:3px solid var(--ink); padding:14px; background:#e3dac6">
+            <div class="k-abs" style="left:14px; top:14px; right:14px; bottom:14px; overflow:hidden"><img id="c6s01-sc023-img" src="assets/c5/photos/bush_un_swearing_in_1971_nara194352.jpg" alt="" style="position:absolute; left:-330px; top:-120px; width:1600px; height:2323px; filter:saturate(0.9) contrast(1.05)" /></div>
+          </div>
+          <div class="k-abs" style="left:1000px; top:1585px; width:1000px; text-align:center; font-size:38px; color:var(--ink)"><span class="t-label" id="c6s01-sc023-cap"><span class="k-w">GEORGE </span><span class="k-w">H. W. </span><span class="k-w">BUSH</span></span></div>
+          <div class="k-abs" style="left:1000px; top:1670px; width:1000px; height:3px; background:var(--ink)"></div>
+          <div id="c6s01-sc023-later" class="k-abs t-display k-ink" style="left:1000px; top:1700px; font-size:72px; opacity:0">later</div>
+          <div id="c6s01-sc023-com" class="k-abs t-serif-i k-ink" style="left:1300px; top:1700px; font-size:80px; opacity:0">comments</div>
+          <div class="k-abs" id="c6s01-sc023-pq" style="left:1000px; top:1840px; width:1000px; font-size:84px; line-height:1.18; color:var(--ink)">
+            <span class="t-serif" style="font-weight:700"><span class="k-w">we </span><span class="k-w">lost </span><span class="k-w">the </span><span class="k-w">vote </span><span class="k-w">because </span><span class="k-w">of </span><span class="k-w">the </span><span class="k-w">visit</span></span>
+          </div>
+          <svg id="c6s01-sc023-mk" viewBox="0 0 3000 2700" style="position:absolute;left:0;top:0;width:3000px;height:2700px;overflow:visible"></svg>
+          <div class="k-abs" id="c6s01-sc023-inset" style="left:2100px; top:1830px; width:460px; height:560px; border:3px solid var(--ink); overflow:hidden; opacity:0; background:#ddd">
+            <img src="assets/c5/photos/kissinger_portrait_1973_official.jpg" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 25%;filter:grayscale(1) sepia(0.2) contrast(1.1)" />
+            <div class="k-abs" style="inset:0; background:url('assets/textures/halftone_01_norm.jpg') 0 0 / 240px auto; mix-blend-mode:overlay; opacity:0.5"></div>
+          </div>
+          <div id="c6s01-sc023-kis" class="k-abs t-label k-ink" style="left:2100px; top:2410px; width:460px; text-align:center; font-size:38px; opacity:0">Kissinger</div>
+          <div id="c6s01-sc023-tc" class="k-abs t-serif-i k-ink" style="left:1000px; top:2240px; font-size:84px"><span class="k-w">to </span><span class="k-w">China</span></div>
+          <div id="c6s01-sc023-att" class="k-abs t-serif-i k-ink" style="left:1000px; top:2380px; font-size:42px; opacity:0">— George H. W. Bush (paraphrased)</div>
+        </div>
+      </div>
+      <div id="c6s01-sc023-tq" class="k-abs t-serif-i clean" style="left:120px; top:820px; font-size:110px"><span class="k-w">this </span><span class="k-w">quote</span></div>
+      <div class="k-credit ink t-label">Photos: NARA (1971), US gov (1973) · page: typeset recreation</div>
+    </div></div>
+
+    <!-- C6S025 · 116.64–124.56 · cutting my legs out from under me … everyone still believes the US is with Taiwan · V4 split -->
+    <div class="k-scene k-night" id="c6s01-sc025" data-scene="C6S025"><div class="k-shot" id="c6s01-sc025-shot">
+      <div class="k-cam" id="c6s01-sc025-cam" style="transform-origin:25% 45%">
+        <div class="k-abs" id="c6s01-sc025-r" style="left:964px; top:0; width:956px; height:1080px; overflow:hidden; box-shadow:inset 6px 0 0 var(--vermilion)">
+          <img src="assets/c5/photos/nixon_zhou_kissinger_opera_peking_1972.jpg" alt="" style="position:absolute; left:-520px; top:0; width:1574px; height:1080px; filter:grayscale(0.7) brightness(0.45) contrast(1.05)" />
+        </div>
+        <div class="k-abs" id="c6s01-sc025-lt" style="left:0; top:0; width:956px; height:700px; overflow:hidden; box-shadow:inset -6px 0 0 var(--navy)">
+          <img src="assets/c6/photos/bush_george_un_us_desk_1971_nara186386.jpg" alt="" style="position:absolute; left:-260px; top:0; width:1364px; height:1080px; filter:sepia(0.15) contrast(1.05) brightness(0.9)" />
+        </div>
+        <div class="k-abs" id="c6s01-sc025-lb" style="left:0; top:700px; width:956px; height:380px; overflow:hidden; box-shadow:inset -6px 0 0 var(--navy)">
+          <img src="assets/c6/photos/bush_george_un_us_desk_1971_nara186386.jpg" alt="" style="position:absolute; left:-260px; top:-700px; width:1364px; height:1080px; filter:sepia(0.15) contrast(1.05) brightness(0.9)" />
+        </div>
+        <svg id="c6s01-sc025-mk" class="k-mk"></svg>
+      </div>
+      <div id="c6s01-sc025-cl" class="k-abs t-serif-i clean" style="left:110px; top:80px; font-size:84px"><span class="k-w">cutting </span><span class="k-w">my </span><span class="k-w">legs </span><span class="k-w">out</span></div>
+      <div id="c6s01-sc025-us" class="k-abs t-display clean" style="left:1040px; top:830px; font-size:76px; white-space:nowrap">
+        <span class="k-w">the </span><span class="k-w" style="color:var(--sky)">US </span><span class="k-w">with </span><span class="k-celrule k-w" id="c6s01-sc025-twr">Taiwan<span class="u" id="c6s01-sc025-twu"></span></span>
+      </div>
+      <div class="k-credit t-label">Photos: NARA (1971) · White House (Beijing, 1972)</div>
+    </div></div>
+
+    <!-- C6S026 · 124.56–129.59 · while the administration is visiting China … if it wasn't for that visit · Nixon–Zhou toast -->
+    <div class="k-scene k-night" id="c6s01-sc026" data-scene="C6S026"><div class="k-shot" id="c6s01-sc026-shot">
+      <div class="k-cam" id="c6s01-sc026-cam" style="transform-origin:62% 42%">
+        <img id="c6s01-sc026-img" class="k-img" src="assets/c5/photos/nixon_zhou_toast_1972.jpg" alt="" style="filter:saturate(0.75) contrast(1.06) brightness(0.9)" />
+        <img class="k-fringe" src="assets/c5/photos/nixon_zhou_toast_1972.jpg" alt="" style="filter:saturate(0.7) brightness(0.85) blur(9px)" />
+        <svg id="c6s01-sc026-mk" class="k-mk"></svg>
+      </div>
+      <div class="k-scrim-b"></div>
+      <div id="c6s01-sc026-ad" class="k-abs t-label clean" style="left:120px; top:100px; font-size:42px"><span class="k-w">the </span><span class="k-w">administration</span></div>
+      <div id="c6s01-sc026-vc" class="k-abs t-serif-i clean" style="left:120px; top:860px; font-size:96px"><span class="k-w">visiting </span><span class="k-w">China</span></div>
+      <div id="c6s01-sc026-tv" class="k-abs t-label clean" style="left:1300px; top:900px; font-size:44px"><span class="k-w">that </span><span class="k-w">visit</span></div>
+      <div class="k-credit t-label">Photo: White House (Beijing, Feb 1972) · NARA</div>
+    </div></div>
+
+    <!-- C6S027 · 129.59–134.87 · We might have won that vote … Taiwan was out of the United Nations · D06 callback -->
+    <div class="k-scene k-paper" id="c6s01-sc027" data-scene="C6S027"><div class="k-shot" id="c6s01-sc027-shot">
+      <div class="k-p1" style="background-image:url('assets/textures/paper_stained_01_hires.jpg'); transform:scaleX(-1)"></div>
+      <div class="k-p2" style="background-image:url('assets/textures/paper_cream_01.jpg'); opacity:0.45"></div>
+      <div class="k-cam" id="c6s01-sc027-cam" style="transform-origin:50% 70%">
+        <svg id="c6s01-sc027-svg" class="k-mk" viewBox="0 0 1920 1080"></svg>
+        <div id="c6s01-sc027-tw" class="k-abs t-label k-ink" style="left:250px; top:960px; font-size:40px; opacity:0"><span class="k-celrule">Taiwan<span class="u" id="c6s01-sc027-twu"></span></span></div>
+        <div id="c6s01-sc027-out" class="k-abs t-display k-ink" style="left:560px; top:930px; font-size:72px; opacity:0">out</div>
+      </div>
+      <div id="c6s01-sc027-mw" class="k-abs t-serif-i k-ink" style="left:120px; top:90px; font-size:80px"><span class="k-w">might </span><span class="k-w">have </span><span class="k-w">won</span></div>
+      <div id="c6s01-sc027-un" class="k-abs t-label k-ink" style="left:1300px; top:110px; font-size:40px"><span class="k-w">United </span><span class="k-w">Nations</span></div>
+    </div></div>
+
+    <!-- C6S028 · 134.87–137.75 · and then it has a cascading or like a domino effect · V2 domino row -->
+    <div class="k-scene k-night" id="c6s01-sc028" data-scene="C6S028"><div class="k-shot" id="c6s01-sc028-shot">
+      <div class="k-abs" style="inset:0; background:radial-gradient(ellipse 70% 60% at 45% 55%, #3a3128 0%, #1a1714 55%, #0c0b0a 100%)"></div>
+      <div class="k-cam" id="c6s01-sc028-cam" style="transform-origin:30% 60%">
+        <div id="c6s01-sc028-row" class="k-abs" style="left:0; top:0; width:1920px; height:1080px"></div>
+      </div>
+      <div class="k-lamp" style="background:radial-gradient(ellipse 40% 50% at 40% 55%, rgba(255,214,170,0.22), rgba(255,214,170,0) 70%)"></div>
+      <div id="c6s01-sc028-cas" class="k-abs t-label clean" style="left:120px; top:100px; font-size:44px; opacity:0">cascading</div>
+      <div id="c6s01-sc028-de" class="k-abs t-display halate" style="left:0; top:800px; width:1920px; text-align:center; font-size:170px"><span class="k-w">DOMINO </span><span class="k-w">EFFECT</span></div>
+    </div></div>
+
+    <!-- C6S029 · 137.75–142.47 · Slowly allies are now switching their recognition from Taiwan to the CCP · world dark atlas + burn -->
+    <div class="k-scene k-night" id="c6s01-sc029" data-scene="C6S029"><div class="k-shot" id="c6s01-sc029-shot">
+      <div class="k-mapcam" id="c6s01-sc029-cam" style="width:6144px; height:3072px">
+        <img src="assets/c3/derived/c3s03/world_night_6144.jpg" alt="" style="width:6144px; height:3072px; filter:brightness(1.12) contrast(1.06)" />
+        <svg id="c6s01-sc029-svg" viewBox="0 0 6144 3072" style="width:6144px; height:3072px; overflow:visible"></svg>
+      </div>
+      <div class="k-scrim-t"></div>
+      <div id="c6s01-sc029-al" class="k-abs t-label clean" style="left:120px; top:90px; font-size:44px; opacity:0">allies</div>
+      <div id="c6s01-sc029-sr" class="k-abs t-serif-i clean" style="left:120px; top:150px; font-size:88px"><span class="k-w">switching </span><span class="k-w">recognition</span></div>
+      <div id="c6s01-sc029-ccp" class="k-abs t-display" style="left:1500px; top:880px; font-size:80px"><span class="k-redbox" id="c6s01-sc029-ccpb" style="opacity:0">CCP</span></div>
+      <div class="k-credit t-label">Relief: AWS Terrain Tiles · Natural Earth</div>
+    </div></div>
+
+    <!-- C6S030 · 142.47–149.75 · the biggest hit is from Japan, which is the biggest trade partner … close allies · D02/R4 bars -->
+    <div class="k-scene k-paper" id="c6s01-sc030" data-scene="C6S030"><div class="k-shot" id="c6s01-sc030-shot">
+      <div class="k-p1" style="background-image:url('assets/textures/paper_cream_02.jpg')"></div>
+      <div class="k-p2" style="background-image:url('assets/textures/paper_stained_01_hires.jpg'); opacity:0.55"></div>
+      <div class="k-cam" id="c6s01-sc030-cam" style="transform-origin:70% 40%">
+        <div id="c6s01-sc030-chart" class="k-abs" style="inset:0"></div>
+        <div class="k-abs" style="left:300px; right:300px; top:850px; height:4px; background:var(--ink)"></div>
+        <svg id="c6s01-sc030-mk" class="k-mk"></svg>
+      </div>
+      <div id="c6s01-sc030-bh" class="k-abs t-label k-ink" style="left:120px; top:90px; font-size:40px"><span class="k-w">biggest </span><span class="k-w">hit</span></div>
+      <div id="c6s01-sc030-ttl" class="k-abs t-serif k-ink" style="left:1000px; top:80px; width:820px; text-align:right; font-size:66px"><span class="k-w">the </span><span class="k-w t-serif-i">biggest </span><span class="k-w">trade </span><span class="k-w">partner</span></div>
+      <div id="c6s01-sc030-ca" class="k-abs t-serif-i k-ink" style="left:120px; top:930px; font-size:80px"><span class="k-w">close </span><span class="k-w">allies</span></div>
+    </div></div>
+
+    <!-- C6S031 · 149.75–156.47 · So Japan switching recognition from Taiwan to China was definitely a big hit · East Asia satellite -->
+    <div class="k-scene k-night" id="c6s01-sc031" data-scene="C6S031"><div class="k-shot" id="c6s01-sc031-shot">
+      <div class="k-mapcam" id="c6s01-sc031-cam" style="width:3199px; height:2475px">
+        <img src="assets/c3/derived/c3s03/east_asia_satdesat_3199.jpg" alt="" style="width:3199px; height:2475px; filter:brightness(1.05) contrast(1.05)" />
+        <svg id="c6s01-sc031-svg" viewBox="0 0 3199 2475" style="width:3199px; height:2475px; overflow:visible"></svg>
+        <img id="c6s01-sc031-blur" src="assets/c3/derived/c3s03/east_asia_satdesat_3199.jpg" alt="" style="width:3199px; height:2475px; filter:blur(10px) brightness(0.8)" />
+      </div>
+      <div class="k-scrim-b"></div>
+      <div id="c6s01-sc031-jp" class="k-abs t-label clean" style="left:120px; top:90px; font-size:44px; opacity:0">Japan</div>
+      <div id="c6s01-sc031-sr" class="k-abs t-serif-i clean" style="left:120px; top:150px; font-size:84px"><span class="k-w">switching </span><span class="k-w">recognition</span></div>
+      <div id="c6s01-sc031-cn" class="k-abs t-label clean" style="left:120px; top:270px; font-size:44px; opacity:0"><span style="display:inline-block;width:28px;height:28px;background:var(--vermilion);margin-right:14px;vertical-align:-2px"></span>China</div>
+      <div id="c6s01-sc031-bh" class="k-abs t-display clean" style="left:0; top:850px; width:1920px; text-align:center; font-size:150px"><span class="k-w">big </span><span class="k-w">hit</span></div>
+      <div class="k-credit t-label">Imagery: NASA Blue Marble · Natural Earth</div>
+    </div></div>
+
+    <!-- C6S032 · 156.47–161.11 · Back in Taiwan, everyone's seeing this, especially the dancing scene · Tatung TV (Taiwanese set) -->
+    <div class="k-scene k-night" id="c6s01-sc032" data-scene="C6S032"><div class="k-shot" id="c6s01-sc032-shot">
+      <div class="k-cam" id="c6s01-sc032-cam" style="transform-origin:954px 500px">
+        <img src="assets/intro/screens/tatung_tv20cge_frame_withbg.jpg" alt="" style="position:absolute; left:0; top:-160px; width:1920px; height:1920px; filter:saturate(0.75) brightness(0.8) contrast(1.05)" />
+        <div id="c6s01-sc032-tube" class="k-abs" style="left:600px; top:236px; width:708px; height:526px; background:#0a0b0b; border-radius:46px; overflow:hidden">
+          <div id="c6s01-sc032-scr" class="k-abs" style="inset:0">
+            <video id="c6s01-sc032-vid" class="k-img" src="assets/c6/footage/un1971_celebration_delegate_clapping.mp4" muted playsinline data-start="156.47" data-duration="4.8" data-media-start="1.0"
+              data-color-grading='{"intensity":1,"adjust":{"saturation":-1,"contrast":0.12},"effects":{"chromaticAberration":0.3,"chromaticAngle":0,"scanlines":0.4,"scanlineCount":0.17,"scanlineSoftness":1,"crtCurvature":0.3,"filmArtifacts":0.4}}'></video>
+          </div>
+          <div id="c6s01-sc032-pw" class="k-abs" style="inset:0; background:#f4f1ea; opacity:0"></div>
+          <div class="k-abs" style="inset:0; background:radial-gradient(ellipse 60% 45% at 30% 22%, rgba(255,255,255,0.16), rgba(255,255,255,0) 60%); box-shadow:inset 0 0 60px rgba(0,0,0,0.8)"></div>
+        </div>
+      </div>
+      <div id="c6s01-sc032-bt" class="k-abs t-label clean" style="left:120px; top:90px; font-size:46px"><span class="k-celrule"><span class="k-w">Back </span><span class="k-w">in </span><span class="k-w">Taiwan</span><span class="u" id="c6s01-sc032-btu"></span></span></div>
+      <div id="c6s01-sc032-ds" class="k-abs t-serif-i clean" style="left:120px; top:880px; font-size:84px"><span class="k-w">the </span><span class="k-w">dancing </span><span class="k-w">scene</span></div>
+      <div id="c6s01-sc032-fa" class="k-abs t-label clean" style="left:1460px; top:930px; font-size:44px; opacity:0">famous</div>
+      <div class="k-credit t-label">Tatung TV-20CGE: Commons, CC BY-SA 3.0 · film: UN 1971</div>
+    </div></div>
+
+    <!-- C6S033 · 161.11–164.71 · And they just cannot keep in the anger and the grief · Vox layered newsprint panels -->
+    <div class="k-scene k-paper" id="c6s01-sc033" data-scene="C6S033"><div class="k-shot" id="c6s01-sc033-shot">
+      <div class="k-p1" style="background-image:url('assets/textures/paper_fiber_01.jpg')"></div>
+      <div class="k-p2" style="background-image:url('assets/textures/paper_cream_01.jpg'); opacity:0.6"></div>
+      <div class="k-abs" style="inset:0; background:url('assets/textures/newsprint_01_norm.jpg') center / cover; mix-blend-mode:overlay; opacity:0.35"></div>
+      <div class="k-cam" id="c6s01-sc033-cam">
+        <div class="k-card" id="c6s01-sc033-a" style="left:80px; top:90px; width:820px; height:520px; transform:rotate(-3deg)"><img src="assets/c6/derived/c6s01/kansan_1971-10-26_1800.jpg" alt="" style="object-fit:none; object-position:-1030px -760px; width:1800px; height:2254px; filter:sepia(0.3) contrast(1.1)" /></div>
+        <div class="k-card" id="c6s01-sc033-b" style="left:960px; top:150px; width:880px; height:600px; transform:rotate(2.5deg)"><img src="assets/c3/newspapers/scmp_1971-10-27_roc_walkout_photo.png" alt="" style="filter:sepia(0.35) blur(0.5px)" /><div class="ht"></div></div>
+        <div class="k-card" id="c6s01-sc033-c" style="left:420px; top:560px; width:760px; height:430px; transform:rotate(1deg)"><img src="assets/c6/derived/c6s01/un1971_hall_wide.jpg" alt="" style="filter:url(#c6s01-tint-ink)" /><div class="ht"></div></div>
+      </div>
+      <div id="c6s01-sc033-an" class="k-abs t-serif k-ink" style="left:1220px; top:760px; font-size:150px; opacity:0; text-shadow:0 0 30px rgba(235,228,214,0.9)">anger</div>
+      <div id="c6s01-sc033-gr" class="k-abs t-serif-i k-ink" style="left:1300px; top:920px; font-size:110px; opacity:0; text-shadow:0 0 30px rgba(235,228,214,0.9)">grief</div>
+      <div class="k-credit ink t-label">Kansan 26 Oct 1971 · SCMP 27 Oct 1971 · UN film · fair use</div>
+    </div></div>
+
+    <!-- C6S034 · 164.71–172.07 · comments from the economic minister … the technological revolution that Taiwan is about to have · streaks -->
+    <div class="k-scene k-night" id="c6s01-sc034" data-scene="C6S034"><div class="k-shot" id="c6s01-sc034-shot">
+      <div class="k-cam" id="c6s01-sc034-cam">
+        <img src="assets/intro/photos/wafer_12in.jpg" alt="" style="position:absolute; left:-200px; top:-100px; width:1400px; height:1280px; object-fit:cover; filter:grayscale(0.7) brightness(0.35) blur(2px); opacity:0.75" />
+        <canvas id="c6s01-sc034-st" class="streaks" style="filter:blur(2.5px); opacity:0"></canvas>
+        <div class="k-card" id="c6s01-sc034-card" style="left:1080px; top:110px; width:600px; height:860px; transform:rotate(2deg); background:#e8e1d0">
+          <img src="assets/c6/photos/sun_yun_suan_premier_portrait_colour.jpg" alt="" style="filter:saturate(0.55) contrast(1.05)" /><div class="ht"></div>
+        </div>
+      </div>
+      <div id="c6s01-sc034-em" class="k-abs t-display" style="left:120px; top:120px; font-size:56px"><span class="k-inkbox" id="c6s01-sc034-emb" style="opacity:0; background:var(--bone); color:var(--ink)"><span class="k-w">economic </span><span class="k-w">minister</span></span></div>
+      <div id="c6s01-sc034-tr" class="k-abs t-serif-i clean" style="left:120px; top:760px; font-size:84px"><span class="k-w">technological </span><span class="k-w">revolution</span></div>
+      <div id="c6s01-sc034-tw" class="k-abs t-label clean" style="left:120px; top:890px; font-size:46px"><span class="k-celrule" id="c6s01-sc034-twr" style="opacity:0">Taiwan<span class="u" id="c6s01-sc034-twu"></span></span></div>
+      <div class="k-credit t-label">Photo: ROC government (public domain)</div>
+    </div></div>
+
+    <!-- C6S035 · 172.07–175.67 · he was just like, wow, they couldn't believe that this happened · V3 dossier (master) -->
+    <div class="k-scene k-paper" id="c6s01-sc035" data-scene="C6S035"><div class="k-shot" id="c6s01-sc035-shot">
+      <div class="k-desk" style="filter:brightness(1.25) sepia(0.2)"></div>
+      <div class="k-cam" id="c6s01-sc035-cam">
+        <div class="k-abs" id="c6s01-sc035-folder" style="left:180px; top:110px; width:1560px; height:880px; background:#c9a86a; border-radius:10px 10px 6px 6px; box-shadow:0 30px 70px rgba(0,0,0,0.5); transform:rotate(-1deg); overflow:hidden">
+          <div class="k-abs" style="inset:0; background:url('assets/textures/paper_stained_01_hires.jpg') center / cover; mix-blend-mode:multiply; opacity:0.8"></div>
+          <div class="k-abs" style="left:0; top:0; width:420px; height:46px; background:#b8965a; border-radius:0 0 14px 0"></div>
+          <div class="k-card" style="left:90px; top:120px; width:400px; height:560px; transform:rotate(-3deg)"><img src="assets/c6/photos/sun_yun_suan_premier_portrait_colour.jpg" alt="" style="filter:url(#c6s01-tint-ink)" /><div class="ht"></div></div>
+          <div class="k-abs" style="left:250px; top:96px; width:44px; height:120px; border:6px solid #8b8f94; border-radius:22px; transform:rotate(-3deg)"></div>
+          <div class="k-abs" id="c6s01-sc035-sheet" style="left:600px; top:110px; width:860px; height:700px; background:#efe8d6; box-shadow:0 10px 26px rgba(20,27,36,0.3)">
+            <div class="k-abs" style="inset:0; background:url('assets/textures/paper_cream_02.jpg') center / cover; mix-blend-mode:multiply; opacity:0.9"></div>
+            <div class="k-ln" style="left:60px; top:90px; width:740px; height:2px; background:rgba(20,27,36,0.4)"></div>
+            <div class="k-ln" style="left:60px; top:330px; width:740px; height:2px; background:rgba(20,27,36,0.4)"></div>
+            <div class="k-ln" style="left:60px; top:560px; width:740px; height:2px; background:rgba(20,27,36,0.4)"></div>
+            <div id="c6s01-sc035-wow" class="k-abs t-serif-i k-ink" style="left:70px; top:120px; font-size:150px; opacity:0">wow</div>
+            <div id="c6s01-sc035-cb" class="k-abs t-display" style="left:70px; top:380px; font-size:96px; color:#2a3140; white-space:nowrap">couldn't believe</div>
+            <div id="c6s01-sc035-att" class="k-abs t-serif-i k-ink" style="left:70px; top:590px; font-size:40px; opacity:0">— the economic minister (paraphrased)</div>
+          </div>
+        </div>
+      </div>
+      <div class="k-lamp"></div>
+      <div class="k-credit t-label">Photo: ROC government (public domain)</div>
+    </div></div>
+
+    <!-- C6S036 · 175.67–180.95 · They fought a war with the United States. They were on the winning side · Cairo 1943 -->
+    <div class="k-scene k-night" id="c6s01-sc036" data-scene="C6S036"><div class="k-shot" id="c6s01-sc036-shot">
+      <div id="c6s01-sc036-weave" class="k-abs" style="inset:0">
+        <div class="k-cam" id="c6s01-sc036-cam" style="transform-origin:28% 42%">
+          <img class="k-img" src="assets/c6/photos/cairo_conference_1943_chiang_fdr_churchill.jpg" alt="" style="object-position:50% 40%; filter:sepia(0.25) contrast(1.08) brightness(0.88)" />
+          <img class="k-fringe" src="assets/c6/photos/cairo_conference_1943_chiang_fdr_churchill.jpg" alt="" style="object-position:50% 40%; filter:sepia(0.25) brightness(0.8) blur(8px)" />
+          <svg id="c6s01-sc036-mk" class="k-mk"></svg>
+        </div>
+      </div>
+      <div class="k-scrim-t"></div>
+      <div id="c6s01-sc036-fw" class="k-abs t-label clean" style="left:120px; top:90px; font-size:42px"><span class="k-w">fought </span><span class="k-w">a </span><span class="k-w">war </span><span class="k-w">with </span><span class="k-w">the </span><span class="k-w">United </span><span class="k-w">States</span></div>
+      <div id="c6s01-sc036-ws" class="k-abs t-serif-i clean" style="left:120px; top:150px; font-size:92px"><span class="k-w">winning </span><span class="k-w">side</span></div>
+      <div class="k-credit t-label">Photo: US Army Signal Corps, Cairo 1943 (public domain)</div>
+    </div></div>
+
+    <!-- C6S037 · 180.95–183.11 · left out hanging · the empty CHINA seat (c4 chair motif) -->
+    <div class="k-scene k-night" id="c6s01-sc037" data-scene="C6S037"><div class="k-shot" id="c6s01-sc037-shot">
+      <div class="k-cam" id="c6s01-sc037-cam" style="transform-origin:50% 50%">
+        <img class="k-img" src="assets/c6/derived/c6s01/un1971_hall_wide.jpg" alt="" style="filter:saturate(0.3) brightness(0.3) blur(6px)" />
+        <svg id="c6s01-sc037-svg" viewBox="0 0 1920 1080" class="k-mk"></svg>
+      </div>
+      <div id="c6s01-sc037-vig" class="k-abs" style="inset:0; background:radial-gradient(ellipse 55% 60% at 50% 50%, rgba(0,0,0,0) 40%, rgba(0,0,0,0.75) 100%); opacity:0.4"></div>
+      <div id="c6s01-sc037-lh" class="k-abs t-serif-i clean" style="left:0; top:860px; width:1920px; text-align:center; font-size:96px"><span class="k-w">left </span><span class="k-w">out </span><span class="k-w">hanging</span></div>
+    </div></div>
+
+    <!-- C6S038 · 183.11–188.63 · by the night of the UN vote … the shock dissipates a bit · GA hall at night + cool streaks -->
+    <div class="k-scene k-night" id="c6s01-sc038" data-scene="C6S038"><div class="k-shot" id="c6s01-sc038-shot">
+      <div class="k-cam" id="c6s01-sc038-cam" style="transform-origin:50% 30%">
+        <img class="k-img" src="assets/c6/derived/c6s01/un1971_hall_wide.jpg" alt="" style="filter:saturate(0.35) brightness(0.62) contrast(1.12) hue-rotate(-12deg)" />
+        <img class="k-fringe" src="assets/c6/derived/c6s01/un1971_hall_wide.jpg" alt="" style="filter:saturate(0.3) brightness(0.5) blur(9px)" />
+      </div>
+      <canvas id="c6s01-sc038-st" class="streaks" style="filter:blur(2.5px); opacity:0.45"></canvas>
+      <div class="k-abs" style="inset:0; background:linear-gradient(180deg, rgba(20,34,60,0.35), rgba(0,0,0,0.1)); mix-blend-mode:multiply"></div>
+      <div id="c6s01-sc038-nt" class="k-abs t-label clean" style="left:120px; top:90px; font-size:44px"><span class="k-w">the </span><span class="k-w">night </span><span class="k-w">of </span><span class="k-w">the </span><span class="k-w">UN </span><span class="k-w">vote</span></div>
+      <div id="c6s01-sc038-sh" class="k-abs t-display clean" style="left:0; top:430px; width:1920px; text-align:center; font-size:230px; opacity:0">shock</div>
+      <div class="k-credit t-label">Film: UN, 25 Oct 1971</div>
+    </div></div>
+
+    <!-- C6S039 · 188.63–193.56 · This is when the leader, Chiang Kai-shek · portrait card (motif master) -->
+    <div class="k-scene k-paper" id="c6s01-sc039" data-scene="C6S039"><div class="k-shot" id="c6s01-sc039-shot">
+      <div class="k-p1" style="background-image:url('assets/textures/paper_cream_01.jpg')"></div>
+      <div class="k-p2" style="background-image:url('assets/textures/paper_fiber_01.jpg'); opacity:0.5"></div>
+      <div class="k-cam" id="c6s01-sc039-cam" style="transform-origin:50% 45%">
+        <!-- MOTIF: Chiang Kai-shek portrait card (N30) — torn edge, halftone multiply, celadon tape corners -->
+        <div class="cks-card" id="c6s01-sc039-card" style="position:absolute; left:700px; top:90px; width:560px; height:740px; transform:rotate(-2deg); filter:drop-shadow(0 24px 34px rgba(20,27,36,0.35))">
+          <div class="k-abs" id="c6s01-sc039-paper" style="inset:0; background:#ece4d2">
+            <img src="assets/c6/photos/chiang_kai_shek_portrait_uniform.jpg" alt="" style="position:absolute; left:22px; top:22px; width:516px; height:696px; object-fit:cover; object-position:50% 12%; filter:grayscale(1) sepia(0.35) contrast(1.12); mix-blend-mode:multiply" />
+            <div class="k-abs" style="left:22px; top:22px; width:516px; height:696px; background:url('assets/textures/halftone_01_norm.jpg') 0 0 / 300px auto; mix-blend-mode:multiply; opacity:0.35"></div>
+          </div>
+          <div class="k-tape" style="left:-36px; top:18px; transform:rotate(-38deg)"></div>
+          <div class="k-tape" style="right:-36px; top:18px; transform:rotate(38deg)"></div>
+        </div>
+      </div>
+      <div id="c6s01-sc039-tl" class="k-abs t-label k-ink" style="left:120px; top:100px; font-size:42px"><span class="k-w">the </span><span class="k-w">leader</span></div>
+      <div id="c6s01-sc039-nm" class="k-abs t-display" style="left:0; top:880px; width:1920px; text-align:center; font-size:96px"><span class="k-inkbox" id="c6s01-sc039-nmb" style="opacity:0"><span class="k-w">CHIANG </span><span class="k-w">KAI-SHEK</span></span></div>
+      <div class="k-credit ink t-label">Photo: ROC government (public domain)</div>
+    </div></div>
+
+    <!-- C6S040 · 193.56–196.76 · Puts out a statement that's still very famous in Taiwan · Taiwan relief, celadon, radio rings -->
+    <div class="k-scene k-night" id="c6s01-sc040" data-scene="C6S040"><div class="k-shot" id="c6s01-sc040-shot">
+      <div class="k-abs" style="inset:0; perspective:1600px; perspective-origin:50% 30%">
+        <div id="c6s01-sc040-plane" class="k-abs" style="left:0; top:0; width:1623px; height:2200px; transform-origin:1268px 224px">
+          <img src="assets/c6/derived/c6s01/taiwan_night_1623.jpg" alt="" style="position:absolute; inset:0; width:1623px; height:2200px; filter:brightness(1.25) contrast(1.05)" />
+          <img id="c6s01-sc040-cel" src="assets/c6/derived/c6s01/taiwan_celadon.png" alt="" style="position:absolute; inset:0; width:1623px; height:2200px; opacity:0" />
+          <svg id="c6s01-sc040-svg" viewBox="0 0 1623 2200" style="position:absolute; left:0; top:0; width:1623px; height:2200px; overflow:visible"></svg>
+        </div>
+      </div>
+      <div class="k-scrim-t"></div>
+      <div id="c6s01-sc040-st" class="k-abs t-label clean" style="left:120px; top:90px; font-size:44px; opacity:0">statement</div>
+      <div id="c6s01-sc040-vf" class="k-abs t-serif-i clean" style="left:120px; top:150px; font-size:96px"><span class="k-w">very </span><span class="k-w">famous</span></div>
+      <div id="c6s01-sc040-tw" class="k-abs t-label clean" style="left:1240px; top:860px; font-size:48px"><span class="k-celrule" id="c6s01-sc040-twr" style="opacity:0">Taiwan<span class="u" id="c6s01-sc040-twu"></span></span></div>
+      <div class="k-credit t-label">Relief: AWS Terrain Tiles (public domain) · Natural Earth</div>
+    </div></div>
+
+    <!-- C6S041 · 196.76–201.96 · stay dignified and strengthen ourselves. Keep on fighting. · V5 scroll -->
+    <div class="k-scene k-paper" id="c6s01-sc041" data-scene="C6S041"><div class="k-shot" id="c6s01-sc041-shot">
+      <div class="k-p1" style="background-image:url('assets/textures/paper_fiber_01.jpg')"></div>
+      <div class="k-p2" style="background-image:url('assets/textures/paper_cream_02.jpg'); opacity:0.88"></div>
+      <div class="k-cam" id="c6s01-sc041-cam" style="transform-origin:50% 45%">
+        <div class="k-abs" id="c6s01-sc041-scroll" style="left:250px; top:120px; width:1420px; height:300px; background:#e6dcc4; box-shadow:0 22px 50px rgba(20,27,36,0.35); transform-origin:0 50%; overflow:hidden">
+          <div class="k-abs" style="inset:0; background:url('assets/textures/paper_fiber_01.jpg') center / cover; mix-blend-mode:multiply; opacity:0.6"></div>
+          <img src="assets/c6/derived/c6s01/slogan_strip.jpg" alt="" style="position:absolute; left:50px; top:40px; width:1320px; height:186px; object-fit:cover; filter:sepia(0.45) contrast(1.15) brightness(0.95); mix-blend-mode:multiply" />
+        </div>
+        <div class="k-rod" style="left:232px; top:100px"></div>
+        <div class="k-rod" id="c6s01-sc041-rod" style="left:232px; top:100px"></div>
+        <div id="c6s01-sc041-l1" class="k-abs t-serif k-ink" style="left:250px; top:500px; font-size:76px; white-space:nowrap"><span class="k-w">stay </span><span class="k-w">dignified </span><span class="k-w">and </span><span class="k-w">strengthen </span><span class="k-w">ourselves</span></div>
+        <svg id="c6s01-sc041-mk" class="k-mk"></svg>
+        <div id="c6s01-sc041-l2" class="k-abs t-display k-ink" style="left:250px; top:700px; font-size:150px; white-space:nowrap"><span class="k-w">Keep </span><span class="k-w">on </span><span class="k-w">fighting.</span></div>
+      </div>
+      <div class="k-credit ink t-label">Slogan photo: Commons, CC BY 2.0</div>
+    </div></div>
+
+    <div id="c6s01-flash"></div>
+    <div id="c6s01-grain" class="tx tx-grain" style="background-image:url('assets/textures/grain_01_norm.jpg')"></div>
+    <div id="c6s01-dust" class="tx tx-dust" style="background-image:url('assets/textures/dust_01.jpg')"></div>
+    <div id="c6s01-vig" class="vignette"></div>
+    <audio id="c6s01-vo" class="temp-vo" src="vo_c6.mp3" data-start="0" data-duration="201.96" data-media-start="0" data-volume="1"></audio>
+  </div>
+  <script>
+/*@SCRIPT@*/
+  </script>
+</template>
+</body>
+</html>
