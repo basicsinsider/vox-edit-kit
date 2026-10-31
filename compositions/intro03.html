@@ -1,0 +1,1106 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8" /></head>
+<body>
+<template>
+  <style>
+    #root { position: absolute; inset: 0; overflow: hidden; background: var(--night); }
+    .i3-scene { position: absolute; inset: 0; overflow: hidden; visibility: hidden; background: var(--night); }
+    .i3-abs { position: absolute; }
+    .i3-full { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; }
+    .i3-svg { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; }
+    .i3-p0 { position: absolute; inset: 0; background: var(--paper); }
+    .i3-p1 { position: absolute; inset: 0; background-size: cover; background-position: center; mix-blend-mode: multiply; opacity: 0.55; pointer-events: none; }
+    .i3-p2 { position: absolute; inset: 0; background-size: cover; background-position: center; mix-blend-mode: multiply; opacity: 0.9; pointer-events: none; }
+    .i3-ht { position: absolute; inset: 0; background-image: url('assets/textures/halftone_01.png'); background-size: 520px auto; mix-blend-mode: multiply; opacity: 0.45; pointer-events: none; }
+    .i3-credit { position: absolute; right: 26px; bottom: 16px; font-family: "Cooper Hewitt", sans-serif; font-size: 13px; letter-spacing: 0.06em; color: rgba(242,237,227,0.62); white-space: nowrap; }
+    .i3-credit.ink { color: rgba(20,27,36,0.6); }
+    .i3-video { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; object-fit: cover; }
+    .w { display: inline-block; white-space: pre; }
+    .i3-scrim-bl { position: absolute; left: 0; bottom: 0; width: 1100px; height: 420px; background: radial-gradient(ellipse 70% 80% at 20% 100%, rgba(10,12,15,0.62), rgba(10,12,15,0) 70%); }
+
+    /* ---------- IS044 · fight poster BETRAYAL -> RIVALRY ---------- */
+    #intro03-sc044-under { position: absolute; inset: 0; }
+    #intro03-sc044-under img { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; object-fit: cover; object-position: 50% 25%; filter: url(#intro03-tint-red) brightness(0.8); }
+    #intro03-sc044-sheet { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; }
+    #intro03-sc044-edge { position: absolute; left: -60px; top: 0; width: 70px; height: 1080px; overflow: visible; filter: drop-shadow(-14px 0 18px rgba(0,0,0,0.55)); }
+    #intro03-sc044-poster { position: absolute; inset: 0; overflow: hidden; }
+    .i3-44-half { position: absolute; top: 70px; width: 880px; height: 800px; overflow: hidden; }
+    .i3-44-half img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    #intro03-sc044-left { left: 50px; }
+    #intro03-sc044-left img { object-position: 50% 20%; filter: url(#intro03-tint-blue) contrast(1.05); }
+    #intro03-sc044-right { left: 990px; }
+    #intro03-sc044-right img { object-position: 50% 18%; filter: url(#intro03-tint-red) contrast(1.05); }
+    #intro03-sc044-seam { position: absolute; left: 900px; top: 40px; width: 120px; height: 860px; overflow: visible; }
+    #intro03-sc044-rule { position: absolute; left: 50px; right: 50px; top: 890px; height: 0; border-top: 4px solid var(--ink); }
+    #intro03-sc044-rule2 { position: absolute; left: 50px; right: 50px; top: 900px; height: 0; border-top: 1.5px solid var(--ink); }
+    #intro03-sc044-stamps { position: absolute; left: 0; top: 300px; width: 1920px; height: 340px; }
+    #intro03-sc044-betrayal { position: absolute; left: 0; width: 1920px; top: 30px; text-align: center; transform: rotate(-5deg); }
+    #intro03-sc044-betrayal span { display: inline-block; font-size: 210px; color: var(--vermilion); border: 12px solid var(--vermilion); padding: 18px 40px 0; mix-blend-mode: multiply; filter: url(#intro03-ch44); background: rgba(235,228,214,0.35); }
+    #intro03-sc044-rivalry { position: absolute; left: 0; width: 1920px; top: 30px; text-align: center; font-size: 250px; }
+    #intro03-sc044-rivalry span { display: inline-block; padding: 14px 40px 0; background: var(--paper); box-shadow: 0 16px 40px rgba(20,27,36,0.3); }
+    #intro03-sc044-rivalry b { font-weight: 800; background: linear-gradient(90deg, var(--navy) 0 50%, var(--vermilion) 50% 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    #intro03-sc044-day { position: absolute; left: 0; width: 1920px; top: 920px; text-align: center; font-size: 92px; color: var(--ink); }
+
+    /* ---------- IS045 · D13 rival lines over ghost Taiwan ---------- */
+    #intro03-sc045-ghost { position: absolute; left: 1010px; top: -20px; width: 900px; height: 1103px; opacity: 0.3;
+      -webkit-mask-image: radial-gradient(ellipse 45% 48% at 52% 50%, #000 40%, transparent 78%); mask-image: radial-gradient(ellipse 45% 48% at 52% 50%, #000 40%, transparent 78%); }
+    #intro03-sc045-ghost img { width: 100%; height: 100%; filter: grayscale(1) brightness(0.75) contrast(1.3); }
+    #intro03-sc045-title { position: absolute; left: 160px; top: 96px; font-size: 92px; }
+    #intro03-sc045-title .r { color: var(--sky); } #intro03-sc045-title .t { color: var(--vermilion); }
+    #intro03-sc045-taiwan { position: absolute; left: 1360px; top: 505px; font-size: 34px; letter-spacing: 0.4em; }
+    #intro03-sc045-super { position: absolute; left: 150px; top: 760px; font-size: 200px; white-space: nowrap; }
+
+    /* ---------- IS046 / IS049 / IS059 face-cam inserts (clean) ---------- */
+    #intro03-sc046-story { position: absolute; left: 130px; top: 840px; font-size: 104px; }
+    #intro03-sc049-card { position: absolute; left: 70px; top: 190px; width: 780px; height: 450px; overflow: hidden; background: var(--paper); box-shadow: 0 30px 70px rgba(0,0,0,0.55); transform: rotate(-2deg); }
+    #intro03-sc049-cam { position: absolute; left: 0; top: 0; width: 4320px; height: 2160px; transform-origin: 0 0; }
+    #intro03-sc049-cam img { position: absolute; left: 0; top: 0; width: 4320px; height: 2160px; }
+    #intro03-sc049-agree { position: absolute; left: 120px; top: 720px; font-size: 58px; }
+    #intro03-sc059-radio { position: absolute; left: 150px; top: 230px; width: 520px; height: 600px; overflow: visible; }
+    #intro03-sc059-radio svg { width: 520px; height: 600px; filter: drop-shadow(0 24px 40px rgba(0,0,0,0.55)); }
+    #intro03-sc059-cap { position: absolute; left: 120px; top: 850px; font-size: 96px; }
+
+    /* ---------- IS047 · old book ---------- */
+    #intro03-sc047-desk { position: absolute; inset: 0; background: radial-gradient(ellipse 55% 60% at 48% 46%, #3a2f25 0%, #1c1713 55%, #0b0a09 100%); }
+    #intro03-sc047-stage { position: absolute; inset: 0; perspective: 1600px; }
+    #intro03-sc047-book { position: absolute; left: 600px; top: 70px; width: 700px; height: 940px; transform: rotateX(18deg) rotateZ(-4deg); transform-origin: 50% 60%;
+      background: linear-gradient(90deg, #1f1a16 0, #3b2f27 3%, #4a3a2e 6%, #43352a 60%, #3b2f25 100%); border-radius: 6px 14px 14px 6px;
+      box-shadow: 0 50px 90px rgba(0,0,0,0.75), inset 0 0 60px rgba(0,0,0,0.5); }
+    #intro03-sc047-cloth { position: absolute; inset: 0; border-radius: inherit; background-image: url('assets/textures/paper_fiber_01_norm.jpg'); background-size: 500px auto; mix-blend-mode: overlay; opacity: 0.7; }
+    #intro03-sc047-frame { position: absolute; left: 60px; top: 60px; right: 40px; bottom: 60px; border: 3px solid rgba(217,196,150,0.75); outline: 1px solid rgba(217,196,150,0.45); outline-offset: 10px; }
+    #intro03-sc047-title { position: absolute; left: 90px; right: 70px; top: 190px; text-align: center; color: #e3cf9f; font-size: 66px; line-height: 1.12; letter-spacing: 0.06em; text-transform: uppercase; text-shadow: 0 -1px 0 rgba(0,0,0,0.6), 0 1px 0 rgba(255,230,180,0.18); }
+    #intro03-sc047-title .big { font-size: 96px; }
+    #intro03-sc047-hl { position: relative; display: inline-block; }
+    #intro03-sc047-hlbar { position: absolute; left: -12px; right: -12px; top: 14px; bottom: 6px; background: var(--yellow); transform-origin: 0 50%; z-index: -1; filter: url(#intro03-roughhl); }
+    #intro03-sc047-lamp { position: absolute; inset: 0; background: radial-gradient(ellipse 40% 45% at 45% 35%, rgba(255,214,160,0.22), rgba(255,214,160,0) 70%); mix-blend-mode: screen; pointer-events: none; }
+
+    /* ---------- IS048 · beige world map, people ---------- */
+    #intro03-sc048-cam { position: absolute; left: 0; top: 0; width: 4320px; height: 2160px; transform-origin: 0 0; }
+    #intro03-sc048-cam img { position: absolute; left: 0; top: 0; width: 4320px; height: 2160px; }
+    #intro03-sc048-most { position: absolute; left: 120px; top: 92px; font-size: 40px; }
+    #intro03-sc048-west { position: absolute; left: 120px; top: 860px; font-size: 104px; color: var(--ink); }
+
+    /* ---------- IS050 · 2.5D Taiwan flyover ---------- */
+    #intro03-sc050-stage { position: absolute; inset: 0; perspective: 1200px; perspective-origin: 50% 50%; }
+    #intro03-sc050-cam { position: absolute; inset: 0; transform-style: preserve-3d; transform-origin: 50% 50%; }
+    .i3-50-l { position: absolute; inset: 0; transform-origin: 50% 50%; }
+    #intro03-sc050-sea { position: absolute; left: -900px; top: -700px; width: 3720px; height: 2480px; background: radial-gradient(ellipse at 50% 45%, #1a2c3f 0%, #0d1620 55%, #070b10 100%); }
+    #intro03-sc050-map { position: absolute; left: 470px; top: -260px; width: 1300px; height: 1594px; }
+    #intro03-sc050-map img { position: absolute; inset: 0; width: 100%; height: 100%; filter: brightness(0.85) contrast(1.1);
+      -webkit-mask-image: radial-gradient(ellipse 50% 50% at 50% 50%, #000 55%, transparent 80%); mask-image: radial-gradient(ellipse 50% 50% at 50% 50%, #000 55%, transparent 80%); }
+    #intro03-sc050-fill { position: absolute; inset: 0; background: var(--celadon); opacity: 0;
+      -webkit-mask-image: url('assets/intro/maps/taiwan_mask.png'); mask-image: url('assets/intro/maps/taiwan_mask.png'); -webkit-mask-size: 100% 100%; mask-size: 100% 100%; }
+    #intro03-sc050-fill .ht2 { position: absolute; inset: 0; background-image: url('assets/textures/halftone_01_norm.jpg'); background-size: 300px auto; opacity: 0.35; }
+    #intro03-sc050-tw { position: absolute; left: 0; width: 1920px; top: 140px; text-align: center; font-size: 46px; letter-spacing: 0.5em; }
+    #intro03-sc050-today { position: absolute; left: 0; width: 1920px; top: 380px; text-align: center; font-size: 230px; }
+    #intro03-sc050-riv { position: absolute; left: 0; width: 1920px; top: 820px; text-align: center; font-size: 120px; }
+    #intro03-sc050-riv .r { color: var(--sky); } #intro03-sc050-riv .t { color: var(--vermilion); }
+    .i3-cloud { position: absolute; }
+    #intro03-sc050-shade { position: absolute; inset: 0; background: radial-gradient(ellipse 70% 70% at 50% 50%, rgba(0,0,0,0) 50%, rgba(5,7,10,0.7) 100%); pointer-events: none; }
+
+    /* ---------- IS051 · Vox layered TSMC panels ---------- */
+    .i3-51-panel { position: absolute; overflow: hidden; box-shadow: 0 30px 60px rgba(0,0,0,0.6); }
+    .i3-51-panel img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: url(#intro03-tint-rednight) contrast(1.05); }
+    #intro03-sc051-p1 { left: -80px; top: -60px; width: 1300px; height: 870px; }
+    #intro03-sc051-p2 { left: 980px; top: 120px; width: 1040px; height: 700px; }
+    #intro03-sc051-p3 { left: 260px; top: 560px; width: 980px; height: 600px; }
+    #intro03-sc051-news { position: absolute; inset: 0; background-image: url('assets/textures/newsprint_01_norm.jpg'); background-size: cover; mix-blend-mode: overlay; opacity: 0.35; }
+    #intro03-sc051-card { position: absolute; left: 610px; top: 330px; width: 700px; height: 280px; background: var(--paper); box-shadow: 0 30px 70px rgba(0,0,0,0.6); }
+    #intro03-sc051-logo { position: absolute; left: 90px; top: 62px; width: 520px; height: 131px; background: var(--vermilion);
+      -webkit-mask: url('assets/intro/logos/TSMC_wordmark.svg') center / contain no-repeat; mask: url('assets/intro/logos/TSMC_wordmark.svg') center / contain no-repeat; }
+    #intro03-sc051-wr { position: absolute; left: 0; width: 1920px; top: 680px; text-align: center; font-size: 110px; }
+    #intro03-sc051-scrim { position: absolute; left: 0; right: 0; top: 600px; height: 380px; background: radial-gradient(ellipse 45% 55% at 50% 50%, rgba(8,8,10,0.75), rgba(8,8,10,0) 75%); }
+
+    /* ---------- IS052 · D02 bars topped by portraits ---------- */
+    #intro03-sc052-sheet { position: absolute; inset: 0; }
+    .i3-52-bar { position: absolute; bottom: 150px; width: 230px; height: 600px; transform-origin: 50% 100%; }
+    .i3-52-bar .fill { position: absolute; inset: 0; }
+    .i3-52-bar .fill::after { content: ""; position: absolute; inset: 0; background: url('assets/textures/grain_02_norm.jpg'); background-size: 500px auto; mix-blend-mode: overlay; opacity: 0.5; }
+    #intro03-sc052-bc .fill { background: var(--vermilion); } #intro03-sc052-bt .fill { background: var(--navy); }
+    #intro03-sc052-bc { left: 1010px; } #intro03-sc052-bt { left: 650px; }
+    .i3-52-head { position: absolute; width: 250px; height: 250px; margin-left: -10px; border-radius: 50%; overflow: hidden; }
+    .i3-52-head img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: grayscale(1) contrast(1.15); }
+    .i3-52-head .i3-ht { opacity: 0.35; }
+    .i3-52-head .ring { position: absolute; inset: 0; border-radius: 50%; border: 8px solid; }
+    #intro03-sc052-base { position: absolute; left: 520px; width: 880px; top: 930px; height: 3px; background: var(--ink); transform-origin: 0 50%; }
+    .i3-52-tick { position: absolute; top: 924px; width: 3px; height: 16px; background: var(--ink); }
+    #intro03-sc052-kick { position: absolute; left: 1420px; top: 150px; font-size: 40px; }
+    #intro03-sc052-dec { position: absolute; left: 520px; top: 950px; font-size: 64px; color: var(--ink); }
+    #intro03-sc052-up { position: absolute; left: 1420px; top: 250px; font-size: 120px; }
+
+    /* ---------- IS053 · D14 Taiwan -> Hsinchu Science Park ---------- */
+    #intro03-sc053-rel { position: absolute; left: 0; top: 0; width: 2480px; height: 3040px; transform-origin: 0 0; }
+    #intro03-sc053-rel img { position: absolute; left: 0; top: 0; width: 2480px; height: 3040px; filter: brightness(0.9) contrast(1.08); }
+    #intro03-sc053-relfill { position: absolute; left: 0; top: 0; width: 2480px; height: 3040px; background: var(--celadon); opacity: 0;
+      -webkit-mask-image: url('assets/intro/maps/taiwan_mask.png'); mask-image: url('assets/intro/maps/taiwan_mask.png'); -webkit-mask-size: 100% 100%; mask-size: 100% 100%; filter: drop-shadow(0 0 6px rgba(159,199,178,0.9)); }
+    #intro03-sc053-sat { position: absolute; left: 0; top: 0; width: 3728px; height: 2823px; transform-origin: 0 0; visibility: hidden; }
+    #intro03-sc053-sat img { position: absolute; left: 0; top: 0; width: 3728px; height: 2823px; filter: saturate(0.6) brightness(0.9) contrast(1.1); }
+    #intro03-sc053-veil { position: absolute; left: 0; top: 0; width: 3728px; height: 2823px; opacity: 0; }
+    #intro03-sc053-ov { position: absolute; left: 0; top: 0; width: 3728px; height: 2823px; overflow: visible; }
+    #intro03-sc053-lab { position: absolute; left: 110px; top: 90px; }
+    #intro03-sc053-tw { position: absolute; left: 110px; top: 90px; font-size: 44px; letter-spacing: 0.4em; }
+    #intro03-sc053-hs { font-size: 150px; }
+    #intro03-sc053-sp { font-size: 46px; margin-top: 18px; letter-spacing: 0.3em; }
+    #intro03-sc053-labbox { position: absolute; left: 70px; top: 60px; width: 1040px; height: 300px; background: radial-gradient(ellipse 60% 60% at 30% 40%, rgba(8,10,12,0.6), rgba(8,10,12,0) 75%); }
+
+    /* ---------- IS054 · painting-to-print: Hsinchu = replica of Silicon Valley ---------- */
+    #intro03-sc054-bg { position: absolute; inset: 0; background: #2b2722; }
+    #intro03-sc054-cam { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 0 0; }
+    #intro03-sc054-page { position: absolute; left: -200px; top: -500px; width: 2320px; height: 2000px; background: #e8dfcc; box-shadow: 0 40px 120px rgba(0,0,0,0.6); overflow: hidden; }
+    #intro03-sc054-page .np { position: absolute; inset: 0; background-image: url('assets/textures/newsprint_01.jpg'); background-size: cover; mix-blend-mode: multiply; opacity: 0.35; }
+    #intro03-sc054-photo { position: absolute; left: 310px; top: 620px; width: 820px; height: 615px; overflow: hidden; outline: 2px solid var(--ink); outline-offset: 8px; }
+    #intro03-sc054-photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 50%; filter: saturate(0.75) contrast(1.05) sepia(0.15); }
+    #intro03-sc054-map { position: absolute; left: 1380px; top: 610px; width: 600px; height: 640px; overflow: hidden; outline: 2px solid var(--ink); outline-offset: 8px; box-shadow: 0 18px 40px rgba(20,27,36,0.35); }
+    #intro03-sc054-map img { position: absolute; left: -40px; top: -60px; width: 700px; filter: url(#intro03-tint-sepia) contrast(1.15); }
+    #intro03-sc054-cap { position: absolute; left: 310px; top: 1262px; font-family: "Crimson Pro", serif; font-variant: small-caps; font-size: 30px; letter-spacing: 0.12em; color: var(--ink); }
+    #intro03-sc054-acc { position: absolute; left: 310px; top: 1318px; font-size: 48px; color: var(--ink-soft); }
+    #intro03-sc054-quote { position: absolute; left: 300px; top: 1385px; width: 1800px; font-family: "Crimson Pro", serif; font-weight: 700; font-size: 84px; line-height: 1.05; color: var(--ink); white-space: nowrap; }
+    .i3-54-greek { position: absolute; height: 12px; background: rgba(20,27,36,0.22); border-radius: 2px; }
+    .i3-54-rule { position: absolute; background: var(--ink); }
+    #intro03-sc054-marks { position: absolute; left: 0; top: 0; width: 2320px; height: 2000px; overflow: visible; }
+
+    /* ---------- IS055/056 · dark world map ---------- */
+    #intro03-sc055-cam { position: absolute; left: 0; top: 0; width: 4320px; height: 2160px; transform-origin: 0 0; }
+    #intro03-sc055-cam img { position: absolute; left: 0; top: 0; width: 4320px; height: 2160px; }
+    #intro03-sc055-txt { position: absolute; left: 110px; top: 80px; }
+    #intro03-sc055-cc { font-size: 40px; }
+    #intro03-sc055-rec { font-size: 96px; margin-top: 10px; }
+    #intro03-sc055-ob { position: absolute; left: 110px; top: 900px; font-size: 64px; }
+    #intro03-sc056-failed { position: absolute; left: 110px; top: 300px; font-size: 64px; }
+    #intro03-sc056-people { position: absolute; left: 110px; top: 820px; font-size: 92px; }
+    .i3-56-circ { position: absolute; width: 230px; height: 230px; border-radius: 50%; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.6); }
+    .i3-56-circ img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: grayscale(1) contrast(1.15); }
+    .i3-56-circ .ring { position: absolute; inset: 0; border-radius: 50%; border: 8px solid; }
+    #intro03-sc056-cc { left: 1520px; top: 330px; } #intro03-sc056-ct { left: 1240px; top: 330px; }
+    #intro03-sc055-shade { position: absolute; left: 0; top: 0; width: 1200px; height: 1080px; background: linear-gradient(90deg, rgba(5,7,10,0.65), rgba(5,7,10,0) 100%); }
+
+    /* ---------- IS057 · host lower third ---------- */
+    #intro03-sc057-lt { position: absolute; left: 120px; top: 760px; }
+    #intro03-sc057-host { font-size: 34px; }
+    #intro03-sc057-rule { width: 340px; height: 3px; background: var(--bone); margin: 14px 0 10px; transform-origin: 0 50%; }
+    #intro03-sc057-sam { font-size: 150px; }
+
+    /* ---------- IS058 · Searching Lessons ---------- */
+    #intro03-sc058-glow { position: absolute; left: 260px; top: 140px; width: 1400px; height: 700px; background: radial-gradient(ellipse at center, rgba(255,140,70,0.16), rgba(255,100,40,0.04) 45%, transparent 70%); }
+    #intro03-sc058-title { position: absolute; left: 0; width: 1920px; top: 340px; text-align: center; font-size: 200px; white-space: nowrap; }
+    #intro03-sc058-strip { position: absolute; left: 0; top: 700px; height: 300px; white-space: nowrap; background: #0b0a09; padding: 34px 0; }
+    #intro03-sc058-strip .fr { display: inline-block; width: 380px; height: 214px; margin: 0 14px; background-size: cover; background-position: center; filter: sepia(0.25) contrast(1.05); vertical-align: top; }
+    #intro03-sc058-strip .holes { position: absolute; left: 0; right: 0; height: 18px; background: repeating-linear-gradient(90deg, transparent 0 22px, #d8cdb8 22px 40px, transparent 40px 60px); opacity: 0.8; }
+
+    /* ---------- IS060 / IS065 · TV sets (drawn) ---------- */
+    #intro03-sc060-wall { position: absolute; inset: 0; background: radial-gradient(ellipse 60% 60% at 50% 45%, #2a2621, #12100e 70%, #080706 100%); }
+    #intro03-sc060-set { position: absolute; left: 430px; top: 150px; width: 1060px; height: 820px; border-radius: 34px;
+      background: linear-gradient(180deg, #5a4430 0%, #3f2e20 100%); box-shadow: 0 40px 90px rgba(0,0,0,0.75), inset 0 2px 0 rgba(255,220,170,0.15); }
+    #intro03-sc060-grain { position: absolute; inset: 0; border-radius: inherit; background: repeating-linear-gradient(92deg, rgba(0,0,0,0.0) 0 9px, rgba(0,0,0,0.12) 9px 11px, rgba(255,210,160,0.05) 11px 15px); }
+    #intro03-sc060-bezel { position: absolute; left: 50px; top: 50px; width: 780px; height: 620px; border-radius: 40px; background: linear-gradient(180deg, #2b2b2a, #1a1a19); box-shadow: inset 0 0 0 4px #3e3c38; }
+    #intro03-sc060-tube { position: absolute; left: 60px; top: 60px; width: 660px; height: 500px; border-radius: 46px / 40px; background: radial-gradient(ellipse at 50% 45%, #1c1c1b, #050505 75%); overflow: hidden; }
+    #intro03-sc060-screen { position: absolute; inset: 0; transform-origin: 50% 50%; overflow: hidden; }
+    #intro03-sc060-bars { position: absolute; inset: 0; display: flex; }
+    #intro03-sc060-bars div { flex: 1; }
+    #intro03-sc060-bars2 { position: absolute; left: 0; right: 0; bottom: 0; height: 110px; display: flex; }
+    #intro03-sc060-bars2 div { flex: 1; }
+    #intro03-sc060-scan { position: absolute; inset: 0; background: repeating-linear-gradient(180deg, rgba(0,0,0,0.18) 0 2px, transparent 2px 4px); }
+    #intro03-sc060-glare { position: absolute; inset: 0; background: radial-gradient(ellipse 60% 45% at 30% 22%, rgba(255,250,240,0.2), rgba(255,250,240,0) 70%); }
+    #intro03-sc060-dot { position: absolute; left: 50%; top: 50%; width: 12px; height: 12px; margin: -6px 0 0 -6px; border-radius: 50%; background: #fff; box-shadow: 0 0 18px 6px rgba(255,255,255,0.8); opacity: 0; }
+    #intro03-sc060-panel { position: absolute; left: 860px; top: 70px; width: 160px; height: 600px; border-radius: 12px; background: linear-gradient(180deg, #2a2725, #1b1918); }
+    .i3-knob { position: absolute; left: 40px; width: 80px; height: 80px; border-radius: 50%; background: radial-gradient(circle at 40% 35%, #8a8580, #3a3734 60%, #1e1c1a); box-shadow: 0 6px 12px rgba(0,0,0,0.6); }
+    .i3-grille { position: absolute; left: 30px; width: 100px; height: 150px; background: repeating-linear-gradient(180deg, #121110 0 5px, #2e2b28 5px 9px); border-radius: 6px; }
+    #intro03-sc060-label { position: absolute; left: 50px; top: 700px; width: 780px; text-align: center; font-size: 46px; color: #e8dccb; }
+    #intro03-sc060-line { position: absolute; left: 0; top: 538px; width: 1920px; height: 4px; background: #fff; box-shadow: 0 0 22px 6px rgba(255,255,255,0.75); transform-origin: 50% 50%; opacity: 0; }
+    #intro03-sc061-wrap { position: absolute; inset: 0; transform-origin: 50% 50%; }
+    #intro03-sc061-flash { position: absolute; inset: 0; background: #f4eee2; opacity: 0; }
+    #intro03-sc061-sweat { position: absolute; left: 1330px; top: 120px; font-size: 150px; }
+
+    #intro03-sc065-wall { position: absolute; inset: 0; background: radial-gradient(ellipse 60% 60% at 50% 50%, #1e2226, #0c0e10 70%, #050607 100%); }
+    #intro03-sc065-cam { position: absolute; inset: 0; transform-origin: 960px 470px; }
+    #intro03-sc065-set { position: absolute; left: 470px; top: 120px; width: 980px; height: 760px; border-radius: 18px; background: linear-gradient(180deg, #26282b, #131416); box-shadow: 0 40px 90px rgba(0,0,0,0.8), inset 0 2px 0 rgba(255,255,255,0.12), inset 0 0 0 3px #3a3d41; }
+    #intro03-sc065-trim { position: absolute; left: 30px; right: 30px; bottom: 30px; height: 70px; border-top: 2px solid #8d9196; background: linear-gradient(180deg, #2c2f33, #1c1e21); }
+    #intro03-sc065-tube { position: absolute; left: 90px; top: 50px; width: 800px; height: 600px; border-radius: 22px / 18px; background: #050505; overflow: hidden; box-shadow: inset 0 0 0 10px #0b0c0d; }
+    #intro03-sc065-screen { position: absolute; inset: 0; transform-origin: 50% 50%; overflow: hidden; }
+    #intro03-sc065-film { position: absolute; left: 0; top: 0; width: 800px; height: 600px; object-fit: cover; }
+    #intro03-sc065-flash { position: absolute; inset: 0; background: #f4eee2; opacity: 0; }
+    #intro03-sc065-glare { position: absolute; inset: 0; background: linear-gradient(160deg, rgba(255,255,255,0.14) 0%, rgba(255,255,255,0) 40%); }
+    #intro03-sc065-lab { position: absolute; left: 0; width: 1920px; top: 920px; text-align: center; font-size: 52px; letter-spacing: 0.3em; }
+
+    /* ---------- IS062 · D12 chapter list + focus pull ---------- */
+    #intro03-sc062-list { position: absolute; left: 0; top: 0; width: 1920px; height: 2600px; }
+    .i3-62-row { position: absolute; left: 0; width: 1920px; height: 56px; }
+    .i3-62-row .bar { position: absolute; left: 160px; top: 22px; height: 12px; }
+    .i3-62-row .ts { position: absolute; left: 640px; top: 0; font-size: 40px; color: rgba(242,237,227,0.85); font-family: "Cooper Hewitt", sans-serif; font-weight: 600; letter-spacing: 0.06em; }
+    .i3-62-row .gk { position: absolute; left: 900px; top: 20px; height: 14px; background: rgba(242,237,227,0.35); border-radius: 3px; }
+    #intro03-sc062-blur { filter: blur(7px); }
+    #intro03-sc062-read { position: absolute; left: 600px; top: 470px; font-size: 92px; white-space: nowrap; }
+    #intro03-sc062-read .tot { color: var(--bone); }
+    #intro03-sc062-long { position: absolute; left: 1180px; top: 860px; font-size: 104px; }
+    #intro03-sc062-prog { position: absolute; left: 160px; right: 160px; top: 1030px; height: 8px; background: rgba(242,237,227,0.2); }
+    #intro03-sc062-progf { position: absolute; left: 0; top: 0; bottom: 0; width: 1.64%; background: var(--bone); }
+
+    /* ---------- IS063 · sweat drop wiped + progress bar ---------- */
+    #intro03-sc063-drop { position: absolute; left: 660px; top: 120px; width: 600px; height: 700px; overflow: visible; }
+    #intro03-sc063-cloth { position: absolute; left: -900px; top: 160px; width: 760px; height: 520px; background: #ece4d2; border-radius: 30px 60px 40px 70px; box-shadow: 0 30px 60px rgba(20,27,36,0.35); transform: rotate(-8deg); }
+    #intro03-sc063-cloth::after { content: ""; position: absolute; inset: 0; border-radius: inherit; background: repeating-linear-gradient(45deg, rgba(20,27,36,0.08) 0 6px, transparent 6px 14px), url('assets/textures/paper_fiber_01_norm.jpg'); background-size: auto, 400px auto; mix-blend-mode: multiply; }
+    #intro03-sc063-bar { position: absolute; left: 160px; right: 160px; top: 930px; height: 26px; border: 3px solid var(--ink); }
+    #intro03-sc063-barf { position: absolute; left: 0; top: 0; bottom: 0; width: 100%; background: var(--ink); transform-origin: 0 50%; }
+    #intro03-sc063-t0 { position: absolute; left: 160px; top: 975px; font-size: 30px; color: var(--ink); }
+    #intro03-sc063-t1 { position: absolute; right: 160px; top: 975px; font-size: 30px; color: var(--ink); }
+
+    /* ---------- IS064 · D07 collage poster ---------- */
+    .i3-64-card { position: absolute; background: #f1e9d8; padding: 14px; box-shadow: 0 18px 40px rgba(20,27,36,0.35); }
+    .i3-64-card .ph { position: relative; width: 100%; height: 100%; overflow: hidden; }
+    .i3-64-card img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: url(#intro03-tint-ink) contrast(1.08); }
+    #intro03-sc064-box { position: absolute; left: 1080px; top: 330px; width: 700px; height: 360px; border: 5px solid var(--ink); outline: 2px solid var(--ink); outline-offset: 10px; text-align: center; padding-top: 52px; }
+    #intro03-sc064-box .k { font-size: 130px; color: var(--ink); line-height: 0.95; text-transform: uppercase; }
+    #intro03-sc064-stamp { position: absolute; left: 1560px; top: 640px; width: 230px; height: 230px; border-radius: 50%; border: 6px double var(--ink); transform: rotate(-14deg); opacity: 0; }
+    #intro03-sc064-dots { position: absolute; inset: 50px; border: 3px dotted rgba(20,27,36,0.45); pointer-events: none; }
+
+    /* ---------- IS066 · streaks ---------- */
+    #intro03-sc066-st { position: absolute; inset: 0; width: 1920px; height: 1080px; filter: blur(2.5px); opacity: 0.75; mix-blend-mode: screen; }
+    #intro03-sc066-txt { position: absolute; left: 0; width: 1920px; top: 470px; text-align: center; font-size: 120px; }
+    #intro03-sc066-white { position: absolute; inset: 0; background: var(--bone); opacity: 0; }
+
+    /* global overlays */
+    #intro03-flash { position: absolute; inset: 0; background: #f4eee2; opacity: 0; pointer-events: none; }
+  </style>
+  <div id="root" data-composition-id="intro03" data-vo-start="185.01" data-duration="90.05" data-width="1920" data-height="1080">
+    <svg id="intro03-defs" width="0" height="0" style="position:absolute"></svg>
+    <svg id="intro03-mkdefs" width="0" height="0" style="position:absolute"></svg>
+
+    <!-- ===== IS044 · 185.01–190.61 · PAPER · torn-paper wipe -> fight poster ===== -->
+    <div class="i3-scene" id="intro03-sc044" data-scene="IS044">
+      <div id="intro03-sc044-under"><img src="assets/intro/derived/intro03/chang_poster.jpg" alt="" /></div>
+      <div id="intro03-sc044-sheet">
+        <svg id="intro03-sc044-edge" viewBox="0 0 70 1080" preserveAspectRatio="none"></svg>
+        <div id="intro03-sc044-poster">
+          <div class="i3-p0"></div>
+          <div class="i3-44-half" id="intro03-sc044-left"><img src="assets/intro/derived/intro03/tsao_poster.jpg" alt="" /><div class="i3-ht"></div></div>
+          <div class="i3-44-half" id="intro03-sc044-right"><img src="assets/intro/derived/intro03/chang_poster.jpg" alt="" /><div class="i3-ht"></div></div>
+          <svg id="intro03-sc044-seam" viewBox="0 0 120 860" preserveAspectRatio="none"></svg>
+          <div id="intro03-sc044-rule"></div><div id="intro03-sc044-rule2"></div>
+          <div class="i3-p1" style="background-image:url('assets/textures/paper_cream_01.jpg')"></div>
+          <div class="i3-p2" style="background-image:url('assets/textures/paper_cream_02.jpg')"></div>
+          <div class="i3-p1" style="background-image:url('assets/textures/paper_torn_01.jpg'); mix-blend-mode: screen; opacity: 0.16"></div>
+          <div id="intro03-sc044-stamps">
+            <div id="intro03-sc044-betrayal" class="t-display"><span>BETRAYAL</span></div>
+            <div id="intro03-sc044-rivalry" class="t-display"><span><b>RIVALRY</b></span></div>
+          </div>
+          <div id="intro03-sc044-day" class="t-serif-i"><span class="w">to </span><span class="w">this </span><span class="w">very </span><span class="w">day</span></div>
+          <div class="i3-credit ink">Photos: Office of the President (ROC), Attribution · Mori / Office of the President, CC BY 2.0 — Wikimedia Commons</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== IS045 · 190.61–196.61 · NIGHT · D13 rival lines over ghost Taiwan ===== -->
+    <div class="i3-scene" id="intro03-sc045" data-scene="IS045">
+      <div id="intro03-sc045-ghost"><img src="assets/intro/maps/taiwan_relief_grey.jpg" alt="" /></div>
+      <svg class="i3-svg" id="intro03-sc045-chart" viewBox="0 0 1920 1080"></svg>
+      <div id="intro03-sc045-title" class="t-serif-i clean"><span class="r">riv</span><span class="t">alry</span></div>
+      <div id="intro03-sc045-taiwan" class="t-label clean">Taiwan</div>
+      <div id="intro03-sc045-super" class="t-display halate">SUPERPOWER</div>
+    </div>
+
+    <!-- ===== IS046 · 196.61–198.93 · FACE 2/6 (cut-out; rivalry lines behind him) ===== -->
+    <div class="i3-scene" id="intro03-sc046" data-scene="IS046">
+      <video id="intro03-sc046-bg" class="clip i3-video" src="assets/facecam/fc_195.8_bg.webm" muted playsinline data-start="11.54" data-duration="2.45" data-media-start="0.74" data-track-index="11"></video>
+      <svg class="i3-svg" id="intro03-sc046-lines" viewBox="0 0 1920 1080"></svg>
+      <video id="intro03-sc046-fg" class="clip i3-video" src="assets/facecam/fc_195.8_fg.webm" muted playsinline data-start="11.54" data-duration="2.45" data-media-start="0.74" data-track-index="12"></video>
+      <div class="i3-scrim-bl"></div>
+      <div id="intro03-sc046-story" class="t-serif-i clean"><span class="w">the </span><span class="w">story</span></div>
+    </div>
+
+    <!-- ===== IS047 · 198.93–201.89 · NIGHT · cloth-bound book (typeset) ===== -->
+    <div class="i3-scene" id="intro03-sc047" data-scene="IS047">
+      <div id="intro03-sc047-desk"></div>
+      <div id="intro03-sc047-stage">
+        <div id="intro03-sc047-book">
+          <div id="intro03-sc047-cloth"></div>
+          <div id="intro03-sc047-frame"></div>
+          <div id="intro03-sc047-title" class="t-serif"><span class="w">One </span><span class="w">of </span><span class="w">the</span><br /><span class="w big"><span id="intro03-sc047-hl"><span id="intro03-sc047-hlbar"></span><span id="intro03-sc047-gw">Greatest</span></span></span><br /><span class="w big">Business</span><br /><span class="w big">Stories</span><br /><span class="w">— ever —</span></div>
+        </div>
+      </div>
+      <div id="intro03-sc047-lamp"></div>
+    </div>
+
+    <!-- ===== IS048 · 201.89–206.77 · PAPER · beige world map, people who don't know ===== -->
+    <div class="i3-scene" id="intro03-sc048" data-scene="IS048">
+      <div class="i3-p0"></div>
+      <div id="intro03-sc048-cam">
+        <img src="assets/intro/derived/intro03/world_beige.jpg" alt="" />
+        <svg id="intro03-sc048-ov" width="4320" height="2160" viewBox="0 0 4320 2160" style="position:absolute;left:0;top:0;overflow:visible"></svg>
+      </div>
+      <div class="i3-p1" style="background-image:url('assets/textures/paper_cream_01.jpg')"></div>
+      <div class="i3-p2" style="background-image:url('assets/textures/paper_cream_02.jpg')"></div>
+      <div id="intro03-sc048-most" class="t-label"><span class="label-box" style="font-size:44px;padding:10px 18px 6px"><span class="w">most </span><span class="w">people</span></span></div>
+      <div id="intro03-sc048-west" class="t-serif-i"><span class="w">the </span><span class="w">West</span></div>
+      <div class="i3-credit ink">Basemap: NASA Blue Marble (PD) · Natural Earth (PD)</div>
+    </div>
+
+    <!-- ===== IS049 · 206.77–209.73 · FACE 3/6 (cut-out; world map card behind him) ===== -->
+    <div class="i3-scene" id="intro03-sc049" data-scene="IS049">
+      <video id="intro03-sc049-bg" class="clip i3-video" src="assets/facecam/fc_206.5_bg.webm" muted playsinline data-start="21.76" data-duration="3.0" data-media-start="0.27" data-track-index="13"></video>
+      <div id="intro03-sc049-card"><div id="intro03-sc049-cam"><img src="assets/intro/derived/intro03/world_beige.jpg" alt="" /><svg id="intro03-sc049-ov" width="4320" height="2160" viewBox="0 0 4320 2160" style="position:absolute;left:0;top:0;overflow:visible"></svg></div></div>
+      <video id="intro03-sc049-fg" class="clip i3-video" src="assets/facecam/fc_206.5_fg.webm" muted playsinline data-start="21.76" data-duration="3.0" data-media-start="0.27" data-track-index="14"></video>
+      <div class="i3-scrim-bl"></div>
+      <div id="intro03-sc049-agree" class="t-label clean">agree</div>
+      <svg class="i3-svg" id="intro03-sc049-marks" viewBox="0 0 1920 1080"></svg>
+    </div>
+
+    <!-- ===== IS050 · 209.73–214.37 · NIGHT · 2.5D Taiwan flyover ===== -->
+    <div class="i3-scene" id="intro03-sc050" data-scene="IS050">
+      <div id="intro03-sc050-stage">
+        <div id="intro03-sc050-cam">
+          <div class="i3-50-l" id="intro03-sc050-l0"><div id="intro03-sc050-sea"></div><div id="intro03-sc050-map"><img src="assets/intro/maps/taiwan_relief_grey.jpg" alt="" /><div id="intro03-sc050-fill"><div class="ht2"></div></div></div></div>
+          <div class="i3-50-l" id="intro03-sc050-l1"><div id="intro03-sc050-today" class="t-serif-i clean">today</div></div>
+          <div class="i3-50-l" id="intro03-sc050-l2"><img class="i3-cloud" src="assets/maps/clouds/cloud_05_puffy.png" style="left:620px;top:470px;width:900px;opacity:0.85" alt="" /><img class="i3-cloud" src="assets/maps/clouds/cloud_02_satellite.png" style="left:-200px;top:-80px;width:900px;opacity:0.55" alt="" /></div>
+          <div class="i3-50-l" id="intro03-sc050-l3"><img class="i3-cloud" src="assets/maps/clouds/cloud_06_puffy.png" style="left:-380px;top:560px;width:1100px;opacity:0.9" alt="" /><img class="i3-cloud" src="assets/maps/clouds/cloud_07_puffy.png" style="left:1300px;top:-120px;width:1000px;opacity:0.85" alt="" /></div>
+        </div>
+      </div>
+      <div id="intro03-sc050-shade"></div>
+      <div id="intro03-sc050-tw" class="t-label clean">Taiwan</div>
+      <div id="intro03-sc050-riv" class="t-serif-i clean"><span class="r">riv</span><span class="t">alry</span></div>
+    </div>
+
+    <!-- ===== IS051 · 214.37–218.37 · NIGHT · Vox layered TSMC panels ===== -->
+    <div class="i3-scene" id="intro03-sc051" data-scene="IS051">
+      <div class="i3-51-panel" id="intro03-sc051-p1"><img src="assets/intro/photos/tsmc_rd_night.jpg" alt="" /></div>
+      <div class="i3-51-panel" id="intro03-sc051-p2"><img src="assets/intro/photos/tsmc_fab5.jpg" alt="" /></div>
+      <div class="i3-51-panel" id="intro03-sc051-p3"><img src="assets/intro/photos/tsmc_fabs_hsinchu_01.jpg" alt="" /></div>
+      <div id="intro03-sc051-news"></div>
+      <div id="intro03-sc051-scrim"></div>
+      <div id="intro03-sc051-card"><div id="intro03-sc051-logo"></div><div class="i3-p1" style="background-image:url('assets/textures/paper_cream_01.jpg')"></div></div>
+      <div id="intro03-sc051-wr" class="t-serif-i clean"><span class="w">world </span><span class="w">renowned</span></div>
+      <div class="i3-credit">Photos: 曾 成訓, CC BY 2.0 · Peellden, CC BY-SA 3.0 — Wikimedia Commons</div>
+    </div>
+
+    <!-- ===== IS052 · 218.37–222.93 · GRID · D02 two bars topped by portraits ===== -->
+    <div class="i3-scene" id="intro03-sc052" data-scene="IS052" style="background: transparent">
+      <div id="intro03-sc052-sheet">
+        <div class="i3-p0"></div>
+        <div class="i3-p2" style="background-image:url('assets/intro/papers/ke1960_mm_grid_green_norm.jpg'); opacity: 0.5; filter: saturate(0.3)"></div>
+        <div class="i3-p2" style="background-image:url('assets/textures/paper_stained_01.jpg'); opacity: 0.55"></div>
+        <div id="intro03-sc052-base"></div>
+        <div class="i3-52-bar" id="intro03-sc052-bt"><div class="fill"></div></div>
+        <div class="i3-52-bar" id="intro03-sc052-bc"><div class="fill"></div></div>
+        <div class="i3-52-head" id="intro03-sc052-ht"><img src="assets/intro/derived/intro03/tsao_circle.jpg" alt="" /><div class="i3-ht"></div><div class="ring" style="border-color: var(--navy)"></div></div>
+        <div class="i3-52-head" id="intro03-sc052-hc"><img src="assets/intro/derived/intro03/chang_circle.jpg" alt="" /><div class="i3-ht"></div><div class="ring" style="border-color: var(--vermilion)"></div></div>
+        <div id="intro03-sc052-ticks"></div>
+        <div id="intro03-sc052-kick" class="t-label"><span class="label-box" style="font-size:44px;padding:10px 18px 6px"><span class="w">two </span><span class="w">men</span></span></div>
+        <div id="intro03-sc052-up" class="t-display t-ink"><span class="w">one </span><span class="w">up</span></div>
+        <div id="intro03-sc052-dec" class="t-serif-i">decades</div>
+        <div class="i3-credit ink">Photos: Office of the President (ROC), CC BY 2.0 · TMYAO, CC BY-SA 4.0 — Wikimedia Commons</div>
+      </div>
+    </div>
+
+    <!-- ===== IS053 · 222.93–228.61 · NIGHT · D14 Taiwan -> Hsinchu Science Park ===== -->
+    <div class="i3-scene" id="intro03-sc053" data-scene="IS053">
+      <div id="intro03-sc053-rel"><img src="assets/intro/maps/taiwan_relief_grey.jpg" alt="" /><div id="intro03-sc053-relfill"></div></div>
+      <div id="intro03-sc053-sat"><img src="assets/intro/maps/hsinchu_s2cloudless2016.jpg" alt="" /><div id="intro03-sc053-veil"></div><svg id="intro03-sc053-ov" viewBox="0 0 3728 2823"></svg></div>
+      <div id="intro03-sc053-labbox"></div>
+      <div id="intro03-sc053-tw" class="t-label clean">Taiwan</div>
+      <div id="intro03-sc053-lab"><div id="intro03-sc053-hs" class="t-display clean">HSINCHU</div><div id="intro03-sc053-sp" class="t-label clean">Science Park</div></div>
+      <div class="i3-credit" id="intro03-sc053-credit">Sentinel-2 cloudless 2016 by EOX, CC BY 4.0 · © OpenStreetMap contributors · relief: AWS Terrain Tiles</div>
+    </div>
+
+    <!-- ===== IS054 · 228.61–233.49 · PAPER · painting-to-print: a replica of the Silicon Valley ===== -->
+    <div class="i3-scene" id="intro03-sc054" data-scene="IS054">
+      <div id="intro03-sc054-bg"></div>
+      <div id="intro03-sc054-cam">
+        <div id="intro03-sc054-page">
+          <div id="intro03-sc054-greek"></div>
+          <div id="intro03-sc054-photo"><img src="assets/intro/photos/hsp_40th.jpg" alt="" /><div class="i3-ht" style="opacity:0.25"></div></div>
+          <div id="intro03-sc054-cap">Hsinchu Science Park.</div>
+          <div id="intro03-sc054-map"><img src="assets/intro/paintings/stanford_peninsula_map.jpg" alt="" /><div class="i3-ht" style="opacity:0.3"></div></div>
+          <div id="intro03-sc054-acc" class="t-serif-i"><span class="w">according </span><span class="w">to </span><span class="w">Taiwanese </span><span class="w">leader,</span></div>
+          <div id="intro03-sc054-quote"><span class="w">“is </span><span class="w">a </span><span class="w">replica </span><span class="w">of </span><span class="w">the </span><span class="w">Silicon </span><span class="w">Valley.”</span></div>
+          <svg id="intro03-sc054-marks" viewBox="0 0 2320 2000"></svg>
+          <div class="np"></div>
+          <div class="i3-p1" style="background-image:url('assets/textures/paper_cream_01.jpg')"></div>
+        </div>
+      </div>
+      <div class="i3-credit">Photo: T Gordon Cheng, CC BY-SA 4.0 — Wikimedia Commons · pictorial map: see SOURCES</div>
+    </div>
+
+    <!-- ===== IS055–IS056 · 233.49–247.86 · NIGHT · dark world map: copies of Silicon Valley fail ===== -->
+    <div class="i3-scene" id="intro03-sc055" data-scene="IS055">
+      <div id="intro03-sc055-cam">
+        <img src="assets/intro/derived/intro03/world_dark.jpg" alt="" />
+        <svg id="intro03-sc055-ov" width="4320" height="2160" viewBox="0 0 4320 2160" style="position:absolute;left:0;top:0;overflow:visible"></svg>
+      </div>
+      <div id="intro03-sc055-shade"></div>
+      <div id="intro03-sc055-txt">
+        <div id="intro03-sc055-cc" class="t-label clean"><span class="w">Countless </span><span class="w">countries</span></div>
+        <div id="intro03-sc055-rec" class="t-serif-i clean"><span class="w">recreating </span><span class="w">Silicon </span><span class="w">Valley</span></div>
+      </div>
+      <div id="intro03-sc055-ob" class="t-serif-i clean"><span class="w">own </span><span class="w">borders</span></div>
+      <svg class="i3-svg" id="intro03-sc056-marks" viewBox="0 0 1920 1080"></svg>
+      <div id="intro03-sc056-failed" class="t-display clean" style="font-size:150px">FAILED</div>
+      <div class="i3-56-circ" id="intro03-sc056-ct"><img src="assets/intro/derived/intro03/tsao_circle.jpg" alt="" /><div class="i3-ht" style="opacity:0.3"></div><div class="ring" style="border-color: var(--sky)"></div></div>
+      <div class="i3-56-circ" id="intro03-sc056-cc"><img src="assets/intro/derived/intro03/chang_circle.jpg" alt="" /><div class="i3-ht" style="opacity:0.3"></div><div class="ring" style="border-color: var(--vermilion)"></div></div>
+      <div id="intro03-sc056-people" class="t-serif-i clean"><div><span class="w">these </span><span class="w">two </span><span class="w">people</span></div><div style="font-size:120px"><span class="w">big </span><span class="w">reasons</span></div></div>
+      <div class="i3-credit">Basemap: NASA Blue Marble (PD) · borders: Natural Earth (PD)</div>
+    </div>
+
+    <!-- ===== IS057 · 247.86–250.02 · FACE 4/6 (clean) ===== -->
+    <div class="i3-scene" id="intro03-sc057" data-scene="IS057">
+      <video id="intro03-sc057-v" class="clip i3-video" src="assets/facecam/fc_245.8.mp4" muted playsinline data-start="62.85" data-duration="2.2" data-media-start="2.06" data-track-index="15"></video>
+      <div class="i3-scrim-bl"></div>
+      <div id="intro03-sc057-lt"><div id="intro03-sc057-host" class="t-label clean">host</div><div id="intro03-sc057-rule"></div><div id="intro03-sc057-sam" class="t-display clean">SAM</div></div>
+    </div>
+
+    <!-- ===== IS058 · 250.02–253.30 · NIGHT · Searching Lessons + film strip of this intro ===== -->
+    <div class="i3-scene" id="intro03-sc058" data-scene="IS058">
+      <canvas class="streaks" id="intro03-sc058-st" style="filter: blur(2.5px); opacity: 0.45"></canvas>
+      <div id="intro03-sc058-glow"></div>
+      <div id="intro03-sc058-title" class="t-display halate"><span id="intro03-sc058-a">Searching </span><span id="intro03-sc058-b">Lessons</span></div>
+      <div id="intro03-sc058-strip"><div class="holes" style="top:8px"></div><div class="holes" style="bottom:8px"></div><span id="intro03-sc058-frames"></span></div>
+    </div>
+
+    <!-- ===== IS059 · 253.30–255.38 · FACE 5/6 (cut-out; radio behind him) ===== -->
+    <div class="i3-scene" id="intro03-sc059" data-scene="IS059">
+      <video id="intro03-sc059-bg" class="clip i3-video" src="assets/facecam/fc_251.0_bg.webm" muted playsinline data-start="68.29" data-duration="2.15" data-media-start="2.30" data-track-index="16"></video>
+      <div id="intro03-sc059-radio"><svg viewBox="0 0 520 600">
+        <defs><linearGradient id="intro03-rg" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#4a3122"/><stop offset="0.5" stop-color="#7a5236"/><stop offset="1" stop-color="#3e281b"/></linearGradient>
+        <pattern id="intro03-rgr" width="16" height="16" patternUnits="userSpaceOnUse"><rect width="16" height="16" fill="#c9b48e"/><path d="M0 8h16M8 0v16" stroke="#9d8661" stroke-width="2"/></pattern></defs>
+        <path d="M30 590 L30 250 Q30 20 260 20 Q490 20 490 250 L490 590 Z" fill="url(#intro03-rg)" stroke="#2a1a10" stroke-width="6"/>
+        <path d="M80 400 L80 260 Q80 80 260 80 Q440 80 440 260 L440 400 Z" fill="url(#intro03-rgr)" stroke="#2a1a10" stroke-width="5"/>
+        <path d="M200 400 L200 140 M260 400 L260 110 M320 400 L320 140" stroke="#5a3a26" stroke-width="16" stroke-linecap="round"/>
+        <rect x="70" y="425" width="380" height="50" rx="10" fill="#e9dcc0" stroke="#2a1a10" stroke-width="4"/>
+        <path d="M100 450 H420" stroke="#6b5a44" stroke-width="2"/><g id="intro03-sc059-needle"><rect x="180" y="430" width="5" height="40" fill="#b5401f"/></g>
+        <circle cx="140" cy="530" r="30" fill="#2a1a10"/><circle cx="380" cy="530" r="30" fill="#2a1a10"/><circle cx="260" cy="530" r="18" fill="#2a1a10"/>
+      </svg></div>
+      <video id="intro03-sc059-fg" class="clip i3-video" src="assets/facecam/fc_251.0_fg.webm" muted playsinline data-start="68.29" data-duration="2.15" data-media-start="2.30" data-track-index="17"></video>
+      <div class="i3-scrim-bl"></div>
+      <div id="intro03-sc059-cap" class="t-serif-i clean"><span class="w">built </span><span class="w">for </span><span class="w">radio</span></div>
+    </div>
+
+    <!-- ===== IS060 · 255.38–259.22 · NIGHT · 1980s TV switches off ===== -->
+    <div class="i3-scene" id="intro03-sc060" data-scene="IS060">
+      <div id="intro03-sc060-wall"></div>
+      <div id="intro03-sc060-set">
+        <div id="intro03-sc060-grain"></div>
+        <div id="intro03-sc060-bezel"><div id="intro03-sc060-tube"><div id="intro03-sc060-screen">
+          <div id="intro03-sc060-bars"><div style="background:#c8c4bc"></div><div style="background:#d8c64a"></div><div style="background:#5fb3b0"></div><div style="background:#5aa55a"></div><div style="background:#a0529a"></div><div style="background:#c0453a"></div><div style="background:#2f5f9e"></div></div>
+          <div id="intro03-sc060-bars2"><div style="background:#2f5f9e"></div><div style="background:#151515"></div><div style="background:#a0529a"></div><div style="background:#151515"></div><div style="background:#5fb3b0"></div><div style="background:#151515"></div><div style="background:#c8c4bc"></div></div>
+          <div id="intro03-sc060-scan"></div>
+        </div><div id="intro03-sc060-dot"></div><div id="intro03-sc060-glare"></div></div></div>
+        <div id="intro03-sc060-panel"><div class="i3-knob" style="top:40px"></div><div class="i3-knob" style="top:150px"></div><div class="i3-grille" style="top:280px"></div><div class="i3-grille" style="top:440px"></div></div>
+        <div id="intro03-sc060-label" class="t-label"><span class="w">off </span><span class="w">camera</span></div>
+      </div>
+      <div id="intro03-sc060-line"></div>
+    </div>
+
+    <!-- ===== IS061 · 259.22–261.94 · FACE 6/6 (clean) ===== -->
+    <div class="i3-scene" id="intro03-sc061" data-scene="IS061">
+      <div id="intro03-sc061-wrap">
+        <video id="intro03-sc061-va" class="clip i3-video" src="assets/facecam/fc_256.0.mp4" muted playsinline data-start="74.21" data-duration="2.28" data-media-start="3.22" data-track-index="18"></video>
+        <video id="intro03-sc061-vb" class="clip i3-video" src="assets/facecam/fc_261.5.mp4" muted playsinline data-start="76.49" data-duration="0.55" data-media-start="0" data-track-index="19"></video>
+        <svg class="i3-svg" id="intro03-sc061-marks" viewBox="0 0 1920 1080"></svg>
+        <div id="intro03-sc061-sweat" class="t-display clean">sweat</div>
+        <div id="intro03-sc061-flash"></div>
+      </div>
+    </div>
+
+    <!-- ===== IS062 · 261.94–265.62 · NIGHT · D12 chapter list, focus pull to the timestamp ===== -->
+    <div class="i3-scene" id="intro03-sc062" data-scene="IS062">
+      <div id="intro03-sc062-blur"><div id="intro03-sc062-list"></div></div>
+      <div id="intro03-sc062-read" class="t-display"><span id="intro03-sc062-cur" style="color:#cfc7b8">0:04:22</span><span style="color:rgba(242,237,227,0.45)"> / </span><span class="tot">4:26:14</span></div>
+      <svg class="i3-svg" id="intro03-sc062-marks" viewBox="0 0 1920 1080"></svg>
+      <div id="intro03-sc062-long" class="t-serif-i clean"><span class="w">long </span><span class="w">story</span></div>
+      <div id="intro03-sc062-prog"><div id="intro03-sc062-progf"></div></div>
+    </div>
+
+    <!-- ===== IS063 · 265.62–270.02 · PAPER (graph) · sweat wiped off; the rest of the podcast ===== -->
+    <div class="i3-scene" id="intro03-sc063" data-scene="IS063" style="background: transparent">
+      <div id="intro03-sc063-sheet" class="i3-full">
+        <div class="i3-p0"></div>
+        <div class="i3-p2" style="background-image:url('assets/textures/paper_graph_01.jpg'); mix-blend-mode: multiply; opacity: 0.6"></div>
+        <div class="i3-p1" style="background-image:url('assets/textures/paper_cream_01.jpg')"></div>
+        <svg id="intro03-sc063-drop" viewBox="0 0 600 700"></svg>
+        <div id="intro03-sc063-cloth"></div>
+        <div id="intro03-sc063-bar"><div id="intro03-sc063-barf"></div></div>
+        <div id="intro03-sc063-t0" class="t-label">0:04:22</div>
+        <div id="intro03-sc063-t1" class="t-label">4:26:14</div>
+      </div>
+    </div>
+
+    <!-- ===== IS064 · 270.02–271.78 · PAPER · D07 collage of historic images ===== -->
+    <div class="i3-scene" id="intro03-sc064" data-scene="IS064">
+      <div class="i3-p0"></div>
+      <div class="i3-p1" style="background-image:url('assets/textures/paper_cream_01.jpg')"></div>
+      <div id="intro03-sc064-board" class="i3-full">
+        <div id="intro03-sc064-dots"></div>
+        <div class="i3-64-card" id="intro03-sc064-c1" style="left:110px;top:90px;width:470px;height:600px"><div class="ph"><img src="assets/intro/photos/chang_1951_mit.jpg" alt="" style="filter:url(#intro03-tint-ink) blur(0.8px) contrast(1.1)" /></div></div>
+        <div class="i3-64-card" id="intro03-sc064-c2" style="left:540px;top:120px;width:560px;height:420px"><div class="ph"><img src="assets/intro/derived/intro03/taiwan_1960_taipei_north_gate_traffic.jpg" alt="" /></div></div>
+        <div class="i3-64-card" id="intro03-sc064-c3" style="left:420px;top:560px;width:620px;height:440px"><div class="ph"><img src="assets/intro/derived/intro03/taiwan_1960_taipei_boulevard_high_angle.jpg" alt="" /></div></div>
+        <div class="i3-64-card" id="intro03-sc064-c4" style="left:1150px;top:730px;width:420px;height:300px"><div class="ph"><img src="assets/intro/derived/intro03/taiwan_1960_sun_moon_lake.jpg" alt="" /></div></div>
+        <div id="intro03-sc064-box"><div class="k t-display"><span class="w">historic</span></div><div class="k t-display" style="font-size:150px"><span class="w">images</span></div></div>
+        <div id="intro03-sc064-stamp"></div>
+      </div>
+      <div class="i3-p1" style="background-image:url('assets/textures/paper_torn_01.jpg'); mix-blend-mode: screen; opacity: 0.14"></div>
+    </div>
+
+    <!-- ===== IS065 · 271.78–273.46 · NIGHT · second TV (black 1980s set) playing B-roll ===== -->
+    <div class="i3-scene" id="intro03-sc065" data-scene="IS065">
+      <div id="intro03-sc065-wall"></div>
+      <div id="intro03-sc065-cam">
+        <div id="intro03-sc065-set">
+          <div id="intro03-sc065-tube"><div id="intro03-sc065-screen">
+            <video id="intro03-sc065-film" class="clip" src="assets/intro/footage/fab_hk_workers_microscope_rows_b.mp4" muted playsinline data-start="86.77" data-duration="2.3" data-media-start="1.0" data-track-index="20"
+              data-color-grading='{"intensity":1,"adjust":{"saturation":-0.4,"contrast":0.1},"effects":{"chromaticAberration":0.3,"chromaticAngle":0,"scanlines":0.4,"scanlineCount":0.17,"scanlineSoftness":1,"crtCurvature":0.3,"filmArtifacts":0.35}}'></video>
+            <div id="intro03-sc065-flash"></div>
+          </div><div id="intro03-sc065-glare"></div></div>
+          <div id="intro03-sc065-trim"></div>
+        </div>
+      </div>
+      <div id="intro03-sc065-lab" class="t-label clean"><span class="w">B-</span><span class="w">rolls</span></div>
+    </div>
+
+    <!-- ===== IS066 · 273.46–275.06 · NIGHT · streaks: here's the story ===== -->
+    <div class="i3-scene" id="intro03-sc066" data-scene="IS066">
+      <canvas id="intro03-sc066-st"></canvas>
+      <div id="intro03-sc066-txt" class="t-serif-i clean"><span class="w">here's </span><span class="w">the </span><span class="w">story</span></div>
+      <div id="intro03-sc066-white"></div>
+    </div>
+
+    <div id="intro03-grain" class="tx tx-grain" style="background-image:url('assets/textures/grain_01_norm.jpg'); opacity: 0.25"></div>
+    <div id="intro03-dust" class="tx tx-dust" style="background-image:url('assets/textures/dust_02.jpg'); opacity: 0"></div>
+    <div id="intro03-vig" class="vignette"></div>
+    <div id="intro03-flash"></div>
+    <audio id="intro03-vo" class="temp-vo" src="vo_intro.mp3" data-start="0" data-duration="90.05" data-media-start="185.01" data-volume="1"></audio>
+  </div>
+  <script>
+  (function () {
+    const SEG = "intro03", SEG_START = 185.01, SEG_END = 275.06, DURATION = +(SEG_END - SEG_START).toFixed(2);
+    const T = (s) => +(s - 185.01).toFixed(3);   // TEXT cues (audited)
+    const S = T;                                  // STRUCTURAL cues
+    const tl = gsap.timeline({ paused: true });
+    const $ = (id) => document.getElementById(SEG + "-" + id);
+    const NS = "http://www.w3.org/2000/svg";
+    const C = (d, e) => FX.choppy(e || FX.ease.out, d, 12);
+    const D = /*DATA-BEGIN*/{}/*DATA-END*/;
+    const defs = $("defs");
+    const lerp = (a, b, k) => a + (b - a) * k;
+
+    function scene(id, a, b) { const el = $(id); tl.set(el, { autoAlpha: 1 }, S(a)); tl.set(el, { autoAlpha: 0 }, S(b)); return el; }
+    function appear(el, t, o) { o = o || {}; const d = o.d || 0.5;
+      tl.fromTo(el, { autoAlpha: 0, y: o.y == null ? 12 : o.y }, { autoAlpha: 1, y: 0, duration: d, ease: C(d), immediateRender: true }, t); }
+    function wordsIn(el, times, o) { const ws = el.querySelectorAll(".w"); times.forEach((t, i) => appear(ws[i], t, o)); }
+    function fadeOut(el, t, d) { tl.to(el, { autoAlpha: 0, duration: d || 0.3, ease: C(d || 0.3, FX.ease.in) }, t); }
+    function gate(a, b, reg) { const o = FX.onFrame; FX.onFrame = (fn) => o(FX.gate(S(a) - 0.05, S(b) + 0.05, fn)); try { reg(); } finally { FX.onFrame = o; } }
+    function svgEl(parent, tag, attrs) { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); parent.appendChild(e); return e; }
+    function drawPath(p, t, dur, ease) { const L = p.getTotalLength(); p.setAttribute("stroke-dasharray", `${L} ${L}`);
+      tl.fromTo(p, { attr: { "stroke-dashoffset": L } }, { attr: { "stroke-dashoffset": 0 }, duration: dur, ease: ease || C(dur, FX.ease.inOut), immediateRender: true }, t); return L; }
+    function catmull(pts) { let d = `M${pts[0][0].toFixed(1)} ${pts[0][1].toFixed(1)}`;
+      for (let i = 0; i < pts.length - 1; i++) { const p0 = pts[Math.max(0, i - 1)], p1 = pts[i], p2 = pts[i + 1], p3 = pts[Math.min(pts.length - 1, i + 2)];
+        d += ` C${(p1[0] + (p2[0] - p0[0]) / 6).toFixed(1)} ${(p1[1] + (p2[1] - p0[1]) / 6).toFixed(1)} ${(p2[0] - (p3[0] - p1[0]) / 6).toFixed(1)} ${(p2[1] - (p3[1] - p1[1]) / 6).toFixed(1)} ${p2[0].toFixed(1)} ${p2[1].toFixed(1)}`; }
+      return d; }
+    // whip: blur only the shots that are not the (clean) face cam
+    let wN = 0;
+    function whip(a, b, t, o) { o = Object.assign({ dir: 1, vertical: false, blurA: true, blurB: true }, o); const A = $(a), B = $(b), k = ++wN;
+      const fa = o.blurA ? FX.whipDefs(defs, `intro03-wa${k}`) : null, fb = o.blurB ? FX.whipDefs(defs, `intro03-wb${k}`) : null;
+      if (fa) { tl.set(A, { filter: `url(#intro03-wa${k})` }, S(t) - 0.17); }
+      if (fb) { tl.set(B, { filter: `url(#intro03-wb${k})` }, S(t) - 0.001); tl.set(B, { filter: "none" }, S(t) + 0.2); }
+      FX.whip(tl, A, B, S(t), { dir: o.dir, vertical: o.vertical, blurA: fa, blurB: fb });
+    }
+    function flash(t, peak) { tl.fromTo($("flash"), { opacity: 0 }, { opacity: peak || 0.85, duration: 0.08, ease: "power2.in", immediateRender: false }, S(t) - 0.08);
+      tl.to($("flash"), { opacity: 0, duration: 0.22, ease: "power2.out" }, S(t)); }
+
+    // ---------- shared defs ----------
+    FX.tintDefs(defs, "intro03-tint-red", "#2b0b07", "#f4d2c6");
+    FX.tintDefs(defs, "intro03-tint-blue", "#0b2440", "#d6e4f1");
+    FX.tintDefs(defs, "intro03-tint-rednight", "#120605", "#c8735f");
+    FX.tintDefs(defs, "intro03-tint-ink", "#1d2733", "#efe6d2");
+    FX.tintDefs(defs, "intro03-tint-sepia", "#3a2c20", "#efe3c8");
+    const ch44 = FX.roughDefs(defs, "intro03-ch44", { freq: 0.045, scale: 7, choke: 0 });
+    FX.roughDefs(defs, "intro03-roughhl", { freq: 0.04, scale: 8 });
+    FX.roughDefs(defs, "intro03-torn", { freq: 0.03, scale: 6 });
+    const mk = FX.markupDefs($("mkdefs"), "intro03-mk");
+    const pen = FX.markupDefs($("mkdefs"), "intro03-pen", { boil: 4 });
+    FX.grain($("grain"), 4401);
+    FX.dust($("dust"), 4402, 2);
+    // overlays: dust on night scenes only; no grain/dust/vignette on the face cam (clean)
+    const FACE = [[196.55, 198.93], [206.77, 209.73], [247.86, 250.02], [253.30, 255.38], [259.22, 261.94]];
+    const NIGHT = [[190.61, 196.55], [198.93, 201.89], [209.73, 214.37], [214.37, 218.37], [222.93, 228.61], [233.49, 247.86], [250.02, 253.30], [255.38, 259.22], [261.94, 265.62], [271.78, 275.06]];
+    NIGHT.forEach(([a, b]) => { tl.set($("dust"), { opacity: 0.4 }, S(a)); tl.set($("dust"), { opacity: 0 }, S(b)); });
+    FACE.forEach(([a, b]) => { tl.set([$("grain"), $("vig")], { autoAlpha: 0 }, S(a)); tl.set([$("grain"), $("vig")], { autoAlpha: 1 }, S(b)); });
+
+    // torn edge (seed 4344, shared with intro02's wipe): jagged vertical polygon
+    function tornPts(seed, h, amp, n) { const r = FX.rng(seed), p = []; for (let i = 0; i <= n; i++) p.push([(r() - 0.5) * amp + (FX.noise1(i * 0.3, seed) - 0.5) * amp * 1.6, (i / n) * h]); return p; }
+
+    // =====================================================================
+    // IS044 · 185.01–190.61 · torn-paper wipe finishes -> fight poster BETRAYAL -> RIVALRY
+    // =====================================================================
+    scene("sc044", 185.01, 190.61);
+    {
+      const ep = tornPts(4344, 1080, 34, 70);
+      svgEl($("sc044-edge"), "path", { d: `M70 0 L${ep.map(([x, y]) => `${(40 + x).toFixed(1)} ${y.toFixed(1)}`).join(" L")} L70 1080 Z`, fill: "#ebe4d6" });
+      const L = tornPts(4345, 860, 26, 60), R2 = tornPts(4346, 860, 26, 60);
+      svgEl($("sc044-seam"), "path", { d: `M${L.map(([x, y]) => `${(28 + x).toFixed(1)} ${y.toFixed(1)}`).join(" L")} L${R2.slice().reverse().map(([x, y]) => `${(92 + x).toFixed(1)} ${y.toFixed(1)}`).join(" L")} Z`, fill: "#ebe4d6", filter: "url(#intro03-torn)" });
+      // wipe: paper edge at 35 % of frame -> covers the frame in 0.25 s
+      tl.fromTo($("sc044-sheet"), { x: 1248 }, { x: 0, duration: 0.25, ease: C(0.25, FX.ease.out), immediateRender: true }, S(185.01));
+      tl.fromTo($("sc044-under"), { x: 0 }, { x: -120, duration: 0.25, ease: "power1.out", immediateRender: true }, S(185.01));
+      // slow push on the poster
+      tl.fromTo($("sc044-poster"), { scale: 1.0 }, { scale: 1.04, duration: 5.3, ease: "none", immediateRender: true, transformOrigin: "50% 45%" }, S(185.26));
+      tl.fromTo($("sc044-left"), { y: 40, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 1.0, ease: C(1.0), immediateRender: true }, S(185.12));
+      tl.fromTo($("sc044-right"), { y: -40, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 1.0, ease: C(1.0), immediateRender: true }, S(185.20));
+      // BETRAYAL stamp: rough choke that settles
+      tl.fromTo($("sc044-betrayal"), { autoAlpha: 0, scale: 1.25 }, { autoAlpha: 1, scale: 1, duration: 0.25, ease: C(0.25), immediateRender: true }, T(185.17) - 0.06);
+      FX.chokeSettle(tl, ch44, $("sc044-betrayal").firstElementChild, T(185.17) - 0.06, 8, 0.6, "none");
+      // RIVALRY replaces it
+      tl.to($("sc044-betrayal"), { autoAlpha: 0, duration: 1 / 12 }, T(186.93) - 0.1);
+      tl.fromTo($("sc044-rivalry"), { autoAlpha: 0, scale: 1.18 }, { autoAlpha: 1, scale: 1, duration: 1.0, ease: C(1.0), immediateRender: true }, T(186.93) - 0.06);
+      wordsIn($("sc044-day"), [T(189.01) - 0.06, T(189.25) - 0.06, T(189.57) - 0.06, T(189.89) - 0.06], { d: 0.4, y: 8 });
+      // exit: the halves slide apart (cut on action into the two lines)
+      tl.to($("sc044-left"), { x: -260, duration: 0.6, ease: C(0.6, FX.ease.in) }, S(190.05));
+      tl.to($("sc044-right"), { x: 260, duration: 0.6, ease: C(0.6, FX.ease.in) }, S(190.05));
+      tl.to([$("sc044-stamps"), $("sc044-day")], { autoAlpha: 0, duration: 0.25 }, S(190.3));
+    }
+
+    // =====================================================================
+    // IS045 · 190.61–196.61 · D13 two rival lines climbing over a ghost Taiwan
+    // =====================================================================
+    scene("sc045", 190.61, 196.66);
+    {
+      const svg = $("sc045-chart"), x0 = 160, x1 = 1340, yb = 690, yt = 250;
+      for (let i = 0; i <= 4; i++) svgEl(svg, "line", { x1: x0, x2: x1, y1: yb - i * (yb - yt) / 4, y2: yb - i * (yb - yt) / 4, stroke: "rgba(242,237,227,0.13)", "stroke-width": 1.5 });
+      const BV = [0.06, 0.13, 0.12, 0.22, 0.27, 0.3, 0.42, 0.45, 0.55, 0.58, 0.7, 0.74, 0.86, 0.93];
+      const RV = [0.03, 0.09, 0.18, 0.2, 0.31, 0.36, 0.38, 0.5, 0.52, 0.64, 0.66, 0.8, 0.84, 0.97];
+      const pts = (V) => V.map((v, i) => [x0 + (i / (V.length - 1)) * (x1 - x0), yb - v * (yb - yt)]);
+      const mkLine = (V, col) => { const p = svgEl(svg, "path", { d: catmull(pts(V)), fill: "none", stroke: col, "stroke-width": 7, "stroke-linecap": "round", "stroke-linejoin": "round" });
+        p.style.filter = `drop-shadow(0 0 8px ${col})`; return p; };
+      const pb = mkLine(BV, "#9fc3e3"), pr = mkLine(RV, "#e03f2c");
+      drawPath(pb, S(191.17), 4.85, C(4.85, FX.ease.inOut));
+      drawPath(pr, S(191.17), 4.85, C(4.85, FX.ease.inOut));
+      const eb = pts(BV).pop(), er = pts(RV).pop();
+      [[eb, "#9fc3e3"], [er, "#e03f2c"]].forEach(([p, c]) => { const d = svgEl(svg, "circle", { cx: p[0], cy: p[1], r: 14, fill: c }); d.style.transformOrigin = `${p[0]}px ${p[1]}px`;
+        tl.fromTo(d, { scale: 0, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.6, ease: C(0.6), immediateRender: true }, S(196.05) - 0.06); });
+      tl.fromTo($("sc045-ghost"), { scale: 1.06, autoAlpha: 0 }, { scale: 1.0, autoAlpha: 1, duration: 1.4, ease: C(1.4), immediateRender: true }, S(190.61));
+      tl.to($("sc045-ghost"), { x: -30, duration: 6, ease: "none" }, S(190.61));
+      tl.fromTo($("sc045-title"), { autoAlpha: 0, x: -20 }, { autoAlpha: 1, x: 0, duration: 0.8, ease: C(0.8), immediateRender: true }, T(191.17) - 0.06);
+      tl.fromTo($("sc045-taiwan"), { autoAlpha: 0, letterSpacing: "0.8em" }, { autoAlpha: 1, letterSpacing: "0.4em", duration: 1.2, ease: C(1.2), immediateRender: true }, T(192.69) - 0.06);
+      tl.fromTo($("sc045-super"), { autoAlpha: 0, scale: 0.92, transformOrigin: "0% 50%" }, { autoAlpha: 1, scale: 1, duration: 1.3, ease: C(1.3), immediateRender: true }, T(194.29) - 0.06);
+    }
+
+    // =====================================================================
+    // IS046 · 196.61–198.93 · FACE 2/6 — the lines keep drawing behind him
+    // =====================================================================
+    whip("sc045", "sc046", 196.55, { dir: 1, vertical: true, blurB: false });
+    scene("sc046", 196.55, 198.93);
+    {
+      const svg = $("sc046-lines");
+      const mk2 = (V, col) => { const p = svgEl(svg, "path", { d: catmull(V.map((v, i) => [-60 + i * 110, 760 - v * 420])), fill: "none", stroke: col, "stroke-width": 9, "stroke-linecap": "round" }); p.style.filter = `drop-shadow(0 0 10px ${col})`; return p; };
+      const a = mk2([0.0, 0.1, 0.08, 0.25, 0.3, 0.46, 0.5, 0.66, 0.72, 0.9], "#9fc3e3"), b = mk2([0.04, 0.06, 0.2, 0.22, 0.4, 0.42, 0.6, 0.62, 0.84, 0.95], "#e03f2c");
+      drawPath(a, S(196.6), 2.0, C(2.0, FX.ease.out)); drawPath(b, S(196.6), 2.0, C(2.0, FX.ease.out));
+      tl.to(svg, { x: 520, duration: 0.45, ease: C(0.45, FX.ease.in) }, S(198.5));
+      wordsIn($("sc046-story"), [T(196.93) - 0.06, T(197.09) - 0.06], { d: 0.45, y: 10 });
+    }
+
+    // =====================================================================
+    // IS047 · 198.93–201.89 · the greatest business story = an old cloth-bound book
+    // =====================================================================
+    scene("sc047", 198.93, 201.89);
+    {
+      tl.fromTo($("sc047-book"), { scale: 1.08, y: 30 }, { scale: 1.0, y: 0, duration: 2.96, ease: FX.ease.cam, immediateRender: true }, S(198.93));
+      tl.fromTo($("sc047-lamp"), { opacity: 0.4 }, { opacity: 1, duration: 0.25, ease: "power2.out", immediateRender: true }, S(198.98));
+      const ws = $("sc047-title").querySelectorAll(":scope > .w");
+      [T(199.17), T(199.33), T(199.49), T(199.65), T(200.29), T(200.77), T(201.41)].forEach((t, i) => appear(ws[i], t - 0.06, { d: 0.35, y: 0 }));
+      gsap.set($("sc047-hlbar"), { scaleX: 0 });
+      tl.fromTo($("sc047-hlbar"), { scaleX: 0 }, { scaleX: 1, duration: 0.45, ease: C(0.45, "sine.inOut"), immediateRender: true }, S(199.70));
+      tl.to($("sc047-gw"), { color: "#141b24", textShadow: "none", duration: 0.2 }, S(199.85));
+      whip("sc047", "sc048", 201.84, { dir: 1 });
+      flash(201.84, 0.6);
+    }
+
+    // =====================================================================
+    // IS048 · 201.89–206.77 · beige world map: most people don't know (the West)
+    // =====================================================================
+    scene("sc048", 201.84, 206.77);
+    const worldCam = (s, cx, cy) => ({ x: 960 - cx * s, y: 540 - cy * s, scale: s });
+    {
+      const ov = $("sc048-ov");
+      const west = svgEl(ov, "path", { d: D.west, fill: "#4a5260", opacity: 0 });
+      const tw = D.places.taipei; const twd = svgEl(ov, "circle", { cx: tw[0], cy: tw[1], r: 12, fill: "#9fc7b2", stroke: "#141b24", "stroke-width": 3 });
+      tl.fromTo(west, { attr: { opacity: 0 } }, { attr: { opacity: 0.55 }, duration: 0.8, ease: C(0.8), immediateRender: true }, S(206.21) - 0.06);
+      tl.fromTo(twd, { attr: { r: 0 } }, { attr: { r: 12 }, duration: 0.5, ease: C(0.5), immediateRender: true }, S(203.0));
+      // people who "don't know": grey pictograms with question marks
+      const cities = [[-74, 40.7], [-118, 34], [-87.6, 41.9], [-95, 29.8], [-79, 43.7], [-99, 19.4], [-74, 4.6], [-77, -12], [-46.6, -23.5], [-58.4, -34.6], [-0.1, 51.5], [2.35, 48.9], [-3.7, 40.4], [13.4, 52.5], [12.5, 41.9], [21, 52.2], [18, 59.3], [30.5, 50.4], [37.6, 55.8], [31.2, 30], [3.4, 6.5], [36.8, -1.3], [28, -26.2], [55.3, 25.2], [72.8, 19], [77.2, 28.6], [116.4, 39.9], [139.7, 35.7], [127, 37.5], [106.8, -6.2], [151.2, -33.9], [-105, 39.7], [-122.3, 47.6], [-84.4, 33.7], [-70.6, -33.4], [29, 41], [51.4, 35.7], [100.5, 13.8], [-9.1, 38.7], [-63, -17]];
+      const r = FX.rng(4800);
+      cities.forEach(([lon, lat], i) => {
+        const x = 12 * (lon + 180) + (r() - 0.5) * 30, y = 12 * (90 - lat) + (r() - 0.5) * 30;
+        const g = svgEl(ov, "g", { transform: `translate(${x.toFixed(0)} ${y.toFixed(0)})` });
+        svgEl(g, "circle", { cx: 0, cy: -46, r: 15, fill: "#6b6f75" });
+        svgEl(g, "path", { d: "M-22 0 Q-22 -28 0 -28 Q22 -28 22 0 Z", fill: "#6b6f75" });
+        if (i % 3 === 0) { const q = svgEl(g, "text", { x: 0, y: -72, "text-anchor": "middle", "font-family": "Haskoy", "font-weight": 800, "font-size": 34, fill: "#141b24" }); q.textContent = "?"; }
+        tl.fromTo(g, { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, S(203.57) - 0.06 + Math.floor(i * 0.6 * 12 / cities.length) / 12);
+      });
+      const A = worldCam(0.53, 2280, 980), B = worldCam(0.56, 2200, 950);
+      tl.fromTo($("sc048-cam"), A, Object.assign({ duration: 4.5, ease: "none", immediateRender: true }, B), S(201.89));
+      wordsIn($("sc048-most"), [T(203.57) - 0.06, T(203.89) - 0.06], { d: 0.4, y: 8 });
+      wordsIn($("sc048-west"), [T(206.05) - 0.06, T(206.21) - 0.06], { d: 0.4, y: 8 });
+      // graphic hand-off: the map shrinks to the card that sits behind the narrator
+      tl.to($("sc048-cam"), Object.assign({ duration: 0.4, ease: C(0.4, FX.ease.in) }, { x: 70 + 390 - 2280 * 0.18, y: 190 + 225 - 980 * 0.18, scale: 0.18 }), S(206.37));
+      tl.to([$("sc048-most"), $("sc048-west")], { autoAlpha: 0, duration: 0.2 }, S(206.4));
+    }
+
+    // =====================================================================
+    // IS049 · 206.77–209.73 · FACE 3/6 — the world map card pushes into Taiwan behind him
+    // =====================================================================
+    scene("sc049", 206.77, 209.73);
+    {
+      const tw = D.places.taipei;
+      svgEl($("sc049-ov"), "circle", { cx: tw[0], cy: tw[1], r: 9, fill: "#9fc7b2", stroke: "#141b24", "stroke-width": 2 });
+      const cardC = (s, cx, cy) => ({ x: 390 - cx * s, y: 225 - cy * s, scale: s });
+      tl.fromTo($("sc049-cam"), cardC(0.18, 2280, 980), Object.assign({ duration: 2.7, ease: FX.ease.cam, immediateRender: true }, cardC(1.25, tw[0], tw[1])), S(206.9));
+      tl.fromTo($("sc049-card"), { y: -8 }, { y: 6, duration: 3, ease: "none", immediateRender: true }, S(206.77));
+      appear($("sc049-agree"), T(208.53) - 0.06, { d: 0.45 });
+      FX.markup.pen(tl, $("sc049-marks"), S(208.6), { points: [[330, 742], [356, 772], [420, 700]], width: 9, color: "#f2ede3", blend: "normal", filter: pen, dur: 0.35, jitter: 3, seed: 49 });
+      whip("sc049", "sc050", 209.67, { dir: 1, blurA: false });
+    }
+
+    // =====================================================================
+    // IS050 · 209.73–214.37 · 2.5D: Taiwan today, in depth (clouds / map / title planes)
+    // =====================================================================
+    scene("sc050", 209.67, 214.37);
+    {
+      const P = 1200, Z = { l0: -700, l1: -250, l2: 150, l3: 380 };
+      for (const k in Z) gsap.set($("sc050-" + k), { z: Z[k], scale: (P - Z[k]) / P });
+      tl.fromTo($("sc050-cam"), { x: 70, z: -60, rotationY: 2, rotationX: 4 }, { x: -60, z: 260, rotationY: -2, rotationX: 0, duration: 3.2, ease: FX.ease.cam, immediateRender: true }, S(209.73));
+      tl.to($("sc050-cam"), { z: 300, x: -80, duration: 1.5, ease: "none" }, S(212.93));
+      FX.focusHunt(tl, $("sc050-stage"), S(212.95), { dur: 0.8 });
+      tl.fromTo($("sc050-l3"), { x: 0 }, { x: -140, duration: 4.7, ease: "none", immediateRender: true }, S(209.67));
+      tl.fromTo($("sc050-fill"), { opacity: 0 }, { opacity: 0.55, duration: 1.2, ease: C(1.2), immediateRender: true }, S(209.97) - 0.06);
+      tl.to($("sc050-fill"), { opacity: 0, duration: 0.4, ease: C(0.4, FX.ease.in) }, S(213.0));
+      tl.fromTo($("sc050-tw"), { autoAlpha: 0, letterSpacing: "0.9em" }, { autoAlpha: 1, letterSpacing: "0.5em", duration: 1.4, ease: C(1.4), immediateRender: true }, T(209.97) - 0.06);
+      appear($("sc050-today"), T(211.97) - 0.06, { d: 0.9, y: 20 });
+      tl.to($("sc050-tw"), { autoAlpha: 0, duration: 0.3 }, S(213.1));
+      appear($("sc050-riv"), T(213.49) - 0.06, { d: 0.6 });
+    }
+
+    // =====================================================================
+    // IS051 · 214.37–218.37 · TSMC: red-tinted fab panels (Vox layered), "world renowned"
+    // =====================================================================
+    scene("sc051", 214.37, 218.66);
+    {
+      tl.fromTo($("sc051-p1"), { x: 0, scale: 1.05 }, { x: -70, scale: 1.0, duration: 4.3, ease: "none", immediateRender: true }, S(214.37));
+      tl.fromTo($("sc051-p2"), { x: 160, y: -40, rotation: 4, autoAlpha: 0 }, { x: 0, y: 0, rotation: 2, autoAlpha: 1, duration: 1.2, ease: C(1.2), immediateRender: true }, S(214.45));
+      tl.to($("sc051-p2"), { x: 50, duration: 3.0, ease: "none" }, S(215.65));
+      tl.fromTo($("sc051-p3"), { y: 160, rotation: -5, autoAlpha: 0 }, { y: 0, rotation: -2.5, autoAlpha: 1, duration: 1.2, ease: C(1.2), immediateRender: true }, S(214.65));
+      tl.to($("sc051-p3"), { x: -40, duration: 3.0, ease: "none" }, S(215.85));
+      tl.fromTo($("sc051-card"), { autoAlpha: 0, scale: 1.2, rotation: -3 }, { autoAlpha: 1, scale: 1, rotation: -1.5, duration: 1.0, ease: C(1.0), immediateRender: true }, S(214.37) - 0.06);
+      wordsIn($("sc051-wr"), [T(215.89) - 0.06, T(216.29) - 0.06], { d: 0.5 });
+    }
+
+    // =====================================================================
+    // IS052 · 218.37–222.93 · D02: two bars topped with the two men, leap-frogging for decades
+    // =====================================================================
+    scene("sc052", 218.31, 222.93);
+    {
+      tl.fromTo($("sc052-sheet"), { y: 1100 }, { y: 0, duration: 0.34, ease: C(0.34, FX.ease.out), immediateRender: true }, S(218.31));
+      tl.fromTo($("sc052-base"), { scaleX: 0 }, { scaleX: 1, duration: 1.0, ease: C(1.0), immediateRender: true }, S(218.5));
+      const tk = $("sc052-ticks");
+      for (let i = 0; i <= 5; i++) { const d = document.createElement("div"); d.className = "i3-52-tick"; d.style.left = (520 + i * 176) + "px"; tk.appendChild(d);
+        tl.fromTo(d, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.001, immediateRender: true }, S(219.73) - 0.06 + i / 12); }
+      // heights (px) over time: start, then four leap-frogs
+      const BAR = { bt: $("sc052-bt"), bc: $("sc052-bc") }, HEAD = { bt: $("sc052-ht"), bc: $("sc052-hc") }, X = { bt: 650, bc: 1010 };
+      const st = { bt: 0, bc: 0 };
+      const set = () => { for (const k in BAR) { BAR[k].style.height = st[k].toFixed(0) + "px"; HEAD[k].style.left = X[k] + "px"; HEAD[k].style.top = (930 - st[k] - 250 + 12).toFixed(0) + "px"; } };
+      set();
+      const steps = [[218.55, 260, 200, 1.0], [219.8, 300, 390, 0.5], [220.4, 470, 420, 0.5], [221.0, 500, 560, 0.5], [221.6, 640, 590, 0.5]];
+      steps.forEach(([t, a, b, d]) => tl.to(st, { bt: a, bc: b, duration: d, ease: C(d, FX.ease.out), onUpdate: set }, S(t)));
+      tl.fromTo([HEAD.bt, HEAD.bc], { scale: 0 }, { scale: 1, duration: 0.6, ease: C(0.6), stagger: 0.1, immediateRender: true }, S(218.6));
+      wordsIn($("sc052-kick"), [T(218.37) - 0.06, T(218.69) - 0.06], { d: 0.4, y: 8 });
+      appear($("sc052-dec"), T(219.73) - 0.06, { d: 0.5 });
+      wordsIn($("sc052-up"), [T(220.69) - 0.06, T(221.09) - 0.06], { d: 0.35, y: 16 });
+      whip("sc052", "sc053", 222.87, { dir: 1, vertical: true });
+    }
+
+    // =====================================================================
+    // IS053 · 222.93–228.61 · D14: Taiwan relief -> push -> satellite Hsinchu, contrast call-out on the park
+    // =====================================================================
+    scene("sc053", 222.87, 228.61);
+    {
+      const rel = $("sc053-rel"), sat = $("sc053-sat");
+      const cam = (s, cx, cy) => ({ x: 960 - cx * s, y: 540 - cy * s, scale: s });
+      tl.fromTo(rel, cam(0.36, 1300, 1520), Object.assign({ duration: 3.1, ease: "none", immediateRender: true }, cam(0.4, 1330, 1380)), S(222.93));
+      tl.fromTo($("sc053-relfill"), { opacity: 0 }, { opacity: 0.6, duration: 1.0, ease: C(1.0), immediateRender: true }, S(225.81) - 0.06);
+      tl.fromTo($("sc053-tw"), { autoAlpha: 0, letterSpacing: "0.8em" }, { autoAlpha: 1, letterSpacing: "0.4em", duration: 1.0, ease: C(1.0), immediateRender: true }, T(225.81) - 0.06);
+      // fast ease-in push to Hsinchu; cut to the satellite at peak velocity (curve cut)
+      const hp = D.twPlaces.hsinchu_science_park;
+      tl.to(rel, Object.assign({ duration: 0.75, ease: "power3.in" }, cam(3.2, hp[0], hp[1])), S(226.05));
+      tl.to($("sc053-tw"), { autoAlpha: 0, duration: 0.2 }, S(226.5));
+      tl.set(rel, { autoAlpha: 0 }, S(226.8));
+      tl.set(sat, { visibility: "visible" }, S(226.8));
+      const sp = D.hsPlaces.hsinchu_science_park;
+      tl.fromTo(sat, cam(0.38, sp[0] - 120, sp[1] - 40), Object.assign({ duration: 1.3, ease: FX.ease.out, immediateRender: false }, cam(1.05, 2034, 1700)), S(226.8));
+      tl.to(sat, Object.assign({ duration: 1.5, ease: "none" }, cam(1.12, 2040, 1700)), S(228.1));
+      tl.fromTo(sat, { filter: "blur(6px)" }, { filter: "blur(0px)", duration: 0.25, ease: "none", immediateRender: false }, S(226.8));
+      FX.focusHunt(tl, sat.querySelector("img"), S(227.3), { dur: 0.8, base: "saturate(0.6) brightness(0.9) contrast(1.1)" });
+      // contrast call-out on the park (hard cut, lifted blacks everywhere else)
+      const park = D.hs.relation_10351419.d;
+      FX.contrastCallout(tl, $("sc053-veil"), S(227.09) - 0.06, { w: 3728, h: 2823, d: park, feather: 22, color: "rgba(40,46,52,1)", strength: 0.62 });
+      const ov = $("sc053-ov");
+      const outline = svgEl(ov, "path", { d: park, fill: "#9fc7b2", "fill-opacity": 0, stroke: "#9fc7b2", "stroke-width": 7, "stroke-linejoin": "round" });
+      outline.style.filter = "drop-shadow(0 0 6px rgba(159,199,178,0.9))";
+      drawPath(outline, S(227.09) - 0.06, 1.0, C(1.0, FX.ease.inOut));
+      tl.to(outline, { attr: { "fill-opacity": 0.22 }, duration: 0.6, ease: C(0.6) }, S(227.6));
+      const road = svgEl(ov, "path", { d: D.hs.way_286882979.d + " " + D.hs.way_556925962.d + " " + D.hs.way_330168753.d, fill: "none", stroke: "#f2d33b", "stroke-width": 16, "stroke-linecap": "round", "stroke-linejoin": "round", opacity: 0.85, filter: "url(#intro03-mk)" });
+      drawPath(road, S(228.13), 0.6, C(0.6, FX.ease.inOut));
+      const pt = svgEl(ov, "path", { d: D.hs.way_160110943.d, fill: "#e03f2c", opacity: 0 }), pu = svgEl(ov, "path", { d: D.hs.way_217846356.d + D.hs.way_257199539.d, fill: "#9fc3e3", opacity: 0 });
+      tl.to([pt, pu], { attr: { opacity: 0.95 }, duration: 0.3, ease: C(0.3), stagger: 0.1 }, S(228.2));
+      gsap.set($("sc053-lab"), { autoAlpha: 0 });
+      appear($("sc053-hs"), T(227.09) - 0.06, { d: 0.6 });
+      tl.set($("sc053-lab"), { autoAlpha: 1 }, T(227.09) - 0.06);
+      tl.fromTo($("sc053-labbox"), { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.3, immediateRender: true }, S(227.0));
+      appear($("sc053-sp"), T(228.13) - 0.06, { d: 0.5, y: 8 });
+      tl.fromTo($("sc053-credit"), { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.01, immediateRender: true }, S(226.8));
+    }
+
+    // =====================================================================
+    // IS054 · 228.61–233.49 · painting-to-print: the park photo is printed in a column; the quote
+    // =====================================================================
+    scene("sc054", 228.61, 233.49);
+    {
+      // greeked body copy (no invented words) + column rules
+      const pg = $("sc054-greek"), r = FX.rng(5400);
+      const add = (cls, css) => { const d = document.createElement("div"); d.className = cls; Object.assign(d.style, css); pg.appendChild(d); };
+      add("i3-54-rule", { left: "120px", top: "520px", width: "2080px", height: "5px" }); add("i3-54-rule", { left: "120px", top: "534px", width: "2080px", height: "1.5px" });
+      add("i3-54-rule", { left: "1260px", top: "560px", width: "1.5px", height: "1400px" });
+      for (let i = 0; i < 26; i++) add("i3-54-greek", { left: "120px", top: (40 + i * 18) + "px", width: (900 + r() * 1100).toFixed(0) + "px", opacity: 0.6 });
+      for (let i = 0; i < 28; i++) add("i3-54-greek", { left: "1380px", top: (1300 + i * 24) + "px", width: (420 + r() * 180).toFixed(0) + "px" });
+      for (let i = 0; i < 14; i++) add("i3-54-greek", { left: "310px", top: (1530 + i * 24) + "px", width: (700 + r() * 200).toFixed(0) + "px" });
+      // camera: start full-frame on the photo, pull back + pan up to the column
+      const page = { x: -200, y: -500 }, ph = { x: 310 + 410, y: 620 + 307 }; // photo centre in page px
+      const s0 = 1920 / 800;
+      tl.fromTo($("sc054-cam"), { x: 960 - (page.x + ph.x) * s0, y: 540 - (page.y + ph.y) * s0, scale: s0 },
+        { x: 960 - (page.x + 1170) * 0.86, y: 540 - (page.y + 1040) * 0.86, scale: 0.86, duration: 1.3, ease: FX.ease.cam, immediateRender: true }, S(228.75));
+      tl.to($("sc054-cam"), { x: 960 - (page.x + 1180) * 0.88, y: 540 - (page.y + 1060) * 0.88, scale: 0.88, duration: 3.4, ease: "none" }, S(230.05));
+      wordsIn($("sc054-acc"), [T(229.01) - 0.06, T(229.41) - 0.06, T(229.57) - 0.06, T(230.29) - 0.06], { d: 0.35, y: 6 });
+      const qt = [T(230.85), T(231.01), T(231.17), T(231.81), T(231.97), T(232.13), T(232.85)];
+      const qw = $("sc054-quote").querySelectorAll(".w");
+      qt.forEach((t, i) => appear(qw[i], t - 0.06, { d: 0.3, y: 6 }));
+      // pen underline per word in sync with the spoken quote (measured after layout)
+      const mks = $("sc054-marks");
+      const qx0 = 300, qy = 1385 + 92;
+      let cx = qx0; const widths = [125, 50, 285, 85, 115, 245, 245];
+      widths.forEach((w, i) => { FX.markup.pen(tl, mks, qt[i] - 0.02, { points: [[cx + 4, qy], [cx + w - 14, qy + 2]], width: 6, color: "#1d5c9e", filter: pen, dur: 0.22, jitter: 3, seed: 540 + i }); cx += w; });
+      // "replica": the Silicon Valley map pinned beside it and an "=" drawn between
+      tl.fromTo($("sc054-map"), { autoAlpha: 0, x: 160, rotation: 6 }, { autoAlpha: 1, x: 0, rotation: 1.5, duration: 0.8, ease: C(0.8), immediateRender: true }, S(231.17));
+      FX.markup.pen(tl, mks, S(231.3), { points: [[1180, 880], [1290, 878]], width: 9, color: "#141b24", filter: pen, dur: 0.18, seed: 551 });
+      FX.markup.pen(tl, mks, S(231.48), { points: [[1180, 930], [1290, 928]], width: 9, color: "#141b24", filter: pen, dur: 0.18, seed: 552 });
+      whip("sc054", "sc055", 233.44, { dir: 1 });
+      flash(233.44, 0.55);
+    }
+
+    // =====================================================================
+    // IS055–IS056 · 233.49–247.86 · dark world map: copies of Silicon Valley, crossed out; the two men
+    // =====================================================================
+    scene("sc055", 233.44, 247.86);
+    {
+      const ov = $("sc055-ov");
+      const chip = (g, s) => { svgEl(g, "rect", { x: -11 * s, y: -11 * s, width: 22 * s, height: 22 * s, rx: 2 * s, fill: "#f2ede3" });
+        for (let k = -1; k <= 1; k++) { svgEl(g, "path", { d: `M${-17 * s} ${k * 6 * s} H${17 * s} M${k * 6 * s} ${-17 * s} V${17 * s}`, stroke: "#f2ede3", "stroke-width": 2.4 * s }); }
+        svgEl(g, "rect", { x: -6 * s, y: -6 * s, width: 12 * s, height: 12 * s, fill: "#0f1318" }); };
+      // the original Silicon Valley (held over the aside line)
+      const sv = D.places.palo_alto; const g0 = svgEl(ov, "g", { transform: `translate(${sv[0]} ${sv[1]})` }); chip(g0, 1.6);
+      const ring0 = svgEl(ov, "circle", { cx: sv[0], cy: sv[1], r: 44, fill: "none", stroke: "#f2ede3", "stroke-width": 4, opacity: 0.8 });
+      tl.fromTo([g0, ring0], { opacity: 0 }, { opacity: 1, duration: 0.6, ease: C(0.6), immediateRender: true }, S(233.6));
+      // borders of the copying countries (drawn on "own borders")
+      const keys = Object.keys(D.copies).filter((k) => D.copies[k]);
+      const borders = keys.map((k) => svgEl(ov, "path", { d: D.copies[k], fill: "rgba(242,237,227,0.07)", stroke: "#f2ede3", "stroke-width": 3.2, "stroke-linejoin": "round", opacity: 0 }));
+      borders.forEach((b, i) => { tl.set(b, { attr: { opacity: 1 } }, S(238.85) - 0.06); drawPath(b, S(238.85) - 0.06 + (i % 6) / 12, 1.2, C(1.2, FX.ease.inOut)); });
+      // pins pop (12, staggered over 1.2 s) — each becomes a copy of Silicon Valley (chip icon) on "Silicon Valley"
+      const pinKeys = Object.keys(D.copyPlace).slice(0, 14);
+      const pins = [];
+      pinKeys.forEach((k, i) => { const p = D.places[k]; if (!p) return;
+        const g = svgEl(ov, "g", { transform: `translate(${p[0]} ${p[1]})` });
+        const dot = svgEl(g, "circle", { cx: 0, cy: 0, r: 10, fill: "#f2ede3" });
+        const cg = svgEl(g, "g", { opacity: 0 }); chip(cg, 1.15);
+        tl.fromTo(g, { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, S(235.09) - 0.06 + Math.floor(i * 1.2 * 12 / pinKeys.length) / 12);
+        tl.to(dot, { attr: { r: 0 }, duration: 0.15 }, S(237.49) - 0.06 + (i % 4) / 24);
+        tl.to(cg, { opacity: 1, duration: 0.001 }, S(237.49) - 0.06 + (i % 4) / 24);
+        pins.push(p); });
+      // Taiwan stays (ring, no cross)
+      const tw = D.places.taipei; const twr = svgEl(ov, "circle", { cx: tw[0], cy: tw[1], r: 26, fill: "none", stroke: "#f2ede3", "stroke-width": 4, opacity: 0 });
+      tl.to(twr, { attr: { opacity: 1 }, duration: 0.3 }, S(242.2));
+      // crosses on the copies (12 fps stop-motion)
+      pins.forEach((p, i) => { const s = 16; const a = svgEl(ov, "path", { d: `M${p[0] - s} ${p[1] - s} L${p[0] + s} ${p[1] + s} M${p[0] + s} ${p[1] - s} L${p[0] - s} ${p[1] + s}`, stroke: "#e8e0d0", "stroke-width": 7, "stroke-linecap": "round", filter: "url(#intro03-mk)", opacity: 0 });
+        tl.set(a, { attr: { opacity: 1 } }, S(241.8) + Math.floor(i * 1.2 * 12 / pins.length) / 12); });
+      tl.to(ring0, { attr: { opacity: 0.35 }, duration: 0.3 }, S(241.8));
+      // camera: whole world drifting, then push to Taiwan on "So let's get to that story"
+      const cam = (s, cx, cy) => ({ x: 960 - cx * s, y: 540 - cy * s, scale: s });
+      tl.fromTo($("sc055-cam"), cam(0.5, 2350, 960), Object.assign({ duration: 8.0, ease: "none", immediateRender: true }, cam(0.54, 2400, 950)), S(233.49));
+      tl.to($("sc055-cam"), Object.assign({ duration: 4.5, ease: "none" }, cam(0.6, 2700, 930)), S(241.5));
+      tl.to($("sc055-cam"), Object.assign({ duration: 1.5, ease: FX.ease.cam }, cam(3.2, tw[0], tw[1])), S(246.2));
+      FX.focusHunt(tl, $("sc055-cam"), S(247.0), { dur: 0.8 });
+      // text
+      wordsIn($("sc055-cc"), [T(235.09) - 0.06, T(235.65) - 0.06], { d: 0.45, y: 8 });
+      wordsIn($("sc055-rec"), [T(236.69) - 0.06, T(237.49) - 0.06, T(238.13) - 0.06], { d: 0.45, y: 8 });
+      wordsIn($("sc055-ob"), [T(239.01) - 0.06, T(239.25) - 0.06], { d: 0.4, y: 8 });
+      tl.to([$("sc055-txt"), $("sc055-ob")], { autoAlpha: 0, duration: 0.3 }, S(240.6));
+      appear($("sc056-failed"), T(241.78) - 0.06, { d: 0.6 });
+      tl.to($("sc056-failed"), { autoAlpha: 0, duration: 0.3 }, S(242.55));
+      wordsIn($("sc056-people"), [T(242.82) - 0.06, T(243.14) - 0.06, T(243.54) - 0.06, T(244.26) - 0.06, T(244.66) - 0.06], { d: 0.4, y: 8 });
+      tl.fromTo([$("sc056-ct"), $("sc056-cc")], { scale: 0, autoAlpha: 0 }, { scale: 1, autoAlpha: 1, duration: 0.8, ease: C(0.8), stagger: 0.12, immediateRender: true }, S(243.14) - 0.04);
+      tl.to($("sc056-people"), { autoAlpha: 0, duration: 0.35 }, S(246.1));
+      // circles slide together as the camera pushes in (motion for the cut)
+      tl.to($("sc056-ct"), { x: 220, y: 60, duration: 1.6, ease: FX.ease.cam }, S(246.2));
+      tl.to($("sc056-cc"), { x: -60, y: 60, duration: 1.6, ease: FX.ease.cam }, S(246.2));
+    }
+
+    // =====================================================================
+    // IS057 · 247.86–250.02 · FACE 4/6 clean — host lower third
+    // =====================================================================
+    scene("sc057", 247.86, 250.02);
+    {
+      appear($("sc057-host"), T(248.26) - 0.06, { d: 0.4, y: 8 });
+      tl.fromTo($("sc057-rule"), { scaleX: 0 }, { scaleX: 1, duration: 0.8, ease: C(0.8), immediateRender: true }, S(248.26));
+      appear($("sc057-sam"), T(248.66) - 0.06, { d: 0.6, y: 16 });
+      whip("sc057", "sc058", 249.96, { dir: -1, blurA: false });
+    }
+
+    // =====================================================================
+    // IS058 · 250.02–253.30 · Searching Lessons (hero) + film strip of this intro
+    // =====================================================================
+    scene("sc058", 249.96, 253.30);
+    gate(249.9, 253.35, () => FX.streaks($("sc058-st"), { seed: 58, speed: 0.6, gain: 0.9 }));
+    {
+      FX.text.random(tl, $("sc058-a"), T(250.02) - 0.06, { dur: 0.6, seed: 58 });
+      FX.text.random(tl, $("sc058-b"), T(250.74) - 0.06, { dur: 0.6, seed: 59 });
+      tl.fromTo($("sc058-title"), { scale: 1.0 }, { scale: 1.04, duration: 2.0, ease: "none", immediateRender: true }, S(250.02));
+      tl.to($("sc058-title"), { y: -170, scale: 0.9, duration: 1.2, ease: C(1.2, FX.ease.inOut) }, S(251.9));
+      const fr = $("sc058-frames");
+      ["chang_poster", "strip_045", "strip_048", "strip_050", "strip_051", "strip_052", "strip_053", "strip_054", "strip_055", "tsao_poster"].forEach((n) => {
+        const d = document.createElement("span"); d.className = "fr"; d.style.backgroundImage = `url('assets/intro/derived/intro03/${n}.jpg')`; fr.appendChild(d); });
+      tl.fromTo($("sc058-strip"), { x: 1920, rotation: -2 }, { x: -2600, rotation: -2, duration: 1.6, ease: "none", immediateRender: true }, S(252.2));
+    }
+
+    // =====================================================================
+    // IS059 · 253.30–255.38 · FACE 5/6 — a vintage radio slides onto the shelf behind him
+    // =====================================================================
+    scene("sc059", 253.30, 255.38);
+    {
+      tl.fromTo($("sc059-radio"), { x: -700, rotation: -6 }, { x: 0, rotation: -2, duration: 1.0, ease: C(1.0), immediateRender: true }, S(254.0));
+      tl.fromTo($("sc059-needle"), { x: 0 }, { x: 150, duration: 0.6, ease: C(0.6, FX.ease.inOut), immediateRender: true }, S(254.7));
+      wordsIn($("sc059-cap"), [T(254.26) - 0.06, T(254.58) - 0.06, T(254.74) - 0.06], { d: 0.4, y: 8 });
+      whip("sc059", "sc060", 255.32, { dir: 1, blurA: false });
+    }
+
+    // =====================================================================
+    // IS060 · 255.38–259.22 · a 1980s TV switches off ("off camera"); the dot becomes a line
+    // =====================================================================
+    scene("sc060", 255.32, 259.22);
+    {
+      tl.fromTo($("sc060-set"), { scale: 0.97 }, { scale: 1.02, duration: 3.8, ease: "none", immediateRender: true, transformOrigin: "50% 50%" }, S(255.38));
+      FX.weave($("sc060-screen"), { amp: 0.8, rot: 0.02, flicker: 0.05, seed: 60, from: S(255.3), to: S(257.6) });
+      tl.to($("sc060-screen"), { scaleY: 0.012, duration: 0.12, ease: "power3.in" }, S(257.54));
+      tl.to($("sc060-screen"), { scaleX: 0.01, duration: 0.1, ease: "power2.in" }, S(257.66));
+      tl.fromTo($("sc060-dot"), { opacity: 0, scale: 1 }, { opacity: 1, duration: 0.001, immediateRender: true }, S(257.76));
+      tl.to($("sc060-dot"), { scale: 0.5, opacity: 0.7, duration: 0.6, ease: "sine.out" }, S(257.8));
+      wordsIn($("sc060-label"), [T(257.54) - 0.06, T(257.86) - 0.06], { d: 0.35, y: 6 });
+      // the dot lingers, then stretches into a horizontal line across the frame
+      tl.to([$("sc060-set"), $("sc060-wall")], { opacity: 0.25, duration: 0.5, ease: "power2.in" }, S(258.5));
+      tl.fromTo($("sc060-line"), { opacity: 0, scaleX: 0.006 }, { opacity: 1, scaleX: 1, duration: 0.7, ease: C(0.7, FX.ease.inOut), immediateRender: true }, S(258.45));
+    }
+
+    // =====================================================================
+    // IS061 · 259.22–261.94 · FACE 6/6 clean — opens from the CRT line; "sweat"
+    // =====================================================================
+    scene("sc061", 259.22, 261.94);
+    {
+      tl.fromTo($("sc061-wrap"), { scaleY: 0.012 }, { scaleY: 1, duration: 0.3, ease: FX.choppy("expo.out", 0.3, 24), immediateRender: true }, S(259.22));
+      tl.fromTo($("sc061-flash"), { opacity: 0.9 }, { opacity: 0, duration: 0.4, ease: "power2.out", immediateRender: true }, S(259.22));
+      appear($("sc061-sweat"), T(260.50) - 0.06, { d: 0.5 });
+      const m = $("sc061-marks");
+      FX.markup.pen(tl, m, S(260.5), { points: [[1240, 230], [1222, 262], [1216, 286], [1226, 304], [1242, 306], [1256, 290], [1254, 266], [1240, 230]], width: 7, color: "#f2ede3", blend: "normal", filter: pen, dur: 0.5, jitter: 2, seed: 61 });
+      FX.markup.pen(tl, m, S(260.75), { points: [[1290, 330], [1278, 352], [1276, 368], [1286, 378], [1298, 372], [1302, 356], [1290, 330]], width: 6, color: "#f2ede3", blend: "normal", filter: pen, dur: 0.35, jitter: 2, seed: 62 });
+      whip("sc061", "sc062", 261.88, { dir: -1, vertical: true, blurA: false });
+    }
+
+    // =====================================================================
+    // IS062 · 261.94–265.62 · D12: chapter list (blurred), focus pull lands on the timestamp
+    // =====================================================================
+    scene("sc062", 261.88, 265.62);
+    {
+      const list = $("sc062-list"), r = FX.rng(6200);
+      for (let i = 0; i < 40; i++) {
+        const row = document.createElement("div"); row.className = "i3-62-row"; row.style.top = (90 + i * 68) + "px";
+        const h = 0.08 * i + r() * 0.6; const hh = Math.floor(h), mm = Math.floor((h - hh) * 60 + i * 6.6) % 60;
+        row.innerHTML = `<div class="bar" style="width:${(120 + r() * 340).toFixed(0)}px;background:${i % 2 ? "var(--vermilion)" : "var(--sky)"};opacity:${(0.55 + r() * 0.4).toFixed(2)}"></div><div class="ts">${hh}:${String(mm).padStart(2, "0")}:${String(Math.floor(r() * 60)).padStart(2, "0")}</div><div class="gk" style="width:${(320 + r() * 520).toFixed(0)}px"></div>`;
+        list.appendChild(row);
+      }
+      tl.fromTo(list, { y: 0 }, { y: -160, duration: 2.9, ease: "none", immediateRender: true }, S(261.94));
+      tl.fromTo($("sc062-read"), { filter: "blur(9px)", opacity: 0.5 }, { filter: "blur(0px)", opacity: 1, duration: 0.5, ease: C(0.5, FX.ease.out), immediateRender: true }, T(263.30) - 0.06);
+      tl.fromTo($("sc062-blur"), { filter: "blur(3px)" }, { filter: "blur(9px)", duration: 0.5, ease: "sine.inOut", immediateRender: true }, S(263.24));
+      FX.markup.pen(tl, $("sc062-marks"), S(263.94) - 0.04, { points: [[960, 610], [968, 760], [962, 960]], width: 8, color: "#f2ede3", blend: "normal", filter: pen, dur: 0.4, seed: 621 });
+      FX.markup.pen(tl, $("sc062-marks"), S(264.3), { points: [[920, 915], [962, 975], [1004, 912]], width: 8, color: "#f2ede3", blend: "normal", filter: pen, dur: 0.2, seed: 622 });
+      wordsIn($("sc062-long"), [T(264.90) - 0.06, T(265.14) - 0.06], { d: 0.4, y: 8 });
+      tl.to(list, { y: -1800, duration: 0.75, ease: C(0.75, FX.ease.in) }, S(264.9));
+    }
+
+    // =====================================================================
+    // IS063 · 265.62–270.02 · paper: a sweat drop, wiped away; the bar for the rest of the podcast
+    // =====================================================================
+    scene("sc063", 265.56, 270.02);
+    {
+      tl.fromTo($("sc063-sheet"), { y: 1100 }, { y: 0, duration: 0.34, ease: C(0.34, FX.ease.out), immediateRender: true }, S(265.56));
+      const dp = $("sc063-drop");
+      const fill = svgEl(dp, "path", { d: "M300 60 C 250 200 130 330 130 450 C 130 560 210 630 300 630 C 390 630 470 560 470 450 C 470 330 350 200 300 60 Z", fill: "#9fb4c2", opacity: 0.0 });
+      FX.markup.pen(tl, dp, S(266.5), { points: [[300, 60], [210, 260], [140, 420], [150, 540], [230, 620], [370, 620], [455, 530], [462, 420], [390, 260], [300, 60]], width: 9, color: "#141b24", filter: pen, dur: 0.9, jitter: 3, seed: 631 });
+      FX.markup.pen(tl, dp, S(267.0), { points: [[220, 470], [230, 540], [270, 575]], width: 7, color: "#141b24", filter: pen, dur: 0.35, seed: 632 });
+      tl.to(fill, { attr: { opacity: 0.55 }, duration: 0.4, ease: C(0.4) }, S(266.8));
+      // "wipe": a cloth sweeps across and the drop is gone
+      tl.fromTo($("sc063-cloth"), { x: 0, y: 0, rotation: -8 }, { x: 2800, y: -60, rotation: 6, duration: 0.9, ease: C(0.9, FX.ease.inOut), immediateRender: true }, S(267.2));
+      tl.to(dp, { opacity: 0, duration: 0.001 }, S(267.62));
+      // progress bar: the rest of this podcast (long)
+      tl.fromTo($("sc063-barf"), { scaleX: 0.0164 }, { scaleX: 0.0164, duration: 0.01, immediateRender: true }, S(265.6));
+      tl.to($("sc063-barf"), { scaleX: 0.5, duration: 1.3, ease: "none" }, S(268.74));
+      tl.fromTo([$("sc063-bar"), $("sc063-t0"), $("sc063-t1")], { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.4, ease: C(0.4), immediateRender: true }, S(265.9));
+    }
+
+    // =====================================================================
+    // IS064 · 270.02–271.78 · D07 collage poster of historic images
+    // =====================================================================
+    scene("sc064", 270.02, 271.78);
+    {
+      [["c1", -5, 270.05], ["c2", 3, 270.17], ["c3", -2, 270.29], ["c4", 4, 270.45]].forEach(([id, rot, t]) =>
+        tl.fromTo($("sc064-" + id), { autoAlpha: 0, y: -50, rotation: rot * 2.2 }, { autoAlpha: 1, y: 0, rotation: rot, duration: 0.5, ease: C(0.5), immediateRender: true }, S(t)));
+      tl.fromTo($("sc064-board"), { scale: 1.0 }, { scale: 1.05, duration: 1.8, ease: "none", immediateRender: true }, S(270.02));
+      tl.fromTo($("sc064-box"), { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.001, immediateRender: true }, T(270.90) - 0.06);
+      wordsIn($("sc064-box"), [T(270.90) - 0.06, T(271.30) - 0.06], { d: 0.3, y: 0 });
+      tl.fromTo($("sc064-stamp"), { opacity: 0, scale: 1.4 }, { opacity: 0.7, scale: 1, duration: 0.25, ease: C(0.25), immediateRender: true }, S(271.35));
+      whip("sc064", "sc065", 271.72, { dir: 1 });
+      flash(271.72, 0.6);
+    }
+
+    // =====================================================================
+    // IS065 · 271.78–273.46 · B-roll on a second set (black 1980s TV), push into the screen
+    // =====================================================================
+    scene("sc065", 271.72, 273.52);
+    {
+      tl.fromTo($("sc065-screen"), { scaleY: 0.012, scaleX: 0.7 }, { scaleY: 1, scaleX: 1, duration: 0.32, ease: FX.choppy("expo.out", 0.32, 24), immediateRender: true }, S(271.85));
+      tl.fromTo($("sc065-flash"), { opacity: 1 }, { opacity: 0, duration: 0.45, ease: "power2.out", immediateRender: true }, S(271.85));
+      wordsIn($("sc065-lab"), [T(271.78) - 0.06, T(272.18) - 0.06], { d: 0.4, y: 6 });
+      tl.to($("sc065-lab"), { autoAlpha: 0, duration: 0.25 }, S(273.1));
+      tl.fromTo($("sc065-cam"), { scale: 1 }, { scale: 1.03, duration: 1.4, ease: "none", immediateRender: true }, S(271.8));
+      tl.to($("sc065-cam"), { scale: 2.6, duration: 0.32, ease: "power3.in" }, S(273.2));
+    }
+
+    // =====================================================================
+    // IS066 · 273.46–275.06 · through the screen into streaks: here's the story
+    // =====================================================================
+    scene("sc066", 273.46, 275.06);
+    gate(273.4, 275.1, () => FX.streaks($("sc066-st"), { seed: 66, speed: 0.9, gain: 1.1 }));
+    {
+      tl.fromTo($("sc066-st"), { scale: 1.3, opacity: 0.4 }, { scale: 1.0, opacity: 0.8, duration: 1.6, ease: FX.ease.cam, immediateRender: true }, S(273.46));
+      wordsIn($("sc066-txt"), [T(273.78) - 0.06, T(274.18) - 0.06, T(274.34) - 0.06], { d: 0.4, y: 8 });
+      tl.fromTo($("sc066-white"), { opacity: 0 }, { opacity: 1, duration: 4 / 24, ease: "power2.in", immediateRender: true }, S(275.06) - 4 / 24);
+    }
+
+    FX.mount(tl, DURATION);
+    window.__timelines = window.__timelines || {};
+    window.__timelines[SEG] = tl;
+  })();
+  </script>
+</template>
+</body>
+</html>
