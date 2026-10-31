@@ -41,3 +41,11 @@ Full transcript (absolute times): `project/transcript_full.json`.
 
 ## Delivery per chunk
 `renders/cN/cN_final.mp4` (1080p, VO at unity + beds) and `review/cN_720p.mp4`, rendered and QA'd separately.
+
+## Cross-chunk colour decision (lead, 2026-10-31)
+- Political/Cold-War chunks (where TSMC/UMC don't appear): **red = PRC / CCP / the Communist bloc** (universal convention),
+  **celadon = Taiwan / ROC**, **blue (navy) = the United States and its allies when a contrast is needed**, everyone else
+  neutral (ink/bone/grey). Chip chunks keep red = TSMC/Morris Chang, blue = UMC/Robert Tsao. Never show red-TSMC and red-PRC in
+  the same scene. Silicon Valley chunk (c1): vermilion = the West / Stanford, navy = the East (as in the approved samples).
+- The original Chinese of a slogan/quote may appear small as decoration under the narrator's English words.
+- Real documents/newspapers keep their own printed words; our overlay text = the narrator's words only.
