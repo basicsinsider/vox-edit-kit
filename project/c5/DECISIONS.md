@@ -11,7 +11,7 @@
    Rogers chip, "the Chinese leadership" = Zhou Enlai card — pictures identify them, on-screen words stay the narrator's. (If Krish wants ID
    labels, add a 22 px t-label under each — cheap change.)
 4. **Map place labels** Kinmen / Matsu (C5S090) as small geographic labels, like other map labels; the narration says only "the islands".
-5. **No fact-checking**: C5B068 says *Kissinger* will go to China to meet Mao — the picture is the real 15 July 1971 televised announcement
+5. **No fact-checking**: C5B063 says *Kissinger* will go to China to meet Mao — the picture is the real 15 July 1971 televised announcement
    (N61), the text is only his words ("later in the year", "China", "Mao Zedong"). Real newspaper headlines that would contradict the
    narration are not used as overlays; real documents keep their own printed words.
 6. **Jeff Bezos quote** (C5S106) — shown as he presents it: pull-quote "compromise is never a good solution", caption JEFF BEZOS, painting-to-
@@ -24,7 +24,7 @@
 10. **TVs**: Tatung (C5S014, Taiwanese assembly), RCA 1970–71 colour set (C5S067 — RCA is in this story), Sony Trinitron rewind (C5S087).
 11. **Charts without narrated values** (growth bars, smile curve, ladder, influence flows, UN dots, Bush/Kissinger columns) are shapes only —
     no axis values, years or counts. The growth bars' 9–10 % band is the only number, as narrated.
-12. **The conference** (C5B022–C5B033) is never named on screen (the narrator doesn't name it); programme = typeset with his topic words.
+12. **The conference** (C5B018–C5B029) is never named on screen (the narrator doesn't name it); programme = typeset with his topic words.
 13. **Fred Terman** reuses c1's Terman assets (callback "the guy we have talked about"), spelled TERMAN (ASR "Turman").
 14. **Typeset recreations** (cable, schedule, patient chart, agenda, columns, org chart, calendar) carry only narrated words or neutral
     filler blurred out; no seals, letterheads, signatures or real mastheads. Real dates appear only inside real documents/props (memo, treaty,
@@ -37,3 +37,11 @@
 19. **Map kit**: all maps from `assets/maps/kit/` (M01–M07). Until it lands, editors block layout with the intro maps but must swap before render.
 20. **Fuseli's The Nightmare** for "their worst dreams are coming true" (painting as B-roll, the words made literal).
 21. **Chunk joins**: c4→c5 continues the EPZ push (C5S001); c5→c6 ends on the UN voting board still moving (cut on action into c6).
+
+## Lead overrides (2026-10-31)
+- Kissinger vs Nixon: the narrator says Kissinger is going to China — show KISSINGER (photos/footage of Kissinger, 1971 secret
+  trip, Pakistan/PIA), not Nixon's 15 July address, so the picture matches the words. Nixon's address only where the narrator
+  talks about Nixon/the announcement.
+- Unnamed people (Chiang Kai-shek, Rogers, Zhou Enlai): small t-label ID labels are OK (visual labels of an object on screen),
+  kept minimal.
+- UN vote graphic: reuse c4's spec (project/c4/EDIT_NOTES.md, its D06 GA hemicycle scene) so the look matches.

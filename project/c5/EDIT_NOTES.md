@@ -1316,7 +1316,7 @@ No blue-UMC / red-TSMC anywhere in c5. Every frame ≤ 2 accents (checked per sc
 2. Unnamed people (Taiwanese leader = Chiang Kai-shek; the Secretary of State = William P. Rogers; Chinese leadership = Zhou Enlai): photos
    without name text (default) or a small ID label?
 3. Map labels "Kinmen" / "Matsu" as small geographic labels although he says only "the islands" (default: yes, small t-label).
-4. The announcement (C5B064): narrator says Kissinger will go to meet Mao; the footage is Nixon's real 15 July 1971 address → default: show
+4. The announcement (C5B063): narrator says Kissinger will go to meet Mao; the footage is Nixon's real 15 July 1971 address → default: show
    the real footage, captions = his words (no fact-checking).
 5. Cultural Revolution colour posters / Mao painting keep their red (red = PRC per the lead's colour decision), lightly muted — OK?
 6. Jeff Bezos "quote" is the narrator's paraphrase → default: show his words as a pull-quote with the caption "JEFF BEZOS" (no quotation

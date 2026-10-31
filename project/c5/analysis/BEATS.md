@@ -151,118 +151,118 @@ narrator or the ASR gets them wrong. Everything else on screen = exactly his wor
 | 30.83–31.47 | C5B007 | "Texas Instrument" | **Texas Instruments** | company name is plural — use the logo / correct name |
 | 32.03 | C5B007 | "RAC" | **RCA** | ASR (or the narrator's tongue) swapped the letters; RCA is the company that "plays a big part" later (RCA ↔ ITRI). **Lead: listen once at 32.03 to confirm** |
 | 129.37–129.69 | C5B025 | "Fred Turman" | **Fred Terman** | same man as c1 (Frederick Terman) |
-| 171.37–171.93 / 278.43–278.91 | C5B033, C5B057 | "Mao Zedong" | **Mao Zedong** | correct in ASR |
-| 313.66–314.14 | C5B064 | "Mao Zhedang" | **Mao Zedong** | |
-| 424.39–424.79 | C5B085 | "Mao Zhong's" | **Mao Zedong's** | |
-| 213.26–213.66 | C5B042 | "Henry Kissinger" | **Henry Kissinger** | correct |
-| 208.22 | C5B041 | "Nixon" | **Nixon** (Richard Nixon) | correct |
-| 216.14, 218.30, 220.86 | C5B043–C5B044 | "secretary of the state" | **Secretary of State** | title; narrator adds "the" |
-| 210.22–211.18 | C5B042 | "national security advisor" | **National Security Advisor** | correct |
-| 381.03 | C5B076 | "Kissinger diplomacy" | **the Kissinger diplomacy** | his phrase; keep |
-| 439.82–440.54 | C5B088 | "Taiwanese Strait" | **Taiwan Strait** | place name |
-| 504.33–504.57 | C5B102 | "Jeff Bezo" | **Jeff Bezos** | |
-| 537.13–538.33 | C5B108 | "George H.W. Bush" | **George H.W. Bush** | correct; later "George Bush" 554.00 |
-| 462.78 ff. | C5B094 ff. | "CCP" | **CCP** | Chinese Communist Party — keep the acronym as spoken |
+| 171.37–171.93 / 278.43–278.91 | C5B033, C5B056 | "Mao Zedong" | **Mao Zedong** | correct in ASR |
+| 313.66–314.14 | C5B063 | "Mao Zhedang" | **Mao Zedong** | |
+| 424.39–424.79 | C5B084 | "Mao Zhong's" | **Mao Zedong's** | |
+| 213.26–213.66 | C5B041 | "Henry Kissinger" | **Henry Kissinger** | correct |
+| 208.22 | C5B040 | "Nixon" | **Nixon** (Richard Nixon) | correct |
+| 216.14, 218.30, 220.86 | C5B042–C5B043 | "secretary of the state" | **Secretary of State** | title; narrator adds "the" |
+| 210.22–211.18 | C5B041 | "national security advisor" | **National Security Advisor** | correct |
+| 381.03 | C5B075 | "Kissinger diplomacy" | **the Kissinger diplomacy** | his phrase; keep |
+| 439.82–440.54 | C5B087 | "Taiwanese Strait" | **Taiwan Strait** | place name |
+| 504.33–504.57 | C5B101 | "Jeff Bezo" | **Jeff Bezos** | |
+| 537.13–538.33 | C5B107, C5B111 | "George H.W. Bush" | **George H.W. Bush** | correct; later "George Bush" 554.00 |
+| 462.78 ff. | C5B093 ff. | "CCP" | **CCP** | Chinese Communist Party — keep the acronym as spoken |
 | 466.54 ff. | — | "UN" / "United Nations" | **UN** / **United Nations** | as spoken |
-| 482.86 | C5B097 | "sites" | sides | ASR — no text on it |
-| 499.21 | C5B101 | "UN set" | UN **seat** | ASR/slip — text "UN seat" |
-| 299.95 | C5B062 | "the strip happens" | (trip) | ASR/slip — no text |
-| — | C5B032, C5B068 | "Taiwanese leader" | **Taiwanese leader** (unnamed; = Chiang Kai-shek, named in c4 at 507.4) | show his portrait; no name text unless Krish wants an ID label (DECISIONS #3) |
-| 270.35 | C5B055 | "the Chinese leadership" | (unnamed; Zhou Enlai shown) | photo card only |
-| 220.86 | C5B044 | "the secretary of the state at the time" | (unnamed; William P. Rogers shown) | photo chip only |
+| 482.86 | C5B096 | "sites" | sides | ASR — no text on it |
+| 499.21 | C5B100 | "UN set" | UN **seat** | ASR/slip — text "UN seat" |
+| 299.95 | C5B061 | "the strip happens" | (trip) | ASR/slip — no text |
+| — | C5B031, C5B067 | "Taiwanese leader" | **Taiwanese leader** (unnamed; = Chiang Kai-shek, named in c4 at 507.4) | show his portrait; no name text unless Krish wants an ID label (DECISIONS #3) |
+| 270.35 | C5B054 | "the Chinese leadership" | (unnamed; Zhou Enlai shown) | photo card only |
+| 220.86 | C5B043 | "the secretary of the state at the time" | (unnamed; William P. Rogers shown) | photo chip only |
 
 ### 2b. Narrator slips / repeats / grammar — keep in the audio, do NOT emphasise or caption
 | time | beat | slip | handling |
 |---|---|---|---|
-| 61.44–62.24 | C5B010–013 | "Taiwan doesn't get to capture this is kind of a business term" (aside mid-sentence) | label box "business term" next to "capture" (that IS what he says it is) |
+| 61.44–62.24 | C5B012 | "Taiwan doesn't get to capture this is kind of a business term" (aside mid-sentence) | label box "business term" next to "capture" (that IS what he says it is) |
 | 72.88 | C5B014 | "an important point to come keep in mind" | text "important point" only |
 | 76.08–78.72 | C5B015 | "move up the value supply chain or value chain in the supply" | text "value chain" only (77.44) |
 | 113.36–115.04 | C5B022 | "or maybe, maybe I'm misunderstanding it" | no text; keep the engineers visual |
 | 119.04–119.44 | C5B022 | "and of course." (fragment) | nothing |
 | 120.33 | C5B023 | "Some Americans was also going" | text "Americans" only |
 | 141.85–142.33 | C5B028 | "getting getting information" | text "information" once |
-| 162.89–164.89 | C5B027–032 | "Taiwanese leader in the point because things that like China…" | text "Taiwanese leader"; then the China comparisons |
+| 162.89–164.89 | C5B031–C5B032 | "Taiwanese leader in the point because things that like China…" | text "Taiwanese leader"; then the China comparisons |
 | 176.30–177.42 | C5B034 | "The country, China, the country." (self-correction) | no text |
-| 179.98–185.42 | C5B031–036 | "uh Yeah", "he's uh he's he's" | text only "purging", "suspicious", "war", "scientists", "engineers" |
-| 214.62 | C5B043 | "Arguably he goes on to become…" | no "arguably" on screen |
+| 179.98–185.42 | C5B035–C5B036 | "uh Yeah", "he's uh he's he's" | text only "purging", "suspicious", "war", "scientists", "engineers" |
+| 214.62 | C5B042 | "Arguably he goes on to become…" | no "arguably" on screen |
 | 238.94–240.67 | C5B047 | "US uh US uh Official" | no text |
-| 279.47–280.19 | C5B058 | "A lot of first here" | text "first" only |
-| 293.79–295.31 | C5B061 | "if why he he does not" | no text on it |
-| 303.50–303.90 | C5B062 | "No no announcement" | text "no announcement" once |
-| 309.66–314.94 | C5B064 | he says *Kissinger* will go to China to meet Mao | no fact-check: text = "later in the year", "China", "Mao Zedong" (his words); footage is the real announcement (DECISIONS #5) |
-| 344.06 | C5B071 | "they they" | — |
-| 393.11–393.67 | C5B078 | "US US gets the upper hand" | text "upper hand", "Cold War" |
-| 409.11 | C5B081 | "China wants give up support of Taiwan" (word missing) | text "give up support of Taiwan" |
-| 427.27–430.30 | C5B086 | "islands that are close to you. The mainland" (= close to the mainland) | text "the islands" + "the mainland" |
-| 444.86 | C5B089 | "we got it's back" | text stops at "don't mess with Taiwan" |
-| 445.50–449.74 | C5B090 | "So now that US is talking with China, China now that the US is talking with China" (restart) | text once, on the first "talking" 446.70 |
-| 474.86–475.34 | C5B096 | "we we we are not against" | text "not against" |
-| 494.33 | C5B100 | "to this very point" | — |
-| 549.76 | C5B111 | "trying to guess some kind of compromise" | text "compromise" only |
-| 555.20–555.92 | C5B112 | "George Bush is Bush one is talking" | text "George Bush" (554.00) + "delegations" |
-| 563.12–564.96 | C5B114 | "let's not vote against abandoning Taiwan" (logic inverted) | no text — the quote card shows only his first sentence |
-| 575.28 | C5B116 | "the Kissinger" | — |
-| 585.12–587.20 | C5B118 | "abandoning abandoning um abandoning" | text "not abandoning … Taiwan" once (first "abandoning" 585.12, "Taiwan" 587.92) |
+| 279.47–280.19 | C5B057 | "A lot of first here" | text "first" only |
+| 293.79–295.31 | C5B060 | "if why he he does not" | no text on it |
+| 303.50–303.90 | C5B061 | "No no announcement" | text "no announcement" once |
+| 309.66–314.14 | C5B063 | he says *Kissinger* will go to China to meet Mao | no fact-check: text = "later in the year", "China", "Mao Zedong" (his words); footage is the real announcement (DECISIONS #5) |
+| 344.06 | C5B070 | "they they" | — |
+| 393.11–393.67 | C5B077 | "US US gets the upper hand" | text "upper hand", "Cold War" |
+| 409.11 | C5B080 | "China wants give up support of Taiwan" (word missing) | text "give up support of Taiwan" |
+| 427.27–430.30 | C5B085 | "islands that are close to you. The mainland" (= close to the mainland) | text "the islands" + "the mainland" |
+| 444.86 | C5B088 | "we got it's back" | text stops at "don't mess with Taiwan" |
+| 445.50–449.74 | C5B089 | "So now that US is talking with China, China now that the US is talking with China" (restart) | text once, on the first "talking" 446.70 |
+| 474.86–475.34 | C5B095 | "we we we are not against" | text "not against" |
+| 494.33 | C5B099 | "to this very point" | — |
+| 549.76 | C5B110 | "trying to guess some kind of compromise" | text "compromise" only |
+| 555.20–555.92 | C5B111 | "George Bush is Bush one is talking" | text "George Bush" (554.00) + "delegations" |
+| 563.12–564.96 | C5B113 | "let's not vote against abandoning Taiwan" (logic inverted) | no text — the quote card shows only his first sentence |
+| 575.28 | C5B115 | "the Kissinger" | — |
+| 585.12–587.20 | C5B117 | "abandoning abandoning um abandoning" | text "not abandoning … Taiwan" once (first "abandoning" 585.12, "Taiwan" 587.92) |
 
 ## 3. Entities (beat ids + key-word start times)
 
 | type | entity | spoken as / note | beats | key-word times |
 |---|---|---|---|---|
-| PERSON | Fred Terman | "Fred Turman, the father of Silicon Valley" | C5B024–C5B029 | 129.37 (Fred), 129.69 (Terman), 130.65 (father), 131.13 (Silicon) |
-| PERSON | Mao Zedong | "Mao Zedong", "Mao Zhedang", "Mao Zhong's" | C5B033, C5B057, C5B064, C5B085 | 171.37, 278.43, 313.66, 424.39 |
-| PERSON | Richard Nixon | "Nixon administration", "Nixon is gonna go", "Nixon was pro communist" | C5B041, C5B067, C5B073 | 208.22, 326.38, 357.02 |
-| PERSON | Henry Kissinger | NSA → "secretary of the state" later | C5B042–C5B066, C5B074, C5B076, C5B106, C5B116 | 213.26 (Henry), 213.66, 222.86, 229.50, 247.39, 265.31, 310.06, 321.18, 363.18, 381.03, 524.17, 573.52, 575.44 |
-| PERSON | Secretary of State "at the time" (William P. Rogers, unnamed) | | C5B044 | 220.86 |
-| PERSON | Taiwanese leader (Chiang Kai-shek, unnamed here) | | C5B032, C5B068 | 162.25, 331.26 |
-| PERSON | Chinese leadership (Zhou Enlai, unnamed) | | C5B055, C5B066 ("communist leaders" 324.30) | 270.35 |
-| PERSON | President of the United States | (Nixon) | C5B056, C5B116 | 273.47, 276.99 (the president — of China), 576.88 |
-| PERSON | George H.W. Bush | "future president George H.W. Bush", "George Bush" | C5B108–C5B118 | 536.17 (future), 537.13 (George), 537.61 (H.W.), 538.33 (Bush), 554.00, 570.80 (ambassador) |
-| PERSON | Jeff Bezos | "this Jeff Bezo quote" | C5B102 | 504.33, 504.57 |
+| PERSON | Fred Terman | "Fred Turman, the father of Silicon Valley" | C5B025 | 129.37 (Fred), 129.69 (Terman), 130.65 (father), 131.13 (Silicon) |
+| PERSON | Mao Zedong | "Mao Zedong", "Mao Zhedang", "Mao Zhong's" | C5B033, C5B056, C5B063, C5B084 | 171.37, 278.43, 313.66, 424.39 |
+| PERSON | Richard Nixon | "Nixon administration", "Nixon is gonna go", "Nixon was pro communist" | C5B040, C5B066, C5B072 | 208.22, 326.38, 357.02 |
+| PERSON | Henry Kissinger | NSA → "secretary of the state" later | C5B041, C5B044–C5B045, C5B049, C5B053, C5B063, C5B065, C5B073, C5B075, C5B105, C5B115 | 213.26 (Henry), 213.66, 222.86, 229.50, 247.39, 265.31, 310.06, 321.18, 363.18, 381.03, 524.17, 573.52, 575.44 |
+| PERSON | Secretary of State "at the time" (William P. Rogers, unnamed) | C5B043 | | 220.86 |
+| PERSON | Taiwanese leader (Chiang Kai-shek, unnamed here) | C5B031, C5B067 | | 162.25, 331.26 |
+| PERSON | Chinese leadership (Zhou Enlai, unnamed) | C5B054, C5B065 |  ("communist leaders" 324.30) | 270.35 |
+| PERSON | President of the United States | (Nixon) | C5B055–C5B056, C5B115 | 273.47, 276.99 (the president — of China), 576.88 |
+| PERSON | George H.W. Bush | "future president George H.W. Bush", "George Bush" | C5B107, C5B111, C5B114 | 536.17 (future), 537.13 (George), 537.61 (H.W.), 538.33 (Bush), 554.00, 570.80 (ambassador) |
+| PERSON | Jeff Bezos | "this Jeff Bezo quote" | C5B101 | 504.33, 504.57 |
 | GROUP | Chinese American engineers | "big names" | C5B022 | 116.16, 116.64, 117.04, 117.92 |
-| GROUP | (other) Americans | | C5B023 | 120.33 |
+| GROUP | (other) Americans | C5B023 | | 120.33 |
 | GROUP | scientists / engineers / anyone studying | targets of Mao | C5B036–C5B037 | 187.26, 188.14, 189.42 |
-| COMPANY | General Instrument | | C5B007 | 29.79 |
-| COMPANY | Texas Instruments | | C5B007 | 30.83 |
+| COMPANY | General Instrument | C5B007 | | 29.79 |
+| COMPANY | Texas Instruments | C5B007 | | 30.83 |
 | COMPANY | RCA | ASR "RAC" | C5B007 | 32.03 |
 | INSTITUTION | Taiwanese government | Terman advises it | C5B027 | 139.21 |
-| INSTITUTION | Nixon administration / "the administration" | | C5B041, C5B109, C5B116 | 209.10, 542.09, 578.16 |
-| INSTITUTION | National Security Advisor / Secretary of State | | C5B042–C5B044 | 210.22, 216.14, 218.30, 220.86 |
-| INSTITUTION | CCP | | C5B094–C5B104 | 462.78, 464.22, 470.86, 486.06, 487.29, 520.09 |
-| INSTITUTION | United Nations / UN / delegations | | C5B094–C5B120 | 466.54, 477.82, 498.89, 523.37, 535.37, 546.17, 557.20 |
-| INSTITUTION | US ambassador to the UN | | C5B108 | 534.49 |
+| INSTITUTION | Nixon administration / "the administration" | C5B040, C5B108, C5B116 | | 209.10, 542.09, 578.16 |
+| INSTITUTION | National Security Advisor / Secretary of State | C5B041–C5B043 | | 210.22, 216.14, 218.30, 220.86 |
+| INSTITUTION | CCP | C5B093–C5B094, C5B097, C5B103 | | 462.78, 464.22, 470.86, 486.06, 487.29, 520.09 |
+| INSTITUTION | United Nations / UN / delegations | C5B093, C5B095, C5B100, C5B104, C5B107, C5B109, C5B111 | | 466.54, 477.82, 498.89, 523.37, 535.37, 546.17, 557.20 |
+| INSTITUTION | US ambassador to the UN | C5B107 | | 534.49 |
 | PLACE | Taiwan / "the island" | | throughout | 5.39, 22.99, 40.51, 52.35, 104.56, 110.80, 242.27, 317.98, 443.82 … |
-| PLACE | United States | | C5B010, C5B040, C5B062 … | 50.51, 204.22, 302.43, 338.62, 346.54 |
-| PLACE | Silicon Valley | | C5B025, C5B029 | 131.13, 152.33 |
-| PLACE | China / Beijing | | throughout from C5B033 | 165.29, 268.99, 312.86, 322.46, 323.10 (Beijing), 327.66 |
-| PLACE | Pakistan | | C5B045–C5B061 | 230.86, 241.39, 246.75, 297.47, 298.51 |
-| PLACE | India | | C5B047 | 236.78 |
-| PLACE | Soviet Union | | C5B074–C5B078 | 364.70, 370.07, 385.03, 386.47 |
-| PLACE | islands close to the mainland (Kinmen / Matsu, unnamed) | | C5B086 | 428.71, 430.30 |
-| PLACE | Taiwan Strait | "Taiwanese Strait" | C5B088 | 439.82 |
-| EVENT | Made in Taiwan | | C5B001, C5B003 | 4.99, 13.31 |
-| EVENT | American aid (ended) | | C5B005 | 21.55 |
-| EVENT | annual conference(s) in Taiwan | (unnamed — no name on screen) | C5B018–C5B029 | 91.84, 92.32, 101.28, 122.09, 136.89 |
-| EVENT | Cultural Revolution | | C5B035 | 178.14 |
-| EVENT | "the China shock" | | C5B040 | 202.22 |
-| EVENT | Kissinger's trip to Pakistan / secret flight to China, July 1971 | | C5B045–C5B062 | 227.82 (July), 228.30 (1971), 230.86, 266.67 (Pakistani plane), 268.99 |
-| EVENT | public announcement (a week later) | | C5B063–C5B065 | 307.66, 316.94 |
-| EVENT | Mao's two attacks on Taiwan's islands; US carrier through the Strait | | C5B085–C5B089 | 423.83, 428.07, 438.46 |
-| EVENT | the yearly UN vote on the Chinese seat | | C5B093–C5B120 | 460.54, 465.98, 471.90, 521.85, 532.09, 553.36, 596.88 |
-| EVENT | Kissinger's second (official) China trip | | C5B106 | 525.45, 527.45 |
-| CONCEPT | lowest level of manufacturing / value chain / capture profits / cheap labor | | C5B011–C5B016 | 55.79, 60.96, 64.40, 69.92, 77.44 |
-| CONCEPT | big evil empire / Cold War / Kissinger diplomacy / peel China away | | C5B074–C5B079 | 367.19, 381.03, 383.59, 395.51 |
-| CONCEPT | compromise / both sides / real vs fake China | | C5B099–C5B104 | 491.61, 496.01, 497.53, 506.01, 510.57 |
-| OBJECT | Christmas lights, radios, washers, umbrellas, textiles | | C5B002–C5B003 | 8.35, 9.23, 10.03, 11.07, 11.87 |
-| OBJECT | transistors / integrated circuits / chips | | C5B009, C5B020 | 45.55, 47.23, 95.76, 98.32, 99.36 |
-| OBJECT | Pakistani plane | | C5B054, C5B060 | 266.67, 288.51 |
-| OBJECT | aircraft carrier | | C5B088 | 438.46 |
-| OBJECT | the Chinese seat / UN seat | | C5B095, C5B098, C5B101 | 469.82, 488.73, 498.89 |
-| NUMBER/DATE | 60s, 70s, 80s, 90s | | C5B001 | 2.43, 2.99, 3.79, 4.27 |
-| NUMBER | 9 to 10 % every year | | C5B004 | 18.19, 18.51, 18.67 |
-| DATE | the 70s / July 1971 | | C5B038, C5B041, C5B045 | 196.62, 207.10, 227.82, 228.30 |
-| NUMBER | two days / a week later / an hour before | | C5B052, C5B063, C5B065 | 255.87, 305.98, 316.06 |
-| NUMBER | two times | | C5B085 | 423.83 |
-| DATE | the weekend before this vote | | C5B111 | 552.32 |
+| PLACE | United States | C5B010, C5B039, C5B061, C5B069–C5B070 |  … | 50.51, 204.22, 302.43, 338.62, 346.54 |
+| PLACE | Silicon Valley | C5B025, C5B029 | | 131.13, 152.33 |
+| PLACE | China / Beijing | C5B032, C5B054, C5B063, C5B065–C5B066 | throughout from | 165.29, 268.99, 312.86, 322.46, 323.10 (Beijing), 327.66 |
+| PLACE | Pakistan | C5B045, C5B047, C5B049, C5B060 | | 230.86, 241.39, 246.75, 297.47, 298.51 |
+| PLACE | India | C5B047 | | 236.78 |
+| PLACE | Soviet Union | C5B073–C5B074, C5B076 | | 364.70, 370.07, 385.03, 386.47 |
+| PLACE | islands close to the mainland (Kinmen / Matsu, unnamed) | C5B085 | | 428.71, 430.30 |
+| PLACE | Taiwan Strait | "Taiwanese Strait" | C5B087 | 439.82 |
+| EVENT | Made in Taiwan | C5B001, C5B003 | | 4.99, 13.31 |
+| EVENT | American aid (ended) | C5B005 | | 21.55 |
+| EVENT | annual conference(s) in Taiwan | (unnamed — no name on screen) | C5B018, C5B020, C5B023, C5B026 | 91.84, 92.32, 101.28, 122.09, 136.89 |
+| EVENT | Cultural Revolution | C5B034 | | 178.14 |
+| EVENT | "the China shock" | C5B039 | | 202.22 |
+| EVENT | Kissinger's trip to Pakistan / secret flight to China, July 1971 | C5B045, C5B053–C5B054 | | 227.82 (July), 228.30 (1971), 230.86, 266.67 (Pakistani plane), 268.99 |
+| EVENT | public announcement (a week later) | C5B062, C5B064 | | 307.66, 316.94 |
+| EVENT | Mao's two attacks on Taiwan's islands; US carrier through the Strait | C5B084–C5B085, C5B087 | | 423.83, 428.07, 438.46 |
+| EVENT | the yearly UN vote on the Chinese seat | C5B092–C5B094, C5B104, C5B106, C5B110, C5B119 | | 460.54, 465.98, 471.90, 521.85, 532.09, 553.36, 596.88 |
+| EVENT | Kissinger's second (official) China trip | C5B105 | | 525.45, 527.45 |
+| CONCEPT | lowest level of manufacturing / value chain / capture profits / cheap labor | C5B011–C5B013, C5B015 | | 55.79, 60.96, 64.40, 69.92, 77.44 |
+| CONCEPT | big evil empire / Cold War / Kissinger diplomacy / peel China away | C5B073, C5B075–C5B077 | | 367.19, 381.03, 383.59, 395.51 |
+| CONCEPT | compromise / both sides / real vs fake China | C5B098–C5B099, C5B101–C5B102 | | 491.61, 496.01, 497.53, 506.01, 510.57 |
+| OBJECT | Christmas lights, radios, washers, umbrellas, textiles | C5B002–C5B003 | | 8.35, 9.23, 10.03, 11.07, 11.87 |
+| OBJECT | transistors / integrated circuits / chips | C5B009, C5B019 | | 45.55, 47.23, 95.76, 98.32, 99.36 |
+| OBJECT | Pakistani plane | C5B053, C5B059 | | 266.67, 288.51 |
+| OBJECT | aircraft carrier | C5B087 | | 438.46 |
+| OBJECT | the Chinese seat / UN seat | C5B094, C5B097, C5B100 | | 469.82, 488.73, 498.89 |
+| NUMBER/DATE | 60s, 70s, 80s, 90s | C5B001 | | 2.43, 2.99, 3.79, 4.27 |
+| NUMBER | 9 to 10 % every year | C5B004 | | 18.19, 18.51, 18.67 |
+| DATE | the 70s / July 1971 | C5B038, C5B040, C5B045 | | 196.62, 207.10, 227.82, 228.30 |
+| NUMBER | two days / a week later / an hour before | C5B051, C5B062, C5B064 | | 255.87, 305.98, 316.06 |
+| NUMBER | two times | C5B084 | | 423.83 |
+| DATE | the weekend before this vote | C5B110 | | 552.32 |
 
 ## 4. Key word cues per beat (exact word start times)
 
