@@ -650,6 +650,18 @@ on action. Use it whenever the narrator quotes someone or introduces a historic 
   `--no-hierarchy` to place all). VO loudness is measured; bed = VO − 14 LU with the voice-band pocket; whips = Epidemic
   whoosh + a low generated whoosh; repeated file takes are rate-shifted ±1–3 st. Check: `tools/audio/measure_mix.py --vo
   vo_intro.mp3 --beds assets/audio/intro --len 275.06 --out renders/testmix_intro.wav` (mix vs VO alone < 1 LU).
+- **Per-act balance (long-form chunks):** after `place_sound`, run `tools/audio/act_levels.py --vo vo_cN.mp3 --beds
+  assets/audio/cN --cues project/cN/music_cuesheet.json --len <len>` — music loudness while he speaks, per cue label, in LU re
+  the VO. Aim −12…−17 (quiet/reflective acts low, builds/cliff-hangers high); a stem's file-wide LUFS misjudges quiet openings
+  and peaks, so nudge `rel_lu` 1–3 dB and rebuild (c1: Act I was −18.8, c3: Act I −10.5 on A Pinpoint's peak). Delete the test-mix WAV.
+- **Derived melody check:** `epidemic_melody.py` energy ≈ 0 dB or above re full means the stems don't sum to the master
+  (Thoughts Revoked, To Whom It May Concern, Finding Life Again, The Unveiling, Prison Cell) → delete the file, use instruments/full.
+- **Marker types added for c3:** `scanner_sweep` (photocopier bar), `string_draw` (red string), `radio_pulse` (3 fading blips),
+  `domino_tick` (wood knock), `domino_run` (accelerating wood clicks), `dial_click` (rotary ratchet) — generated in place_sound.py.
+- **Chunk colours** (each its own corner of the Melting Glass family, glued by Interstice/Woodwind Reviere/Melting Glass): c1 Pardon
+  My French + Journeyman Road + Formations; c2 A Pinpoint of Light + April + City Phases; c3 Thoughts Revoked + Shadowfall + To Whom
+  It May Concern; c4 Silent Sun + Ostinato + Still in Blues; c5 Finding Life Again + The Unveiling + Prison Cell.
+- vo_c5.mp3's noise floor sits above the −45 dBFS gate (only 5 pauses detected): pause lifts barely apply there; harmless.
 
 ### 10.9 Long-form rules (Krish, 2026-10-31 evening)
 - **Copyrighted material is allowed** for this channel (used the way YouTube's fair-use guidelines allow: commentary/
@@ -686,6 +698,7 @@ on action. Use it whenever the narrator quotes someone or introduces a historic 
 - [ ] Smooth long eases, 12 fps. [ ] Cuts on action; whips, no iris. [ ] No photo/clip used > 2× in a chunk.
 
 ## Changelog
+- 2026-10-31 — sound designer: c1 rebalanced + rebuilt, c3 and c5 beds built (cue sheets, 6 new Epidemic tracks in LOG.md); new `tools/audio/act_levels.py` per-act check; six c3 marker types; §10.8 notes on balance, derived-melody check and chunk colours.
 - 2026-10-31 — c6s01 editor: §4.2 notes (textCallout keyEl, focalBlur layering, no CJK in text, tilted map plane background); generator `project/c6/gen/` (markup + script + inlined map paths); derived assets `assets/c6/derived/c6s01/` (celadon Taiwan fill PNG, 1971 UN film stills, Kansan page 1800 px); real 莊敬自強 slogan photo (Commons CC BY 2.0).
 - 2026-10-31 — c5s03 editor: §4.2 gotchas (`.hl` class collision, transparent scene for paper slides, no path measuring in callbacks, Commons TIFF thumbs); Taiwan Strait Esri z10 mosaic + mask (`assets/c5/made/`), helpers `paperSlide`/`pushThrough`/`hemi`/`chair` in `project/c5/gen/c5s03/`.
 - 2026-10-31 — c5s02 editor (C5S043–083): §4.2 gotchas (torn paper = screen texture, ink boxes before their words, `.plate` inset order, offset parents); rendered globe videos (Blue Marble / Black Marble), keyed RCA XL-100 (`assets/c5/screens/`), template + generator `project/c5/gen/c5s02_*`.

@@ -272,7 +272,8 @@
       const svg = $("sc057-svg"), f = FX.markupDefs(svg, "c6s02-mk57", { boil: 4 }); svg.setAttribute("viewBox", "0 0 2740 2700");
       line("sc057-cl", [["classmate", T(287.01)]]);
       tl.to(["#c6s02-sc057-c2", "#c6s02-sc057-dx"], { x: 1200, rotation: 12, duration: 0.8, ease: C(FX.ease.in, 0.8) }, S(287.0));   // gone 287.8
-      tl.to("#c6s02-sc057-c1", { x: 260, rotation: -1, duration: 1.2, ease: C(FX.ease.inOut, 1.2) }, S(287.5));   // 288.7
+      tl.to("#c6s02-sc057-c1", { x: -230, rotation: -1, duration: 1.2, ease: C(FX.ease.inOut, 1.2) }, S(287.5));   // 288.7 — moves left so the Kremlin circle stays clear
+      tl.to("#c6s02-sc057-cl", { opacity: 0, duration: 0.4, ease: C(FX.ease.in, 0.4) }, S(288.2));
       tl.fromTo("#c6s02-sc057-tag", { opacity: 0 }, { opacity: 1, duration: 0.25, immediateRender: true }, S(288.1));
       line("sc057-l", [["learns ", T(288.29)], ["a ", T(288.53)], ["lot", T(288.61)]]);
       tl.to(cam, { scale: 0.72, x: 960 - 1200 * 0.72, y: 500 - 1350 * 0.72, duration: 1.6, ease: FX.ease.cam }, S(288.9));
@@ -322,7 +323,7 @@
       for (let x = 60; x < 1920; x += 120) d += "M" + x + " 0 L" + (x + 1) + " 1080 ";
       for (let y = 60; y < 1080; y += 120) d += "M0 " + y + " L1920 " + (y + 1) + " ";
       el("path", { d, stroke: BONE, "stroke-width": 1.5, fill: "none" }, g);
-      const a2 = div("c62-abs t-display", "left:140px;top:400px;font-size:150px;color:var(--yellow)", $("sc060-cam")); a2.id = "c6s02-sc060-a2";
+      const a2 = div("c62-abs t-display", "left:140px;top:400px;font-size:150px;color:var(--bone)", $("sc060-cam")); a2.id = "c6s02-sc060-a2";
       line("sc060-a", [["The ", T(303.41)], ["state ", T(303.49)], ["could ", T(303.81)], ["build", T(304.05)]], { dur: 0.5 });
       line("sc060-a2", [["industry", T(304.29)]], { dur: 0.6 });
       line("sc060-b", [["if ", T(304.69)], ["engineers ", T(305.01)], ["are ", T(305.49)], ["in ", T(305.73)], ["charge", T(305.97)]], { dur: 0.4 });

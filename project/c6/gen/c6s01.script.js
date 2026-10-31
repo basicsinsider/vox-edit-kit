@@ -498,8 +498,8 @@
       [T(98.10), T(98.34)].forEach((c, i) => rise(words("sc022-su")[i], c, { dur: 0.5, y: 8 }));
       // three headline strips (real 1971 front page) whip in
       const strips = $("sc022-strips");
-      [[-1035, -755, 140, 230, -2], [-1035, -880, 130, 400, 1.5], [-1060, -1150, 150, 570, -1]].forEach(([ox, oy, hh, top, r], i) => {
-        strips.insertAdjacentHTML("beforeend", `<div class="k-card" id="c6s01-sc022-s${i}" style="left:${300 + i * 90}px; top:${top}px; width:765px; height:${hh}px; transform:rotate(${r}deg); background:#e8e0cc"><img src="assets/c6/derived/c6s01/kansan_1971-10-26_1800.jpg" alt="" style="position:absolute; left:${ox}px; top:${oy}px; width:1800px; height:2254px; object-fit:fill; filter:sepia(0.35) contrast(1.1)"/></div>`);
+      [[-940, -768, 144, 270, -2, 800], [-945, -915, 130, 440, 1.5, 765], [-1060, -1150, 150, 600, -1, 765]].forEach(([ox, oy, hh, top, r, ww], i) => {
+        strips.insertAdjacentHTML("beforeend", `<div class="k-card" id="c6s01-sc022-s${i}" style="left:${300 + i * 90}px; top:${top}px; width:${ww}px; height:${hh}px; transform:rotate(${r}deg); background:#e8e0cc"><img src="assets/c6/derived/c6s01/kansan_1971-10-26_1800.jpg" alt="" style="position:absolute; left:${ox}px; top:${oy}px; width:1800px; height:2254px; object-fit:fill; filter:sepia(0.35) contrast(1.1)"/></div>`);
         tl.fromTo($("sc022-s" + i), { x: -1500, opacity: 1 }, { x: 0, duration: 0.45, ease: C(E.out, 0.45), immediateRender: true }, S(100.66) + i * 0.08);
       });
       [T(100.98), T(101.22), T(101.46), T(101.62)].forEach((c, i) => rise(words("sc022-vb")[i], c, { dur: 0.3, y: 6 }));

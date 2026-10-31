@@ -54,6 +54,14 @@ commands below. Never use the public low-quality preview MP3s in an edit. Measur
 | `shadowfall/` | Shadowfall — Henry Miles (cinematic, dark, epic, orchestral hybrid) | 20dff97e-cb47-48ce-97da-4b82af835462 | — | full, bass, drums, instruments, melody_derived | 83 | A minor | archival grandeur for WWII → Security Council (its 126–135 build lands on the word) and the ominous 'hidden fragility' (its drums enter as a clock-like pulse) |
 | `to_whom_it_may_concern/` | To Whom It May Concern — Jon Björk (dark, sad, tragedy) | d87c821d-00ba-3650-8ff8-e37892a2892b | — | full, bass, instruments (stems don't sum to the master: no melody) | 90 | D minor | the existential crisis (UN kicks out the ROC), the wistful flight to Taiwan |
 
+### Added for chunk c5 (2026-10-31) — cue sheet `project/c5/music_cuesheet.json`
+
+| folder | title — artist | kosmosId | public URL | stems downloaded | bpm | key (est.) | role / why |
+|---|---|---|---|---|---|---|---|
+| `finding_life_again/` | Finding Life Again — Kikoru (contemporary classical, hopeful, restless; similar to Melting Glass) | 76336c03-b048-394c-9f4f-5f80bf7be2b7 | — | full, bass, drums, instruments (stems don't sum to the master: no melody) | 147 | C major (relative of the A-minor set) | Taiwan's rise: export economy, the conference, swell on 'Fred Terman', the brave carrier swell |
+| `the_unveiling/` | The Unveiling — Christoffer Moe Ditlevsen (mysterious, sneaking; same composer as Estimations) | 605b5158-5031-3a52-b442-98d766ae92fc | — | full, bass, drums, instruments (no melody: stems don't sum) | 100 | A minor | Kissinger's secret trip (quiet stalk → peak on the announcement), the Cold-War-triangle pulse, the UN-vote build into c6 |
+| `prison_cell/` | Prison Cell — Jon Björk (ambient, dark drone, sad) | 4ea71784-9324-3347-9d44-f58f89e4b187 | — | full, bass, instruments (stems louder than the master; no melody) | 92 | A minor | Cultural Revolution drone, the low pulse under Nixon/Kissinger, the 'shock', 'worst dreams', the unresolved ending |
+
 ### Candidates auditioned (by metadata + measured key from previews; not downloaded)
 Formations (Van Sandano, 100, Ab minor — wrong key for the set), Chrysotile (Farrell Wooten drone, C# minor — clashes with D),
 Imber (140, F# minor), Ostinato (Vieveri, 180, A minor — strong alternative for a build), City Phases (John Abbot, 150, A minor —
