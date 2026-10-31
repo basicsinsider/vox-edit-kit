@@ -1,0 +1,917 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8" /></head>
+<body>
+<template>
+  <style>
+    #root { position: absolute; inset: 0; overflow: hidden; background: var(--night); }
+    .c2b-scene { position: absolute; inset: 0; overflow: hidden; visibility: hidden; opacity: 0; }
+    .c2b-shot { position: absolute; inset: 0; overflow: hidden; transform-origin: 50% 50%; }
+    .c2b-night { background: var(--night); }
+    .c2b-paper { background: var(--paper); }
+    .c2b-abs { position: absolute; }
+    .c2b-cam { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
+    .c2b-full { position: absolute; left: 0; top: 0; width: 100%; height: 100%; }
+    .c2b-p1, .c2b-p2 { position: absolute; inset: 0; background-size: cover; background-position: center; pointer-events: none; }
+    .c2b-p2 { opacity: 0.9; mix-blend-mode: multiply; }
+    .c2b-tex { position: absolute; inset: 0; background: url('assets/textures/paper_cream_02.jpg') center / cover; mix-blend-mode: multiply; opacity: 0.55; pointer-events: none; }
+    .c2b-credit { position: absolute; right: 30px; bottom: 20px; font-size: 13px; letter-spacing: 0.08em; color: rgba(242,237,227,0.62); z-index: 5; }
+    .c2b-credit.ink { color: rgba(20,27,36,0.62); }
+    .c2b-mk { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; pointer-events: none; }
+    .c2b-w { display: inline-block; white-space: pre; opacity: 0; }
+    .c2b-ink { color: var(--ink); }
+    .c2b-red { color: var(--vermilion); }
+    .c2b-sky { color: var(--sky); }
+    .c2b-hlbar { position: absolute; background: var(--yellow); mix-blend-mode: multiply; transform-origin: 0 50%; opacity: 0.9; }
+    .c2b-card { position: absolute; background: #efe8d8; box-shadow: 0 26px 60px rgba(20,27,36,0.32); overflow: hidden; }
+    .c2b-card .tx2 { position: absolute; inset: 0; background: url('assets/textures/paper_cream_01.jpg') center / cover; mix-blend-mode: multiply; opacity: 0.7; pointer-events: none; }
+    .c2b-print { position: absolute; background: #e9e2d2; padding: 18px 18px 18px; box-shadow: 0 30px 70px rgba(0,0,0,0.6); }
+    .c2b-print .in { position: relative; width: 100%; height: 100%; overflow: hidden; background: #111; }
+    .c2b-print img, .c2b-print video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    .c2b-circ { position: absolute; border-radius: 50%; overflow: hidden; background-color: #cfc6b4; background-repeat: no-repeat; box-shadow: 0 14px 34px rgba(20,27,36,0.28); border-style: solid; }
+    .c2b-ring-red { border-color: var(--vermilion); }
+    .c2b-ring-navy { border-color: var(--navy); }
+    .c2b-ring-ink { border-color: var(--ink); }
+    .c2b-ring-bone { border-color: var(--bone); }
+    .c2b-scrim-b { position: absolute; left: 0; right: 0; bottom: 0; height: 420px; background: linear-gradient(180deg, rgba(15,19,24,0), rgba(15,19,24,0.82)); }
+    .c2b-scrim-l { position: absolute; left: 0; top: 0; bottom: 0; width: 900px; background: linear-gradient(90deg, rgba(15,19,24,0.85), rgba(15,19,24,0)); }
+    .c2b-lamp { position: absolute; inset: 0; background: radial-gradient(ellipse 60% 70% at 55% 45%, #3a3128 0%, #1d1915 55%, #0f0e0c 100%); }
+    .c2b-ln { height: 10px; background: rgba(20,27,36,0.28); margin: 0 0 16px; border-radius: 2px; }
+    .c2b-tag { position: absolute; width: 92px; height: 92px; border-radius: 50%; background: var(--ink); color: var(--paper); font-size: 52px; line-height: 92px; text-align: center; letter-spacing: 0; box-shadow: 0 10px 24px rgba(0,0,0,0.3); }
+    .c2b-film { position: absolute; background: #0b0b0a; padding: 26px 46px; box-shadow: 0 30px 80px rgba(0,0,0,0.7); }
+    .c2b-film::before, .c2b-film::after { content: ""; position: absolute; top: 0; bottom: 0; width: 24px;
+      background: repeating-linear-gradient(180deg, transparent 0 14px, rgba(232,224,208,0.55) 14px 30px, transparent 30px 44px); }
+    .c2b-film::before { left: 11px; } .c2b-film::after { right: 11px; }
+    .c2b-film .in { position: relative; width: 100%; height: 100%; overflow: hidden; background: #000; }
+    .c2b-film video, .c2b-film img { position: absolute; inset: -2%; width: 104%; height: 104%; object-fit: cover; }
+    .c2b-unlit { color: transparent; -webkit-text-stroke: 3px rgba(242,237,227,0.78); }
+    #c2s02-flash { position: absolute; inset: 0; background: #fbf4e6; opacity: 0; pointer-events: none; z-index: 7; }
+    #c2s02-grain, #c2s02-dust, #c2s02-vig { z-index: 8; }
+
+    /* C2S043 */
+    #c2s02-sc043-map { position: absolute; left: 0; top: 0; width: 3200px; height: 1764px; opacity: 0.62; filter: brightness(1.25) contrast(1.05); }
+    #c2s02-sc043-nj { position: absolute; left: 2589.6px; top: 460.4px; width: 320px; height: 320px; border-radius: 50%; opacity: 0;
+      background: radial-gradient(circle, rgba(159,195,227,0.85) 0%, rgba(159,195,227,0.35) 30%, rgba(159,195,227,0) 70%); mix-blend-mode: screen; }
+    #c2s02-sc043-east { left: 2140px; top: 520px; width: 540px; text-align: right; font-size: 54px; }
+    #c2s02-sc043-ter { left: 39px; top: 671px; width: 333px; height: 333px; border-width: 12px; background-size: 360px auto; background-position: -6px -14px; filter: grayscale(1) contrast(1.05); }
+    #c2s02-sc043-terl { left: 30px; top: 1020px; width: 350px; text-align: center; font-size: 50px; opacity: 0; }
+    #c2s02-sc043-mil { left: 1180px; top: 640px; font-size: 52px; opacity: 0; transform: rotate(-4deg); }
+
+    /* C2S044 */
+    #c2s02-sc044-cr { left: 150px; top: 110px; font-size: 76px; }
+    #c2s02-sc044-fac { left: 0; top: 862px; width: 1920px; text-align: center; font-size: 34px; opacity: 0; }
+    #c2s02-sc044-st { left: 0; top: 912px; width: 1920px; text-align: center; font-size: 110px; opacity: 0; }
+
+    /* C2S045 */
+    #c2s02-sc045-form { left: 330px; top: 60px; width: 1260px; height: 980px; transform: rotate(-1.4deg); padding: 70px 90px; }
+    #c2s02-sc045-form .hd { font-size: 84px; color: var(--ink); }
+    #c2s02-sc045-form .rule { height: 5px; background: var(--ink); margin: 22px 0 26px; }
+    #c2s02-sc045-form .fld { font-size: 24px; color: var(--ink-soft); margin: 0 0 10px; }
+    #c2s02-sc045-form .val { font-size: 40px; color: var(--ink); margin: 0 0 30px; }
+    .c2b-typed { position: relative; font-size: 50px; color: var(--ink); margin: 0 0 26px; }
+
+    /* C2S046 */
+    #c2s02-sc046-glow { position: absolute; inset: 0; background: radial-gradient(ellipse 40% 60% at 72% 45%, rgba(255,214,170,0.16), rgba(0,0,0,0) 70%); }
+    #c2s02-sc046-pw { position: absolute; inset: 0; }
+    #c2s02-sc046-por { position: absolute; left: 930px; top: -30px; height: 1180px; filter: url(#c2s02-tint-bone) contrast(1.05); }
+    #c2s02-sc046-medal { position: absolute; left: 150px; top: 690px; width: 300px; height: 300px; filter: saturate(0.5) sepia(0.25) brightness(0.92); }
+    #c2s02-sc046-np { left: 490px; top: 800px; font-size: 34px; }
+    #c2s02-sc046-name { left: 140px; top: 250px; font-size: 150px; }
+
+    /* C2S047 */
+    #c2s02-sc047-bell { left: 330px; top: 490px; width: 220px; height: 220px; border-width: 8px; background: #efe7d6 url('assets/logos/bell_system_1921.png') center / 170px auto no-repeat; }
+    .c2b-trio { width: 150px; height: 150px; border-width: 6px; background-image: url('assets/c2/photos/bardeen_shockley_brattain_1948.jpg'); background-size: 1056px auto; filter: grayscale(1) contrast(1.05); }
+    #c2s02-sc047-ter { left: 1370px; top: 490px; width: 220px; height: 220px; border-width: 8px; background-image: url('assets/archival/collage/terman_frederick_1955.jpg'); background-size: 240px auto; background-position: -10px -8px; filter: grayscale(1); }
+    #c2s02-sc047-terl { left: 1330px; top: 730px; width: 300px; text-align: center; font-size: 30px; }
+    #c2s02-sc047-lot { left: 0; top: 520px; width: 1920px; text-align: center; font-size: 30px; }
+    #c2s02-sc047-top { left: 160px; top: 60px; width: 560px; text-align: center; font-size: 56px; }
+
+    /* C2S048 */
+    #c2s02-sc048-stage { position: absolute; inset: 0; perspective: 1800px; perspective-origin: 50% 35%; }
+    #c2s02-sc048-plane { position: absolute; left: -640px; top: -342px; width: 3200px; height: 1764px; transform: rotateX(24deg) rotateZ(6deg); transform-origin: 50% 50%; }
+    #c2s02-sc048-cam { width: 3200px; height: 1764px; }
+    #c2s02-sc048-map { position: absolute; left: 0; top: 0; width: 3200px; height: 1764px; filter: saturate(0.8) sepia(0.15); box-shadow: 0 40px 120px rgba(20,27,36,0.4); }
+    #c2s02-sc048-sh { left: 0; top: 0; width: 150px; height: 150px; border-width: 8px; background-image: url('assets/c2/cutouts/shockley_portrait_cut.png'); background-size: 200px auto; background-position: -25px -12px; background-color: #d9d0bf; filter: grayscale(1); opacity: 0; }
+    #c2s02-sc048-pa { left: 260px; top: 860px; font-size: 64px; opacity: 0; }
+    #c2s02-sc048-him { left: 140px; top: 120px; font-size: 64px; }
+
+    /* C2S049 */
+    #c2s02-sc049-cam { position: absolute; inset: 0; transform-origin: 1380px 700px; }
+    #c2s02-sc049-frame { position: absolute; left: 330px; top: 160px; width: 540px; height: 660px; transform: rotate(-4deg); padding: 30px;
+      background: linear-gradient(135deg, #6b5234, #3b2c1c 40%, #7a6040 60%, #2e2216); box-shadow: 0 34px 80px rgba(0,0,0,0.65); }
+    #c2s02-sc049-frame .mat { position: absolute; inset: 30px; background: #ddd2bd; padding: 54px; }
+    #c2s02-sc049-frame .glass { position: absolute; inset: 54px; background: linear-gradient(160deg, #3b3933 0%, #1c1b18 60%, #2a2823 100%); box-shadow: inset 0 0 40px rgba(0,0,0,0.8); }
+    #c2s02-sc049-frame .glare { position: absolute; inset: 54px; background: linear-gradient(120deg, rgba(255,240,220,0) 30%, rgba(255,240,220,0.16) 42%, rgba(255,240,220,0) 55%); }
+    #c2s02-sc049-pc { position: absolute; left: 1010px; top: 470px; width: 780px; height: 500px; transform: rotate(5deg); background: #ede5d3; padding: 22px; box-shadow: 0 30px 70px rgba(0,0,0,0.6); }
+    #c2s02-sc049-pc .in { position: relative; width: 100%; height: 100%; overflow: hidden; background: url('assets/c2/derived/c2s02/usgs1948_pa_mv.jpg') -1200px -380px / 2920px 2200px; filter: sepia(0.35) saturate(0.75); }
+    #c2s02-sc049-pal { position: absolute; left: 0; top: 150px; width: 100%; text-align: center; font-size: 150px; color: var(--vermilion); -webkit-text-stroke: 3px #ede5d3; }
+    #c2s02-sc049-mom { left: 340px; top: 880px; font-size: 84px; }
+    #c2s02-sc049-pool { position: absolute; inset: 0; background: radial-gradient(ellipse 48% 58% at 50% 42%, rgba(255,214,170,0.20), rgba(255,214,170,0) 70%); mix-blend-mode: screen; }
+
+    /* C2S050 */
+    #c2s02-sc050-cam { position: absolute; inset: 0; transform-origin: 980px 500px; }
+    #c2s02-sc050-ph { left: 400px; top: 160px; width: 1120px; height: 580px; transform: rotate(-1.5deg); }
+    #c2s02-sc050-ph img { object-position: 50% 40%; filter: grayscale(1) contrast(1.08) brightness(0.95); }
+    #c2s02-sc050-co { left: 400px; top: 820px; font-size: 36px; }
+    #c2s02-sc050-st { left: 400px; top: 880px; font-size: 72px; }
+
+    /* C2S051-052 */
+    #c2s02-sc051-map { position: absolute; left: 0; top: 0; width: 2920px; height: 2200px; filter: sepia(0.45) saturate(0.7) contrast(1.04) brightness(1.02); }
+    #c2s02-sc051-pa { left: 120px; top: 90px; font-size: 96px; }
+    .c2b-pinl { position: absolute; font-size: 40px; opacity: 0; white-space: nowrap; }
+    #c2s02-sc052-ind { left: 140px; top: 900px; font-size: 76px; }
+
+    /* C2S053 */
+    #c2s02-sc053-map, #c2s02-sc053-blur { position: absolute; left: 0; top: 0; width: 2600px; height: 2200px; }
+    #c2s02-sc053-map { filter: brightness(0.9) contrast(1.08); }
+    #c2s02-sc053-blur { filter: blur(7px) brightness(0.8); }
+    #c2s02-sc053-big { left: 140px; top: 820px; font-size: 84px; }
+
+    /* C2S054 */
+    .c2b-panel { position: absolute; overflow: hidden; box-shadow: 0 26px 60px rgba(0,0,0,0.55); }
+    .c2b-panel img { position: absolute; left: 0; top: 0; }
+    #c2s02-sc054-quad { left: 80px; top: 90px; width: 1060px; height: 400px; transform: rotate(-3deg); }
+    #c2s02-sc054-svy { left: 1180px; top: 120px; width: 620px; height: 780px; transform: rotate(4deg); }
+    #c2s02-sc054-cal { left: 160px; top: 540px; width: 520px; height: 470px; transform: rotate(-5deg); background: #d9cfbd; padding: 30px; }
+    #c2s02-sc054-cal .g { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
+    #c2s02-sc054-cal .g div { height: 52px; border: 2px solid rgba(20,27,36,0.45); }
+    #c2s02-sc054-cal .h { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; font-size: 16px; color: var(--ink); margin-bottom: 8px; }
+    #c2s02-sc054-ter { position: absolute; left: 560px; top: 150px; width: 960px; height: 936px; filter: url(#c2s02-tint-bone) contrast(1.08); }
+    #c2s02-sc054-tl { left: 140px; top: 70px; font-size: 40px; }
+    #c2s02-sc054-se { left: 1180px; top: 900px; font-size: 80px; }
+
+    /* C2S055 */
+    #c2s02-sc055-title { left: 160px; top: 80px; font-size: 92px; }
+    #c2s02-sc055-stage { position: absolute; inset: 0; perspective: 1300px; perspective-origin: 50% 20%; }
+    #c2s02-sc055-plane { position: absolute; left: 160px; top: 250px; width: 1600px; height: 760px; transform-origin: 50% 100%; }
+    #c2s02-sc055-road { left: 0; top: 940px; width: 1920px; text-align: center; font-size: 40px; }
+
+    /* C2S056 */
+    #c2s02-sc056-wall { position: absolute; inset: 0; background: radial-gradient(ellipse 55% 75% at 66% 48%, #3b2f26 0%, #1a1613 60%, #0e0c0a 100%); }
+    #c2s02-sc056-cam { position: absolute; inset: 0; transform-origin: 1410px 520px; }
+    #c2s02-sc056-fr { position: absolute; left: 1060px; top: 70px; width: 700px; height: 930px; padding: 22px; background: linear-gradient(135deg, #8a6a33, #4e3a1b 35%, #a5844a 55%, #3f2f17); box-shadow: 0 40px 90px rgba(0,0,0,0.7); }
+    #c2s02-sc056-fr img { width: 656px; height: 886px; display: block; filter: saturate(0.85) contrast(1.04); }
+    #c2s02-sc056-st { left: 150px; top: 330px; font-size: 38px; }
+    #c2s02-sc056-ls { left: 140px; top: 420px; font-size: 136px; }
+
+    /* C2S057 */
+    #c2s02-sc057-map { position: absolute; left: 0; top: 0; width: 2650px; height: 2050px; filter: saturate(0.55) sepia(0.25) contrast(1.03); box-shadow: 0 30px 90px rgba(20,27,36,0.4); }
+    #c2s02-sc057-num { left: 140px; top: 110px; font-size: 150px; }
+    #c2s02-sc057-num .label-box { color: var(--yellow); padding: 0.08em 0.2em 0.02em; }
+    #c2s02-sc057-ac { left: 150px; top: 290px; font-size: 44px; opacity: 0; }
+    #c2s02-sc057-lot { left: 140px; top: 900px; font-size: 76px; }
+
+    /* C2S058 */
+    #c2s02-sc058-map { position: absolute; left: 0; top: 0; width: 2100px; height: 2100px; filter: saturate(0.7) sepia(0.15); box-shadow: 0 30px 90px rgba(20,27,36,0.4); }
+    #c2s02-sc058-of { left: 130px; top: 140px; font-size: 44px; }
+    #c2s02-sc058-sf { left: 1250px; top: 150px; font-size: 44px; }
+
+    /* C2S059-060 */
+    #c2s02-sc059-map { position: absolute; left: 0; top: 0; width: 3584px; height: 2944px; filter: saturate(0.55) brightness(0.82) contrast(1.06); }
+    #c2s02-sc059-now { left: 140px; top: 820px; font-size: 110px; opacity: 0; }
+    #c2s02-sc060-all { left: 140px; top: 860px; font-size: 84px; }
+
+    /* C2S061-062 */
+    #c2s02-sc061-bg { position: absolute; inset: -60px; background: url('assets/c2/documents/stanford_founding_grant_1885_p10_heading.jpg') center 30% / cover; filter: blur(14px) sepia(0.6) brightness(0.55); }
+    #c2s02-sc061-stage { position: absolute; inset: 0; perspective: 2200px; }
+    #c2s02-sc061-cam { width: 1770px; height: 1450px; }
+    #c2s02-sc061-pages { position: absolute; left: 0; top: 0; width: 1770px; height: 1450px; transform: rotateY(-7deg) rotateX(5deg); transform-origin: 50% 40%; }
+    .c2b-page { position: absolute; top: 0; box-shadow: 0 30px 80px rgba(0,0,0,0.45); }
+    .c2b-page img { display: block; width: 100%; height: 100%; filter: sepia(0.25) contrast(1.05); }
+    #c2s02-sc061-ht { position: absolute; inset: 0; background: url('assets/textures/halftone_01_norm.jpg') 0 0 / 420px auto; mix-blend-mode: overlay; opacity: 0.12; }
+    #c2s02-sc061-key { position: absolute; left: 880px; top: 0; width: 891px; height: 1440px; }
+    .c2b-strip { position: absolute; background: #efe8d8; box-shadow: 0 16px 40px rgba(0,0,0,0.4); padding: 18px 34px 14px; }
+    #c2s02-sc061-rule { left: 120px; top: 830px; transform: rotate(-1.5deg); }
+    #c2s02-sc061-rule .a { font-size: 40px; }
+    #c2s02-sc061-rule .b { font-size: 64px; margin-left: 18px; }
+    #c2s02-sc062-veil { position: absolute; inset: 0; opacity: 0; }
+    #c2s02-sc062-note { left: 1010px; top: 770px; transform: rotate(1.5deg); padding: 24px 40px 18px; }
+    #c2s02-sc062-note .t { font-size: 54px; position: relative; }
+
+    /* C2S063 */
+    #c2s02-sc063-deed { position: absolute; left: 90px; top: -120px; width: 900px; height: 1450px; transform: rotate(-6deg); overflow: hidden; box-shadow: 0 30px 90px rgba(0,0,0,0.6); }
+    #c2s02-sc063-deed img { width: 900px; height: 1453px; filter: url(#c2s02-tint-dark); }
+    #c2s02-sc063-ter { position: absolute; left: 900px; top: 160px; width: 960px; height: 936px; filter: url(#c2s02-tint-bone) contrast(1.06); }
+    #c2s02-sc063-tl { left: 1500px; top: 110px; font-size: 40px; }
+    #c2s02-sc063-fin { left: 150px; top: 380px; font-size: 170px; opacity: 0; }
+    #c2s02-sc063-ru { left: 160px; top: 640px; font-size: 40px; }
+
+    /* C2S064 */
+    #c2s02-sc064-led { left: 110px; top: 100px; width: 860px; height: 876px; transform: rotate(-2deg); }
+    #c2s02-sc064-led img { width: 100%; height: 100%; filter: sepia(0.2); }
+    #c2s02-sc064-slip { left: 1080px; top: 180px; width: 640px; height: 420px; transform: rotate(1.5deg); padding: 40px 50px; }
+    #c2s02-sc064-sell { position: relative; font-size: 92px; display: inline-block; opacity: 0; }
+    #c2s02-sc064-rent { position: relative; font-size: 130px; display: block; margin-top: 20px; opacity: 0; }
+    #c2s02-sc064-vv { left: 1080px; top: 830px; font-size: 60px; }
+
+    /* C2S065 */
+    #c2s02-sc065-stage { position: absolute; inset: 0; perspective: 1200px; perspective-origin: 50% 45%; }
+    #c2s02-sc065-cam { position: absolute; inset: 0; transform-style: preserve-3d; }
+    .c2b-l25 { position: absolute; inset: 0; transform-origin: 50% 50%; }
+    .c2b-l25 img { position: absolute; left: -232px; top: 0; width: 2385px; height: 1080px; filter: grayscale(1) sepia(0.25) brightness(0.62) contrast(1.15); }
+    #c2s02-sc065-far img { filter: grayscale(1) sepia(0.25) brightness(0.5) contrast(1.1) blur(2.5px); }
+    #c2s02-sc065-mid { -webkit-mask-image: linear-gradient(180deg, transparent 37%, #000 47%); mask-image: linear-gradient(180deg, transparent 37%, #000 47%); }
+    #c2s02-sc065-near { -webkit-mask-image: linear-gradient(180deg, transparent 80%, #000 92%); mask-image: linear-gradient(180deg, transparent 80%, #000 92%); }
+    #c2s02-sc065-near img { filter: grayscale(1) sepia(0.25) brightness(0.45) contrast(1.1) blur(4px); }
+    #c2s02-sc065-haze { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(40,34,30,0.5) 0%, rgba(40,34,30,0.0) 45%); }
+    #c2s02-sc065-title { position: absolute; left: 0; top: 270px; width: 1920px; text-align: center; font-size: 150px; white-space: nowrap; }
+
+    /* C2S066 */
+    #c2s02-sc066-card { left: 560px; top: 70px; width: 1180px; height: 940px; transform: rotate(1.5deg); padding: 20px; }
+    #c2s02-sc066-card .in { position: relative; width: 100%; height: 100%; overflow: hidden; }
+    #c2s02-sc066-card img { position: absolute; left: -556px; top: -1274px; width: 1920px; height: 2556px; filter: saturate(0.35) sepia(0.3) brightness(1.04); }
+    #c2s02-sc066-tc { left: 110px; top: 120px; font-size: 34px; }
+    #c2s02-sc066-loc { left: 110px; top: 190px; font-size: 34px; }
+    #c2s02-sc066-ch { left: 110px; top: 840px; font-size: 76px; }
+
+    /* C2S067 */
+    #c2s02-sc067-form { left: 360px; top: 80px; width: 1200px; height: 920px; padding: 70px 90px; }
+    #c2s02-sc067-form .hd { font-size: 96px; color: var(--ink); }
+    #c2s02-sc067-form .rule { height: 5px; background: var(--ink); margin: 20px 0 40px; }
+    #c2s02-sc067-form .fld { font-size: 26px; color: var(--ink-soft); margin: 0 0 14px; }
+    #c2s02-sc067-n { font-size: 150px; }
+    #c2s02-sc067-n .label-box { color: var(--yellow); padding: 0.08em 0.2em 0.02em; }
+
+    /* C2S068 */
+    #c2s02-sc068-weave { position: absolute; inset: 0; }
+    #c2s02-sc068-film { left: 380px; top: 90px; width: 1160px; height: 830px; }
+    #c2s02-sc068-wh { left: 140px; top: 900px; font-size: 76px; }
+    #c2s02-sc068-be { left: 1560px; top: 130px; font-size: 36px; }
+
+    /* C2S069 */
+    #c2s02-sc069-card { left: 420px; top: 120px; width: 1080px; height: 640px; padding: 22px 22px 90px; transform-origin: 50% 0%; }
+    #c2s02-sc069-card .in { position: relative; width: 100%; height: 100%; overflow: hidden; }
+    #c2s02-sc069-card img { position: absolute; left: -110px; top: -40px; width: 1575px; height: 600px; filter: sepia(0.3) contrast(1.05); }
+    #c2s02-sc069-stl { position: absolute; left: 30px; bottom: 22px; font-size: 44px; opacity: 0; }
+    #c2s02-sc069-yp { left: 160px; top: 840px; font-size: 40px; }
+    #c2s02-sc069-le { left: 1200px; top: 830px; font-size: 92px; }
+
+    /* C2S070-071 */
+    #c2s02-sc070-st { left: 860px; top: 120px; width: 200px; height: 200px; border-width: 8px; background: url('assets/c2/derived/c2s02/quad_panel.jpg') -560px -150px / 900px auto; filter: sepia(0.3); }
+    #c2s02-sc070-em, #c2s02-sc070-co { width: 180px; height: 180px; border-width: 6px; background: #eee6d5; }
+    #c2s02-sc070-em { left: 330px; top: 700px; }
+    #c2s02-sc070-co { left: 1410px; top: 700px; }
+    .c2b-nl { position: absolute; font-size: 30px; text-align: center; width: 500px; }
+    .c2b-al { position: absolute; font-size: 44px; white-space: nowrap; }
+
+    /* C2S072 */
+    #c2s02-sc072-cam { position: absolute; inset: 0; transform-origin: 900px 400px; }
+    #c2s02-sc072-img { position: absolute; left: 0; top: -170px; width: 1920px; height: 1498px; filter: url(#c2s02-tint-bone) contrast(1.05) brightness(0.92); }
+    #c2s02-sc072-pr { left: 1260px; top: 640px; font-size: 40px; }
+    #c2s02-sc072-ca { left: 1260px; top: 710px; font-size: 76px; }
+
+    /* C2S073 */
+    #c2s02-sc073-ph { left: 600px; top: 150px; width: 1080px; height: 815px; transform: rotate(1.5deg); padding: 16px; }
+    #c2s02-sc073-ph img { filter: grayscale(1) contrast(1.05); }
+    #c2s02-sc073-le { left: 130px; top: 170px; font-size: 44px; }
+
+    /* C2S074 */
+    #c2s02-sc074-sheet { left: 260px; top: 150px; width: 1400px; height: 760px; padding: 40px 50px; }
+    #c2s02-sc074-sheet .days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 14px; font-size: 22px; color: var(--ink); margin: 0 0 14px; }
+    #c2s02-sc074-sheet .cols { display: grid; grid-template-columns: repeat(7, 1fr); gap: 14px; height: 470px; }
+    #c2s02-sc074-sheet .col { position: relative; border: 2px solid rgba(20,27,36,0.35); }
+    .c2b-blk { position: absolute; left: 8px; right: 8px; top: 8px; bottom: 8px; transform-origin: 50% 0%; }
+    .c2b-blk .ht { position: absolute; inset: 0; background: url('assets/textures/halftone_01_norm.jpg') 0 0 / 260px auto; mix-blend-mode: multiply; opacity: 0.35; }
+    #c2s02-sc074-pc { left: 120px; top: 60px; width: 160px; height: 160px; border-width: 6px; background: url('assets/c2/photos/shockley_blackboard_transistor.jpg') -380px -40px / 900px auto; filter: grayscale(1); }
+    #c2s02-sc074-pcl { left: 320px; top: 80px; font-size: 40px; }
+    #c2s02-sc074-pt { left: 320px; top: 140px; font-size: 60px; }
+    #c2s02-sc074-stl { left: 1110px; top: 935px; font-size: 44px; }
+
+    /* C2S075 */
+    #c2s02-sc075-streaks { opacity: 0.22; filter: blur(2.5px); }
+    #c2s02-sc075-hub { left: 840px; top: 440px; width: 240px; height: 240px; border-width: 9px; background: url('assets/c2/derived/c2s02/quad_panel.jpg') -560px -150px / 1000px auto; filter: sepia(0.3) brightness(0.9); }
+    #c2s02-sc075-hr { left: 0; top: 90px; width: 1920px; text-align: center; font-size: 76px; }
+    #c2s02-sc075-hl { left: 810px; top: 700px; width: 300px; text-align: center; font-size: 34px; opacity: 0; }
+    #c2s02-sc075-co { left: 0; top: 960px; width: 1920px; text-align: center; font-size: 38px; opacity: 0; }
+
+    /* C2S076 / C2S078 plan */
+    .c2b-tile { position: absolute; width: 170px; height: 170px; box-shadow: 0 14px 30px rgba(20,27,36,0.35); overflow: hidden; background: var(--ink); }
+    .c2b-tile img { position: absolute; }
+    .c2b-tl { position: absolute; font-size: 28px; white-space: nowrap; opacity: 0; }
+    #c2s02-sc076-ge { left: 92px; top: 62px; width: 48px; height: 48px; }
+    #c2s02-sc078-lot { left: 120px; top: 70px; font-size: 40px; }
+    #c2s02-sc078-hq { left: 120px; top: 930px; font-size: 64px; }
+
+    /* C2S077 */
+    #c2s02-sc077-w1, #c2s02-sc077-w2 { position: absolute; inset: 0; }
+    #c2s02-sc077-film { left: 640px; top: 120px; width: 1180px; height: 840px; }
+    #c2s02-sc077-lk { left: 130px; top: 330px; font-size: 124px; opacity: 0; }
+    #c2s02-sc077-md { left: 140px; top: 480px; font-size: 40px; }
+    #c2s02-sc077-kl { left: 760px; top: 160px; width: 1040px; height: 790px; padding: 16px; transform: rotate(-1.5deg); }
+    #c2s02-sc077-kl img { filter: grayscale(1) contrast(1.1) brightness(0.8); }
+    #c2s02-sc077-va { position: absolute; left: 120px; top: 420px; width: 560px; opacity: 0; filter: brightness(0) invert(0.93); }
+
+    /* C2S079-080 */
+    .c2b-eq { width: 300px; height: 300px; border-width: 8px; opacity: 0; }
+    #c2s02-sc079-c1 { left: 210px; top: 300px; background: url('assets/c2/derived/c2s02/engineers_still.jpg') -170px -30px / 680px auto; filter: grayscale(1) contrast(1.1); }
+    #c2s02-sc079-c2 { left: 810px; top: 300px; background: url('assets/archival/hp/hewlett_and_packard_together_1960.jpg') -150px -10px / 620px auto; filter: grayscale(1) contrast(1.05); }
+    #c2s02-sc079-c3 { left: 1410px; top: 300px; background: url('assets/c2/photos/hp_stanford_industrial_park_plant_rendering_1959.jpg') -330px -60px / 900px auto; filter: grayscale(1) contrast(1.05); }
+    .c2b-plus { position: absolute; top: 380px; width: 120px; text-align: center; font-size: 110px; opacity: 0; }
+    .c2b-eql { position: absolute; top: 640px; width: 460px; text-align: center; font-size: 48px; }
+    #c2s02-sc080-eq { left: 0; top: 270px; width: 1920px; text-align: center; font-size: 110px; opacity: 0; }
+    #c2s02-sc080-line { left: 0; top: 470px; width: 1920px; text-align: center; white-space: nowrap; }
+    #c2s02-sc080-line .s { font-size: 70px; vertical-align: middle; }
+    #c2s02-sc080-sv { font-size: 150px; vertical-align: middle; margin: 0 40px; position: relative; }
+    #c2s02-sc080-svf { position: absolute; left: 0; top: 0; opacity: 0; color: var(--bone); white-space: nowrap; }
+    #c2s02-sc080-ah { left: 0; top: 720px; width: 1920px; text-align: center; font-size: 64px; }
+
+    /* C2S081 */
+    #c2s02-sc081-a { left: 470px; top: 250px; width: 760px; height: 600px; transform: rotate(-3deg); padding: 22px 22px 100px; }
+    #c2s02-sc081-a .in { position: relative; width: 100%; height: 100%; overflow: hidden; }
+    #c2s02-sc081-a img { position: absolute; left: -300px; top: -680px; width: 1650px; height: 1100px; }
+    #c2s02-sc081-tr { position: absolute; left: 34px; bottom: 30px; font-size: 44px; opacity: 0; }
+    #c2s02-sc081-b { left: 640px; top: 160px; width: 760px; height: 520px; padding: 40px; }
+    #c2s02-sc081-b .q { position: absolute; left: 0; top: 70px; width: 100%; text-align: center; font-size: 300px; color: var(--ink); opacity: 0.85; }
+    #c2s02-sc081-ai { left: 130px; top: 90px; font-size: 72px; }
+    #c2s02-sc081-ot { left: 1440px; top: 330px; font-size: 38px; }
+
+    /* C2S082 */
+    #c2s02-sc082-cam { position: absolute; inset: 0; transform-origin: 960px 540px; }
+    #c2s02-sc082-und { position: absolute; left: 260px; top: -60px; width: 1400px; height: 1446px; background: url('assets/c2/documents/edn_jul1961_micrologic_logic_schematics_p2.jpg') center / cover; filter: grayscale(1) invert(1) brightness(1.4); mix-blend-mode: screen; opacity: 0.1; }
+    #c2s02-sc082-sw { left: 0; top: 720px; width: 1920px; text-align: center; font-size: 40px; }
+    #c2s02-sc082-ma { left: 0; top: 110px; width: 1920px; text-align: center; font-size: 120px; }
+    #c2s02-sc082-any { left: 0; top: 880px; width: 1920px; text-align: center; font-size: 64px; }
+
+    /* C2S083 */
+    #c2s02-sc083-svg { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; }
+    #c2s02-sc083-box { left: 0; top: 420px; width: 1920px; text-align: center; }
+    #c2s02-sc083-box .b { display: inline-block; background: rgba(235,228,214,0.94); padding: 16px 40px 10px; box-shadow: 0 16px 40px rgba(20,27,36,0.25); }
+    #c2s02-sc083-tt { font-size: 110px; }
+    #c2s02-sc083-mm { font-size: 64px; margin-top: 6px; }
+
+    /* C2S084 */
+    #c2s02-sc084-w1 { position: absolute; inset: 0; }
+    #c2s02-sc084-film { left: 360px; top: 90px; width: 1200px; height: 860px; }
+    #c2s02-sc084-so { left: 120px; top: 960px; font-size: 40px; }
+    #c2s02-sc084-cam2 { position: absolute; inset: 0; transform-origin: 960px 520px; }
+    #c2s02-sc084-wire { left: 540px; top: 70px; width: 840px; height: 905px; padding: 18px; transform: rotate(1.5deg); }
+    #c2s02-sc084-wire img { filter: grayscale(1) contrast(1.1); }
+    #c2s02-sc084-he { left: 130px; top: 820px; font-size: 110px; }
+
+    /* C2S085 */
+    #c2s02-sc085-cam { width: 3072px; height: 2048px; }
+    #c2s02-sc085-tube { position: absolute; left: 1364px; top: 593.6px; width: 530.4px; height: 467.2px; border-radius: 120px; background: #050505; overflow: hidden; }
+    #c2s02-sc085-scr { position: absolute; inset: 0; transform-origin: 50% 50%; }
+    #c2s02-sc085-scr video { position: absolute; left: -6%; top: -6%; width: 112%; height: 112%; object-fit: cover; }
+    #c2s02-sc085-glow { position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 50%, rgba(255,255,255,0.9), rgba(255,255,255,0) 70%); opacity: 0; }
+    #c2s02-sc085-tv { position: absolute; left: 0; top: 0; width: 3072px; height: 2048px; filter: saturate(0.45) brightness(0.62) sepia(0.15) contrast(1.05); }
+    #c2s02-sc085-mil { left: 140px; top: 150px; font-size: 40px; }
+    #c2s02-sc085-mis { left: 130px; top: 800px; font-size: 120px; }
+
+    /* C2S086-087 */
+    #c2s02-sc086-sheet { position: absolute; left: 180px; top: 0; width: 1560px; height: 1080px; transform-origin: 50% 50%; background: #ece4d2; box-shadow: 0 30px 80px rgba(20,27,36,0.35); overflow: hidden; }
+    #c2s02-sc086-sheet .g { position: absolute; inset: 0; background: url('assets/textures/paper_graph_01_hires.jpg') center / cover; mix-blend-mode: multiply; opacity: 0.45; }
+    #c2s02-sc086-svg { position: absolute; left: 0; top: 0; width: 1560px; height: 1080px; }
+    #c2s02-sc086-num { left: 240px; top: 80px; font-size: 120px; }
+    #c2s02-sc086-num .label-box { color: var(--yellow); padding: 0.08em 0.2em 0.02em; }
+    #c2s02-sc086-pc { left: 250px; top: 230px; font-size: 40px; opacity: 0; }
+    #c2s02-sc087-th { left: 250px; top: 230px; font-size: 40px; opacity: 0; }
+    #c2s02-sc086-so { left: 240px; top: 860px; font-size: 72px; }
+    #c2s02-sc087-do { left: 240px; top: 860px; font-size: 72px; }
+    #c2s02-sc087-gw { left: 1160px; top: 860px; font-size: 80px; }
+  </style>
+  <div id="root" data-composition-id="c2s02" data-vo-start="198.43" data-duration="204.70" data-width="1920" data-height="1080">
+    <svg id="c2s02-defs" width="0" height="0" style="position:absolute"></svg>
+
+    <!-- C2S043 · 198.43–203.15 · Terman, this is happening in the east, but Terman is using the money he's getting from the military · D11 ghost US map -->
+    <div class="c2b-scene c2b-night" id="c2s02-sc043" data-scene="C2S043"><div class="c2b-shot" id="c2s02-sc043-shot">
+      <div class="c2b-cam" id="c2s02-sc043-cam" style="width:3200px;height:1764px">
+        <img id="c2s02-sc043-map" src="assets/c2/derived/c2s02/us_night_3200.jpg" alt="" />
+        <div id="c2s02-sc043-nj"></div>
+        <svg id="c2s02-sc043-svg" class="c2b-mk" style="width:3200px;height:1764px" viewBox="0 0 3200 1764"></svg>
+        <div id="c2s02-sc043-ter" class="c2b-circ c2b-ring-red" style="background-image:url('assets/archival/collage/terman_frederick_1955.jpg'); opacity:0"></div>
+        <div id="c2s02-sc043-terl" class="c2b-abs t-label clean c2b-red">Terman</div>
+        <div id="c2s02-sc043-east" class="c2b-abs t-label c2b-sky"><span class="c2b-w">the </span><span class="c2b-w">east</span></div>
+        <div id="c2s02-sc043-mil" class="c2b-abs t-label clean">military</div>
+      </div>
+    </div></div>
+
+    <!-- C2S044 · 203.15–210.02 · …cutting edge research become faculty at Stanford · D06 parliament on K+E cross-section paper -->
+    <div class="c2b-scene c2b-paper" id="c2s02-sc044" data-scene="C2S044"><div class="c2b-shot" id="c2s02-sc044-shot">
+      <div class="c2b-p1" style="background-image:url('assets/textures/paper_cream_01.jpg')"></div>
+      <div class="c2b-p2" style="background-image:url('assets/intro/papers/ke1960_cross_section_green_norm_hires.jpg'); filter:saturate(0.15) brightness(1.05); background-size:2400px auto"></div>
+      <svg id="c2s02-sc044-svg" class="c2b-mk" viewBox="0 0 1920 1080"></svg>
+      <div id="c2s02-sc044-cr" class="c2b-abs t-serif-i c2b-ink"><span class="c2b-w">cutting </span><span class="c2b-w">edge </span><span class="c2b-w">research</span></div>
+      <div id="c2s02-sc044-fac" class="c2b-abs t-label c2b-ink">faculty</div>
+      <div id="c2s02-sc044-st" class="c2b-abs t-display c2b-red">Stanford</div>
+    </div></div>
+
+    <!-- C2S045 · 210.02–213.86 · So he's giving them bigger contracts, more money to come move to Stanford · typeset contract + highlighter -->
+    <div class="c2b-scene c2b-paper" id="c2s02-sc045" data-scene="C2S045"><div class="c2b-shot" id="c2s02-sc045-shot">
+      <div class="c2b-p1" style="background-image:url('assets/textures/paper_cream_02.jpg'); filter:brightness(0.86)"></div>
+      <div class="c2b-p2" style="background-image:url('assets/textures/paper_fiber_01.jpg'); opacity:0.5"></div>
+      <div class="c2b-abs" id="c2s02-sc045-cam" style="inset:0; transform-origin:900px 560px">
+        <div id="c2s02-sc045-form" class="c2b-card"><div class="tx2"></div>
+          <div class="t-display hd" style="position:relative">Research Contract</div>
+          <div class="rule" style="position:relative"></div>
+          <div style="position:relative; display:flex; gap:80px">
+            <div style="flex:1"><div class="t-label fld">Contractor</div><div class="t-serif val">Stanford University</div></div>
+            <div style="flex:1"><div class="t-label fld">Funds</div><div class="t-serif val">$ ________</div></div>
+          </div>
+          <div style="position:relative"><div class="c2b-ln" style="width:94%"></div><div class="c2b-ln" style="width:88%"></div><div class="c2b-ln" style="width:91%"></div><div class="c2b-ln" style="width:62%"></div></div>
+          <div style="position:relative; margin-top:40px">
+            <div class="c2b-typed t-label" id="c2s02-sc045-l1"><span class="c2b-hlbar" id="c2s02-sc045-hl" style="left:-8px; right:-10px; top:12px; bottom:4px"></span><span class="c2b-w" style="position:relative">bigger </span><span class="c2b-w" style="position:relative">contracts</span></div>
+            <div class="c2b-typed t-label" id="c2s02-sc045-l2">more money</div>
+            <div class="c2b-typed t-label c2b-red" id="c2s02-sc045-l3" style="opacity:0">Stanford</div>
+          </div>
+        </div>
+      </div>
+    </div></div>
+
+    <!-- C2S046 · 213.86–217.14 · Another interesting part, one of the Nobel Prize winner, William Shockley -->
+    <div class="c2b-scene c2b-night" id="c2s02-sc046" data-scene="C2S046"><div class="c2b-shot" id="c2s02-sc046-shot">
+      <div id="c2s02-sc046-glow"></div>
+      <div id="c2s02-sc046-pw"><img id="c2s02-sc046-por" src="assets/c2/cutouts/shockley_portrait_cut.png" alt="" /></div>
+      <img id="c2s02-sc046-medal" src="assets/c2/derived/c2s02/nobel_medal_cut.png" alt="" />
+      <div id="c2s02-sc046-np" class="c2b-abs t-label clean"><span class="c2b-w">Nobel </span><span class="c2b-w">Prize</span></div>
+      <div id="c2s02-sc046-name" class="c2b-abs t-display halate"><span class="c2b-w">William</span><br /><span class="c2b-w">Shockley</span></div>
+      <div class="c2b-credit">Medal photo: CC BY-SA 4.0 (Wikimedia Commons)</div>
+    </div></div>
+
+    <!-- C2S047 · 217.14–220.42 · So Terman is getting a lot of people who work with them, not the top guys · D15 node diagram -->
+    <div class="c2b-scene c2b-paper" id="c2s02-sc047" data-scene="C2S047"><div class="c2b-shot" id="c2s02-sc047-shot">
+      <div class="c2b-p1" style="background-image:url('assets/textures/paper_cream_01.jpg')"></div>
+      <div class="c2b-p2" style="background-image:url('assets/textures/paper_fiber_01.jpg'); opacity:0.45"></div>
+      <svg id="c2s02-sc047-svg" class="c2b-mk" viewBox="0 0 1920 1080"></svg>
+      <div id="c2s02-sc047-bell" class="c2b-circ c2b-ring-navy"></div>
+      <div id="c2s02-sc047-p1" class="c2b-circ c2b-ring-ink c2b-trio" style="left:175px; top:250px; background-position:-241px -31px"></div>
+      <div id="c2s02-sc047-p2" class="c2b-circ c2b-ring-ink c2b-trio" style="left:365px; top:220px; background-position:-387px -219px"></div>
+      <div id="c2s02-sc047-p3" class="c2b-circ c2b-ring-ink c2b-trio" style="left:555px; top:250px; background-position:-612px -40px"></div>
+      <div id="c2s02-sc047-ter" class="c2b-circ c2b-ring-red"></div>
+      <div id="c2s02-sc047-terl" class="c2b-abs t-label c2b-red" style="opacity:0">Terman</div>
+      <div id="c2s02-sc047-lot" class="c2b-abs t-label c2b-ink"><span class="c2b-w">a </span><span class="c2b-w">lot </span><span class="c2b-w">of </span><span class="c2b-w">people</span></div>
+      <div id="c2s02-sc047-top" class="c2b-abs t-serif-i c2b-ink"><span class="c2b-w">not </span><span class="c2b-w">the </span><span class="c2b-w">top </span><span class="c2b-w">guys</span></div>
+      <svg id="c2s02-sc047-mk" class="c2b-mk" viewBox="0 0 1920 1080"></svg>
+      <div class="c2b-credit ink">Photo: AT&amp;T / Nokia Bell Labs, 1948</div>
+    </div></div>
+
+    <!-- C2S048 · 220.42–223.54 · but William Shockley himself comes to Palo Alto · D10 tilted atlas map -->
+    <div class="c2b-scene c2b-paper" id="c2s02-sc048" data-scene="C2S048"><div class="c2b-shot" id="c2s02-sc048-shot">
+      <div class="c2b-p1" style="background-image:url('assets/textures/paper_stained_01_hires.jpg'); filter:brightness(0.9)"></div>
+      <div id="c2s02-sc048-stage"><div id="c2s02-sc048-plane"><div class="c2b-cam" id="c2s02-sc048-cam">
+        <img id="c2s02-sc048-map" src="assets/c2/derived/c2s02/us_atlas_3200.jpg" alt="" />
+        <svg id="c2s02-sc048-svg" class="c2b-mk" style="width:3200px;height:1764px" viewBox="0 0 3200 1764"></svg>
+        <div id="c2s02-sc048-sh" class="c2b-circ c2b-ring-ink"></div>
+        <div id="c2s02-sc048-pa" class="c2b-abs t-label c2b-red"><span class="c2b-w">Palo </span><span class="c2b-w">Alto</span></div>
+      </div></div></div>
+      <div class="c2b-tex" style="opacity:0.35"></div>
+      <div id="c2s02-sc048-him" class="c2b-abs t-serif-i c2b-ink" style="opacity:0">himself</div>
+    </div></div>
+
+    <!-- C2S049 · 223.54–227.14 · because his mom, who's old and getting sick, is in Palo Alto · lamp-lit desk -->
+    <div class="c2b-scene c2b-night" id="c2s02-sc049" data-scene="C2S049"><div class="c2b-shot" id="c2s02-sc049-shot">
+      <div class="c2b-lamp"></div>
+      <div id="c2s02-sc049-cam">
+        <div id="c2s02-sc049-frame"><div class="mat"></div><div class="glass"></div><div class="glare"></div></div>
+        <div id="c2s02-sc049-pc"><div class="in"><div class="c2b-tex" style="opacity:0.4"></div>
+          <div id="c2s02-sc049-pal" class="t-display"><span class="c2b-w">Palo </span><span class="c2b-w">Alto</span></div></div></div>
+      </div>
+      <div id="c2s02-sc049-pool"></div>
+      <div id="c2s02-sc049-mom" class="c2b-abs t-serif-i clean"><span class="c2b-w">his </span><span class="c2b-w">mom</span></div>
+    </div></div>
+
+    <!-- C2S050 · 227.14–230.10 · and he wants to start a company selling transistors · Shockley lab building -->
+    <div class="c2b-scene c2b-night" id="c2s02-sc050" data-scene="C2S050"><div class="c2b-shot" id="c2s02-sc050-shot">
+      <div class="c2b-lamp" style="filter:brightness(0.7)"></div>
+      <div id="c2s02-sc050-cam">
+        <div id="c2s02-sc050-ph" class="c2b-print"><div class="in"><img src="assets/c2/photos/chm_shockley_lab_mountain_view_c1960.jpg" alt="" style="height:140%; top:-20%" /></div></div>
+      </div>
+      <div id="c2s02-sc050-co" class="c2b-abs t-label clean"><span class="c2b-w">a </span><span class="c2b-w">company</span></div>
+      <div id="c2s02-sc050-st" class="c2b-abs t-serif-i clean"><span class="c2b-w">selling </span><span class="c2b-w">transistors</span></div>
+      <svg id="c2s02-sc050-mk" class="c2b-mk" viewBox="0 0 1920 1080"></svg>
+      <div class="c2b-credit">Photo: Computer History Museum</div>
+    </div></div>
+
+    <!-- C2S051–052 · 230.10–240.50 · do the company in Palo Alto, so I can be close to my mom / nothing to do with Stanford … independent · USGS 1948 quad -->
+    <div class="c2b-scene c2b-paper" id="c2s02-sc051" data-scene="C2S051-C2S052"><div class="c2b-shot" id="c2s02-sc051-shot">
+      <div class="c2b-cam" id="c2s02-sc051-cam" style="width:2920px;height:2200px">
+        <img id="c2s02-sc051-map" src="assets/c2/derived/c2s02/usgs1948_pa_mv.jpg" alt="" />
+        <svg id="c2s02-sc051-svg" class="c2b-mk" style="width:2920px;height:2200px" viewBox="0 0 2920 2200"></svg>
+        <div id="c2s02-sc051-lco" class="c2b-pinl t-label c2b-ink"><span class="c2b-w">the </span><span class="c2b-w">company</span></div>
+        <div id="c2s02-sc051-lcl" class="c2b-pinl t-serif-i c2b-ink" style="font-size:58px"><span class="c2b-w">close </span><span class="c2b-w">to </span><span class="c2b-w">my </span><span class="c2b-w">mom</span></div>
+        <div id="c2s02-sc052-lst" class="c2b-pinl t-label c2b-red" style="font-size:72px">Stanford</div>
+      </div>
+      <div class="c2b-tex" style="opacity:0.45"></div>
+      <div id="c2s02-sc051-pa" class="c2b-abs t-display c2b-ink" style="opacity:0">Palo Alto</div>
+      <div id="c2s02-sc052-ind" class="c2b-abs t-serif-i c2b-ink" style="opacity:0">independent</div>
+      <div class="c2b-credit ink">Map: USGS Palo Alto quadrangle, 1948</div>
+    </div></div>
+
+    <!-- C2S053 · 240.50–243.62 · but it's gonna end up paying a big role very quickly · satellite + rings -->
+    <div class="c2b-scene c2b-night" id="c2s02-sc053" data-scene="C2S053"><div class="c2b-shot" id="c2s02-sc053-shot">
+      <div class="c2b-cam" id="c2s02-sc053-cam" style="width:2600px;height:2200px">
+        <img id="c2s02-sc053-map" src="assets/c2/derived/c2s02/bay_satdesat_pa.jpg" alt="" />
+        <img id="c2s02-sc053-blur" src="assets/c2/derived/c2s02/bay_satdesat_pa.jpg" alt="" />
+        <svg id="c2s02-sc053-svg" class="c2b-mk" style="width:2600px;height:2200px" viewBox="0 0 2600 2200"></svg>
+      </div>
+      <div class="c2b-scrim-b" style="height:360px"></div>
+      <div id="c2s02-sc053-big" class="c2b-abs t-serif-i clean"><span class="c2b-w">a </span><span class="c2b-w">big </span><span class="c2b-w">role</span></div>
+      <div class="c2b-credit">Imagery: Esri, Maxar, Earthstar Geographics</div>
+    </div></div>
+
+    <!-- C2S054 · 243.62–248.50 · All the while … Terman does something else that's very interesting · Vox layered -->
+    <div class="c2b-scene c2b-night" id="c2s02-sc054" data-scene="C2S054"><div class="c2b-shot" id="c2s02-sc054-shot">
+      <div class="c2b-lamp" style="filter:brightness(0.75)"></div>
+      <div id="c2s02-sc054-quad" class="c2b-panel"><img src="assets/c2/derived/c2s02/quad_panel.jpg" alt="" style="width:1100px; height:419px; left:-20px; top:-10px; filter:url(#c2s02-tint-red)" /></div>
+      <div id="c2s02-sc054-svy" class="c2b-panel"><img src="assets/c2/derived/c2s02/usgs1948_pa_mv.jpg" alt="" style="width:2920px; height:2200px; left:-1000px; top:-650px; filter:url(#c2s02-tint-warm)" /></div>
+      <div id="c2s02-sc054-cal" class="c2b-panel"><div class="h t-label"><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span></div>
+        <div class="g"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+        <div class="c2b-tex" style="opacity:0.6"></div></div>
+      <img id="c2s02-sc054-ter" src="assets/c2/derived/c2s02/terman_1955_cut.png" alt="" />
+      <div class="c2b-scrim-b" style="height:300px"></div>
+      <div id="c2s02-sc054-tl" class="c2b-abs t-label clean c2b-red" style="opacity:0">Terman</div>
+      <div id="c2s02-sc054-se" class="c2b-abs t-serif-i clean"><span class="c2b-w">something </span><span class="c2b-w">else</span></div>
+    </div></div>
+
+    <!-- C2S055 · 248.50–252.44 · Place pays massive dividends down the road · chart becomes a road -->
+    <div class="c2b-scene c2b-paper" id="c2s02-sc055" data-scene="C2S055"><div class="c2b-shot" id="c2s02-sc055-shot">
+      <div class="c2b-p1" style="background-image:url('assets/textures/paper_cream_01.jpg')"></div>
+      <div class="c2b-p2" style="background-image:url('assets/textures/paper_stained_01_hires.jpg'); opacity:0.75"></div>
+      <div class="c2b-abs" id="c2s02-sc055-cam" style="inset:0; transform-origin:960px 700px">
+        <div id="c2s02-sc055-stage"><div id="c2s02-sc055-plane"><svg id="c2s02-sc055-svg" class="c2b-mk" style="width:1600px;height:760px" viewBox="0 0 1600 760"></svg></div></div>
+      </div>
+      <div id="c2s02-sc055-title" class="c2b-abs t-serif c2b-ink"><span class="c2b-w">massive </span><span class="c2b-w"><i class="c2b-red">dividends</i></span></div>
+      <div id="c2s02-sc055-road" class="c2b-abs t-label c2b-ink"><span class="c2b-w">down </span><span class="c2b-w">the </span><span class="c2b-w">road</span></div>
+    </div></div>
+
+    <!-- C2S056 · 252.44–255.54 · Stanford, when it was founded by Leland Stanford · Meissonier portrait -->
+    <div class="c2b-scene c2b-night" id="c2s02-sc056" data-scene="C2S056"><div class="c2b-shot" id="c2s02-sc056-shot">
+      <div id="c2s02-sc056-wall"></div>
+      <div id="c2s02-sc056-cam"><div id="c2s02-sc056-fr"><img src="assets/c2/paintings/leland_stanford_p1070023.jpg" alt="" /></div></div>
+      <div id="c2s02-sc056-st" class="c2b-abs t-label clean" style="opacity:0">Stanford</div>
+      <div id="c2s02-sc056-ls" class="c2b-abs t-display halate"><span class="c2b-w">Leland</span><br /><span class="c2b-w">Stanford</span></div>
+      <div class="c2b-credit">Jean-Louis-Ernest Meissonier, Leland Stanford (1881), Cantor Arts Center</div>
+    </div></div>
+
+    <!-- C2S057 · 255.54–260.50 · was granted eight thousand acres of land. A lot of land · R12 on USGS 1953 -->
+    <div class="c2b-scene c2b-paper" id="c2s02-sc057" data-scene="C2S057"><div class="c2b-shot" id="c2s02-sc057-shot">
+      <div class="c2b-p1" style="background-image:url('assets/textures/paper_cream_02.jpg'); filter:brightness(0.8)"></div>
+      <div class="c2b-cam" id="c2s02-sc057-cam" style="width:2650px;height:2050px">
+        <img id="c2s02-sc057-map" src="assets/c2/derived/c2s02/usgs1953_stanford_lands.jpg" alt="" />
+        <svg id="c2s02-sc057-svg" class="c2b-mk" style="width:2650px;height:2050px" viewBox="0 0 2650 2050"></svg>
+      </div>
+      <div class="c2b-tex" style="opacity:0.35"></div>
+      <div id="c2s02-sc057-num" class="c2b-abs t-display"><span class="label-box" id="c2s02-sc057-box" style="opacity:0"><span id="c2s02-sc057-n">0</span></span></div>
+      <div id="c2s02-sc057-ac" class="c2b-abs t-label c2b-ink">acres</div>
+      <div id="c2s02-sc057-lot" class="c2b-abs t-serif-i c2b-ink"><span class="c2b-w">a </span><span class="c2b-w">lot </span><span class="c2b-w">of </span><span class="c2b-w">land</span></div>
+      <div class="c2b-credit ink">Map: USGS Palo Alto quadrangle, 1953 · outline approximate</div>
+    </div></div>
+
+    <!-- C2S058 · 260.50–264.93 · I think that's like one fourth of San Francisco that's Stanford had · R11 on Bay Area atlas -->
+    <div class="c2b-scene c2b-paper" id="c2s02-sc058" data-scene="C2S058"><div class="c2b-shot" id="c2s02-sc058-shot">
+      <div class="c2b-p1" style="background-image:url('assets/textures/paper_cream_01.jpg'); filter:brightness(0.85)"></div>
+      <div class="c2b-p2" style="background-image:url('assets/textures/paper_fiber_01.jpg'); opacity:0.45"></div>
+      <div class="c2b-cam" id="c2s02-sc058-cam" style="width:2100px;height:2100px">
+        <img id="c2s02-sc058-map" src="assets/c2/derived/c2s02/bay_atlas_sf_stanford.jpg" alt="" />
+        <svg id="c2s02-sc058-svg" class="c2b-mk" style="width:2100px;height:2100px" viewBox="0 0 2100 2100"></svg>
+      </div>
+      <svg id="c2s02-sc058-mk" class="c2b-mk" viewBox="0 0 1920 1080"></svg>
+      <div id="c2s02-sc058-of" class="c2b-abs t-label c2b-ink"><span class="c2b-w">one </span><span class="c2b-w">fourth</span></div>
+      <div id="c2s02-sc058-sf" class="c2b-abs t-label c2b-ink"><span class="c2b-w">San </span><span class="c2b-w">Francisco</span></div>
+      <div class="c2b-credit ink">Relief: AWS Terrain Tiles / Natural Earth · outlines approximate</div>
+    </div></div>
+
+    <!-- C2S059–060 · 264.93–270.93 · not really sure how much they have now / they should have all of it · satellite -->
+    <div class="c2b-scene c2b-night" id="c2s02-sc059" data-scene="C2S059-C2S060"><div class="c2b-shot" id="c2s02-sc059-shot">
+      <div class="c2b-cam" id="c2s02-sc059-cam" style="width:3584px;height:2944px">
+        <img id="c2s02-sc059-map" src="assets/c2/derived/c2s02/aerial_stanford_lands_z16_050.jpg" alt="" />
+        <svg id="c2s02-sc059-svg" class="c2b-mk" style="width:3584px;height:2944px" viewBox="0 0 3584 2944"></svg>
+      </div>
+      <div class="c2b-scrim-b" style="height:360px"></div>
+      <div id="c2s02-sc059-now" class="c2b-abs t-serif-i clean">now?</div>
+      <div id="c2s02-sc060-all" class="c2b-abs t-serif-i clean"><span class="c2b-w">all </span><span class="c2b-w">of </span><span class="c2b-w">it</span></div>
+      <div class="c2b-credit">Imagery: Esri, Maxar, Earthstar Geographics · outline approximate</div>
+    </div></div>
+
+    <!-- C2S061–062 · 270.93–279.41 · one rule in the deed … they could not sell any of this land ever · Founding Grant 1885 -->
+    <div class="c2b-scene c2b-paper" id="c2s02-sc061" data-scene="C2S061-C2S062"><div class="c2b-shot" id="c2s02-sc061-shot">
+      <div id="c2s02-sc061-bg"></div>
+      <div id="c2s02-sc061-stage"><div class="c2b-cam" id="c2s02-sc061-cam"><div id="c2s02-sc061-pages">
+        <div id="c2s02-sc061-dim">
+          <div class="c2b-page" style="left:0; width:843px; height:1441px"><img src="assets/c2/documents/stanford_founding_grant_1885_p10_heading.jpg" alt="" /></div>
+          <div class="c2b-page" style="left:880px; width:891px; height:1440px"><img src="assets/c2/documents/stanford_founding_grant_1885_p11_land_clause.jpg" alt="" /></div>
+        </div>
+        <div id="c2s02-sc061-key"><img src="assets/c2/documents/stanford_founding_grant_1885_p11_land_clause.jpg" alt="" style="width:891px; height:1440px; filter:sepia(0.25) contrast(1.05)" /></div>
+        <div id="c2s02-sc061-ht"></div>
+      </div></div></div>
+      <div id="c2s02-sc062-veil"></div>
+      <div id="c2s02-sc061-rule" class="c2b-strip"><span class="t-label c2b-ink a" id="c2s02-sc061-or" style="opacity:0">one rule</span><span class="t-serif-i c2b-ink b" id="c2s02-sc061-dd" style="opacity:0">deed</span></div>
+      <div id="c2s02-sc062-note" class="c2b-strip" style="opacity:0"><span class="t-serif c2b-ink t"><span class="c2b-w">could </span><span style="position:relative; display:inline-block"><span class="c2b-hlbar" id="c2s02-sc062-hl" style="left:-6px; right:-6px; top:20px; bottom:6px"></span><span class="c2b-w" style="position:relative">not </span><span class="c2b-w" style="position:relative">sell</span></span><span class="c2b-w"> … </span><i class="c2b-w c2b-red">ever</i></span></div>
+      <div class="c2b-credit">Founding Grant, Leland Stanford Junior University, 1885</div>
+    </div></div>
+
+    <!-- C2S063 · 279.41–284.85 · this is where Terman does … finagling the rules · Vox cut-out + deed -->
+    <div class="c2b-scene c2b-night" id="c2s02-sc063" data-scene="C2S063"><div class="c2b-shot" id="c2s02-sc063-shot">
+      <div class="c2b-lamp" style="filter:brightness(0.6)"></div>
+      <div id="c2s02-sc063-deed"><img src="assets/c2/documents/stanford_founding_grant_1885_p11_land_clause.jpg" alt="" /></div>
+      <svg id="c2s02-sc063-mk" class="c2b-mk" viewBox="0 0 1920 1080"></svg>
+      <img id="c2s02-sc063-ter" src="assets/c2/derived/c2s02/terman_1955_cut.png" alt="" />
+      <div class="c2b-scrim-l" style="width:760px; opacity:0.7"></div>
+      <div id="c2s02-sc063-tl" class="c2b-abs t-label clean c2b-red" style="opacity:0">Terman</div>
+      <div id="c2s02-sc063-fin" class="c2b-abs t-serif-i halate">finagling</div>
+      <div id="c2s02-sc063-ru" class="c2b-abs t-label clean"><span class="c2b-w">the </span><span class="c2b-w">rules</span></div>
+    </div></div>
+
+    <!-- C2S064 · 284.85–289.81 · I can't sell it. But how about I just rent it for very, very long time · ledger -->
+    <div class="c2b-scene c2b-paper" id="c2s02-sc064" data-scene="C2S064"><div class="c2b-shot" id="c2s02-sc064-shot">
+      <div class="c2b-p1" style="background-image:url('assets/textures/paper_cream_01.jpg')"></div>
+      <div class="c2b-p2" style="background-image:url('assets/textures/paper_lined_01_hires.jpg'); filter:saturate(0.3)"></div>
+      <div id="c2s02-sc064-led" class="c2b-card"><img src="assets/intro/papers/ledger_specimen_p318.jpg" alt="" /></div>
+      <div id="c2s02-sc064-slip" class="c2b-card"><div class="tx2"></div>
+        <div id="c2s02-sc064-sell" class="t-label c2b-ink">sell</div>
+        <div id="c2s02-sc064-rent" class="t-serif-i c2b-ink">rent</div>
+      </div>
+      <svg id="c2s02-sc064-mk" class="c2b-mk" viewBox="0 0 1920 1080"></svg>
+      <div id="c2s02-sc064-vv" class="c2b-abs t-serif-i c2b-ink"><span class="c2b-w">very, </span><span class="c2b-w">very </span><span class="c2b-w">long </span><span class="c2b-w">time</span></div>
+    </div></div>
+
+    <!-- C2S065 · 289.81–293.65 · He creates this thing called the Stanford Industrial Park · 2.5D (HP 1959 rendering) -->
+    <div class="c2b-scene c2b-night" id="c2s02-sc065" data-scene="C2S065"><div class="c2b-shot" id="c2s02-sc065-shot">
+      <div id="c2s02-sc065-stage"><div id="c2s02-sc065-cam">
+        <div class="c2b-l25" id="c2s02-sc065-far"><img src="assets/c2/photos/hp_stanford_industrial_park_plant_rendering_1959.jpg" alt="" /></div>
+        <div class="c2b-l25" id="c2s02-sc065-tw"><div id="c2s02-sc065-title" class="t-display halate"><span class="c2b-w">Stanford </span><span class="c2b-w">Industrial </span><span class="c2b-w">Park</span></div></div>
+        <div class="c2b-l25" id="c2s02-sc065-mid"><img src="assets/c2/photos/hp_stanford_industrial_park_plant_rendering_1959.jpg" alt="" /></div>
+        <div class="c2b-l25" id="c2s02-sc065-near"><img src="assets/c2/photos/hp_stanford_industrial_park_plant_rendering_1959.jpg" alt="" /></div>
+      </div></div>
+      <div id="c2s02-sc065-haze"></div>
+      <div class="c2b-credit">Rendering: Hewlett-Packard plant, Stanford Industrial Park (HP Annual Report 1959)</div>
+    </div></div>
+
+    <!-- C2S066 · 293.65–298.85 · if you're a technology company who needs location, you can just come here · pictorial map -->
+    <div class="c2b-scene c2b-paper" id="c2s02-sc066" data-scene="C2S066"><div class="c2b-shot" id="c2s02-sc066-shot">
+      <div class="c2b-p1" style="background-image:url('assets/textures/paper_cream_02.jpg')"></div>
+      <div class="c2b-p2" style="background-image:url('assets/textures/paper_fiber_01.jpg'); opacity:0.45"></div>
+      <div id="c2s02-sc066-card" class="c2b-card"><div class="in"><img src="assets/intro/paintings/stanford_peninsula_map.jpg" alt="" /></div></div>
+      <svg id="c2s02-sc066-mk" class="c2b-mk" viewBox="0 0 1920 1080"></svg>
+      <div id="c2s02-sc066-tc" class="c2b-abs t-label c2b-ink"><span class="c2b-w">technology </span><span class="c2b-w">company</span></div>
+      <div id="c2s02-sc066-loc" class="c2b-abs t-label c2b-ink" style="opacity:0">location</div>
+      <div id="c2s02-sc066-ch" class="c2b-abs t-serif-i c2b-ink"><span class="c2b-w">come </span><span class="c2b-w">here</span></div>
+      <div class="c2b-credit ink">Pictorial map of the San Francisco Bay Peninsula (Stanford University)</div>
+    </div></div>
+
+    <!-- C2S067 · 298.85–303.41 · you can get a ninety nine year lease on this land · typeset lease form -->
+    <div class="c2b-scene c2b-paper" id="c2s02-sc067" data-scene="C2S067"><div class="c2b-shot" id="c2s02-sc067-shot">
+      <div class="c2b-p1" style="background-image:url('assets/textures/paper_cream_01.jpg'); filter:brightness(0.85)"></div>
+      <div class="c2b-p2" style="background-image:url('assets/textures/paper_stained_01_hires.jpg'); opacity:0.5"></div>
+      <div id="c2s02-sc067-form" class="c2b-card"><div class="tx2"></div>
+        <div class="t-display hd" style="position:relative">Ground Lease</div>
+        <div class="rule" style="position:relative"></div>
+        <div style="position:relative"><div class="t-label fld">Term</div>
+          <div style="display:flex; align-items:center; gap:36px; height:190px">
+            <div class="t-display" id="c2s02-sc067-n"><span class="label-box" id="c2s02-sc067-box" style="opacity:0"><span id="c2s02-sc067-nv">0</span></span></div>
+            <div class="t-label c2b-ink" style="font-size:54px"><span class="c2b-w" id="c2s02-sc067-y">year </span><span class="c2b-w" id="c2s02-sc067-l">lease</span></div>
+          </div>
+        </div>
+        <div style="position:relative; margin-top:40px"><div class="t-label fld">Premises</div>
+          <div class="t-serif-i c2b-ink" style="font-size:64px"><span class="c2b-w">this </span><span class="c2b-w">land</span></div></div>
+        <div style="position:relative; margin-top:40px"><div class="c2b-ln" style="width:90%"></div><div class="c2b-ln" style="width:84%"></div><div class="c2b-ln" style="width:52%"></div></div>
+      </div>
+    </div></div>
+
+    <!-- C2S068 · 303.41–306.61 · You can work here, and they're gonna be a lot of other benefits · lab footage -->
+    <div class="c2b-scene c2b-night" id="c2s02-sc068" data-scene="C2S068"><div class="c2b-shot" id="c2s02-sc068-shot">
+      <div class="c2b-lamp" style="filter:brightness(0.55)"></div>
+      <div id="c2s02-sc068-weave"><div id="c2s02-sc068-film" class="c2b-film"><div class="in">
+        <video id="c2s02-sc068-vid" src="assets/c2/footage/bell_transistor1953_engineers_at_benches.mp4" muted playsinline data-start="104.98" data-duration="3.2" data-media-start="1.0"
+          data-color-grading='{"adjust":{"saturation":-1,"contrast":0.1},"effects":{"chromaticAberration":0.12,"chromaticAngle":0}}'></video>
+      </div></div></div>
+      <div id="c2s02-sc068-wh" class="c2b-abs t-serif-i clean"><span class="c2b-w">work </span><span class="c2b-w">here</span></div>
+      <div id="c2s02-sc068-be" class="c2b-abs t-label clean" style="opacity:0">benefits</div>
+      <div class="c2b-credit">Film: AT&amp;T Archives and History Center, 1953</div>
+    </div></div>
+
+    <!-- C2S069 · 306.61–311.89 · One of the benefits is gonna be your people can come learn more in Stanford -->
+    <div class="c2b-scene c2b-paper" id="c2s02-sc069" data-scene="C2S069"><div class="c2b-shot" id="c2s02-sc069-shot">
+      <div class="c2b-p1" style="background-image:url('assets/textures/paper_cream_02.jpg')"></div>
+      <div class="c2b-p2" style="background-image:url('assets/textures/paper_fiber_01.jpg'); opacity:0.5"></div>
+      <div id="c2s02-sc069-card" class="c2b-card"><div class="in"><img src="assets/c2/derived/c2s02/quad_panel.jpg" alt="" /></div>
+        <div id="c2s02-sc069-stl" class="t-display c2b-red">Stanford</div></div>
+      <div class="c2b-tag t-display" id="c2s02-sc069-tag" style="left:1440px; top:80px">1</div>
+      <svg id="c2s02-sc069-svg" class="c2b-mk" viewBox="0 0 1920 1080"></svg>
+      <div id="c2s02-sc069-yp" class="c2b-abs t-label c2b-ink"><span class="c2b-w">your </span><span class="c2b-w">people</span></div>
+      <div id="c2s02-sc069-le" class="c2b-abs t-serif-i c2b-ink" style="opacity:0">learn</div>
+      <div class="c2b-credit ink">Stanford Main Quad, c. 1896</div>
+    </div></div>
+
+    <!-- C2S070–071 · 311.89–321.58 · graduate program … salary … tuition paid by the company · D15 triangle on K+E grid -->
+    <div class="c2b-scene c2b-paper" id="c2s02-sc070" data-scene="C2S070-C2S071"><div class="c2b-shot" id="c2s02-sc070-shot">
+      <div class="c2b-p1" style="background-image:url('assets/textures/paper_cream_01.jpg')"></div>
+      <div class="c2b-p2" style="background-image:url('assets/intro/papers/ke1960_cover_grid_blue_norm_hires.jpg'); filter:saturate(0.1) brightness(1.05); background-size:2600px auto"></div>
+      <svg id="c2s02-sc070-svg" class="c2b-mk" viewBox="0 0 1920 1080"></svg>
+      <div id="c2s02-sc070-st" class="c2b-circ c2b-ring-red"></div>
+      <div id="c2s02-sc070-em" class="c2b-circ c2b-ring-ink"><svg viewBox="0 0 100 100" style="width:100%;height:100%"><g fill="none" stroke="#141b24" stroke-width="5" stroke-linecap="round"><circle cx="50" cy="36" r="13"/><path d="M24 80 Q24 56 50 56 Q76 56 76 80"/></g></svg></div>
+      <div id="c2s02-sc070-co" class="c2b-circ c2b-ring-ink"><svg viewBox="0 0 100 100" style="width:100%;height:100%"><g fill="none" stroke="#141b24" stroke-width="5" stroke-linejoin="round"><path d="M18 78 L18 50 L32 42 L32 50 L46 42 L46 50 L60 42 L60 28 L70 28 L70 78 Z M14 78 L86 78"/></g></svg></div>
+      <svg id="c2s02-sc070-mk" class="c2b-mk" viewBox="0 0 1920 1080"></svg>
+      <div class="c2b-nl t-label c2b-ink" style="left:710px; top:340px"><span class="c2b-w" id="c2s02-sc070-g1">graduate </span><span class="c2b-w" id="c2s02-sc070-g2">program</span></div>
+      <div class="c2b-nl t-label c2b-ink" style="left:170px; top:900px; opacity:0" id="c2s02-sc070-eml">employees</div>
+      <div class="c2b-al t-serif-i c2b-ink" style="left:830px; top:905px; opacity:0" id="c2s02-sc070-sal">salary</div>
+      <div class="c2b-al t-serif-i c2b-red" style="left:1300px; top:380px" id="c2s02-sc071-tu"><span class="c2b-w">tuition </span><span class="c2b-w">paid</span></div>
+      <div class="c2b-nl t-label c2b-ink" style="left:1250px; top:900px" id="c2s02-sc071-by"><span class="c2b-w">by </span><span class="c2b-w">the </span><span class="c2b-w">company</span></div>
+    </div></div>
+
+    <!-- C2S072 · 321.58–327.34 · all these professors that are … coming in already · benefit 2 -->
+    <div class="c2b-scene c2b-night" id="c2s02-sc072" data-scene="C2S072"><div class="c2b-shot" id="c2s02-sc072-shot">
+      <div id="c2s02-sc072-cam"><img id="c2s02-sc072-img" src="assets/c2/photos/shockley_blackboard_transistor.jpg" alt="" /></div>
+      <div class="c2b-scrim-b" style="height:500px"></div>
+      <div class="c2b-tag t-display" id="c2s02-sc072-tag" style="left:1260px; top:520px; background:var(--bone); color:var(--ink)">2</div>
+      <div id="c2s02-sc072-pr" class="c2b-abs t-label clean" style="opacity:0">professors</div>
+      <div id="c2s02-sc072-ca" class="c2b-abs t-serif-i clean"><span class="c2b-w">coming </span><span class="c2b-w">in </span><span class="c2b-w">already</span></div>
+      <div class="c2b-credit">Photo: Stanford University Libraries</div>
+    </div></div>
+
+    <!-- C2S073 · 327.34–330.38 · they're the leading edge in the stuff you guys are trying to do · klystron -->
+    <div class="c2b-scene c2b-night" id="c2s02-sc073" data-scene="C2S073"><div class="c2b-shot" id="c2s02-sc073-shot">
+      <div class="c2b-lamp" style="filter:brightness(0.65)"></div>
+      <div id="c2s02-sc073-ph" class="c2b-print"><div class="in"><img src="assets/c2/objects/klystron_prototype_cutaway.jpg" alt="" /></div></div>
+      <svg id="c2s02-sc073-mk" class="c2b-mk" viewBox="0 0 1920 1080"></svg>
+      <div id="c2s02-sc073-le" class="c2b-abs t-label clean"><span class="c2b-w">leading </span><span class="c2b-w">edge</span></div>
+      <div class="c2b-credit">Klystron prototype cutaway (Wikimedia Commons, PD)</div>
+    </div></div>
+
+    <!-- C2S074 · 330.38–336.14 · work for your company as paid consultant part-time while they're working for Stanford · week planner -->
+    <div class="c2b-scene c2b-paper" id="c2s02-sc074" data-scene="C2S074"><div class="c2b-shot" id="c2s02-sc074-shot">
+      <div class="c2b-p1" style="background-image:url('assets/textures/paper_cream_01.jpg')"></div>
+      <div class="c2b-p2" style="background-image:url('assets/textures/paper_graph_01_hires.jpg'); mix-blend-mode:normal; opacity:0.9"></div>
+      <div id="c2s02-sc074-pc" class="c2b-circ c2b-ring-ink"></div>
+      <div id="c2s02-sc074-pcl" class="c2b-abs t-label c2b-ink"><span class="c2b-w">paid </span><span class="c2b-w">consultant</span></div>
+      <div id="c2s02-sc074-pt" class="c2b-abs t-serif-i c2b-ink" style="opacity:0">part-time</div>
+      <div id="c2s02-sc074-sheet" class="c2b-card" style="top:250px; height:660px"><div class="tx2"></div>
+        <div class="days t-label" style="position:relative"><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span></div>
+        <div class="cols" style="position:relative">
+          <div class="col"><div class="c2b-blk" id="c2s02-sc074-b0" style="background:var(--ink)"><div class="ht"></div></div></div>
+          <div class="col"><div class="c2b-blk" id="c2s02-sc074-b1" style="background:var(--ink)"><div class="ht"></div></div></div>
+          <div class="col"><div class="c2b-blk" id="c2s02-sc074-b2" style="background:var(--vermilion)"><div class="ht"></div></div></div>
+          <div class="col"><div class="c2b-blk" id="c2s02-sc074-b3" style="background:var(--vermilion)"><div class="ht"></div></div></div>
+          <div class="col"><div class="c2b-blk" id="c2s02-sc074-b4" style="background:var(--vermilion)"><div class="ht"></div></div></div>
+          <div class="col"></div><div class="col"></div>
+        </div>
+      </div>
+      <div id="c2s02-sc074-stl" class="c2b-abs t-label c2b-red" style="opacity:0">Stanford</div>
+    </div></div>
+
+    <!-- C2S075 · 336.14–341.66 · a harmonious relationship happening between Stanford and all these companies · D15 hub -->
+    <div class="c2b-scene c2b-night" id="c2s02-sc075" data-scene="C2S075"><div class="c2b-shot" id="c2s02-sc075-shot">
+      <canvas id="c2s02-sc075-streaks" class="streaks"></canvas>
+      <svg id="c2s02-sc075-svg" class="c2b-mk" viewBox="0 0 1920 1080"></svg>
+      <div id="c2s02-sc075-hub" class="c2b-circ c2b-ring-red"></div>
+      <div id="c2s02-sc075-hr" class="c2b-abs t-serif-i clean"><span class="c2b-w">harmonious </span><span class="c2b-w">relationship</span></div>
+      <div id="c2s02-sc075-hl" class="c2b-abs t-label clean c2b-red">Stanford</div>
+      <div id="c2s02-sc075-co" class="c2b-abs t-label clean">companies</div>
+    </div></div>
+
+    <!-- C2S076 · 341.66–346.40 · HP moves in, General Electric moves in · park plat -->
+    <div class="c2b-scene c2b-paper" id="c2s02-sc076" data-scene="C2S076"><div class="c2b-shot" id="c2s02-sc076-shot">
+      <div class="c2b-p1" style="background-image:url('assets/textures/paper_cream_02.jpg')"></div>
+      <div class="c2b-p2" style="background-image:url('assets/textures/paper_stained_01_hires.jpg'); opacity:0.6"></div>
+      <div class="c2b-abs" id="c2s02-sc076-cam" style="inset:0; transform-origin:960px 560px">
+        <svg id="c2s02-sc076-svg" class="c2b-mk" viewBox="0 0 1920 1080"></svg>
+        <div class="c2b-tile" id="c2s02-sc076-hp" style="left:560px; top:330px; opacity:0"><img src="assets/c2/derived/c2s02/hp_logo_tile_1958.jpg" alt="" style="left:-6px; top:-20px; width:186px; height:227px" /></div>
+        <div class="c2b-tile" id="c2s02-sc076-get" style="left:1010px; top:560px; opacity:0"><img id="c2s02-sc076-ge" src="assets/archival/brain_drain/ge_logo_bone.svg" alt="" style="left:25px; top:25px; width:120px; height:120px" /></div>
+        <div class="c2b-tl t-label c2b-ink" id="c2s02-sc076-gel" style="left:950px; top:745px"><span class="c2b-w">General </span><span class="c2b-w">Electric</span></div>
+      </div>
+      <div class="c2b-credit ink">hp logo: HP Annual Report 1958 · park plan redrawn, not to scale</div>
+    </div></div>
+
+    <!-- C2S077 · 346.40–349.84 · Lockheed's new missile division moves in, Varian moves in -->
+    <div class="c2b-scene c2b-night" id="c2s02-sc077" data-scene="C2S077"><div class="c2b-shot" id="c2s02-sc077-shot">
+      <div class="c2b-lamp" style="filter:brightness(0.5)"></div>
+      <div id="c2s02-sc077-w1">
+        <div id="c2s02-sc077-wv"><div id="c2s02-sc077-film" class="c2b-film"><div class="in">
+          <video id="c2s02-sc077-vid" src="assets/c2/footage/un1958_atlas_on_pad_cape_canaveral.mp4" muted playsinline data-start="147.97" data-duration="2.45" data-media-start="2.0"
+            data-color-grading='{"adjust":{"saturation":-1,"contrast":0.12},"effects":{"chromaticAberration":0.12,"chromaticAngle":0}}'></video>
+        </div></div></div>
+        <div id="c2s02-sc077-lk" class="c2b-abs t-display clean">Lockheed</div>
+        <div id="c2s02-sc077-md" class="c2b-abs t-label clean"><span class="c2b-w">missile </span><span class="c2b-w">division</span></div>
+        <div class="c2b-credit">Newsreel: Universal, 1958</div>
+      </div>
+      <div id="c2s02-sc077-w2" style="visibility:hidden">
+        <div id="c2s02-sc077-kl" class="c2b-print"><div class="in"><img src="assets/c2/objects/klystron_oscillator_1944.jpg" alt="" /></div></div>
+        <img id="c2s02-sc077-va" src="assets/c2/logos/varian_logo.png" alt="Varian" />
+      </div>
+    </div></div>
+
+    <!-- C2S078 · 349.84–357.26 · a lot of companies … move their headquarters to this thing · park plat fills -->
+    <div class="c2b-scene c2b-paper" id="c2s02-sc078" data-scene="C2S078"><div class="c2b-shot" id="c2s02-sc078-shot">
+      <div class="c2b-p1" style="background-image:url('assets/textures/paper_cream_02.jpg')"></div>
+      <div class="c2b-p2" style="background-image:url('assets/textures/paper_stained_01_hires.jpg'); opacity:0.6"></div>
+      <div class="c2b-abs" id="c2s02-sc078-cam" style="inset:0; transform-origin:960px 560px">
+        <svg id="c2s02-sc078-svg" class="c2b-mk" viewBox="0 0 1920 1080"></svg>
+        <div class="c2b-tile" style="left:560px; top:330px"><img src="assets/c2/derived/c2s02/hp_logo_tile_1958.jpg" alt="" style="left:-6px; top:-20px; width:186px; height:227px" /></div>
+        <div class="c2b-tile" style="left:1010px; top:560px"><img src="assets/archival/brain_drain/ge_logo_bone.svg" alt="" style="left:25px; top:25px; width:120px; height:120px" /></div>
+        <div class="c2b-tile" style="left:1270px; top:300px; display:flex; align-items:center; justify-content:center"><span class="t-label" style="color:var(--bone); font-size:22px; letter-spacing:0.08em">Lockheed</span></div>
+        <div class="c2b-tile" style="left:760px; top:640px; display:flex; align-items:center; justify-content:center"><img src="assets/c2/logos/varian_logo.png" alt="" style="position:static; width:140px; filter:brightness(0) invert(0.93)" /></div>
+      </div>
+      <div id="c2s02-sc078-lot" class="c2b-abs t-label c2b-ink"><span class="c2b-w">a </span><span class="c2b-w">lot </span><span class="c2b-w">of </span><span class="c2b-w">companies</span></div>
+      <div id="c2s02-sc078-hq" class="c2b-abs t-serif-i c2b-ink" style="opacity:0">headquarters</div>
+    </div></div>
+
+    <!-- C2S079–080 · 357.26–371.18 · smart people + technological companies + land … not Silicon Valley yet. That's about to happen -->
+    <div class="c2b-scene c2b-night" id="c2s02-sc079" data-scene="C2S079-C2S080"><div class="c2b-shot" id="c2s02-sc079-shot">
+      <canvas id="c2s02-sc080-streaks" class="streaks" style="opacity:0; filter:blur(2.5px)"></canvas>
+      <div class="c2b-abs" id="c2s02-sc079-eqw" style="inset:0; transform-origin:960px 450px">
+        <div id="c2s02-sc079-c1" class="c2b-circ c2b-ring-bone c2b-eq"></div>
+        <div class="c2b-plus t-display clean" id="c2s02-sc079-p1" style="left:600px">+</div>
+        <div id="c2s02-sc079-c2" class="c2b-circ c2b-ring-bone c2b-eq"></div>
+        <div class="c2b-plus t-display clean" id="c2s02-sc079-p2" style="left:1200px">+</div>
+        <div id="c2s02-sc079-c3" class="c2b-circ c2b-ring-red c2b-eq"></div>
+        <div class="c2b-eql t-serif-i clean" style="left:130px" id="c2s02-sc079-l1"><span class="c2b-w">smart </span><span class="c2b-w">people</span></div>
+        <div class="c2b-eql t-serif-i clean" style="left:730px" id="c2s02-sc079-l2"><span class="c2b-w">technological </span><span class="c2b-w">companies</span></div>
+        <div class="c2b-eql t-serif-i clean" style="left:1330px; opacity:0" id="c2s02-sc079-l3">land</div>
+      </div>
+      <div id="c2s02-sc080-eq" class="c2b-abs t-display clean">=</div>
+      <div id="c2s02-sc080-line" class="c2b-abs"><span class="t-serif-i clean s c2b-w" id="c2s02-sc080-not">not</span><span id="c2s02-sc080-sv" class="t-display"><span class="c2b-unlit c2b-w" id="c2s02-sc080-s1">SILICON </span><span class="c2b-unlit c2b-w" id="c2s02-sc080-s2">VALLEY</span><span id="c2s02-sc080-svf">SILICON VALLEY</span></span><span class="t-serif-i clean s c2b-w" id="c2s02-sc080-yet">yet</span></div>
+      <div id="c2s02-sc080-ah" class="c2b-abs t-serif-i clean"><span class="c2b-w">about </span><span class="c2b-w">to </span><span class="c2b-w">happen</span></div>
+    </div></div>
+
+    <!-- C2S081 · 371.18–374.78 · So there's another innovation that happens on top of transistors -->
+    <div class="c2b-scene c2b-paper" id="c2s02-sc081" data-scene="C2S081"><div class="c2b-shot" id="c2s02-sc081-shot">
+      <div class="c2b-p1" style="background-image:url('assets/textures/paper_cream_02.jpg'); filter:brightness(0.92)"></div>
+      <div class="c2b-p2" style="background-image:url('assets/textures/paper_fiber_01.jpg'); opacity:0.5"></div>
+      <div id="c2s02-sc081-a" class="c2b-card"><div class="in"><img src="assets/c2/objects/ck722.jpg" alt="" /></div><div id="c2s02-sc081-tr" class="t-label c2b-ink">transistors</div></div>
+      <div id="c2s02-sc081-b" class="c2b-card"><div class="tx2"></div><div class="q t-display">?</div></div>
+      <div id="c2s02-sc081-ai" class="c2b-abs t-serif-i c2b-ink"><span class="c2b-w">another </span><span class="c2b-w">innovation</span></div>
+      <div id="c2s02-sc081-ot" class="c2b-abs t-label c2b-ink"><span class="c2b-w">on </span><span class="c2b-w">top </span><span class="c2b-w">of</span></div>
+      <div class="c2b-credit ink">Raytheon CK722 (Wikimedia Commons)</div>
+    </div></div>
+
+    <!-- C2S082 · 374.78–378.73 · Transistors are a switch, but if you want to build a machine, any type of machine · blueprint -->
+    <div class="c2b-scene c2b-paper" id="c2s02-sc082" data-scene="C2S082"><div class="c2b-shot" id="c2s02-sc082-shot">
+      <div class="c2b-p1" style="background-image:url('assets/textures/paper_blueprint_01_hires.jpg'); filter:saturate(0.8) brightness(0.92)"></div>
+      <div id="c2s02-sc082-cam">
+        <div id="c2s02-sc082-und"></div>
+        <svg id="c2s02-sc082-svg" class="c2b-mk" viewBox="0 0 1920 1080"></svg>
+      </div>
+      <div id="c2s02-sc082-sw" class="c2b-abs t-label clean"><span class="c2b-w">a </span><span class="c2b-w">switch</span></div>
+      <div id="c2s02-sc082-ma" class="c2b-abs t-display clean"><span class="c2b-w">a </span><span class="c2b-w">machine</span></div>
+      <div id="c2s02-sc082-any" class="c2b-abs t-serif-i clean"><span class="c2b-w">any </span><span class="c2b-w">type </span><span class="c2b-w">of </span><span class="c2b-w">machine</span></div>
+    </div></div>
+
+    <!-- C2S083 · 378.73–382.41 · You need tens of thousands of transistors. Maybe more · isotype zoom-out on K+E log paper -->
+    <div class="c2b-scene c2b-paper" id="c2s02-sc083" data-scene="C2S083"><div class="c2b-shot" id="c2s02-sc083-shot">
+      <div class="c2b-p1" style="background-image:url('assets/textures/paper_cream_01.jpg')"></div>
+      <div class="c2b-p2" style="background-image:url('assets/intro/papers/ke1960_log_grid_green_norm_hires.jpg'); filter:saturate(0.15); background-size:2400px auto"></div>
+      <svg id="c2s02-sc083-svg" viewBox="0 0 1920 1080"></svg>
+      <div id="c2s02-sc083-box" class="c2b-abs"><div class="b"><div id="c2s02-sc083-tt" class="t-display c2b-ink"><span class="c2b-w">tens </span><span class="c2b-w">of </span><span class="c2b-w">thousands</span></div>
+        <div id="c2s02-sc083-mm" class="t-serif-i c2b-ink"><span class="c2b-w">maybe </span><span class="c2b-w">more</span></div></div></div>
+    </div></div>
+
+    <!-- C2S084 · 382.41–391.13 · soldering them … gluing them together with hand … a lot of headache -->
+    <div class="c2b-scene c2b-night" id="c2s02-sc084" data-scene="C2S084"><div class="c2b-shot" id="c2s02-sc084-shot">
+      <div class="c2b-lamp" style="filter:brightness(0.55)"></div>
+      <div id="c2s02-sc084-w1">
+        <div id="c2s02-sc084-wv"><div id="c2s02-sc084-film" class="c2b-film"><div class="in">
+          <video id="c2s02-sc084-vid" src="assets/c2/footage/bell_transistor1953_hands_assembling.mp4" muted playsinline data-start="183.98" data-duration="3.95" data-media-start="0.5"
+            data-color-grading='{"adjust":{"saturation":-1,"contrast":0.12},"effects":{"chromaticAberration":0.12,"chromaticAngle":0}}'></video>
+        </div></div></div>
+        <div id="c2s02-sc084-so" class="c2b-abs t-label clean" style="opacity:0">soldering</div>
+        <div class="c2b-credit">Film: AT&amp;T Archives and History Center, 1953</div>
+      </div>
+      <div id="c2s02-sc084-w2" style="position:absolute; inset:0; visibility:hidden">
+        <div id="c2s02-sc084-cam2"><div id="c2s02-sc084-wire" class="c2b-print"><div class="in"><img src="assets/c2/photos/hp_1958_subassembly_line_wiring.jpg" alt="" /></div></div>
+          <svg id="c2s02-sc084-mk" class="c2b-mk" viewBox="0 0 1920 1080"></svg></div>
+        <div id="c2s02-sc084-he" class="c2b-abs t-serif-i clean" style="opacity:0">headache</div>
+        <div class="c2b-credit">Photo: Hewlett-Packard, 1958</div>
+      </div>
+    </div></div>
+
+    <!-- C2S085 · 391.13–394.41 · And if you're talking about military stuff, let's say missiles · 1950s RCA Victor TV -->
+    <div class="c2b-scene c2b-night" id="c2s02-sc085" data-scene="C2S085"><div class="c2b-shot" id="c2s02-sc085-shot">
+      <div class="c2b-cam" id="c2s02-sc085-cam">
+        <div id="c2s02-sc085-tube"><div id="c2s02-sc085-scr">
+          <video id="c2s02-sc085-vid" src="assets/c2/footage/un1958_atlas_night_launch.mp4" muted playsinline data-start="192.70" data-duration="3.5" data-media-start="1.0"
+            data-color-grading='{"intensity":1,"adjust":{"saturation":-1,"contrast":0.1},"effects":{"chromaticAberration":0.15,"chromaticAngle":0,"scanlines":0.4,"scanlineCount":0.17,"scanlineSoftness":1,"crtCurvature":0.35,"filmArtifacts":0.45}}'></video>
+          <div id="c2s02-sc085-glow"></div></div></div>
+        <img id="c2s02-sc085-tv" src="assets/c2/derived/c2s02/tv_rca_1950s_keyed.png" alt="" />
+      </div>
+      <div class="c2b-scrim-l" style="width:700px; opacity:0.8"></div>
+      <div id="c2s02-sc085-mil" class="c2b-abs t-label clean" style="opacity:0">military</div>
+      <div id="c2s02-sc085-mis" class="c2b-abs t-display clean" style="opacity:0">missiles</div>
+      <div class="c2b-credit">TV: Ohio History Connection (Commons, CC BY-SA 4.0) · Newsreel: Universal, 1958</div>
+    </div></div>
+
+    <!-- C2S086–087 · 394.41–403.13 · 10,000 pieces being soldered together … 10,000 different options for things to go wrong · missile drawing -->
+    <div class="c2b-scene c2b-paper" id="c2s02-sc086" data-scene="C2S086-C2S087"><div class="c2b-shot" id="c2s02-sc086-shot">
+      <div class="c2b-p1" style="background-image:url('assets/textures/paper_cream_02.jpg'); filter:brightness(0.72) sepia(0.2)"></div>
+      <div id="c2s02-sc086-sheet"><div class="g"></div><svg id="c2s02-sc086-svg" viewBox="0 0 1560 1080"></svg><div class="c2b-tex" style="opacity:0.4"></div></div>
+      <div id="c2s02-sc086-txt" class="c2b-abs" style="inset:0">
+        <div id="c2s02-sc086-num" class="c2b-abs t-display"><span class="label-box" id="c2s02-sc086-box" style="opacity:0"><span id="c2s02-sc086-n">0</span></span></div>
+        <div id="c2s02-sc086-pc" class="c2b-abs t-label c2b-ink">pieces</div>
+        <div id="c2s02-sc087-th" class="c2b-abs t-label c2b-ink">things</div>
+        <div id="c2s02-sc086-so" class="c2b-abs t-serif-i c2b-ink"><span class="c2b-w">soldered </span><span class="c2b-w">together</span></div>
+        <div id="c2s02-sc087-do" class="c2b-abs t-serif c2b-ink"><span class="c2b-w">different </span><span class="c2b-w">options</span></div>
+        <div id="c2s02-sc087-gw" class="c2b-abs t-serif-i c2b-red"><span class="c2b-w">go </span><span class="c2b-w">wrong</span></div>
+      </div>
+    </div></div>
+
+    <div id="c2s02-flash"></div>
+    <div id="c2s02-grain" class="tx tx-grain" style="background-image:url('assets/textures/grain_01_norm.jpg')"></div>
+    <div id="c2s02-dust" class="tx tx-dust" style="background-image:url('assets/textures/dust_02.jpg')"></div>
+    <div id="c2s02-vig" class="vignette"></div>
+    <audio id="c2s02-vo" class="temp-vo" src="vo_c2.mp3" data-start="0" data-duration="204.70" data-media-start="198.43" data-volume="1"></audio>
+  </div>
+  <script>
+  /*SCRIPT*/
+  </script>
+</template>
+</body>
+</html>

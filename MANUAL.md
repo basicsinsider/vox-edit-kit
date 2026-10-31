@@ -192,6 +192,11 @@ use, attribution optional; never redistribute the files publicly, never use them
   delta (lip sync unchanged), and lengthen `data-duration` of clips that ended at the old cut (they go black) (intro fixes).
 - `FX.markupDefs(svg, …)` resets the svg's viewBox to `0 0 1920 1080`; on a larger camera svg set your viewBox again after it
   (intro01 IS011's arrow was drawn off-frame for the whole first render).
+- `FX.text.odometer` measures glyph widths when it is built: inside a scene that is `display:none` (long segments hide scenes
+  outside their window) every reel gets width 0 and the number never shows. Set the scene to `display:block` around the call, then
+  back to `none` (c4s01 C4S028). Timed `<video>` inside a scene: give it the scene's own start (the whip time), not the beat time.
+- Simplifying closed map rings with Ramer–Douglas–Peucker collapses them to 2 points (first = last point): simplify the two halves
+  separately (`project/c4/gen/c4s01_assets.py`). Kit country paths are `M…L…Z` per sub-path — split on `M`, not `Z`.
 - Timing audit for §10.9 (every scene): dump the timeline in a headless page (`tl.getChildren(true,true,false)` → start/end/targets)
   and list tweens that end < 0.5 s before their scene's whip start / hard cut; then snapshot those scenes' last 0.6 s.
 ### 4.3 Check, look, render
@@ -603,6 +608,8 @@ on action. Use it whenever the narrator quotes someone or introduces a historic 
 - [ ] Smooth long eases, 12 fps. [ ] Cuts on action; whips, no iris. [ ] No photo/clip used > 2× in a chunk.
 
 ## Changelog
+- 2026-10-31 — c4s01 editor: §4.2 gotchas (odometer inside hidden scenes, timed video start = scene start, RDP on closed rings); map crops for
+  Eurasia/Africa from the kit world relief (`assets/c4/derived/c4s01/`, generator `project/c4/gen/c4s01_assets.py`).
 - 2026-10-31 — Intro fixes after Krish's review (`project/intro/FIXES.md`): K+E upscaled grid scans → Texturelabs
   `paper_graph_01_hires` (≤ native); all 66 scenes audited for §10.9 (≈45 timing fixes; IS006 telephone now rides the route and
   holds in the US; IS028 plane lands before the whip); map kit re-projected into the old pixel spaces

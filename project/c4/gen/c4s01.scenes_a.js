@@ -14,7 +14,7 @@
       FX.chokeSettle(tl, ch, $("sc001-veto"), T(1.14), 12, 0.6, "blur(0.45px)");
       tl.to($("sc001-veto"), { opacity: 0, duration: 0.5, ease: "power1.in" }, S(5.3));
       const mk = $("sc001-mk"), f = gated(0, 8.1, () => FX.markupDefs(mk, "c4s01-mk001", { boil: 4 }));
-      FX.markup.circle(tl, mk, S(6.30), { cx: 990, cy: 905, rx: 860, ry: 175, rot: -2, dur: 1.0, color: BONE, width: 7, filter: f, seed: 101 });
+      FX.markup.circle(tl, mk, S(6.10), { cx: 990, cy: 905, rx: 860, ry: 175, rot: -2, dur: 0.9, color: BONE, width: 7, filter: f, seed: 101 });
       [T(6.82), T(7.30)].forEach((c, i) => rise(words("sc001-sc")[i], c, { dur: 0.45, y: 10 }));
     })();
 
@@ -40,11 +40,11 @@
       });
       seats.filter((s) => s.perm).forEach((s, i) => tl.fromTo(s.el, { attr: { opacity: 0 } }, { attr: { opacity: 1 }, duration: 0.001, immediateRender: true }, S(8.30) + i / 12));
       seats.filter((s) => !s.perm).forEach((s, i) => tl.fromTo(s.el, { attr: { opacity: 0 } }, { attr: { opacity: 1 }, duration: 0.001, immediateRender: true }, S(10.78) + i / 12));
-      [T(8.32), T(8.80)].forEach((c, i) => rise(words("sc002-perm")[i], c, { dur: 0.7, y: 10 }));
-      [T(10.80), T(11.12)].forEach((c, i) => rise(words("sc002-rot")[i], c, { dur: 0.7, y: 10 }));
-      show($("sc002-11b"), T(12.72));
-      FX.text.count(tl, $("sc002-n"), T(12.72), 0, 11, 0.4);
-      rise($("sc002-mem"), T(13.04), { dur: 0.2, y: 6 });                          // §10.9: spoken in the last 0.5 s → short entrance
+      [T(8.26), T(8.74)].forEach((c, i) => rise(words("sc002-perm")[i], c, { dur: 0.7, y: 10 }));
+      [T(10.74), T(11.06)].forEach((c, i) => rise(words("sc002-rot")[i], c, { dur: 0.7, y: 10 }));
+      show($("sc002-11b"), T(12.66));
+      FX.text.count(tl, $("sc002-n"), T(12.66), 0, 11, 0.4);
+      rise($("sc002-mem"), T(12.98), { dur: 0.2, y: 6 });                          // §10.9: spoken in the last 0.5 s → short entrance
       tl.fromTo($("sc002-cam"), { scale: 1.14 }, { scale: 1.0, duration: 1.3, ease: E.cam, immediateRender: true }, S(8.00));
       tl.to($("sc002-cam"), { scale: 1.02, duration: 5.5, ease: "none" }, S(9.30));
       // C4S003 — one vote each (a tick per seat)
@@ -53,13 +53,13 @@
         const ox = s.x + (s.x - cx) * 0.2, oy = s.y + (s.y - cy) * 0.2;
         ink(svg, `M${ox - 12} ${oy - 2} L${ox - 3} ${oy + 9} L${ox + 14} ${oy - 12}`, S(14.35) + k / 24, 0.18, { color: INK, width: 5 });
       });
-      [T(14.35), T(14.59)].forEach((c, i) => rise(words("sc003-ov")[i], c, { dur: 0.6, y: 10 }));
+      [T(14.29), T(14.53)].forEach((c, i) => rise(words("sc003-ov")[i], c, { dur: 0.6, y: 10 }));
       tl.to($("sc003-ov"), { opacity: 0, duration: 0.3 }, S(16.0));
       // the veto: a permanent seat stamps VETO
       const ch = gated(15.9, 17.0, () => FX.roughDefs(defs, "c4s01-ch003", { freq: 0.045, scale: 7, choke: 0 }));
-      show($("sc003-stamp"), T(16.11));
-      tl.fromTo($("sc003-stamp"), { scale: 1.35 }, { scale: 1, duration: 0.25, ease: "power2.in", immediateRender: true }, T(16.11));
-      FX.chokeSettle(tl, ch, $("sc003-stamp"), T(16.11), 9, 0.5, "none");
+      show($("sc003-stamp"), T(16.05));
+      tl.fromTo($("sc003-stamp"), { scale: 1.35 }, { scale: 1, duration: 0.25, ease: "power2.in", immediateRender: true }, T(16.05));
+      FX.chokeSettle(tl, ch, $("sc003-stamp"), T(16.05), 9, 0.5, "none");
       tl.fromTo($("sc003-hl"), { scaleX: 0 }, { scaleX: 1, duration: 0.35, ease: "sine.inOut", immediateRender: true }, S(16.40));
       seats[2].el.querySelector("circle").setAttribute("stroke-width", "10");
       // the resolution card in the middle
@@ -69,11 +69,11 @@
         const c = s.perm ? PAPER : INK;
         ink(svg, `M${s.x - 15} ${s.y + 1} L${s.x - 4} ${s.y + 13} L${s.x + 17} ${s.y - 14}`, S(19.17) + Math.floor(i / 2) / 12, 0.12, { color: c, width: 7 });
       });
-      tl.fromTo($("sc003-10"), { opacity: 0, scale: 0.85 }, { opacity: 1, scale: 1, duration: 0.7, ease: C(E.out, 0.7), immediateRender: true }, T(19.23));
+      tl.fromTo($("sc003-10"), { opacity: 0, scale: 0.85 }, { opacity: 1, scale: 1, duration: 0.7, ease: C(E.out, 0.7), immediateRender: true }, T(19.17));
       // …and it's not gonna pass: cross over the card
       const mk = $("sc003-mk"), f = gated(20.3, 21.7, () => FX.markupDefs(mk, "c4s01-mk003", { boil: 4 }));
       FX.markup.cross(tl, mk, S(20.53), { x: 960, y: 555, s: 110, dur: 0.12, color: INK, width: 14, filter: f });
-      [T(20.59), T(20.67), T(20.91)].forEach((c, i) => show(words("sc003-np")[i], c));
+      [T(20.53), T(20.61), T(20.85)].forEach((c, i) => show(words("sc003-np")[i], c));
       tl.to($("sc002-cam"), { scale: 0.98, duration: 7.5, ease: "none" }, S(14.8));
       tl.to($("sc002-shot"), { x: -1990, rotation: -2, duration: 0.38, ease: E.in }, S(21.27));   // PS: paper slides away left, night underneath
     })();
@@ -88,13 +88,13 @@
       tl.to($("sc004-wrap"), { scale: 0.2294, duration: 2.45, ease: E.cam }, S(22.84));   // pull out to the whole hall (lands 25.29)
       tl.to($("sc004-wrap"), { scale: 0.215, duration: 0.5, ease: "none" }, S(25.29));
       FX.focusHunt(tl, $("sc004-b"), S(23.10), { dur: 0.8 });
-      [T(22.91), T(23.39)].forEach((c, i) => rise(words("sc004-gen")[i], c, { dur: 0.8, y: 14 }));
+      [T(22.85), T(23.33)].forEach((c, i) => rise(words("sc004-gen")[i], c, { dur: 0.8, y: 14 }));
       tl.to($("sc004-gen"), { opacity: 0, duration: 0.3 }, S(24.10));
-      [T(24.19), T(24.27), T(24.51), T(24.67)].forEach((c, i) => show(words("sc004-jur")[i], c));
+      [T(24.13), T(24.21), T(24.45), T(24.61)].forEach((c, i) => show(words("sc004-jur")[i], c));
     })();
 
     /* =================== C4S005 · 25.79–32.11 · General Assembly has a jurisdiction over who should get what seat (2.5D) =================== */
-    scene("sc005", 25.79, 32.11);
+    scene("sc005", 25.79, 32.22);
     (function () {
       const P = 1200, Z = { L0: -420, L1: -140, L2: 180 };
       for (const [k, z] of Object.entries(Z)) gsap.set($("sc005-" + k), { z, scale: (P - z) / P });
@@ -105,15 +105,15 @@
       tl.to(cam, { x: -110, y: -50, z: 250, duration: 1.8, ease: "none" }, S(30.21));
       FX.focusHunt(tl, $("sc005-stage"), S(30.24), { dur: 0.8 });
       FX.contrastCallout(tl, $("sc005-veil"), S(30.09), { ellipse: [1150, 860, 270, 130], feather: 30, color: "rgba(26,25,23,1)", strength: 0.66 });
-      rise($("sc005-jur"), T(28.59), { dur: 0.9, y: 12 });
-      [T(30.11), T(30.51), T(30.75), T(31.07)].forEach((c, i) => show(words("sc005-who")[i], c));
-      show($("sc005-seat"), T(31.39));
+      rise($("sc005-jur"), T(28.53), { dur: 0.9, y: 12 });
+      [T(30.05), T(30.45), T(30.69), T(31.01)].forEach((c, i) => show(words("sc005-who")[i], c));
+      show($("sc005-seat"), T(31.33));
       tl.fromTo($("sc005-seathl"), { scaleX: 0 }, { scaleX: 1, duration: 0.2, ease: "sine.inOut", immediateRender: true }, S(31.36));
     })();
-    whip($("sc005-shot"), $("sc006-shot"), S(32.11), { dir: 1 });
+    whip($("sc005-shot"), $("sc006-shot"), S(32.22), { dir: 1 });   // §10.9: "seat" highlight lands 31.56, holds
 
     /* =================== C4S006 · 32.11–37.87 · a vote in the General Assembly decides who the Chinese seat belongs to =================== */
-    scene("sc006", 32.11, 37.87);
+    scene("sc006", 32.22, 37.87);
     (function () {
       tl.fromTo($("sc006-cam"), { scale: 1.0 }, { scale: 1.08, duration: 5.76, ease: "none", immediateRender: true }, S(32.11));
       FX.focalBlur(tl, $("sc006-blur"), [
@@ -121,9 +121,9 @@
         { t: S(32.95), x: 560, y: 650, r: 190, dur: 1.2 },          // the nameplate below the presidency card
         { t: S(34.55), x: 480, y: 280, r: 250, dur: 1.0 },          // cut to the delegate: the man in the Chinese seat
       ]);
-      rise($("sc006-vote"), T(32.99), { dur: 0.9, y: 12 });
+      rise($("sc006-vote"), T(32.93), { dur: 0.9, y: 12 });
       tl.to($("sc006-vote"), { opacity: 0, duration: 0.3 }, S(35.2));
-      [T(35.55), T(35.79), T(36.27)].forEach((c, i) => rise(words("sc006-cs")[i], c, { dur: 0.8, y: 14 }));
+      [T(35.49), T(35.73), T(36.21)].forEach((c, i) => rise(words("sc006-cs")[i], c, { dur: 0.8, y: 14 }));
     })();
     whip($("sc006-shot"), $("sc007-shot"), S(37.87), { dir: -1, flash: true });
 
@@ -135,15 +135,15 @@
       tl.fromTo($("sc007-crowd"), { y: 30 }, { y: -10, duration: 5.3, ease: "none", immediateRender: true }, S(37.87));
       tl.fromTo($("sc007-gate"), { y: -20 }, { y: 16, duration: 5.3, ease: "none", immediateRender: true }, S(37.87));
       tl.fromTo($("sc007-mao"), { scale: 1.0 }, { scale: 1.04, duration: 5.3, ease: "none", immediateRender: true }, S(37.87));
-      pop($("sc007-ccpb"), T(39.55), 0.9);
-      rise($("sc007-china"), T(41.71), { dur: 0.8, y: 12 });
-      [T(42.35), T(42.59), T(42.83)].forEach((c, i) => show(words("sc007-eye")[i], c));
+      pop($("sc007-ccpb"), T(39.49), 0.9);
+      rise($("sc007-china"), T(41.65), { dur: 0.8, y: 12 });
+      [T(42.29), T(42.53), T(42.77)].forEach((c, i) => show(words("sc007-eye")[i], c));
       tl.fromTo($("sc007-cal"), { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.5, ease: C(E.out, 0.5), immediateRender: true }, S(41.95));
       [4, 3, 2, 1].forEach((k, i) => tl.fromTo($("sc007-pg" + k), { scaleY: 1, opacity: 1 }, { scaleY: -0.05, opacity: 0, duration: 1 / 6, ease: C("none", 1 / 6), immediateRender: false }, S(42.35) + i * 0.25));
     })();
 
     /* =================== C4S008 · 43.15–48.59 · especially from the Warsaw Pact … close to China or close to the CCP =================== */
-    scene("sc008", 43.15, 48.59);
+    scene("sc008", 43.15, 48.70);
     ground("night", S(43.15));
     (function () {
       const svg = $("sc008-svg"), cam = $("sc008-cam"), K = 45.5111;
@@ -163,7 +163,7 @@
       FX.focusHunt(tl, cam, S(47.10), { dur: 0.7 });
       // Warsaw Pact lights up (12 fps steps), glow edge
       tl.fromTo(wpg, { attr: { opacity: 0 } }, { attr: { opacity: 1 }, duration: 0.5, ease: C("none", 0.5), immediateRender: true }, S(44.55));
-      [T(44.59), T(45.23)].forEach((c, i) => rise(words("sc008-wp")[i], c, { dur: 0.8, y: 10 }));
+      [T(44.53), T(45.17)].forEach((c, i) => rise(words("sc008-wp")[i], c, { dur: 0.8, y: 10 }));
       // pen arrow from the bloc to China
       const [x1, y1] = ll(48, 50), [x2, y2] = ll(98, 37);
       const d = `M${x1.toFixed(0)} ${y1.toFixed(0)} Q${((x1 + x2) / 2).toFixed(0)} ${(y1 - 520).toFixed(0)} ${x2.toFixed(0)} ${y2.toFixed(0)}`;
@@ -171,18 +171,18 @@
       const ang = Math.atan2(y2 - (y1 - 520), x2 - (x1 + x2) / 2), h = 90;
       ink(svg, `M${(x2 - h * Math.cos(ang - 0.5)).toFixed(0)} ${(y2 - h * Math.sin(ang - 0.5)).toFixed(0)} L${x2.toFixed(0)} ${y2.toFixed(0)} L${(x2 - h * Math.cos(ang + 0.5)).toFixed(0)} ${(y2 - h * Math.sin(ang + 0.5)).toFixed(0)}`, S(47.40), 0.2, { color: BONE, width: 16 });
       tl.fromTo(cng, { attr: { opacity: 0 } }, { attr: { opacity: 1 }, duration: 0.25, ease: C("none", 0.25), immediateRender: true }, S(47.75));
-      pop($("sc008-ccpb"), T(47.79), 0.3);
-      tl.to(cam, Object.assign(at(80, 41, 0.6), { duration: 0.3, ease: E.in }), S(48.40));   // push → vertical whip
+      pop($("sc008-ccpb"), T(47.73), 0.3);
+      tl.to(cam, Object.assign(at(80, 41, 0.6), { duration: 0.3, ease: E.in }), S(48.50));   // push → vertical whip
     })();
-    whip($("sc008-shot"), $("sc009-shot"), S(48.59), { dir: 1, vertical: true });
+    whip($("sc008-shot"), $("sc009-shot"), S(48.70), { dir: 1, vertical: true });   // §10.9: China fill lands 48.00, holds
 
     /* =================== C4S009 · 48.59–54.67 · bring up a resolution … kick out this government that's sitting in Taiwan =================== */
-    scene("sc009", 48.59, 54.67);
-    ground("paper", S(48.59));
+    scene("sc009", 48.70, 54.67);
+    ground("paper", S(48.70));
     (function () {
       const cam = $("sc009-cam");
       const at = (cx, cy, z) => ({ x: 960 - cx * z, y: 540 - cy * z, scale: z });
-      tl.fromTo(cam, at(700, 860, 0.56), Object.assign(at(705, 900, 0.6), { duration: 1.1, ease: "none", immediateRender: true }), S(48.59));
+      tl.fromTo(cam, at(700, 860, 0.56), Object.assign(at(705, 900, 0.6), { duration: 1.0, ease: "none", immediateRender: true }), S(48.70));
       tl.to(cam, Object.assign(at(760, 1395, 1.12), { duration: 1.5, ease: E.cam }), S(49.70));
       tl.to(cam, Object.assign(at(770, 1400, 1.17), { duration: 3.2, ease: "none" }), S(51.20));
       tl.to(cam, Object.assign(at(780, 1250, 1.2), { duration: 0.36, ease: E.in }), S(54.31));   // CA: page slides up
@@ -198,9 +198,9 @@
       const mk = $("sc009-mk"), fp = gated(51.8, 54.8, () => FX.markupDefs(mk, "c4s01-mk009", { boil: 4 })); mk.setAttribute("viewBox", "0 0 1400 1808");
       FX.markup.pen(tl, mk, S(51.95), { points: [[812, 1392], [1000, 1394], [1196, 1390]], dur: 0.5, width: 5, color: INK, filter: fp, seed: 91 });
       FX.markup.pen(tl, mk, S(52.45), { points: [[166, 1436], [600, 1440], [1000, 1437], [1290, 1434]], dur: 0.8, width: 5, color: INK, filter: fp, seed: 92 });
-      rise($("sc009-res"), T(49.07), { dur: 0.9, y: 10 });
-      [T(50.91), T(51.23)].forEach((c, i) => rise(words("sc009-ko")[i], c, { dur: 0.7, y: 12 }));
-      tl.fromTo($("sc009-twr"), { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.25, ease: C(E.out, 0.25), immediateRender: true }, T(54.11));
+      rise($("sc009-res"), T(49.01), { dur: 0.9, y: 10 });
+      [T(50.85), T(51.17)].forEach((c, i) => rise(words("sc009-ko")[i], c, { dur: 0.7, y: 12 }));
+      tl.fromTo($("sc009-twr"), { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.25, ease: C(E.out, 0.25), immediateRender: true }, T(54.05));
       tl.fromTo($("sc009-twu"), { scaleX: 0 }, { scaleX: 1, duration: 0.3, ease: C(E.out, 0.3), immediateRender: true }, S(54.12));
     })();
 
@@ -211,13 +211,13 @@
       tl.to($("sc010-cam"), { scale: 1.02, duration: 3.4, ease: "none" }, S(55.67));
       $("sc010-chair").innerHTML = CHAIR;
       tl.fromTo($("sc010-chair"), { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.6, ease: C(E.out, 0.6), immediateRender: true }, S(54.70));
-      pop($("sc010-ccpb"), T(55.39), 0.8);
+      pop($("sc010-ccpb"), T(55.33), 0.8);
       const svg = $("sc010-svg"), f = gated(56.0, 59.2, () => FX.markupDefs(svg, "c4s01-mk010", { boil: 4 }));
       FX.markup.pen(tl, svg, S(56.10), { points: [[640, 790], [900, 730], [1150, 740], [1300, 800]], dur: 0.6, width: 7, color: INK, filter: f, seed: 101 });
       FX.markup.pen(tl, svg, S(56.68), { points: [[1255, 768], [1302, 802], [1250, 830]], dur: 0.15, width: 7, color: INK, filter: f, seed: 102, jitter: 2 });
       tl.to($("sc010-chair"), { x: 940, duration: 1.0, ease: C(E.inOut, 1.0) }, S(56.30));     // the seat moves ROC → CCP, lands 57.30
-      [T(56.19), T(56.59)].forEach((c, i) => rise(words("sc010-cs")[i], c, { dur: 0.8, y: 12 }));
-      [T(57.87), T(58.43)].forEach((c, i) => rise(words("sc010-pv")[i], c, { dur: i ? 0.2 : 0.6, y: 8 }));
+      [T(56.13), T(56.53)].forEach((c, i) => rise(words("sc010-cs")[i], c, { dur: 0.8, y: 12 }));
+      [T(57.81), T(58.37)].forEach((c, i) => rise(words("sc010-pv")[i], c, { dur: i ? 0.2 : 0.6, y: 8 }));
     })();
     whip($("sc010-shot"), $("sc011-shot"), S(59.07), { dir: -1 });
 
@@ -231,13 +231,13 @@
       [0, 1, 2].forEach((k) => gsap.set($("sc011-s" + k), { opacity: 0 }));
       const ch = gated(62.4, 63.3, () => FX.roughDefs(defs, "c4s01-ch011", { freq: 0.045, scale: 7, choke: 0 }));
       $("sc011-s3").style.filter = "url(#c4s01-ch011)";
-      show($("sc011-s3"), T(62.59));
-      tl.fromTo($("sc011-s3"), { scale: 1.4 }, { scale: 1, duration: 0.25, ease: "power2.in", immediateRender: true }, T(62.59));
-      FX.chokeSettle(tl, ch, $("sc011-s3"), T(62.59), 9, 0.5, "none");
+      show($("sc011-s3"), T(62.53));
+      tl.fromTo($("sc011-s3"), { scale: 1.4 }, { scale: 1, duration: 0.25, ease: "power2.in", immediateRender: true }, T(62.53));
+      FX.chokeSettle(tl, ch, $("sc011-s3"), T(62.53), 9, 0.5, "none");
       tl.fromTo($("sc011-cam"), { scale: 1.0, y: 30, rotation: 0 }, { scale: 1.08, y: -10, rotation: -1.2, duration: 6.3, ease: "none", immediateRender: true }, S(59.07));
-      [T(59.31), T(59.63)].forEach((c, i) => rise(words("sc011-ey")[i], c, { dur: 0.8, y: 10 }));
+      [T(59.25), T(59.57)].forEach((c, i) => rise(words("sc011-ey")[i], c, { dur: 0.8, y: 10 }));
       tl.to($("sc011-ey"), { opacity: 0, duration: 0.3 }, S(62.2));
-      rise($("sc011-hab"), T(64.99), { dur: 0.22, y: 8 });
+      rise($("sc011-hab"), T(64.93), { dur: 0.22, y: 8 });
       tl.to($("sc011-d3"), { x: 900, rotation: 10, duration: 0.3, ease: E.in }, S(65.12));   // CA: top page slides out
     })();
 
@@ -253,15 +253,15 @@
         <path d="M180 900 L1800 900" stroke="${INK}" stroke-width="4" opacity="0.8"/><path d="M180 240 L180 900" stroke="${INK}" stroke-width="4" opacity="0.8"/>
         <path d="M180 ${thr} L1800 ${thr}" stroke="${INK}" stroke-width="4" stroke-dasharray="18 14" opacity="0.65"/>
         <path d="${d} L1760 ${thr} L200 ${thr} Z" fill="${INK}" opacity="0.12" clip-path="url(#c4s01-c12)"/>`;
-      const line = ink(svg, d, S(65.70), 4.4, { color: INK, width: 8, ease: "none" });
-      tl.fromTo(svg.querySelector("#c4s01-c12r"), { attr: { width: 200 } }, { attr: { width: 1760 }, duration: 4.4, ease: "none", immediateRender: true }, S(65.70));
+      const line = ink(svg, d, S(65.60), 4.4, { color: INK, width: 8, ease: "none" });
+      tl.fromTo(svg.querySelector("#c4s01-c12r"), { attr: { width: 200 } }, { attr: { width: 1760 }, duration: 4.4, ease: "none", immediateRender: true }, S(65.60));
       // a tick (one defeat a year) pops on every point as the line passes it (12 fps)
       pts.forEach((p, i) => {
         svg.insertAdjacentHTML("beforeend", `<circle id="c4s01-p12-${i}" cx="${p[0]}" cy="${p[1]}" r="11" fill="${PAPER}" stroke="${INK}" stroke-width="5" opacity="0"/>`);
-        tl.fromTo(document.getElementById("c4s01-p12-" + i), { attr: { opacity: 0 } }, { attr: { opacity: 1 }, duration: 0.001, immediateRender: true }, S(65.70) + 4.4 * i / (pts.length - 1));
+        tl.fromTo(document.getElementById("c4s01-p12-" + i), { attr: { opacity: 0 } }, { attr: { opacity: 1 }, duration: 0.001, immediateRender: true }, S(65.60) + 4.4 * i / (pts.length - 1));
       });
-      rise($("sc012-def"), T(66.75), { dur: 0.8, y: 10 });
-      [T(69.44), T(70.00), T(70.32)].forEach((c, i) => rise(words("sc012-vfd")[i], c, { dur: i < 2 ? 0.5 : 0.2, y: 10 }));
+      rise($("sc012-def"), T(66.69), { dur: 0.8, y: 10 });
+      [T(69.38), T(69.94), T(70.26)].forEach((c, i) => rise(words("sc012-vfd")[i], c, { dur: i < 2 ? 0.5 : 0.2, y: 10 }));
       tl.fromTo($("sc012-cam"), { x: 30 }, { x: -40, duration: 5.3, ease: "none", immediateRender: true }, S(65.39));
     })();
     whip($("sc012-shot"), $("sc013-shot"), S(70.72), { dir: -1, vertical: true });

@@ -35,9 +35,9 @@
       });
       race([121.5, 24.5], [[-5.5, 7.5], [34.0, -13.5], [-58, -23], [-84, 12]], CEL, S(140.30), 251);
       race([116.4, 39.9], [[35.0, -6.4], [-10.9, 10.4], [-77, 21], [3, 28]], RED, S(141.10), 261);
-      rise($("sc025-comp"), T(140.35), { dur: 0.8, y: 12 });
-      pop($("sc025-ccpb"), T(141.15), 0.8);
-      rise($("sc025-ov"), T(143.87), { dur: 0.4, y: 8 });
+      rise($("sc025-comp"), T(140.29), { dur: 0.8, y: 12 });
+      pop($("sc025-ccpb"), T(141.09), 0.8);
+      rise($("sc025-ov"), T(143.81), { dur: 0.4, y: 8 });
     })();
 
     /* =================== C4S026 · 144.83–147.87 · this is where we have to back up just a little bit more =================== */
@@ -51,8 +51,8 @@
       gated(144.7, 148.0, () => FX.weave($("sc026-weave"), { amp: 2.2, flicker: 0.09, seed: 2601 }));
       tl.fromTo($("sc026-strip"), { y: -3700 }, { y: 0, duration: 3.04, ease: "none", immediateRender: true }, S(144.83));   // frames run backwards (downwards)
       tl.fromTo($("sc026-scr"), { opacity: 0.25 }, { opacity: 0.45, duration: 3.0, ease: "none", immediateRender: true }, S(144.83));
-      FX.text.random(tl, $("sc026-b1"), T(146.19), { dur: 0.35, seed: 26 });
-      FX.text.random(tl, $("sc026-b2"), T(146.43), { dur: 0.25, seed: 27 });
+      FX.text.random(tl, $("sc026-b1"), T(146.13), { dur: 0.35, seed: 26 });
+      FX.text.random(tl, $("sc026-b2"), T(146.37), { dur: 0.25, seed: 27 });
     })();
     whip($("sc026-shot"), $("sc027-shot"), S(147.87), { dir: -1 });
 
@@ -62,11 +62,11 @@
     (function () {
       tl.fromTo($("sc027-cam"), { scale: 1.0 }, { scale: 1.06, duration: 6.6, ease: "none", immediateRender: true }, S(147.87));
       tl.to($("sc027-cam"), { scale: 1.3, x: 200, duration: 0.36, ease: E.in }, S(154.47));       // CA: push into the poster
-      [T(150.27), T(150.91), T(151.15)].forEach((c, i) => rise(words("sc027-rbj")[i], c, { dur: 0.7, y: 14 }));
-      tl.fromTo($("sc027-roc"), { x: 0 }, { x: -330, duration: 0.8, ease: C(E.out, 0.8), immediateRender: true }, T(152.67));
+      [T(150.21), T(150.85), T(151.09)].forEach((c, i) => rise(words("sc027-rbj")[i], c, { dur: 0.7, y: 14 }));
+      tl.fromTo($("sc027-roc"), { x: 0 }, { x: -330, duration: 0.8, ease: C(E.out, 0.8), immediateRender: true }, T(152.61));
       tl.fromTo($("sc027-ax"), { scaleX: 0 }, { scaleX: 1, duration: 0.8, ease: C(E.out, 0.8), immediateRender: true }, S(153.20));
       tl.fromTo($("sc027-tick"), { scaleY: 0 }, { scaleY: 1, duration: 0.3, ease: C(E.out, 0.3), immediateRender: true }, S(153.95));
-      [T(154.03), T(154.27), T(154.51)].forEach((c, i) => show(words("sc027-ww")[i], c));
+      [T(153.97), T(154.21), T(154.45)].forEach((c, i) => show(words("sc027-ww")[i], c));
     })();
 
     /* =================== C4S028 · 154.83–161.39 · Japan took over the island of Taiwan in 1890s, during the Meiji era =================== */
@@ -75,12 +75,12 @@
     (function () {
       tl.fromTo($("sc028-cam"), { scale: 1.2, x: 150 }, { scale: 1.16, x: -150, duration: 6.56, ease: E.cam, immediateRender: true }, S(154.83));
       $("sc028").style.display = "block";   // odometer measures glyph widths: build it while laid out
-      FX.text.odometer(tl, $("sc028-yr"), T(157.31), { dur: 0.7, stagger: 0.05, seed: 1895 });
+      FX.text.odometer(tl, $("sc028-yr"), T(157.25), { dur: 0.7, stagger: 0.05, seed: 1895 });
       $("sc028").style.display = "none";
       tl.to($("sc028-yr"), { opacity: 0, duration: 0.35 }, S(158.75));
       gated(158.2, 161.5, () => FX.roughDefs(defs, "c4s01-rough028", { freq: 0.03, scale: 7 }));   // torn-paper edge (permanent boil allowed on torn edges)
       tl.fromTo($("sc028-card"), { opacity: 0, y: 80, rotation: 10 }, { opacity: 1, y: 0, rotation: 4, duration: 0.9, ease: C(E.out, 0.9), immediateRender: true }, S(158.37));
-      [T(158.43), T(159.15)].forEach((c, i) => rise(words("sc028-me")[i], c, { dur: 0.8, y: 10 }));
+      [T(158.37), T(159.09)].forEach((c, i) => rise(words("sc028-me")[i], c, { dur: 0.8, y: 10 }));
     })();
     whip($("sc028-shot"), $("sc029-shot"), S(161.39), { dir: 1, vertical: true });
 
@@ -92,55 +92,55 @@
       tl.to($("sc029-cam"), { scale: 1.1, x: -80, duration: 0.3, ease: E.in }, S(164.13));    // CA
       show($("sc029-y"), S(161.45));
       tl.fromTo($("sc029-band"), { scaleX: 0 }, { scaleX: 1, duration: 1.7, ease: C(E.inOut, 1.7), immediateRender: true }, S(161.55));
-      rise($("sc029-rule"), T(161.79), { dur: 0.6, y: 6 });
+      rise($("sc029-rule"), T(161.73), { dur: 0.6, y: 6 });
       tl.fromTo($("sc029-mark"), { scaleY: 0 }, { scaleY: 1, duration: 0.4, ease: C(E.out, 0.4), immediateRender: true }, S(163.10));
-      [T(163.15), T(163.31), T(163.47), T(163.79), T(164.03)].forEach((c, i) => show(words("sc029-end")[i], c));
+      [T(163.09), T(163.25), T(163.41), T(163.73), T(163.97)].forEach((c, i) => show(words("sc029-end")[i], c));
     })();
 
     /* =================== C4S030–C4S031 · 164.43–174.35 · problems with Japanese rule … Japanese history in China … pretty brutal =================== */
-    scene("sc030", 164.43, 174.70);
+    scene("sc030", 164.43, 174.95);
     ground("night", S(164.43));
     (function () {
       const cam = $("sc030-cam");
       tl.fromTo(cam, { scale: 1.0 }, { scale: 1.05, duration: 6.9, ease: "none", immediateRender: true }, S(164.43));
       tl.fromTo($("sc030-a"), { x: -20 }, { x: 25, duration: 7.0, ease: "none", immediateRender: true }, S(164.43));
       tl.fromTo($("sc030-b"), { x: 30, y: 0 }, { x: -20, y: -15, duration: 7.0, ease: "none", immediateRender: true }, S(164.43));
-      rise($("sc030-pr"), T(165.39), { dur: 0.9, y: 12 });
+      rise($("sc030-pr"), T(165.33), { dur: 0.9, y: 12 });
       tl.to($("sc030-pr"), { opacity: 0, duration: 0.4 }, S(168.6));
-      [T(169.47), T(170.03), T(170.43), T(170.59)].forEach((c, i) => show(words("sc030-jh")[i], c));
+      [T(169.41), T(169.97), T(170.37), T(170.53)].forEach((c, i) => show(words("sc030-jh")[i], c));
       tl.to($("sc030-jh"), { opacity: 0, duration: 0.3 }, S(171.6));
       // C4S031 — punch-in 10 %, the veil hard-cuts at the push's peak speed, BRUTAL chokes in and settles
       tl.to(cam, { scale: 1.16, duration: 0.4, ease: E.in }, S(171.39));
       tl.to(cam, { scale: 1.19, duration: 2.6, ease: "none" }, S(171.79));
       FX.contrastCallout(tl, $("sc031-veil"), S(171.72), { ellipse: [520, 450, 360, 270], feather: 40, color: "rgba(24,23,21,1)", strength: 0.7 });
       const ch = gated(173.4, 174.4, () => FX.roughDefs(defs, "c4s01-ch031", { freq: 0.04, scale: 7, choke: 0 }));
-      show($("sc031-br"), T(173.63));
-      FX.chokeSettle(tl, ch, $("sc031-br"), T(173.63), 12, 0.4, "none");
+      show($("sc031-br"), T(173.57));
+      FX.chokeSettle(tl, ch, $("sc031-br"), T(173.57), 12, 0.4, "none");
     })();
 
     /* =================== C4S032 · 174.35–181.55 · not as bad as some of the worst stories … doesn't mean there wasn't any brutality =================== */
-    scene("sc032", 174.20, 181.55);
+    scene("sc032", 174.45, 181.65);
     (function () {
-      tl.fromTo($("sc032-shot"), { x: -1990, rotation: -2 }, { x: 0, rotation: 0, duration: 0.5, ease: C(E.out, 0.5), immediateRender: true }, S(174.20));   // PS: paper slides in from the left
-      ground("paper", S(174.35));
+      tl.fromTo($("sc032-shot"), { x: -1990, rotation: -2 }, { x: 0, rotation: 0, duration: 0.5, ease: C(E.out, 0.5), immediateRender: true }, S(174.45));   // PS: paper slides in from the left (§10.9: BRUTAL settles 174.05)
+      ground("paper", S(174.60));
       tl.fromTo($("sc032-cam"), { scale: 1.0, x: 0 }, { scale: 1.07, x: -20, duration: 7.2, ease: "none", immediateRender: true }, S(174.35));
-      [T(176.67), T(176.99)].forEach((c, i) => rise(words("sc032-ws")[i], c, { dur: 0.8, y: 12 }));
+      [T(176.61), T(176.93)].forEach((c, i) => rise(words("sc032-ws")[i], c, { dur: 0.8, y: 12 }));
       const mk = $("sc032-mk"), f = gated(180.2, 181.7, () => FX.markupDefs(mk, "c4s01-mk032", { boil: 4 }));
-      FX.markup.circle(tl, mk, S(180.45), { cx: 1005, cy: 395, rx: 135, ry: 165, rot: -8, dur: 0.55, color: INK, width: 7, filter: f, seed: 321 });
-      rise($("sc032-br"), T(180.51), { dur: 0.5, y: 8 });
+      FX.markup.circle(tl, mk, S(180.40), { cx: 1005, cy: 395, rx: 135, ry: 165, rot: -8, dur: 0.5, color: INK, width: 7, filter: f, seed: 321 });
+      rise($("sc032-br"), T(180.45), { dur: 0.5, y: 8 });
     })();
-    whip($("sc032-shot"), $("sc033-shot"), S(181.55), { dir: 1, flash: true });
+    whip($("sc032-shot"), $("sc033-shot"), S(181.65), { dir: 1, flash: true });   // §10.9: circle done 180.90
 
     /* =================== C4S033 · 181.55–184.67 · But there were positives from the Japanese rule =================== */
-    scene("sc033", 181.55, 184.67);
-    ground("night", S(181.55));
+    scene("sc033", 181.65, 184.67);
+    ground("night", S(181.65));
     (function () {
       const img = $("sc033-img");
       tl.fromTo($("sc033-cam"), { scale: 1.0 }, { scale: 1.08, duration: 3.12, ease: "none", immediateRender: true }, S(181.55));
       tl.fromTo(img, { filter: "grayscale(1) sepia(0) brightness(0.55) contrast(1.15)" }, { filter: "grayscale(1) sepia(0.62) brightness(0.78) contrast(1.05)", duration: 1.4, ease: C(E.out, 1.4), immediateRender: true }, S(182.45));
       gated(182.3, 184.8, () => FX.streaks($("sc033-str"), { seed: 331, speed: 0.5, tint: [255, 206, 158], lo: 0.4, gain: 1.1 }));
       tl.fromTo($("sc033-str"), { opacity: 0 }, { opacity: 0.55, duration: 1.0, ease: C(E.out, 1.0), immediateRender: true }, S(182.40));
-      rise($("sc033-pos"), T(182.51), { dur: 0.9, y: 14 });
+      rise($("sc033-pos"), T(182.45), { dur: 0.9, y: 14 });
     })();
     whip($("sc033-shot"), $("sc034-shot"), S(184.67), { dir: 1 });
 
@@ -154,27 +154,27 @@
       tl.to(cam, { x: -660, duration: 0.9, ease: E.cam }, S(190.45));
       tl.to(cam, { x: 0, y: 141, scale: 0.738, duration: 1.5, ease: E.cam }, S(192.10));     // C4S035: pull back — the whole system
       tl.to(cam, { x: 10, y: 146, scale: 0.73, duration: 1.1, ease: "none" }, S(193.60));
-      pop($("sc034-boxb"), T(186.75), 0.9);
+      pop($("sc034-boxb"), T(186.69), 0.9);
       const card = (id, t, r0, r1) => tl.fromTo($(id), { opacity: 0, y: -50, rotation: r0, scale: 1.08 }, { opacity: 1, y: 0, rotation: r1, scale: 1, duration: 0.6, ease: C(E.out, 0.6), immediateRender: true }, t);
-      card("sc034-rail", T(187.87), -9, -3);
-      card("sc034-port", T(188.43), 8, 2.5);
-      card("sc034-hydro", T(188.91), -7, -2);
-      card("sc034-elec", T(189.71), 9, 3);
-      card("sc035-school", T(190.75), -8, -2.5);
+      card("sc034-rail", T(187.81), -9, -3);
+      card("sc034-port", T(188.37), 8, 2.5);
+      card("sc034-hydro", T(188.85), -7, -2);
+      card("sc034-elec", T(189.65), 9, 3);
+      card("sc035-school", T(190.69), -8, -2.5);
       // electricity card: a pen pylon + power line + bulb (graphic; no Japanese-era power-line photo reachable)
       const pyl = $("sc034-pyl"), INKP = "#2a3140";
       ink(pyl, "M120 330 L170 60 L220 330 M138 230 L202 230 M150 160 L190 160 M110 90 L230 90 M95 110 L245 110", S(189.75), 0.5, { color: INKP, width: 5 });
       ink(pyl, "M110 90 Q60 120 0 110 M230 90 Q300 130 392 120", S(189.95), 0.4, { color: INKP, width: 3 });
       ink(pyl, "M300 190 Q300 150 330 150 Q360 150 360 190 Q360 215 345 230 L345 250 L315 250 L315 230 Q300 215 300 190 Z M318 262 L342 262", S(190.05), 0.4, { color: INKP, width: 5 });
-      show($("sc035-sch2"), T(191.23));
-      [T(191.55), T(191.71)].forEach((c, i) => rise(words("sc035-ps")[i], c, { dur: 0.6, y: 10 }));
+      show($("sc035-sch2"), T(191.17));
+      [T(191.49), T(191.65)].forEach((c, i) => rise(words("sc035-ps")[i], c, { dur: 0.6, y: 10 }));
       // pen lines connect every card into one network (C4S035)
       const net = $("sc035-net"), f = gated(192.3, 194.8, () => FX.markupDefs(net, "c4s01-mk035", { boil: 4 })); net.setAttribute("viewBox", "0 0 2600 1080");
       const c = { rail: [440, 520], port: [1040, 630], hydro: [1640, 475], elec: [2160, 680], school: [2240, 260], box: [560, 170] };
       [["box", "rail"], ["rail", "port"], ["port", "hydro"], ["hydro", "school"], ["hydro", "elec"], ["port", "elec"], ["box", "hydro"]].forEach(([a, b], i) =>
         FX.markup.pen(tl, net, S(192.40) + i * 0.12, { points: [c[a], [(c[a][0] + c[b][0]) / 2, (c[a][1] + c[b][1]) / 2 - 40], c[b]], dur: 0.6, width: 6, color: INK, filter: f, seed: 351 + i, jitter: 8 }));
-      show($("sc035-sysb"), T(193.63));
-      [T(193.63), T(193.87)].forEach((c2, i) => show(words("sc035-sys")[i], c2));
+      show($("sc035-sysb"), T(193.57));
+      [T(193.57), T(193.81)].forEach((c2, i) => show(words("sc035-sys")[i], c2));
     })();
     whip($("sc034-shot"), $("sc036-shot"), S(194.74), { dir: 1, vertical: true });
 
@@ -182,8 +182,8 @@
     scene("sc036", 194.74, SEG_END);
     ground("night", S(194.74));
     (function () {
-      // pans right→left over 6.0 s with the camera ease, so it is still moving at the c4s02 hand-off (199.14 → see NOTES)
-      tl.fromTo($("sc036-cam"), { x: 0 }, { x: -2066, duration: 6.0, ease: E.cam, immediateRender: true }, S(194.74));
-      [T(196.18), T(196.42)].forEach((c, i) => rise(words("sc036-as")[i], c, { dur: 0.8, y: 12 }));
-      [T(198.10), T(198.42)].forEach((c, i) => rise(words("sc036-ge")[i], c, { dur: i ? 0.2 : 0.5, y: 8 }));
+      // pans right→left over 7.5 s with the camera ease, so it is still moving at the c4s02 hand-off (199.14 → see NOTES)
+      tl.fromTo($("sc036-cam"), { x: 0 }, { x: -2066, duration: 7.5, ease: E.cam, immediateRender: true }, S(194.74));
+      [T(196.12), T(196.36)].forEach((c, i) => rise(words("sc036-as")[i], c, { dur: 0.8, y: 12 }));
+      [T(198.04), T(198.36)].forEach((c, i) => rise(words("sc036-ge")[i], c, { dur: i ? 0.2 : 0.5, y: 8 }));
     })();

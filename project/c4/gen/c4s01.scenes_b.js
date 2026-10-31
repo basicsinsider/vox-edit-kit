@@ -27,8 +27,8 @@
       const [qx, qy] = ll(23.5, -3);
       FX.contrastCallout(tl, $("sc014-veil"), S(74.10), { w: 7055, h: 3731, d: MAPS.africa.d.dem_rep_congo, feather: 14, color: "rgba(20,22,26,1)", strength: 0.72 });
       tl.to(document.getElementById("c4s01-af-dem_rep_congo"), { attr: { "fill-opacity": 0.45, "stroke-width": 9 }, duration: 0.001 }, S(74.10));
-      [T(71.12), T(71.44)].forEach((c, i) => rise(words("sc013-nc")[i], c, { dur: 0.8, y: 10 }));
-      rise($("sc013-af"), T(73.28), { dur: 0.25, y: 10 });
+      [T(71.06), T(71.38)].forEach((c, i) => rise(words("sc013-nc")[i], c, { dur: 0.8, y: 10 }));
+      rise($("sc013-af"), T(73.22), { dur: 0.25, y: 10 });
       tl.to([$("sc013-af"), $("sc013-nc")], { opacity: 0, duration: 0.25 }, S(74.05));
       // C4S014: a celadon rope to Taiwan, a red rope to the CCP — they tug alternately (12 fps)
       const cn = $("sc014-cnsvg"), dcn = MAPS.eurasia.d.china;
@@ -38,8 +38,8 @@
       cn.innerHTML = `<g transform="translate(${(150 - (x0 + x1) / 2 * sc).toFixed(1)} ${(150 - (y0 + y1) / 2 * sc).toFixed(1)}) scale(${sc.toFixed(4)})"><path d="${dcn}" fill="url(#c4s01-ht-red)" stroke="${RED}" stroke-width="${(3 / sc).toFixed(1)}"/></g>`;
       tl.fromTo($("sc014-tw"), { opacity: 0, x: -40 }, { opacity: 1, x: 0, duration: 0.9, ease: C(E.out, 0.9), immediateRender: true }, S(76.10));
       tl.fromTo($("sc014-cn"), { opacity: 0, x: 40 }, { opacity: 1, x: 0, duration: 0.9, ease: C(E.out, 0.9), immediateRender: true }, S(77.08));
-      rise($("sc014-twl"), T(76.24), { dur: 0.8, y: 10 });
-      pop($("sc014-ccpb"), T(77.20), 0.8);
+      rise($("sc014-twl"), T(76.18), { dur: 0.8, y: 10 });
+      pop($("sc014-ccpb"), T(77.14), 0.8);
       const rope = $("sc014-rope");
       rope.innerHTML = `<path id="c4s01-r-tw" fill="none" stroke="${CEL}" stroke-width="9" stroke-linecap="round"/><path id="c4s01-r-cn" fill="none" stroke="${RED}" stroke-width="9" stroke-linecap="round"/>`;
       const rt = document.getElementById("c4s01-r-tw"), rc = document.getElementById("c4s01-r-cn");
@@ -59,8 +59,8 @@
       const tug = [[78.00, 10, 90, -40], [78.55, 90, 12, 34], [79.10, 14, 90, -30], [79.65, 90, 10, 28], [80.20, 12, 90, -22], [80.75, 60, 60, 0]];
       tug.forEach(([t, s1, s2, x]) => tl.to(st, { s1, s2, x, duration: 0.5, ease: C(E.inOut, 0.5), onUpdate: draw }, S(t)));
       draw();
-      [T(78.00), T(78.32)].forEach((c, i) => rise(words("sc014-fo")[i], c, { dur: 0.6, y: 12 }));
-      [T(81.76), T(82.08)].forEach((c, i) => rise(words("sc014-yc")[i], c, { dur: i ? 0.15 : 0.3, y: 8 }));
+      [T(77.94), T(78.26)].forEach((c, i) => rise(words("sc014-fo")[i], c, { dur: 0.6, y: 12 }));
+      [T(81.70), T(82.02)].forEach((c, i) => rise(words("sc014-yc")[i], c, { dur: i ? 0.15 : 0.3, y: 8 }));
     })();
 
     /* =================== C4S015 · 82.56–88.64 · Taiwan … they send in aid, diplomat missions … whatever they can =================== */
@@ -72,13 +72,13 @@
       tl.to($("sc015-cam"), { scale: 1.12, duration: 1.4, ease: E.cam }, S(86.20));
       tl.to($("sc015-cam"), { scale: 1.14, duration: 1.0, ease: "none" }, S(87.60));
       tl.to($("sc015-cam"), { scale: 1.3, x: -120, duration: 0.3, ease: E.in }, S(88.38));       // CA
-      typeOn($("sc015-ty0"), T(82.96));
-      typeOn($("sc015-ty1"), T(84.88));
-      typeOn($("sc015-ty2"), T(86.00));
-      typeOn($("sc015-ty3"), T(86.56));
-      typeOn($("sc015-ty4"), T(87.76));
-      typeOn($("sc015-ty5"), T(88.08), 1 / 30);
-      typeOn($("sc015-ty6"), T(88.32), 1 / 30);
+      typeOn($("sc015-ty0"), T(82.90));
+      typeOn($("sc015-ty1"), T(84.82));
+      typeOn($("sc015-ty2"), T(85.94));
+      typeOn($("sc015-ty3"), T(86.50));
+      typeOn($("sc015-ty4"), T(87.70));
+      typeOn($("sc015-ty5"), T(88.02), 1 / 30);
+      typeOn($("sc015-ty6"), T(88.26), 1 / 30);
       // the paper-clipped card: a pencil route Taiwan → Africa on an atlas crop (missions abroad)
       tl.fromTo($("sc015-clip"), { opacity: 0, x: 120, y: 60, rotation: 12 }, { opacity: 1, x: 0, y: 0, rotation: 5, duration: 0.9, ease: C(E.out, 0.9), immediateRender: true }, S(86.00));
       tl.fromTo($("sc015-pc"), { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, S(86.75));
@@ -106,10 +106,10 @@
         g.insertAdjacentHTML("beforeend", `<path id="c4s01-c16-${k}" d="${d}" fill="url(#c4s01-ht-cel)" stroke="${INK}" stroke-width="4" opacity="0"/>`);
         tl.fromTo(document.getElementById("c4s01-c16-" + k), { attr: { opacity: 0 } }, { attr: { opacity: 1 }, duration: 0.001, immediateRender: true }, S(89.00) + i / 6);
         const [x, y] = ll(lon, lat);
-        ink(lg, `M${x.toFixed(0)} ${y.toFixed(0)} L${lx.toFixed(0)} ${ly.toFixed(0)}`, S(91.40) + i / 24, 0.45, { color: INK, width: 5 });
+        ink(lg, `M${x.toFixed(0)} ${y.toFixed(0)} L${lx.toFixed(0)} ${ly.toFixed(0)}`, S(91.20) + i / 24, 0.45, { color: INK, width: 5 });
       });
-      rise($("sc016-conv"), T(88.96), { dur: 0.9, y: 12 });
-      [T(92.00), T(92.48)].forEach((c, i) => rise(words("sc016-roc")[i], c, { dur: i ? 0.15 : 0.25, y: 8 }));
+      rise($("sc016-conv"), T(88.90), { dur: 0.9, y: 12 });
+      [T(91.94), T(92.42)].forEach((c, i) => rise(words("sc016-roc")[i], c, { dur: i ? 0.15 : 0.25, y: 8 }));
       tl.fromTo($("sc016-rocu"), { scaleX: 0 }, { scaleX: 1, duration: 0.3, ease: C(E.out, 0.3), immediateRender: true }, S(92.05));
     })();
     whip($("sc016-shot"), $("sc017-shot"), S(92.72), { dir: 1 });
@@ -137,10 +137,10 @@
         const p = ink(svg, `M${x1.toFixed(0)} ${y1.toFixed(0)} Q${((x1 + x2) / 2).toFixed(0)} ${((y1 + y2) / 2 - 300).toFixed(0)} ${x2.toFixed(0)} ${y2.toFixed(0)}`, S(93.55) + i * 0.15, 1.0, { color: RED, width: 14, ease: "sine.inOut" });
         p.setAttribute("opacity", "0.9");
       });
-      pop($("sc017-ccpb"), T(92.80), 0.8);
-      [T(93.60), T(93.76)].forEach((c, i) => rise(words("sc017-st")[i], c, { dur: 0.7, y: 10 }));
+      pop($("sc017-ccpb"), T(92.74), 0.8);
+      [T(93.54), T(93.70)].forEach((c, i) => rise(words("sc017-st")[i], c, { dur: 0.7, y: 10 }));
       tl.to($("sc017-st"), { opacity: 0, duration: 0.3 }, S(95.6));
-      rise($("sc017-big"), T(96.48), { dur: 0.3, y: 10 });
+      rise($("sc017-big"), T(96.42), { dur: 0.3, y: 10 });
       tl.to(cam, Object.assign(at(95.0, 33, 0.5), { duration: 0.2, ease: E.in }), S(96.80));     // CA into the bars
     })();
 
@@ -148,7 +148,7 @@
     scene("sc018", 96.96, 101.36);
     ground("paper", S(96.96));
     (function () {
-      const rows = $("sc018-rows"), names = ["land", "people", "resources"], R = [1150, 1240, 1080], Cw = [120, 150, 100], cues = [T(98.88), T(99.28), T(99.84)];
+      const rows = $("sc018-rows"), names = ["land", "people", "resources"], R = [1150, 1240, 1080], Cw = [120, 150, 100], cues = [T(98.82), T(99.22), T(99.78)];
       names.forEach((n, i) => {
         rows.insertAdjacentHTML("beforeend", `<div class="k-row" id="c4s01-sc018-r${i}" style="top:${300 + i * 190}px"><div class="lb t-label">${n}</div><div class="b r" style="width:${R[i]}px"><div class="ht"></div></div><div class="b c" style="width:${Cw[i]}px"><div class="ht"></div></div></div>`);
         const r = $("sc018-r" + i);
@@ -156,9 +156,9 @@
         tl.fromTo(r.querySelector(".r"), { scaleX: 0 }, { scaleX: 1, duration: 0.9, ease: C(E.out, 0.9), immediateRender: true }, cues[i] + 0.04);
         tl.fromTo(r.querySelector(".c"), { scaleX: 0 }, { scaleX: 1, duration: 0.5, ease: C(E.out, 0.5), immediateRender: true }, cues[i] + 0.04);
       });
-      [T(97.44), T(97.52), T(97.76)].forEach((c, i) => show(words("sc018-title")[i], c));
+      [T(97.38), T(97.46), T(97.70)].forEach((c, i) => show(words("sc018-title")[i], c));
       show($("sc018-sw"), S(100.82));
-      rise($("sc018-key"), T(100.88), { dur: 0.35, y: 8 });
+      rise($("sc018-key"), T(100.82), { dur: 0.35, y: 8 });
       tl.fromTo($("sc018-shot"), { scale: 1.0 }, { scale: 1.03, duration: 4.4, ease: "none", immediateRender: false, transformOrigin: "40% 50%" }, S(96.96));
     })();
     whip($("sc018-shot"), $("sc019-shot"), S(101.36), { dir: 1, vertical: true });
@@ -183,9 +183,9 @@
       };
       draw();
       tl.fromTo(st, { a: -3 }, { a: 16, duration: 2.2, ease: C(E.inOut, 2.2), onUpdate: draw, immediateRender: false }, S(101.55));   // slowly tips to red (lands 103.75)
-      pop($("sc019-ccpb"), T(102.24), 0.8);
+      pop($("sc019-ccpb"), T(102.18), 0.8);
       tl.fromTo($("sc019-ccp"), { y: 0 }, { y: 120, duration: 1.4, ease: C(E.inOut, 1.4), immediateRender: false }, S(102.3));
-      rise($("sc019-win"), T(103.20), { dur: 0.6, y: 12 });
+      rise($("sc019-win"), T(103.14), { dur: 0.6, y: 12 });
       // tilt down onto the GA hemicycle on the same sheet
       tl.fromTo($("sc019-sheet"), { y: 0 }, { y: -1080, duration: 1.1, ease: E.cam, immediateRender: false }, S(104.00));
       tl.to($("sc019-sheet"), { scale: 1.03, duration: 8.4, ease: "none", transformOrigin: "50% 75%" }, S(105.1));
@@ -206,13 +206,13 @@
       const arc = document.getElementById("c4s01-celarc"), al = arc.getTotalLength();
       arc.setAttribute("stroke-dasharray", `${al} ${al}`);
       tl.fromTo(arc, { attr: { "stroke-dashoffset": 0 } }, { attr: { "stroke-dashoffset": al * 0.23 }, duration: 3.0, ease: C(E.inOut, 3.0), immediateRender: true }, S(108.30));
-      [T(104.32), T(104.40), T(104.72), T(104.96), T(105.52)].forEach((c, i) => show(words("sc020-title")[i], c));
+      [T(104.26), T(104.34), T(104.66), T(104.90), T(105.46)].forEach((c, i) => show(words("sc020-title")[i], c));
       tl.fromTo($("sc020-hl"), { scaleX: 0 }, { scaleX: 1, duration: 0.45, ease: "sine.inOut", immediateRender: true }, S(105.02));
-      pop($("sc020-ccpb"), T(107.60), 0.8);
+      pop($("sc020-ccpb"), T(107.54), 0.8);
       $("sc020-chair").innerHTML = CHAIR;
       tl.fromTo($("sc020-chair"), { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.6, ease: C(E.out, 0.6), immediateRender: true }, S(110.30));
-      [T(110.40), T(111.28)].forEach((c, i) => rise(words("sc020-cs")[i], c, { dur: 0.6, y: 8 }));
-      tl.fromTo($("sc020-twr"), { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.25, ease: C(E.out, 0.25), immediateRender: true }, T(113.12));
+      [T(110.34), T(111.22)].forEach((c, i) => rise(words("sc020-cs")[i], c, { dur: 0.6, y: 8 }));
+      tl.fromTo($("sc020-twr"), { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.25, ease: C(E.out, 0.25), immediateRender: true }, T(113.06));
     })();
     whip($("sc019-shot"), $("sc021-shot"), S(113.60), { dir: -1, vertical: true });
 
@@ -222,9 +222,9 @@
     (function () {
       gated(113.5, 120.5, () => FX.weave($("sc021-weave"), { amp: 0.6, flicker: 0.025, seed: 2101 }));
       tl.fromTo($("sc021-cam"), { scale: 1.0 }, { scale: 1.06, duration: 6.4, ease: "none", immediateRender: true }, S(113.60));
-      [T(114.32), T(114.64), T(114.72), T(114.96)].forEach((c, i) => show(words("sc021-nbi")[i], c));
+      [T(114.26), T(114.58), T(114.66), T(114.90)].forEach((c, i) => show(words("sc021-nbi")[i], c));
       tl.to($("sc021-nbi"), { opacity: 0, duration: 0.4 }, S(116.9));
-      [T(115.60), T(115.76), T(116.24), T(116.48), T(116.72)].forEach((c, i) => show(words("sc021-us")[i], c));
+      [T(115.54), T(115.70), T(116.18), T(116.42), T(116.66)].forEach((c, i) => show(words("sc021-us")[i], c));
       tl.fromTo($("sc021-twu"), { scaleX: 0 }, { scaleX: 1, duration: 0.6, ease: C(E.out, 0.6), immediateRender: true }, S(116.78));
     })();
 
@@ -237,11 +237,11 @@
       tl.fromTo(shot, { y: 1140 }, { y: 0, duration: 0.5, ease: C(E.out, 0.5), immediateRender: false }, S(119.80));   // PS: torn-edge paper slides up over the photo
       tl.set(shot, { maskImage: "none", webkitMaskImage: "none" }, S(120.32));
       ground("paper", S(120.0));
-      [T(122.80), T(123.36)].forEach((c, i) => rise(words("sc022-dw")[i], c, { dur: 0.7, y: 10 }));
-      tl.fromTo($("sc022-rocr"), { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.7, ease: C(E.out, 0.7), immediateRender: true }, T(124.96));
-      pop($("sc022-ccpb"), T(125.84), 0.7);
+      [T(122.74), T(123.30)].forEach((c, i) => rise(words("sc022-dw")[i], c, { dur: 0.7, y: 10 }));
+      tl.fromTo($("sc022-rocr"), { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.7, ease: C(E.out, 0.7), immediateRender: true }, T(124.90));
+      pop($("sc022-ccpb"), T(125.78), 0.7);
       tl.fromTo($("sc022-tab"), { x: 420 }, { x: 0, duration: 0.42, ease: C(E.out, 0.42), immediateRender: true }, S(126.40));
-      [T(126.56), T(126.72)].forEach((c, i) => show(words("sc022-tab")[i], c));
+      [T(126.50), T(126.66)].forEach((c, i) => show(words("sc022-tab")[i], c));
       tl.to($("sc022-tab"), { x: -40, duration: 0.5, ease: "none" }, S(126.94));
     })();
 
@@ -270,10 +270,10 @@
       gated(130.1, 130.75, () => FX.onFrame((t) => { const k = t - TE; const a = k >= 0 && k <= 0.5 ? 4 * (1 - k / 0.5) : 0;
         cam.style.translate = `${((FX.noise1(t * 40, 3) - 0.5) * 2 * a).toFixed(1)}px ${((FX.noise1(t * 40, 9) - 0.5) * 2 * a).toFixed(1)}px`; }));
       tl.fromTo(cam, { scale: 1.0 }, { scale: 1.07, duration: 7.1, ease: "none", immediateRender: true }, S(127.44));
-      [T(128.64), T(128.88)].forEach((c, i) => rise(words("sc023-be")[i], c, { dur: 0.7, y: 10 }));
-      tl.fromTo($("sc023-sei"), { opacity: 0, scale: 1.12 }, { opacity: 1, scale: 1, duration: 0.9, ease: C(E.out, 0.9), immediateRender: true }, T(130.16));
+      [T(128.58), T(128.82)].forEach((c, i) => rise(words("sc023-be")[i], c, { dur: 0.7, y: 10 }));
+      tl.fromTo($("sc023-sei"), { opacity: 0, scale: 1.12 }, { opacity: 1, scale: 1, duration: 0.9, ease: C(E.out, 0.9), immediateRender: true }, T(130.10));
       tl.to([$("sc023-sei"), $("sc023-be")], { opacity: 0, duration: 0.35 }, S(132.20));
-      [T(132.67), T(132.83)].forEach((c, i) => rise(words("sc023-eq")[i], c, { dur: 0.7, y: 10 }));
+      [T(132.61), T(132.77)].forEach((c, i) => rise(words("sc023-eq")[i], c, { dur: 0.7, y: 10 }));
     })();
     whip($("sc023-shot"), $("sc024-shot"), S(134.51), { dir: 1, flash: true });
 
@@ -283,5 +283,5 @@
       gated(134.4, 139.8, () => FX.weave($("sc024-weave"), { amp: 0.6, flicker: 0.025, seed: 2401 }));
       tl.fromTo($("sc024-cam"), { scale: 1.0 }, { scale: 1.06, duration: 5.2, ease: "none", immediateRender: true }, S(134.51));
       tl.to($("sc024-cam"), { scale: 1.12, x: -60, duration: 0.3, ease: E.in }, S(139.41));      // CA
-      [T(137.31), T(138.19)].forEach((c, i) => rise(words("sc024-te")[i], c, { dur: 0.8, y: 10 }));
+      [T(137.25), T(138.13)].forEach((c, i) => rise(words("sc024-te")[i], c, { dur: 0.8, y: 10 }));
     })();
