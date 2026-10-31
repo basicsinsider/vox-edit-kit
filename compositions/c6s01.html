@@ -810,8 +810,12 @@
     (function () {
       tl.fromTo($("sc001-cam"), { scale: 1.0 }, { scale: 1.06, duration: 2.6, ease: "none", immediateRender: true }, 0);
       // reversed focus hunt: sharp → soft (not knowing)
-      const s = { r: 0 }, f = () => ($("sc001-cam").style.filter = `blur(${s.r.toFixed(2)}px)`);
-      tl.fromTo(s, { r: 0 }, { r: 3, duration: 0.5, ease: "sine.inOut", immediateRender: true, onUpdate: f }, S(0.5));
+      // c5 hand-off: c5s03 ends on the vote board at ~7–10 px blur with the push still moving → open at 9 px and
+      // rack to sharp by 0.45 s (one continuous focus hunt across the cut), then the planned sharp → soft.
+      const s = { r: 9 }, f = () => ($("sc001-cam").style.filter = `blur(${s.r.toFixed(2)}px)`);
+      f();
+      tl.fromTo(s, { r: 9 }, { r: 0, duration: 0.45, ease: "power2.out", immediateRender: true, onUpdate: f }, 0);
+      tl.to(s, { r: 3, duration: 0.5, ease: "sine.inOut", onUpdate: f }, S(0.5));
       tl.to(s, { r: 1.5, duration: 0.3, ease: "sine.inOut", onUpdate: f }, S(1.0));
       tl.to(s, { r: 5, duration: 0.7, ease: "sine.inOut", onUpdate: f }, S(1.3));
     })();

@@ -159,11 +159,11 @@
     (function () {
       tl.fromTo("#c6s02-sc050-cam", { scale: 1.0, y: 0 }, { scale: 1.08, y: -40, duration: 3.4, ease: "none", immediateRender: false }, S(244.28));
       line("sc050-t", [["turns ", T(244.84)], ["on ", T(245.32)], ["the ", T(245.48)], ["communists", T(245.56)]]);
-      tl.fromTo("#c6s02-sc050-flag", { opacity: 0, x: 260, rotation: 14 }, { opacity: 1, x: 0, rotation: 8, duration: 0.6, ease: C(FX.ease.out, 0.6), immediateRender: true }, S(246.38));   // "Soviet Union" — done 246.98
+      tl.fromTo("#c6s02-sc050-flag", { opacity: 0, x: 260, rotation: 14 }, { opacity: 1, x: 0, rotation: 8, duration: 0.45, ease: C(FX.ease.out, 0.45), immediateRender: true }, S(246.38));   // "Soviet Union" — done 246.83, holds to the slide (247.19)
     })();
 
     /* ============ C6S051 · 247.64–254.45 · hostage for 12 years — the ledger ============ */
-    slide("051", 247.64, "bottom");
+    slide("051", S(247.64), "bottom");
     scene("051", 247.19, 254.45);
     ground("paper", S(247.4));
     (function () {
@@ -183,8 +183,8 @@
       line("sc051-st", [["stuck", T(250.29)]]);
       line("sc051-sd", [["to ", T(252.05)], ["study", T(252.13)]]);
       const svg = $("sc051-svg"), f = FX.markupDefs(svg, "c6s02-mk51", { boil: 4 });
-      FX.markup.pen(tl, svg, S(253.74), { points: [[640, 198], [900, 192], [1130, 199]], width: 6, color: INK, filter: f, dur: 0.18, seed: 5101 });
-      FX.markup.pen(tl, svg, S(253.86), { points: [[650, 214], [910, 210], [1120, 216]], width: 6, color: INK, filter: f, dur: 0.18, seed: 5102 });   // done 254.04
+      FX.markup.pen(tl, svg, S(253.74), { points: [[640, 198], [900, 192], [1130, 199]], width: 6, color: INK, filter: f, dur: 0.15, seed: 5101 });
+      FX.markup.pen(tl, svg, S(253.80), { points: [[650, 214], [910, 210], [1120, 216]], width: 6, color: INK, filter: f, dur: 0.15, seed: 5102 });   // done 253.95 — holds 0.5 s (§10.9)
     })();
 
     /* ============ C6S052 · 254.45–262.53 · sent to a plant to work; his dad leads China ============ */
@@ -278,7 +278,7 @@
       tl.to(cam, { scale: 0.72, x: 960 - 1200 * 0.72, y: 500 - 1350 * 0.72, duration: 1.6, ease: FX.ease.cam }, S(288.9));
       tl.to("#c6s02-sc057-veil", { opacity: 0.3, duration: 1.2, ease: C(FX.ease.out, 1.2) }, S(288.9));
       tl.to("#c6s02-sc057-c1", { scale: 0.75, y: -60, duration: 1.4, ease: C(FX.ease.inOut, 1.4) }, S(288.9));   // done 290.3
-      FX.markup.pen(tl, svg, S(290.95), { points: [[1180, 1180], [1290, 1150], [1420, 1210], [1440, 1330], [1330, 1420], [1170, 1400], [1110, 1290], [1150, 1200]], width: 10, color: INK, filter: f, dur: 0.5, seed: 5701 });   // Kremlin — done 291.45
+      FX.markup.pen(tl, svg, S(290.80), { points: [[1180, 1180], [1290, 1150], [1420, 1210], [1440, 1330], [1330, 1420], [1170, 1400], [1110, 1290], [1150, 1200]], width: 10, color: INK, filter: f, dur: 0.4, seed: 5701 });   // Kremlin, on "in … Moscow" — done 291.20 (whip 291.56)
       line("sc057-m", [["Moscow", T(291.09)]], { dur: 0.3 });
     })();
 
@@ -370,7 +370,7 @@
     })();
 
     /* ============ C6S063–064 · 318.14–329.26 · cabinet table: reshuffle, generals → engineers ============ */
-    slide("063", 318.14, "bottom", 0.3);
+    slide("063", S(318.14), "bottom", 0.3);
     scene("063", 317.84, 329.26);
     ground("paper", S(318.0));
     (function () {
@@ -635,8 +635,8 @@
       line("sc072-c", [["change", T(378.53)]], { dur: 0.6 });
       line("sc072-d", [["down ", T(379.01)], ["the ", T(379.25)], ["line", T(379.33)]], { dur: 0.4 });
       const svg = $("sc072-svg"), f = FX.markupDefs(svg, "c6s02-mk72", { boil: 4 });
-      FX.markup.pen(tl, svg, S(379.05), { points: [[760, 880], [920, 872], [1120, 878], [1260, 870]], width: 7, color: BONE, blend: "normal", filter: f, dur: 0.55, seed: 7201 });
-      FX.markup.pen(tl, svg, S(379.58), { points: [[1222, 840], [1264, 870], [1224, 902]], width: 7, color: BONE, blend: "normal", filter: f, dur: 0.2, seed: 7202 });   // still drawing at the cut (CA)
+      FX.markup.pen(tl, svg, S(378.98), { points: [[760, 880], [920, 872], [1120, 878], [1260, 870]], width: 7, color: BONE, blend: "normal", filter: f, dur: 0.32, seed: 7201 });
+      FX.markup.pen(tl, svg, S(379.28), { points: [[1222, 840], [1264, 870], [1224, 902]], width: 7, color: BONE, blend: "normal", filter: f, dur: 0.1, seed: 7202 });   // arrow done 379.38, holds 0.5 s; CA = camera push
     })();
 
     /* ============ C6S073 · 379.89–385.17 · the reason … "I don't know where I heard this" (lamp-lit shelf) ============ */
@@ -661,7 +661,7 @@
       line("sc073-r", [["the ", T(380.13)], ["reason", T(380.21)]]);
       line("sc073-c", [["change", T(382.21)]]);
       // no text on the aside; the one book slides out of the shelf toward us
-      tl.to(book.el, { y: 40, scale: 1.08, boxShadow: "0 30px 50px rgba(0,0,0,0.8)", duration: 1.0, ease: C(FX.ease.out, 1.0) }, S(383.6));
+      tl.to(book.el, { y: 40, scale: 1.08, boxShadow: "0 30px 50px rgba(0,0,0,0.8)", duration: 1.0, ease: C(FX.ease.out, 1.0) }, S(383.3));   // done 384.3, holds before the push-through (384.83)
       $("sc073").dataset.ox = book.x - 160; $("sc073").dataset.oy = book.y;
     })();
 

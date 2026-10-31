@@ -39,6 +39,21 @@ commands below. Never use the public low-quality preview MP3s in an edit. Measur
 | `april/` | April — Jakob Ahlbom | fa190df2-467b-4180-bfea-ecc28647704d | — | full, bass, instruments, melody_derived | 128 | G major | light, hopeful texture under the transistor explanation; Nobel lift; shimmer under the IC "print" idea |
 | `city_phases/` | City Phases — John Abbot (Krish's playlist) | a5194258-5cee-4686-b89a-dfa7c323a12a | https://www.epidemicsound.com/track/530JEZzEY7/ | full, bass, instruments, melody_derived (melody is most of the track) | 150 | A minor | "transistor everywhere" build → radios → world |
 
+### Added for chunk c1 (2026-10-31) — cue sheet `project/c1/music_cuesheet.json`
+
+| folder | title — artist | kosmosId | public URL | stems downloaded | bpm | key (est.) | role / why |
+|---|---|---|---|---|---|---|---|
+| `journeyman_road/` | Journeyman Road — Farrell Wooten (Krish's playlist; acoustic, happy/hopeful) | 6f157326-4849-3772-b7ee-3d96ffac101e | https://www.epidemicsound.com/track/xMW4hwbFgy/ | full, bass, drums, instruments (use `full`: its melody isn't a separate stem) | 108 | B major (est.; light acoustic, sits fine as a short stand-alone act) | playful/delightful layer of Act VII: Disney, the coin flip, the HP garage |
+| `formations/` | Formations — Van Sandano (Krish's playlist; contemporary classical, dark pulses) | 62bcc9c2-0834-3299-a065-d3a584cf0067 | https://www.epidemicsound.com/track/WVNmADGk4F/ | full, bass, drums, instruments | 100 | Ab minor (outside the family: used alone, entered on a cut 'the war' and left on a cut 'Dean') | WWII secret radar lab (Act VIII) |
+
+### Added for chunk c3 (2026-10-31) — cue sheet `project/c3/music_cuesheet.json` (political / Cold-War colour)
+
+| folder | title — artist | kosmosId | public URL | stems downloaded | bpm | key (est.) | role / why |
+|---|---|---|---|---|---|---|---|
+| `thoughts_revoked/` | Thoughts Revoked — Kikoru (drama, pulses, restless; similar to Melting Glass) | 227e6423-291b-3dd6-977a-1c6d78d3b1c3 | — | full, bass, drums, instruments (derived melody ≈ the whole full mix → deleted; use instruments/full) | 122 | D minor | investigative pulse of the California-law act, the steady 'recognition' act and the decolonization/UN act that carries into c4 |
+| `shadowfall/` | Shadowfall — Henry Miles (cinematic, dark, epic, orchestral hybrid) | 20dff97e-cb47-48ce-97da-4b82af835462 | — | full, bass, drums, instruments, melody_derived | 83 | A minor | archival grandeur for WWII → Security Council (its 126–135 build lands on the word) and the ominous 'hidden fragility' (its drums enter as a clock-like pulse) |
+| `to_whom_it_may_concern/` | To Whom It May Concern — Jon Björk (dark, sad, tragedy) | d87c821d-00ba-3650-8ff8-e37892a2892b | — | full, bass, instruments (stems don't sum to the master: no melody) | 90 | D minor | the existential crisis (UN kicks out the ROC), the wistful flight to Taiwan |
+
 ### Candidates auditioned (by metadata + measured key from previews; not downloaded)
 Formations (Van Sandano, 100, Ab minor — wrong key for the set), Chrysotile (Farrell Wooten drone, C# minor — clashes with D),
 Imber (140, F# minor), Ostinato (Vieveri, 180, A minor — strong alternative for a build), City Phases (John Abbot, 150, A minor —
@@ -46,6 +61,9 @@ alt for the boom), Terms of Gravity (Eb major), Building Something Together (Ede
 Deception Uncovered (C major/minor dark drone), Behind the Curtain (E), The Last Horizon (A major), Silent Sun (Anna Landström,
 116, F major — hopeful, alt for act VIII), April (G major), Reclaim (C minor), A Pinpoint of Light (105, D minor — alt pulse),
 Still in Blues (G minor drone), Air (A minor drone), Lotus River (D major). Similar-search seeds: Melting Glass, Formations, Chrysotile.
+c3/c5 audition (similar to Melting Glass / Estimations / Formations; key from previews): Covert Affairs (E minor), The Mole (F# minor),
+Methodus, Fake Photisms / Paradigm Shift / Neon Noir (E minor), Rise of the Velcro (B minor), Sense of Betrayal / Rushes To (C minor),
+Allegro Sotto Le Stelle (Ab major) — off-key; No One in Sight, Mindscape (A minor) — spares.
 
 ## SFX (Epidemic Sound) — `sfx/`
 

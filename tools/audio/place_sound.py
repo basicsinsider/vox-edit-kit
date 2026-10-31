@@ -343,6 +343,9 @@ GAIN = {
     "circuit_clunk": (0.08, 0.10),
     "switch_click": (0.06, 0.08), "card_flip": (0.06, 0.08), "rewind": (0.07, 0.09), "clock_tick": (0.04, 0.05),
     "typewriter": (0.05, 0.065), "medal_ring": (0.05, 0.07), "solder_hiss": (0.04, 0.05),
+    # c3 types (photocopier, red string, radio rings, dominoes, rotary dial)
+    "scanner_sweep": (0.05, 0.065), "string_draw": (0.05, 0.065), "radio_pulse": (0.035, 0.045),
+    "domino_tick": (0.06, 0.08), "domino_run": (0.06, 0.08), "dial_click": (0.05, 0.065),
 }
 LOWTYPES = {"boom_low", "stamp_thud"}
 SFX_TRIM_DB = -3.0   # this VO is quiet (speech peaks ~ -16 dBFS): trims the table so SFX sit ~20 dB under local VO peaks
@@ -604,6 +607,40 @@ def render_event(m, i, rng, wdir):
         z = hp(np.random.default_rng(seed).standard_normal((n_, 2)) * 0.3, 2500, 2)
         z *= np.exp(-np.arange(n_) / (0.18 * SR))[:, None]
         return fade(z, 0.01, 0.08), 0.0, f"solder_hiss gen#{seed}"
+    if ty == "scanner_sweep":          # photocopier light bar: bright band-passed sweep over a faint motor hum
+        dur = max(0.3, d or 0.5)
+        y = st(G.whoosh(dur, seed, 900, 5000, 0.5))
+        n_ = len(y)
+        hum = 0.08 * np.sin(2 * np.pi * 120 * np.arange(n_) / SR) * np.hanning(n_)
+        y = y / (np.abs(y).max() + 1e-9) + np.stack([hum, hum], 1)
+        return y, 0.0, f"scanner_sweep {dur:.2f}s gen#{seed}"
+    if ty == "string_draw":            # red string drawn across the board
+        y = G.string_pull(seed, d or 0.6)
+        return y, 0.0, f"string_draw {d or 0.6:.2f}s gen#{seed}"
+    if ty == "radio_pulse":            # radio rings: 3 soft sonar-like blips spread over the move, fading
+        dur = max(0.6, d or 1.5)
+        y = np.zeros((int((dur + 1.2) * SR), 2))
+        for k_, (dt, f, a_) in enumerate([(0.0, 1180, 1.0), (dur / 3, 1060, 0.7), (2 * dur / 3, 940, 0.5)]):
+            G.put(y, st(G.tone_blip(seed + k_, f)), dt, a_)
+        y = G.room(y, 0.25) if hasattr(G, "room") else y
+        return st(y), 0.0, f"radio_pulse x3 {dur:.1f}s gen#{seed}"
+    if ty == "domino_tick":            # first domino tips: light wood knock
+        y = lib("kenney_impact_wood_light_01")
+        return y, onset(y), "kenney_impact_wood_light_01"
+    if ty == "domino_run":             # the row follows suit: accelerating wood clicks over `dur`
+        dur = max(0.4, d or 0.7)
+        y = np.zeros((int((dur + 0.4) * SR), 2))
+        tt, k_, gap = 0.0, 0, 0.12
+        while tt < dur:
+            G.put(y, st(G.tick(seed + k_, f=float(rng.uniform(1100, 1600)), bright=0.7)), tt, float(rng.uniform(0.7, 1.0)))
+            tt += gap * rng.uniform(0.85, 1.1)
+            gap = max(0.05, gap * 0.85)
+            k_ += 1
+        return y, 0.0, f"domino_run x{k_} {dur:.2f}s gen#{seed}"
+    if ty == "dial_click":             # rotary dial: ratchet ticks slowing as the dial returns
+        dur = d or 1.5
+        y = G.ticker_roll(dur, 18, 9, seed)
+        return y, 0.0, f"dial_click {dur:.2f}s gen#{seed}"
     if ty == "chime_soft":
         y = lib("chime_soft")
         return y, onset(y), "chime_soft"
