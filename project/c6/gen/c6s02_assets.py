@@ -128,6 +128,6 @@ mm = lambda lon, lat: [round((ax(lon) - ax(106)) * s, 1), round((ay(lat) - ay(37
 paths["miniW"], paths["miniH"] = mini.width, mini.height
 paths["miniChina"] = mm(116.4, 30.6); paths["miniTaipei"] = mm(121.56, 25.03); paths["miniNanjing"] = mm(118.8, 32.06)
 z82 = Image.open(P("_tmp/c6s02/zis_82.jpg")); z82.crop((240, 190, 1010, 610)).save(P("assets/c6/photos/soviet_zis_plant_scaffold_1931.jpg"), quality=92)
-dl = Image.open(P("_tmp/c6s02/deng_lizhi.jpg")); dl.crop((40, 150, 740, 680)).save(P("assets/c6/photos/deng_xiaoping_billboard_shenzhen_lizhi_park_2025_crop.jpg"), quality=92)
+dl = Image.open(P("_tmp/c6s02/deng_lizhi.jpg")); dl.crop((40, 200, 740, 640)).save(P("assets/c6/photos/deng_xiaoping_billboard_shenzhen_lizhi_park_2025_crop.jpg"), quality=92)
 json.dump(paths, open(P("assets/c6/derived/c6s02/paths.json"), "w"))
 print("mini", paths["miniW"], paths["miniH"], paths["miniChina"], paths["miniTaipei"])

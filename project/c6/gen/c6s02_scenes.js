@@ -253,7 +253,7 @@
     scene("056", 279.89, 285.09);
     ground("night", S(279.89));
     (function () {
-      const bb = $("sc056-bb"); bb.style.cssText += ";left:380px;top:200px;width:1160px;height:879px;background-size:1160px auto;background-position:0 0;filter:saturate(0.6) brightness(0.5) contrast(1.15) sepia(0.3);-webkit-mask-image:radial-gradient(ellipse 58% 56% at 50% 48%,#000 70%,transparent 100%);mask-image:radial-gradient(ellipse 58% 56% at 50% 48%,#000 70%,transparent 100%)";
+      const bb = $("sc056-bb"); bb.style.cssText += ";left:300px;top:230px;width:1320px;height:830px;background-size:1320px auto;background-position:0 0;filter:saturate(0.6) brightness(0.5) contrast(1.15) sepia(0.3);-webkit-mask-image:radial-gradient(ellipse 58% 56% at 50% 48%,#000 70%,transparent 100%);mask-image:radial-gradient(ellipse 58% 56% at 50% 48%,#000 70%,transparent 100%)";
       tl.fromTo(bb, { y: -40 }, { y: 120, duration: 5.3, ease: "none", immediateRender: false }, S(279.89));     // slow tilt up: near layer moves more
       tl.fromTo("#c6s02-sc056-sky", { y: 0 }, { y: 50, duration: 5.3, ease: "none", immediateRender: false }, S(279.89));
       // nothing on screen during "communism … or something" (slip) — the corrected phrase rises into the sky
@@ -327,8 +327,8 @@
       line("sc060-a2", [["industry", T(304.29)]], { dur: 0.6 });
       line("sc060-b", [["if ", T(304.69)], ["engineers ", T(305.01)], ["are ", T(305.49)], ["in ", T(305.73)], ["charge", T(305.97)]], { dur: 0.4 });
       const svg = $("sc060-svg"), f = FX.markupDefs(svg, "c6s02-mk60", { boil: 4 });
-      FX.markup.pen(tl, svg, S(305.05), { points: [[560, 660], [620, 600], [760, 590], [860, 560]], width: 7, color: BONE, blend: "normal", filter: f, dur: 0.45, seed: 6001 });
-      FX.markup.pen(tl, svg, S(305.45), { points: [[820, 540], [866, 556], [830, 596]], width: 7, color: BONE, blend: "normal", filter: f, dur: 0.15, seed: 6002 });   // arrow head — done 305.6
+      FX.markup.pen(tl, svg, S(305.05), { points: [[770, 700], [880, 650], [870, 545], [730, 482]], width: 7, color: BONE, blend: "normal", filter: f, dur: 0.45, seed: 6001 });
+      FX.markup.pen(tl, svg, S(305.45), { points: [[764, 458], [726, 482], [760, 512]], width: 7, color: BONE, blend: "normal", filter: f, dur: 0.15, seed: 6002 });   // arrow head — done 305.6
       tl.to("#c6s02-sc060-cam", { x: 260, duration: 0.4, ease: FX.ease.in }, S(306.05));   // CA: slide right into the cut
     })();
 
