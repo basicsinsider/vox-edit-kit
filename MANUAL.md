@@ -208,6 +208,13 @@ use, attribution optional; never redistribute the files publicly, never use them
   the scene's whip.
 - Timing audit for §10.9 (every scene): dump the timeline in a headless page (`tl.getChildren(true,true,false)` → start/end/targets)
   and list tweens that end < 0.5 s before their scene's whip start / hard cut; then snapshot those scenes' last 0.6 s.
+- Scenes kept at `display:none` outside their window (long segments) have NO layout while the script builds the timeline:
+  anything that measures (`FX.text.odometer` reel widths, `getBoundingClientRect`, `getTotalLength` on HTML-sized SVG) gets 0 —
+  the c4s03 "60s" odometer was invisible. Wrap the call: `gsap.set(scene,{display:"block"}); FX.text.odometer(…); gsap.set(scene,{display:"none"})`.
+- GSAP `x/y/rotation` on an SVG `<g>` that already has a `transform="translate(…)"` attribute REPLACES it (the ship/crates of c4s03
+  jumped to 0,0): put the placement on an outer `<g>` and animate an inner one.
+- A pen/marker path with an SVG filter (`FX.markupDefs`) that is perfectly horizontal or vertical has a zero-height/width bounding box,
+  so the filter region is empty and the stroke disappears — give every filtered line a little curve/offset (c4s03 C4S082 arrow).
 ### 4.3 Check, look, render
 ```bash
 python3 tools/build_index.py s05            # put one (or several) compositions in index.html
@@ -617,6 +624,7 @@ on action. Use it whenever the narrator quotes someone or introduces a historic 
 - [ ] Smooth long eases, 12 fps. [ ] Cuts on action; whips, no iris. [ ] No photo/clip used > 2× in a chunk.
 
 ## Changelog
+- 2026-10-31 — c4s03 editor: §4.2 gotchas (display:none scenes break measuring FX, GSAP on SVG `<g>` with a transform attribute, filtered straight pen lines vanish); new assets: Takao 1945 AMS city plan, Kaohsiung harbour Esri z16 aerial (`assets/c4/maps/`), Wufeng Lin family photo, Shenzhen skyline halftone.
 - 2026-10-31 — c4s02 editor (C4S037–069): §4.2 gotchas (odometer needs layout before display:none, SVG `<g>` transform attribute
   vs GSAP, zero-height filtered pen lines, cut between clips via `data-start`); c4 isotype family `assets/c4/icons/`; template +
   generator workflow for long segments (`project/c4/gen/c4s02_template.html` → `build_c4s02.py` inlines map data).

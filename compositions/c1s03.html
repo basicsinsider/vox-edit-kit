@@ -1,0 +1,1569 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8" /></head>
+<body>
+<template>
+  <style>
+    #root { position: absolute; inset: 0; overflow: hidden; background: var(--night); }
+    .c3-scene { position: absolute; inset: 0; overflow: hidden; visibility: hidden; opacity: 0; }
+    .c3-night { background: var(--night); }
+    .c3-abs { position: absolute; }
+    .c3-full { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; }
+    .c3-svg { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; pointer-events: none; }
+    .c3-w { display: inline-block; opacity: 0; white-space: pre; }
+    .c3-credit { position: absolute; right: 30px; bottom: 22px; font-size: 13px; letter-spacing: 0.08em; color: rgba(242,237,227,0.6); z-index: 6; }
+    .c3-credit.ink { color: rgba(20,27,36,0.6); }
+    /* two paper layers (MANUAL 10.6.1): cream scan + a Texturelabs _hires scan on top at ~90 % */
+    .c3-pg { position: absolute; inset: 0; background: var(--paper); }
+    .c3-pg img { position: absolute; left: 0; top: 0; width: 100%; height: 100%; object-fit: cover; }
+    .c3-pg .p1 { mix-blend-mode: multiply; opacity: 0.6; }
+    .c3-pg .p2 { mix-blend-mode: multiply; opacity: 0.9; filter: saturate(0.25) contrast(0.6) brightness(1.08); }
+    .c3-pg .p2.gr { filter: saturate(0.25) contrast(1.35) brightness(1.08); transform: scale(1.5); }
+    .c3-pg .p2.st { filter: saturate(0.35) contrast(0.75) brightness(1.06); }
+    .c3-pg .p2.ln { filter: saturate(0.3) contrast(0.9) brightness(1.06); transform: scale(1.3); }
+    .c3-pg .p2.tn { mix-blend-mode: screen; opacity: 0.3; filter: none; }
+    .c3-ink { color: var(--ink); }
+    .c3-circ { position: absolute; border-radius: 50%; overflow: hidden; border: 7px solid #9a958c; background: #d9d2c4; box-shadow: 0 16px 34px rgba(20,27,36,0.28); }
+    .c3-circ img { position: absolute; left: 50%; top: 4%; width: 100%; transform: translateX(-50%); filter: grayscale(1) sepia(0.35) contrast(1.05); }
+    .c3-card { position: absolute; background: #f3ecdd; padding: 14px; box-shadow: 0 22px 44px rgba(20,27,36,0.32); }
+    .c3-card img { display: block; width: 100%; height: 100%; object-fit: cover; }
+    .c3-plate { position: absolute; overflow: hidden; }
+    .c3-plate img { position: absolute; }
+    .c3-tag { position: absolute; background: rgba(235,228,214,0.92); padding: 16px 30px 10px; box-shadow: 0 10px 24px rgba(20,27,36,0.18); }
+    .c3-box { display: inline-block; background: var(--ink); color: var(--paper); padding: 12px 22px 6px; }
+    .c3-hl { position: absolute; height: 30px; background: var(--yellow); mix-blend-mode: multiply; transform-origin: 0 50%; opacity: 0.9; }
+    #c1s03-grain, #c1s03-dust, #c1s03-vig { z-index: 20; }
+    #c1s03-flash { position: absolute; inset: 0; background: #fbf4e6; opacity: 0; z-index: 25; pointer-events: none; }
+
+    /* ===== C1S071 pictorial Peninsula map ===== */
+    #c1s03-sc071-tilt { position: absolute; inset: 0; perspective: 1800px; perspective-origin: 960px 300px; }
+    #c1s03-sc071-plane { position: absolute; inset: 0; transform: rotateX(18deg) rotateZ(-4deg); transform-origin: 960px 600px; }
+    #c1s03-sc071-cam { position: absolute; left: 0; top: 0; width: 1920px; height: 2556px; transform-origin: 0 0; }
+    #c1s03-sc071-map { position: absolute; left: 0; top: 0; width: 1920px; height: 2556px; box-shadow: 0 40px 80px rgba(20,27,36,0.45); filter: saturate(0.92) contrast(1.02); }
+    #c1s03-sc071-tag { left: 96px; top: 70px; }
+
+    /* ===== C1S072 thesis title page ===== */
+    #c1s03-sc072-stage { position: absolute; inset: 0; perspective: 1600px; perspective-origin: 700px 400px; }
+    #c1s03-sc072-cam { position: absolute; inset: 0; transform-origin: 640px 380px; }
+    #c1s03-sc072-page { position: absolute; left: 250px; top: 70px; width: 780px; height: 1000px; background: #f4eedf; transform: rotateX(10deg) rotateZ(-2deg); transform-origin: 50% 0; box-shadow: 0 34px 60px rgba(20,27,36,0.35); overflow: hidden; }
+    #c1s03-sc072-page .tx2 { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; mix-blend-mode: multiply; opacity: 0.55; }
+    .c3-thl { position: absolute; left: 0; width: 780px; text-align: center; color: var(--ink); }
+
+    /* ===== C1S073 HP 200A ===== */
+    #c1s03-sc073-cam { position: absolute; inset: 0; transform-origin: 58% 30%; }
+    #c1s03-sc073-cam .plate .img, #c1s03-sc073-cam .plate .fringe { object-position: 50% 30%; filter: grayscale(0.55) sepia(0.25) brightness(0.72) contrast(1.12); }
+    #c1s03-sc073-cam .plate .fringe { filter: grayscale(0.55) sepia(0.25) brightness(0.72) contrast(1.12) blur(7px); }
+    #c1s03-sc073-shade { position: absolute; inset: 0; background: linear-gradient(0deg, rgba(15,19,24,0.92) 0%, rgba(15,19,24,0.55) 34%, rgba(15,19,24,0) 60%); }
+
+    /* ===== C1S074 fellowship + coins ===== */
+    #c1s03-sc074-cam { position: absolute; inset: 0; transform-origin: 50% 50%; }
+    #c1s03-sc074-letter { position: absolute; left: 150px; top: 120px; width: 660px; height: 840px; background: #f4eedf; transform: rotate(-2.5deg); box-shadow: 0 26px 50px rgba(20,27,36,0.3); overflow: hidden; }
+    #c1s03-sc074-letter .tx2 { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; mix-blend-mode: multiply; opacity: 0.6; }
+    .c3-bar { position: absolute; height: 9px; background: rgba(20,27,36,0.32); border-radius: 4px; }
+    .c3-coin { position: absolute; width: 150px; height: 58px; border-radius: 50%; background-size: 150px 58px; box-shadow: 0 6px 0 #6d6255, 0 8px 10px rgba(20,27,36,0.35); filter: grayscale(1) sepia(0.45) contrast(1.15) brightness(1.02); }
+
+    /* ===== C1S075 layered money ===== */
+    .c3-note { position: absolute; width: 640px; height: 272px; background-repeat: no-repeat; box-shadow: 0 18px 34px rgba(0,0,0,0.5); }
+    #c1s03-sc075-terman { position: absolute; left: 70px; bottom: -40px; height: 980px; filter: url(#c1s03-tint-bone) drop-shadow(0 0 2px rgba(242,237,227,0.35)); }
+    .c3-stu { position: absolute; width: 300px; height: 380px; background: #ece3d0; padding: 12px; box-shadow: 0 22px 44px rgba(0,0,0,0.55); }
+    .c3-stu img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(1) sepia(0.4) contrast(1.05) brightness(0.95); }
+
+    /* ===== C1S076 patent on blueprint ===== */
+    #c1s03-sc076-cam { position: absolute; inset: 0; transform-origin: 40% 40%; }
+    #c1s03-sc076-bp { position: absolute; inset: -40px; width: 2000px; height: 1160px; object-fit: cover; filter: brightness(0.82) saturate(0.9); }
+    #c1s03-sc076-pat { position: absolute; left: 330px; top: 40px; width: 690px; height: 1013px; mix-blend-mode: screen; filter: invert(1) brightness(1.05) contrast(1.4); opacity: 0.92; }
+
+    /* ===== C1S077 25 rows ===== */
+    #c1s03-sc077-rows { position: absolute; left: 700px; top: 0; width: 1150px; height: 1080px; }
+    #c1s03-sc077-n { display: inline-block; background: var(--yellow); color: var(--ink); font-size: 250px; padding: 22px 34px 0; line-height: 1; }
+
+    /* ===== C1S078 hub ===== */
+    #c1s03-sc078-cam { position: absolute; inset: 0; transform-origin: 960px 500px; }
+    .c3-node { position: absolute; width: 150px; height: 150px; border-radius: 50%; background: #d9d2c4; border: 6px solid #9a958c; box-shadow: 0 12px 26px rgba(20,27,36,0.22); }
+
+    /* ===== C1S079 Disney ===== */
+    #c1s03-sc079-cam { position: absolute; inset: 0; transform-origin: 70% 40%; }
+    #c1s03-sc079-bg { position: absolute; left: -60px; top: -60px; width: 2040px; height: 1200px; object-fit: cover; filter: grayscale(1) sepia(0.35) brightness(0.45) contrast(1.1) blur(9px); }
+    #c1s03-sc079-shade { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(15,19,24,0.92) 0%, rgba(15,19,24,0.6) 40%, rgba(15,19,24,0.15) 75%); }
+    #c1s03-sc079-fant { position: absolute; left: 1010px; top: 190px; width: 780px; height: 595px; background: #ece3d0; padding: 16px; transform: rotate(2deg); box-shadow: 0 30px 60px rgba(0,0,0,0.6); }
+    #c1s03-sc079-fant img { width: 100%; height: 100%; object-fit: cover; filter: saturate(0.8) contrast(1.05); }
+    #c1s03-sc079-prod { position: absolute; left: 1180px; top: 300px; width: 520px; height: 390px; background: #ece3d0; padding: 12px; transform: rotate(-3deg); box-shadow: 0 26px 50px rgba(0,0,0,0.55); }
+    #c1s03-sc079-prod img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(0.6) sepia(0.2) brightness(0.9); }
+
+    /* ===== C1S080 / C1S082 coin ===== */
+    .c3-coinwrap { position: absolute; width: 360px; height: 360px; perspective: 1400px; }
+    .c3-coin3d { position: absolute; inset: 0; transform-style: preserve-3d; }
+    .c3-face { position: absolute; inset: 0; width: 100%; height: 100%; backface-visibility: hidden; -webkit-backface-visibility: hidden; filter: grayscale(1) sepia(0.3) contrast(1.15) brightness(1.0); }
+    .c3-face.back { transform: rotateX(180deg); }
+    #c1s03-sc080-glow { position: absolute; inset: 0; background: radial-gradient(ellipse 40% 45% at 50% 52%, rgba(255,226,186,0.16), rgba(0,0,0,0) 70%); }
+
+    /* ===== C1S081 surname blocks ===== */
+    .c3-block { position: absolute; width: 700px; height: 210px; background: #2c2925; box-shadow: 0 24px 40px rgba(20,27,36,0.4), inset 0 0 0 6px #3b3631; text-align: center; }
+    .c3-block .t { position: absolute; left: 0; right: 0; top: 52px; font-size: 128px; color: #ede3cf; }
+
+    /* ===== C1S082 HP panels ===== */
+    .c3-panel { position: absolute; background: #ece3d0; padding: 14px; box-shadow: 0 26px 50px rgba(0,0,0,0.55); }
+    .c3-panel img { width: 100%; height: 100%; object-fit: cover; filter: saturate(0.45) contrast(1.05) brightness(0.98); }
+    #c1s03-sc082-logo { position: absolute; left: 1080px; top: 742px; width: 520px; height: 102px; background: var(--bone); opacity: 0;
+      -webkit-mask-image: url('assets/c1/objects/hp_logo_1979_blue.svg'); mask-image: url('assets/c1/objects/hp_logo_1979_blue.svg'); -webkit-mask-size: contain; mask-size: contain; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; }
+
+    /* ===== C1S083–084 2.5D garage (approved s10) ===== */
+    #c1s03-sc083-stage { position: absolute; inset: 0; perspective: 1200px; perspective-origin: 50% 50%; }
+    #c1s03-sc083-cam { position: absolute; inset: 0; transform-style: preserve-3d; transform-origin: 50% 50%; }
+    .c3-l { position: absolute; inset: 0; transform-origin: 50% 50%; }
+    .c3-l img { position: absolute; filter: saturate(0.82) contrast(1.03) sepia(0.12); }
+    #c1s03-sc083-bd2 { left: -340px; top: -230px; width: 2600px; filter: saturate(0.7) sepia(0.2) brightness(0.72) blur(16px) !important; }
+    #c1s03-sc083-bd1 { left: 62px; top: 211px; width: 1795px; -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 160px); mask-image: linear-gradient(180deg, transparent 0, #000 160px); filter: saturate(0.75) sepia(0.15) brightness(0.8) blur(4px) !important; }
+    #c1s03-sc083-haze { background: linear-gradient(180deg, rgba(236,214,180,0.0) 10%, rgba(236,214,180,0.16) 45%, rgba(236,214,180,0.04) 80%); }
+    #c1s03-sc083-gar img { left: 185px; top: 284px; width: 1517px; }
+    #c1s03-sc083-hedge img { left: 62px; top: 649px; width: 405px; -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 70px); mask-image: linear-gradient(90deg, transparent 0, #000 70px); }
+    #c1s03-sc083-house img { left: 1688px; top: 211px; width: 169px; -webkit-mask-image: linear-gradient(270deg, transparent 0, #000 60px); mask-image: linear-gradient(270deg, transparent 0, #000 60px); }
+    #c1s03-sc083-title { position: absolute; left: 0; top: 118px; width: 1920px; text-align: center; font-size: 236px; line-height: 1; }
+    #c1s03-sc083-rays { position: absolute; inset: 0; background:
+        linear-gradient(118deg, transparent 30%, rgba(255,230,190,0.22) 33%, transparent 37%),
+        linear-gradient(112deg, transparent 40%, rgba(255,230,190,0.16) 42.5%, transparent 46%),
+        linear-gradient(124deg, transparent 50%, rgba(255,230,190,0.12) 52%, transparent 55%);
+      mix-blend-mode: screen; }
+    #c1s03-sc083-shade { position: absolute; inset: 0; background: linear-gradient(0deg, rgba(14,12,10,0.65) 0%, rgba(14,12,10,0) 30%), linear-gradient(180deg, rgba(20,17,14,0.75) 0%, rgba(20,17,14,0) 14%); }
+
+    /* ===== C1S085 cards ===== */
+    #c1s03-sc085-cam { position: absolute; inset: 0; transform-origin: 1395px 455px; }
+
+    /* ===== C1S086 DuMont scope ===== */
+    #c1s03-sc086-cam { position: absolute; inset: 0; transform-origin: 1150px 520px; }
+    #c1s03-sc086-scope { position: absolute; left: 382px; top: -264px; width: 1536px; height: 2383px; filter: grayscale(0.4) sepia(0.2) brightness(0.62) contrast(1.15); }
+    #c1s03-sc086-scr { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; }
+
+    /* ===== C1S087 signal flow ===== */
+    #c1s03-sc087-cam { position: absolute; inset: 0; }
+
+    /* ===== C1S088 B2B ===== */
+    #c1s03-sc088-cam { position: absolute; inset: 0; }
+    #c1s03-sc088-cat { position: absolute; left: 1230px; top: 80px; width: 580px; height: 755px; background: #f3ecdd; padding: 12px; transform: rotate(3deg); box-shadow: 0 26px 50px rgba(20,27,36,0.35); }
+    #c1s03-sc088-cat img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(0.5) sepia(0.25) contrast(1.05); }
+
+    /* ===== C1S089 radio factory footage ===== */
+    #c1s03-sc089-weave { position: absolute; inset: -18px; }
+    #c1s03-sc089-vid { position: absolute; left: -10px; top: -10px; width: 1960px; height: 1100px; object-fit: cover; filter: sepia(0.3) contrast(1.12) brightness(0.92); }
+    #c1s03-sc089-shade { position: absolute; inset: 0; background: linear-gradient(0deg, rgba(15,19,24,0.85) 0%, rgba(15,19,24,0) 34%); }
+
+    /* ===== C1S090 front page ===== */
+    #c1s03-sc090-cam { position: absolute; inset: 0; transform-origin: 958px 370px; }
+    #c1s03-sc090-page { position: absolute; left: 110px; top: 30px; width: 1700px; height: 2331px; transform: rotate(-1.2deg); box-shadow: 0 30px 60px rgba(20,27,36,0.35); }
+    #c1s03-sc090-page img { position: absolute; inset: 0; width: 100%; height: 100%; filter: grayscale(1) sepia(0.3) contrast(1.1) brightness(1.02); }
+    #c1s03-sc090-ht { position: absolute; inset: 0; background-size: 520px auto; mix-blend-mode: multiply; opacity: 0.18; }
+    #c1s03-sc090-veil { position: absolute; left: 0; top: 0; width: 1700px; height: 2331px; opacity: 0; }
+    #c1s03-sc090-tag { left: 120px; top: 760px; width: 1100px; height: 240px; }
+
+    /* ===== C1S091 Terman + tubes ===== */
+    .c3-tube { position: absolute; width: 1100px; height: 733px; object-fit: cover; box-shadow: 0 30px 60px rgba(0,0,0,0.6); }
+    #c1s03-sc091-terman { position: absolute; left: 1020px; bottom: -30px; height: 1020px; filter: url(#c1s03-tint-bone) drop-shadow(0 0 2px rgba(242,237,227,0.4)) drop-shadow(0 30px 40px rgba(0,0,0,0.6)); }
+
+    /* ===== C1S092 telegram ===== */
+    #c1s03-sc092-cam { position: absolute; inset: 0; transform-origin: 50% 55%; }
+    #c1s03-sc092-card { position: absolute; left: 200px; top: 150px; width: 1520px; height: 780px; background: #efe3c6; transform: rotate(-1.2deg); box-shadow: 0 30px 60px rgba(20,27,36,0.32); overflow: hidden; }
+    #c1s03-sc092-card .tex { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; mix-blend-mode: multiply; opacity: 0.75; }
+    .c3-ty { position: absolute; left: 110px; font-size: 66px; color: var(--ink); letter-spacing: 0.12em; }
+    #c1s03-sc092-stamp { position: absolute; left: 1010px; top: 520px; font-size: 92px; color: var(--navy); border: 8px solid var(--navy); padding: 12px 26px 2px; transform: rotate(-8deg); mix-blend-mode: multiply; opacity: 0; }
+
+    /* ===== C1S093 isotype ===== */
+    #c1s03-sc093-grid { position: absolute; left: 980px; top: 210px; width: 760px; height: 640px; }
+    .c3-ico { position: absolute; width: 46px; height: 52px; opacity: 0; }
+    #c1s03-sc093-n { display: inline-block; background: var(--yellow); color: var(--ink); font-size: 210px; padding: 18px 28px 0; line-height: 1; }
+
+    /* ===== C1S094–095 radar ===== */
+    #c1s03-sc094-weave { position: absolute; inset: -18px; }
+    #c1s03-sc094-vid { position: absolute; left: -10px; top: -10px; width: 1960px; height: 1100px; object-fit: cover; filter: sepia(0.25) contrast(1.15) brightness(0.85); }
+    #c1s03-sc094-scope { position: absolute; inset: 0; opacity: 0; background: radial-gradient(ellipse at 60% 50%, #1b2128, #0b0d10 70%); }
+    #c1s03-sc094-scam { position: absolute; inset: 0; transform-origin: 1250px 540px; }
+    #c1s03-sc094-ppi { position: absolute; left: 790px; top: 82px; width: 916px; height: 916px; border-radius: 50%; overflow: hidden; background: #0d1210; }
+    #c1s03-sc094-ppi video { position: absolute; left: -160px; top: -60px; width: 1240px; height: 827px; object-fit: cover; filter: sepia(0.5) hue-rotate(50deg) saturate(1.6) brightness(1.05) contrast(1.25); }
+    #c1s03-sc094-frame { position: absolute; left: 6px; top: -135px; width: 1971px; height: 1333px; filter: grayscale(0.3) brightness(0.8); }
+    #c1s03-sc095-noise { position: absolute; left: 790px; top: 82px; width: 916px; height: 916px; border-radius: 50%; mix-blend-mode: screen; opacity: 0; }
+    #c1s03-sc095-chaff { position: absolute; inset: 0; visibility: hidden; }
+    #c1s03-sc095-chaff img { position: absolute; left: -40px; top: -30px; width: 2000px; height: 1140px; object-fit: cover; filter: grayscale(1) sepia(0.2) contrast(1.15) brightness(0.85); }
+
+    /* ===== C1S096 timeline ===== */
+    #c1s03-sc096-cam { position: absolute; inset: 0; }
+
+    /* ===== C1S097 Dean ===== */
+    #c1s03-sc097-cam { position: absolute; inset: 0; transform-origin: 60% 40%; }
+    #c1s03-sc097-cam .plate .img, #c1s03-sc097-cam .plate .fringe { filter: saturate(0.5) sepia(0.25) brightness(0.6) contrast(1.08); }
+    #c1s03-sc097-cam .plate .fringe { filter: saturate(0.5) sepia(0.25) brightness(0.6) contrast(1.08) blur(7px); }
+    #c1s03-sc097-shade { position: absolute; inset: 0; background: linear-gradient(0deg, rgba(15,19,24,0.88) 0%, rgba(15,19,24,0.2) 45%, rgba(15,19,24,0.3) 100%); }
+    #c1s03-sc097-terman { position: absolute; left: 60px; bottom: -40px; height: 860px; filter: url(#c1s03-tint-bone) drop-shadow(0 0 2px rgba(242,237,227,0.4)); }
+    #c1s03-sc097-brass { position: absolute; left: 820px; top: 760px; width: 980px; height: 170px; border-radius: 8px;
+      background: linear-gradient(160deg, #8a6a3a 0%, #d9b877 22%, #b48c4f 48%, #e8cf93 70%, #9b7740 100%);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.6), inset 0 0 0 4px rgba(70,50,20,0.55), inset 0 2px 0 rgba(255,240,200,0.6); }
+    #c1s03-sc097-brass .t { position: absolute; left: 0; right: 0; top: 50px; text-align: center; font-size: 74px; color: #3a2a12; text-shadow: 0 1px 0 rgba(255,236,190,0.6), 0 -1px 0 rgba(40,25,5,0.5); }
+    .c3-screw { position: absolute; top: 72px; width: 22px; height: 22px; border-radius: 50%; background: radial-gradient(circle at 40% 35%, #f4e2b4, #7a5a2a); }
+
+    /* ===== C1S098 Capitol + lines ===== */
+    #c1s03-sc098-cam { position: absolute; inset: 0; transform-origin: 55% 35%; }
+    #c1s03-sc098-cam .plate .img, #c1s03-sc098-cam .plate .fringe { object-position: 50% 40%; filter: sepia(0.3) brightness(0.62) contrast(1.15); }
+    #c1s03-sc098-cam .plate .fringe { filter: sepia(0.3) brightness(0.62) contrast(1.15) blur(7px); }
+    #c1s03-sc098-shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(15,19,24,0.7) 0%, rgba(15,19,24,0) 30%, rgba(15,19,24,0) 60%, rgba(15,19,24,0.8) 100%); }
+
+    /* ===== C1S099 notes ===== */
+    .c3-bill { position: absolute; width: 600px; height: 255px; background-repeat: no-repeat; filter: url(#c1s03-tint-ink); box-shadow: 0 14px 26px rgba(20,27,36,0.3); }
+
+    /* ===== C1S100 Pentagon ===== */
+    #c1s03-sc100-cam { position: absolute; inset: 0; transform-origin: 65% 45%; }
+    #c1s03-sc100-bg { position: absolute; left: -100px; top: -80px; width: 2120px; height: 1240px; object-fit: cover; filter: saturate(0.5) brightness(0.32) blur(18px); }
+    #c1s03-sc100-card { position: absolute; left: 560px; top: 150px; width: 1260px; height: 807px; background: #ece3d0; padding: 14px; transform: rotate(-1.5deg); box-shadow: 0 34px 70px rgba(0,0,0,0.65); }
+    #c1s03-sc100-card img { width: 100%; height: 100%; object-fit: cover; filter: saturate(0.75) contrast(1.05) brightness(0.92); }
+
+    /* ===== C1S101 US map ===== */
+    #c1s03-sc101-cam { position: absolute; left: 0; top: 0; width: 6392px; height: 3524px; transform-origin: 0 0; }
+    #c1s03-sc101-map { position: absolute; left: 0; top: 0; width: 6392px; height: 3524px; mix-blend-mode: multiply; filter: saturate(0.85) brightness(1.06);
+      -webkit-mask-image: radial-gradient(ellipse 52% 56% at 50% 50%, #000 82%, transparent 100%); mask-image: radial-gradient(ellipse 52% 56% at 50% 50%, #000 82%, transparent 100%); }
+    #c1s03-sc101-svg { position: absolute; left: 0; top: 0; width: 6392px; height: 3524px; overflow: visible; }
+
+    /* ===== C1S102 diagram ===== */
+    #c1s03-sc102-cam { position: absolute; inset: 0; }
+
+    /* ===== C1S103 satellite ===== */
+    #c1s03-sc103-cam { position: absolute; left: 0; top: 0; width: 4352px; height: 3840px; transform-origin: 0 0; }
+    #c1s03-sc103-map { position: absolute; left: 0; top: 0; width: 4352px; height: 3840px; filter: grayscale(0.85) brightness(0.62) contrast(1.15); }
+    #c1s03-sc103-svg { position: absolute; left: 0; top: 0; width: 4352px; height: 3840px; overflow: visible; }
+    #c1s03-sc103-shade { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(15,19,24,0.85) 0%, rgba(15,19,24,0.45) 32%, rgba(15,19,24,0) 55%); }
+
+    /* ===== C1S104 Capitol low ===== */
+    #c1s03-sc104-cam { position: absolute; inset: 0; transform-origin: 70% 30%; }
+    #c1s03-sc104-cam .plate .img, #c1s03-sc104-cam .plate .fringe { object-position: 60% 20%; filter: sepia(0.25) brightness(0.7) contrast(1.15); }
+    #c1s03-sc104-cam .plate .fringe { filter: sepia(0.25) brightness(0.7) contrast(1.15) blur(7px); }
+    #c1s03-sc104-shade { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(15,19,24,0.88) 0%, rgba(15,19,24,0.5) 38%, rgba(15,19,24,0) 62%); }
+    #c1s03-sc104-streaks { opacity: 0.32; }
+
+    /* ===== C1S105 bars ===== */
+    #c1s03-sc105-cam { position: absolute; inset: 0; }
+    .c3-hbar { position: absolute; left: 300px; height: 44px; transform-origin: 0 50%; }
+  </style>
+  <div id="root" data-composition-id="c1s03" data-vo-start="402.83" data-duration="200.03" data-width="1920" data-height="1080">
+    <svg id="c1s03-defs" width="0" height="0" style="position:absolute"></svg>
+
+    <!-- C1S071 · 402.83–408.27 · pictorial Peninsula map (PAPER) -->
+    <div class="c3-scene" id="c1s03-sc071" data-scene="C1S071">
+      <div class="c3-pg"><img class="p1" src="assets/textures/paper_cream_01.jpg" alt="" /><img class="p2 st" src="assets/textures/paper_stained_01_hires.jpg" alt="" /></div>
+      <div id="c1s03-sc071-tilt"><div id="c1s03-sc071-plane"><div id="c1s03-sc071-cam">
+        <img id="c1s03-sc071-map" src="assets/intro/paintings/stanford_peninsula_map.jpg" alt="" />
+        <svg id="c1s03-sc071-svg" class="c3-svg" style="width:1920px;height:2556px"></svg>
+      </div></div></div>
+      <div id="c1s03-sc071-tag" class="c3-tag">
+        <div class="t-label c3-ink" style="font-size:30px"><span id="c1s03-sc071-w1" class="c3-w">California</span></div>
+        <div class="t-display c3-ink" style="font-size:108px;margin-top:6px"><span id="c1s03-sc071-w2" class="c3-w">Palo </span><span id="c1s03-sc071-w3" class="c3-w">Alto</span></div>
+      </div>
+      <div class="folds"></div>
+      <div class="c3-credit ink t-label">Pictorial map of the SF Bay Peninsula (PD) · Internet Archive</div>
+    </div>
+
+    <!-- C1S072 · 408.27–414.51 · Hewlett's thesis (GRID) -->
+    <div class="c3-scene" id="c1s03-sc072" data-scene="C1S072">
+      <div class="c3-pg"><img class="p1" src="assets/textures/paper_cream_02.jpg" alt="" /><img class="p2 gr" src="assets/textures/paper_graph_01_hires.jpg" alt="" /></div>
+      <div id="c1s03-sc072-cam">
+        <div id="c1s03-sc072-stage"><div id="c1s03-sc072-page">
+          <img class="tx2" src="assets/textures/paper_cream_01.jpg" alt="" />
+          <div id="c1s03-sc072-body">
+            <div class="c3-thl t-label" style="top:90px;font-size:24px">Stanford University</div>
+            <div class="c3-thl" style="top:136px"><svg width="300" height="6"><path d="M0 3 H300" stroke="#141b24" stroke-width="2"/></svg></div>
+            <div class="c3-thl t-serif" style="top:560px;font-size:25px;line-height:1.45;padding:0 110px">A thesis submitted to the Department of Electrical Engineering and the Committee on Graduate Study of Stanford University in partial fulfillment of the requirements for the degree of Engineer</div>
+            <div class="c3-thl t-serif-i" style="top:780px;font-size:30px">by</div>
+            <div class="c3-thl t-serif" style="top:822px;font-size:40px">William R. Hewlett</div>
+            <div class="c3-thl t-label" style="top:900px;font-size:24px">June 1939</div>
+          </div>
+          <div id="c1s03-sc072-title">
+            <div class="c3-thl t-serif" style="top:270px;font-size:46px;font-weight:700;letter-spacing:0.04em">A NEW TYPE</div>
+            <div class="c3-thl t-serif" style="top:330px;font-size:46px;font-weight:700;letter-spacing:0.04em">RESISTANCE-CAPACITY</div>
+            <div class="c3-thl t-serif" style="top:390px;font-size:46px;font-weight:700;letter-spacing:0.04em">OSCILLATOR</div>
+          </div>
+        </div></div>
+        <svg id="c1s03-sc072-mk" class="c3-svg"></svg>
+      </div>
+      <div class="c3-abs t-serif-i c3-ink" style="left:1150px;top:190px;font-size:96px"><span id="c1s03-sc072-w1" class="c3-w">idea</span></div>
+      <div class="c3-abs t-display c3-ink" style="left:1150px;top:400px;font-size:132px"><span id="c1s03-sc072-w2" class="c3-w">Hewlett</span></div>
+      <div class="c3-abs t-serif-i" style="left:1150px;top:600px;font-size:110px;color:var(--vermilion)"><span id="c1s03-sc072-w3" class="c3-w">thesis</span></div>
+      <div class="folds"></div>
+      <div class="c3-credit ink t-label">Typeset recreation of W. R. Hewlett's 1939 Stanford thesis title page</div>
+    </div>
+
+    <!-- C1S073 · 414.51–418.75 · HP 200A audio oscillator (NIGHT, hero) -->
+    <div class="c3-scene c3-night" id="c1s03-sc073" data-scene="C1S073">
+      <div id="c1s03-sc073-cam"><div class="plate"><img class="img" src="assets/c1/objects/hp_200A_audio_oscillator_front_panel.jpg" alt="" /><img class="fringe" src="assets/c1/objects/hp_200A_audio_oscillator_front_panel.jpg" alt="" /></div></div>
+      <div id="c1s03-sc073-shade"></div>
+      <svg id="c1s03-sc073-mk" class="c3-svg"></svg>
+      <div class="c3-abs t-display halate" style="left:110px;top:690px;font-size:150px;line-height:0.95"><span id="c1s03-sc073-w1" class="c3-w">AUDIO</span><br /><span id="c1s03-sc073-w2" class="c3-w">OSCILLATOR</span></div>
+      <div class="c3-abs t-serif-i clean" style="left:1240px;top:640px;font-size:60px"><span id="c1s03-sc073-w3" class="c3-w">the </span><span id="c1s03-sc073-w4" class="c3-w">idea</span></div>
+      <div class="c3-credit t-label">HP 200A · Photo: Colin / Wikimedia Commons, CC BY-SA 2.0</div>
+    </div>
+
+    <!-- C1S074 · 418.75–428.59 · fellowship letter + coin stacks (PAPER) -->
+    <div class="c3-scene" id="c1s03-sc074" data-scene="C1S074">
+      <div class="c3-pg"><img class="p1" src="assets/textures/paper_cream_01.jpg" alt="" /><img class="p2 ln" src="assets/textures/paper_lined_01_hires.jpg" alt="" /></div>
+      <div id="c1s03-sc074-cam">
+        <div id="c1s03-sc074-letter">
+          <img class="tx2" src="assets/textures/paper_cream_02.jpg" alt="" />
+          <div class="c3-abs t-label c3-ink" style="left:0;width:660px;text-align:center;top:70px;font-size:24px">Stanford University</div>
+          <div class="c3-abs t-serif-i c3-ink" style="left:0;width:660px;text-align:center;top:108px;font-size:26px;opacity:0.75">Department of Electrical Engineering</div>
+          <div class="c3-abs" style="left:80px;top:160px;width:500px;height:2px;background:var(--ink);opacity:0.6"></div>
+          <div class="c3-abs t-serif c3-ink" style="left:0;width:660px;text-align:center;top:205px;font-size:76px;font-weight:600"><span id="c1s03-sc074-w2" class="c3-w">Fellowship</span></div>
+          <div id="c1s03-sc074-bars"></div>
+        </div>
+        <div class="c3-circ" id="c1s03-sc074-terman" style="left:1300px;top:70px;width:230px;height:230px"><img src="assets/c1/cutouts/terman_1940s_cutout.png" alt="" style="width:118%;top:6%" /></div>
+        <div class="c3-abs t-label c3-ink" style="left:1300px;width:230px;text-align:center;top:318px;font-size:30px"><span id="c1s03-sc074-w1" class="c3-w">Terman</span></div>
+        <div id="c1s03-sc074-coins" class="c3-full"></div>
+        <div class="c3-abs t-serif-i c3-ink" style="left:1000px;top:420px;font-size:72px"><span id="c1s03-sc074-w3" class="c3-w">some </span><span id="c1s03-sc074-w4" class="c3-w">money</span></div>
+        <div class="c3-abs t-serif c3-ink" style="left:980px;top:950px;font-size:58px"><span id="c1s03-sc074-w5" class="c3-w">start </span><span id="c1s03-sc074-w6" class="c3-w">this </span><span id="c1s03-sc074-w7" class="c3-w">company</span></div>
+      </div>
+      <div class="folds"></div>
+      <div class="c3-credit ink t-label">Walking Liberty half dollar · Wikimedia Commons, CC BY-SA 3.0 · Terman: IEEE/ETHW (fair use)</div>
+    </div>
+
+    <!-- C1S075 · 428.59–436.03 · his own money to his students (NIGHT, Vox layered) -->
+    <div class="c3-scene c3-night" id="c1s03-sc075" data-scene="C1S075">
+      <div id="c1s03-sc075-bg" class="c3-full">
+        <div class="c3-note" id="c1s03-sc075-n1" style="left:-120px;top:40px;transform:rotate(-8deg) scale(1.5);filter:url(#c1s03-tint-dark);opacity:0.75"></div>
+        <div class="c3-note" id="c1s03-sc075-n2" style="left:980px;top:620px;transform:rotate(6deg) scale(1.7);filter:url(#c1s03-tint-dark);opacity:0.7"></div>
+        <div class="c3-note" id="c1s03-sc075-n3" style="left:1180px;top:-60px;transform:rotate(-4deg) scale(1.3);filter:url(#c1s03-tint-dark);opacity:0.6"></div>
+      </div>
+      <div class="tx" style="background-image:url('assets/textures/newsprint_01_norm.jpg');mix-blend-mode:overlay;opacity:0.35"></div>
+      <img id="c1s03-sc075-terman" src="assets/c1/cutouts/terman_1940s_cutout.png" alt="" />
+      <div class="c3-stu" id="c1s03-sc075-s1" style="left:1180px;top:150px;transform:rotate(-4deg)"><img src="assets/archival/hp/hewlett_william_c1962.jpg" alt="" style="object-position:50% 25%" /></div>
+      <div class="c3-stu" id="c1s03-sc075-s2" style="left:1520px;top:230px;transform:rotate(5deg)"><img src="assets/archival/hp/packard_david_1933.jpg" alt="" style="object-position:50% 20%" /></div>
+      <div class="c3-note" id="c1s03-sc075-cash" style="left:0;top:0;width:340px;height:145px;filter:url(#c1s03-tint-bone)"></div>
+      <div class="c3-abs t-label clean" style="left:1180px;width:640px;text-align:center;top:640px;font-size:34px"><span id="c1s03-sc075-w4" class="c3-w">students</span></div>
+      <div class="c3-abs t-serif-i clean" style="left:640px;top:790px;font-size:78px"><span id="c1s03-sc075-w1" class="c3-w">his </span><span id="c1s03-sc075-w2" class="c3-w">own </span><span id="c1s03-sc075-w3" class="c3-w">money</span></div>
+      <div class="c3-abs t-display clean" style="left:640px;top:890px;font-size:110px"><span id="c1s03-sc075-w5" class="c3-w">funding</span></div>
+      <div class="c3-credit t-label">$1 silver certificate 1935 · Commons CC BY-SA 4.0 · Hewlett / Packard archival portraits</div>
+    </div>
+
+    <!-- C1S076 · 436.03–438.91 · patent drawing on blueprint (GRID) -->
+    <div class="c3-scene" id="c1s03-sc076" data-scene="C1S076" style="background:#1d3d66">
+      <div id="c1s03-sc076-cam">
+        <img id="c1s03-sc076-bp" src="assets/textures/paper_blueprint_01_hires.jpg" alt="" />
+        <img id="c1s03-sc076-pat" src="assets/c1/documents/patent_US2268872_hewlett_drawing_sheet.png" alt="" />
+        <div class="c3-abs t-display" style="left:1160px;top:330px;font-size:150px;color:#eef3f6"><span id="c1s03-sc076-w1" class="c3-w">build</span></div>
+        <div class="c3-abs t-serif-i" style="left:1160px;top:510px;font-size:110px;color:#eef3f6"><span id="c1s03-sc076-w2" class="c3-w">oscillator</span></div>
+      </div>
+      <div class="c3-credit t-label">W. R. Hewlett, US Patent 2,268,872 (filed 1939) · public domain</div>
+    </div>
+
+    <!-- C1S077 · 438.91–443.47 · a list of 25 companies (NIGHT, D12) -->
+    <div class="c3-scene c3-night" id="c1s03-sc077" data-scene="C1S077">
+      <div class="c3-full" style="background:radial-gradient(ellipse 70% 80% at 65% 45%, #1a2029, #0f1318 70%)"></div>
+      <svg id="c1s03-sc077-rows" viewBox="0 0 1150 1080"></svg>
+      <div class="c3-abs t-label clean" style="left:140px;top:190px;font-size:40px"><span id="c1s03-sc077-w1" class="c3-w">list</span></div>
+      <div class="c3-abs t-display" id="c1s03-sc077-num" style="left:130px;top:250px;opacity:0"><span id="c1s03-sc077-n">0</span></div>
+      <div class="c3-abs t-label clean" style="left:140px;top:560px;font-size:44px"><span id="c1s03-sc077-w2" class="c3-w">companies</span></div>
+      <div class="c3-abs t-serif-i clean" style="left:136px;top:760px;font-size:84px"><span id="c1s03-sc077-w3" class="c3-w">buy </span><span id="c1s03-sc077-w4" class="c3-w">it</span></div>
+    </div>
+
+    <!-- C1S078 · 443.47–449.39 · hub-and-spoke connections (PAPER, D15) -->
+    <div class="c3-scene" id="c1s03-sc078" data-scene="C1S078">
+      <div class="c3-pg"><img class="p1" src="assets/textures/paper_cream_02.jpg" alt="" /><img class="p2 st" src="assets/textures/paper_stained_01_hires.jpg" alt="" style="transform:scale(1.2) rotate(180deg)" /></div>
+      <div id="c1s03-sc078-cam">
+        <svg id="c1s03-sc078-mk" class="c3-svg"></svg>
+        <div id="c1s03-sc078-nodes"></div>
+        <div class="c3-circ" id="c1s03-sc078-hub" style="left:830px;top:370px;width:260px;height:260px;border-color:var(--ink)"><img src="assets/c1/cutouts/terman_1940s_cutout.png" alt="" style="width:118%;top:6%" /></div>
+      </div>
+      <div class="c3-abs t-serif-i c3-ink" style="left:0;width:1920px;text-align:center;top:930px;font-size:78px"><span id="c1s03-sc078-w1" class="c3-w">connections</span></div>
+      <div class="folds"></div>
+    </div>
+
+    <!-- C1S079 · 449.39–455.95 · first buyers: Disney (NIGHT, hero) -->
+    <div class="c3-scene c3-night" id="c1s03-sc079" data-scene="C1S079">
+      <div id="c1s03-sc079-cam">
+        <img id="c1s03-sc079-bg" src="assets/c1/places/walt_disney_studios_hyperion_1929.jpg" alt="" />
+        <div id="c1s03-sc079-shade"></div>
+        <div id="c1s03-sc079-prod"><img src="assets/c1/objects/hp_200A_audio_oscillator_front_panel.jpg" alt="" /></div>
+        <div id="c1s03-sc079-fant"><img src="assets/c1/paintings/fantasia_1940_trailer_title.png" alt="" /></div>
+      </div>
+      <div class="c3-abs t-serif-i clean" style="left:110px;top:150px;font-size:84px"><span id="c1s03-sc079-w1" class="c3-w">first </span><span id="c1s03-sc079-w2" class="c3-w">buyers</span></div>
+      <div class="c3-abs t-display halate" style="left:100px;top:640px;font-size:210px"><span id="c1s03-sc079-w3" class="c3-w">DISNEY</span></div>
+      <div class="c3-credit t-label">Fantasia trailer (1940, PD) · Walt Disney Studios 1929 (PD)</div>
+    </div>
+
+    <!-- C1S080 · 455.95–462.78 · decided by a coin flip (NIGHT) -->
+    <div class="c3-scene c3-night" id="c1s03-sc080" data-scene="C1S080">
+      <canvas id="c1s03-sc080-streaks" class="streaks" style="opacity:0.35"></canvas>
+      <div id="c1s03-sc080-glow"></div>
+      <div class="c3-abs t-label clean" style="left:0;width:1920px;text-align:center;top:110px;font-size:44px"><span id="c1s03-sc080-w1" class="c3-w">company </span><span id="c1s03-sc080-w2" class="c3-w">name</span></div>
+      <svg id="c1s03-sc080-blank" class="c3-svg"></svg>
+      <div class="c3-coinwrap" id="c1s03-sc080-cw" style="left:780px;top:430px"><div class="c3-coin3d" id="c1s03-sc080-coin">
+        <img class="c3-face" src="assets/c1/objects/walking_liberty_half_1945d_obverse.png" alt="" /><img class="c3-face back" src="assets/c1/objects/walking_liberty_half_1945d_reverse.png" alt="" /></div></div>
+      <div class="c3-abs t-serif-i clean" style="left:110px;top:880px;font-size:86px"><span id="c1s03-sc080-w3" class="c3-w">coin </span><span id="c1s03-sc080-w4" class="c3-w">flip</span></div>
+      <div class="c3-abs t-label clean" style="left:0;width:1920px;text-align:center;top:300px;font-size:40px"><span id="c1s03-sc080-w5" class="c3-w">decided</span></div>
+      <div class="c3-credit t-label">Walking Liberty half dollar · Wikimedia Commons, CC BY-SA 3.0</div>
+    </div>
+
+    <!-- C1S081 · 462.78–468.78 · HEWLETT / PACKARD blocks (PAPER) -->
+    <div class="c3-scene" id="c1s03-sc081" data-scene="C1S081">
+      <div class="c3-pg"><img class="p1" src="assets/textures/paper_cream_01.jpg" alt="" /><img class="p2 tn" src="assets/textures/paper_torn_01_hires.jpg" alt="" /></div>
+      <div id="c1s03-sc081-cam" class="c3-full">
+        <div class="c3-abs t-label c3-ink" style="left:0;width:1920px;text-align:center;top:150px;font-size:40px"><span id="c1s03-sc081-w1" class="c3-w">last </span><span id="c1s03-sc081-w2" class="c3-w">name</span></div>
+        <div class="c3-block" id="c1s03-sc081-h" style="left:200px;top:400px"><div class="t t-display"><span id="c1s03-sc081-w3" class="c3-w">HEWLETT</span></div></div>
+        <div class="c3-block" id="c1s03-sc081-p" style="left:1020px;top:400px"><div class="t t-display"><span id="c1s03-sc081-w4" class="c3-w">PACKARD</span></div></div>
+        <div class="c3-abs t-display c3-ink" id="c1s03-sc081-q" style="left:900px;width:120px;text-align:center;top:420px;font-size:160px;opacity:0">?</div>
+        <div class="c3-abs t-serif-i c3-ink" style="left:0;width:1920px;text-align:center;top:840px;font-size:80px"><span id="c1s03-sc081-w5" class="c3-w">which </span><span id="c1s03-sc081-w6" class="c3-w">one </span><span id="c1s03-sc081-w7" class="c3-w">goes </span><span id="c1s03-sc081-w8" class="c3-w">first?</span></div>
+      </div>
+      <div class="folds"></div>
+    </div>
+
+    <!-- C1S082 · 468.78–476.22 · coin lands → everything HP (NIGHT, Vox layered) -->
+    <div class="c3-scene c3-night" id="c1s03-sc082" data-scene="C1S082">
+      <div class="c3-full" style="background:radial-gradient(ellipse 70% 70% at 40% 45%, #1c222b, #0f1318 75%)"></div>
+      <div class="tx" style="background-image:url('assets/textures/newsprint_02_norm.jpg');mix-blend-mode:overlay;opacity:0.25"></div>
+      <div class="c3-coinwrap" id="c1s03-sc082-cw" style="left:150px;top:250px"><div class="c3-coin3d" id="c1s03-sc082-coin">
+        <img class="c3-face" src="assets/c1/objects/walking_liberty_half_1945d_obverse.png" alt="" /><img class="c3-face back" src="assets/c1/objects/walking_liberty_half_1945d_reverse.png" alt="" /></div></div>
+      <div class="c3-panel" id="c1s03-sc082-lap" style="left:640px;top:150px;width:600px;height:480px;transform:rotate(-2deg)"><img src="assets/c1/objects/hp_pavilion_dv2000_laptop.jpg" alt="" /></div>
+      <div class="c3-panel" id="c1s03-sc082-prn" style="left:1300px;top:210px;width:500px;height:420px;transform:rotate(3deg)"><img src="assets/c1/objects/hp_laserjet_1020_printer.jpg" alt="" /></div>
+      <div class="c3-abs t-serif-i clean" style="left:110px;top:680px;font-size:64px"><span id="c1s03-sc082-w1" class="c3-w">flipped </span><span id="c1s03-sc082-w2" class="c3-w">a coin</span></div>
+      <div class="c3-abs t-label clean" style="left:640px;width:600px;text-align:center;top:660px;font-size:34px"><span id="c1s03-sc082-w3" class="c3-w">HP </span><span id="c1s03-sc082-w4" class="c3-w">computers</span></div>
+      <div class="c3-abs t-label clean" style="left:1300px;width:500px;text-align:center;top:660px;font-size:34px"><span id="c1s03-sc082-w5" class="c3-w">HP </span><span id="c1s03-sc082-w6" class="c3-w">printers</span></div>
+      <div id="c1s03-sc082-logo"></div>
+      <div class="c3-abs t-display clean" style="left:110px;top:860px;font-size:120px"><span id="c1s03-sc082-w7" class="c3-w">Everything </span><span id="c1s03-sc082-w8" class="c3-w">HP</span></div>
+      <div class="c3-credit t-label">HP laptop: Commons CC BY 2.0 · HP LaserJet: Commons CC BY-SA 3.0 · HP logo (trademark of HP)</div>
+    </div>
+
+    <!-- C1S083 · 476.22–483.02 (+ C1S084 · 483.02–488.62) · 2.5D garage (NIGHT, hero) -->
+    <div class="c3-scene" id="c1s03-sc083" data-scene="C1S083" style="background:#1a1714">
+      <div id="c1s03-sc083-stage"><div id="c1s03-sc083-cam">
+        <div class="c3-l" id="c1s03-sc083-bd"><img id="c1s03-sc083-bd2" src="assets/archival/hp/layers/backdrop.jpg" alt="" /><img id="c1s03-sc083-bd1" src="assets/archival/hp/layers/backdrop.jpg" alt="" /></div>
+        <div class="c3-l" id="c1s03-sc083-tl"><div id="c1s03-sc083-title" class="t-display halate"><span id="c1s03-sc083-w1">GARAGE</span></div></div>
+        <div class="c3-l" id="c1s03-sc083-haze"></div>
+        <div class="c3-l" id="c1s03-sc083-gar"><img src="assets/archival/hp/layers/garage.png" alt="" /></div>
+        <div class="c3-l" id="c1s03-sc083-hedge"><img src="assets/archival/hp/layers/hedge.png" alt="" /></div>
+        <div class="c3-l" id="c1s03-sc083-house"><img src="assets/archival/hp/layers/house.png" alt="" /></div>
+      </div></div>
+      <div id="c1s03-sc083-rays"></div>
+      <div id="c1s03-sc083-shade"></div>
+      <div class="c3-abs t-serif-i clean" style="left:108px;top:900px;font-size:56px"><span id="c1s03-sc083-w2" class="c3-w">first </span><span id="c1s03-sc083-w3" class="c3-w">company</span></div>
+      <div class="c3-credit t-label">HP garage, 367 Addison Ave · Photo: BrokenSphere / Commons, CC BY-SA 3.0</div>
+    </div>
+    <div class="c3-scene" id="c1s03-sc084" data-scene="C1S084" style="background:transparent">
+      <div class="c3-abs t-display clean" id="c1s03-sc084-sv" style="left:0;width:1920px;text-align:center;top:150px;font-size:170px"><span id="c1s03-sc084-w1" class="c3-w">SILICON </span><span id="c1s03-sc084-w2" class="c3-w">VALLEY</span></div>
+      <div class="c3-abs t-serif-i" style="left:1500px;top:330px;font-size:110px;color:var(--vermilion);text-shadow:0 2px 12px rgba(0,0,0,0.5)"><span id="c1s03-sc084-w3" class="c3-w">yet</span></div>
+      <svg id="c1s03-sc084-mk" class="c3-svg"></svg>
+    </div>
+
+    <!-- C1S085 · 488.62–493.18 · Disney + 200A cards (PAPER) -->
+    <div class="c3-scene" id="c1s03-sc085" data-scene="C1S085" style="box-shadow:-20px 0 40px rgba(0,0,0,0.5)">
+      <div class="c3-pg"><img class="p1" src="assets/textures/paper_cream_02.jpg" alt="" /><img class="p2 ln" src="assets/textures/paper_lined_01_hires.jpg" alt="" style="transform:scale(1.4) rotate(90deg)" /></div>
+      <div id="c1s03-sc085-cam">
+        <div class="c3-card" id="c1s03-sc085-d" style="left:170px;top:190px;width:680px;height:530px;transform:rotate(-3deg)"><img src="assets/c1/paintings/fantasia_1940_trailer_title.png" alt="" style="filter:saturate(0.8)" /></div>
+        <div class="c3-card" id="c1s03-sc085-o" style="left:1090px;top:220px;width:640px;height:490px;transform:rotate(2deg)"><img src="assets/c1/objects/hp_200A_audio_oscillator_front_panel.jpg" alt="" style="filter:grayscale(0.6) sepia(0.2)" /></div>
+        <svg id="c1s03-sc085-mk" class="c3-svg"></svg>
+        <div class="c3-abs t-label c3-ink" style="left:170px;width:680px;text-align:center;top:760px;font-size:36px"><span id="c1s03-sc085-w1" class="c3-w">Disney</span></div>
+        <div class="c3-abs t-serif-i c3-ink" style="left:170px;width:680px;text-align:center;top:820px;font-size:70px"><span id="c1s03-sc085-w2" class="c3-w">first </span><span id="c1s03-sc085-w3" class="c3-w">client</span></div>
+        <div class="c3-abs t-serif-i c3-ink" style="left:1090px;width:640px;text-align:center;top:760px;font-size:70px"><span id="c1s03-sc085-w4" class="c3-w">audio </span><span id="c1s03-sc085-w5" class="c3-w">oscillator</span></div>
+      </div>
+      <div class="folds"></div>
+      <div class="c3-credit ink t-label">Fantasia trailer 1940 (PD) · HP 200A: Colin / Commons, CC BY-SA 2.0</div>
+    </div>
+
+    <!-- C1S086 · 493.18–496.78 · DuMont 208-B oscilloscope (NIGHT, screen) -->
+    <div class="c3-scene c3-night" id="c1s03-sc086" data-scene="C1S086">
+      <div id="c1s03-sc086-cam">
+        <img id="c1s03-sc086-scope" src="assets/c1/objects/dumont_208b_oscilloscope_c1943_harvard.jpg" alt="" />
+        <svg id="c1s03-sc086-scr" viewBox="0 0 1920 1080"></svg>
+      </div>
+      <div class="c3-full" style="background:linear-gradient(90deg, rgba(15,19,24,0.92) 0%, rgba(15,19,24,0.7) 30%, rgba(15,19,24,0) 48%)"></div>
+      <div class="c3-abs t-serif-i clean" style="left:110px;top:300px;font-size:76px;line-height:1.15"><span id="c1s03-sc086-w1" class="c3-w">different </span><br /><span id="c1s03-sc086-w2" class="c3-w">levels </span><span id="c1s03-sc086-w3" class="c3-w">of </span><span id="c1s03-sc086-w4" class="c3-w">sound</span></div>
+      <div class="c3-abs t-display clean" style="left:110px;top:620px;font-size:120px"><span id="c1s03-sc086-w5" class="c3-w">control</span></div>
+      <div class="c3-credit t-label">DuMont Type 208-B oscilloscope, c. 1943 · Daderot / Commons, CC0</div>
+    </div>
+
+    <!-- C1S087 · 496.78–505.10 · signal-flow diagram (PAPER) -->
+    <div class="c3-scene" id="c1s03-sc087" data-scene="C1S087">
+      <div class="c3-pg"><img class="p1" src="assets/textures/paper_cream_01.jpg" alt="" /><img class="p2 st" src="assets/textures/paper_stained_01_hires.jpg" alt="" style="transform:scale(1.3)" /></div>
+      <div id="c1s03-sc087-cam">
+        <div class="c3-card" id="c1s03-sc087-osc" style="left:110px;top:300px;width:400px;height:300px;transform:rotate(-2deg)"><img src="assets/c1/objects/hp_200A_audio_oscillator_front_panel.jpg" alt="" style="filter:grayscale(0.7) sepia(0.2)" /></div>
+        <div class="c3-card" id="c1s03-sc087-rad" style="left:790px;top:290px;width:400px;height:300px;transform:rotate(2deg)"><img src="assets/c1/objects/regentone_valve_radio.jpg" alt="" style="filter:grayscale(1) sepia(0.3) contrast(1.1)" /></div>
+        <svg id="c1s03-sc087-mk" class="c3-svg"></svg>
+        <div class="c3-abs t-serif-i c3-ink" style="left:90px;width:440px;text-align:center;top:650px;font-size:58px"><span id="c1s03-sc087-w1" class="c3-w">specific </span><span id="c1s03-sc087-w2" class="c3-w">level</span></div>
+        <div class="c3-abs t-serif-i c3-ink" style="left:770px;width:440px;text-align:center;top:650px;font-size:58px"><span id="c1s03-sc087-w3" class="c3-w">sound </span><span id="c1s03-sc087-w4" class="c3-w">equipment</span></div>
+        <div class="c3-abs t-label c3-ink" style="left:1400px;width:400px;text-align:center;top:650px;font-size:44px"><span id="c1s03-sc087-w5" class="c3-w">test</span></div>
+        <div class="c3-abs t-serif-i" style="left:1400px;width:400px;text-align:center;top:720px;font-size:72px;color:var(--vermilion)"><span id="c1s03-sc087-w6" class="c3-w">catching</span></div>
+      </div>
+      <div class="folds"></div>
+      <div class="c3-credit ink t-label">HP 200A: Colin, CC BY-SA 2.0 · valve radio: Commons, CC BY-SA 2.0</div>
+    </div>
+
+    <!-- C1S088 · 505.10–511.90 · B2B + HP catalogue (GRID) -->
+    <div class="c3-scene" id="c1s03-sc088" data-scene="C1S088">
+      <div class="c3-pg"><img class="p1" src="assets/textures/paper_cream_02.jpg" alt="" /><img class="p2 gr" src="assets/textures/paper_graph_01_hires.jpg" alt="" style="transform:scale(1.8);object-position:30% 40%" /></div>
+      <div id="c1s03-sc088-cam">
+        <svg id="c1s03-sc088-mk" class="c3-svg"></svg>
+        <div class="c3-abs t-display" style="left:0;width:1500px;text-align:center;top:110px;font-size:190px"><span id="c1s03-sc088-w1" class="c3-w"><span class="c3-box" style="padding:18px 34px 6px">B2B</span></span></div>
+      </div>
+      <div id="c1s03-sc088-cat"><img src="assets/c1/documents/hp_catalog_17a_1943_p5_oscillators.jpg" alt="" /></div>
+      <div class="c3-abs t-serif-i c3-ink" style="left:110px;top:900px;font-size:76px"><span id="c1s03-sc088-w2" class="c3-w">testing </span><span id="c1s03-sc088-w3" class="c3-w">equipment</span></div>
+      <div class="folds"></div>
+      <div class="c3-credit ink t-label">HP catalogue 1943 · © HP, fair use (hpmemoryproject.org)</div>
+    </div>
+
+    <!-- C1S089 · 511.90–516.54 · 1940 radio factory testers (NIGHT, footage) -->
+    <div class="c3-scene c3-night" id="c1s03-sc089" data-scene="C1S089">
+      <div id="c1s03-sc089-weave"><video id="c1s03-sc089-vid" src="assets/c1/footage/radio_factory_1940_headphone_testing.mp4" muted playsinline data-start="109.07" data-duration="4.75" data-media-start="1.2"
+        data-color-grading='{"adjust":{"saturation":-1,"contrast":0.1},"effects":{"chromaticAberration":0.12,"chromaticAngle":0}}'></video></div>
+      <div id="c1s03-sc089-shade"></div>
+      <div class="c3-abs t-serif-i clean" style="left:110px;top:870px;font-size:86px"><span id="c1s03-sc089-w1" class="c3-w">sound </span><span id="c1s03-sc089-w2" class="c3-w">products</span></div>
+      <div class="c3-credit t-label">"Radio and Television" (1940) · Prelinger Archives, PD</div>
+    </div>
+
+    <!-- C1S090 · 516.54–522.97 · WWII front page (PAPER) -->
+    <div class="c3-scene" id="c1s03-sc090" data-scene="C1S090">
+      <div class="c3-pg"><img class="p1" src="assets/textures/paper_cream_01.jpg" alt="" /><img class="p2" src="assets/textures/paper_cream_02.jpg" alt="" /></div>
+      <div id="c1s03-sc090-cam">
+        <div id="c1s03-sc090-page"><img src="assets/c1/documents/washington_post_1941-12-08_japan_declares_war_frontpage.jpg" alt="" /><div id="c1s03-sc090-ht" style="background-image:url('assets/textures/halftone_01.png')"></div><div id="c1s03-sc090-veil"></div></div>
+      </div>
+      <div class="c3-tag" id="c1s03-sc090-tag">
+        <div class="t-serif c3-ink" style="font-size:62px"><span id="c1s03-sc090-w1" class="c3-w">the </span><span id="c1s03-sc090-w2" class="c3-w">war </span><span id="c1s03-sc090-w3" class="c3-w">interrupts </span><span id="c1s03-sc090-w4" class="c3-w">everything</span></div>
+        <div class="t-display c3-ink" style="font-size:110px;margin-top:8px"><span id="c1s03-sc090-w5" class="c3-w">World </span><span id="c1s03-sc090-w6" class="c3-w">War </span><span id="c1s03-sc090-w7" class="c3-w">II</span></div>
+      </div>
+      <div class="c3-credit ink t-label">The Washington Post, 8 Dec 1941 · © fair use</div>
+    </div>
+
+    <!-- C1S091 · 522.97–528.97 · Terman, radio (NIGHT, Vox layered) -->
+    <div class="c3-scene c3-night" id="c1s03-sc091" data-scene="C1S091">
+      <img class="c3-tube" id="c1s03-sc091-t1" src="assets/c1/objects/radio_vacuum_tubes_ferrymead.jpg" alt="" style="left:-140px;top:120px;transform:rotate(-5deg);filter:url(#c1s03-tint-dark)" />
+      <img class="c3-tube" id="c1s03-sc091-t2" src="assets/c1/objects/regentone_valve_radio.jpg" alt="" style="left:760px;top:-180px;width:900px;height:600px;transform:rotate(4deg);filter:url(#c1s03-tint-dark)" />
+      <div class="tx" style="background-image:url('assets/textures/newsprint_01_norm.jpg');mix-blend-mode:overlay;opacity:0.3"></div>
+      <img id="c1s03-sc091-terman" src="assets/c1/cutouts/terman_1940s_cutout.png" alt="" />
+      <div class="c3-abs t-display clean" style="left:110px;top:200px;font-size:170px"><span id="c1s03-sc091-w1" class="c3-w">Terman</span></div>
+      <div class="c3-abs t-serif-i clean" style="left:116px;top:420px;font-size:86px"><span id="c1s03-sc091-w2" class="c3-w">foremost </span><span id="c1s03-sc091-w3" class="c3-w">minds</span></div>
+      <div class="c3-abs t-label clean" style="left:120px;top:640px;font-size:52px"><span id="c1s03-sc091-w4" class="c3-w">radio</span></div>
+      <svg id="c1s03-sc091-mk" class="c3-svg"></svg>
+      <div class="c3-credit t-label">Terman: IEEE/ETHW (fair use) · valves: Commons CC BY-SA 4.0 · radio: CC BY-SA 2.0</div>
+    </div>
+
+    <!-- C1S092 · 528.97–532.17 · telegram + SECRET (PAPER, D08) -->
+    <div class="c3-scene" id="c1s03-sc092" data-scene="C1S092">
+      <div class="c3-pg"><img class="p1" src="assets/textures/paper_cream_02.jpg" alt="" /><img class="p2 st" src="assets/textures/paper_stained_01_hires.jpg" alt="" style="transform:scale(1.15) rotate(180deg)" /></div>
+      <div id="c1s03-sc092-cam">
+        <div id="c1s03-sc092-card">
+          <img class="tex" src="assets/textures/paper_cream_01.jpg" alt="" />
+          <div class="c3-abs t-display" style="left:0;right:0;top:46px;text-align:center;font-size:118px;color:var(--ink);letter-spacing:0.16em">TELEGRAM</div>
+          <div class="c3-abs" style="left:70px;right:70px;top:190px;height:9px;border-top:3px solid var(--ink);border-bottom:2px solid var(--ink)"></div>
+          <div class="c3-ty t-label" id="c1s03-sc092-l1" style="top:300px"><span id="c1s03-sc092-w1">TAPPED </span><span id="c1s03-sc092-w2">BY </span><span id="c1s03-sc092-w3">THE </span><span id="c1s03-sc092-w4">MILITARY</span></div>
+          <div class="c3-ty t-label" id="c1s03-sc092-l2" style="top:410px"><span id="c1s03-sc092-w5">TO </span><span id="c1s03-sc092-w6">RUN </span><span id="c1s03-sc092-w7">A </span><span id="c1s03-sc092-w8">SECRET </span><span id="c1s03-sc092-w9">LAB</span></div>
+          <div class="c3-abs" style="left:90px;right:90px;top:385px;height:2px;background:rgba(20,27,36,0.25)"></div>
+          <div class="c3-abs" style="left:90px;right:90px;top:495px;height:2px;background:rgba(20,27,36,0.25)"></div>
+          <div class="c3-abs" style="left:0;right:0;bottom:30px;height:2px;background:rgba(20,27,36,0.4)"></div>
+          <div id="c1s03-sc092-stamp" class="t-display">SECRET</div>
+        </div>
+      </div>
+      <div class="folds"></div>
+    </div>
+
+    <!-- C1S093 · 532.17–534.81 · 800 people in Harvard (GRID, D03) -->
+    <div class="c3-scene" id="c1s03-sc093" data-scene="C1S093">
+      <div class="c3-pg"><img class="p1" src="assets/textures/paper_cream_01.jpg" alt="" /><img class="p2 gr" src="assets/textures/paper_graph_01_hires.jpg" alt="" style="transform:scale(2);object-position:70% 30%" /></div>
+      <div id="c1s03-sc093-grid"></div>
+      <div class="c3-abs t-display" style="left:130px;top:210px"><span id="c1s03-sc093-n" style="opacity:0">0</span></div>
+      <div class="c3-abs t-label c3-ink" style="left:140px;top:470px;font-size:44px"><span id="c1s03-sc093-w1" class="c3-w">people</span></div>
+      <div class="c3-abs t-label" style="left:136px;top:560px;font-size:56px"><span id="c1s03-sc093-w2" class="c3-w"><span class="c3-box" style="background:var(--navy);color:var(--bone)">Harvard</span></span></div>
+      <div class="c3-abs t-label c3-ink" id="c1s03-sc093-key" style="left:1290px;top:880px;font-size:24px;opacity:0">1 icon = 10 people</div>
+      <div class="folds"></div>
+    </div>
+
+    <!-- C1S094 · 534.81–541.21 · radar → PPI scope (NIGHT, screen) -->
+    <div class="c3-scene c3-night" id="c1s03-sc094" data-scene="C1S094">
+      <div id="c1s03-sc094-weave"><video id="c1s03-sc094-vid" src="assets/c1/footage/radar_1945_scr584_dish.mp4" muted playsinline data-start="131.98" data-duration="2.75" data-media-start="0.0"
+        data-color-grading='{"adjust":{"saturation":-1,"contrast":0.1},"effects":{"chromaticAberration":0.12,"chromaticAngle":0}}'></video></div>
+      <div id="c1s03-sc094-scope"><div id="c1s03-sc094-scam">
+        <div id="c1s03-sc094-ppi"><video src="assets/c1/footage/radar_1945_ppi_sweep_b.mp4" muted playsinline data-start="134.57" data-duration="5.05" data-media-start="0.2"></video></div>
+        <canvas id="c1s03-sc095-noise" width="192" height="192"></canvas>
+        <img id="c1s03-sc094-frame" src="assets/c1/screens/radar_ppi_scope_1945_frame.png" alt="" />
+      </div></div>
+      <div class="c3-full" id="c1s03-sc094-shade" style="background:linear-gradient(90deg, rgba(15,19,24,0.9) 0%, rgba(15,19,24,0.55) 30%, rgba(15,19,24,0) 45%)"></div>
+      <div class="c3-abs t-label clean" style="left:110px;top:300px;font-size:44px"><span id="c1s03-sc094-w1" class="c3-w">United </span><span id="c1s03-sc094-w2" class="c3-w">States</span></div>
+      <div class="c3-abs t-display clean" style="left:104px;top:370px;font-size:180px"><span id="c1s03-sc094-w3" class="c3-w">fool</span></div>
+      <div class="c3-abs t-serif-i clean" style="left:112px;top:580px;font-size:80px"><span id="c1s03-sc094-w4" class="c3-w">enemy </span><span id="c1s03-sc094-w5" class="c3-w">radars</span></div>
+      <div class="c3-credit t-label">"Radar Secrets Revealed", Universal Newsreel 1945 · PD</div>
+    </div>
+
+    <!-- C1S095 · 541.21–544.57 · jam it, hide from it (NIGHT) -->
+    <div class="c3-scene" id="c1s03-sc095" data-scene="C1S095" style="background:transparent">
+      <div id="c1s03-sc095-chaff"><img src="assets/c1/photos/window_chaff_cloud_lancasters_1943_iwm_c5634.jpg" alt="" /><div class="c3-full" style="background:linear-gradient(0deg, rgba(15,19,24,0.85) 0%, rgba(15,19,24,0) 40%)"></div>
+        <div class="c3-credit t-label">Chaff ("Window") from Lancasters, 1943 · IWM C 5634, PD</div></div>
+      <div class="c3-abs t-display clean" id="c1s03-sc095-jam" style="left:104px;top:370px;font-size:180px"><span id="c1s03-sc095-w1" class="c3-w">jam </span><span id="c1s03-sc095-w2" class="c3-w">it</span></div>
+      <div class="c3-abs t-serif-i clean" style="left:110px;top:860px;font-size:96px"><span id="c1s03-sc095-w3" class="c3-w">hide </span><span id="c1s03-sc095-w4" class="c3-w">from </span><span id="c1s03-sc095-w5" class="c3-w">it</span></div>
+    </div>
+
+    <!-- C1S096 · 544.57–548.09 · all throughout WWII timeline (PAPER) -->
+    <div class="c3-scene" id="c1s03-sc096" data-scene="C1S096">
+      <div class="c3-pg"><img class="p1" src="assets/textures/paper_cream_02.jpg" alt="" /><img class="p2 ln" src="assets/textures/paper_lined_01_hires.jpg" alt="" /></div>
+      <div id="c1s03-sc096-cam">
+        <svg id="c1s03-sc096-mk" class="c3-svg"></svg>
+        <div class="c3-abs t-serif-i c3-ink" style="left:560px;width:800px;text-align:center;top:330px;font-size:84px"><span id="c1s03-sc096-w1" class="c3-w">all </span><span id="c1s03-sc096-w2" class="c3-w">throughout</span></div>
+        <div class="c3-abs t-display c3-ink" style="left:560px;width:800px;text-align:center;top:660px;font-size:110px"><span id="c1s03-sc096-w3" class="c3-w">World </span><span id="c1s03-sc096-w4" class="c3-w">War </span><span id="c1s03-sc096-w5" class="c3-w">II</span></div>
+      </div>
+      <div class="folds"></div>
+    </div>
+
+    <!-- C1S097 · 548.09–552.17 · back to Stanford as Dean (NIGHT) -->
+    <div class="c3-scene c3-night" id="c1s03-sc097" data-scene="C1S097">
+      <div id="c1s03-sc097-cam"><div class="plate"><img class="img" src="assets/c1/places/stanford_memorial_church_detroit_photochrom.jpg" alt="" /><img class="fringe" src="assets/c1/places/stanford_memorial_church_detroit_photochrom.jpg" alt="" /></div></div>
+      <div id="c1s03-sc097-shade"></div>
+      <img id="c1s03-sc097-terman" src="assets/c1/cutouts/terman_1940s_cutout.png" alt="" />
+      <div class="c3-abs t-label clean" style="left:820px;width:980px;text-align:center;top:660px;font-size:52px"><span id="c1s03-sc097-w1" class="c3-w">Stanford</span></div>
+      <div id="c1s03-sc097-brass"><div class="c3-screw" style="left:24px"></div><div class="c3-screw" style="right:24px"></div>
+        <div class="t t-serif" style="font-weight:600"><span id="c1s03-sc097-w2" class="c3-w">Dean </span><span id="c1s03-sc097-w3" class="c3-w">of </span><span id="c1s03-sc097-w4" class="c3-w">Engineering</span></div></div>
+      <div class="c3-credit t-label">Stanford Memorial Church · Detroit Publishing photochrom (PD) · Terman: IEEE/ETHW</div>
+    </div>
+
+    <!-- C1S098 · 552.17–557.61 · connections in Washington (NIGHT, markups) -->
+    <div class="c3-scene c3-night" id="c1s03-sc098" data-scene="C1S098">
+      <div id="c1s03-sc098-cam"><div class="plate"><img class="img" src="assets/c1/places/us_capitol_c1930s_nara_525116.jpg" alt="" /><img class="fringe" src="assets/c1/places/us_capitol_c1930s_nara_525116.jpg" alt="" /></div>
+        <svg id="c1s03-sc098-mk" class="c3-svg"></svg></div>
+      <div id="c1s03-sc098-shade"></div>
+      <div class="c3-circ" id="c1s03-sc098-t" style="left:120px;top:690px;width:240px;height:240px;border-color:#cfc6b5"><img src="assets/c1/cutouts/terman_1940s_cutout.png" alt="" style="width:118%;top:6%" /></div>
+      <div class="c3-abs t-serif-i clean" style="left:400px;top:820px;font-size:78px"><span id="c1s03-sc098-w1" class="c3-w">connections</span></div>
+      <div class="c3-abs t-display clean" style="left:110px;top:80px;font-size:130px"><span id="c1s03-sc098-w2" class="c3-w">Washington</span></div>
+      <div class="c3-credit t-label">US Capitol · National Archives (NARA 525116), PD</div>
+    </div>
+
+    <!-- C1S099 · 557.61–564.49 · pay very handsomely (PAPER) -->
+    <div class="c3-scene" id="c1s03-sc099" data-scene="C1S099" style="box-shadow:-20px 0 40px rgba(0,0,0,0.5)">
+      <div class="c3-pg"><img class="p1" src="assets/textures/paper_cream_01.jpg" alt="" /><img class="p2 st" src="assets/textures/paper_stained_01_hires.jpg" alt="" style="transform:scale(1.25)" /></div>
+      <div id="c1s03-sc099-bills" class="c3-full"></div>
+      <div class="c3-abs t-serif c3-ink" style="left:110px;top:120px;font-size:110px;line-height:1"><span id="c1s03-sc099-w1" class="c3-w">pay </span><span id="c1s03-sc099-w2" class="c3-w">very </span><br /><span id="c1s03-sc099-w3" class="c3-w" style="font-style:italic">handsomely</span></div>
+      <div class="c3-hl" id="c1s03-sc099-hl" style="left:106px;top:410px;width:300px;height:36px"></div>
+      <div class="c3-abs t-serif-i c3-ink" style="left:114px;top:380px;font-size:66px"><span id="c1s03-sc099-w4" class="c3-w">literally</span></div>
+      <div class="folds"></div>
+      <div class="c3-credit ink t-label">US $1 silver certificate, series 1935 · Commons, CC BY-SA 4.0</div>
+    </div>
+
+    <!-- C1S100 · 564.49–570.41 · the military / Pentagon? (NIGHT) -->
+    <div class="c3-scene c3-night" id="c1s03-sc100" data-scene="C1S100">
+      <div id="c1s03-sc100-cam">
+        <img id="c1s03-sc100-bg" src="assets/c1/places/pentagon_aerial_postcard_1940s.jpg" alt="" />
+        <div id="c1s03-sc100-card"><img src="assets/c1/places/pentagon_aerial_postcard_1940s.jpg" alt="" /></div>
+        <svg id="c1s03-sc100-mk" class="c3-svg"></svg>
+      </div>
+      <div class="c3-full" style="background:linear-gradient(90deg, rgba(15,19,24,0.85) 0%, rgba(15,19,24,0.4) 26%, rgba(15,19,24,0) 40%)"></div>
+      <div class="c3-abs t-serif-i clean" style="left:96px;top:250px;font-size:74px"><span id="c1s03-sc100-w1" class="c3-w">convinces</span></div>
+      <div class="c3-abs t-display clean" style="left:92px;top:340px;font-size:120px"><span id="c1s03-sc100-w2" class="c3-w">military</span></div>
+      <div class="c3-abs t-label clean" style="left:96px;top:780px;font-size:50px"><span id="c1s03-sc100-w3" class="c3-w">Pentagon</span></div>
+      <div class="c3-credit t-label">Tichnor Bros. postcard · Boston Public Library / Commons, CC BY 2.0</div>
+    </div>
+
+    <!-- C1S101 · 570.41–578.25 · research labs at Stanford, out west (PAPER, map kit) -->
+    <div class="c3-scene" id="c1s03-sc101" data-scene="C1S101">
+      <div class="c3-pg"><img class="p1" src="assets/textures/paper_cream_02.jpg" alt="" /><img class="p2" src="assets/textures/paper_cream_01.jpg" alt="" /></div>
+      <div id="c1s03-sc101-cam">
+        <img id="c1s03-sc101-map" src="assets/maps/kit/us_atlas.jpg" alt="" />
+        <svg id="c1s03-sc101-svg" viewBox="0 0 6392 3524"></svg>
+        <div class="c3-abs t-display" style="left:470px;top:1700px;font-size:120px;color:var(--vermilion);text-shadow:0 2px 0 rgba(235,228,214,0.8)"><span id="c1s03-sc101-w3" class="c3-w">Stanford</span></div>
+      </div>
+      <div class="c3-tag" style="left:96px;top:70px"><div class="t-label c3-ink" style="font-size:40px"><span id="c1s03-sc101-w1" class="c3-w">research </span><span id="c1s03-sc101-w2" class="c3-w">labs</span></div></div>
+      <div class="c3-abs t-serif-i c3-ink" style="left:1260px;top:860px;font-size:110px;text-shadow:0 0 18px rgba(235,228,214,0.9)"><span id="c1s03-sc101-w4" class="c3-w">out </span><span id="c1s03-sc101-w5" class="c3-w">west</span></div>
+      <div class="folds"></div>
+      <div class="c3-credit ink t-label">Relief: AWS Terrain Tiles (PD) · Natural Earth</div>
+    </div>
+
+    <!-- C1S102 · 578.25–584.58 · money → Terman → ahead ×3 (GRID) -->
+    <div class="c3-scene" id="c1s03-sc102" data-scene="C1S102" style="box-shadow:20px 0 40px rgba(0,0,0,0.5);z-index:2">
+      <div class="c3-pg"><img class="p1" src="assets/textures/paper_cream_02.jpg" alt="" /><img class="p2 gr" src="assets/textures/paper_graph_01_hires.jpg" alt="" style="transform:scale(1.6);object-position:60% 60%" /></div>
+      <div id="c1s03-sc102-cam">
+        <div class="c3-abs t-display c3-ink" id="c1s03-sc102-dol" style="left:190px;top:400px;width:240px;height:240px;border-radius:50%;border:8px solid var(--ink);text-align:center;font-size:170px;line-height:250px;opacity:0">$</div>
+        <div class="c3-circ" id="c1s03-sc102-t" style="left:690px;top:390px;width:260px;height:260px;border-color:var(--ink)"><img src="assets/c1/cutouts/terman_1940s_cutout.png" alt="" style="width:118%;top:6%" /></div>
+        <svg id="c1s03-sc102-mk" class="c3-svg"></svg>
+        <div class="c3-abs t-label c3-ink" style="left:150px;width:320px;text-align:center;top:680px;font-size:40px"><span id="c1s03-sc102-w1" class="c3-w">the </span><span id="c1s03-sc102-w2" class="c3-w">money</span></div>
+        <div class="c3-abs t-serif-i c3-ink" style="left:1080px;top:150px;font-size:84px"><span id="c1s03-sc102-w3" class="c3-w">push </span><span id="c1s03-sc102-w4" class="c3-w">everything</span></div>
+      </div>
+      <div class="folds"></div>
+    </div>
+
+    <!-- C1S103 · 584.58–591.62 · federal money flowing into Stanford labs (NIGHT, D14) -->
+    <div class="c3-scene c3-night" id="c1s03-sc103" data-scene="C1S103">
+      <div id="c1s03-sc103-cam">
+        <img id="c1s03-sc103-map" src="assets/maps/kit/aerial_stanford_z17.jpg" alt="" />
+        <svg id="c1s03-sc103-svg" viewBox="0 0 4352 3840"></svg>
+      </div>
+      <div id="c1s03-sc103-shade"></div>
+      <div class="c3-abs t-label clean" style="left:110px;top:110px;font-size:40px"><span id="c1s03-sc103-w1" class="c3-w">one </span><span id="c1s03-sc103-w2" class="c3-w">big </span><span id="c1s03-sc103-w3" class="c3-w">problem</span></div>
+      <div class="c3-abs t-display clean" style="left:104px;top:190px;font-size:120px;line-height:0.95"><span id="c1s03-sc103-w4" class="c3-w">federal </span><br /><span id="c1s03-sc103-w5" class="c3-w">money</span></div>
+      <div class="c3-abs t-serif-i clean" style="left:110px;top:440px;font-size:80px"><span id="c1s03-sc103-w6" class="c3-w">flowing</span></div>
+      <div class="c3-abs t-label clean" style="left:110px;top:900px;font-size:48px"><span id="c1s03-sc103-w7" class="c3-w">research </span><span id="c1s03-sc103-w8" class="c3-w">labs </span><span id="c1s03-sc103-w9" class="c3-w">at </span><span id="c1s03-sc103-w10" class="c3-w" style="color:#ff7a5c">Stanford</span></div>
+      <div class="c3-credit t-label">Imagery: Esri, Maxar, Earthstar Geographics</div>
+    </div>
+
+    <!-- C1S104 · 591.62–596.02 · strongest government (NIGHT) -->
+    <div class="c3-scene c3-night" id="c1s03-sc104" data-scene="C1S104">
+      <div id="c1s03-sc104-cam"><div class="plate"><img class="img" src="assets/c1/places/us_capitol_army_day_parade_1940_loc.jpg" alt="" /><img class="fringe" src="assets/c1/places/us_capitol_army_day_parade_1940_loc.jpg" alt="" /></div></div>
+      <canvas id="c1s03-sc104-streaks" class="streaks"></canvas>
+      <div id="c1s03-sc104-shade"></div>
+      <div class="c3-abs t-display clean" style="left:104px;top:260px;font-size:130px;line-height:1"><span id="c1s03-sc104-w1" class="c3-w">strongest</span><br /><span id="c1s03-sc104-w2" class="c3-w">government</span></div>
+      <div class="c3-abs t-serif-i clean" style="left:110px;top:560px;font-size:84px"><span id="c1s03-sc104-w3" class="c3-w">backing </span><span id="c1s03-sc104-w4" class="c3-w">you</span></div>
+      <div class="c3-credit t-label">Army Day parade at the Capitol, April 1940 · Harris &amp; Ewing / Library of Congress, PD</div>
+    </div>
+
+    <!-- C1S105 · 596.02–602.86 · Stanford cannot be best at everything (PAPER, D04/R6) -->
+    <div class="c3-scene" id="c1s03-sc105" data-scene="C1S105" style="box-shadow:-20px 0 40px rgba(0,0,0,0.5)">
+      <div class="c3-pg"><img class="p1" src="assets/textures/paper_cream_01.jpg" alt="" /><img class="p2 st" src="assets/textures/paper_stained_01_hires.jpg" alt="" style="transform:scale(1.4) rotate(180deg)" /></div>
+      <div id="c1s03-sc105-cam">
+        <div class="c3-abs t-label c3-ink" style="left:300px;top:110px;font-size:32px"><span id="c1s03-sc105-w1" class="c3-w">Terman</span></div>
+        <div class="c3-abs t-serif c3-ink" style="left:296px;top:160px;font-size:84px"><span id="c1s03-sc105-w2" class="c3-w">Stanford </span><span id="c1s03-sc105-w3" class="c3-w">cannot </span><span id="c1s03-sc105-w4" class="c3-w">be </span><span id="c1s03-sc105-w5" class="c3-w">best </span><span id="c1s03-sc105-w6" class="c3-w">at </span><span id="c1s03-sc105-w7" class="c3-w" style="font-style:italic;color:var(--vermilion);position:relative">everything<i id="c1s03-sc105-strike" style="position:absolute;left:-3%;width:106%;top:52%;height:8px;background:var(--ink);transform-origin:0 50%;transform:scaleX(0) rotate(-2deg);border-radius:4px;filter:url(#c1s03-rough105)"></i></span></div>
+        <div id="c1s03-sc105-bars"></div>
+      </div>
+      <div class="folds"></div>
+    </div>
+
+    <div id="c1s03-flash"></div>
+    <div id="c1s03-grain" class="tx tx-grain" style="background-image:url('assets/textures/grain_01_norm.jpg')"></div>
+    <div id="c1s03-dust" class="tx tx-dust" style="background-image:url('assets/textures/dust_02.jpg')"></div>
+    <div id="c1s03-vig" class="vignette"></div>
+    <audio id="c1s03-vo" class="temp-vo" src="vo_c1.mp3" data-start="0" data-duration="200.03" data-media-start="402.83" data-volume="1"></audio>
+  </div>
+  <script>
+  (function () {
+    const SEG = "c1s03", SEG_START = 402.83, SEG_END = 602.86, DURATION = 200.03;
+    const T = (s) => +(s - 402.83).toFixed(3);   // TEXT cues, LOCAL c1 seconds (audited)
+    const S = T;                                    // STRUCTURAL cues (cuts, camera, objects) — not audited
+    const L = 0.06;                                 // text lands 60 ms before its word
+    const tl = gsap.timeline({ paused: true });
+    const $ = (id) => document.getElementById(SEG + "-" + id);
+    const NS = "http://www.w3.org/2000/svg";
+    const C = (e, d) => FX.choppy(e, d, 12);
+    const defs = $("defs");
+    const INK = "#141b24", NAVY = "#1d5c9e", SKY = "#9fc3e3", RED = "#e03f2c", BONE = "#f2ede3", YEL = "#f2d33b";
+
+    function gated(a, b, fn) { const o = FX.onFrame; FX.onFrame = (f) => o(FX.gate(S(a) - 0.1, S(b) + 0.1, f)); try { return fn(); } finally { FX.onFrame = o; } }
+    // ---------- shared filters ----------
+    FX.tintDefs(defs, "c1s03-tint-dark", "#0b0d10", "#6f6a62");
+    FX.tintDefs(defs, "c1s03-tint-bone", "#1c1916", "#efe6d4");
+    FX.tintDefs(defs, "c1s03-tint-ink", "#2a2622", "#ece3d0");
+    const KEYS = ["071","072","073","074","075","076","077","078","079","080","081","082","083","085","086","087","088","089","090","091","092","093","094","095","096","097","098","099","100","101","102","103","104","105"];
+    const blurs = {};
+    KEYS.forEach((k) => { blurs[k] = FX.whipDefs(defs, "c1s03-wb" + k); });
+    let morphT = null, morphS = null;
+    gated(476.0, 488.7, () => { morphT = FX.roughDefs(defs, "c1s03-rough083", { freq: 0.035, scale: 6, choke: 0 }); });
+    gated(531.3, 532.2, () => { morphS = FX.roughDefs(defs, "c1s03-rough092", { freq: 0.04, scale: 7, choke: 0 }); });
+
+    // ---------- helpers ----------
+    function scene(k, a, b) {
+      const e = $("sc" + k);
+      if (S(a) <= 0) gsap.set(e, { autoAlpha: 1 });
+      else tl.fromTo(e, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.001, immediateRender: false }, S(a));
+      if (b < SEG_END) tl.set(e, { autoAlpha: 0 }, S(b));
+    }
+    function rise(id, t, o) {
+      o = o || {};
+      const e = typeof id === "string" ? $(id) : id;
+      const d = o.dur || 0.9;
+      tl.fromTo(e, { opacity: 0, y: o.y == null ? 18 : o.y }, { opacity: 1, y: 0, duration: d, ease: C(FX.ease.out, d), immediateRender: true }, t);
+    }
+    function pop(id, t, o) {
+      o = o || {};
+      const e = typeof id === "string" ? $(id) : id;
+      const d = o.dur || 1.0;
+      tl.fromTo(e, { opacity: 0, scale: o.from || 0.6 }, { opacity: 1, scale: 1, duration: d, ease: C(FX.ease.out, d), immediateRender: true }, t);
+    }
+    function out(id, t, d) { const e = typeof id === "string" ? $(id) : id; tl.to(e, { opacity: 0, duration: d || 0.3, ease: C(FX.ease.in, d || 0.3) }, t); }
+    function ground(kind, t) {
+      const v = kind === "paper" ? [0.32, 0.14, 0.24] : [1, 0.42, 0.36];
+      tl.set(["#c1s03-vig", "#c1s03-dust", "#c1s03-grain"], { opacity: (i) => v[i] }, t);
+    }
+    function whip(ka, kb, t, o) {
+      o = Object.assign({ dir: 1, vertical: false }, o);
+      const a = $("sc" + ka), b = $("sc" + kb);
+      tl.set(a, { filter: "url(#c1s03-wb" + ka + ")" }, t - 0.17);
+      tl.set(b, { filter: "url(#c1s03-wb" + kb + ")" }, t - 0.001);
+      FX.whip(tl, a, b, t, Object.assign({ blurA: blurs[ka], blurB: blurs[kb] }, o));
+      tl.set(a, { filter: "none" }, t + 0.06);
+      tl.set(b, { filter: "none" }, t + 0.2);
+    }
+    function flash(t) {
+      tl.fromTo("#c1s03-flash", { opacity: 0 }, { opacity: 0.85, duration: 0.08, ease: "power2.in", immediateRender: false }, t - 0.08);
+      tl.to("#c1s03-flash", { opacity: 0, duration: 0.24, ease: "power2.out" }, t);
+    }
+    function el(tag, attrs, parent) { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; }
+    function ink(parent, d, t, dur, o) {
+      o = o || {};
+      const p = el("path", { d, fill: "none", stroke: o.color || INK, "stroke-width": o.width || 6, "stroke-linecap": "round", "stroke-linejoin": "round" }, parent);
+      if (o.filter) p.setAttribute("filter", o.filter);
+      if (o.opacity) p.setAttribute("opacity", o.opacity);
+      if (o.dash) p.setAttribute("data-dash", o.dash);
+      const len = p.getTotalLength() || 1;
+      p.setAttribute("stroke-dasharray", len + " " + len); p.setAttribute("stroke-dashoffset", len);
+      tl.fromTo(p, { attr: { "stroke-dashoffset": len } }, { attr: { "stroke-dashoffset": 0 }, duration: dur, ease: o.ease || C(FX.ease.inOut, dur), immediateRender: true }, t);
+      return p;
+    }
+    function mk(id, a, b, vb) {   // markup svg with a pen filter (boil 4), gated to the scene
+      const svg = $(id); let f;
+      gated(a, b, () => { f = FX.markupDefs(svg, "c1s03-f-" + id, { boil: 4 }); });
+      if (vb) svg.setAttribute("viewBox", vb);
+      return f;
+    }
+    function curvePts(x1, y1, cx, cy, x2, y2, n) { const p = []; for (let i = 0; i <= n; i++) { const t = i / n, u = 1 - t; p.push([u * u * x1 + 2 * u * t * cx + t * t * x2, u * u * y1 + 2 * u * t * cy + t * t * y2]); } return p; }
+    const ICON_FACTORY = '<path d="M6 58 V30 L22 40 V30 L38 40 V30 L54 40 V14 H62 V58Z"/><path d="M14 50h6M28 50h6M42 50h6"/>';
+    const PERSON = '<svg viewBox="0 0 46 52"><circle cx="23" cy="11" r="9" fill="#4a5260"/><path d="M5 52 V36 Q5 23 23 23 Q41 23 41 36 V52Z" fill="#4a5260"/></svg>';
+    // $1 1935 silver certificate scan (3840x3349): obverse ≈ y 60–1650, reverse ≈ y 1720–3310
+    function noteBg(e, w, back) {
+      const s = w / 3740;
+      e.style.backgroundImage = "url('assets/c1/documents/us_1_dollar_silver_certificate_1935.jpg')";
+      e.style.backgroundSize = (3840 * s).toFixed(1) + "px auto";
+      e.style.backgroundPosition = (-50 * s).toFixed(1) + "px " + (-(back ? 1720 : 60) * s).toFixed(1) + "px";
+    }
+
+    // ---------- global textures ----------
+    FX.grain($("grain"), 301);
+    FX.dust($("dust"), 302, 2);
+    gsap.set(["#c1s03-vig", "#c1s03-dust", "#c1s03-grain"], { opacity: (i) => [0.32, 0.14, 0.24][i] });
+
+    /* ============ C1S071 · 402.83–408.27 · pictorial Peninsula map, push to Palo Alto ============ */
+    scene("071", 402.83, 408.27);
+    (function () {
+      // camera in map px (1920x2556): centre C at scale s → x = 960 − C.x·s, y = 540 − C.y·s
+      const cam = (cx, cy, s) => ({ x: 960 - cx * s, y: 540 - cy * s, scale: s });
+      // enters already moving (cork-board push hand-off): sine.out keeps velocity at frame 0
+      tl.fromTo("#c1s03-sc071-cam", cam(1020, 1250, 0.62), Object.assign(cam(1150, 1540, 1.25), { duration: 5.15, ease: "sine.out", immediateRender: true }), 0);
+      const svg = $("sc071-svg"), f = mk("sc071-svg", 402.8, 408.3, "0 0 1920 2556");
+      // pin on Palo Alto
+      const pin = el("g", { opacity: 0 }, svg);
+      el("ellipse", { cx: 1152, cy: 1548, rx: 16, ry: 6, fill: "rgba(20,27,36,0.35)" }, pin);
+      el("path", { d: "M1152 1548 L1152 1496", stroke: INK, "stroke-width": 6 }, pin);
+      el("circle", { cx: 1152, cy: 1484, r: 20, fill: INK, stroke: BONE, "stroke-width": 5 }, pin);
+      tl.fromTo(pin, { opacity: 0, y: -80 }, { opacity: 1, y: 0, duration: 0.5, ease: C(FX.ease.out, 0.5), immediateRender: true }, S(406.85));
+      // pen circle around Palo Alto (ink, multiply on the red print)
+      const circ = FX.markup.circle(tl, svg, S(406.95), { cx: 1150, cy: 1520, rx: 150, ry: 80, rot: -8, dur: 0.6, seed: 71, color: INK, width: 9, filter: f });
+      circ.style.mixBlendMode = "multiply";
+      tl.fromTo("#c1s03-sc071-tag", { opacity: 0, x: -30 }, { opacity: 1, x: 0, duration: 0.8, ease: C(FX.ease.out, 0.8), immediateRender: true }, T(405.39) - L);
+      rise("sc071-w1", T(405.39) - L);
+      rise("sc071-w2", T(406.91) - L, { dur: 0.5 });
+      rise("sc071-w3", T(407.47) - L, { dur: 0.3 });
+      // PT: push-through into Palo Alto (ease-in) → cut
+      tl.to("#c1s03-sc071-cam", Object.assign(cam(1150, 1530, 3.0), { duration: 0.3, ease: FX.ease.in }), S(407.97));
+      tl.to("#c1s03-sc071-tag", { opacity: 0, duration: 0.2 }, S(408.05));
+    })();
+
+    /* ============ C1S072 · 408.27–414.51 · Hewlett's thesis title page (GRID) ============ */
+    scene("072", 408.27, 414.51);
+    (function () {
+      // arrives from the push-through: big → settle, then focus hunt
+      tl.fromTo("#c1s03-sc072-cam", { scale: 1.6 }, { scale: 1.0, duration: 0.7, ease: FX.ease.cam, immediateRender: true }, S(408.27));
+      FX.focusHunt(tl, $("sc072-page"), S(408.95), { dur: 0.8 });
+      tl.to("#c1s03-sc072-cam", { scale: 1.05, duration: 3.0, ease: "none" }, S(409.0));
+      rise("sc072-w1", T(408.99) - L);
+      rise("sc072-w2", T(411.23) - L);
+      // text call-out (§10.6.4): body dims, the title holds, frame punches in
+      tl.to("#c1s03-sc072-body", { opacity: 0.2, duration: 1.0, ease: FX.ease.out }, S(412.1));
+      tl.to("#c1s03-sc072-cam", { scale: 1.12, duration: 1.1, ease: FX.ease.cam }, S(412.1));
+      rise("sc072-w3", T(413.39) - L, { dur: 0.6 });
+      const svg = $("sc072-mk"), f = mk("sc072-mk", 408.2, 414.6);
+      FX.markup.pen(tl, svg, S(413.45), { points: [[1150, 740], [1300, 734], [1440, 742]], width: 7, color: RED, seed: 72, dur: 0.45, filter: f });
+      // cut on action: the push keeps moving
+      tl.to("#c1s03-sc072-cam", { scale: 1.16, duration: 0.9, ease: "none" }, S(413.6));
+    })();
+
+    /* ============ C1S073 · 414.51–418.75 · HP 200A (hero) ============ */
+    scene("073", 414.51, 418.82);
+    ground("night", S(414.51));
+    (function () {
+      tl.fromTo("#c1s03-sc073-cam", { scale: 1.0, x: 0 }, { scale: 1.09, x: -30, duration: 4.3, ease: "none", immediateRender: true }, S(414.51));
+      rise("sc073-w1", T(416.27) - L, { dur: 0.8 });
+      rise("sc073-w2", T(416.75) - L, { dur: 0.8 });
+      const svg = $("sc073-mk"), f = mk("sc073-mk", 414.4, 418.9);
+      // pen call-out: arrow from the caption to the frequency dial
+      FX.markup.pen(tl, svg, S(416.95), { points: [[1230, 630], [1180, 520], [1130, 440]], width: 6, color: BONE, blend: "normal", seed: 73, dur: 0.55, filter: f });
+      FX.markup.pen(tl, svg, S(417.45), { points: [[1100, 470], [1130, 440], [1166, 462]], width: 6, color: BONE, blend: "normal", seed: 74, dur: 0.2, filter: f });
+      rise("sc073-w3", T(418.03) - L, { dur: 0.15, y: 8 });
+      rise("sc073-w4", T(418.19) - L, { dur: 0.15, y: 8 });
+    })();
+
+    /* ============ C1S074 · 418.75–428.59 · fellowship + coins (PAPER) ============ */
+    whip("073", "074", S(418.75), { dir: -1, vertical: true });
+    scene("074", 418.75, 428.59);
+    ground("paper", S(418.75));
+    (function () {
+      tl.fromTo("#c1s03-sc074-cam", { scale: 1.0 }, { scale: 1.045, duration: 9.84, ease: "none", immediateRender: true }, S(418.75));
+      pop("sc074-terman", T(419.87) - L - 0.1, { from: 0.85 });
+      rise("sc074-w1", T(419.87) - L);
+      // letter slides in (paper slide)
+      const bars = $("sc074-bars");
+      [[320, 500], [362, 470], [404, 510], [446, 380], [520, 500], [562, 450], [604, 300], [700, 220]].forEach(([y, w]) => { const d = document.createElement("div"); d.className = "c3-bar"; d.style.left = "80px"; d.style.top = y + "px"; d.style.width = w + "px"; bars.appendChild(d); });
+      tl.fromTo("#c1s03-sc074-letter", { x: -900, rotation: -8 }, { x: 0, rotation: -2.5, duration: 1.0, ease: C(FX.ease.out, 1.0), immediateRender: true }, S(421.45));
+      rise("sc074-w2", T(421.95) - L, { dur: 0.7 });
+      // four coin stacks, one per "some money"
+      const box = $("sc074-coins");
+      const stacks = [[1010, 4], [1200, 6], [1390, 8], [1580, 10]], starts = [S(423.63), S(424.43), S(425.31), S(426.19)];
+      stacks.forEach(([x, n], k) => {
+        for (let i = 0; i < n; i++) {
+          const c = document.createElement("div"); c.className = "c3-coin";
+          c.style.backgroundImage = "url('assets/c1/objects/walking_liberty_half_1945d_obverse.png')";
+          c.style.left = x + "px"; c.style.top = (860 - i * 16) + "px"; box.appendChild(c);
+          tl.fromTo(c, { opacity: 0, y: -60 }, { opacity: 1, y: 0, duration: 0.25, ease: C(FX.ease.out, 0.25), immediateRender: true }, starts[k] - 0.05 + i * (0.42 / n));
+        }
+      });
+      rise("sc074-w3", T(423.63) - L);
+      rise("sc074-w4", T(423.87) - L);
+      rise("sc074-w5", T(427.79) - L, { dur: 0.3 });
+      rise("sc074-w6", T(428.11) - L, { dur: 0.2 });
+      rise("sc074-w7", T(428.27) - L, { dur: 0.2 });
+    })();
+
+    /* ============ C1S075 · 428.59–436.03 · his own money to his students (NIGHT) ============ */
+    scene("075", 428.59, 436.10);
+    ground("night", S(428.59));
+    (function () {
+      ["n1", "n2", "n3"].forEach((k, i) => noteBg($("sc075-" + k), 640, i === 1));
+      noteBg($("sc075-cash"), 340, false);
+      tl.fromTo("#c1s03-sc075-n1", { x: 0 }, { x: 60, duration: 7.5, ease: "none", immediateRender: true }, S(428.59));
+      tl.fromTo("#c1s03-sc075-n2", { x: 0 }, { x: -50, duration: 7.5, ease: "none", immediateRender: true }, S(428.59));
+      tl.fromTo("#c1s03-sc075-n3", { y: 0 }, { y: 30, duration: 7.5, ease: "none", immediateRender: true }, S(428.59));
+      tl.fromTo("#c1s03-sc075-terman", { x: -60, opacity: 0 }, { x: 0, opacity: 1, duration: 1.2, ease: C(FX.ease.out, 1.2), immediateRender: true }, S(428.62));
+      tl.fromTo("#c1s03-sc075-s1", { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: 1.0, ease: C(FX.ease.out, 1.0), immediateRender: true }, S(429.2));
+      tl.fromTo("#c1s03-sc075-s2", { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: 1.0, ease: C(FX.ease.out, 1.0), immediateRender: true }, S(429.45));
+      rise("sc075-w1", T(430.11) - L);
+      rise("sc075-w2", T(430.35) - L);
+      rise("sc075-w3", T(430.67) - L);
+      // the note passes from Terman to the students (12 fps arc)
+      const p = { t: 0 }, cash = $("sc075-cash");
+      const pos = () => { const u = p.t, x = 520 + (1360 - 520) * u, y = 560 - Math.sin(u * Math.PI) * 220 + (520 - 560) * u; gsap.set(cash, { x, y, rotation: -12 + 24 * u }); };
+      gsap.set(cash, { x: 520, y: 560, opacity: 0 });
+      tl.fromTo(cash, { opacity: 0 }, { opacity: 1, duration: 0.3, immediateRender: false }, S(430.9));
+      tl.fromTo(p, { t: 0 }, { t: 1, duration: 1.4, ease: C(FX.ease.inOut, 1.4), immediateRender: false, onUpdate: pos }, S(431.2));
+      rise("sc075-w4", T(432.67) - L, { dur: 0.7 });
+      rise("sc075-w5", T(434.43) - L, { dur: 0.7 });
+      tl.to("#c1s03-sc075-bg", { scale: 1.06, duration: 7.4, ease: "none" }, S(428.59));
+    })();
+
+    /* ============ C1S076 · 436.03–438.91 · patent drawing traces on (GRID/blueprint) ============ */
+    whip("075", "076", S(436.03), { dir: 1 });
+    scene("076", 436.03, 438.91);
+    ground("paper", S(436.03));
+    (function () {
+      tl.fromTo("#c1s03-sc076-cam", { scale: 1.0 }, { scale: 1.07, duration: 2.9, ease: "none", immediateRender: true }, S(436.03));
+      const s = { p: 0 }, pat = $("sc076-pat");
+      const clip = () => { pat.style.clipPath = "inset(0 0 " + (100 - s.p).toFixed(1) + "% 0)"; };
+      clip();
+      tl.fromTo(s, { p: 0 }, { p: 100, duration: 1.7, ease: C(FX.ease.inOut, 1.7), immediateRender: false, onUpdate: clip }, S(436.1));
+      rise("sc076-w1", T(437.15) - L, { dur: 0.7 });
+      rise("sc076-w2", T(437.79) - L, { dur: 0.7 });
+    })();
+
+    /* ============ C1S077 · 438.91–443.47 · a list of 25 companies (NIGHT) ============ */
+    scene("077", 438.91, 443.47);
+    ground("night", S(438.91));
+    (function () {
+      const svg = $("sc077-rows"), r = FX.rng(7700), rows = [];
+      for (let i = 0; i < 25; i++) {
+        const y = 70 + i * 38, g = el("g", { opacity: 0 }, svg);
+        el("path", { d: "M20 " + (y + 14) + " H1130", stroke: "rgba(242,237,227,0.14)", "stroke-width": 1.5 }, g);
+        el("circle", { cx: 40, cy: y, r: 5, fill: "rgba(242,237,227,0.7)" }, g);
+        let d = "M80 " + y, x = 80; const end = 360 + r() * 520;
+        while (x < end) { x += 14 + r() * 18; d += " Q" + (x - 8).toFixed(0) + " " + (y - 9 + r() * 6).toFixed(0) + " " + x.toFixed(0) + " " + (y + (r() - 0.5) * 6).toFixed(0); }
+        el("path", { d, fill: "none", stroke: "rgba(242,237,227,0.78)", "stroke-width": 3.2, "stroke-linecap": "round" }, g);
+        rows.push(g);
+      }
+      rows.forEach((g, i) => tl.fromTo(g, { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, S(439.0) + Math.floor(i / 3) / 12));
+      tl.fromTo(svg, { filter: "blur(9px)", y: 20 }, { filter: "blur(9px)", y: 20, duration: 0.001, immediateRender: true }, S(438.91));
+      // rack focus as the count lands
+      tl.to(svg, { filter: "blur(0px)", duration: 0.8, ease: C("sine.inOut", 0.8) }, S(440.05));
+      tl.to(svg, { y: -30, duration: 4.5, ease: "none" }, S(438.95));
+      rise("sc077-w1", T(439.63) - L);
+      tl.fromTo("#c1s03-sc077-num", { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, T(440.03) - L);
+      FX.text.count(tl, $("sc077-n"), T(440.03) - L, 0, 25, 0.75);
+      rise("sc077-w2", T(440.75) - L);
+      rise("sc077-w3", T(442.59) - L, { dur: 0.5 });
+      rise("sc077-w4", T(443.07) - L, { dur: 0.2 });
+      // PT: push-through toward the centre
+      tl.to(["#c1s03-sc077-rows"], { scale: 2.2, duration: 0.25, ease: FX.ease.in, transformOrigin: "300px 540px" }, S(443.22));
+    })();
+
+    /* ============ C1S078 · 443.47–449.39 · hub-and-spoke connections (PAPER, D15) ============ */
+    scene("078", 443.47, 449.46);
+    ground("paper", S(443.47));
+    (function () {
+      tl.fromTo("#c1s03-sc078-cam", { scale: 2.2 }, { scale: 1.0, duration: 0.65, ease: FX.ease.cam, immediateRender: true }, S(443.47));
+      FX.focusHunt(tl, $("sc078-cam"), S(444.1), { dur: 0.8 });
+      const box = $("sc078-nodes"), svg = $("sc078-mk"), f = mk("sc078-mk", 443.4, 449.5);
+      const pts = [[420, 330], [540, 760], [960, 120], [1380, 760], [1500, 330], [960, 840]];
+      pts.forEach(([x, y], i) => {
+        const d = document.createElement("div"); d.className = "c3-node"; d.style.left = (x - 75) + "px"; d.style.top = (y - 75) + "px"; box.appendChild(d);
+        pop(d, S(444.6) + i * 0.12, { from: 0.5, dur: 0.8 });
+        const dx = x - 960, dy = y - 500, L0 = Math.hypot(dx, dy), ux = dx / L0, uy = dy / L0;
+        FX.markup.pen(tl, svg, S(446.3) + i * 0.2, { points: [[960 + ux * 145, 500 + uy * 145], [960 + ux * (L0 * 0.5) + uy * 12, 500 + uy * (L0 * 0.5) - ux * 12], [x - ux * 82, y - uy * 82]], width: 6, color: INK, seed: 780 + i, dur: 0.55, filter: f });
+      });
+      rise("sc078-w1", T(447.71) - L);
+      tl.to("#c1s03-sc078-cam", { scale: 1.04, duration: 4.4, ease: "none" }, S(444.3));
+    })();
+
+    /* ============ C1S079 · 449.39–455.95 · first buyers → DISNEY (NIGHT, hero) ============ */
+    whip("078", "079", S(449.39), { dir: 1 });
+    scene("079", 449.39, 455.95);
+    ground("night", S(449.39));
+    (function () {
+      tl.fromTo("#c1s03-sc079-cam", { scale: 1.0 }, { scale: 1.07, duration: 6.6, ease: "none", immediateRender: true }, S(449.39));
+      rise("sc079-w1", T(450.67) - L);
+      rise("sc079-w2", T(450.99) - L);
+      // "this product" — the 200A card, then the Disney studio comes into focus and the Fantasia card lands on top
+      tl.fromTo("#c1s03-sc079-prod", { opacity: 0, y: 60, rotation: -6 }, { opacity: 1, y: 0, rotation: -3, duration: 1.0, ease: C(FX.ease.out, 1.0), immediateRender: true }, S(452.2));
+      tl.to("#c1s03-sc079-bg", { filter: "grayscale(1) sepia(0.35) brightness(0.55) contrast(1.1) blur(1.5px)", duration: 0.9, ease: C("sine.inOut", 0.9) }, S(453.7));
+      tl.to("#c1s03-sc079-prod", { x: -380, y: 230, rotation: -9, scale: 0.7, duration: 0.9, ease: C(FX.ease.inOut, 0.9) }, S(454.2));
+      tl.fromTo("#c1s03-sc079-fant", { opacity: 0, scale: 1.25, rotation: 6 }, { opacity: 1, scale: 1, rotation: 2, duration: 0.8, ease: C(FX.ease.out, 0.8), immediateRender: true }, S(454.45));
+      rise("sc079-w3", T(454.75) - L, { dur: 0.6 });
+    })();
+
+    /* ============ C1S080 · 455.95–462.78 · decided by a coin flip (NIGHT) ============ */
+    scene("080", 455.95, 462.85);
+    (function () {
+      gated(455.9, 462.9, () => FX.streaks($("sc080-streaks"), { seed: 8001, speed: 0.35, gain: 0.7 }));
+      rise("sc080-w1", T(456.27) - L);
+      rise("sc080-w2", T(456.67) - L);
+      const svg = $("sc080-blank");
+      ink(svg, "M600 260 H900", S(456.9), 0.45, { color: "rgba(242,237,227,0.8)", width: 4 });
+      ink(svg, "M940 260 H980", S(457.3), 0.15, { color: "rgba(242,237,227,0.8)", width: 4 });
+      ink(svg, "M1020 260 H1320", S(457.4), 0.45, { color: "rgba(242,237,227,0.8)", width: 4 });
+      const coin = $("sc080-coin"), cw = $("sc080-cw");
+      gsap.set(coin, { rotationX: 0 });
+      tl.fromTo(coin, { rotationX: 8 }, { rotationX: -8, duration: 3.4, ease: "sine.inOut", immediateRender: true }, S(455.95));
+      // the toss: up and spinning (12 fps), keeps spinning in the air to the whip
+      tl.fromTo(cw, { y: 0, scale: 1 }, { y: -170, scale: 0.86, duration: 1.4, ease: C(FX.ease.out, 1.4), immediateRender: false }, S(459.4));
+      tl.to(cw, { y: -200, duration: 2.0, ease: "none" }, S(460.8));
+      tl.fromTo(coin, { rotationX: -8 }, { rotationX: -8 + 360 * 5, duration: 3.4, ease: C("none", 3.4), immediateRender: false }, S(459.4));
+      rise("sc080-w5", T(459.42) - L, { dur: 0.6 });
+      rise("sc080-w3", T(460.38) - L);
+      rise("sc080-w4", T(460.70) - L);
+      tl.to("#c1s03-sc080-w5", { opacity: 0, duration: 0.25 }, S(461.6));
+      tl.set("#c1s03-sc080-w5", { opacity: 1, y: 0 }, T(462.30) - L);
+    })();
+
+    /* ============ C1S081 · 462.78–468.78 · HEWLETT / PACKARD blocks (PAPER) ============ */
+    whip("080", "081", S(462.78), { dir: 1 });
+    scene("081", 462.78, 468.78);
+    ground("paper", S(462.78));
+    (function () {
+      tl.fromTo("#c1s03-sc081-cam", { scale: 1.0, x: 0 }, { scale: 1.04, x: -20, duration: 6.0, ease: "none", immediateRender: true }, S(462.78));
+      rise("sc081-w1", T(463.42) - L);
+      rise("sc081-w2", T(463.66) - L);
+      tl.fromTo("#c1s03-sc081-h", { opacity: 0, y: -120 }, { opacity: 1, y: 0, duration: 0.8, ease: C(FX.ease.out, 0.8), immediateRender: true }, T(464.22) - L);
+      tl.set("#c1s03-sc081-w3", { opacity: 1 }, T(464.22) - L);
+      tl.fromTo("#c1s03-sc081-p", { opacity: 0, y: -120 }, { opacity: 1, y: 0, duration: 0.8, ease: C(FX.ease.out, 0.8), immediateRender: true }, T(465.42) - L);
+      tl.set("#c1s03-sc081-w4", { opacity: 1 }, T(465.42) - L);
+      // "combine": the blocks slide together
+      tl.to("#c1s03-sc081-h", { x: 90, duration: 0.8, ease: C(FX.ease.inOut, 0.8) }, S(466.38));
+      tl.to("#c1s03-sc081-p", { x: -90, duration: 0.8, ease: C(FX.ease.inOut, 0.8) }, S(466.38));
+      // "which one goes first?": they lift and shuffle, ending hovering at two heights with a ?
+      tl.to("#c1s03-sc081-h", { y: -130, duration: 0.6, ease: C(FX.ease.inOut, 0.6) }, S(467.5));
+      tl.to("#c1s03-sc081-p", { y: 110, duration: 0.6, ease: C(FX.ease.inOut, 0.6) }, S(467.5));
+      tl.fromTo("#c1s03-sc081-q", { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.5, ease: C(FX.ease.out, 0.5), immediateRender: true }, S(467.7));
+      rise("sc081-w5", T(467.50) - L, { dur: 0.5 });
+      rise("sc081-w6", T(467.74) - L, { dur: 0.4 });
+      rise("sc081-w7", T(467.98) - L, { dur: 0.4 });
+      rise("sc081-w8", T(468.22) - L, { dur: 0.3 });
+    })();
+
+    /* ============ C1S082 · 468.78–476.22 · coin lands → Everything HP (NIGHT) ============ */
+    scene("082", 468.78, 476.29);
+    ground("night", S(468.78));
+    (function () {
+      const coin = $("sc082-coin"), cw = $("sc082-cw");
+      // falls in spinning, lands flat (obverse up) at 470.1 — hard cut on action from the shuffling blocks
+      tl.fromTo(cw, { y: -560, scale: 0.8 }, { y: 0, scale: 1, duration: 1.3, ease: C(FX.ease.inOut, 1.3), immediateRender: true }, S(468.78));
+      tl.fromTo(coin, { rotationX: 0 }, { rotationX: 360 * 3, duration: 1.3, ease: C(FX.ease.out, 1.3), immediateRender: true }, S(468.78));
+      tl.fromTo(cw, { x: 0 }, { x: 6, duration: 1 / 12, yoyo: true, repeat: 1, ease: "none", immediateRender: false }, S(470.08));
+      rise("sc082-w1", T(469.66) - L);
+      rise("sc082-w2", T(470.14) - L);
+      tl.fromTo("#c1s03-sc082-lap", { opacity: 0, x: 400 }, { opacity: 1, x: 0, duration: 0.9, ease: C(FX.ease.out, 0.9), immediateRender: true }, S(471.25));
+      rise("sc082-w3", T(471.42) - L);
+      rise("sc082-w4", T(471.90) - L);
+      tl.fromTo("#c1s03-sc082-prn", { opacity: 0, x: 400 }, { opacity: 1, x: 0, duration: 0.9, ease: C(FX.ease.out, 0.9), immediateRender: true }, S(472.3));
+      rise("sc082-w5", T(472.46) - L);
+      rise("sc082-w6", T(472.94) - L);
+      rise("sc082-w7", T(474.86) - L);
+      rise("sc082-w8", T(475.50) - L, { dur: 0.4 });
+      tl.fromTo("#c1s03-sc082-logo", { opacity: 0, scale: 1.3 }, { opacity: 1, scale: 1, duration: 0.4, ease: C(FX.ease.out, 0.4), immediateRender: true }, S(475.44));
+      tl.fromTo("#c1s03-sc082", { scale: 1 }, { scale: 1.035, duration: 7.4, ease: "none", immediateRender: false }, S(468.8));
+    })();
+
+    /* ============ C1S083–084 · 476.22–488.62 · 2.5D garage (NIGHT, hero 'garage') ============ */
+    whip("082", "083", S(476.22), { dir: 1 });
+    flash(S(476.22));
+    scene("083", 476.22, 488.62);
+    (function () {
+      const P = 1200, Z = { bd: -500, tl: -260, haze: -160, gar: 0, hedge: 160, house: 260 };
+      for (const k in Z) gsap.set("#c1s03-sc083-" + k, { z: Z[k], scale: (P - Z[k]) / P });
+      tl.fromTo("#c1s03-sc083-cam", { x: 70, z: -40, rotationY: 1.6 }, { x: -60, z: 170, rotationY: -1.6, duration: 12.4, ease: "sine.inOut", immediateRender: true }, S(476.22));
+      tl.fromTo("#c1s03-sc083-hedge img, #c1s03-sc083-house img", { filter: "saturate(0.82) sepia(0.12) blur(1.5px)" }, { filter: "saturate(0.82) sepia(0.12) blur(6px)", duration: 12.4, ease: "none", immediateRender: true }, S(476.22));
+      tl.fromTo("#c1s03-sc083-rays", { opacity: 0.5, x: -40 }, { opacity: 0.95, x: 60, duration: 12.4, ease: "sine.inOut", immediateRender: true }, S(476.22));
+      // GARAGE chokes in behind the roof (settles clean)
+      const title = $("sc083-title");
+      title.style.filter = "url(#c1s03-rough083)";
+      tl.fromTo(title, { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, T(478.14) - L);
+      if (morphT) FX.chokeSettle(tl, morphT, title, T(478.14) - L, 10, 0.55, "blur(0.45px)");
+      rise("sc083-w2", T(482.06) - L, { dur: 0.6 });
+      rise("sc083-w3", T(482.46) - L, { dur: 0.5 });
+      // C1S084 — same world: the title gives way to SILICON VALLEY, struck, 'yet'
+      out("sc083-w2", S(483.3), 0.4); out("sc083-w3", S(483.3), 0.4);
+      tl.to(title, { opacity: 0.0, duration: 0.5, ease: C(FX.ease.in, 0.5) }, S(484.3));
+    })();
+    scene("084", 483.02, 488.62);
+    (function () {
+      rise("sc084-w1", T(485.02) - L, { dur: 0.5 });
+      rise("sc084-w2", T(485.58) - L, { dur: 0.3 });
+      const svg = $("sc084-mk"), f = mk("sc084-mk", 483.0, 488.7);
+      FX.markup.pen(tl, svg, S(485.86), { points: [[420, 250], [960, 236], [1500, 244]], width: 11, color: RED, blend: "normal", seed: 84, dur: 0.35, filter: f });
+      rise("sc084-w3", T(485.90) - L, { dur: 0.4 });
+      // "but it started in the garage": the strike + SILICON VALLEY step aside, GARAGE returns
+      tl.to(["#c1s03-sc084-sv", "#c1s03-sc084-mk", "#c1s03-sc084-w3"], { opacity: 0, duration: 0.4, ease: C(FX.ease.in, 0.4) }, S(487.0));
+      tl.to("#c1s03-sc083-title", { opacity: 1, duration: 0.6, ease: C(FX.ease.out, 0.6) }, S(487.5));
+    })();
+
+    /* ============ C1S085 · 488.62–493.18 · Disney + 200A cards (PAPER) ============ */
+    scene("085", 488.30, 493.18);
+    ground("paper", S(488.62));
+    (function () {
+      // PS: the paper sheet slides in over the garage
+      tl.fromTo("#c1s03-sc085", { x: 1920 }, { x: 0, duration: 0.32, ease: FX.ease.in, immediateRender: false }, S(488.30));
+      rise("sc085-w1", T(488.62) - L, { dur: 0.6 });
+      rise("sc085-w2", T(489.42) - L);
+      rise("sc085-w3", T(489.66) - L);
+      const svg = $("sc085-mk"), f = mk("sc085-mk", 488.3, 493.2);
+      FX.markup.pen(tl, svg, S(489.9), { points: [[1080, 420], [980, 380], [870, 420]], width: 7, color: INK, seed: 85, dur: 0.55, filter: f });
+      FX.markup.pen(tl, svg, S(490.4), { points: [[895, 392], [868, 422], [902, 446]], width: 7, color: INK, seed: 86, dur: 0.2, filter: f });
+      rise("sc085-w4", T(490.22) - L);
+      rise("sc085-w5", T(490.62) - L);
+      tl.fromTo("#c1s03-sc085-o", { scale: 1 }, { scale: 1.04, duration: 0.25, yoyo: true, repeat: 1, ease: C("sine.inOut", 0.25), immediateRender: false }, S(490.2));
+      tl.fromTo("#c1s03-sc085-cam", { scale: 1 }, { scale: 1.03, duration: 3.0, ease: "none", immediateRender: false }, S(488.62));
+      // PT: push into the 200A dial
+      tl.to("#c1s03-sc085-cam", { scale: 3.2, duration: 0.55, ease: FX.ease.in }, S(492.63));
+    })();
+
+    /* ============ C1S086 · 493.18–496.78 · oscilloscope: different levels of sound (NIGHT) ============ */
+    scene("086", 493.18, 496.78);
+    ground("night", S(493.18));
+    (function () {
+      tl.fromTo("#c1s03-sc086-cam", { scale: 2.0 }, { scale: 1.0, duration: 0.7, ease: FX.ease.cam, immediateRender: true }, S(493.18));
+      FX.focusHunt(tl, $("sc086-cam"), S(493.88), { dur: 0.7 });
+      tl.to("#c1s03-sc086-cam", { scale: 1.06, duration: 2.9, ease: "none" }, S(493.9));
+      // screen (img placed at 382,−264, scale 0.8 → CRT centre ≈ (1150, 520), r ≈ 360)
+      const svg = $("sc086-scr"), cx = 1150, cy = 520, R = 352;
+      svg.innerHTML = '<defs><radialGradient id="c1s03-crt" cx="50%" cy="45%" r="55%"><stop offset="0" stop-color="#1c3a2c"/><stop offset="0.7" stop-color="#0c1a14"/><stop offset="1" stop-color="#050a08"/></radialGradient>' +
+        '<filter id="c1s03-glow" x="-20%" y="-50%" width="140%" height="200%"><feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>' +
+        '<clipPath id="c1s03-crtclip"><circle cx="' + cx + '" cy="' + cy + '" r="' + R + '"/></clipPath></defs>';
+      el("circle", { cx, cy, r: R, fill: "url(#c1s03-crt)" }, svg);
+      const g = el("g", { "clip-path": "url(#c1s03-crtclip)" }, svg);
+      for (let i = -4; i <= 4; i++) { el("path", { d: "M" + (cx - R) + " " + (cy + i * 70) + " H" + (cx + R), stroke: "rgba(150,230,180,0.12)", "stroke-width": 1.5 }, g); el("path", { d: "M" + (cx + i * 70) + " " + (cy - R) + " V" + (cy + R), stroke: "rgba(150,230,180,0.12)", "stroke-width": 1.5 }, g); }
+      const tr = el("path", { d: "", fill: "none", stroke: "#c8ffd8", "stroke-width": 4, filter: "url(#c1s03-glow)" }, g);
+      el("circle", { cx: cx - 90, cy: cy - 140, r: 120, fill: "rgba(255,255,255,0.05)" }, svg);
+      const st = { amp: 0.0, fr: 3, on: 0 };
+      const draw = (t) => {
+        const ph = t * 7.0; let d = "";
+        for (let i = 0; i <= 120; i++) { const u = i / 120, x = cx - R + u * 2 * R, y = cy - Math.sin(u * Math.PI * 2 * st.fr + ph) * st.amp * 230; d += (i ? " L" : "M") + x.toFixed(1) + " " + y.toFixed(1); }
+        tr.setAttribute("d", d); tr.setAttribute("opacity", st.on);
+      };
+      gated(493.1, 496.9, () => FX.onFrame((t) => draw(t)));
+      tl.fromTo(st, { on: 0, amp: 0.02 }, { on: 1, amp: 0.25, duration: 0.3, ease: "none", immediateRender: true }, S(493.3));
+      // "different levels": amplitude steps 0.25 → 0.55 → 0.9 (12 fps)
+      tl.to(st, { amp: 0.55, duration: 0.25, ease: C("power2.out", 0.25) }, S(494.3));
+      tl.to(st, { amp: 0.9, duration: 0.25, ease: C("power2.out", 0.25) }, S(495.0));
+      // "control": the frequency is dialled
+      tl.to(st, { fr: 6, amp: 0.6, duration: 0.6, ease: C(FX.ease.inOut, 0.6) }, S(496.25));
+      rise("sc086-w1", T(493.90) - L);
+      rise("sc086-w2", T(494.30) - L);
+      rise("sc086-w3", T(494.78) - L, { dur: 0.6 });
+      rise("sc086-w4", T(495.02) - L, { dur: 0.6 });
+      rise("sc086-w5", T(496.30) - L, { dur: 0.3 });
+    })();
+
+    /* ============ C1S087 · 496.78–505.10 · signal flow: oscillator → equipment → meter (PAPER) ============ */
+    scene("087", 496.78, 505.17);
+    ground("paper", S(496.78));
+    (function () {
+      tl.fromTo("#c1s03-sc087-cam", { x: 20 }, { x: -30, duration: 8.3, ease: "none", immediateRender: true }, S(496.78));
+      pop("sc087-osc", S(496.85), { from: 0.85 });
+      const svg = $("sc087-mk"), f = mk("sc087-mk", 496.7, 505.2);
+      // a sine of one specific level
+      const sp = []; for (let i = 0; i <= 40; i++) { const u = i / 40; sp.push([540 + u * 220, 450 - Math.sin(u * Math.PI * 6) * 34]); }
+      FX.markup.pen(tl, svg, S(497.6), { points: sp, width: 6, color: INK, seed: 871, dur: 0.9, jitter: 1, filter: f });
+      FX.markup.pen(tl, svg, S(498.45), { points: [[750, 432], [772, 450], [750, 468]], width: 6, color: INK, seed: 872, dur: 0.2, filter: f });
+      rise("sc087-w1", T(497.58) - L);
+      rise("sc087-w2", T(497.98) - L);
+      pop("sc087-rad", S(500.1), { from: 0.85 });
+      rise("sc087-w3", T(500.22) - L);
+      rise("sc087-w4", T(500.62) - L);
+      // meter (our drawing): arc, ticks, a target mark, needle
+      const m = el("g", { opacity: 0 }, svg), mx = 1600, my = 560;
+      el("path", { d: "M1420 560 A180 180 0 0 1 1780 560 Z", fill: "#f3ecdd", stroke: INK, "stroke-width": 5 }, m);
+      for (let i = 0; i <= 10; i++) { const a = Math.PI + i * Math.PI / 10; el("path", { d: "M" + (mx + Math.cos(a) * 150).toFixed(1) + " " + (my + Math.sin(a) * 150).toFixed(1) + " L" + (mx + Math.cos(a) * 170).toFixed(1) + " " + (my + Math.sin(a) * 170).toFixed(1), stroke: INK, "stroke-width": 3 }, m); }
+      const ta = Math.PI + 0.68 * Math.PI;
+      el("path", { d: "M" + (mx + Math.cos(ta) * 120).toFixed(1) + " " + (my + Math.sin(ta) * 120).toFixed(1) + " L" + (mx + Math.cos(ta) * 176).toFixed(1) + " " + (my + Math.sin(ta) * 176).toFixed(1), stroke: RED, "stroke-width": 8 }, m);
+      const needle = el("path", { d: "M1600 560 L1600 410", stroke: INK, "stroke-width": 6, "stroke-linecap": "round" }, m);
+      el("circle", { cx: mx, cy: my, r: 12, fill: INK }, m);
+      tl.fromTo(m, { opacity: 0 }, { opacity: 1, duration: 0.5, ease: C(FX.ease.out, 0.5), immediateRender: true }, S(501.3));
+      FX.markup.pen(tl, svg, S(501.35), { points: [[1215, 450], [1300, 448], [1410, 470]], width: 6, color: INK, seed: 873, dur: 0.5, filter: f });
+      rise("sc087-w5", T(501.42) - L);
+      const nd = { a: -80 };
+      const setN = () => needle.setAttribute("transform", "rotate(" + nd.a.toFixed(1) + " 1600 560)");
+      setN();
+      tl.fromTo(nd, { a: -80 }, { a: 32.4, duration: 1.3, ease: C(FX.ease.out, 1.3), immediateRender: false, onUpdate: setN }, S(502.2));
+      // ✓ on 'catching'
+      FX.markup.pen(tl, svg, S(503.55), { points: [[1530, 300], [1575, 345], [1680, 220]], width: 10, color: RED, seed: 874, dur: 0.45, filter: f });
+      rise("sc087-w6", T(503.58) - L, { dur: 0.6 });
+    })();
+
+    /* ============ C1S088 · 505.10–511.90 · B2B + HP catalogue (GRID) ============ */
+    whip("087", "088", S(505.10), { dir: 1 });
+    scene("088", 505.10, 511.90);
+    (function () {
+      const svg = $("sc088-mk"), f = mk("sc088-mk", 505.0, 512.0);
+      const fac = (x) => { const g = el("g", { transform: "translate(" + x + " 470) scale(4.2)", fill: "none", stroke: INK, "stroke-width": 2.2, "stroke-linecap": "round", "stroke-linejoin": "round", opacity: 0 }, svg); g.innerHTML = ICON_FACTORY; return g; };
+      const f1 = fac(240), f2 = fac(940);
+      tl.fromTo(f1, { opacity: 0 }, { opacity: 1, duration: 0.6, ease: C(FX.ease.out, 0.6), immediateRender: true }, S(505.3));
+      tl.fromTo(f2, { opacity: 0 }, { opacity: 1, duration: 0.6, ease: C(FX.ease.out, 0.6), immediateRender: true }, S(505.6));
+      tl.fromTo("#c1s03-sc088-w1", { opacity: 0, scale: 0.7 }, { opacity: 1, scale: 1, duration: 0.8, ease: C(FX.ease.out, 0.8), immediateRender: true }, T(507.18) - L);
+      FX.markup.pen(tl, svg, S(507.4), { points: [[540, 600], [700, 570], [880, 600]], width: 7, color: RED, seed: 881, dur: 0.6, filter: f });
+      FX.markup.pen(tl, svg, S(507.95), { points: [[850, 576], [884, 602], [848, 626]], width: 7, color: RED, seed: 882, dur: 0.2, filter: f });
+      tl.fromTo("#c1s03-sc088-cam", { x: 0 }, { x: -160, duration: 1.2, ease: FX.ease.cam, immediateRender: true }, S(509.6));
+      tl.fromTo("#c1s03-sc088-cat", { x: 900, rotation: 10 }, { x: 0, rotation: 3, duration: 1.0, ease: C(FX.ease.out, 1.0), immediateRender: true }, S(509.8));
+      rise("sc088-w2", T(510.70) - L);
+      rise("sc088-w3", T(511.26) - L, { dur: 0.5 });
+      tl.to("#c1s03-sc088-cat", { x: -20, y: 10, duration: 1.2, ease: "none" }, S(510.8));
+    })();
+
+    /* ============ C1S089 · 511.90–516.54 · radio factory testers (NIGHT, footage) ============ */
+    scene("089", 511.90, 516.60);
+    ground("night", S(511.90));
+    (function () {
+      gated(511.8, 516.7, () => FX.weave($("sc089-weave"), { amp: 1.8, flicker: 0.05, seed: 89 }));
+      tl.fromTo("#c1s03-sc089-weave", { scale: 1.0 }, { scale: 1.06, duration: 4.7, ease: "none", immediateRender: true }, S(511.9));
+      rise("sc089-w1", T(515.10) - L);
+      rise("sc089-w2", T(515.74) - L, { dur: 0.5 });
+    })();
+
+    /* ============ C1S090 · 516.54–522.97 · WWII front page + contrast call-out (PAPER) ============ */
+    whip("089", "090", S(516.54), { dir: -1 });
+    flash(S(516.54));
+    scene("090", 516.54, 522.97);
+    ground("paper", S(516.54));
+    (function () {
+      // ease-in push; the contrast call-out cuts in at its peak velocity
+      tl.fromTo("#c1s03-sc090-cam", { scale: 1.0, y: 0 }, { scale: 1.16, y: 30, duration: 2.8, ease: FX.ease.in, immediateRender: true }, S(516.54));
+      FX.contrastCallout(tl, $("sc090-veil"), S(519.3), { w: 1700, h: 2331, d: "M40 262 L1660 262 L1660 412 L40 412 Z", feather: 16, strength: 0.62 });
+      tl.to("#c1s03-sc090-cam", { scale: 1.2, y: 34, duration: 3.7, ease: "none" }, S(519.34));
+      tl.fromTo("#c1s03-sc090-tag", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.7, ease: C(FX.ease.out, 0.7), immediateRender: true }, T(519.10) - L);
+      rise("sc090-w1", T(519.10) - L);
+      rise("sc090-w2", T(519.34) - L);
+      rise("sc090-w3", T(519.82) - L);
+      rise("sc090-w4", T(520.62) - L);
+      rise("sc090-w5", T(521.61) - L);
+      rise("sc090-w6", T(522.09) - L, { dur: 0.4 });
+      rise("sc090-w7", T(522.41) - L, { dur: 0.3 });
+    })();
+
+    /* ============ C1S091 · 522.97–528.97 · Terman, foremost minds, radio (NIGHT) ============ */
+    scene("091", 522.97, 529.04);
+    ground("night", S(522.97));
+    (function () {
+      tl.fromTo("#c1s03-sc091-t1", { x: 0 }, { x: 70, duration: 6.1, ease: "none", immediateRender: true }, S(522.97));
+      tl.fromTo("#c1s03-sc091-t2", { x: 0, y: 0 }, { x: -50, y: 20, duration: 6.1, ease: "none", immediateRender: true }, S(522.97));
+      tl.fromTo("#c1s03-sc091-terman", { x: 80, opacity: 0 }, { x: 0, opacity: 1, duration: 1.2, ease: C(FX.ease.out, 1.2), immediateRender: true }, S(522.97));
+      tl.to("#c1s03-sc091-terman", { scale: 1.04, duration: 5.0, ease: "none", transformOrigin: "50% 100%" }, S(524.0));
+      rise("sc091-w1", T(522.97) - L);
+      rise("sc091-w2", T(524.65) - L);
+      rise("sc091-w3", T(525.45) - L);
+      rise("sc091-w4", T(527.37) - L, { dur: 0.7 });
+      const svg = $("sc091-mk"), f = mk("sc091-mk", 522.9, 529.1);
+      FX.markup.pen(tl, svg, S(527.5), { points: [[118, 708], [200, 704], [300, 710]], width: 6, color: BONE, blend: "normal", seed: 91, dur: 0.45, filter: f });
+    })();
+
+    /* ============ C1S092 · 528.97–532.17 · telegram + SECRET (PAPER) ============ */
+    whip("091", "092", S(528.97), { dir: 1 });
+    scene("092", 528.97, 532.17);
+    ground("paper", S(528.97));
+    (function () {
+      tl.fromTo("#c1s03-sc092-cam", { scale: 1.0 }, { scale: 1.05, duration: 3.2, ease: "none", immediateRender: true }, S(528.97));
+      // typewriter: each word types out from its cue (24 fps letters)
+      const typeW = (id, t) => { const e = $(id); const chars = FX.split(e, "chars"); chars.forEach((c, i) => tl.fromTo(c, { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, t + i / 30)); };
+      typeW("sc092-w1", T(529.69) - L);
+      typeW("sc092-w2", T(530.17) - L);
+      typeW("sc092-w3", T(530.33) - L);
+      typeW("sc092-w4", T(530.49) - L);
+      typeW("sc092-w5", T(530.97) - L);
+      typeW("sc092-w6", T(531.13) - L);
+      typeW("sc092-w7", T(531.29) - L);
+      typeW("sc092-w8", T(531.45) - L);
+      typeW("sc092-w9", T(531.77) - L);
+      const stamp = $("sc092-stamp");
+      if (morphS) stamp.style.filter = "url(#c1s03-rough092)";
+      tl.fromTo(stamp, { opacity: 0, scale: 1.7 }, { opacity: 0.9, scale: 1, duration: 0.18, ease: C("power3.in", 0.18), immediateRender: true }, S(531.42));
+      if (morphS) FX.chokeSettle(tl, morphS, stamp, S(531.42), 4, 0.2, "none");
+      tl.fromTo("#c1s03-sc092-cam", { x: 0 }, { x: 7, duration: 1 / 12, yoyo: true, repeat: 1, ease: "none", immediateRender: false }, S(531.6));
+    })();
+
+    /* ============ C1S093 · 532.17–534.81 · 800 people in Harvard (GRID) ============ */
+    scene("093", 532.17, 534.81);
+    (function () {
+      const g = $("sc093-grid"), ic = [];
+      for (let r = 0; r < 8; r++) for (let c = 0; c < 10; c++) { const d = document.createElement("div"); d.className = "c3-ico"; d.style.left = c * 76 + "px"; d.style.top = r * 80 + "px"; d.innerHTML = PERSON; g.appendChild(d); ic.push(d); }
+      ic.forEach((d, i) => tl.fromTo(d, { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, S(532.51) + Math.floor(i / 8) / 12));
+      tl.fromTo("#c1s03-sc093-key", { opacity: 0 }, { opacity: 1, duration: 0.5, immediateRender: true }, S(532.6));
+      tl.fromTo("#c1s03-sc093-n", { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, T(532.57) - L);
+      FX.text.count(tl, $("sc093-n"), T(532.57) - L, 0, 800, 0.85);
+      rise("sc093-w1", T(533.21) - L, { dur: 0.6 });
+      tl.fromTo("#c1s03-sc093-w2", { opacity: 0, x: -30 }, { opacity: 1, x: 0, duration: 0.5, ease: C(FX.ease.out, 0.5), immediateRender: true }, T(533.69) - L);
+      tl.fromTo("#c1s03-sc093-grid", { scale: 1 }, { scale: 1.04, duration: 2.7, ease: "none", immediateRender: true, transformOrigin: "50% 50%" }, S(532.17));
+    })();
+
+    /* ============ C1S094 · 534.81–541.21 · radar dish → PPI scope (NIGHT) ============ */
+    scene("094", 534.81, 542.12);
+    ground("night", S(534.81));
+    (function () {
+      gated(534.7, 537.6, () => FX.weave($("sc094-weave"), { amp: 1.6, flicker: 0.05, seed: 94 }));
+      tl.fromTo("#c1s03-sc094-weave", { scale: 1.0 }, { scale: 1.08, duration: 2.7, ease: "none", immediateRender: true }, S(534.81));
+      // cut on action: the dish swings → the scope (already pulling back), focus hunt
+      tl.fromTo("#c1s03-sc094-scope", { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: false }, S(537.40));
+      tl.set("#c1s03-sc094-weave", { opacity: 0 }, S(537.42));
+      tl.fromTo("#c1s03-sc094-scam", { scale: 1.45 }, { scale: 1.0, duration: 0.9, ease: FX.ease.cam, immediateRender: false }, S(537.40));
+      FX.focusHunt(tl, $("sc094-scam"), S(538.3), { dur: 0.7 });
+      tl.to("#c1s03-sc094-scam", { scale: 1.06, duration: 3.6, ease: "none" }, S(538.35));
+      rise("sc094-w1", T(538.57) - L);
+      rise("sc094-w2", T(539.05) - L);
+      rise("sc094-w3", T(539.53) - L, { dur: 0.6 });
+      rise("sc094-w4", T(540.01) - L, { dur: 0.6 });
+      rise("sc094-w5", T(540.41) - L, { dur: 0.5 });
+      // C1S095 starts on the same scope: the 094 words step aside as 'jam it' arrives
+      ["sc094-w1", "sc094-w2", "sc094-w3", "sc094-w4", "sc094-w5"].forEach((k) => tl.set($(k), { opacity: 0 }, S(541.15)));
+    })();
+
+    /* ============ C1S095 · 541.21–544.57 · jam it (noise) → hide from it (chaff) ============ */
+    scene("095", 541.21, 544.64);
+    (function () {
+      // jamming: the scope fills with noise (192 px canvas, per frame), camera shakes at 12 fps
+      const cv = $("sc095-noise"), cx = cv.getContext("2d"), img = cx.createImageData(192, 192);
+      gated(541.1, 542.2, () => FX.onFrame((t) => { const r = FX.rng(1 + Math.floor(t * 24)); for (let i = 0; i < img.data.length; i += 4) { const v = r() * 255 * (r() > 0.5 ? 1 : 0.4); img.data[i] = v * 0.75; img.data[i + 1] = v; img.data[i + 2] = v * 0.8; img.data[i + 3] = 255; } cx.putImageData(img, 0, 0); }));
+      tl.fromTo(cv, { opacity: 0 }, { opacity: 0.85, duration: 0.25, ease: C("power2.out", 0.25), immediateRender: true }, S(541.2));
+      const sh = { k: 0 };
+      tl.fromTo(sh, { k: 0 }, { k: 1, duration: 0.8, ease: "none", immediateRender: false, onUpdate: () => { const f = Math.floor((S(541.2) + sh.k * 0.8) * 12); const r = FX.rng(f + 9); gsap.set("#c1s03-sc094-scam", { x: (r() - 0.5) * 18, y: (r() - 0.5) * 12 }); } }, S(541.2));
+      rise("sc095-w1", T(541.21) - L, { dur: 0.3 });
+      rise("sc095-w2", T(541.69) - L, { dur: 0.25 });
+      // whip (inside the scene) to the chaff photo
+      const ch = $("sc095-chaff");
+      tl.set("#c1s03-sc095-jam", { opacity: 0 }, S(541.98));
+      tl.set(ch, { visibility: "visible" }, S(541.97));
+      tl.fromTo(ch, { x: 700, scale: 1.18, filter: "blur(12px)" }, { x: 0, scale: 1, filter: "blur(0px)", duration: 0.17, ease: "power3.out", immediateRender: false }, S(541.97));
+      tl.to("#c1s03-sc094-scam", { x: -700, duration: 0.16, ease: "power3.in" }, S(541.81));
+      tl.fromTo(ch, { scale: 1 }, { scale: 1.08, y: -20, duration: 2.5, ease: "none", immediateRender: false }, S(542.15));
+      rise("sc095-w3", T(542.01) - L, { dur: 0.5 });
+      rise("sc095-w4", T(542.49) - L, { dur: 0.4 });
+      rise("sc095-w5", T(542.81) - L, { dur: 0.4 });
+    })();
+
+    /* ============ C1S096 · 544.57–548.09 · all throughout World War II (PAPER, timeline) ============ */
+    whip("095", "096", S(544.57), { dir: 1, vertical: true });
+    scene("096", 544.57, 548.09);
+    ground("paper", S(544.57));
+    (function () {
+      const svg = $("sc096-mk"), f = mk("sc096-mk", 544.5, 548.2);
+      el("path", { d: "M120 560 H1800", stroke: INK, "stroke-width": 4 }, svg);
+      for (let x = 160; x <= 1760; x += 80) el("path", { d: "M" + x + " 548 V572", stroke: INK, "stroke-width": 3, opacity: 0.6 }, svg);
+      // bracket over the war years (shape only, no dates — not narrated)
+      ink(svg, "M560 500 V470 H1360 V500", S(545.8), 0.7, { width: 6, filter: f });
+      const dot = el("circle", { cx: 560, cy: 560, r: 18, fill: RED, opacity: 0 }, svg);
+      tl.fromTo(dot, { opacity: 0 }, { opacity: 1, duration: 0.2, immediateRender: true }, S(545.8));
+      tl.fromTo(dot, { attr: { cx: 560 } }, { attr: { cx: 1360 }, duration: 1.6, ease: C(FX.ease.inOut, 1.6), immediateRender: false }, S(545.9));
+      const trail = ink(svg, "M560 560 H1360", S(545.9), 1.6, { color: RED, width: 8 });
+      void trail;
+      rise("sc096-w1", T(545.85) - L);
+      rise("sc096-w2", T(546.09) - L);
+      rise("sc096-w3", T(547.29) - L, { dur: 0.5 });
+      rise("sc096-w4", T(547.53) - L, { dur: 0.3 });
+      rise("sc096-w5", T(547.77) - L, { dur: 0.2 });
+      tl.fromTo("#c1s03-sc096-cam", { x: 60 }, { x: -60, duration: 3.6, ease: "none", immediateRender: true }, S(544.57));
+    })();
+
+    /* ============ C1S097 · 548.09–552.17 · back to Stanford as Dean of Engineering (NIGHT) ============ */
+    scene("097", 548.09, 552.24);
+    ground("night", S(548.09));
+    (function () {
+      tl.fromTo("#c1s03-sc097-cam", { scale: 1.0 }, { scale: 1.08, duration: 4.1, ease: "none", immediateRender: true }, S(548.09));
+      tl.fromTo("#c1s03-sc097-terman", { x: -60, opacity: 0 }, { x: 0, opacity: 1, duration: 1.1, ease: C(FX.ease.out, 1.1), immediateRender: true }, S(548.1));
+      rise("sc097-w1", T(549.77) - L);
+      tl.fromTo("#c1s03-sc097-brass", { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.6, ease: C(FX.ease.out, 0.6), immediateRender: true }, S(550.2));
+      rise("sc097-w2", T(550.57) - L, { dur: 0.4, y: 0 });
+      rise("sc097-w3", T(550.97) - L, { dur: 0.3, y: 0 });
+      rise("sc097-w4", T(551.21) - L, { dur: 0.4, y: 0 });
+    })();
+
+    /* ============ C1S098 · 552.17–557.61 · connections in Washington (NIGHT) ============ */
+    whip("097", "098", S(552.17), { dir: 1 });
+    scene("098", 552.17, 557.61);
+    (function () {
+      tl.fromTo("#c1s03-sc098-cam", { scale: 1.0 }, { scale: 1.08, duration: 5.4, ease: "none", immediateRender: true }, S(552.17));
+      pop("sc098-t", S(552.6), { from: 0.8 });
+      const svg = $("sc098-mk"), f = mk("sc098-mk", 552.1, 557.7);
+      const nodes = [[960, 300], [700, 560], [1240, 560], [1560, 520]];
+      nodes.forEach(([x, y], i) => {
+        FX.markup.pen(tl, svg, S(554.3) + i * 0.22, { points: [[300, 760], [(300 + x) / 2 + 30, (760 + y) / 2 - 60], [x, y + 26]], width: 5, color: BONE, blend: "normal", seed: 980 + i, dur: 0.6, filter: f });
+        const c = el("circle", { cx: x, cy: y, r: 18, fill: "none", stroke: BONE, "stroke-width": 5, opacity: 0, filter: f }, svg);
+        tl.fromTo(c, { opacity: 0 }, { opacity: 1, duration: 0.2, immediateRender: true }, S(554.85) + i * 0.22);
+      });
+      rise("sc098-w1", T(554.49) - L);
+      rise("sc098-w2", T(555.45) - L);
+    })();
+
+    /* ============ C1S099 · 557.61–564.49 · pay very handsomely, literally (PAPER) ============ */
+    scene("099", 557.30, 564.49);
+    ground("paper", S(557.61));
+    (function () {
+      tl.fromTo("#c1s03-sc099", { x: 1920 }, { x: 0, duration: 0.32, ease: FX.ease.in, immediateRender: false }, S(557.30));
+      const box = $("sc099-bills"), r = FX.rng(9900);
+      for (let i = 0; i < 9; i++) {
+        const b = document.createElement("div"); b.className = "c3-bill"; noteBg(b, 600, i % 3 === 2);
+        const x = 760 + r() * 980 - 300, y = 300 + r() * 560 - 128, rot = (r() - 0.5) * 40;
+        b.style.left = x + "px"; b.style.top = y + "px"; box.appendChild(b);
+        const t0 = S(559.2) + i * 0.4;
+        tl.fromTo(b, { opacity: 0, y: -900, rotation: rot + (r() - 0.5) * 60 }, { opacity: 1, y: 0, rotation: rot, duration: 0.9, ease: C(FX.ease.out, 0.9), immediateRender: true }, t0);
+      }
+      rise("sc099-w1", T(559.29) - L);
+      rise("sc099-w2", T(559.77) - L);
+      rise("sc099-w3", T(560.01) - L);
+      rise("sc099-w4", T(561.93) - L, { dur: 0.6 });
+      tl.fromTo("#c1s03-sc099-hl", { scaleX: 0 }, { scaleX: 1, duration: 0.45, ease: C("sine.inOut", 0.45), immediateRender: true }, S(561.95));
+      tl.fromTo("#c1s03-sc099-bills", { scale: 1 }, { scale: 1.05, duration: 6.0, ease: "none", immediateRender: true, transformOrigin: "60% 60%" }, S(558.4));
+    })();
+
+    /* ============ C1S100 · 564.49–570.41 · the military … Pentagon? (NIGHT) ============ */
+    scene("100", 564.49, 570.48);
+    ground("night", S(564.49));
+    (function () {
+      tl.fromTo("#c1s03-sc100-cam", { scale: 1.0 }, { scale: 1.09, duration: 5.9, ease: "none", immediateRender: true }, S(564.49));
+      rise("sc100-w1", T(566.25) - L);
+      rise("sc100-w2", T(567.05) - L);
+      rise("sc100-w3", T(568.65) - L, { dur: 0.6 });
+      const svg = $("sc100-mk"), f = mk("sc100-mk", 564.4, 570.5);
+      // hand-drawn ? beside the building (no answer, no date)
+      FX.markup.pen(tl, svg, S(568.7), { points: [[1560, 300], [1580, 250], [1640, 240], [1690, 270], [1690, 330], [1640, 370], [1625, 420], [1625, 450]], width: 9, color: BONE, blend: "normal", seed: 100, dur: 0.75, jitter: 2, filter: f });
+      FX.markup.pen(tl, svg, S(569.5), { points: [[1622, 500], [1628, 512]], width: 13, color: BONE, blend: "normal", seed: 101, dur: 0.1, filter: f });
+    })();
+
+    /* ============ C1S101 · 570.41–578.25 · research labs at Stanford, out west (PAPER, map) ============ */
+    whip("100", "101", S(570.41), { dir: 1 });
+    scene("101", 570.41, 578.25);
+    ground("paper", S(570.41));
+    (function () {
+      const cam = (cx, cy, s) => ({ x: 960 - cx * s, y: 540 - cy * s, scale: s });
+      gsap.set("#c1s03-sc101-cam", cam(4700, 1550, 0.42));
+      tl.fromTo("#c1s03-sc101-cam", cam(4700, 1550, 0.42), Object.assign(cam(4560, 1560, 0.44), { duration: 3.2, ease: "none", immediateRender: true }), S(570.41));
+      tl.to("#c1s03-sc101-cam", Object.assign(cam(1300, 1620, 0.46), { duration: 2.2, ease: FX.ease.cam }), S(573.75));
+      tl.to("#c1s03-sc101-cam", Object.assign(cam(1220, 1640, 0.48), { duration: 2.3, ease: "none" }), S(575.95));
+      const svg = $("sc101-svg"), f = mk("sc101-svg", 570.3, 578.3, "0 0 6392 3524");
+      const DC = [5216, 1476], ST = [408, 1672];
+      // Washington: a navy dot (no label — not spoken here)
+      el("circle", { cx: DC[0], cy: DC[1], r: 26, fill: NAVY, stroke: BONE, "stroke-width": 8 }, svg);
+      // 'research labs': three lab pins gather at Washington, the pen route carries them west, they land at Stanford
+      const pinG = (x, y) => { const g = el("g", { opacity: 0, transform: "translate(" + x + " " + y + ")" }, svg); el("path", { d: "M0 0 L0 -60", stroke: INK, "stroke-width": 10 }, g); el("circle", { cx: 0, cy: -76, r: 26, fill: RED, stroke: BONE, "stroke-width": 7 }, g); return g; };
+      const OFF = [[-80, -20], [0, -70], [80, -20]];
+      OFF.forEach(([dx, dy], i) => {
+        const a = pinG(DC[0] + dx, DC[1] + dy), b = pinG(ST[0] + 60 + dx * 1.2, ST[1] + dy);
+        tl.fromTo(a, { opacity: 0 }, { opacity: 1, duration: 0.3, immediateRender: true }, S(572.85) + i * 0.12);
+        tl.to(a, { opacity: 0, duration: 0.3 }, S(573.85));
+        tl.fromTo(b, { opacity: 0, y: -60 }, { opacity: 1, y: 0, duration: 0.45, ease: C(FX.ease.out, 0.45), immediateRender: true }, S(575.7) + i * 0.1);
+      });
+      FX.markup.pen(tl, svg, S(573.8), { points: curvePts(DC[0], DC[1], 2900, 650, ST[0] + 30, ST[1] - 20, 14), width: 16, color: RED, seed: 101, dur: 2.0, jitter: 10, filter: f });
+      rise("sc101-w1", T(572.89) - L);
+      rise("sc101-w2", T(573.37) - L);
+      rise("sc101-w3", T(575.77) - L, { dur: 0.7 });
+      rise("sc101-w4", T(577.37) - L, { dur: 0.4 });
+      rise("sc101-w5", T(577.53) - L, { dur: 0.3 });
+    })();
+
+    /* ============ C1S102 · 578.25–584.58 · give the money → push everything ahead ×3 (GRID) ============ */
+    scene("102", 578.25, 584.88);
+    (function () {
+      tl.fromTo("#c1s03-sc102-cam", { scale: 1.0 }, { scale: 1.04, duration: 6.4, ease: "none", immediateRender: true, transformOrigin: "50% 50%" }, S(578.25));
+      pop("sc102-t", S(578.4), { from: 0.85 });
+      tl.fromTo("#c1s03-sc102-dol", { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.8, ease: C(FX.ease.out, 0.8), immediateRender: true }, S(580.5));
+      rise("sc102-w1", T(580.66) - L);
+      rise("sc102-w2", T(580.90) - L);
+      const svg = $("sc102-mk"), f = mk("sc102-mk", 578.2, 584.9);
+      FX.markup.pen(tl, svg, S(581.0), { points: [[450, 520], [560, 510], [670, 522]], width: 7, color: INK, seed: 1021, dur: 0.5, filter: f });
+      FX.markup.pen(tl, svg, S(581.45), { points: [[640, 498], [672, 522], [640, 546]], width: 7, color: INK, seed: 1022, dur: 0.15, filter: f });
+      rise("sc102-w3", T(582.50) - L);
+      rise("sc102-w4", T(582.82) - L);
+      // one arrow per 'ahead' (each a little further ahead)
+      [[S(583.02), 640, 1420], [S(583.50), 520, 1560], [S(583.98), 400, 1700]].forEach(([t, y, x2], i) => {
+        FX.markup.pen(tl, svg, t, { points: [[980, 520], [1180, y + (520 - y) * 0.35], [x2, y]], width: 8, color: RED, seed: 1023 + i, dur: 0.16, filter: f });
+        FX.markup.pen(tl, svg, t + 0.15, { points: [[x2 - 36, y - 22], [x2, y], [x2 - 30, y + 28]], width: 8, color: RED, seed: 1033 + i, dur: 0.06, filter: f });
+      });
+      // PS: the sheet slides away left, uncovering the satellite
+      tl.to("#c1s03-sc102", { x: -1920, duration: 0.34, ease: FX.ease.in }, S(584.50));
+    })();
+
+    /* ============ C1S103 · 584.58–591.62 · federal money flowing into Stanford's labs (NIGHT, D14) ============ */
+    scene("103", 584.45, 591.62);
+    ground("night", S(584.58));
+    (function () {
+      const cam = (cx, cy, s) => ({ x: 960 - cx * s, y: 540 - cy * s, scale: s });
+      tl.fromTo("#c1s03-sc103-cam", cam(2300, 2300, 0.5), Object.assign(cam(2500, 2450, 0.55), { duration: 4.4, ease: "none", immediateRender: true }), S(584.45));
+      tl.to("#c1s03-sc103-cam", Object.assign(cam(2600, 2550, 0.66), { duration: 2.8, ease: FX.ease.cam }), S(588.85));
+      const svg = $("sc103-svg"), f = mk("sc103-svg", 584.4, 591.7, "0 0 4352 3840");
+      // lab districts (approximate, hand-drawn around the engineering corner of the Quad, the SE campus and the Research Park edge)
+      const D = ["M1440 1960 L1820 1900 L1860 2240 L1500 2300 Z", "M2240 2240 L2700 2190 L2760 2560 L2300 2620 Z", "M3900 3200 L4340 3150 L4340 3640 L3960 3700 Z"];
+      const fills = D.map((d) => el("path", { d, fill: RED, "fill-opacity": 0.6, stroke: "#ff8a6a", "stroke-width": 8, opacity: 0, style: "mix-blend-mode:overlay" }, svg));
+      const edges = D.map((d) => el("path", { d, fill: "none", stroke: "#ff9a7a", "stroke-width": 7, opacity: 0, filter: f }, svg));
+      fills.forEach((p, i) => tl.fromTo(p, { opacity: 0 }, { opacity: 1, duration: 0.5, ease: C(FX.ease.out, 0.5), immediateRender: true }, S(589.38) + i * 0.25));
+      edges.forEach((p, i) => tl.fromTo(p, { opacity: 0 }, { opacity: 0.9, duration: 0.5, ease: C(FX.ease.out, 0.5), immediateRender: true }, S(589.38) + i * 0.25));
+      // the yellow money route flows in from the north-east (Washington's direction)
+      FX.markup.pen(tl, svg, S(587.2), { points: curvePts(4352, 1100, 3000, 1500, 1700, 2080, 14), width: 22, color: YEL, blend: "normal", seed: 103, dur: 1.7, jitter: 8, filter: f });
+      FX.markup.pen(tl, svg, S(588.3), { points: curvePts(3200, 1560, 2900, 2000, 2480, 2380, 8), width: 18, color: YEL, blend: "normal", seed: 104, dur: 0.8, jitter: 6, filter: f });
+      rise("sc103-w1", T(585.78) - L);
+      rise("sc103-w2", T(586.02) - L);
+      rise("sc103-w3", T(586.26) - L);
+      rise("sc103-w4", T(586.90) - L);
+      rise("sc103-w5", T(587.30) - L);
+      rise("sc103-w6", T(588.26) - L);
+      rise("sc103-w7", T(589.38) - L);
+      rise("sc103-w8", T(589.78) - L);
+      rise("sc103-w9", T(590.18) - L, { dur: 0.6 });
+      rise("sc103-w10", T(590.42) - L, { dur: 0.6 });
+    })();
+
+    /* ============ C1S104 · 591.62–596.02 · even with the strongest government (NIGHT) ============ */
+    scene("104", 591.62, 596.02);
+    (function () {
+      gated(591.5, 596.1, () => FX.streaks($("sc104-streaks"), { seed: 10401, speed: 0.4, gain: 0.8 }));
+      tl.fromTo("#c1s03-sc104-cam", { scale: 1.12, y: 30 }, { scale: 1.0, y: 0, duration: 4.4, ease: "sine.out", immediateRender: true }, S(591.62));
+      rise("sc104-w1", T(593.46) - L);
+      rise("sc104-w2", T(594.10) - L);
+      rise("sc104-w3", T(595.14) - L, { dur: 0.5 });
+      rise("sc104-w4", T(595.62) - L, { dur: 0.25 });
+    })();
+
+    /* ============ C1S105 · 596.02–602.86 · Stanford cannot be best at everything (PAPER) ============ */
+    scene("105", 595.70, 602.86);
+    ground("paper", S(596.02));
+    (function () {
+      tl.fromTo("#c1s03-sc105", { x: 1920 }, { x: 0, duration: 0.32, ease: FX.ease.in, immediateRender: false }, S(595.70));
+      // slow drift left → right, 12 px/s, continues into c2 (no fade)
+      tl.fromTo("#c1s03-sc105-cam", { x: 0 }, { x: 12 * 6.84, duration: 6.84, ease: "none", immediateRender: true }, S(596.02));
+      rise("sc105-w1", T(596.02) - L, { dur: 0.7 });
+      // unlabelled field bars (shapes only): one long (Stanford's strength), most stay short
+      const box = $("sc105-bars"), Wd = [1150, 380, 300, 440, 260, 350, 220, 320], y0 = 380;
+      Wd.forEach((w, i) => {
+        const b = document.createElement("div"); b.className = "c3-hbar";
+        b.style.top = (y0 + i * 72) + "px"; b.style.width = w + "px"; b.style.background = i === 0 ? "var(--vermilion)" : "rgba(20,27,36,0.72)";
+        box.appendChild(b);
+        tl.fromTo(b, { scaleX: 0 }, { scaleX: 1, duration: 1.2, ease: C(FX.ease.out, 1.2), immediateRender: true }, S(597.0) + i * 0.18);
+      });
+      rise("sc105-w2", T(600.18) - L);
+      rise("sc105-w3", T(600.98) - L, { dur: 0.6 });
+      rise("sc105-w4", T(601.38) - L, { dur: 0.4 });
+      rise("sc105-w5", T(601.62) - L, { dur: 0.4 });
+      rise("sc105-w6", T(601.94) - L, { dur: 0.3 });
+      rise("sc105-w7", T(602.18) - L, { dur: 0.25 });
+      // pen strike through 'everything' (rough edge boils like a pen: permanent markup)
+      gated(595.6, 602.9, () => FX.roughDefs(defs, "c1s03-rough105", { freq: 0.05, scale: 4 }));
+      tl.fromTo("#c1s03-sc105-strike", { scaleX: 0, rotation: -2 }, { scaleX: 1, rotation: -2, duration: 0.28, ease: C("sine.inOut", 0.28), immediateRender: true }, S(602.22));
+    })();
+
+    FX.mount(tl, DURATION);
+    window.__timelines = window.__timelines || {};
+    window.__timelines[SEG] = tl;
+  })();
+  </script>
+</template>
+</body>
+</html>
