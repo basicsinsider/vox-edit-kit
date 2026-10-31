@@ -222,6 +222,8 @@ use, attribution optional; never redistribute the files publicly, never use them
   `window.__timelines[id].getChildren(true,true,false)` (start, end, target id) and list tweens that end < 0.5 s before each scene's cut.
 - A map crop that is narrower than the frame at the planned zoom shows its edge: pad it with the next-larger kit map in the same pixel
   space (c2s02 `us_night_wide.jpg` = us_night pasted over world_night, sea taken from the world map through the landmask = no seam).
+- `mix-blend-mode: multiply` on a piece inside a transformed/scaled camera div blends only with what is *inside* that div: with no
+  opaque ground in the camera, white parts show as white boxes (c2s03 patent figures). Put the paper ground inside the camera (c2s03 editor).
 ### 4.3 Check, look, render
 ```bash
 python3 tools/build_index.py s05            # put one (or several) compositions in index.html
@@ -631,6 +633,7 @@ on action. Use it whenever the narrator quotes someone or introduces a historic 
 - [ ] Smooth long eases, 12 fps. [ ] Cuts on action; whips, no iris. [ ] No photo/clip used > 2× in a chunk.
 
 ## Changelog
+- 2026-10-31 — c2s03 editor: §4.2 multiply-inside-camera gotcha.
 - 2026-10-31 — c2s02 editor: §4.2 notes (Haskoy lacks "=", puppeteer timeline dump for the hold rule, padding narrow map crops); Esri z16 Stanford-lands mosaic, keyed 1950s RCA TV, Nobel medal cut-out, Terman cut-out added (assets/c2/derived/c2s02/SOURCES.md).
 - 2026-10-31 — c4s03 editor: §4.2 gotchas (display:none scenes break measuring FX, GSAP on SVG `<g>` with a transform attribute, filtered straight pen lines vanish); new assets: Takao 1945 AMS city plan, Kaohsiung harbour Esri z16 aerial (`assets/c4/maps/`), Wufeng Lin family photo, Shenzhen skyline halftone.
 - 2026-10-31 — c4s02 editor (C4S037–069): §4.2 gotchas (odometer needs layout before display:none, SVG `<g>` transform attribute

@@ -653,7 +653,7 @@
       <div id="c1s03-sc101-cam">
         <img id="c1s03-sc101-map" src="assets/maps/kit/us_atlas.jpg" alt="" />
         <svg id="c1s03-sc101-svg" viewBox="0 0 6392 3524"></svg>
-        <div class="c3-abs t-display" style="left:470px;top:1700px;font-size:120px;color:var(--vermilion);text-shadow:0 2px 0 rgba(235,228,214,0.8)"><span id="c1s03-sc101-w3" class="c3-w">Stanford</span></div>
+        <div class="c3-abs t-display" style="left:-20px;top:1720px;font-size:120px;color:var(--vermilion);text-shadow:0 2px 0 rgba(235,228,214,0.8)"><span id="c1s03-sc101-w3" class="c3-w">Stanford</span></div>
       </div>
       <div class="c3-tag" style="left:96px;top:70px"><div class="t-label c3-ink" style="font-size:40px"><span id="c1s03-sc101-w1" class="c3-w">research </span><span id="c1s03-sc101-w2" class="c3-w">labs</span></div></div>
       <div class="c3-abs t-serif-i c3-ink" style="left:1260px;top:860px;font-size:110px;text-shadow:0 0 18px rgba(235,228,214,0.9)"><span id="c1s03-sc101-w4" class="c3-w">out </span><span id="c1s03-sc101-w5" class="c3-w">west</span></div>
@@ -1456,13 +1456,13 @@
       // Washington: a navy dot (no label — not spoken here)
       el("circle", { cx: DC[0], cy: DC[1], r: 26, fill: NAVY, stroke: BONE, "stroke-width": 8 }, svg);
       // 'research labs': three lab pins gather at Washington, the pen route carries them west, they land at Stanford
-      const pinG = (x, y) => { const g = el("g", { opacity: 0, transform: "translate(" + x + " " + y + ")" }, svg); el("path", { d: "M0 0 L0 -60", stroke: INK, "stroke-width": 10 }, g); el("circle", { cx: 0, cy: -76, r: 26, fill: RED, stroke: BONE, "stroke-width": 7 }, g); return g; };
-      const OFF = [[-80, -20], [0, -70], [80, -20]];
+      const pinG = (x, y) => { const g = el("g", { opacity: 0, transform: "translate(" + x + " " + y + ")" }, svg); el("path", { d: "M0 0 L0 -110", stroke: INK, "stroke-width": 16 }, g); el("circle", { cx: 0, cy: -140, r: 46, fill: RED, stroke: BONE, "stroke-width": 12 }, g); return g; };
+      const OFF = [[-150, -10], [0, -90], [150, -10]];
       OFF.forEach(([dx, dy], i) => {
-        const a = pinG(DC[0] + dx, DC[1] + dy), b = pinG(ST[0] + 60 + dx * 1.2, ST[1] + dy);
+        const a = pinG(DC[0] + dx, DC[1] + dy), b = pinG(ST[0] + 40 + dx, ST[1] + dy + 10);
         tl.fromTo(a, { opacity: 0 }, { opacity: 1, duration: 0.3, immediateRender: true }, S(572.85) + i * 0.12);
         tl.to(a, { opacity: 0, duration: 0.3 }, S(573.85));
-        tl.fromTo(b, { opacity: 0, y: -60 }, { opacity: 1, y: 0, duration: 0.45, ease: C(FX.ease.out, 0.45), immediateRender: true }, S(575.7) + i * 0.1);
+        tl.fromTo(b, { opacity: 0 }, { opacity: 1, duration: 0.45, ease: C(FX.ease.out, 0.45), immediateRender: true }, S(575.7) + i * 0.1);
       });
       FX.markup.pen(tl, svg, S(573.8), { points: curvePts(DC[0], DC[1], 2900, 650, ST[0] + 30, ST[1] - 20, 14), width: 16, color: RED, seed: 101, dur: 2.0, jitter: 10, filter: f });
       rise("sc101-w1", T(572.89) - L);
@@ -1499,11 +1499,11 @@
     ground("night", S(584.58));
     (function () {
       const cam = (cx, cy, s) => ({ x: 960 - cx * s, y: 540 - cy * s, scale: s });
-      tl.fromTo("#c1s03-sc103-cam", cam(2300, 2300, 0.5), Object.assign(cam(2500, 2450, 0.55), { duration: 4.4, ease: "none", immediateRender: true }), S(584.45));
-      tl.to("#c1s03-sc103-cam", Object.assign(cam(2600, 2550, 0.66), { duration: 2.8, ease: FX.ease.cam }), S(588.85));
+      tl.fromTo("#c1s03-sc103-cam", cam(2000, 2100, 0.5), Object.assign(cam(1980, 2130, 0.55), { duration: 4.4, ease: "none", immediateRender: true }), S(584.45));
+      tl.to("#c1s03-sc103-cam", Object.assign(cam(1950, 2150, 0.64), { duration: 2.8, ease: FX.ease.cam }), S(588.85));
       const svg = $("sc103-svg"), f = mk("sc103-svg", 584.4, 591.7, "0 0 4352 3840");
       // lab districts (approximate, hand-drawn around the engineering corner of the Quad, the SE campus and the Research Park edge)
-      const D = ["M1440 1960 L1820 1900 L1860 2240 L1500 2300 Z", "M2240 2240 L2700 2190 L2760 2560 L2300 2620 Z", "M3900 3200 L4340 3150 L4340 3640 L3960 3700 Z"];
+      const D = ["M1440 1960 L1820 1900 L1860 2240 L1500 2300 Z", "M2240 2240 L2700 2190 L2760 2560 L2300 2620 Z", "M2300 1600 L2700 1560 L2740 1880 L2340 1920 Z"];
       const fills = D.map((d) => el("path", { d, fill: RED, "fill-opacity": 0.6, stroke: "#ff8a6a", "stroke-width": 8, opacity: 0, style: "mix-blend-mode:overlay" }, svg));
       const edges = D.map((d) => el("path", { d, fill: "none", stroke: "#ff9a7a", "stroke-width": 7, opacity: 0, filter: f }, svg));
       fills.forEach((p, i) => tl.fromTo(p, { opacity: 0 }, { opacity: 1, duration: 0.5, ease: C(FX.ease.out, 0.5), immediateRender: true }, S(589.38) + i * 0.25));
