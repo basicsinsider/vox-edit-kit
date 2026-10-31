@@ -1,7 +1,7 @@
 """Derived assets for compositions/c2s02.html (run from the project root with .venv/bin/python).
 Downscaled/cropped map pieces (keeps decode memory low), keyed TV screen, medal and logo crops, footage stills."""
 import json, os, subprocess
-from PIL import Image, ImageDraw, ImageFilter
+from PIL import Image, ImageDraw, ImageFilter, ImageChops
 Image.MAX_IMAGE_PIXELS = None
 OUT = "assets/c2/derived/c2s02"; os.makedirs(OUT, exist_ok=True)
 info = {}
@@ -14,7 +14,7 @@ def save(im, name, q=88):
 
 # US night (map kit) 6392x3524 -> 3200 wide (53.27 px/deg lon, 66.58 px/deg lat)
 us = Image.open("assets/maps/kit/us_night.jpg"); k = 3200 / us.width
-save(us.resize((3200, round(us.height * k)), Image.LANCZOS), "us_night_3200.jpg")
+usn = us.resize((3200, round(us.height * k)), Image.LANCZOS)   # intermediate for us_night_wide (not saved)
 ua = Image.open("assets/maps/kit/us_atlas.jpg")
 save(ua.resize((3200, round(ua.height * k)), Image.LANCZOS), "us_atlas_3200.jpg")
 info["us_k"] = k
@@ -73,7 +73,6 @@ L0, L1, A0, A1 = -136, -56, 56, 19
 box = (round((L0 + 180) * 45.511), round((90 - A0) * 45.511), round((L1 + 180) * 45.511), round((90 - A1) * 45.511))
 W2, H2 = round((L1 - L0) * 53.333), round((A0 - A1) * 66.58)
 base = wn.crop(box).resize((W2, H2), Image.LANCZOS)
-usn = Image.open(f"{OUT}/us_night_3200.jpg")
 mk = Image.new("L", usn.size, 0); ImageDraw.Draw(mk).rectangle((60, 60, usn.width - 60, usn.height - 60), fill=255)
 mk = mk.filter(ImageFilter.GaussianBlur(30))
 lm = Image.open("assets/maps/kit/us_landmask.png").convert("L").resize(usn.size, Image.BILINEAR).filter(ImageFilter.GaussianBlur(2))

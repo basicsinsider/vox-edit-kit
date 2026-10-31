@@ -215,6 +215,13 @@ use, attribution optional; never redistribute the files publicly, never use them
   jumped to 0,0): put the placement on an outer `<g>` and animate an inner one.
 - A pen/marker path with an SVG filter (`FX.markupDefs`) that is perfectly horizontal or vertical has a zero-height/width bounding box,
   so the filter region is empty and the stroke disappears — give every filtered line a little curve/offset (c4s03 C4S082 arrow).
+- Haskoy has no "=" glyph (it renders blank): draw an equals sign as two bars (c2s02 C2S080). Check any maths/symbol glyph in a
+  snapshot before relying on it.
+- Hold-rule audit without the CLI (c2s02): inline the composition's `<template>` into a page that loads gsap + lib/fx.*, open it with
+  puppeteer-core + the HyperFrames chrome-headless-shell (`~/.cache/hyperframes/chrome/…`), dump
+  `window.__timelines[id].getChildren(true,true,false)` (start, end, target id) and list tweens that end < 0.5 s before each scene's cut.
+- A map crop that is narrower than the frame at the planned zoom shows its edge: pad it with the next-larger kit map in the same pixel
+  space (c2s02 `us_night_wide.jpg` = us_night pasted over world_night, sea taken from the world map through the landmask = no seam).
 ### 4.3 Check, look, render
 ```bash
 python3 tools/build_index.py s05            # put one (or several) compositions in index.html
@@ -624,6 +631,7 @@ on action. Use it whenever the narrator quotes someone or introduces a historic 
 - [ ] Smooth long eases, 12 fps. [ ] Cuts on action; whips, no iris. [ ] No photo/clip used > 2× in a chunk.
 
 ## Changelog
+- 2026-10-31 — c2s02 editor: §4.2 notes (Haskoy lacks "=", puppeteer timeline dump for the hold rule, padding narrow map crops); Esri z16 Stanford-lands mosaic, keyed 1950s RCA TV, Nobel medal cut-out, Terman cut-out added (assets/c2/derived/c2s02/SOURCES.md).
 - 2026-10-31 — c4s03 editor: §4.2 gotchas (display:none scenes break measuring FX, GSAP on SVG `<g>` with a transform attribute, filtered straight pen lines vanish); new assets: Takao 1945 AMS city plan, Kaohsiung harbour Esri z16 aerial (`assets/c4/maps/`), Wufeng Lin family photo, Shenzhen skyline halftone.
 - 2026-10-31 — c4s02 editor (C4S037–069): §4.2 gotchas (odometer needs layout before display:none, SVG `<g>` transform attribute
   vs GSAP, zero-height filtered pen lines, cut between clips via `data-start`); c4 isotype family `assets/c4/icons/`; template +

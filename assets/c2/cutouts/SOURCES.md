@@ -30,3 +30,4 @@
 - `vacuum_tube_tall_cut.png` — hand polygon of the tall tube in objects/early_triode_vacuum_tubes.jpg (PD).
 - `mercury_dime_1943d_obverse_cut.png` — Commons "1943D Mercury Dime obverse-cutout.png" (1280 thumb), CC BY-SA 3.0 (coin design PD) — credit "Photo: Wikimedia Commons, CC BY-SA 3.0". N23.
 - `regency_tr1_red_cut.png` — white background keyed from photos/chm_regency_tr1_red.jpg (© CHM, fair use, credit "Photo: Computer History Museum").
+- `terman_1955_cut.png` — Frederick Terman 1955 (E41 `assets/archival/collage/terman_frederick_1955.jpg`, PD, 960x936) cut with `npx hyperframes@0.8.217 remove-background` (c2s02, 2026-10-31). Shared Terman likeness: C2S054, C2S063 (c2s02); free for c2s01/c2s03.

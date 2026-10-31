@@ -130,3 +130,8 @@
 - Subject: glass soda bottle (Coca-Cola contour bottle, 0.2 l)
 - Source: https://commons.wikimedia.org/wiki/File:15-09-26-RalfR-WLC-0098_-_Coca-Cola_glass_bottle_(Germany).jpg (1280 thumb)
 - Licence / credit: CC0 (Ralf Roletschek) · Size: 1280x2270 · Used: C2S031–032 (N22, modern bottle — closest free match) → cutouts/glass_bottle_cut.png
+### objects/nobel_medal_fleming_1945.jpg (c2s02, N24)
+- Subject: Nobel Prize medal (obverse, Alfred Nobel) awarded to Sir Alexander Fleming, 1945 — National Museum of Scotland
+- Source: https://commons.wikimedia.org/wiki/File:Nobel_prize_medal_for_medicine,_Sweden,_1945,_to_Sir_Alexander_Fleming_(1881-1955)_who_discovered_Penicillin._On_display_at_the_National_Museum_of_Scotland.jpg (1920 thumb of 3936x2624)
+- Licence / credit: CC BY-SA 4.0 (Wikimedia Commons) — on-screen credit "Medal photo: CC BY-SA 4.0 (Wikimedia Commons)" · Size: 1920x1280
+- Circular cut-out: `derived/c2s02/nobel_medal_cut.png` (836x836, project/c2/gen/c2s02_assets.py). Used: C2S034 (c2s01), C2S046 (c2s02).

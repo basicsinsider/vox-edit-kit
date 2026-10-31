@@ -30,7 +30,7 @@ YouTube/Vimeo footage (AT&T Archives, HP/Varian corporate films, CHM lectures) �
 | ID | status | path / need | scenes | uses | sources / notes |
 |---|---|---|---|---|---|
 | E41 | ✅ | `assets/archival/collage/terman_frederick_1955.jpg` (960×936, PD) | S010 card, S012 circle, S043 circle | 3 | card/circle size only (≤ native) |
-| N06 | ❌ | Frederick Terman portrait 1950s, ≥ 1600 px, clean bg → cut-out 🛠 | S054 Vox cut-out, S063 | 2 | Stanford News Service / Stanford Historical Photograph Collection; Commons "Frederick Terman"; IEEE History Center (ETHW, CC) |
+| N06 | 🔁 `assets/c2/cutouts/terman_1955_cut.png` (cut from E41, 960 px — no larger copy reachable) | Frederick Terman portrait 1950s, ≥ 1600 px, clean bg → cut-out 🛠 | S054 Vox cut-out, S063 | 2 | Stanford News Service / Stanford Historical Photograph Collection; Commons "Frederick Terman"; IEEE History Center (ETHW, CC) |
 | N09 | ✅ `assets/c2/photos/bardeen_shockley_brattain_1948.jpg` (1920) | Bell Labs 1948 publicity photo: Bardeen, Shockley (seated at microscope), Brattain, ≥ 2400 px | S015, crops S047 | 2 | Commons "Bardeen Shockley Brattain 1948.JPG"; AT&T/Nokia Bell Labs © fair use |
 | N33 | ✅ `assets/c2/photos/shockley_portrait.jpg` (2317) + `cutouts/shockley_portrait_cut.png` | William Shockley portrait c.1956 (Nobel) ≥ 1600 px | S046 | 1 | nobelprize.org; Commons |
 | N62 | ✅ `assets/c2/photos/shockley_stanford_painter.jpg` (+ `shockley_1959_lecture.jpg`, `shockley_blackboard_transistor.jpg`) | second Shockley portrait (different photo; 1950s–70s) | S091 | 1 | Commons "William Shockley, Stanford University" (Chuck Painter / Stanford News Service, CC); CHM |
@@ -84,7 +84,7 @@ YouTube/Vimeo footage (AT&T Archives, HP/Varian corporate films, CHM lectures) �
 | N21 | ✅ `assets/c2/photos/chm_bell_labs_tradic_felker_harris.jpg` (800) | TRADIC (Bell Labs 1954, first transistorised computer) or IBM 7090 | S028 | 1 | Commons "TRADIC computer.jpg" (USAF PD); IBM archives |
 | N22 | ❌ | 1950s glass soda bottle, clean cut-out | S031 | 1 | Commons (CC) |
 | N23 | ❌ | 1950s US coin (quarter/dime) | S032 | 1 | US coins PD (Commons / US Mint) |
-| N24 | ❌ | Nobel Prize medal (obverse) ≥ 2000 px | S034, S046 | 2 | Commons "Nobel Prize medal" (CC) |
+| N24 | ✅ `assets/c2/objects/nobel_medal_fleming_1945.jpg` + `derived/c2s02/nobel_medal_cut.png` (c2s02) | Nobel Prize medal (obverse) ≥ 2000 px | S034, S046 | 2 | Commons "Nobel Prize medal" (CC) |
 | N26 | 🔁 `assets/c2/objects/we_model_500_telephone.jpg` (needs polygon cut-out) | Western Electric 500 desk telephone (1950s) cut-out | S035 | 1 | Commons (CC) |
 | N30 | ✅ `assets/c2/objects/regency_tr1_b.jpg` + `photos/chm_regency_tr1_red.jpg` | Regency TR-1 transistor radio photo cut-out | S040 | 1 | Commons "Regency TR-1" (CC) |
 | N49 | ✅ `assets/c2/objects/klystron_prototype_cutaway.jpg`, `klystron_oscillator_1944.jpg` (small) | klystron (Varian brothers / Stanford) photo | S073 | 1 | Commons "Klystron", Stanford/SLAC history (fair use) |
@@ -150,7 +150,7 @@ YouTube/Vimeo footage (AT&T Archives, HP/Varian corporate films, CHM lectures) �
 | ID | status | need | scenes | notes |
 |---|---|---|---|---|
 | E55 | ✅ | `assets/intro/screens/tektronix_475a_scope_frame.png` + `_screen.json` | S123 | not used in the intro |
-| N57 | 🔁 `assets/c2/objects/rca_victor_tv_1950s_ohio.jpg` (screen not keyed yet) | 1950s TV set (RCA / Zenith / Admiral table or console) photo, screen keyed transparent + `*_screen.json` | S085 | Commons (CC), museum photos; **not** the intro's Tatung/Trinitron or the 10-min edit's museum TVs |
+| N57 | ✅ `assets/c2/derived/c2s02/tv_rca_1950s_keyed.png` + `_screen.json` (c2s02) | 1950s TV set (RCA / Zenith / Admiral table or console) photo, screen keyed transparent + `*_screen.json` | S085 | Commons (CC), museum photos; **not** the intro's Tatung/Trinitron or the 10-min edit's museum TVs |
 
 ## 9. Maps
 | ID | status | need | scenes | notes |
