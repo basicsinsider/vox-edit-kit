@@ -31,7 +31,7 @@
     #c4s02-grain, #c4s02-dust, #c4s02-vig { z-index: 8; }
 
     /* C4S037 yield line over ghost Taiwan */
-    #c4s02-sc037-paint { position: absolute; left: -1600px; top: 0; height: 1080px; width: 3984px; max-width: none; }
+    #c4s02-sc037-paint { position: absolute; left: 0; top: 0; height: 1081px; width: 3986px; max-width: none; filter: saturate(0.8) contrast(1.03) brightness(0.92); }
     #c4s02-sc037-ghost { position: absolute; left: 1010px; top: -60px; width: 885px; height: 1200px;
       -webkit-mask: url('assets/c4/derived/c4s02/tw_mask.png') 0 0 / 100% 100%; mask: url('assets/c4/derived/c4s02/tw_mask.png') 0 0 / 100% 100%; }
     #c4s02-sc037-ghost img { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0.45; }
@@ -867,7 +867,9 @@
     gsap.set($("sc037"), { autoAlpha: 1 });
     (function () {
       // hand-off from c4s01: the 1935 bird's-eye painting is still panning; it holds 2 frames then dissolves on the pan's motion
-      tl.fromTo($("sc037-paint"), { x: 0 }, { x: 160, duration: 0.9, ease: "none", immediateRender: true }, 0);
+      // matches c4s01 C4S036 exactly: x = −1776.3 at 199.14, moving ≈ −10.1 px/frame; decelerate (power2.out starts at 2×avg ≈ 10 px/frame)
+      gsap.set($("sc037-paint"), { x: -1776.3 });
+      tl.fromTo($("sc037-paint"), { x: -1776.3 }, { x: -1885, duration: 0.9, ease: "power2.out", immediateRender: true }, 0);
       tl.fromTo($("sc037-paint"), { opacity: 1 }, { opacity: 0, duration: 0.5, ease: "power1.inOut", immediateRender: true }, 2 / 24);
       tl.fromTo($("sc037-ghost"), { opacity: 0, x: 60 }, { opacity: 0.36, x: 0, duration: 1.2, ease: C(E.out, 1.2), immediateRender: true }, 0.04);
       const svg = $("sc037-svg");

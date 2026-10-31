@@ -74,13 +74,28 @@ afr = ["ghana", "guinea", "nigeria", "senegal", "mali", "c_te_d_ivoire", "camero
        "guinea_bissau", "eq_guinea", "lesotho", "eswatini"]
 res["africa"] = {"size": [W, H], "geo": A, "d": {k: to_d(P[k], f, 1.4, 4) for k in afr if k in P}}
 
+# --- Asia Blue Marble satdesat crop: lon 70..140, lat 14..56 at 45 px/deg — C3S080 (whole China + Taiwan)
+B = dict(lon0=70, lon1=140, lat0=14, lat1=56, k=45.0)
+W2, H2 = int((B["lon1"] - B["lon0"]) * B["k"]), int((B["lat1"] - B["lat0"]) * B["k"])
+if not (O / "asia_satdesat.jpg").exists():
+    big = Image.open(K / "world_satdesat_21600.jpg"); KB = 60.0
+    box = (int((B["lon0"] + 180) * KB), int((90 - B["lat1"]) * KB), int((B["lon1"] + 180) * KB), int((90 - B["lat0"]) * KB))
+    big.crop(box).resize((W2, H2), Image.LANCZOS).save(O / "asia_satdesat.jpg", quality=88); del big
+g = lambda x, y: ((x / WK - 180 - B["lon0"]) * B["k"], (90 - y / WK - (90 - B["lat1"])) * B["k"])
+res["asia"] = {"size": [W2, H2], "geo": B, "d": {k: to_d(P[k], g, 1.2, 4) for k in ["china", "taiwan", "mongolia"]}}
+del res["east_asia"]
+
+# --- 1950 PRC stamp: crop off the black scan margin
+st = Image.open("assets/c3/posters/prc_stamp_1950_sino_soviet_friendship.jpg").convert("RGB")
+bb = st.convert("L").point(lambda v: 255 if v > 150 else 0).getbbox(); st.crop(bb).save(O / "prc_stamp_1950_crop.jpg", quality=92); print("stamp", bb)
+
 json.dump(res, open(O / "paths.json", "w"), separators=(",", ":"))
 for k, v in res.items(): print(k, v["size"], len(v["d"]), sum(len(x) for x in v["d"].values()))
 
 # --- freeze frames (last/held frames under short clips)
 def still(src, t, name):
     subprocess.run(["ffmpeg", "-loglevel", "error", "-y", "-ss", str(t), "-i", src, "-frames:v", "1", "-q:v", "2", str(O / name)], check=True)
-still("assets/intro/footage/rotary_phone_1970_dialing.mp4", 3.06, "rotary_phone_freeze.jpg")
+still("assets/intro/footage/rotary_phone_1970_dialing.mp4", 2.58, "rotary_phone_freeze.jpg")
 still("assets/c4/footage/un_1950_security_council_president_china_delegate.mp4", 4.6, "un_1950_roc_delegate_last.jpg")
 still("assets/c3/footage/newsreel_1960_un_general_assembly_hall_wide.mp4", 6.9, "un_ga_1960_hall_last.jpg")
 print("stills ok")
