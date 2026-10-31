@@ -668,8 +668,11 @@ on action. Use it whenever the narrator quotes someone or introduces a historic 
   `domino_tick` (wood knock), `domino_run` (accelerating wood clicks), `dial_click` (rotary ratchet) — generated in place_sound.py.
 - **Chunk colours** (each its own corner of the Melting Glass family, glued by Interstice/Woodwind Reviere/Melting Glass): c1 Pardon
   My French + Journeyman Road + Formations; c2 A Pinpoint of Light + April + City Phases; c3 Thoughts Revoked + Shadowfall + To Whom
-  It May Concern; c4 Silent Sun + Ostinato + Still in Blues; c5 Finding Life Again + The Unveiling + Prison Cell.
-- vo_c5.mp3's noise floor sits above the −45 dBFS gate (only 5 pauses detected): pause lifts barely apply there; harmless.
+  It May Concern; c4 Silent Sun + Ostinato + Still in Blues; c5 Finding Life Again + The Unveiling + Prison Cell; c6 Captivating + Reflection of the Sun (+ Estimations, Misguided Path,
+  City Phases, Lightbulb Moment from the family). place_sound maps the c6 editor names `clunk` → circuit_clunk, `crowd` → crowd_room.
+- Quiet track openings (Melting Glass 0–32 s) measure far below the stem's file-wide LUFS: a layer there needs +4…5 dB `rel_lu`,
+  and an `auto` dip where it runs on into a louder section (c6 Act II was −21 LU re VO on the first pass).
+- vo_c5.mp3 / vo_c6.mp3 noise floors sit above the −45 dBFS gate (only 5 pauses detected each): pause lifts barely apply there; harmless.
 
 ### 10.9 Long-form rules (Krish, 2026-10-31 evening)
 - **Copyrighted material is allowed** for this channel (used the way YouTube's fair-use guidelines allow: commentary/
@@ -707,6 +710,7 @@ on action. Use it whenever the narrator quotes someone or introduces a historic 
 
 ## Changelog
 - 2026-10-31 — c6s03 editor: segment C6S077–C6S107 finished (lint 0 errors, audit clean); derived assets logged in `assets/c6/derived/c6s03/SOURCES.md`. Lessons: map pins on a pulled-back camera (scale ≈ 0.23) need r ≥ 66 + a dark centre or they read as specks; when a whip/slide follows the last spoken words, shorten the tail word rises (0.2–0.4 s) so the text finishes before the transition; Commons originals under 960 px can't be fetched as thumbs, and the original URL also 429s from this IP, so use the fetch relay (`requests/fetch.json`).
+- 2026-10-31 — sound designer: c6 bed (cue sheet, Captivating + Reflection of the Sun, `clunk`/`crowd` aliases, per-act balance in two passes).
 - 2026-10-31 — sound designer: c1 rebalanced + rebuilt, c3 and c5 beds built (cue sheets, 6 new Epidemic tracks in LOG.md); new `tools/audio/act_levels.py` per-act check; six c3 marker types; §10.8 notes on balance, derived-melody check and chunk colours.
 - 2026-10-31 — c6s01 editor: §4.2 notes (textCallout keyEl, focalBlur layering, no CJK in text, tilted map plane background); generator `project/c6/gen/` (markup + script + inlined map paths); derived assets `assets/c6/derived/c6s01/` (celadon Taiwan fill PNG, 1971 UN film stills, Kansan page 1800 px); real 莊敬自強 slogan photo (Commons CC BY 2.0).
 - 2026-10-31 — c5s03 editor: §4.2 gotchas (`.hl` class collision, transparent scene for paper slides, no path measuring in callbacks, Commons TIFF thumbs); Taiwan Strait Esri z10 mosaic + mask (`assets/c5/made/`), helpers `paperSlide`/`pushThrough`/`hemi`/`chair` in `project/c5/gen/c5s03/`.

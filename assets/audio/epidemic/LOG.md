@@ -62,6 +62,13 @@ commands below. Never use the public low-quality preview MP3s in an edit. Measur
 | `the_unveiling/` | The Unveiling — Christoffer Moe Ditlevsen (mysterious, sneaking; same composer as Estimations) | 605b5158-5031-3a52-b442-98d766ae92fc | — | full, bass, drums, instruments (no melody: stems don't sum) | 100 | A minor | Kissinger's secret trip (quiet stalk → peak on the announcement), the Cold-War-triangle pulse, the UN-vote build into c6 |
 | `prison_cell/` | Prison Cell — Jon Björk (ambient, dark drone, sad) | 4ea71784-9324-3347-9d44-f58f89e4b187 | — | full, bass, instruments (stems louder than the master; no melody) | 92 | A minor | Cultural Revolution drone, the low pulse under Nixon/Kissinger, the 'shock', 'worst dreams', the unresolved ending |
 
+### Added for chunk c6 (2026-10-31) — cue sheet `project/c6/music_cuesheet.json` (political / turning-point colour)
+
+| folder | title — artist | kosmosId | public URL | stems downloaded | bpm | key (est.) | role / why |
+|---|---|---|---|---|---|---|---|
+| `captivating/` | Captivating — Joseph Alesci (drama, elegant, main title, peaceful) | f0983d53-2b0c-3eb3-bd2b-e54166733057 | — | full, bass, drums, instruments (derived melody −1.9 dB re full: unreliable, deleted) | 91 | A minor | the turning point ('statement' → 'Keep on fighting'), the engineers' cabinet, the breakfast build into c7 |
+| `reflection_of_the_sun/` | Reflection of the Sun — Anna Landström (contemporary classical, dreamy) | 91275fd8-6226-4873-a678-2b1686def992 | — | full, bass, instruments, melody_derived (no DRUMS stem exists) | 88 | F major | airy wonder from 'technological breakthrough'; its 93–118 s peak = the swell on 'moon' |
+
 ### Candidates auditioned (by metadata + measured key from previews; not downloaded)
 Formations (Van Sandano, 100, Ab minor — wrong key for the set), Chrysotile (Farrell Wooten drone, C# minor — clashes with D),
 Imber (140, F# minor), Ostinato (Vieveri, 180, A minor — strong alternative for a build), City Phases (John Abbot, 150, A minor —
@@ -71,7 +78,7 @@ Deception Uncovered (C major/minor dark drone), Behind the Curtain (E), The Last
 Still in Blues (G minor drone), Air (A minor drone), Lotus River (D major). Similar-search seeds: Melting Glass, Formations, Chrysotile.
 c3/c5 audition (similar to Melting Glass / Estimations / Formations; key from previews): Covert Affairs (E minor), The Mole (F# minor),
 Methodus, Fake Photisms / Paradigm Shift / Neon Noir (E minor), Rise of the Velcro (B minor), Sense of Betrayal / Rushes To (C minor),
-Allegro Sotto Le Stelle (Ab major) — off-key; No One in Sight, Mindscape (A minor) — spares.
+Allegro Sotto Le Stelle (Ab major) — off-key; c6 audition: Longing (B minor), Shadow Play / Kingdom / Nimb / Cry for Help (C minor), Solution in Sight (A major), Kyoto Waltz (E major) — off-key; No One in Sight, Mindscape (A minor) — spares.
 
 ## SFX (Epidemic Sound) — `sfx/`
 
