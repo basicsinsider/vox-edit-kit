@@ -71,3 +71,12 @@ No Texturelabs cork exists that could be fetched without login; Texturelabs lice
 Full geometry in `tv_frame_0N_screen.json`. Raw downloads in `_raw/tv/` (also scott.jpg: Scott 6T-11 mirror TV, CC0 Daderot, https://commons.wikimedia.org/wiki/File:Scott_Model_6t-11_Television,_vertical_tube_with_mirror_-_National_Electronics_Museum_-_DSC00190.JPG — unused alternate).
 
 - `tv_frame_03_cut.png` (seg04 editor) — tv_frame_03.png with the white/beige museum background keyed out (border flood-fill on luminance + hand polygon trims at the shoulders, bottom label strip removed). Same CC0 source (Daderot). Screen geometry unchanged: `tv_frame_03_screen.json`.
+
+### Added 2026-10-31 (Krish's picks). The full-resolution original of each is in `_raw/Texturelabs_Paper_NNNL.jpg`.
+| File | Source | License | Dims (hi-res) | Recommended blend |
+|---|---|---|---|---|
+| paper_graph_01.jpg / _norm.jpg | Texturelabs Paper 300 "Blue lines graph paper", https://texturelabs.org/textures/paper_300/ | Texturelabs | 4240x3194 | Background plate for charts, or Multiply |
+| paper_lined_01.jpg / _norm.jpg | Texturelabs Paper 152 "Antique lined paper" (portrait, punched holes), https://texturelabs.org/textures/paper_152/ | Texturelabs | 3258x4240 | Background plate (notes, lists), or _norm Overlay/Soft Light |
+| paper_stained_01.jpg / _norm.jpg | Texturelabs Paper 353 "Stained vintage paper" (coffee rings), https://texturelabs.org/textures/paper_353/ | Texturelabs | 4240x3161 | Multiply |
+| paper_torn_01.jpg / _norm.jpg | Texturelabs Paper 351 "Torn and folded" (black, white fold lines and tears), https://texturelabs.org/textures/paper_351/ | Texturelabs | 4240x3016 | Screen (dark background) — folded-paper overlay |
+| paper_blueprint_01.jpg / _norm.jpg | Texturelabs Paper 380 "Antique blueprint" (blue), https://texturelabs.org/textures/paper_380/ | Texturelabs | 4240x3317 | Background plate (plans, diagrams), or _norm Overlay/Soft Light |

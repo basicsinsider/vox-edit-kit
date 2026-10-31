@@ -572,3 +572,4 @@ on action. Use it whenever the narrator quotes someone or introduces a historic 
 - 2026-10-29 — FX.choppy now ceil-steps (no 1/12 s delay at the start); FX.gate added (from seg01/seg06 editors).
 - 2026-10-29 — user: no fact-checking; on-screen text follows the voiceover as spoken.
 - 2026-10-29 — sound pass: `tools/audio/place_sound.py` pre-mixes music / SFX / ambience into three 600 s beds (assets/audio/bed/, timeline.json); §7.1 added; this VO is −27.2 LUFS so the bed sits ~14 LU under it (−41 LUFS).
+- 2026-10-31 — Added 5 Texturelabs papers (graph, lined, stained, torn/folded, blueprint) to assets/textures (SOURCES.md). How the download works in a browser tool: click the size button (lg), the page POSTs to admin-ajax.php and gets back a `downloadlink` (signed S3 URL, valid 20 min) — fetch that URL. prep_texture.py now accepts a file that is already in `_raw/`.
