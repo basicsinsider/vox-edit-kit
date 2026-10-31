@@ -457,6 +457,26 @@ downloads them into `assets/audio/epidemic/`. VO stays untouched; bed far under 
 - ASR name fixes so far: Robert Tsao (ASR "Robot Cao", "Sao", "Xiao"), Morris Chang, TSMC, UMC, Hsinchu Science Park
   ("Shin Shu Park"), host "Sam", show "Searching Lessons" (check spelling with Krish).
 
+### 10.5 Round-3 rules (Krish, 2026-10-31)
+- **Paintings, oil paintings, illustrations and vintage posters are B-roll too** — same rule as photos: they must match the
+  words. A colour painting of a famous figure often beats a B/W photo; pictorial maps (e.g. 1950s illustrated California maps)
+  can stand in for maps. PD/CC/free only, logged. Examples Krish sent: illustrated California maps, Wild West poster art,
+  a pictorial "Palo Alto — birthplace of Silicon Valley" map.
+- **Vintage grid / ruled paper grounds** (look of Creative Market "Vintage Ruled Grid Paper Textures" — reference only, not
+  bought, never re-drawn as vector): real scans — archive.org `kecatalog` (K+E Graph Sheets Catalog 1960), old ledgers,
+  engineering notebooks, Texturelabs paper. Files in `assets/intro/papers/` (and later a shared `assets/textures/papers/`).
+- **Vintage instruction manuals / datasheets** of the era (archive.org, bitsavers) are prime visuals for tech topics.
+- **Per-chunk reference packs**: Krish sends Pinterest refs per chunk (Drive folder → `references/style-images/<chunk>/Dnn.jpg`).
+  Use as many as the narration allows; unused ones carry over to the next chunk; a layout may repeat (varied). For scenes he
+  didn't supply, find similar Pinterest-style references yourself and note them in the plan.
+- **Access from this cloud machine (2026-10-31):** Commons API 429 → `find_media.py commons-html` (HTML search works);
+  YouTube ("sign in, not a bot"), Vimeo ("couldn't verify your connection") and Instagram (anonymous rate limit) block the
+  datacenter IP even in a headless browser → list them in `requests/fetch.json` (fetch relay) or ask Krish to download and
+  push them to `references/reels/raw/`. Google Drive public folders work (`embeddedfolderview?id=` + `drive.usercontent`).
+- Multi-agent intro pipeline as in AGENT_BRIEFS (analyst ∥ gatherers A/B/C ∥ sound designer → planner → editors → sound
+  placement → assembly/QA). Chunk files: `project/<chunk>/`, compositions `introNN` / `cKsNN`; build with
+  `tools/build_master.py --prefix intro --vo vo_intro.mp3 --len 275.06 --timeline assets/audio/intro/timeline.json`.
+
 ## 9. QA checklist
 - [ ] VO identical to source (same level; no processing). [ ] Every text cue within 0–120 ms before its word.
 - [ ] Only the three fonts. [ ] Palette only; West=vermilion/East=navy. [ ] ≤ 2 accents per frame.
@@ -466,6 +486,7 @@ downloads them into `assets/audio/epidemic/`. VO stays untouched; bed far under 
 - [ ] Smooth long eases, 12 fps. [ ] Cuts on action; whips, no iris. [ ] No photo/clip used > 2× in a chunk.
 
 ## Changelog
+- 2026-10-31 — §10.5: paintings/posters as B-roll, vintage grid papers, manuals, per-chunk Pinterest packs, cloud access notes; intro pipeline launched.
 - 2026-10-31 — Krish round 2: §10 added (intentional glow, settle-after-reveal, words↔visual rule, per-video palette
   `lib/palette.css` + Taiwan palette, Vox long-tail easing `FX.ease.*`, whip transitions `FX.whip` replace the iris, cut on
   action, DSLR focus hunt `FX.focusHunt`, better screens, Epidemic layered bed, long-form intro/chunk workflow).
