@@ -550,6 +550,14 @@ on action. Use it whenever the narrator quotes someone or introduces a historic 
   (≈ 12–16 LU under the voice), SFX −10…−20 dB below the VO depending on importance. **Frequency pocket**: a (dynamic) EQ dip
   on the MUSIC bed in the voice band (≈ 1–4 kHz, −3…−6 dB while he speaks) — "make room for vocals". Never EQ the VO.
 
+- **Pipeline (Epidemic projects):** `.venv/bin/python tools/audio/place_sound.py --vo vo_intro.mp3 --transcript
+  transcript_intro.json --len 275.06 --markers 'compositions/intro0*.sfx.json' --cues project/intro/music_cuesheet.json
+  --out assets/audio/intro` → `music_bed.wav / sfx.wav / ambience.wav / timeline.json` (+ `sfx_hierarchy.json` = this
+  section's restraint pass applied to the editors' markers: hero per scene + moves + ambience, no two hits < 0.25 s;
+  `--no-hierarchy` to place all). VO loudness is measured; bed = VO − 14 LU with the voice-band pocket; whips = Epidemic
+  whoosh + a low generated whoosh; repeated file takes are rate-shifted ±1–3 st. Check: `tools/audio/measure_mix.py --vo
+  vo_intro.mp3 --beds assets/audio/intro --len 275.06 --out renders/testmix_intro.wav` (mix vs VO alone < 1 LU).
+
 ## 9. QA checklist
 - [ ] VO identical to source (same level; no processing). [ ] Every text cue within 0–120 ms before its word.
 - [ ] Only the three fonts. [ ] Palette only; West=vermilion/East=navy. [ ] ≤ 2 accents per frame.
@@ -559,6 +567,7 @@ on action. Use it whenever the narrator quotes someone or introduces a historic 
 - [ ] Smooth long eases, 12 fps. [ ] Cuts on action; whips, no iris. [ ] No photo/clip used > 2× in a chunk.
 
 ## Changelog
+- 2026-10-31 — §10.8: place_sound.py project/Epidemic mode (layered stems, measured VO, restraint pass, variation); intro beds built.
 - 2026-10-31 — intro01 editor: §4.2 lint template-literal selectors, CSS masks inside 3D planes, object cut-outs by polygon, gating FX helpers per scene.
 - 2026-10-31 — intro03 editor: §4.2 gotchas (greyscale masks need alpha for CSS mask-image, antimeridian country paths, lint on letterSpacing tweens / font-family in credits).
 - 2026-10-31 — 5 Texturelabs papers added by Krish (assets/textures/paper_{graph,lined,stained,torn,blueprint}_01, SOURCES.md

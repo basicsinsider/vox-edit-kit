@@ -16,11 +16,19 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 from dsp import ROOT, AUDIO                             # noqa: E402
 from loudness import _B1, _A1, _B2, _A2                 # noqa: E402
-from place_sound import vo_activity                     # noqa: E402
+import place_sound as PS                                # noqa: E402
+import shutil                                           # noqa: E402
 
-FF = os.path.expanduser("~/.local/bin/ffmpeg")
-OUT = "renders/testmix_600s.wav"
-B = os.path.join(AUDIO, "bed")
+FF = shutil.which("ffmpeg") or os.path.expanduser("~/.local/bin/ffmpeg")
+# usage: measure_mix.py [--vo vo_intro.mp3 --beds assets/audio/intro --len 275.06 --out renders/testmix_intro.wav]
+_a = lambda k, d: sys.argv[sys.argv.index(k) + 1] if k in sys.argv else d
+VO = _a("--vo", "vo10.mp3")
+B = os.path.join(ROOT, _a("--beds", os.path.join(AUDIO, "bed")))
+SFX_ = "" if "--beds" in sys.argv else "_600s"
+OUT = _a("--out", "renders/testmix_600s.wav")
+PS.VO_FILE, PS.LEN = VO, float(_a("--len", "600"))
+PS.N = int(PS.LEN * PS.SR)
+vo_activity = PS.vo_activity
 
 
 def ebu(path):
@@ -33,13 +41,13 @@ def ebu(path):
 
 if __name__ == "__main__":
     os.makedirs(os.path.dirname(OUT), exist_ok=True)
-    subprocess.run([FF, "-v", "error", "-y", "-i", os.path.join(ROOT, "vo10.mp3"),
-                    "-i", f"{B}/music_bed_600s.wav", "-i", f"{B}/sfx_600s.wav", "-i", f"{B}/ambience_600s.wav",
+    subprocess.run([FF, "-v", "error", "-y", "-i", os.path.join(ROOT, VO),
+                    "-i", f"{B}/music_bed{SFX_}.wav", "-i", f"{B}/sfx{SFX_}.wav", "-i", f"{B}/ambience{SFX_}.wav",
                     "-filter_complex", "[0:a]aresample=48000[v];[v][1:a][2:a][3:a]amix=inputs=4:normalize=0:duration=first",
                     "-c:a", "pcm_s24le", OUT], check=True)
-    for name, p in [("VO alone", os.path.join(ROOT, "vo10.mp3")), ("test mix", OUT),
-                    ("music bed", f"{B}/music_bed_600s.wav"), ("sfx", f"{B}/sfx_600s.wav"),
-                    ("ambience", f"{B}/ambience_600s.wav")]:
+    for name, p in [("VO alone", os.path.join(ROOT, VO)), ("test mix", OUT),
+                    ("music bed", f"{B}/music_bed{SFX_}.wav"), ("sfx", f"{B}/sfx{SFX_}.wav"),
+                    ("ambience", f"{B}/ambience{SFX_}.wav")]:
         i, pk = ebu(p)
         print(f"{name:10s} {i:6.1f} LUFS-I   true peak {pk:6.1f} dBTP")
 
@@ -51,9 +59,9 @@ if __name__ == "__main__":
         y = kw(x)
         n = len(y) // h
         return (y[: n * h].reshape(n, h, -1) ** 2).mean(1).sum(1)
-    m = sf.read(f"{B}/music_bed_600s.wav")[0]
-    s = sf.read(f"{B}/sfx_600s.wav")[0]
-    a = sf.read(f"{B}/ambience_600s.wav")[0]
+    m = sf.read(f"{B}/music_bed{SFX_}.wav")[0]
+    s = sf.read(f"{B}/sfx{SFX_}.wav")[0]
+    a = sf.read(f"{B}/ambience{SFX_}.wav")[0]
     n = min(len(act), len(m) // h)
     act = act[:n]
     body = np.zeros(n, bool)

@@ -116,7 +116,7 @@ Draft markers the plan already implies (editors confirm/shift to their frames):
 ]
 ```
 
-## 5. How `tools/audio/place_sound.py` should change (proposal — not rewritten yet)
+## 5. `tools/audio/place_sound.py` changes (DONE 2026-10-31 — cue sheet = `project/intro/music_cuesheet.json`)
 
 1. **Parameterise the project**: `--vo vo_intro.mp3 --words transcript_intro.json --len 275.06 --markers 'compositions/intro*.sfx.json'
    --out assets/audio/bed/intro/` instead of the hard-coded `vo10.mp3`, `transcript.json`, `LEN = 600`, `seg0*`. Also: its
