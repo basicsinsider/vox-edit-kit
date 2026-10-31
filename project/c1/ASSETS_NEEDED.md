@@ -25,13 +25,13 @@ Getty/AP: don't download (watermarks/licensing) — use the Getty-free alternati
 | ID | status | asset / need | source & notes | scenes (segment) | uses |
 |---|---|---|---|---|---|
 | E01 | 🔁 | Fred Terman 1955 portrait `assets/archival/collage/terman_frederick_1955.jpg` (exists) | fallback portrait; better 1970s photo = N01 | C1S003, C1S005, C1S045 (c1s01, c1s02) | 3 |
-| N01 | ❌ | Frederick Terman in the 1970s (age ~74, the 1974 quote), head & shoulders, ≥1600 px | Stanford News Service / Stanford Historical Photograph Collection (purl.stanford.edu, searchworks 'Frederick Terman'), IEEE History Center 'Frederick Terman' (ethw.org), Computer History Museum catalog; © owner, fair use, credit | C1S003 (c1s01) | 1 |
-| R01 | 🔁 | young Terman, Stanford Quad 1921 crop `terman_frederick_1920_theta_xi_crop.jpg` + group `theta_xi_stanford_1920_group_quad1921.jpg` | re-download: example-docs/sources/assets_archival.md (archive.org Stanford Quad 1921) | C1S024, C1S049, C1S055, C1S056, C1S061, C1S070, C1S075, C1S078 (c1s01, c1s02, c1s03) | 8 |
-| N02 | ❌ | Frederick Terman in the 1940s (Harvard RRL director / Dean of Engineering), ≥1600 px | Stanford Special Collections (SC0160 Terman papers), IEEE ETHW 'Frederick Terman', Harvard University Archives RRL photos; fair use | C1S091, C1S097, C1S098 (c1s03) | 3 |
+| N01 | 🔁 | Frederick Terman in the 1970s (age ~74, the 1974 quote), head & shoulders, ≥1600 px | Stanford News Service / Stanford Historical Photograph Collection (purl.stanford.edu, searchworks 'Frederick Terman'), IEEE History Center 'Frederick Terman' (ethw.org), Computer History Museum catalog; © owner, fair use, credit → partial: `assets/c1/people/terman_with_packard_hewlett_1977_ieee.jpg` (640 px, © IEEE) — hi-res still missing | C1S003 (c1s01) | 1 |
+| R01 | ✅ | young Terman, Stanford Quad 1921 crop `terman_frederick_1920_theta_xi_crop.jpg` + group `theta_xi_stanford_1920_group_quad1921.jpg` | re-download: example-docs/sources/assets_archival.md (archive.org Stanford Quad 1921) → `assets/c1/people/theta_xi_stanford_1920_group_quad1921.jpg` + `terman_frederick_1920_theta_xi_crop.jpg` | C1S024, C1S049, C1S055, C1S056, C1S061, C1S070, C1S075, C1S078 (c1s01, c1s02, c1s03) | 8 |
+| N02 | 🔁 | Frederick Terman in the 1940s (Harvard RRL director / Dean of Engineering), ≥1600 px | Stanford Special Collections (SC0160 Terman papers), IEEE ETHW 'Frederick Terman', Harvard University Archives RRL photos; fair use → partial: `assets/c1/people/terman_frederick_portrait_c1940s_ieee.jpg` (675x955, © IEEE) | C1S091, C1S097, C1S098 (c1s03) | 3 |
 | R02 | 🔁 | Herbert Hoover NARA portrait `assets/archival/hoover/hoover_presidential_portrait_photo_NARA.jpg` ✅ + young Hoover 1898 `hoover_young_1898.jpg` ✅ | exists | C1S026, C1S027, C1S038, C1S041 (c1s01, c1s02) | 4 |
-| R03 | 🔁 | Hoover official painted portrait (Elmer Wesley Greene 1956) `hoover_official_white_house_portrait_greene_1956.jpg` | re-download: example-docs/sources/assets_archival.md (Commons File:Hhoover.jpeg, PD) | C1S045, C1S046 (c1s02) | 2 |
-| R04 | 🔁 | Hoover as Secretary of Commerce 1924/1928 `hoover_secretary_of_commerce_1924_with_hughes.jpg`, `…_1928_informal.jpg` | re-download: example-docs/sources/assets_archival.md | C1S040 (c1s02) | 1 |
-| R05 | 🔁 | Lou Henry Hoover `lou_henry_hoover_1905_harris_ewing.jpg` | re-download: example-docs/sources/assets_archival.md (Harris & Ewing, PD) | C1S038 (c1s02) | 1 |
+| R03 | ✅ | Hoover official painted portrait (Elmer Wesley Greene 1956) `hoover_official_white_house_portrait_greene_1956.jpg` | re-download: example-docs/sources/assets_archival.md (Commons File:Hhoover.jpeg, PD) → `assets/c1/people/hoover_official_white_house_portrait_greene_1956.jpg` | C1S045, C1S046 (c1s02) | 2 |
+| R04 | ✅ | Hoover as Secretary of Commerce 1924/1928 `hoover_secretary_of_commerce_1924_with_hughes.jpg`, `…_1928_informal.jpg` | re-download: example-docs/sources/assets_archival.md → `assets/c1/people/hoover_secretary_of_commerce_{1923,1924_with_hughes,1928_informal}.jpg` | C1S040 (c1s02) | 1 |
+| R05 | ✅ | Lou Henry Hoover `lou_henry_hoover_1905_harris_ewing.jpg` | re-download: example-docs/sources/assets_archival.md (Harris & Ewing, PD) → `assets/c1/people/lou_henry_hoover_1905_harris_ewing.jpg` | C1S038 (c1s02) | 1 |
 | R06 | 🔁 | Lewis Terman — `lewis_terman_1923_LOWRES.jpg` is too small; find ≥1600 px | Commons 'Lewis Terman', Stanford Historical Photograph Collection; APA archives (fair use) | C1S051, C1S052, C1S055 (c1s02) | 3 |
 | E07 | ✅ | Hewlett c1962 `assets/archival/hp/hewlett_william_c1962.jpg`, Packard 1933 `packard_david_1933.jpg`, both 1960 `hewlett_and_packard_together_1960.jpg` | exists (s09 cut-outs) | C1S066, C1S068, C1S069, C1S070, C1S075 (c1s02, c1s03) | 5 |
 | N03 | ❌ | Hewlett and Packard in the late 1930s (garage era), ≥1600 px | HP / Hewlett Packard Enterprise archives press images, hpmemory.org, Computer History Museum; © HP, fair use, credit | C1S066 (c1s02) | 1 |
@@ -44,20 +44,20 @@ Getty/AP: don't download (watermarks/licensing) — use the Getty-free alternati
 |---|---|---|---|---|---|
 | E10 | ✅ | Stanford Main Quad panorama c1896 `assets/archival/hoover/stanford_main_quad_panorama_c1896*.jpg` + Inner Quad c1900 | exists — 2.5D quad (s07/SC023) | C1S018, C1S025, C1S027, C1S037, C1S064 (c1s01, c1s02) | 5 |
 | N10 | ❌ | Stanford under construction 1887–1891 (scaffolding, Quad arcades), ≥2000 px | Stanford Historical Photograph Collection (searchworks/purl), Commons 'Stanford University construction', Calisphere; PD (pre-1929) | C1S028 (c1s01) | 1 |
-| R11 | 🔁 | Stanford Memorial Church photochrom / campus aerial c1920 `stanford_memorial_church_detroit_photochrom.jpg`, `stanford_campus_aerial_c1920_quad1921.jpg` | re-download: example-docs/sources/assets_archival.md | C1S019, C1S025, C1S049, C1S097 (c1s01, c1s02, c1s03) | 4 |
-| R12 | 🔁 | modern Stanford aerial `stanford_aerial_panorama_2024.jpg` / `stanford_oval_main_quad_aerial_2007.jpg` | re-download: example-docs/sources/assets_archival.md (CC BY-SA — credit) | C1S037 (c1s02) | 1 |
+| R11 | ✅ | Stanford Memorial Church photochrom / campus aerial c1920 `stanford_memorial_church_detroit_photochrom.jpg`, `stanford_campus_aerial_c1920_quad1921.jpg` | re-download: example-docs/sources/assets_archival.md → `assets/c1/places/stanford_campus_aerial_c1920_quad1921.jpg`, `stanford_memorial_church_detroit_photochrom.jpg` | C1S019, C1S025, C1S049, C1S097 (c1s01, c1s02, c1s03) | 4 |
+| R12 | ✅ | modern Stanford aerial `stanford_aerial_panorama_2024.jpg` / `stanford_oval_main_quad_aerial_2007.jpg` | re-download: example-docs/sources/assets_archival.md (CC BY-SA — credit) → `assets/c1/places/stanford_oval_main_quad_aerial_2007.jpg`, `stanford_aerial_panorama_2024.jpg` | C1S037 (c1s02) | 1 |
 | E13 | ✅ | modern Silicon Valley aerials `assets/intro/photos/silicon_valley_aerial.jpg`, `silicon_valley_2014.jpg` | exists; + `silicon_valley_aerial_2013.jpg` in example-docs/sources | C1S002, C1S004, C1S016, C1S017 (c1s01) | 4 |
 | N13 | ❌ | Silicon Valley at dusk/night, high-res (≥3000 px) for the 'greatest feat' hero | Commons 'Silicon Valley aerial night', Flickr CC BY; press/fair use OK | C1S004 (c1s01) | 1 |
 | N14 | ❌ | UC Berkeley campus 1920s (Sather Tower / Campanile) ≥1600 px | Commons 'Sather Tower 1920s', Calisphere/Bancroft (PD) | C1S018, C1S019 (c1s01) | 2 |
 | N15 | ❌ | 1920s Stanford/Berkeley engineering students in a lab or drafting room | Stanford Quad yearbooks 1920s on archive.org, Calisphere, Bancroft Library (PD) | C1S018 (c1s01) | 1 |
 | E16 | ✅ | Bell Labs West Street `assets/archival/companies/bell_labs_west_street_building_historic.jpg`; GE logo `assets/archival/brain_drain/ge_logo_bone.svg` | exists | C1S022, C1S068 (c1s01, c1s02) | 2 |
-| R16 | 🔁 | GE Schenectady works aerial/panorama `ge_schenectady_works_aerial_1896.jpg`, `…_panorama_1907_lc.jpg`, postcard | re-download: example-docs/sources/assets_archival.md; a 1930s view preferred (N16) | C1S022, C1S068 (c1s01, c1s02) | 2 |
-| N16 | ❌ | GE Schenectady 1930s (Packard's time) photo/postcard | miSci (Museum of Innovation & Science) via Commons, LOC postcards, archive.org GE Monogram magazine | C1S022, C1S068 (c1s01, c1s02) | 2 |
+| R16 | ✅ | GE Schenectady works aerial/panorama `ge_schenectady_works_aerial_1896.jpg`, `…_panorama_1907_lc.jpg`, postcard | re-download: example-docs/sources/assets_archival.md; a 1930s view preferred (N16) → `assets/c1/places/ge_schenectady_works_aerial_1896.jpg`, `ge_schenectady_postcard.jpg` (1907 panorama failed) | C1S022, C1S068 (c1s01, c1s02) | 2 |
+| N16 | 🔁 | GE Schenectady 1930s (Packard's time) photo/postcard | miSci (Museum of Innovation & Science) via Commons, LOC postcards, archive.org GE Monogram magazine → substitute: `assets/c1/places/ge_schenectady_postcard.jpg` (linen postcard c.1930s–40s, 960 px) | C1S022, C1S068 (c1s01, c1s02) | 2 |
 | N17 | ❌ | 1920s train departing a California station (Oakland Mole / SF Third & Townsend) — footage or photo | archive.org Prelinger 'Southern Pacific 1920s', California Revealed; PD | C1S020 (c1s01) | 1 |
 | N18 | ❌ | Stanford business school 1925 (first home / bulletin 'Graduate School of Business 1925') | archive.org 'Stanford University Bulletin 1925', Stanford GSB history page (fair use) | C1S044 (c1s02) | 1 |
 | E19 | ✅ | HP garage 2.5D layers `assets/archival/hp/layers/` (backdrop, garage, hedge, house, layout.json) | exists — approved s10 | C1S083, C1S084 (c1s03) | 2 |
-| N20 | ❌ | Hoover inauguration 4 Mar 1929 photo or newsreel | Commons / LOC (PD), archive.org newsreels | C1S059 (c1s02) | 1 |
-| N21 | ❌ | Great Depression: Hooverville / breadline photos (2–3) | Commons (Dorothea Lange, FSA/OWI LOC — PD), 'Hooverville Seattle 1933' | C1S060 (c1s02) | 1 |
+| N20 | ✅ | Hoover inauguration 4 Mar 1929 photo or newsreel | Commons / LOC (PD), archive.org newsreels → `assets/c1/footage/hoover_1929_*.mp4` (NARA inauguration day film, 640x480) | C1S059 (c1s02) | 1 |
+| N21 | ✅ | Great Depression: Hooverville / breadline photos (2–3) | Commons (Dorothea Lange, FSA/OWI LOC — PD), 'Hooverville Seattle 1933' → `assets/c1/photos/white_angel_breadline_1932_lange.jpg`, `hooverville_seattle_tideflats_1933.jpg` | C1S060 (c1s02) | 1 |
 | N22 | ❌ | Harvard 1940s (Biological Laboratories / Harvard Yard) + RRL lab interior | Harvard University Archives (fair use), Commons; IEEE ETHW 'Radio Research Laboratory' | C1S093 (c1s03) | 1 |
 | N23 | ❌ | US Capitol / Washington 1940s, low angle with flag (≥2000 px) | LOC Harris & Ewing / FSA via Commons (PD) | C1S040, C1S098, C1S104 (c1s01, c1s02, c1s03) | 3 |
 | N24 | ❌ | The Pentagon (1940s–50s aerial) | Commons 'Pentagon aerial 1943' (US Army, PD) | C1S100 (c1s01) | 1 |
@@ -81,14 +81,14 @@ Getty/AP: don't download (watermarks/licensing) — use the Getty-free alternati
 | ID | status | asset / need | source & notes | scenes (segment) | uses |
 |---|---|---|---|---|---|
 | E40 | ✅ | NYT 7 Nov 1928 'HOOVER WINS' front page `assets/archival/newspapers/nyt_1928-11-07_hoover_wins_frontpage.jpg` | exists (s06) | C1S026 (c1s01) | 1 |
-| R41 | 🔁 | Terman 1916 *The Measurement of Intelligence* title page + IQ tables `terman_1916_title_page_HIRES_color.jpg` etc. | re-download: example-docs/sources/assets_archival.md (archive.org) | C1S053 (c1s02) | 1 |
+| R41 | ✅ | Terman 1916 *The Measurement of Intelligence* title page + IQ tables `terman_1916_title_page_HIRES_color.jpg` etc. | re-download: example-docs/sources/assets_archival.md (archive.org) → `assets/c1/documents/terman_1916_*_HIRES_color.jpg` | C1S053 (c1s02) | 1 |
 | R42 | 🔁 | entrance exam 1891 recreation `entrance_exam_1891_made.png`, admission card `admission_card_hoover_1891.png`, stamp | re-make from example-docs/sources/assets_archival_documents.md + assets_cutouts_made.md (typeset recreations) | C1S035, C1S036 (c1s02) | 2 |
 | R43 | 🔁 | Hewlett thesis title page recreation `hewlett_thesis_titlepage_1939_recreation.png`; fellowship letter `fellowship_letter_1938.png` | re-make (example-docs/sources/assets_archival_documents.md, assets_cutouts_made.md) | C1S072, C1S074 (c1s03) | 2 |
 | N44 | ❌ | Terman, *Radio Engineering* (McGraw-Hill 1932) cover/title page scan | archive.org 'Radio Engineering Terman 1932' (full text exists), worldradiohistory.com | C1S057 (c1s02) | 1 |
-| N45 | ❌ | Hewlett US patent 2,268,872 'Variable frequency oscillation generator' (filed 1939) drawing sheet | Google Patents / USPTO full-text PDF (US gov, PD) | C1S076 (c1s03) | 1 |
-| N46 | ❌ | HP 1940s catalogue page with the 200A/200B (test equipment) | hparchive.com (HP catalogs/HP Journal scans), hpmemory.org; © HP fair use | C1S088 (c1s03) | 1 |
+| N45 | ✅ | Hewlett US patent 2,268,872 'Variable frequency oscillation generator' (filed 1939) drawing sheet | Google Patents / USPTO full-text PDF (US gov, PD) → `assets/c1/documents/patent_US2268872_hewlett_drawing_sheet.png` (+ text page) | C1S076 (c1s03) | 1 |
+| N46 | ✅ | HP 1940s catalogue page with the 200A/200B (test equipment) | hparchive.com (HP catalogs/HP Journal scans), hpmemory.org; © HP fair use → `assets/c1/documents/hp_catalog_17a_1943_*.jpg`, `hp_price_list_1941_p1.jpg` (© HP fair use) | C1S088 (c1s03) | 1 |
 | N47 | ❌ | 1920s–50s newspaper classified 'HELP WANTED — no experience necessary' page | archive.org newspaper runs, Chronicling America via loc.gov image servers (PD pre-1929) | C1S033, C1S034 (c1s01) | 2 |
-| N48 | ❌ | WWII front page (e.g. 1 Sep 1939 / 8 Dec 1941 'WAR' headline) full page ≥3000 px | archive.org newspaper scans, Commons 'front page 1941 war'; fair use | C1S090 (c1s03) | 1 |
+| N48 | ✅ | WWII front page (e.g. 1 Sep 1939 / 8 Dec 1941 'WAR' headline) full page ≥3000 px | archive.org newspaper scans, Commons 'front page 1941 war'; fair use → `assets/c1/documents/washington_post_1941-12-08_japan_declares_war_frontpage.jpg` (+ Atlanta 9 Dec) | C1S090 (c1s03) | 1 |
 | N49 | ❌ | Stanford Board of Trustees 1920s minutes/letterhead (for a corner object) | Stanford Digital Repository 'Board of Trustees minutes'; fallback typeset | C1S041 (c1s02) | 1 |
 | N50 | ❌ | 1930s US Treasury cheque / pay envelope (halftone), 1930s banknote engraving | Commons (US currency images, PD with display rules — never full-size realistic), archive.org | C1S069, C1S075, C1S099 (c1s02, c1s03) | 3 |
 | N51 | 🛠 | tweet card (typeset recreation: generic avatar, no real handle, his words only) | make in our fonts | C1S029, C1S034 (c1s01) | 2 |
@@ -98,29 +98,29 @@ Getty/AP: don't download (watermarks/licensing) — use the Getty-free alternati
 
 | ID | status | asset / need | source & notes | scenes (segment) | uses |
 |---|---|---|---|---|---|
-| E60 | 🔁 | HP 200A front panel `hp_200A_audio_oscillator_front_panel.jpg` (CC BY-SA 2.0 — credit) | re-download: example-docs/sources/assets_archival.md | C1S073, C1S085, C1S087 (c1s03) | 3 |
+| E60 | ✅ | HP 200A front panel `hp_200A_audio_oscillator_front_panel.jpg` (CC BY-SA 2.0 — credit) | re-download: example-docs/sources/assets_archival.md → `assets/c1/objects/hp_200A_audio_oscillator_front_panel.jpg` | C1S073, C1S085, C1S087 (c1s03) | 3 |
 | N60 | ❌ | HP 200A/200B high-res (≥3000 px) studio photo, 3/4 view | Computer History Museum catalog, HP press kit, Commons (CC BY-SA) | C1S073 (c1s03) | 1 |
 | N61 | ❌ | 1930s US coin obverse/reverse (Walking Liberty half dollar / Mercury dime) high-res | Commons US Mint images (PD) | C1S074, C1S080, C1S082 (c1s03) | 3 |
 | N62 | ❌ | modern HP laptop + HP printer product photos (press, fair use) + HP logo (current) | HP press room / Commons; logo via `media-use resolve --type logo --entity HP` | C1S067, C1S082 (c1s02, c1s03) | 2 |
 | N63 | ❌ | vintage toggle light switch / bulb turning on — footage or macro photo | archive.org Prelinger, Pexels (free licence) | C1S031 (c1s01) | 1 |
 | N64 | ❌ | 1930s radio cabinet / loudspeaker (halftone cut-out) | Commons / Smithsonian Open Access (CC0) | C1S087 (c1s03) | 1 |
 | N65 | ❌ | 1920s–30s vacuum tubes (radio valves) high-res | Commons (CC0/BY), Smithsonian | C1S091 (c1s03) | 1 |
-| N66 | ❌ | WWII radar antenna (SCR-584 / SCR-270) footage + PPI radar scope photo with screen keyed (`*_screen.json`) | archive.org NARA/Army Signal Corps films, Commons 'PPI scope' (PD) | C1S094, C1S095 (c1s03) | 2 |
-| N67 | ❌ | WWII chaff ('Window') drop from bombers — photo/footage | Commons USAF/IWM (IWM non-commercial: avoid; use USAF PD) | C1S095 (c1s03) | 1 |
+| N66 | ✅ | WWII radar antenna (SCR-584 / SCR-270) footage + PPI radar scope photo with screen keyed (`*_screen.json`) | archive.org NARA/Army Signal Corps films, Commons 'PPI scope' (PD) → `assets/c1/photos/radar_ppi_*.jpg`, `scr584_radar_dish_operator.jpg`; keyed scope `assets/c1/screens/radar_ppi_scope_1945_frame.png` + `_screen.json` | C1S094, C1S095 (c1s03) | 2 |
+| N67 | ✅ | WWII chaff ('Window') drop from bombers — photo/footage | Commons USAF/IWM (IWM non-commercial: avoid; use USAF PD) → `assets/c1/photos/window_chaff_*.jpg` (IWM, PD) | C1S095 (c1s03) | 1 |
 | N68 | ❌ | 1940s oscilloscope (DuMont 208 / RCA) photo with screen keyed; fallback ✅ `assets/intro/screens/tektronix_475a_scope_frame.png` | Commons, Smithsonian (CC0) | C1S086 (c1s03) | 1 |
 | N69 | ❌ | 1950s TV set (Zenith/Admiral/RCA) with screen keyed — not the four museum TVs | Commons CC0 museum photos | C1S054 (c1s02) | 1 |
 | E70 | ✅ | logos of the 12 trillion-dollar companies `assets/logos/*.svg` + Eli Lilly `assets/maps/eli_lilly_*` | exists (s01/R4, s02) | C1S010 (c1s01) | 1 |
-| N71 | ❌ | apple + orange cut-outs (old `cutouts/src/apple_wet_isolated.jpg`, `orange_closeup.jpg`) | re-download: example-docs/sources/assets_cutouts.md | C1S013 (c1s01) | 1 |
+| N71 | ✅ | apple + orange cut-outs (old `cutouts/src/apple_wet_isolated.jpg`, `orange_closeup.jpg`) | re-download: example-docs/sources/assets_cutouts.md → `assets/c1/objects/apple_wet_isolated.jpg`, `orange_closeup.jpg` | C1S013 (c1s01) | 1 |
 
 ## Footage
 
 | ID | status | asset / need | source & notes | scenes (segment) | uses |
 |---|---|---|---|---|---|
-| E80 | 🔁 | Hoover 1928 newsreel `hoover_1928_south_america_*.mp4` | re-download: example-docs/sources/assets_archival_footage.md (Ford/NARA archive.org) | C1S039 (c1s02) | 1 |
-| E81 | 🔁 | classroom test 1956 `classroom_test_1956_wide.mp4` | re-download: example-docs/sources/assets_archival_footage.md (Prelinger) | C1S054 (c1s02) | 1 |
-| E82 | 🔁 | radio factory 1940 headphone testing / assembly `radio_factory_1940_*.mp4` | re-download: example-docs/sources/assets_archival_footage.md (Prelinger 'Radio and Television' 1940) | C1S089 (c1s03) | 1 |
-| E83 | ✅ | 1920s orchard / old West plates: `assets/archival/companies/california_san_francisco_powell_street_1920.jpg`; orchards `santa_clara_prune_orchard*.jpg` (re-download) | example-docs/sources/assets_archival.md | C1S017 (c1s01) | 1 |
-| N84 | ❌ | WWII radar/jamming newsreel (Army Signal Corps), 6–15 s | archive.org 'radar 1945 newsreel', NARA | C1S094 (c1s03) | 1 |
+| E80 | ✅ | Hoover 1928 newsreel `hoover_1928_south_america_*.mp4` | re-download: example-docs/sources/assets_archival_footage.md (Ford/NARA archive.org) → `assets/c1/footage/hoover_1928_south_america_*.mp4` | C1S039 (c1s02) | 1 |
+| E81 | ✅ | classroom test 1956 `classroom_test_1956_wide.mp4` | re-download: example-docs/sources/assets_archival_footage.md (Prelinger) → `assets/c1/footage/classroom_test_1956_wide.mp4` | C1S054 (c1s02) | 1 |
+| E82 | ✅ | radio factory 1940 headphone testing / assembly `radio_factory_1940_*.mp4` | re-download: example-docs/sources/assets_archival_footage.md (Prelinger 'Radio and Television' 1940) → `assets/c1/footage/radio_factory_1940_*.mp4` | C1S089 (c1s03) | 1 |
+| E83 | ✅ | 1920s orchard / old West plates: `assets/archival/companies/california_san_francisco_powell_street_1920.jpg`; orchards `santa_clara_prune_orchard*.jpg` (re-download) | example-docs/sources/assets_archival.md → `assets/c1/places/santa_clara_prune_orchard*.jpg` | C1S017 (c1s01) | 1 |
+| N84 | ✅ | WWII radar/jamming newsreel (Army Signal Corps), 6–15 s | archive.org 'radar 1945 newsreel', NARA → `assets/c1/footage/radar_1945_*.mp4` (Universal Newsreel "Radar Secrets Revealed" 1945) | C1S094 (c1s03) | 1 |
 
 ## Maps
 

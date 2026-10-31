@@ -1,0 +1,7 @@
+# assets/c3/posters — sources (2026-10-31)
+| file | subject | source | licence | author, date | size |
+|---|---|---|---|---|---|
+| owi_this_man_is_your_friend_chinese_1942.jpg | OWI poster "This man is your FRIEND — Chinese — He fights for FREEDOM" (N35); pencil "300" mark top right | https://commons.wikimedia.org/wiki/File:THIS_MAN_IS_YOUR_FRIEND._CHINESE._HE_FIGHTS_FOR_FREEDOM_-_NARA_-_515793.jpg | PD (US OWI / NARA 515793) | Office of Facts and Figures/OWI, 1942 | 2141×3000 |
+| nara_515905_united_nations_security_council.jpg | US State Dept. poster "Security Council — 5 permanent members (China, France, UK, USA, USSR) … the world is informed", Lake Success session photo (N43 / N61 substitute) | https://commons.wikimedia.org/wiki/File:UNITED_NATIONS_-_SECURITY_COUNCIL_-_NARA_-_515905.jpg | PD (US gov) | US Dept. of State, Oct 1946 | 2337×3000 |
+| nara_5730089_supporting_stalin.jpg | Chinese-language propaganda cartoon (NARA title "Supporting Stalin") — 1940s–50s China/Soviet art, use as N34/N54 substitute after checking the caption | https://commons.wikimedia.org/wiki/File:Supporting_Stalin_-_NARA_-_5730089.jpg | PD (NARA) | c.1950 | 2634×3000 |
+| roc_1960s_slogan_recover_mainland.jpg | ROC placard "全力支援前線，準備反攻大陸" (support the front, prepare to recover the mainland) (N48 substitute — a real 1960s sign, not a printed poster) | https://commons.wikimedia.org/wiki/File:1960s_ROC_slogan.jpg | PD/fair use | 1960s | 619×1086 (card size only) |

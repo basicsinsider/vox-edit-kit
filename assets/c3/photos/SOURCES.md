@@ -1,0 +1,23 @@
+# assets/c3/photos — sources (gathered 2026-10-31, chunk c3)
+Commons files were fetched as 3840/1920 px thumbnails (originals 429) and resampled back to the file's native size (no upscaling).
+
+| file | subject | source | licence / credit | author, date | size |
+|---|---|---|---|---|---|
+| field_david_dudley_brady_handy.jpg | David Dudley Field II, Brady-Handy studio portrait (N07) | https://commons.wikimedia.org/wiki/File:David_Field_-_Brady-Handy.jpg (LOC Brady-Handy coll.) | PD | Brady-Handy studio, c.1865–80 | 2151×2365 |
+| cairo_1943_fdr_chiang_churchill.jpg | Chiang, FDR, Churchill seated, Cairo, 25 Nov 1943 (N37) | https://commons.wikimedia.org/wiki/File:Franklin_D._Roosevelt,_Chiang_Kai-shek,_and_Winston_Churchill_at_the_Cairo_Conference,_1943.jpg | PD (US Army) | US Army Signal Corps, 1943 | 2005×1551 |
+| cairo_1943_participants.jpg | Cairo Conference group: Chiang, FDR, Churchill, Madame Chiang + staff (N37 alt, for 2.5D: rows) | https://commons.wikimedia.org/wiki/File:Cairo_Conference_Participants.jpg | PD (US gov) | US Army, 1943 | 2280×1535 |
+| cairo_1943_soong_meiling.jpg | same group, wider, Soong Mei-ling right (N37 alt, largest) | https://commons.wikimedia.org/wiki/File:On_November_22,_1943,_Soong_Meiling_attended_the_Cairo_Conference.jpg | PD | 1943 | 3448×2080 |
+| chiang_kai_shek_portrait.jpg | Chiang Kai-shek in full dress uniform (N45) | https://commons.wikimedia.org/wiki/File:Chiang_Kai-shek（蔣中正）.jpg | PD (ROC gov / age) | c.1940s | 2517×3331 |
+| mao_tse_tung_portrait.jpg | Mao Zedong portrait, B/W (N45) — small, card size only | https://commons.wikimedia.org/wiki/File:Mao_Tse_Tung.jpg | PD (PRC / age; check) | c.1950s | 740×1024 |
+| mao_zedong_with_cap.jpg | Mao Zedong with cap, colourised (N45 alt) | https://commons.wikimedia.org/wiki/File:Mao_Zedong_with_cap.jpg | PD | 1940s (colourised) | 875×1196 |
+| mao_stalin_moscow_1949_dec21.jpg | Mao, Bulganin, Stalin, Ulbricht, Tsedenbal — Stalin's 70th birthday, Bolshoi, 21 Dec 1949 (N53) | https://commons.wikimedia.org/wiki/File:Mao,_Bulganin,_Stalin,_Ulbricht_Tsedenbal.jpeg | PD-Russia/ fair use | 1949 | 1663×1092 |
+| eisenhower_chiang_soong_taipei_1960_colour.jpg | Eisenhower, Madame Chiang, Chiang Kai-shek walking, Taipei, June 1960, COLOUR (N50) — small | https://commons.wikimedia.org/wiki/File:Eisenhower_visits_Taiwan_(June_1960).jpg | PD (US gov) | June 1960 | 800×552 |
+| eisenhower_taipei_motorcade_1960.jpg | Eisenhower standing in open car with Chiang, Taipei crowds, 18 Jun 1960 (N50) | https://commons.wikimedia.org/wiki/File:U.S._President_Eisenhower_visited_TAIWAN_美國總統艾森豪於1960年6月訪問臺灣台北時與蔣中正總統-2.jpg | PD (ROC gov) | 1960 | 1102×689 |
+| ww2_sc184778_chinese_american_troops_truck.jpg | Chinese and American troops in a truck, CBI theater (N36) | https://commons.wikimedia.org/wiki/File:SC_184778-S_-_Chinese_and_American_troops_who_have_just_received_first_aid_treatment_are_seen_in_a_2½_ton_truck_for_transfer_to_the_far_rear_where_they_will_receive_hospital_care.jpg | PD (US Army Signal Corps) | 1944 | 3840×3161 (of 5542) |
+| ww2_sc190514_american_trained_chinese_22nd_division.jpg | column of the 22nd American-trained Chinese Division, Burma (N36) | https://commons.wikimedia.org/wiki/File:SC_190514_-_This_column_of_troops_of_the_22nd_American_Trained_Chinese_Division_are_advancing_to_their_front_line_positions_to_relieve_other_frontline_troops_there_by_giving_them_asrest.jpg | PD (US Army Signal Corps) | 1944 | 1669×1616 |
+| fdr_portrait_perskie_1944.png | FDR official 1944 campaign portrait, colour-tinted (N39) | https://commons.wikimedia.org/wiki/File:Franklin_D._Roosevelt_-_Portrait_by_Jacob_H._Perskie.png | PD | Jacob H. Perskie, 1944 | 2340×2914 |
+| fairchild_micrologic_series_01.jpg | Fairchild Milliwatt Micrologic ICs (TO-5 cans), early 1960s (N01) | https://commons.wikimedia.org/wiki/File:Fairchild_Milliwatt_Micrologic_series_(01).jpg | CC BY 4.0 — credit on screen (see Commons page for author) | modern photo | 3000×2000 |
+| fairchild_micrologic_series_04.jpg | same, single can (N01) | https://commons.wikimedia.org/wiki/File:Fairchild_Milliwatt_Micrologic_series_(04).jpg | CC BY 4.0 — credit | modern photo | 2898×1932 |
+| hoover_tower_01.jpg | Hoover Tower vs blue sky + trees fg — 2.5D source (N19) | https://commons.wikimedia.org/wiki/File:Hoover_Tower,_Stanford,_California_01.jpg | CC BY-SA 4.0 — credit | modern | 3000×4000 |
+| hoover_tower_jan2013.jpg | Hoover Tower, palm fg, red dome (N19 alt) | https://commons.wikimedia.org/wiki/File:Hoover_Tower_Stanford_January_2013.jpg | CC BY-SA 3.0 — credit | Jan 2013 | 2640×4400 |
+| hoover_tower_ccby.jpg | Hoover Tower backlit + fountain (N19 alt) | https://commons.wikimedia.org/wiki/File:Hoover_Tower.jpg | CC BY 2.0 — credit | modern | 2538×3144 |

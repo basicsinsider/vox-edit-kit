@@ -1,0 +1,1 @@
+# assets/c3/flags — Commons SVGs rendered to 1920 px PNG (PD). Files: flag_us_50star, flag_us_48star_1912_1959, flag_france, flag_ussr, flag_roc, flag_prc (https://commons.wikimedia.org/wiki/File:Flag_of_….svg). UK, Russia, Japan failed (429) — re-fetch with tools/commons_thumb.sh pattern `.svg/1920px-….svg.png` or draw (simple geometry).
