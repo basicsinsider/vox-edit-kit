@@ -340,6 +340,7 @@ GAIN = {
     # Epidemic-era types (SOUND_PLAN §4)
     "whip": (0.08, 0.10), "riser": (0.07, 0.09), "phone_ring": (0.05, 0.07), "phone_dial": (0.05, 0.07),
     "plane_pass": (0.08, 0.10), "teletype": (0.05, 0.07), "focus_hunt": (0.05, 0.065),
+    "circuit_clunk": (0.08, 0.10),
 }
 LOWTYPES = {"boom_low", "stamp_thud"}
 SFX_TRIM_DB = -3.0   # this VO is quiet (speech peaks ~ -16 dBFS): trims the table so SFX sit ~20 dB under local VO peaks
@@ -366,9 +367,10 @@ def render_epidemic(m, i, rng):
         buf[o:o + len(low)] += 0.5 * low / (np.abs(low).max() + 1e-9)
         return buf, lk, f"epi:{nm} + low whoosh gen#{seed}"
     if ty == "boom_low":
-        if any(k in note for k in ("morris", "biggest")):
+        if any(k in note for k in ("morris", "biggest", "seismic")):
             nm = "boom_dark_cinematic_low_hit"
-        elif any(k in note for k in ("condition", "'one'", "tsmc", "superpower", "slams")):
+        elif any(k in note for k in ("condition", "'one'", "tsmc", "superpower", "slams", "industrialists",
+                                     "export processing", "chiang")):
             nm = "boom_cinematic_deep"
         elif any(k in note for k in ("died", "sub only")):
             nm = "boom_sub_bass_clean_01"
@@ -554,6 +556,13 @@ def render_event(m, i, rng, wdir):
     if ty == "gate_creak":
         y = lib("kenney_gate_creak_01")
         return y, 0.0, "kenney_gate_creak_01"
+    if ty == "circuit_clunk":          # contrast veil / call-out: heavy switch latch over a short low thump
+        lat = st(lib(["kenney_metal_latch", "kenney_switch_click"][i % 2]))
+        th = st(G.impact(seed, 0.5, 90, 55, 0.3))
+        y = np.zeros((max(len(lat), len(th)), 2))
+        y[:len(lat)] += lat / (np.abs(lat).max() + 1e-9)
+        y[:len(th)] += 0.6 * th / (np.abs(th).max() + 1e-9)
+        return y, onset(y), f"circuit_clunk gen#{seed}"
     if ty == "chime_soft":
         y = lib("chime_soft")
         return y, onset(y), "chime_soft"

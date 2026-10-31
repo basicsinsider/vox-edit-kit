@@ -125,7 +125,7 @@ MOVES = {"whip", "whoosh_soft", "whoosh", "whoosh_big", "air_swell"}
 AMB = {"projector_loop", "crt_hum", "wind", "factory_hum", "crowd_room"}
 ALWAYS = {"boom_low", "riser", "plane_pass", "phone_ring", "teletype"}
 RANK = {"boom_low": 10, "riser": 9, "stamp_thud": 8, "phone_ring": 8, "plane_pass": 8, "teletype": 7, "burn_crackle": 7,
-        "film_burn": 7, "map_pin": 6, "paper_tear": 6, "highlighter_swipe": 6, "counter_ticks": 5, "odometer_tick": 5,
+        "film_burn": 7, "circuit_clunk": 6, "map_pin": 6, "paper_tear": 6, "highlighter_swipe": 6, "counter_ticks": 5, "odometer_tick": 5,
         "marker_long": 5, "paper_slide": 5, "phone_dial": 5, "pin_pop": 4, "marker_scratch": 4, "crt_click": 4,
         "crt_off": 4, "projector_click": 4, "shutter": 4, "focus_hunt": 4, "cork_pin": 4, "string_pull": 3,
         "lamp_click": 3, "gate_creak": 3, "paper_flip": 3, "page_turn": 3, "paper_rustle": 3, "pencil_scribble": 3,

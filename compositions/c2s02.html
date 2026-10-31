@@ -49,7 +49,9 @@
     #c2s02-grain, #c2s02-dust, #c2s02-vig { z-index: 8; }
 
     /* C2S043 */
-    #c2s02-sc043-map { position: absolute; left: 0; top: 0; width: 4267px; height: 2463px; opacity: 0.62; filter: brightness(1.25) contrast(1.05); }
+    #c2s02-sc043-map { position: absolute; left: 0; top: 0; width: 4267px; height: 2463px; filter: brightness(0.95) contrast(1.08); }
+    /* c2s01's world_night_5120 (14.2222 px/deg) registered into this map's space: x = 3.75·X − 2346.7, y = 4.6814·Y − 2263.7 */
+    #c2s02-sc043-world { position: absolute; left: -2346.7px; top: -2263.7px; width: 19200px; height: 11984px; filter: brightness(0.95) contrast(1.08); }
     #c2s02-sc043-nj { position: absolute; left: 2589.6px; top: 460.4px; width: 320px; height: 320px; border-radius: 50%; opacity: 0;
       background: radial-gradient(circle, rgba(159,195,227,0.85) 0%, rgba(159,195,227,0.35) 30%, rgba(159,195,227,0) 70%); mix-blend-mode: screen; }
     #c2s02-sc043-east { left: 2140px; top: 520px; width: 540px; text-align: right; font-size: 54px; }
@@ -320,7 +322,8 @@
     /* C2S081 */
     #c2s02-sc081-a { left: 470px; top: 250px; width: 760px; height: 600px; transform: rotate(-3deg); padding: 22px 22px 100px; }
     #c2s02-sc081-a .in { position: relative; width: 100%; height: 100%; overflow: hidden; }
-    #c2s02-sc081-a img { position: absolute; left: -137px; top: -496px; width: 1650px; height: 1100px; }
+    #c2s02-sc081-a img { position: absolute; left: 50%; top: 50%; width: 140px; height: 489px; margin: -244px 0 0 -70px; transform: rotate(-38deg); filter: grayscale(0.2) contrast(1.05); }
+    #c2s02-sc081-a .ht { position: absolute; inset: 0; background: url('assets/textures/halftone_01_norm.jpg') 0 0 / 300px auto; mix-blend-mode: multiply; opacity: 0.3; }
     #c2s02-sc081-tr { position: absolute; left: 34px; bottom: 30px; font-size: 44px; opacity: 0; }
     #c2s02-sc081-b { left: 990px; top: 90px; width: 760px; height: 520px; padding: 40px; }
     #c2s02-sc081-b .q { position: absolute; left: 0; top: 70px; width: 100%; text-align: center; font-size: 300px; color: var(--ink); opacity: 0.85; }
@@ -378,6 +381,7 @@
     <!-- C2S043 · 198.43–203.15 · Terman, this is happening in the east, but Terman is using the money he's getting from the military · D11 ghost US map -->
     <div class="c2b-scene c2b-night" id="c2s02-sc043" data-scene="C2S043"><div class="c2b-shot" id="c2s02-sc043-shot">
       <div class="c2b-cam" id="c2s02-sc043-cam" style="width:4267px;height:2463px">
+        <img id="c2s02-sc043-world" src="assets/c2/derived/c2s01/world_night_5120.jpg" alt="" />
         <img id="c2s02-sc043-map" src="assets/c2/derived/c2s02/us_night_wide.jpg" alt="" />
         <div id="c2s02-sc043-nj"></div>
         <svg id="c2s02-sc043-svg" class="c2b-mk" style="width:4267px;height:2463px" viewBox="0 0 4267 2463"></svg>
@@ -829,11 +833,11 @@
     <div class="c2b-scene c2b-paper" id="c2s02-sc081" data-scene="C2S081"><div class="c2b-shot" id="c2s02-sc081-shot">
       <div class="c2b-p1" style="background-image:url('assets/textures/paper_cream_02.jpg'); filter:brightness(0.92)"></div>
       <div class="c2b-p2" style="background-image:url('assets/textures/paper_fiber_01.jpg'); opacity:0.5"></div>
-      <div id="c2s02-sc081-a" class="c2b-card"><div class="in"><img src="assets/c2/objects/ck722.jpg" alt="" /></div><div id="c2s02-sc081-tr" class="t-label c2b-ink">transistors</div></div>
+      <div id="c2s02-sc081-a" class="c2b-card"><div class="in" style="background:#e6dcc7"><img src="assets/c2/cutouts/transistor_early.png" alt="" /><div class="ht"></div></div><div id="c2s02-sc081-tr" class="t-label c2b-ink">transistors</div></div>
       <div id="c2s02-sc081-b" class="c2b-card"><div class="tx2"></div><div class="q t-display">?</div></div>
       <div id="c2s02-sc081-ai" class="c2b-abs t-serif-i c2b-ink"><span class="c2b-w">another </span><span class="c2b-w">innovation</span></div>
       <div id="c2s02-sc081-ot" class="c2b-abs t-label c2b-ink"><span class="c2b-w">on </span><span class="c2b-w">top </span><span class="c2b-w">of</span></div>
-      <div class="c2b-credit ink">Raytheon CK722 (Wikimedia Commons)</div>
+      
     </div></div>
 
     <!-- C2S082 · 374.78–378.73 · Transistors are a switch, but if you want to build a machine, any type of machine · blueprint -->
@@ -1015,8 +1019,11 @@
       const cam = $("sc043-cam"), A = (lon, lat, s) => at(ux(lon), uy(lat), s);
       const NJ = [ux(-74.40), uy(40.68)], DC = [ux(-77.04), uy(38.90)], ST = [ux(-122.17), uy(37.43)];
       // hand-off from c2s01 C2S042: camera centred on 39°N 98°W, still gliding
-      gsap.set(cam, A(-98, 39, 0.62));
-      tl.fromTo(cam, A(-98, 39, 0.62), Object.assign(A(-97, 39, 0.66), { duration: 1.5, ease: E.cam, immediateRender: false }), S(198.43));
+      // hand-off from c2s01 C2S042: same world_night file, centred 98°W 39°N at 8.53 px/deg (lon) — here s = 0.16, still accelerating
+      gsap.set(cam, A(-98, 39, 0.16));
+      tl.fromTo(cam, A(-98, 39, 0.16), Object.assign(A(-97, 39, 0.66), { duration: 1.5, ease: E.cam, immediateRender: false }), S(198.43));
+      tl.fromTo($("sc043-map"), { filter: "brightness(0.95) contrast(1.08)" }, { filter: "brightness(0.78) contrast(1.05)", duration: 1.5, ease: "none", immediateRender: true }, S(198.43));
+      tl.set($("sc043-world"), { autoAlpha: 0 }, S(199.40));
       tl.to(cam, Object.assign(A(-101, 38.4, 0.68), { duration: 1.4, ease: E.cam }), S(200.30));   // pan West
       tl.to(cam, Object.assign(A(-101.3, 38.4, 0.70), { duration: 1.45, ease: "none" }), S(201.70));
       // East: New Jersey / Bell Labs glows sky
