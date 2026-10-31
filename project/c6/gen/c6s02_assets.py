@@ -64,29 +64,25 @@ tw = subpaths(getd(P("assets/maps/kit/world_overlay.svg"), "c-taiwan"))
 paths["twWorld"] = dstr([[(x / 4, y / 4) for x, y in simp(r, 1.0)] for r in tw])   # 4096 space
 paths["twWorldC"] = [round(wx(120.95) / 4, 1), round(wy(23.7) / 4, 1)]
 
-# ---------- 4. East Asia night crop: claim fill (China + Taiwan celadon) / mainland red (C6S075–076) ----------
-A = json.load(open(P("assets/maps/kit/east_asia.json")))
-ax = lambda lon: (lon - 100) * 127.95; ay = lambda lat: (48 - lat) * 150
-c0, d0, c1, d1 = 0, 0, int(ax(136)), int(ay(16)); KA = 0.55
-en = Image.open(P("assets/maps/kit/east_asia_night.jpg")).crop((c0, d0, c1, d1))
-en = en.resize((int(en.width * KA), int(en.height * KA)), Image.LANCZOS); en.save(P("assets/c6/derived/c6s02/east_asia_night_crop.jpg"), quality=88)
+# ---------- 4. Claim map (C6S075–076): native crop of the kit world night relief, lon 70–138E, lat 15–56N ----------
+gx0, gy0, gx1, gy1 = int(wx(70)), int(wy(56)), int(wx(138)), int(wy(15))
+en = W.crop((gx0, gy0, gx1, gy1)); en.save(P("assets/c6/derived/c6s02/claim_night_crop.jpg"), quality=88)
 paths["eaW"], paths["eaH"] = en.width, en.height
-ov = P("assets/maps/kit/east_asia_overlay.svg")
-china = [[((x - c0) * KA, (y - d0) * KA) for x, y in r] for r in subpaths(getd(ov, "c-china"))]
-taiwan = [[((x - c0) * KA, (y - d0) * KA) for x, y in r] for r in subpaths(getd(ov, "c-taiwan"))]
+wov = open(P("assets/maps/kit/world_overlay.svg")).read()
+def wd(pid): return re.search(r'id="%s"[^>]*\sd="([^"]+)"' % pid, wov).group(1)
+china = [[(x - gx0, y - gy0) for x, y in r] for r in subpaths(wd("c-china"))]
 def fillpng(rings, rgb, name, blur=0):
     im = Image.new("L", (en.width, en.height), 0); d = ImageDraw.Draw(im)
     for r in rings: d.polygon(r, fill=255)
     if blur: im = im.filter(ImageFilter.GaussianBlur(blur))
     col = Image.new("RGBA", im.size, rgb + (255,)); col.putalpha(im); col.save(P("assets/c6/derived/c6s02/" + name))
-fillpng(china, (159, 199, 178), "ea_china_celadon.png", 1)
-fillpng(china, (224, 63, 44), "ea_china_red.png", 1)
-fillpng(taiwan, (159, 199, 178), "ea_taiwan_celadon.png", 1)
-paths["eaChina"] = dstr([simp(r, 2.0) for r in china if len(r) > 30])
-paths["eaTaiwan"] = dstr([simp(r, 1.0) for r in taiwan if len(r) > 10])
-paths["eaTaipei"] = [round(ax(121.56) * KA, 1), round(ay(25.03) * KA, 1)]
-paths["eaTwC"] = [round(ax(120.95) * KA, 1), round(ay(23.7) * KA, 1)]
-
+fillpng(china, (159, 199, 178), "claim_china_celadon.png", 1.5)
+fillpng(china, (224, 63, 44), "claim_china_red.png", 1.5)
+paths["eaChina"] = dstr([simp(r, 2.5) for r in china if len(r) > 30])
+cx = lambda lon: (lon - 70) * 45.5111; cy = lambda lat: (56 - lat) * 45.5111
+paths["eaTwBox"] = [round(cx(119.3), 1), round(cy(25.4), 1), round(2.9 * 45.5111, 1), round(3.6 * 45.5111, 1)]
+paths["eaTwC"] = [round(cx(120.95), 1), round(cy(23.7), 1)]
+paths["eaBeijing"] = [round(cx(116.4), 1), round(cy(39.9), 1)]
 # ---------- 5. Taiwan outline (kit) normalised to a 1000-px-tall box (C6S047 faint, C6S066 blueprint) ----------
 T = json.load(open(P("assets/maps/kit/taiwan.json")))
 tr = max(subpaths(getd(P("assets/maps/kit/taiwan_overlay.svg"), "c-taiwan")), key=len)

@@ -118,14 +118,14 @@
         <svg viewBox="0 0 1400 900"><g fill="none" stroke="${INK}" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"><path d="M780 532 L640 532 M662 516 L640 532 L662 548"/><path d="M800 532 L940 532 M918 516 L940 532 L918 548"/></g></svg></div>`;
       $("sc047-cards").innerHTML = h; $("sc047-blur").innerHTML = h;
       const cam = $("sc047-cam");
-      tl.fromTo(cam, { scale: 1.0 }, { scale: 1.15, duration: 1.4, ease: E.cam, immediateRender: true }, S(223.46));
-      tl.to(cam, { scale: 1.18, duration: 3.4, ease: "none" }, S(224.86));
+      tl.fromTo(cam, { scale: 1.0 }, { scale: 1.07, duration: 1.4, ease: E.cam, immediateRender: true }, S(223.46));
+      tl.to(cam, { scale: 1.09, duration: 3.4, ease: "none" }, S(224.86));
       FX.focusHunt(tl, $("sc047-cards"), S(224.90), { dur: 0.8 });
       FX.focalBlur(tl, $("sc047-blur"), [
-        { t: S(223.46), x: 760, y: 370, r: 230 },
-        { t: S(225.64), x: 640, y: 455, r: 200, dur: 0.9 },
-        { t: S(226.55), x: 760, y: 540, r: 220, dur: 0.6 },
-        { t: S(227.15), x: 820, y: 625, r: 240, dur: 0.6 },
+        { t: S(223.46), x: 790, y: 394, r: 210 },
+        { t: S(225.64), x: 690, y: 467, r: 180, dur: 0.9 },
+        { t: S(226.55), x: 790, y: 540, r: 200, dur: 0.6 },
+        { t: S(227.15), x: 840, y: 613, r: 220, dur: 0.6 },
       ]);
       [T(224.28), T(224.44)].forEach((c, i) => rise(words("sc047-gb")[i], c, { dur: 0.7, y: 12 }));
       [T(226.28), T(226.76), T(227.24)].forEach((c, i) => rise(words("sc047-wm")[i], c, { dur: 0.5, y: 10 }));
