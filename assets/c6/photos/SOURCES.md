@@ -1,0 +1,25 @@
+# assets/c6/photos — SOURCES (gathered 2026-10-31, c6 asset gatherer)
+All looked at. Commons downloads are standard thumbnails (1280/1920/3840) because originals answered 429.
+
+| file | subject | source URL | licence / credit | author, date | px |
+|---|---|---|---|---|---|
+| apollo11_aldrin_as11-40-5903.jpg | Buzz Aldrin on the Moon (AS11-40-5903), full original | https://images.nasa.gov/details/as11-40-5903 | Public domain (NASA) — credit "NASA" | Neil Armstrong, 20 Jul 1969 | 5189×5067 |
+| apollo11_mission_control_s69-39593.jpg | Mission Control during the Apollo 11 EVA (B&W) | https://images.nasa.gov/details/S69-39593 | PD (NASA) | NASA, 20 Jul 1969 | 4093×2698 |
+| apollo11_mission_control_s69-40022.jpg | Mission Control celebrating the end of Apollo 11 (colour, flags) | https://images.nasa.gov/details/s69-40022 | PD (NASA) | NASA, 24 Jul 1969 | 5752×3743 |
+| bush_george_un_us_desk_1971_nara186386.jpg | George H. W. Bush at the US desk ("UNITED STATES" plate), hand to head, UN ambassador | https://commons.wikimedia.org/wiki/File:George_Bush_as_United_Nations_Representative,_1971-72_-_NARA_-_186386.tif | PD (US gov, NARA 186386) | 1971–72 | 1280×1014 (orig 3000) |
+| cairo_conference_1943_chiang_fdr_churchill.jpg | Chiang, Roosevelt, Churchill, Cairo | https://commons.wikimedia.org/wiki/File:Franklin_D._Roosevelt,_Chiang_Kai-shek,_and_Winston_Churchill_at_the_Cairo_Conference,_1943.jpg | PD (US Army) | 25 Nov 1943 | 1920×1485 |
+| chiang_ching_kuo_portrait_colour.jpg | Chiang Ching-kuo, colour official portrait (premier/president era) | https://commons.wikimedia.org/wiki/File:Portrait_of_Chiang_Ching-kuo.jpg | PD (ROC government work) per Commons | 1970s | 1920×2463 |
+| chiang_ching_kuo_president_portrait_colour.jpg | Chiang Ching-kuo, older colour portrait (president, 1980s) — small | https://commons.wikimedia.org/wiki/File:蔣經國總統_1.jpg | PD per Commons | 1980s | 587×737 |
+| chiang_ching_kuo_receives_sun_yun_suan.jpg | CCK (in wheelchair) receives Sun Yun-suan — late, faded colour | https://commons.wikimedia.org/wiki/File:蔣經國接見孫運璿.jpg | PD per Commons | 1980s | 1280×997 (orig 2004) |
+| chiang_ching_kuo_with_li_kwoh_ting_print.jpg | CCK with K. T. Li (photo of a framed print, magenta cast) | https://commons.wikimedia.org/wiki/File:蔣經國與李國鼎.jpg | per Commons (PD/ROC) | 1970s–80s | 1920×2555 |
+| chiang_ching_kuo_youth_uniform_ussr.jpg | young Chiang Ching-kuo in uniform (USSR years, 1930s) — small | https://commons.wikimedia.org/wiki/File:Chiang_Ching-kuo_youth.jpg | PD (old) | c. 1930s | 350×505 |
+| chiang_ching_kuo_1965_film_still.jpg | CCK close-up, frame from the LBJ Library 1965 film (see footage) | https://archive.org/details/youtube-MQFZzfsiBmk | PD (US gov film, LBJ Library) | 23 Sep 1965 | 640×480 |
+| chiang_kai_shek_portrait_uniform.jpg | Chiang Kai-shek, formal portrait in dress uniform (B&W) | https://commons.wikimedia.org/wiki/File:Chiang_Kai-shek（蔣中正）.jpg | PD per Commons | 1940s | 1280×1694 (orig 2517) |
+| deng_xiaoping_age16_c1920.jpg | young Deng Xiaoping, aged 16 | https://commons.wikimedia.org/wiki/File:已满16的邓公.jpg | PD (old) | c. 1920 | 960×1104 |
+| deng_xiaoping_student_france_1921.jpg | Deng Xiaoping as a student in France, full length | https://commons.wikimedia.org/wiki/File:Student_Deng_Xiaoping_in_France.jpg | PD (old) | c. 1921 | 1280×1859 |
+| deng_xiaoping_carter_1979_nara183157.jpg | Deng & Carter, White House arrival ceremony | https://commons.wikimedia.org/wiki/File:Deng_Xiaoping_and_Jimmy_Carter_at_the_arrival_ceremony_for_the_Vice_Premier_of_China._-_NARA_-_183157-restored.jpg | PD (NARA 183157) | 29 Jan 1979 | 1920×1518 |
+| deng_xiaoping_1979_closeup_cropped.jpg | Deng 1979 face close-up (same event, cropped) — for the N39↔N40 curve cut | https://commons.wikimedia.org/wiki/File:Deng_Xiaoping_at_the_arrival_ceremony_for_the_Vice_Premier_of_China_(cropped).jpg | PD (NARA) | 29 Jan 1979 | 799×1065 |
+| mao_portrait_tiananmen_gate.jpg | Mao portrait on Tiananmen Gate (modern photo) | https://commons.wikimedia.org/wiki/File:Portrait_of_Chairman_Mao_on_Tiananmen_Gatetower.jpg | CC BY-SA 4.0 — credit the Commons author on screen | modern | 3840×2880 |
+| moscow_sun_yat_sen_university_students_c1926.jpg | students of Moscow Sun Yat-sen University (UTK) — CCK's school; CCK not identified in it | https://commons.wikimedia.org/wiki/File:UTK-KUTK_students_Moscow.jpg | PD (old) | c. 1926 | 1920×1278 |
+| sun_yun_suan_premier_portrait_colour.jpg | Sun Yun-suan, colour portrait (premier, c. 1978–84) | https://commons.wikimedia.org/wiki/File:孫運璿院長.jpg | PD (ROC gov) per Commons | c. 1978 | 600×876 |
+| sun_yun_suan_sworn_in_economics_minister_1969.jpg | Sun Yun-suan sworn in as Minister of Economic Affairs | https://commons.wikimedia.org/wiki/File:新任經濟部長孫運璿就任.jpg | PD (ROC gov) per Commons | 1969 | 1920×1264 |
