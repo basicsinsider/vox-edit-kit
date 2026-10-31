@@ -8,18 +8,21 @@ and the segment contains NO voiceover <audio> of its own.
 assets/audio/timeline.json (written by the sound designer):
   [{"id": "mus-01", "src": "assets/audio/music/x.wav", "start": 0.0, "duration": 95.2,
     "media_start": 0.0, "volume": 0.18}, ...]
-Usage: python3 tools/build_master.py [--out master.html]
+Usage: python3 tools/build_master.py [--out master.html] [--prefix seg] [--vo vo10.mp3] [--len 600] [--timeline assets/audio/timeline.json]
+  e.g. intro: --prefix intro --vo vo_intro.mp3 --len 275.06 --timeline assets/audio/intro/timeline.json --out intro.html
 """
 import json, re, sys, pathlib
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 out = sys.argv[sys.argv.index("--out") + 1] if "--out" in sys.argv else "master.html"
-VO_LEN = 600.0
+arg = lambda k, d: sys.argv[sys.argv.index(k) + 1] if k in sys.argv else d
+PREFIX, VO, VO_LEN = arg("--prefix", "seg"), arg("--vo", "vo10.mp3"), float(arg("--len", "600"))
+TL = arg("--timeline", "assets/audio/timeline.json")
 
 segs = []
-for f in sorted((ROOT / "compositions").glob("seg*.html")):
+for f in sorted((ROOT / "compositions").glob(f"{PREFIX}*.html")):
     src = f.read_text()
-    m = re.search(r'data-composition-id="(seg\d+)"[^>]*', src)
+    m = re.search(rf'data-composition-id="({PREFIX}\d+)"[^>]*', src)
     if not m:
         continue
     tag = m.group(0)
@@ -41,7 +44,7 @@ hosts = "\n".join(
     for sid, src, st, du in segs)
 
 tracks = []
-tl = ROOT / "assets/audio/timeline.json"
+tl = ROOT / TL
 if tl.exists():
     for i, t in enumerate(json.loads(tl.read_text())):
         tracks.append(
@@ -62,7 +65,7 @@ html = f'''<!doctype html>
   <body>
     <div id="root" data-composition-id="main" data-start="0" data-duration="{total:.3f}" data-width="1920" data-height="1080" data-fps="24">
 {hosts}
-      <audio id="vo-main" src="vo10.mp3" data-start="0" data-duration="{VO_LEN}" data-media-start="0" data-volume="1" data-track-index="5"></audio>
+      <audio id="vo-main" src="{VO}" data-start="0" data-duration="{VO_LEN}" data-media-start="0" data-volume="1" data-track-index="5"></audio>
 {chr(10).join(tracks)}
     </div>
     <script>

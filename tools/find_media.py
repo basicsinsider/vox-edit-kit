@@ -5,6 +5,7 @@ Usage:
   python3 tools/find_media.py archive "Prelinger factory 1930s"   # archive.org films (mediatype movies)
   python3 tools/find_media.py archive-texts "New York Times 1928"  # archive.org scans (newspapers, books, yearbooks)
   python3 tools/find_media.py files <archive_identifier>          # list an archive.org item's downloadable files
+  python3 tools/find_media.py commons-html "Morris Chang"         # Commons via the HTML search page (use when the API answers 429)
 Options: --limit N (default 12)
 Download Commons images with tools/commons_thumb.sh (full-size originals are rate-limited).
 Download archive.org files from https://archive.org/download/<identifier>/<file>.
@@ -19,6 +20,35 @@ if "--limit" in sys.argv:
 if len(args) < 2:
     sys.exit(__doc__)
 mode, query = args[0], " ".join(args[1:])
+
+
+def html(url, tries=3):
+    for i in range(tries):
+        try:
+            with urllib.request.urlopen(urllib.request.Request(url, headers=UA), timeout=40) as r:
+                return r.read().decode("utf-8", "replace")
+        except Exception as e:
+            if i == tries - 1:
+                return ""
+            time.sleep(5 * (i + 1))
+
+
+def commons_html(query):
+    import re, html as H
+    page = html("https://commons.wikimedia.org/w/index.php?" + urllib.parse.urlencode(
+        {"search": query, "title": "Special:MediaSearch", "type": "image"}))
+    seen = []
+    for f in re.findall(r'href="https://commons.wikimedia.org/wiki/(File:[^"#?]+)"', page):
+        if f not in seen:
+            seen.append(f)
+    for f in seen[:limit]:
+        fp = html("https://commons.wikimedia.org/wiki/" + f)
+        lic = re.search(r'class="licensetpl_short"[^>]*>(.*?)<', fp) or re.search(r'(Public domain|CC[ -]BY[^<"]{0,20}|CC0)', fp)
+        size = re.search(r'\((\d[\d,]*) × (\d[\d,]*) pixels', fp)
+        name = urllib.parse.unquote(f[5:]).replace("_", " ")
+        print(f'{name}\n   {size.group(1)+"x"+size.group(2) if size else "?"} | {H.unescape(lic.group(1)).strip() if lic else "? check page"} | '
+              f'https://commons.wikimedia.org/wiki/{f}')
+        time.sleep(1.5)
 
 
 def get(url, tries=4):
@@ -40,6 +70,8 @@ if mode == "commons":
         i = p["imageinfo"][0]; m = i["extmetadata"]
         print(f'{p["title"][5:]}\n   {i["width"]}x{i["height"]} | {m.get("LicenseShortName", {}).get("value", "?")} | '
               f'{(m.get("DateTimeOriginal", {}).get("value") or "")[:25]} | {i["descriptionurl"]}')
+elif mode == "commons-html":
+    commons_html(query)
 elif mode in ("archive", "archive-texts"):
     mt = "movies" if mode == "archive" else "texts"
     q = urllib.parse.urlencode({"q": f"({query}) AND mediatype:{mt}", "fl[]": ["identifier", "title", "year", "licenseurl", "rights"],
