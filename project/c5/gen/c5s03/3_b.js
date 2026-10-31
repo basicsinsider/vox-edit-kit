@@ -159,9 +159,9 @@
     (function () {
       const page = $("sc106-page"), r = FX.rng(10601);
       ["sc106-n1", "sc106-n2"].forEach((id) => { let h = ""; for (let i = 0; i < 60; i++) h += `<div class="k-filler" style="width:${i % 9 === 8 ? 140 + r() * 80 : 330 + r() * 50}px"></div>`; $(id).innerHTML = h; });
-      const s0 = 2.36;
+      const s0 = 1.85;
       gsap.set(page, { x: 960 - 960 * s0, y: 540 - 340 * s0, scale: s0 });
-      tl.fromTo(page, { x: 960 - 960 * s0, y: 540 - 340 * s0, scale: s0 }, { x: 960 - 960 * 2.42, y: 540 - 340 * 2.42, scale: 2.42, duration: 1.07, ease: "none", immediateRender: false }, S(503.53));
+      tl.fromTo(page, { x: 960 - 960 * s0, y: 540 - 340 * s0, scale: s0 }, { x: 960 - 960 * 1.9, y: 540 - 340 * 1.9, scale: 1.9, duration: 1.07, ease: "none", immediateRender: false }, S(503.53));
       tl.to(page, { x: 0, y: -30, scale: 1.0, duration: 1.2, ease: C(E.inOut, 1.2) }, S(504.60));
       tl.to(page, { x: -30, y: -60, scale: 1.03, duration: 1.9, ease: "none" }, S(505.80));
       [T(504.27), T(504.51)].forEach((c, i) => rise(words("sc106-col")[i], c, { dur: 0.5, y: 6 }));

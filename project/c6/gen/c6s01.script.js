@@ -281,16 +281,16 @@
     (function () {
       const cam = $("sc011-cam"), wrap = $("sc011-seats");
       const names = ["AFGHANISTAN","ALBANIA","ALGERIA","ARGENTINA","AUSTRALIA","AUSTRIA","BAHRAIN","BARBADOS","BELGIUM","BHUTAN","BOLIVIA","BOTSWANA","BRAZIL","BULGARIA","BURMA","BURUNDI","BYELORUSSIAN SSR","CAMEROON","CANADA","CENTRAL AFRICAN REP.","CEYLON","CHAD","CHILE","CHINA","COLOMBIA","CONGO","COSTA RICA","CUBA","CYPRUS","CZECHOSLOVAKIA","DAHOMEY","DENMARK","DOMINICAN REP.","ECUADOR","EGYPT","EL SALVADOR","EQUATORIAL GUINEA","ETHIOPIA","FIJI","FINLAND","FRANCE","GABON","GAMBIA","GHANA","GREECE","GUATEMALA","GUINEA","GUYANA","HAITI","HONDURAS","HUNGARY","ICELAND","INDIA","INDONESIA","IRAN","IRAQ","IRELAND","ISRAEL","ITALY","IVORY COAST","JAMAICA","JAPAN","JORDAN","KENYA","KHMER REPUBLIC","KUWAIT","LAOS","LEBANON","LESOTHO","LIBERIA","LIBYA","LUXEMBOURG","MADAGASCAR","MALAWI","MALAYSIA","MALDIVES","MALI","MALTA","MAURITANIA","MAURITIUS","MEXICO","MONGOLIA","MOROCCO","NEPAL","NETHERLANDS","NEW ZEALAND","NICARAGUA","NIGER","NIGERIA","NORWAY","OMAN","PAKISTAN","PANAMA","PARAGUAY","PERU","PHILIPPINES","POLAND","PORTUGAL","QATAR","ROMANIA","RWANDA","SAUDI ARABIA","SENEGAL","SIERRA LEONE","SINGAPORE","SOMALIA","SOUTH AFRICA","SPAIN","SUDAN","SWAZILAND","SWEDEN","SYRIA","THAILAND","TOGO","TUNISIA","TURKEY","UGANDA","UKRAINIAN SSR","USSR","UNITED KINGDOM","TANZANIA","UNITED STATES","URUGUAY","VENEZUELA","YEMEN","YUGOSLAVIA","ZAMBIA"];
-      const rows = 8, per = 13, x0 = 100, y0 = 150, dx = 142, dy = 70;
+      const rows = 8, per = 13, x0 = 100, y0 = 200, dx = 142, dy = 92;
       const rocR = 5, rocC = 6;                                // the CHINA (ROC) seat: row 5, centre
-      const roc = [x0 + rocC * dx + 66, y0 + rocR * dy + 17];
+      const roc = [x0 + rocC * dx + 20 + 66, y0 + rocR * dy - 108 + 20];
       let k = 0; const seats = [];
       for (let r = 0; r < rows; r++) for (let c = 0; c < per; c++) {
         const isRoc = r === rocR && c === rocC;
         const nm = isRoc ? "CHINA" : names[(k++ * 7) % names.length];
-        const x = x0 + c * dx + (r % 2 ? 20 : 0), y = y0 + r * dy + Math.abs(c - 6) * 6;
+        const x = x0 + c * dx + (r % 2 ? 20 : 0), y = y0 + r * dy - (36 - (c - 6) * (c - 6)) * 3;
         wrap.insertAdjacentHTML("beforeend", `<div class="k-seat t-label${isRoc ? " roc" : ""}" id="c6s01-st${r}_${c}" style="left:${x}px; top:${y}px">${nm === "CHINA" && !isRoc ? "CHILE" : nm}</div>`);
-        if (!isRoc) seats.push({ el: document.getElementById(`c6s01-st${r}_${c}`), x: x + 66, y: y + 17 });
+        if (!isRoc) seats.push({ el: document.getElementById(`c6s01-st${r}_${c}`), x: x + 66, y: y + 20 });
       }
       $("sc011-tw").style.left = roc[0] - 60 + "px"; $("sc011-tw").style.top = roc[1] + 34 + "px";
       gsap.set(cam, { transformOrigin: `${roc[0]}px ${roc[1]}px` });
@@ -517,9 +517,9 @@
       // full-frame colour picture → pull-back + upward pan reveals it printed in a column
       tl.fromTo(cam, { x: -2002, y: -902, scale: 1.975 }, { x: -1990, y: -890, scale: 1.96, duration: 3.1, ease: "none", immediateRender: true }, S(102.08));
       tl.to(cam, { x: 30, y: 60, scale: 0.62, duration: 1.3, ease: E.cam }, S(105.18));
-      tl.to(cam, { x: -90, y: -360, scale: 0.7, duration: 3.4, ease: E.inOut }, S(106.6));
-      tl.to(cam, { x: -196, y: -548 - 60, scale: 0.68, duration: 1.4, ease: E.inOut }, S(110.0));
-      tl.to(cam, { x: -150, y: -560, scale: 0.64, duration: 4.0, ease: E.inOut }, S(112.6));
+      tl.to(cam, { x: -165, y: -210, scale: 0.75, duration: 3.2, ease: E.inOut }, S(106.6));
+      tl.to(cam, { x: -390, y: -765, scale: 0.9, duration: 1.4, ease: E.inOut }, S(109.95));
+      tl.to(cam, { x: -553, y: -862, scale: 0.85, duration: 3.6, ease: E.inOut }, S(112.7));
       [T(103.86), T(104.02)].forEach((c, i) => rise(words("sc023-tq")[i], c, { dur: 0.6, y: 10 }));
       tl.to($("sc023-tq"), { opacity: 0, duration: 0.4, ease: E.in }, S(105.1));
       [T(104.58), T(105.06), T(105.70)].forEach((c, i) => show(words("sc023-cap")[i], c));
@@ -594,9 +594,9 @@
       });
       // Taiwan's celadon dot drops out of the Assembly; navy dims (two accents: celadon + red)
       const tw = H.dots[22];
-      tl.set(tw.el, { attr: { fill: CEL, r: 15 } }, S(132.33));
+      tl.set(tw.el, { attr: { fill: CEL, r: 19, stroke: INK, "stroke-width": 4, "stroke-opacity": 1 } }, S(132.33));
       tl.to(H.dots.filter((d, i) => i < 55 && i !== 22).map((d) => d.el), { attr: { "fill-opacity": 0.3 }, duration: 0.3 }, S(132.33));
-      Object.assign($("sc027-tw").style, { left: tw.x - 80 + "px", top: tw.y - 80 + "px" });
+      Object.assign($("sc027-tw").style, { left: tw.x - 120 + "px", top: tw.y - 100 + "px" });
       show($("sc027-tw"), T(132.33));
       ul($("sc027-twu"), S(132.40), 0.35);
       Object.assign($("sc027-out").style, { left: tw.x + 40 + "px", top: tw.y + 20 + "px" });

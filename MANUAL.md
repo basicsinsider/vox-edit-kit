@@ -254,6 +254,12 @@ use, attribution optional; never redistribute the files publicly, never use them
 - Taiwan-Strait close-ups sharper than the kit's east_asia crop (128 px/deg): fetch Esri z9 tiles
   (`tools/map_tiles.py fetch esri 9 115.5 20.4 125.6 27.6`, ~180 tiles) and mosaic in web mercator; re-project the kit landmask with
   lon/lat per pixel (`project/c3/gen/c3s02_assets.py`).
+- (c5s01 editor) Every timed `<video>` needs an `id` (lint error `media_missing_id`: without it the renderer freezes the clip).
+  `FX.markup.arrow` / `strokePath` paths with round caps can show a stray DOT before they are drawn (dash fully offset): set the
+  returned paths to `opacity:0` with `gsap.set` and `tl.set(...,{opacity:1}, start)`. Kit regional crops are tight rectangles — when a
+  camera shows past the image edge, give the scene the map's own sea colour (`taiwan_night` sea = rgb(19,26,34)) instead of brightening
+  the map with a CSS filter. `taiwan_landmask.png` also covers the Fujian (PRC) coast in its NW corner — cut lon < 120.05°, lat > 24.9°
+  before filling Taiwan celadon (`project/c5/gen/c5s01_assets.py`).
 ### 4.3 Check, look, render
 ```bash
 python3 tools/build_index.py s05            # put one (or several) compositions in index.html
@@ -663,6 +669,7 @@ on action. Use it whenever the narrator quotes someone or introduces a historic 
 - [ ] Smooth long eases, 12 fps. [ ] Cuts on action; whips, no iris. [ ] No photo/clip used > 2× in a chunk.
 
 ## Changelog
+- 2026-10-31 — c5s01 editor: §4.2 gotchas (video ids, stray dot on undrawn arrows, map sea-colour backgrounds, Taiwan landmask includes the Fujian coast); derived c5s01 maps/2.5D layers via `project/c5/gen/c5s01_assets.py`.
 - 2026-10-31 — c3s02 editor: §4.2 gotchas (map-camera img selectors, torn paper as ground, Esri z9 strait mosaic); generator
   `project/c3/gen/c3s02_assets.py` + `build_c3s02.py` (src + scenes_{a,b,c}.js → compositions/c3s02.html).
 - 2026-10-31 — c3s03 editor: when cropping a kit raster for a region, y = (lat1 − lat)·k, i.e. `(y_world/45.5111 − 90 + lat1)·k` (a sign slip put Africa's borders off the imagery); keep the CSS size of a map `<img>`/svg in step with a regenerated crop; compute map-path centres numerically from the `d` string (getBBox returns 0 inside `display:none` scenes). New derived maps: Blue Marble Asia/Africa crops in `assets/c3/derived/c3s03/`.

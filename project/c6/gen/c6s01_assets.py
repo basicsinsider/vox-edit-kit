@@ -12,7 +12,7 @@ def frame(src, t, out):
         subprocess.run(["ffmpeg", "-loglevel", "error", "-y", "-ss", str(t), "-i", src, "-frames:v", "1", "-q:v", "2", str(O / out)], check=True)
 
 # 1971 film stills (UN film, fair use)
-frame("assets/c6/footage/un1971_vote_hall_pan_to_board.mp4", 4.6, "un1971_hall_wide.jpg")
+frame("assets/c6/footage/un1971_vote_hall_pan_to_board.mp4", 2.2, "un1971_hall_wide.jpg")
 frame("assets/c6/footage/un1971_us_desk.mp4", 0.3, "un1971_delegates_seated.jpg")
 frame("assets/c6/footage/un1971_celebration_delegate_clapping.mp4", 1.5, "un1971_dancing_still.jpg")
 

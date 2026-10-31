@@ -120,7 +120,7 @@
     scene("sc116", 553.94, 557.84);
     (function () {
       cam($("sc116-cam"), { scale: 1.0, x: 0 }, { scale: 1.07, x: -30 }, S(553.94), 3.9);
-      FX.focalBlur(tl, $("sc116-blur"), [{ t: S(553.94), x: 900, y: 420, r: 250 }, { t: S(554.3), x: 1080, y: 400, r: 300, dur: 2.6 }]);
+      FX.focalBlur(tl, $("sc116-blur"), [{ t: S(553.94), x: 1000, y: 520, r: 300 }, { t: S(554.3), x: 1420, y: 420, r: 320, dur: 2.6 }]);
       [T(553.94), T(554.50)].forEach((c, i) => rise(words("sc116-gb")[i], c, { dur: 0.7, y: 10 }));
       rise(words("sc116-del")[0], T(557.14), { dur: 0.35, y: 8 });
     })();
@@ -254,7 +254,7 @@
       const img = $("sc124-img"), s = { b: 14 }, fl = () => (img.style.filter = `saturate(0.7) brightness(0.8) blur(${s.b.toFixed(2)}px)`);
       fl();
       cam($("sc124-cam"), { scale: 1.0 }, { scale: 1.2 }, S(592.48), 5.55);
-      [[593.2, 6, 0.7], [594.0, 11, 0.5], [594.9, 4.5, 0.8], [595.9, 9, 0.5], [596.7, 5, 0.7], [597.5, 8, 0.53]].forEach(([t, v, d]) =>
+      [[593.2, 9, 0.7], [594.0, 13, 0.5], [594.9, 7, 0.8], [595.9, 11, 0.5], [596.7, 7.5, 0.7], [597.5, 10, 0.53]].forEach(([t, v, d]) =>
         tl.to(s, { b: v, duration: d, ease: "sine.inOut", onUpdate: fl }, S(t)));
       [T(596.58), T(596.82)].forEach((c, i) => rise(words("sc124-tv")[i], c, { dur: 0.6, y: 10 }));
     })();

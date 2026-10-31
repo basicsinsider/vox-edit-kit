@@ -399,7 +399,7 @@
     <!-- C6S081 · 425.09–432.86 · 10 Major Projects (NIGHT) -->
     <div class="c63-scene" id="c6s03-sc081" data-scene="C6S081">
       <div class="c63-weave" id="c6s03-sc081-wv"><div id="c6s03-sc081-cam" class="c63-cam" style="transform-origin:1300px 400px">
-        <video id="c6s03-sc081-vid" class="c63-vid" src="assets/c4/footage/taiwan_1960_refinery_towers.mp4" muted playsinline data-start="23.68" data-duration="7.6" data-media-start="0.5"
+        <video id="c6s03-sc081-vid" class="c63-vid" src="assets/c4/footage/taiwan_1960_refinery_towers.mp4" muted playsinline data-start="23.68" data-duration="8.0" data-media-start="0.5"
           data-color-grading='{"intensity":1,"adjust":{"saturation":-0.5,"contrast":0.08},"effects":{"chromaticAberration":0.12,"chromaticAngle":0}}'></video>
       </div></div>
       <canvas id="c6s03-sc081-streaks" class="streaks" style="opacity:0.45"></canvas>
@@ -563,7 +563,7 @@
     <div class="c63-scene" id="c6s03-sc094" data-scene="C6S094">
       <div id="c6s03-sc094-cam" class="c63-cam">
         <div id="c6s03-sc094-tube"></div>
-        <div id="c6s03-sc094-scr"><video id="c6s03-sc094-vid" src="assets/c6/footage/apollo11_first_step_tv_broadcast.mp4" muted playsinline data-start="107.4" data-duration="4.95" data-media-start="4.0"
+        <div id="c6s03-sc094-scr"><video id="c6s03-sc094-vid" src="assets/c6/footage/apollo11_first_step_tv_broadcast.mp4" muted playsinline data-start="107.4" data-duration="4.95" data-media-start="3.0"
           data-color-grading='{"intensity":1,"adjust":{"saturation":-1,"contrast":0.1},"effects":{"chromaticAberration":0.35,"chromaticAngle":0,"scanlines":0.4,"scanlineCount":0.17,"scanlineSoftness":1,"crtCurvature":0.35,"filmArtifacts":0.45}}'></video></div>
         <div id="c6s03-sc094-glow"></div>
         <img id="c6s03-sc094-tv" src="assets/c6/made/rca_ctc5_tv_frame.png" alt="" />
@@ -765,6 +765,754 @@
     <div id="c6s03-vig" class="vignette"></div>
     <audio id="c6s03-vo" class="temp-vo" src="vo_c6.mp3" data-start="0" data-duration="196.6" data-media-start="401.41" data-volume="1"></audio>
   </div>
+
+  <script>
+  (function () {
+    const SEG = "c6s03", SEG_START = 401.41, SEG_END = 598.01, DURATION = 196.6;
+    const T = s => +(s - 401.41).toFixed(3);   // TEXT cues (audited) — LOCAL c6 seconds in, segment seconds out
+    const S = T;                                // STRUCTURAL cues (cuts, camera, objects) — not audited
+    const L = 0.06;
+    const tl = gsap.timeline({ paused: true });
+    const $ = (id) => document.getElementById(SEG + "-" + id);
+    const NS = "http://www.w3.org/2000/svg";
+    const C = (e, d) => FX.choppy(e, d, 12);
+    const defs = $("defs");
+    const INK = "#141b24", BONE = "#f2ede3", YEL = "#f2d33b", CEL = "#9fc7b2", GREY = "#9a958c";
+
+    // ---------- shared filters ----------
+    FX.tintDefs(defs, "c6s03-tint-paper", "#3a3f48", "#efe7d5");
+    const blurs = {};
+    ["077","078","079","081","082","083","084","086","086b","088","090","092","093","094","096","097","101","102","103","104","105","106"].forEach((k) => { blurs[k] = FX.whipDefs(defs, "c6s03-wb" + k); });
+    const ch104 = FX.roughDefs(defs, "c6s03-ch104", { freq: 0.04, scale: 6, choke: 0 });
+
+    // ---------- helpers ----------
+    const scenes = [];
+    function scene(k, a, b) {
+      const e = $("sc" + k); scenes.push([e, a]);
+      if (a <= SEG_START + 0.001) gsap.set(e, { autoAlpha: 1 });
+      else tl.fromTo(e, { display: "none", autoAlpha: 0 }, { display: "block", autoAlpha: 1, duration: 0.001, immediateRender: false }, S(a));
+      if (b < SEG_END) tl.set(e, { display: "none", autoAlpha: 0 }, S(b));
+      return e;
+    }
+    const E = (id) => (typeof id === "string" ? $(id) : id);
+    function rise(id, t, o) {
+      o = o || {}; const e = E(id); const d = o.dur || 0.9;
+      tl.fromTo(e, { opacity: 0, y: o.y == null ? 18 : o.y }, { opacity: 1, y: 0, duration: d, ease: C(FX.ease.out, d), immediateRender: true }, t);
+    }
+    function pop(id, t, o) {
+      o = o || {}; const e = E(id); const d = o.dur || 1.0;
+      tl.fromTo(e, { opacity: 0, scale: o.from || 0.6 }, { opacity: 1, scale: 1, duration: d, ease: C(FX.ease.out, d), immediateRender: true }, t);
+    }
+    function out(id, t, d) { tl.to(E(id), { opacity: 0, duration: d || 0.3, ease: C(FX.ease.in, d || 0.3) }, t); }
+    function ground(kind, t) {
+      const v = kind === "paper" ? [0.32, 0.14, 0.24] : [1, 0.42, 0.36];
+      if (t <= 0) gsap.set(["#c6s03-vig", "#c6s03-dust", "#c6s03-grain"], { opacity: (i) => v[i] });
+      else tl.set(["#c6s03-vig", "#c6s03-dust", "#c6s03-grain"], { opacity: (i) => v[i] }, t);
+    }
+    function whip(ka, kb, t, o) {
+      o = Object.assign({ dir: 1, vertical: false }, o);
+      const a = $("sc" + ka), b = $("sc" + kb);
+      tl.set(a, { filter: "url(#c6s03-wb" + ka + ")" }, t - 0.17);
+      tl.set(b, { filter: "url(#c6s03-wb" + kb + ")" }, t - 0.001);
+      FX.whip(tl, a, b, t, Object.assign({ blurA: blurs[ka], blurB: blurs[kb] }, o));
+      tl.set(b, { filter: "none" }, t + 0.2);
+      tl.set(a, { filter: "none", x: 0, y: 0, scale: 1 }, t + 0.1);
+    }
+    function flash(t) { tl.fromTo("#c6s03-flash", { opacity: 0 }, { opacity: 0.85, duration: 0.08, ease: "power2.in", immediateRender: false }, t - 0.08); tl.to("#c6s03-flash", { opacity: 0, duration: 0.22, ease: "power2.out" }, t); }
+    // paper slide: incoming scene slides over the outgoing one (12 fps), landing at t
+    function slide(kb, t, from, d) {
+      const b = $("sc" + kb); d = d || 0.45;
+      const v = from === "right" ? { x: 1960, y: 0 } : from === "left" ? { x: -1960, y: 0 } : { x: 0, y: 1120 };
+      tl.fromTo(b, { x: v.x, y: v.y, boxShadow: "0 0 60px rgba(0,0,0,0.6)" }, { x: 0, y: 0, duration: d, ease: C(FX.ease.inOut, d), immediateRender: false }, t - d);
+      tl.set(b, { boxShadow: "none" }, t + 0.05);
+    }
+    // push-through: outgoing punches in toward (ox, oy), the incoming settles from a larger scale
+    function push(ka, kb, t, ox, oy) {
+      const a = $("sc" + ka), b = $("sc" + kb);
+      tl.fromTo(a, { scale: 1, transformOrigin: ox + "px " + oy + "px" }, { scale: 2.8, duration: 0.34, ease: FX.ease.in, immediateRender: false }, t - 0.34);
+      tl.fromTo(a, { filter: "blur(0px)" }, { filter: "blur(6px)", duration: 0.34, ease: "power2.in", immediateRender: false }, t - 0.34);
+      tl.fromTo(b, { scale: 1.35, transformOrigin: "960px 540px" }, { scale: 1, duration: 0.8, ease: FX.ease.cam, immediateRender: false }, t);
+      tl.set(a, { scale: 1, filter: "none" }, t + 0.05);
+    }
+    function ink(parent, d, t, dur, o) {
+      o = o || {};
+      const p = document.createElementNS(NS, "path");
+      p.setAttribute("d", d); p.setAttribute("fill", o.fill || "none");
+      p.setAttribute("stroke", o.color || INK); p.setAttribute("stroke-width", o.width || 6);
+      p.setAttribute("stroke-linecap", "round"); p.setAttribute("stroke-linejoin", "round");
+      if (o.filter) p.setAttribute("filter", o.filter);
+      if (o.opacity) p.setAttribute("opacity", o.opacity);
+      if (o.blend) p.style.mixBlendMode = o.blend;
+      parent.appendChild(p);
+      const len = p.getTotalLength() || 1;
+      p.setAttribute("stroke-dasharray", len + " " + len); p.setAttribute("stroke-dashoffset", len);
+      tl.fromTo(p, { attr: { "stroke-dashoffset": len } }, { attr: { "stroke-dashoffset": 0 }, duration: dur, ease: o.ease || C(FX.ease.inOut, dur), immediateRender: true }, t);
+      return p;
+    }
+    function el(tag, attrs, parent) { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; }
+    function div(cls, parent, css) { const d = document.createElement("div"); if (cls) d.className = cls; if (css) d.style.cssText = css; parent.appendChild(d); return d; }
+    function gated(a, b, fn) { const o = FX.onFrame; FX.onFrame = (f) => o(FX.gate(S(a) - 0.1, S(b) + 0.1, f)); try { fn(); } finally { FX.onFrame = o; } }
+    // typewriter (12 fps steps, 3 letters per step): first letter lands exactly at t
+    function type(id, t) {
+      const e = E(id); const chars = FX.split(e, "chars");
+      chars.forEach((c, i) => tl.fromTo(c, { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, t + Math.floor(i / 3) / 12));
+    }
+    // arrow head at the end of a quadratic (x1,y1)-(cx,cy)-(x2,y2)
+    function head(parent, cx, cy, x2, y2, t, o) {
+      const ang = Math.atan2(y2 - cy, x2 - cx), h = (o && o.h) || 26;
+      const d = "M" + (x2 - h * Math.cos(ang - 0.5)).toFixed(1) + " " + (y2 - h * Math.sin(ang - 0.5)).toFixed(1) + " L" + x2 + " " + y2 + " L" + (x2 - h * Math.cos(ang + 0.5)).toFixed(1) + " " + (y2 - h * Math.sin(ang + 0.5)).toFixed(1);
+      return ink(parent, d, t, 0.16, o);
+    }
+
+    // ---------- global textures ----------
+    FX.grain($("grain"), 6301);
+    FX.dust($("dust"), 6302, 2);
+    ground("paper", 0);
+
+    /* ============ C6S077 · 401.41–406.77 · more Taiwanese people into the ruling elite (PAPER) ============ */
+    scene("077", 401.41, 406.80);
+    (function () {
+      // second half of c6s02's whip ↓: lands from above, sharp by 401.57
+      const sc = $("sc077"), bn = blurs["077"], sb = { v: 90 };
+      gsap.set(sc, { y: -385, scale: 1.18, filter: "url(#c6s03-wb077)" }); bn.setAttribute("stdDeviation", "0 90");
+      tl.fromTo(sc, { y: -385, scale: 1.18 }, { y: 0, scale: 1, duration: 0.16, ease: "power3.out", immediateRender: false }, 0);
+      tl.fromTo(sb, { v: 90 }, { v: 0, duration: 0.16, ease: "power2.out", immediateRender: false, onUpdate: () => bn.setAttribute("stdDeviation", "0 " + sb.v.toFixed(1)) }, 0);
+      tl.set(sc, { filter: "none" }, 0.2);
+      const svg = $("sc077-svg"), mk = FX.markupDefs(svg, "c6s03-mk77", { boil: 4 });
+      // axis + quarter ticks (no numbers — DECISIONS 2)
+      ink(svg, "M150 712 L1770 714", S(401.6), 0.8, { width: 3, opacity: 0.7 });
+      [0, 0.25, 0.5, 0.75, 1].forEach((f, i) => ink(svg, "M" + (150 + f * 1620) + " 704 L" + (152 + f * 1620) + " 726", S(401.9) + i * 0.06, 0.15, { width: 3, opacity: 0.7 }));
+      tl.fromTo("#c6s03-sc077-track", { scaleX: 0 }, { scaleX: 1, duration: 1.2, ease: C(FX.ease.out, 1.2), immediateRender: true }, S(401.55));
+      tl.fromTo("#c6s03-sc077-bar", { scaleX: 0 }, { scaleX: 0.045, duration: 0.5, ease: C(FX.ease.out, 0.5), immediateRender: true }, S(402.2));
+      // the Taiwanese share grows from a sliver (12 fps) — done 405.25, held to the cut
+      tl.to("#c6s03-sc077-bar", { scaleX: 0.42, duration: 1.6, ease: C(FX.ease.out, 1.6) }, S(403.65));
+      rise("sc077-w1", T(403.49) - L);
+      rise("sc077-w2", T(403.65) - L);
+      FX.markup.pen(tl, svg, S(404.0), { points: [[352, 335], [520, 331], [700, 337]], width: 9, color: "#6f9d86", filter: mk, dur: 0.6, seed: 7701 });
+      rise("sc077-w3", T(404.53) - L);
+      rise("sc077-w4", T(405.09) - L);
+      rise("sc077-w5", T(405.49) - L);
+      rise("sc077-w6", T(405.65) - L);
+      rise("sc077-w7", T(406.13) - L, { dur: 0.6 });
+      // cut on action: the camera slides right
+      tl.to("#c6s03-sc077-cam", { x: -240, duration: 0.42, ease: FX.ease.in }, S(406.35));
+    })();
+
+    /* ============ C6S078 · 406.77–413.09 · economy → get people rich (NIGHT, D13) ============ */
+    scene("078", 406.77, 413.20);
+    ground("night", S(406.77));
+    (function () {
+      const svg = $("sc078-svg");
+      for (let y = 300; y <= 900; y += 150) el("line", { x1: 0, x2: 2300, y1: y, y2: y, stroke: "rgba(242,237,227,0.09)", "stroke-width": 2 }, svg);
+      const D = "M160 860 C400 850 520 805 700 765 S980 700 1150 625 S1450 525 1620 430 S1900 300 2050 235";
+      const glow = el("path", { d: D, fill: "none", stroke: CEL, "stroke-width": 22, opacity: 0.22, "stroke-linecap": "round", style: "filter:blur(8px)" }, svg);
+      const line = el("path", { d: D, fill: "none", stroke: CEL, "stroke-width": 7, "stroke-linecap": "round" }, svg);
+      const dot = el("circle", { r: 13, fill: BONE, cx: 160, cy: 860 }, svg);
+      const len = line.getTotalLength();
+      [glow, line].forEach((p) => { p.setAttribute("stroke-dasharray", len + " " + len); p.setAttribute("stroke-dashoffset", len); });
+      const st = { p: 0 };
+      const upd = () => { const off = len * (1 - st.p); line.setAttribute("stroke-dashoffset", off); glow.setAttribute("stroke-dashoffset", off); const q = line.getPointAtLength(len * st.p); dot.setAttribute("cx", q.x.toFixed(1)); dot.setAttribute("cy", q.y.toFixed(1)); };
+      upd();
+      tl.fromTo(st, { p: 0 }, { p: 1, duration: 4.9, ease: C("sine.inOut", 4.9), immediateRender: false, onUpdate: upd }, S(407.0));   // done 411.9
+      tl.fromTo("#c6s03-sc078-cam", { x: 0 }, { x: -380, duration: 5.4, ease: "sine.inOut", immediateRender: false }, S(407.1));
+      tl.fromTo("#c6s03-sc078-ghost", { x: 0, scale: 1.04 }, { x: -60, scale: 1.0, duration: 6.4, ease: "none", immediateRender: false }, S(406.77));
+      pop("sc078-c1", S(409.35), { dur: 0.9, from: 0.7 });
+      pop("sc078-c2", S(411.55), { dur: 0.8, from: 0.7 });   // done 412.35, whip starts 412.93
+      rise("sc078-w1", T(408.69) - L);
+      rise("sc078-w2", T(409.17) - L);
+      rise("sc078-w3", T(409.41) - L);
+      rise("sc078-w4", T(409.57) - L);
+      rise("sc078-w5", T(412.13) - L, { dur: 0.6 });
+      rise("sc078-w6", T(412.45) - L, { dur: 0.4 });
+      rise("sc078-w7", T(412.61) - L, { dur: 0.3 });
+      rise("sc078-w8", T(412.69) - L, { dur: 0.3 });
+    })();
+
+    /* ============ C6S079–080 · 413.09–425.09 · one-party state → democracy · the 'spoil' tape (PAPER) ============ */
+    whip("078", "079", S(413.09), { dir: 1 });
+    scene("079", 413.09, 425.20);
+    ground("paper", S(413.09));
+    (function () {
+      const svg = $("sc079-svg"), mk = FX.markupDefs(svg, "c6s03-mk79", { boil: 4 });
+      ink(svg, "M220 640 C600 646 1300 634 1700 641", S(413.35), 1.0, { width: 6, filter: mk });
+      const n1 = el("circle", { cx: 220, cy: 640, r: 15, fill: INK }, svg), n2 = el("circle", { cx: 1700, cy: 641, r: 15, fill: INK }, svg);
+      [n1, n2].forEach((c, i) => tl.fromTo(c, { opacity: 0, scale: 0.3, transformOrigin: "50% 50%" }, { opacity: 1, scale: 1, duration: 0.5, ease: C(FX.ease.out, 0.5), immediateRender: true }, S(413.5) + i * 0.8));
+      tl.fromTo("#c6s03-sc079-cam", { x: 0, scale: 1 }, { x: -50, scale: 1.03, duration: 8.5, ease: "none", immediateRender: false }, S(413.09));
+      // faint 'democracy' + the ballot at the end of the track
+      pop("sc079-ballot", S(415.15), { dur: 0.9, from: 0.75 });
+      rise("sc079-w0", T(415.25) - L);
+      tl.fromTo("#c6s03-sc079-one", { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, T(418.13) - L);
+      rise("sc079-w1", T(418.13) - L, { dur: 0.5, y: 8 });
+      rise("sc079-w2", T(418.37) - L, { dur: 0.5, y: 8 });
+      rise("sc079-w3", T(418.69) - L, { dur: 0.5, y: 8 });
+      // the marker travels from one-party state to democracy (12 fps), the ballot gets its stamp
+      const m = el("circle", { cx: 220, cy: 640, r: 22, fill: "none", stroke: INK, "stroke-width": 6 }, svg);
+      tl.fromTo(m, { attr: { cx: 220 }, opacity: 0 }, { attr: { cx: 1700 }, opacity: 1, duration: 1.3, ease: C(FX.ease.inOut, 1.3), immediateRender: true }, S(419.0));
+      out("sc079-dem0", S(419.35), 0.25);
+      rise("sc079-w4", T(419.49) - L, { dur: 0.9 });
+      tl.fromTo("#c6s03-sc079-stamp", { opacity: 0, scale: 1.7 }, { opacity: 0.85, scale: 1, duration: 0.17, ease: C("power3.in", 0.17), immediateRender: true }, S(419.75));
+      // 'this story' band (done 421.6)
+      tl.fromTo("#c6s03-sc079-band", { scaleX: 0 }, { scaleX: 1, duration: 0.9, ease: C(FX.ease.out, 0.9), immediateRender: true }, S(420.69));
+      rise("sc079-w5", T(421.09) - L, { dur: 0.6 });
+      rise("sc079-w6", T(421.25) - L, { dur: 0.6 });
+      // C6S080 — the spoiler tape slaps over DEMOCRACY, then peels off (done 424.37, holds to the flash whip)
+      tl.fromTo("#c6s03-sc079-tape", { opacity: 0, scale: 1.25, rotation: -9 }, { opacity: 1, scale: 1, rotation: -5, duration: 2 / 12, ease: C("power2.in", 2 / 12), immediateRender: true }, T(422.69) - L);
+      tl.fromTo("#c6s03-sc079-cam", { y: 0 }, { y: 6, duration: 1 / 12, yoyo: true, repeat: 1, ease: "none", immediateRender: false }, S(422.8));
+      tl.to("#c6s03-sc079-tape", { rotation: 16, x: 300, y: -420, opacity: 0, duration: 0.3, ease: C(FX.ease.in, 0.3) }, S(424.07));
+    })();
+
+    /* ============ C6S081 · 425.09–432.86 · 10 Major Projects (NIGHT) ============ */
+    flash(S(425.09));
+    whip("079", "081", S(425.09), { dir: 1, vertical: true });
+    scene("081", 425.09, 432.86);
+    ground("night", S(425.09));
+    (function () {
+      gated(425.0, 432.9, () => { FX.weave($("sc081-wv"), { amp: 1.3, seed: 8101 }); FX.streaks($("sc081-streaks"), { seed: 8102, speed: 0.4, gain: 0.85 }); });
+      tl.fromTo("#c6s03-sc081-cam", { scale: 1.0 }, { scale: 1.12, duration: 7.3, ease: "none", immediateRender: false }, S(425.09));
+      tl.to("#c6s03-sc081-cam", { scale: 1.45, duration: 0.42, ease: FX.ease.in }, S(432.44));   // cut on action
+      rise("sc081-w1", T(425.65) - L);
+      rise("sc081-w2", T(429.25) - L);
+      rise("sc081-w3", T(430.05) - L);
+      FX.text.odometer(tl, $("sc081-ten"), T(431.17) - L, { dur: 0.6, spins: 6, seed: 8103 });   // locked 431.8
+      rise("sc081-w4", T(431.65) - L, { dur: 0.7 });
+      rise("sc081-w5", T(432.05) - L, { dur: 0.6 });
+    })();
+
+    /* ============ C6S082 · 432.86–438.14 · infrastructure and industry inside of Taiwan (NIGHT) ============ */
+    scene("082", 432.86, 438.25);
+    (function () {
+      gated(432.8, 438.3, () => FX.weave($("sc082-wv"), { amp: 1.5, seed: 8201 }));
+      tl.fromTo("#c6s03-sc082-cam", { scale: 1.0 }, { scale: 1.06, duration: 3.14, ease: "none", immediateRender: false }, S(432.86));
+      tl.fromTo("#c6s03-sc082-cam", { scale: 1.12 }, { scale: 1.0, duration: 2.1, ease: FX.ease.cam, immediateRender: false }, S(436.0));   // hard cut on the pour
+      rise("sc082-w1", T(435.10) - L);
+      rise("sc082-w2", T(436.06) - L);
+      rise("sc082-w3", T(436.62) - L);
+      rise("sc082-w4", T(437.02) - L);
+      rise("sc082-w5", T(437.18) - L);
+      const mk = $("sc082-mk"), f = FX.markupDefs(mk, "c6s03-mk82", { boil: 4 });
+      FX.markup.pen(tl, mk, S(437.3), { points: [[452, 968], [600, 963], [742, 970]], width: 8, color: CEL, blend: "normal", filter: f, dur: 0.4, seed: 8202 });
+    })();
+
+    /* ============ C6S083 · 438.14–446.62 · ports, roads, steel mills… (NIGHT, D14 on satellite) ============ */
+    whip("082", "083", S(438.14), { dir: -1, vertical: true });
+    scene("083", 438.14, 446.66);
+    (function () {
+      const cam = $("sc083-cam"), svg = $("sc083-msvg"), mk = FX.markupDefs(svg, "c6s03-mk83", { boil: 12 });
+      svg.setAttribute("viewBox", "0 0 3246 4399");   // markupDefs resets the viewBox (§4.2)
+      const place = (cx, cy, s) => ({ x: 1270 - cx * s, y: 540 - cy * s, scale: s });
+      gsap.set(cam, place(2050, 1350, 0.36));
+      tl.fromTo(cam, place(2050, 1350, 0.36), Object.assign(place(1847, 2180, 0.232), { duration: 7.0, ease: FX.ease.cam, immediateRender: false }), S(438.3));   // pull back, done 445.3
+      function pin(x, y, t, seed) {
+        const g = el("g", { opacity: 0 }, svg);
+        const halo = el("circle", { cx: x, cy: y, r: 80, fill: "none", stroke: CEL, "stroke-width": 14 }, g);
+        el("circle", { cx: x, cy: y, r: 36, fill: BONE, stroke: INK, "stroke-width": 12 }, g);
+        tl.fromTo(g, { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, t);
+        tl.fromTo(halo, { attr: { r: 30 }, opacity: 1 }, { attr: { r: 150 }, opacity: 0, duration: 0.9, ease: C(FX.ease.out, 0.9), immediateRender: true }, t);
+      }
+      const R = (i, t) => tl.fromTo("#c6s03-sc083-r" + i, { opacity: 0, x: -30 }, { opacity: 1, x: 0, duration: 0.6, ease: C(FX.ease.out, 0.6), immediateRender: true }, t);
+      R(1, T(439.82) - L); pin(1354, 1356, S(439.82)); pin(2866, 990, S(439.95));
+      R(2, T(440.78) - L);
+      ink(svg, "M2731 330 L2485 428 L2239 501 L1880 733 L1701 1026 L1522 1540 L1388 1625 L1377 2077 L1287 2358 L1052 2933 L1153 3361", S(440.72), 1.2, { width: 30, color: YEL, opacity: 0.92, filter: mk });
+      R(3, T(441.74) - L); pin(1187, 3483, S(441.74));
+      R(4, T(442.94) - L); pin(1060, 3400, S(442.94));
+      R(5, T(443.90) - L);
+      ink(svg, "M2866 990 L2830 1080 L2799 1149 L2700 1420 L2575 1735", S(443.84), 0.9, { width: 16, color: BONE, opacity: 0.9 });
+      R(6, T(444.62) - L); pin(2608, 147, S(444.62));   // last pin done 445.1
+      rise("sc083-w1", T(445.50) - L, { dur: 0.6 });
+      rise("sc083-w2", T(445.90) - L, { dur: 0.5 });
+      rise("sc083-w3", T(445.98) - L, { dur: 0.5 });
+      rise("sc083-w4", T(446.14) - L, { dur: 0.4 });
+      rise("sc083-w5", T(446.30) - L, { dur: 0.3 });
+    })();
+
+    /* ============ C6S084–085 · 446.62–456.94 · money flows in, invested (PAPER, D11) ============ */
+    slide("084", S(446.62), "bottom", 0.3);
+    scene("084", 446.30, 457.05);
+    ground("paper", S(446.45));
+    (function () {
+      const svg = $("sc084-svg"), mk = FX.markupDefs(svg, "c6s03-mk84", { boil: 4 });
+      svg.setAttribute("viewBox", "0 0 1920 1080");
+      gsap.set("#c6s03-sc084-tw", { left: 1260 });
+      // Saudi Arabia (Natural Earth shape) + two unlabeled 'outside' sources
+      const sa = el("g", { transform: "translate(120 120)", opacity: 0 }, svg);
+      el("path", { d: "M231.2 105.0 L238.3 106.9 L240.6 107.2 L238.2 110.6 L242.0 112.0 L246.2 119.0 L253.6 127.9 L266.7 132.1 L286.5 134.6 L299.1 142.6 L296.8 154.2 L291.2 171.0 L271.4 179.1 L247.9 186.9 L225.1 190.0 L205.3 193.2 L186.8 207.1 L176.9 216.1 L157.7 211.2 L142.3 209.6 L135.4 210.5 L132.1 210.4 L126.5 208.0 L123.6 211.7 L121.9 214.6 L123.0 218.6 L121.1 220.5 L117.0 224.3 L116.0 220.0 L113.7 216.5 L110.8 212.7 L110.3 211.0 L107.5 206.8 L103.1 203.4 L100.2 200.0 L98.7 197.5 L97.4 194.0 L94.5 190.7 L93.7 186.9 L92.1 184.1 L90.6 180.9 L88.7 177.7 L85.3 174.3 L82.0 171.5 L78.2 168.5 L76.2 168.9 L71.1 164.6 L69.3 161.8 L67.9 160.0 L66.5 157.8 L65.5 152.6 L64.3 149.7 L63.6 147.5 L63.2 143.8 L63.6 140.8 L64.0 138.5 L62.5 132.5 L62.2 132.0 L60.2 129.0 L58.6 125.8 L57.0 122.0 L55.4 119.0 L52.9 116.7 L49.1 114.5 L47.7 113.1 L44.2 111.5 L40.7 110.4 L37.5 104.4 L38.2 101.0 L36.6 97.4 L34.5 93.6 L31.4 91.1 L30.3 88.0 L26.7 83.7 L20.7 74.3 L15.4 67.9 L12.3 63.1 L8.6 58.6 L6.8 57.0 L3.8 57.2 L2.4 57.1 L0.5 57.8 L1.2 55.7 L3.2 50.5 L3.8 45.5 L5.1 40.3 L17.4 41.2 L28.9 34.7 L41.2 30.3 L48.4 23.2 L34.6 8.8 L60.9 2.2 L77.7 1.8 L93.1 7.8 L105.6 14.1 L117.0 22.3 L131.0 32.4 L144.1 41.6 L156.2 42.6 L168.5 43.4 L179.5 44.1 L185.2 49.7 L197.4 51.0 L198.6 53.6 L201.2 58.3 L202.8 60.0 L203.4 61.3 L202.8 63.0 L203.1 64.2 L205.0 64.1 L208.2 65.0 L208.2 66.6 L209.0 67.3 L210.0 69.1 L211.2 70.5 L213.0 70.3 L216.0 73.8 L220.7 76.8 L219.5 77.6 L222.8 84.1 L221.5 86.5 L219.6 85.6 L221.4 87.8 L222.8 91.6 L225.0 94.2 L227.1 97.7 L229.1 101.7 ZM108.4 219.5 L108.4 220.0 L108.3 220.3 L108.4 220.9 L108.3 221.3 L108.0 221.3 L107.6 220.8 L107.3 220.7 L106.9 220.7 L107.2 220.4 L107.5 220.2 L107.3 219.9 L107.0 219.7 L106.6 219.8 L106.2 219.8 L105.9 219.9 L105.7 220.0 L105.4 220.1 L105.2 220.0 L104.8 219.8 L104.3 219.5 L103.9 219.2 L103.6 219.0 L103.4 218.7 L103.2 218.2 L102.8 218.0 L102.6 217.6 L102.4 217.3 L102.3 217.1 L102.3 216.8 L102.6 217.0 L103.3 217.3 L103.6 217.7 L103.8 218.3 L104.1 218.7 L104.3 218.9 L104.9 218.9 L105.1 219.2 L105.4 219.2 L105.7 219.1 L105.9 219.1 L106.1 219.4 L106.7 219.2 L106.3 219.1 L106.1 218.8 L106.4 218.2 L106.6 218.0 L107.3 218.3 L107.5 218.9 L107.8 219.0 L107.9 219.3 L108.4 219.5 ZM104.7 218.3 L104.4 218.1 L103.8 217.4 L103.5 217.1 L103.6 216.8 L103.9 216.7 L104.2 216.7 L104.5 216.3 L104.7 216.0 L104.7 215.7 L104.3 215.5 L103.8 215.4 L104.3 215.3 L104.7 215.4 L104.9 215.8 L105.0 216.2 L105.0 216.4 L104.9 216.8 L104.9 217.0 L105.4 217.1 L105.6 217.4 L105.0 217.4 L104.9 217.9 L105.2 218.0 L105.7 218.3 L105.8 218.6 L105.3 218.5 L104.8 218.3 ZM213.6 67.9 L213.8 68.0 L214.6 68.2 L215.3 68.4 L215.0 68.5 L214.8 68.4 L214.4 68.3 L214.1 68.3 L213.7 68.5 L213.4 68.6 L213.1 68.5 L213.3 68.1 L213.0 68.0 L212.7 68.1 L212.4 68.2 L212.1 68.5 L212.2 68.0 L212.6 67.8 L213.0 67.7 L213.3 67.8 ZM35.0 95.4 L35.0 95.7 L34.6 95.5 L34.5 95.3 L34.1 95.2 L33.8 95.1 L33.9 94.7 L34.2 94.6 L34.6 94.7 L34.7 95.0 L35.0 95.4 ZM33.7 95.5 L34.0 95.5 L33.7 95.6 L33.5 95.9 L33.1 96.3 L32.8 96.1 L32.5 95.8 L32.3 95.6 L31.7 95.0 L31.7 94.8 L31.4 94.4 L31.7 94.5 L31.9 94.8 L32.3 95.0 L32.8 95.2 L33.0 95.3 L33.4 95.3 L33.1 95.5 L33.2 95.8 L33.5 95.6 ZM31.6 94.3 L31.3 94.2 L31.1 93.9 L30.9 93.8 L30.5 93.5 L30.3 93.5 L30.0 93.7 L30.1 93.3 L30.4 93.3 L30.6 93.4 L31.4 93.8 L31.5 94.0 L31.9 94.2 L32.2 94.4 L32.7 94.8 L32.9 95.1 L32.5 94.9 L32.2 94.8 L32.1 94.5 L31.8 94.5 L31.6 94.3 ZM30.0 93.3 L29.8 93.6 L29.5 93.4 L28.4 92.9 L28.1 92.8 L27.8 92.9 L27.6 92.7 L27.3 92.2 L27.8 91.6 L28.0 91.4 L27.8 92.0 L28.0 92.3 L28.4 92.5 L28.8 92.9 L29.2 93.0 L29.4 93.2 L29.7 93.3 L30.0 93.3 ZM28.1 91.0 L28.0 90.6 L28.0 90.0 L28.3 89.5 L28.6 89.2 L28.4 89.5 L28.2 90.1 L28.4 90.3 L28.6 90.6 L28.7 90.9 L28.6 91.2 L28.9 91.3 L28.6 91.4 L28.4 91.3 L28.1 91.0 Z", fill: "#4a5260", stroke: INK, "stroke-width": 2, opacity: 0.85 }, sa);
+      tl.fromTo(sa, { opacity: 0 }, { opacity: 1, duration: 0.6, ease: C(FX.ease.out, 0.6), immediateRender: true }, S(447.6));
+      const rib = [["M330 270 C760 270 980 560 1390 565", 46, 0.55], ["M-40 640 C500 650 900 600 1390 580", 30, 0.28], ["M-40 880 C520 880 950 650 1390 595", 22, 0.28]];
+      rib.forEach(([d, w, op], i) => ink(svg, d, S(447.76) + i * 0.15, 1.5, { width: w, opacity: op, color: INK }));   // ribbons done 449.6
+      tl.fromTo("#c6s03-sc084-zero", { opacity: 0, scale: 1.4 }, { opacity: 1, scale: 1, duration: 0.25, ease: C("power3.in", 0.25), immediateRender: true }, T(450.06) - L);
+      rise("sc084-w1", T(447.34) - L);
+      rise("sc084-w2", T(450.06) - L, { dur: 0.6 });
+      rise("sc084-w3", T(450.38) - L, { dur: 0.6 });
+      rise("sc084-w4", T(451.02) - L, { dur: 0.6 });
+      FX.markup.pen(tl, svg, S(451.1), { points: [[140, 120], [330, 92], [440, 190], [400, 330], [230, 360], [110, 280], [135, 150]], width: 6, color: INK, filter: mk, dur: 0.7, seed: 8401 });
+      // C6S085 — ten project boxes on the island; the money fans out and fills them
+      const bx = [];
+      for (let i = 0; i < 10; i++) {
+        const x = 1500 + (i % 2) * 70, y = 360 + Math.floor(i / 2) * 70;
+        const r = el("rect", { x, y, width: 48, height: 48, fill: "none", stroke: INK, "stroke-width": 4, opacity: 0 }, svg);
+        const f2 = el("rect", { x: x + 6, y: y + 6, width: 36, height: 36, fill: INK, opacity: 0 }, svg);
+        bx.push([r, f2, x + 24, y + 24]);
+      }
+      bx.forEach(([r], i) => tl.fromTo(r, { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, S(452.4) + i / 24));
+      bx.forEach(([, , x, y], i) => ink(svg, "M1390 580 Q1440 " + (y - 20) + " " + (x - 26) + " " + y, S(452.7) + i * 0.04, 0.6, { width: 3, opacity: 0.6 }));
+      bx.forEach(([, f2], i) => tl.fromTo(f2, { opacity: 0 }, { opacity: 0.9, duration: 0.001, immediateRender: true }, S(455.5) + Math.floor(i / 2) / 12));   // filled 455.84
+      rise("sc084-w5", T(455.82) - L);
+      rise("sc084-w6", T(456.30) - L, { dur: 0.5 });
+      rise("sc084-w7", T(456.46) - L, { dur: 0.4 });
+      // camera: push along the Saudi ribbon, then back out and over to the island
+      tl.fromTo("#c6s03-sc084-cam", { scale: 1, x: 0 }, { scale: 1.1, x: 0, duration: 4.4, ease: FX.ease.cam, immediateRender: false }, S(447.0));
+      tl.to("#c6s03-sc084-cam", { scale: 1.06, x: -190, duration: 3.0, ease: FX.ease.cam }, S(452.1));
+    })();
+
+    /* ============ C6S086 · 456.94–466.46 · they work out — then → now (NIGHT) ============ */
+    whip("084", "086", S(456.94), { dir: 1 });
+    scene("086", 456.94, 466.46);
+    ground("night", S(456.94));
+    (function () {
+      gated(456.9, 463.4, () => FX.weave($("sc086-wv"), { amp: 1.5, seed: 8601 }));
+      tl.fromTo("#c6s03-sc086-cama", { scale: 1.0 }, { scale: 1.07, duration: 6.3, ease: "none", immediateRender: false }, S(456.94));
+      rise("sc086-w1", T(458.38) - L);
+      rise("sc086-w2", T(458.86) - L);
+      // internal light-flash whip: then → now
+      flash(S(463.2));
+      const a = $("sc086-wv"), b = $("sc086-now");
+      tl.set(a, { filter: "url(#c6s03-wb086)" }, S(463.03)); tl.set(b, { filter: "url(#c6s03-wb086b)" }, S(463.199));
+      FX.whip(tl, a, b, S(463.2), { dir: 1, blurA: blurs["086"], blurB: blurs["086b"] });
+      tl.set(b, { filter: "none" }, S(463.4));
+      out("sc086-wo", S(463.05), 0.15);
+      tl.set("#c6s03-sc086-cr1", { opacity: 0 }, S(463.2)); tl.set("#c6s03-sc086-cr2", { opacity: 1 }, S(463.2));
+      tl.fromTo("#c6s03-sc086-now img", { scale: 1.0 }, { scale: 1.1, duration: 3.3, ease: "none", immediateRender: false }, S(463.2));
+      FX.focusHunt(tl, document.querySelector("#c6s03-sc086-now img"), S(463.55), { dur: 0.8, base: "saturate(0.55) brightness(0.82) contrast(1.08)" });
+      rise("sc086-w3", T(463.42) - L);
+      rise("sc086-w4", T(463.58) - L);
+      rise("sc086-w5", T(464.78) - L);
+      rise("sc086-w6", T(465.10) - L);
+      rise("sc086-w7", T(465.58) - L, { dur: 0.6 });
+      rise("sc086-w8", T(465.74) - L, { dur: 0.5 });
+      rise("sc086-w9", T(465.90) - L, { dur: 0.4 });
+      rise("sc086-w10", T(466.14) - L, { dur: 0.3 });
+    })();
+
+    /* ============ C6S087 · 466.46–473.74 · none technological, all infrastructure (NIGHT, D12) ============ */
+    scene("087", 466.46, 473.80);
+    (function () {
+      const NAMES = ["Sun Yat-sen Freeway", "North-Link Railway", "Railway Electrification", "Taoyuan International Airport", "Taichung Harbor", "Su-ao Port", "China Steel", "China Shipbuilding", "Petrochemical Industry", "Nuclear Power Plant"];
+      const list = $("sc087-list"), svg = $("sc087-svg"), mk = FX.markupDefs(svg, "c6s03-mk87", { boil: 4 });
+      const rows = NAMES.map((n, i) => { const d = div("c63-li t-label", list, "top:" + (205 + i * 72) + "px"); d.textContent = n; return d; });
+      const dashes = NAMES.map((n, i) => div("c63-dash", list, "left:1070px;top:" + (219 + i * 72) + "px"));
+      rows.forEach((r, i) => {
+        tl.fromTo(r, { opacity: 0, filter: "blur(5px)" }, { opacity: 0.55, filter: "blur(4px)", duration: 0.001, immediateRender: true }, S(466.6) + i / 12);
+        tl.to(r, { opacity: 1, filter: "blur(0px)", duration: 0.5, ease: "sine.out" }, S(467.0) + i * 0.4);   // focus pulls down the list (done 471.1)
+      });
+      dashes.forEach((d, i) => tl.fromTo(d, { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, S(469.1) + i / 24));
+      NAMES.forEach((n, i) => { const y = 228 + i * 72; ink(svg, "M1478 " + (y - 2) + " L1494 " + (y + 12) + " L1526 " + (y - 18), S(471.36) + i * 0.08, 0.2, { width: 6, color: BONE, filter: mk }); });   // ticks done 472.28
+      tl.fromTo("#c6s03-sc087-cam", { scale: 1.04 }, { scale: 1.0, duration: 7.2, ease: "none", immediateRender: false }, S(466.46));
+      rise("sc087-w1", T(467.74) - L);
+      rise("sc087-w2", T(468.06) - L);
+      rise("sc087-w3", T(468.62) - L);
+      rise("sc087-w4", T(469.10) - L);
+      rise("sc087-w5", T(469.98) - L);
+      rise("sc087-w6", T(471.42) - L);
+      rise("sc087-w7", T(472.30) - L);
+    })();
+
+    /* ============ C6S088–089 · 473.74–483.42 · a few months → Chiang Ching-kuo → secretary general (PAPER, D15) ============ */
+    slide("088", S(473.74), "bottom");
+    scene("088", 473.29, 483.55);
+    ground("paper", S(473.5));
+    (function () {
+      tl.fromTo("#c6s03-sc088-cam", { scale: 1.0 }, { scale: 1.03, duration: 9.6, ease: "none", immediateRender: false }, S(473.74));
+      // calendar pages flip (12 fps)
+      ["p1", "p2", "p3"].forEach((k, i) => {
+        const t0 = S(475.2) + i * 0.25;
+        tl.to("#c6s03-sc088-" + k, { rotationX: 85, y: -30, duration: 0.17, ease: C("power2.in", 0.17), transformPerspective: 900 }, t0);
+        tl.to("#c6s03-sc088-" + k, { y: 900, rotation: -10, opacity: 0, duration: 0.25, ease: C(FX.ease.in, 0.25) }, t0 + 0.17);
+      });
+      rise("sc088-w1", T(475.18) - L);
+      rise("sc088-w2", T(475.26) - L);
+      rise("sc088-w3", T(475.50) - L);
+      tl.fromTo("#c6s03-sc088-card", { opacity: 0, x: 700, rotation: 12 }, { opacity: 1, x: 0, rotation: 3, duration: 1.0, ease: C(FX.ease.out, 1.0), immediateRender: true }, S(477.3));
+      tl.fromTo("#c6s03-sc088-nm", { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, T(477.50) - L);
+      rise("sc088-w4", T(477.50) - L, { dur: 0.5, y: 8 });
+      rise("sc088-w5", T(478.06) - L, { dur: 0.5, y: 8 });
+      // C6S089 — the calendar leaves, the card becomes the diagram's first node
+      tl.to(["#c6s03-sc088-cal", "#c6s03-sc088-fm"], { x: -1100, duration: 0.6, ease: C(FX.ease.in, 0.6) }, S(479.0));
+      tl.to("#c6s03-sc088-card", { x: -770, y: -50, scale: 0.6, rotation: 0, opacity: 0, duration: 0.6, ease: C(FX.ease.inOut, 0.6) }, S(479.2));
+      pop("sc088-cck", S(479.45), { dur: 0.7, from: 0.85 });
+      tl.to("#c6s03-sc088-nm", { x: -730, y: -165, scale: 0.62, duration: 0.7, ease: C(FX.ease.inOut, 0.7) }, S(479.3));
+      pop("sc088-sg", S(479.95), { dur: 0.8, from: 0.6 });
+      const svg = $("sc088-svg"), mk = FX.markupDefs(svg, "c6s03-mk88", { boil: 4 });
+      ink(svg, "M572 492 Q862 420 1142 492", S(480.0), 0.6, { width: 6, filter: mk });
+      head(svg, 862, 420, 1142, 492, S(480.55), { width: 6, filter: mk });
+      rise("sc088-w6", T(480.06) - L);
+      rise("sc088-w7", T(480.62) - L);
+      pop("sc088-eng", T(482.06) - L, { dur: 0.5, from: 0.7 });   // done 482.5, whip 483.26
+    })();
+
+    /* ============ C6S090–091 · 483.42–496.20 · the instruction, typed (NIGHT, D08) ============ */
+    whip("088", "090", S(483.42), { dir: 1, vertical: true });
+    scene("090", 483.42, 496.30);
+    ground("night", S(483.42));
+    (function () {
+      tl.fromTo("#c6s03-sc090-cam", { scale: 1.0, y: 40 }, { scale: 1.08, y: -150, duration: 10.6, ease: FX.ease.cam, immediateRender: false }, S(483.42));
+      tl.to("#c6s03-sc090-cam", { scale: 1.2, y: -330, duration: 0.8, ease: FX.ease.cam }, S(494.3));   // punch-in on the last line
+      tl.fromTo("#c6s03-sc090-par", { opacity: 0 }, { opacity: 1, duration: 0.4, immediateRender: true }, S(485.3));
+      type("sc090-w1", T(485.34) - L);
+      type("sc090-w2", T(485.98) - L);
+      type("sc090-w3", T(486.86) - L);
+      type("sc090-w4", T(489.10) - L);
+      type("sc090-w5", T(489.42) - L);
+      type("sc090-w6", T(490.14) - L);
+      type("sc090-w7", T(490.62) - L);
+      type("sc090-w8", T(490.78) - L);
+      type("sc090-w9", T(491.26) - L);
+      type("sc090-w10", T(492.46) - L);
+      rise("sc090-w11", T(494.57) - L, { dur: 0.3, y: 10 });
+      rise("sc090-w12", T(494.97) - L, { dur: 0.25, y: 10 });
+      rise("sc090-w13", T(495.13) - L, { dur: 0.25, y: 10 });
+      const mk = $("sc090-mk"), f = FX.markupDefs(mk, "c6s03-mk90", { boil: 4 });
+      mk.setAttribute("viewBox", "0 0 900 1060");
+      FX.markup.pen(tl, mk, S(495.12), { points: [[78, 826], [420, 819], [800, 828]], width: 6, color: INK, filter: f, dur: 0.22, seed: 9001 });
+      FX.markup.pen(tl, mk, S(495.30), { points: [[96, 850], [440, 846], [760, 853]], width: 5, color: INK, filter: f, dur: 0.2, seed: 9002 });   // done 495.50, whip 496.04
+    })();
+
+    /* ============ C6S092 · 496.20–502.60 · nothing to do with chips — technology (PAPER) ============ */
+    whip("090", "092", S(496.2), { dir: -1 });
+    scene("092", 496.2, 502.6);
+    ground("paper", S(496.2));
+    (function () {
+      tl.fromTo("#c6s03-sc092-cam", { scale: 1.1 }, { scale: 1.0, duration: 6.4, ease: "none", immediateRender: false }, S(496.2));
+      rise("sc092-w1", T(498.17) - L);
+      rise("sc092-w2", T(498.41) - L);
+      rise("sc092-w3", T(498.57) - L);
+      rise("sc092-w4", T(498.73) - L);
+      rise("sc092-w5", T(498.97) - L);
+      const mk = $("sc092-mk"), f = FX.markupDefs(mk, "c6s03-mk92", { boil: 4 });
+      FX.markup.pen(tl, mk, S(499.1), { points: [[340, 250], [560, 450], [780, 650]], width: 14, color: INK, filter: f, dur: 0.22, seed: 9201 });
+      FX.markup.pen(tl, mk, S(499.35), { points: [[770, 240], [560, 460], [350, 660]], width: 14, color: INK, filter: f, dur: 0.22, seed: 9202 });
+      FX.text.fill(tl, $("sc092-tech"), T(501.29) - L, { per: 0.02, hold: 0.2, settle: 0.35, cool: INK });   // settled 501.98
+    })();
+
+    /* ============ C6S093 · 502.60–508.81 · documentaries — film strips (PAPER) ============ */
+    scene("093", 502.6, 508.95);
+    (function () {
+      const cam = $("sc093-cam");
+      const FR = ["still_taiwan_1960_campus_students_bicycles", "still_taiwan_1960_refinery_towers", "still_taiwan_1960_steam_train", "still_taiwan_1960_steel_mill_molten", "still_taiwan_1960_highway_builders", "still_formosa_1959_harbour_bridge", "still_formosa_1959_department_store", "still_formosa_1959_ship_loading_export", "still_newsreel_1959_formosa_taipei_street"];
+      const strips = [[-120, 170, 2200, -3], [260, 440, 2300, 2], [-200, 700, 1400, -1.5]];
+      let k = 0;
+      strips.forEach(([x, y, w, r], i) => {
+        const s = div("c63-strip", cam, "left:" + x + "px;top:" + y + "px;width:" + w + "px;transform:rotate(" + r + "deg)");
+        for (let fx = 30; fx + 236 < w; fx += 262) { const f = div("fr", s, "left:" + fx + "px;background-image:url('assets/c6/derived/c6s03/" + FR[k % FR.length] + ".jpg')"); k++; }
+        const p1 = div("c63-pin", cam, "left:" + (x + 220) + "px;top:" + (y - 8) + "px"), p2 = div("c63-pin", cam, "left:" + (x + w - 260) + "px;top:" + (y - 8 + w * Math.sin(r * Math.PI / 180) * 0.8) + "px");
+        const t0 = S(502.65) + i * 0.2;
+        tl.fromTo(s, { x: 2300 }, { x: 0, duration: 0.7, ease: C(FX.ease.out, 0.7), immediateRender: true }, t0);
+        [p1, p2].forEach((p, j) => tl.fromTo(p, { opacity: 0, scale: 1.6 }, { opacity: 1, scale: 1, duration: 0.17, ease: C("power2.in", 0.17), immediateRender: true }, t0 + 0.75 + j * 0.08));
+      });
+      tl.fromTo(cam, { x: 0 }, { x: -520, duration: 6.3, ease: "none", immediateRender: false }, S(502.6));
+      tl.fromTo("#c6s03-sc093-d", { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, T(504.57) - L);
+      rise("sc093-w1", T(504.57) - L);
+      rise("sc093-w2", T(507.45) - L);
+    })();
+
+    /* ============ C6S094 · 508.81–513.69 · the US goes to the Moon, on a 1955 RCA set (NIGHT) ============ */
+    whip("093", "094", S(508.81), { dir: 1 });
+    scene("094", 508.81, 513.75);
+    ground("night", S(508.81));
+    (function () {
+      tl.fromTo("#c6s03-sc094-cam", { scale: 1.0 }, { scale: 1.12, duration: 4.5, ease: "none", immediateRender: false }, S(508.81));
+      tl.fromTo("#c6s03-sc094-scr", { scaleY: 0.012, filter: "brightness(3)" }, { scaleY: 1, filter: "brightness(1)", duration: 0.2, ease: C("power2.out", 0.2), immediateRender: true }, S(508.98));
+      rise("sc094-w1", T(509.85) - L);
+      rise("sc094-w2", T(510.17) - L);
+      rise("sc094-w3", T(511.29) - L, { dur: 1.1, y: 26 });
+      rise("sc094-w4", T(513.29) - L, { dur: 0.4 });
+      rise("sc094-w5", T(513.37) - L, { dur: 0.35 });
+    })();
+
+    /* ============ C6S095 · 513.69–519.85 · 2.5D Aldrin; 50 / 20 years ago (NIGHT) ============ */
+    push("094", "095", S(513.69), 960, 470);
+    scene("095", 513.69, 519.85);
+    (function () {
+      const P = 1200;
+      [["#c6s03-sc095-back", -300], ["#c6s03-sc095-subj", 0], ["#c6s03-sc095-front", 120]].forEach(([id, z]) => gsap.set(id, { z, scale: (P - z) / P }));
+      tl.fromTo("#c6s03-sc095-cam3", { z: -60, x: 40, rotationY: 1.5 }, { z: 140, x: -60, rotationY: -1.5, duration: 6.2, ease: FX.ease.cam, immediateRender: false }, S(513.69));
+      FX.focusHunt(tl, $("sc095-stage"), S(518.0), { dur: 0.8 });
+      rise("sc095-w1", T(514.89) - L);
+      rise("sc095-w2", T(515.13) - L);
+      rise("sc095-w3", T(515.37) - L);
+      tl.fromTo("#c6s03-sc095-m1", { opacity: 0, x: -700, rotation: -14 }, { opacity: 1, x: 0, rotation: -4, duration: 0.9, ease: C(FX.ease.out, 0.9), immediateRender: true }, S(516.03));
+      rise("sc095-w4", T(516.09) - L);
+      rise("sc095-w5", T(516.49) - L);
+      rise("sc095-w6", T(516.65) - L);
+      tl.fromTo("#c6s03-sc095-m2", { opacity: 0, x: 700, rotation: 12 }, { opacity: 1, x: 0, rotation: 3, duration: 0.9, ease: C(FX.ease.out, 0.9), immediateRender: true }, S(516.99));   // done 517.9
+      rise("sc095-w7", T(517.05) - L);
+      rise("sc095-w8", T(517.37) - L);
+      rise("sc095-w9", T(517.53) - L);
+      out("sc095-ci", S(518.8), 0.2);
+      rise("sc095-w10", T(519.05) - L, { dur: 0.5 });
+      rise("sc095-w11", T(519.29) - L, { dur: 0.4 });
+      rise("sc095-w12", T(519.45) - L, { dur: 0.3 });
+      rise("sc095-w13", T(519.53) - L, { dur: 0.3 });
+    })();
+
+    /* ============ C6S096 · 519.85–525.69 · regular flights to the moon (PAPER, Vox layered) ============ */
+    scene("096", 519.85, 525.80);
+    ground("paper", S(519.85));
+    (function () {
+      const st = $("sc096-stack");
+      for (let i = 0; i < 5; i++) {
+        const t = div("c63-tk", st, "left:" + (i * 26) + "px;top:" + (i * 78) + "px;transform:rotate(" + (i % 2 ? 2.2 : -1.8) + "deg)");
+        t.innerHTML = '<div class="tx"></div><div class="head"></div><div class="perf"></div><div class="moon"><i style="left:30px;top:40px;width:26px;height:22px"></i><i style="left:74px;top:70px;width:18px;height:16px"></i><i style="left:50px;top:88px;width:12px;height:11px"></i></div>' +
+          '<div class="bar" style="top:80px;width:300px"></div><div class="bar" style="top:200px;width:180px;opacity:0.6"></div><div class="bar" style="top:228px;width:240px;opacity:0.6"></div>' +
+          '<svg viewBox="0 0 480 120"><path d="M10 100 Q240 -20 470 30" fill="none" stroke="#141b24" stroke-width="4" stroke-dasharray="2 14" stroke-linecap="round"/><circle cx="470" cy="30" r="9" fill="#141b24"/></svg>';
+        tl.fromTo(t, { x: 1300, opacity: 1 }, { x: 0, duration: 0.55, ease: C(FX.ease.out, 0.55), immediateRender: true }, S(519.95) + i * 0.33);   // last lands 521.82
+      }
+      tl.fromTo("#c6s03-sc096-pa", { x: 0 }, { x: 50, duration: 5.9, ease: "none", immediateRender: false }, S(519.85));
+      tl.fromTo("#c6s03-sc096-pb", { x: 0 }, { x: -40, duration: 5.9, ease: "none", immediateRender: false }, S(519.85));
+      tl.fromTo("#c6s03-sc096-cam", { scale: 1.0 }, { scale: 1.04, duration: 5.9, ease: "none", immediateRender: false }, S(519.85));
+      rise("sc096-w1", T(522.89) - L);
+      rise("sc096-w2", T(523.13) - L);
+      rise("sc096-w3", T(523.53) - L);
+      rise("sc096-w4", T(523.61) - L);
+      rise("sc096-w5", T(523.69) - L);
+    })();
+
+    /* ============ C6S097 · 525.69–530.65 · Mission Control: part of this future (NIGHT) ============ */
+    whip("096", "097", S(525.69), { dir: -1, vertical: true });
+    scene("097", 525.69, 530.65);
+    ground("night", S(525.69));
+    (function () {
+      tl.fromTo("#c6s03-sc097-cam", { scale: 1.0 }, { scale: 1.08, duration: 5.0, ease: "none", immediateRender: false }, S(525.69));
+      const svg = $("sc097-svg");
+      const P = [[420, 640], [700, 575], [980, 610], [1260, 545], [1540, 600], [820, 790], [1180, 780]];
+      const E2 = [[0, 1], [1, 2], [2, 3], [3, 4], [1, 5], [5, 6], [6, 3], [2, 6]];
+      E2.forEach(([a, b], i) => ink(svg, "M" + P[a][0] + " " + P[a][1] + " L" + P[b][0] + " " + (P[b][1] + 1), S(525.95) + i * 0.08, 0.45, { width: 2.5, color: BONE, opacity: 0.6 }));
+      P.forEach(([x, y], i) => { const c = el("circle", { cx: x, cy: y, r: 7, fill: BONE, opacity: 0 }, svg); tl.fromTo(c, { opacity: 0 }, { opacity: 0.9, duration: 0.001, immediateRender: true }, S(525.9) + i / 12); });
+      ink(svg, "M1540 600 Q1650 520 1700 392", S(526.83), 0.5, { width: 4, color: CEL });
+      const tw = el("circle", { cx: 1700, cy: 380, r: 16, fill: CEL, opacity: 0 }, svg);
+      tl.fromTo(tw, { opacity: 0, attr: { r: 4 } }, { opacity: 1, attr: { r: 16 }, duration: 0.5, ease: C(FX.ease.out, 0.5), immediateRender: true }, S(527.2));
+      gated(527.2, 530.7, () => FX.radioWaves(svg, 1700, 380, { rings: 3, max: 170, period: 1.6, width: 5, color: CEL, from: S(527.2) }));
+      rise("sc097-w1", T(526.89) - L);
+      rise("sc097-w2", T(527.13) - L);
+      rise("sc097-w3", T(527.29) - L);
+      rise("sc097-w4", T(527.45) - L);
+      rise("sc097-w5", T(529.21) - L);
+      rise("sc097-w6", T(529.45) - L);
+      rise("sc097-w7", T(530.17) - L, { dur: 0.45 });
+    })();
+
+    /* ============ C6S098–099 · 530.65–541.95 · top guy = secretary general → telecom official (PAPER, D15) ============ */
+    scene("098", 530.65, 541.98);
+    ground("paper", S(530.65));
+    (function () {
+      tl.fromTo("#c6s03-sc098-cam", { x: 0 }, { x: -300, duration: 10.6, ease: "sine.inOut", immediateRender: false }, S(530.65));
+      pop("sc098-cck", S(530.65), { dur: 0.6, from: 0.85 });
+      pop("sc098-sg", S(530.75), { dur: 0.6, from: 0.85 });
+      const svg = $("sc098-svg"), mk = FX.markupDefs(svg, "c6s03-mk98", { boil: 4 });
+      svg.setAttribute("viewBox", "0 0 2200 1080");
+      ink(svg, "M545 420 Q700 352 856 420", S(531.6), 0.45, { width: 6, filter: mk });
+      head(svg, 700, 352, 856, 420, S(532.0), { width: 6, filter: mk });
+      rise("sc098-w1", T(531.69) - L);
+      rise("sc098-w2", T(531.93) - L);
+      tl.fromTo("#c6s03-sc098-task", { opacity: 0, y: -20 }, { opacity: 1, y: 0, duration: 0.6, ease: C(FX.ease.out, 0.6), immediateRender: true }, T(532.57) - L);
+      rise("sc098-w3", T(532.57) - L, { dur: 0.5, y: 6 });
+      rise("sc098-w4", T(532.81) - L, { dur: 0.5, y: 6 });
+      rise("sc098-w5", T(532.97) - L, { dur: 0.5, y: 6 });
+      out("sc098-tg", S(535.2), 0.2);
+      tl.fromTo("#c6s03-sc098-sgl", { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, T(535.45) - L);
+      rise("sc098-w6", T(535.45) - L, { dur: 0.5, y: 8 });
+      rise("sc098-w7", T(536.09) - L, { dur: 0.5, y: 8 });
+      // C6S099 — second arrow to the telecom official (never named)
+      ink(svg, "M1145 420 Q1300 352 1456 420", S(537.23), 0.5, { width: 6, filter: mk });
+      head(svg, 1300, 352, 1456, 420, S(537.68), { width: 6, filter: mk });
+      rise("sc098-w8", T(537.29) - L);
+      rise("sc098-w9", T(537.85) - L);
+      pop("sc098-tc", S(538.95), { dur: 0.8, from: 0.6 });
+      rise("sc098-w10", T(539.13) - L, { dur: 0.6, y: 8 });
+      rise("sc098-w11", T(541.29) - L, { dur: 0.5 });
+    })();
+
+    /* ============ C6S100 · 541.95–547.13 · transistors (NIGHT) ============ */
+    push("098", "100", S(541.95), 1290, 430);
+    scene("100", 541.95, 547.13);
+    ground("night", S(541.95));
+    (function () {
+      tl.fromTo("#c6s03-sc100-cam", { scale: 1.0 }, { scale: 1.05, duration: 1.9, ease: "none", immediateRender: false }, S(541.95));
+      tl.to("#c6s03-sc100-cam", { scale: 2.3, duration: 0.38, ease: "power3.out" }, S(543.85));   // fast zoom
+      FX.focusHunt(tl, $("sc100-img"), S(544.25), { dur: 0.8, base: "grayscale(0.85) sepia(0.25) brightness(0.72) contrast(1.15)" });
+      tl.to("#c6s03-sc100-cam", { scale: 2.45, x: -40, duration: 2.8, ease: "none" }, S(544.3));
+      rise("sc100-w1", T(542.41) - L);
+      rise("sc100-tr", T(544.41) - L, { dur: 1.0, y: 24 });
+      rise("sc100-w2", T(546.33) - L, { dur: 0.6 });
+      rise("sc100-w3", T(546.57) - L, { dur: 0.5 });
+    })();
+
+    /* ============ C6S101 · 547.13–554.94 · circuits and transistors, new-ish (NIGHT) ============ */
+    scene("101", 547.13, 555.05);
+    (function () {
+      tl.fromTo("#c6s03-sc101-cam", { x: 0, scale: 1.0 }, { x: -170, scale: 1.05, duration: 7.8, ease: "none", immediateRender: false }, S(547.13));
+      tl.fromTo("#c6s03-sc101-board", { opacity: 0, x: 900, rotation: 12 }, { opacity: 1, x: 0, rotation: 4, duration: 0.9, ease: C(FX.ease.out, 0.9), immediateRender: true }, S(551.23));
+      rise("sc101-w1", T(550.25) - L);
+      rise("sc101-w2", T(550.41) - L);
+      rise("sc101-w3", T(551.29) - L);
+      rise("sc101-w4", T(551.85) - L);
+      rise("sc101-w5", T(552.01) - L);
+      rise("sc101-w6", T(553.98) - L);
+    })();
+
+    /* ============ C6S102 · 554.94–563.10 · a random American guy, in the country (PAPER) ============ */
+    whip("101", "102", S(554.94), { dir: 1 });
+    scene("102", 554.94, 563.10);
+    ground("paper", S(554.94));
+    (function () {
+      pop("sc102-sg", S(554.95), { dur: 0.5, from: 0.9 });
+      pop("sc102-tc", S(555.0), { dur: 0.5, from: 0.9 });
+      tl.fromTo("#c6s03-sc102-cam", { scale: 1.0 }, { scale: 1.04, duration: 8.1, ease: "none", immediateRender: false }, S(554.94));
+      const svg = $("sc102-svg"), mk = FX.markupDefs(svg, "c6s03-mk102", { boil: 4 });
+      ink(svg, "M318 172 L372 168", S(555.1), 0.3, { width: 5, filter: mk });
+      // Taiwan pin (celadon) on the map card + the dotted route from California
+      const TW = [216, 696], CA = [1724, 514];
+      const pinTw = el("circle", { cx: TW[0], cy: TW[1], r: 12, fill: CEL, stroke: INK, "stroke-width": 3 }, svg);
+      const halo = el("circle", { cx: TW[0], cy: TW[1], r: 14, fill: "none", stroke: CEL, "stroke-width": 6, opacity: 0 }, svg);
+      const route = el("path", { d: "M" + CA[0] + " " + CA[1] + " Q980 300 " + TW[0] + " " + TW[1], fill: "none", stroke: "none" }, svg);
+      const RL = route.getTotalLength(), N = 46;
+      for (let i = 0; i <= N; i++) { const q = route.getPointAtLength(RL * i / N); const c = el("circle", { cx: q.x.toFixed(1), cy: q.y.toFixed(1), r: 4.5, fill: INK, opacity: 0 }, svg); tl.fromTo(c, { opacity: 0 }, { opacity: 0.85, duration: 0.001, immediateRender: true }, S(557.44) + Math.floor(i / 2) / 12 * 0.75); }   // route done 558.9
+      rise("sc102-w1", T(557.50) - L);
+      rise("sc102-w2", T(557.82) - L);
+      const am = $("sc102-am"), st = { p: 0 };
+      const mv = () => { const q = route.getPointAtLength(RL * st.p); am.style.left = q.x.toFixed(1) + "px"; am.style.top = q.y.toFixed(1) + "px"; };
+      mv();
+      pop(am, S(558.7), { dur: 0.6, from: 0.5 });
+      rise("sc102-w3", T(558.78) - L);
+      tl.fromTo(st, { p: 0 }, { p: 1, duration: 2.0, ease: C(FX.ease.inOut, 2.0), immediateRender: false, onUpdate: mv }, S(559.55));   // lands 561.55
+      tl.fromTo(halo, { attr: { r: 14 }, opacity: 1 }, { attr: { r: 120 }, opacity: 0, duration: 0.9, ease: C(FX.ease.out, 0.9), immediateRender: false }, S(561.55));
+      tl.fromTo(pinTw, { attr: { r: 12 } }, { attr: { r: 20 }, duration: 0.3, ease: C(FX.ease.out, 0.3), immediateRender: false }, S(561.55));
+      rise("sc102-w4", T(561.58) - L);
+      rise("sc102-w5", T(561.74) - L);
+      rise("sc102-w6", T(561.90) - L);
+    })();
+
+    /* ============ C6S103 · 563.10–569.90 · cutting-edge technology in the US: RCA (NIGHT) ============ */
+    scene("103", 563.10, 570.0);
+    ground("night", S(563.10));
+    (function () {
+      tl.fromTo("#c6s03-sc103-ad", { y: 0, scale: 1.0 }, { y: -420, scale: 1.02, duration: 5.4, ease: FX.ease.cam, immediateRender: false }, S(563.10));
+      rise("sc103-w1", T(564.46) - L);
+      rise("sc103-w2", T(564.86) - L);
+      rise("sc103-w3", T(566.06) - L);
+      rise("sc103-w4", T(566.30) - L);
+      rise("sc103-w5", T(566.94) - L);
+      rise("sc103-w6", T(567.50) - L);
+      tl.fromTo("#c6s03-sc103-rca", { opacity: 0, scale: 1.4 }, { opacity: 1, scale: 1, duration: 0.17, ease: C("power3.in", 0.17), immediateRender: true }, T(568.86) - L);   // landed 568.97
+      tl.fromTo("#c6s03-sc103-cam", { x: 0 }, { x: 7, duration: 1 / 12, yoyo: true, repeat: 1, ease: "none", immediateRender: false }, S(568.97));
+    })();
+
+    /* ============ C6S104 · 569.90–575.26 · Pan Wen-yuan, an RCA man (NIGHT) ============ */
+    whip("103", "104", S(569.9), { dir: -1, vertical: true });
+    scene("104", 569.9, 575.26);
+    (function () {
+      tl.fromTo("#c6s03-sc104-cam", { scale: 1.0 }, { scale: 1.06, duration: 5.0, ease: "none", immediateRender: false }, S(569.9));
+      tl.to("#c6s03-sc104-cam", { scale: 1.3, x: -120, duration: 0.3, ease: FX.ease.in }, S(574.96));   // cut on action
+      const nm = $("sc104-nm");
+      nm.style.filter = "url(#c6s03-ch104)";
+      tl.fromTo(nm, { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, T(572.62) - L);
+      FX.chokeSettle(tl, ch104, nm, T(572.62) - L, 6, 0.5, "none");
+      rise("sc104-w1", T(572.62) - L, { dur: 0.5, y: 8 });
+      rise("sc104-w2", T(573.10) - L, { dur: 0.5, y: 8 });
+      rise("sc104-w3", T(574.38) - L);
+      rise("sc104-w4", T(574.94) - L, { dur: 0.3 });
+      tl.fromTo("#c6s03-sc104-badge", { opacity: 0, scale: 1.6, rotation: -20 }, { opacity: 1, scale: 1, rotation: -8, duration: 0.3, ease: C("power3.in", 0.3), immediateRender: true }, S(574.32));   // done 574.62
+    })();
+
+    /* ============ C6S105 · 575.26–582.14 · annual conferences, every single year (PAPER) ============ */
+    scene("105", 575.26, 582.25);
+    ground("paper", S(575.26));
+    (function () {
+      tl.fromTo("#c6s03-sc105-cam", { scale: 1.12 }, { scale: 1.0, duration: 1.2, ease: FX.ease.cam, immediateRender: false }, S(575.26));
+      const tabs = $("sc105-tabs");
+      const tb = []; for (let i = 0; i < 8; i++) tb.push(div("c63-tab", tabs, "left:" + (300 + i * 170) + "px;transform:rotate(" + ((i % 3) - 1) * 1.5 + "deg)"));
+      const tick = (e, t) => tl.fromTo(e, { opacity: 0, rotationX: -90, transformPerspective: 800 }, { opacity: 1, rotationX: 0, duration: 0.17, ease: C("power2.out", 0.17), immediateRender: true }, t);
+      tick(tb[0], S(576.0)); tick(tb[1], S(576.42));
+      for (let i = 2; i < 8; i++) tick(tb[i], S(578.16) + (i - 2) * 0.125);   // last 578.95
+      rise("sc105-w1", T(576.06) - L);
+      rise("sc105-w2", T(576.46) - L);
+      rise("sc105-w3", T(578.22) - L);
+      rise("sc105-w4", T(578.46) - L);
+      rise("sc105-w5", T(578.78) - L);
+      const svg = $("sc105-svg"), mk = FX.markupDefs(svg, "c6s03-mk105", { boil: 4 });
+      pop("sc105-gov", S(580.3), { dur: 0.7, from: 0.6 });
+      ink(svg, "M486 330 Q960 170 1448 330", S(580.48), 0.6, { width: 6, filter: mk });
+      head(svg, 960, 170, 1448, 330, S(581.0), { width: 6, filter: mk });   // done 581.16
+      rise("sc105-w6", T(580.54) - L);
+      rise("sc105-w7", T(581.66) - L, { dur: 0.6 });
+    })();
+
+    /* ============ C6S106 · 582.14–590.78 · old classmates → his name is Fei (PAPER, burn reveal) ============ */
+    whip("105", "106", S(582.14), { dir: 1, vertical: true });
+    scene("106", 582.14, 590.78);
+    (function () {
+      const bs = $("sc106-bsvg");
+      bs.innerHTML = '<defs>' +
+        '<filter id="c6s03-b106" filterUnits="userSpaceOnUse" x="0" y="0" width="260" height="260" color-interpolation-filters="sRGB">' +
+        '<feImage href="assets/maps/burn_b.png" x="0" y="0" width="260" height="260" preserveAspectRatio="none" result="n"/>' +
+        '<feColorMatrix id="c6s03-b106m" in="n" type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  -12 0 0 0 13" result="t"/>' +
+        '<feComposite in="SourceGraphic" in2="t" operator="in"/></filter>' +
+        '<filter id="c6s03-c106" filterUnits="userSpaceOnUse" x="0" y="0" width="260" height="260" color-interpolation-filters="sRGB">' +
+        '<feImage href="assets/maps/burn_b.png" x="0" y="0" width="260" height="260" preserveAspectRatio="none" result="n"/>' +
+        '<feColorMatrix id="c6s03-c106a" in="n" type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  -12 0 0 0 13" result="e"/>' +
+        '<feColorMatrix id="c6s03-c106b" in="n" type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  -12 0 0 0 15.2" result="l"/>' +
+        '<feComposite in="l" in2="e" operator="arithmetic" k1="0" k2="1" k3="-1" k4="0" result="ring"/>' +
+        '<feFlood flood-color="#ff6a3d" result="fl"/><feComposite in="fl" in2="ring" operator="in" result="r2"/>' +
+        '<feGaussianBlur in="r2" stdDeviation="2" result="gl"/><feMerge><feMergeNode in="gl"/><feMergeNode in="r2"/></feMerge></filter></defs>' +
+        '<image href="assets/c6/derived/c6s03/fei_hua_circle.jpg" x="0" y="0" width="260" height="260"/>' +
+        '<g filter="url(#c6s03-b106)"><rect x="0" y="0" width="260" height="260" fill="#d9d2c4"/><image href="assets/intro/cutouts/silhouette_exec.png" x="-12" y="23" width="270" height="243"/></g>' +
+        '<rect x="0" y="0" width="260" height="260" fill="#fff" filter="url(#c6s03-c106)"/>';
+      const M = (o) => "0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  -12 0 0 0 " + o.toFixed(3);
+      const b = { v: 13 };
+      tl.fromTo(b, { v: 13 }, { v: -2.4, duration: 0.5, ease: C("power1.inOut", 0.5), immediateRender: true, onUpdate: () => { $("b106m").setAttribute("values", M(b.v)); $("c106a").setAttribute("values", M(b.v)); $("c106b").setAttribute("values", M(b.v + 2.2)); } }, S(589.7));   // burnt 590.2
+      tl.to("#c6s03-sc106-sg", { borderColor: "#7f9f8e", duration: 0.3 }, S(590.0));
+      const svg = $("sc106-svg"), mk = FX.markupDefs(svg, "c6s03-mk106", { boil: 4 });
+      FX.markup.pen(tl, svg, S(585.04), { points: [[600, 640], [612, 700], [1000, 708], [1350, 700], [1362, 640]], width: 6, color: INK, filter: mk, dur: 0.8, seed: 10601 });
+      rise("sc106-w1", T(585.10) - L);
+      rise("sc106-w2", T(585.50) - L);
+      rise("sc106-w3", T(587.90) - L);
+      rise("sc106-w4", T(588.46) - L);
+      tl.fromTo("#c6s03-sc106-cam", { scale: 1.0 }, { scale: 1.2, duration: 3.9, ease: FX.ease.cam, immediateRender: false }, S(586.4));
+      out("sc106-sgl", S(589.8), 0.2);
+      tl.fromTo("#c6s03-sc106-fh", { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.5, ease: C(FX.ease.out, 0.5), immediateRender: true }, T(590.06) - L);
+      tl.to("#c6s03-sc106-cam", { scale: 1.45, duration: 0.33, ease: FX.ease.in }, S(590.45));   // cut on action
+    })();
+
+    /* ============ C6S107 · 590.78–598.01 · breakfast tomorrow — held into c7 (NIGHT) ============ */
+    scene("107", 590.78, 999);
+    ground("night", S(590.78));
+    (function () {
+      tl.fromTo("#c6s03-sc107-cam", { scale: 1.14, y: 50 }, { scale: 1.0, y: 0, duration: 4.2, ease: FX.ease.cam, immediateRender: false }, S(590.78));
+      tl.to("#c6s03-sc107-cam", { scale: 1.03, duration: 3.0, ease: "none" }, S(595.0));
+      [["c1", -700, 0, -16], ["c2", 700, 0, 14], ["c3", 0, 600, 10]].forEach(([k, x, y, r], i) => {
+        const e = $("sc107-" + k), r0 = parseFloat(getComputedStyle(e).transform === "none" ? 0 : 0);
+        tl.fromTo(e, { opacity: 1, x, y, rotation: r }, { x: 0, y: 0, rotation: [-7, 5, 4][i], duration: 0.9, ease: C(FX.ease.out, 0.9), immediateRender: true }, S(591.68) + i * 0.1);
+      });
+      rise("sc107-w1", T(591.74) - L);
+      rise("sc107-w2", T(591.82) - L);
+      rise("sc107-w3", T(591.90) - L);
+      out("sc107-all", S(594.8), 0.3);
+      rise("sc107-w4", T(593.74) - L, { dur: 1.1, y: 26 });
+      rise("sc107-w5", T(594.22) - L, { dur: 0.7 });
+      rise("sc107-w6", T(595.90) - L);
+      rise("sc107-w7", T(596.14) - L);
+      rise("sc107-w8", T(596.70) - L);
+      rise("sc107-w9", T(596.94) - L, { dur: 0.5 });
+      rise("sc107-w10", T(597.10) - L, { dur: 0.4 });   // settled 597.44, held to 598.01
+    })();
+
+    // measuring FX are built: hide every scene outside its window (MANUAL §4.2)
+    scenes.forEach(([e, a]) => { if (a > SEG_START + 0.001) gsap.set(e, { display: "none" }); });
+
+    FX.mount(tl, DURATION);
+    window.__timelines = window.__timelines || {};
+    window.__timelines[SEG] = tl;
+  })();
+  </script>
 </template>
 </body>
 </html>

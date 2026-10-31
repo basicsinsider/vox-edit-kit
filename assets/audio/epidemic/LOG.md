@@ -31,6 +31,14 @@ commands below. Never use the public low-quality preview MP3s in an edit. Measur
 | `ostinato/` | Ostinato — Vieveri (Krish's playlist) | e4a14fb1-33bf-3246-9e09-f7d9384f74dd | https://www.epidemicsound.com/track/ClT3alC0ax/ | full, instruments, melody_derived (no bass/drums stems exist) | 180 | A minor | the building ostinato of the UN vote war and the export-zone groove |
 | `still_in_blues/` | Still in Blues — (Epidemic, dark drone/suspense) | 5217f8cb-0660-4a3d-867c-bfa3f3d57ce6 | — | full, bass, drums, instruments (stems are far quieter than the full mix — use `full` as the layer) | – (drone) | G minor | cold drone for war damage and the White Terror |
 
+### Added for chunk c2 (2026-10-31) — cue sheet `project/c2/music_cuesheet.json`
+
+| folder | title — artist | kosmosId | public URL | stems downloaded | bpm | key (est.) | role / why |
+|---|---|---|---|---|---|---|---|
+| `a_pinpoint_of_light/` | A Pinpoint of Light — (Epidemic) | 7be83545-80e3-3b2a-a478-842cdf857781 | — | full, bass, drums, instruments, melody_derived | 105 | D minor | steady pulse of Act I (steeples) and the Silicon Valley lift that ends c2 (bookends) |
+| `april/` | April — Jakob Ahlbom | fa190df2-467b-4180-bfea-ecc28647704d | — | full, bass, instruments, melody_derived | 128 | G major | light, hopeful texture under the transistor explanation; Nobel lift; shimmer under the IC "print" idea |
+| `city_phases/` | City Phases — John Abbot (Krish's playlist) | a5194258-5cee-4686-b89a-dfa7c323a12a | https://www.epidemicsound.com/track/530JEZzEY7/ | full, bass, instruments, melody_derived (melody is most of the track) | 150 | A minor | "transistor everywhere" build → radios → world |
+
 ### Candidates auditioned (by metadata + measured key from previews; not downloaded)
 Formations (Van Sandano, 100, Ab minor — wrong key for the set), Chrysotile (Farrell Wooten drone, C# minor — clashes with D),
 Imber (140, F# minor), Ostinato (Vieveri, 180, A minor — strong alternative for a build), City Phases (John Abbot, 150, A minor —
