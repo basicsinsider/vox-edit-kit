@@ -431,7 +431,11 @@ auth `Authorization: Bearer ${EPIDEMIC_SOUND_MCP_API_KEY}`). Krish creates the k
 stores it in the cloud environment as `EPIDEMIC_SOUND_MCP_API_KEY`; a new session then has `SearchRecordings`,
 `SearchSimilarToRecording`, `DownloadRecording` (stems from the original track), `EditRecording` (cut to length),
 `SearchSoundEffects`, `DownloadSoundEffect`. Downloads use his paid subscription (no new licence). Never use the public
-low-quality preview MP3s in an edit. Fallback without the key: Claude lists tracks/stems in `requests/epidemic.md`, Krish
+low-quality preview MP3s in an edit. **Working (2026-10-31):** `python3 tools/epidemic_fetch.py <kosmosId> <name> FULL BASS
+DRUMS INSTRUMENTS` → `assets/audio/epidemic/<name>/` (48 kHz WAV, gitignored — licensed to Krish's subscription; re-download
+any time). The kosmosId of every playlist track is in the saved playlist JSON. Stem types via the API: FULL, BASS, DRUMS,
+INSTRUMENTS (no MELODY download — derive it as full − bass − drums − instruments if needed). `tools/epidemic_mcp.py` is the
+bare client (list tools / call any tool) for sessions that haven't loaded `.mcp.json`; key from env or `~/.secrets/epidemic_key`. Fallback without the key: Claude lists tracks/stems in `requests/epidemic.md`, Krish
 downloads them into `assets/audio/epidemic/`. VO stays untouched; bed far under the voice.
 
 ### 10.4 The Taiwan long-form edit (4 h 26 min) — workflow
