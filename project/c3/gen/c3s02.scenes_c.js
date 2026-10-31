@@ -22,9 +22,9 @@
       [T(329.02), T(329.42)].forEach((c, i) => rise(words("sc065-bf")[i], c, { dur: 0.6, y: 12 }));
       hide($("sc065-bf"), S(330.80));
       // C3S066: FDR lowers over the US pillar — the plan was his
-      const fdr = $("sc066-fdr"); fdr.style.left = (XS[0] - 115) + "px"; fdr.style.top = "40px";
+      const fdr = $("sc066-fdr"); fdr.style.left = (XS[0] - 115) + "px"; fdr.style.top = "70px";
       tl.fromTo(fdr, { opacity: 0, y: -360 }, { opacity: 1, y: 0, duration: 1.0, ease: C(E.out, 1.0), immediateRender: true }, S(331.18));
-      const us = $("sc066-us"); us.style.left = (XS[0] + 135) + "px"; us.style.top = "130px";
+      const us = $("sc066-us"); us.style.left = (XS[0] + 135) + "px"; us.style.top = "160px";
       tl.set(us, { opacity: 1 }, T(331.18));
       [T(331.18), T(331.58)].forEach((c, i) => rise(words("sc066-us")[i], c, { dur: 0.6, y: 8 }));
       $("sc066-pwo").style.left = "1480px"; $("sc066-pwo").style.top = "170px";
@@ -65,7 +65,7 @@
         tl.fromTo(g, { y: -40 }, { y: 0, duration: 0.4, ease: C(E.out, 0.4), immediateRender: true }, S(t));
         const lab = $("sc067-l" + i); cam.appendChild(lab);
         Object.assign(lab.style, { left: (x + 40) + "px", top: (y - 70) + "px", fontSize: "56px" });
-        if (i === 1) lab.style.left = (x - 140) + "px";
+        if (i === 1) lab.style.left = (x - 140) + "px"; if (i === 3) { lab.style.left = (x - 600) + "px"; lab.style.top = (y + 20) + "px"; lab.style.textAlign = "right"; lab.style.width = "560px"; }
         tl.set(lab, { opacity: 1 }, S(t) - 0.07);
         const ws = lab.querySelectorAll(".k-w");
         cues.forEach((c, k) => rise(ws[k], c, { dur: k === 3 ? 0.4 : 0.6, y: 8 }));
@@ -96,11 +96,11 @@
     ground("night", S(352.84));
     (function () {
       const cam = $("sc070-cam");
-      tl.fromTo(cam, camAt(0.62, 1168, 870), Object.assign(camAt(1.45, 1800, 700), { duration: 2.1, ease: E.cam, immediateRender: true }), S(352.95));
+      tl.fromTo(cam, camAt(0.62, 1168, 870), Object.assign(camAt(1.45, 1860, 700), { duration: 2.1, ease: E.cam, immediateRender: true }), S(352.95));
       FX.focusHunt(tl, $("sc070-img"), S(355.60), { dur: 0.8, base: "grayscale(1) sepia(0.2) contrast(1.05) brightness(0.92)" });
-      tl.to(cam, Object.assign(camAt(1.2, 1700, 760), { duration: 3.9, ease: E.inOut }), S(355.10));
+      tl.to(cam, Object.assign(camAt(1.2, 1760, 760), { duration: 3.9, ease: E.inOut }), S(355.10));
       const mf = gated(352.8, 359.1, () => FX.markupDefs(defs, "c3s02-mk070", { boil: 4 }));
-      FX.markup.circle(tl, $("sc070-mk"), S(355.02), { cx: 1832, cy: 640, rx: 165, ry: 205, rot: -4, dur: 0.7, color: CEL, width: 12, filter: mf, seed: 7001 });
+      FX.markup.circle(tl, $("sc070-mk"), S(355.02), { cx: 1895, cy: 650, rx: 165, ry: 205, rot: -4, dur: 0.7, color: CEL, width: 12, filter: mf, seed: 7001 });
       rise(words("sc070-veto")[0], T(353.26), { dur: 0.8, y: 10 });
       [T(354.38), T(355.02)].forEach((c, i) => rise(words("sc070-ps")[i], c, { dur: 0.7, y: 10 }));
       [T(356.70), T(357.42)].forEach((c, i) => rise(words("sc070-sc")[i], c, { dur: 0.8, y: 16 }));

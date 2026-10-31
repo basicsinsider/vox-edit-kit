@@ -1,0 +1,1490 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8" /></head>
+<body>
+<template>
+  <style>
+    /* c5s01 — chunk c5, LOCAL VO 0.00–194.22 (C5S001–C5S042). Notes: compositions/c5s01.NOTES.md */
+    #root { position: absolute; inset: 0; overflow: hidden; background: var(--night); }
+    .k-scene { position: absolute; inset: 0; overflow: hidden; visibility: hidden; opacity: 0; }
+    .k-night { background: var(--night); }
+    .k-paper { background: var(--paper); }
+    .k-abs { position: absolute; }
+    .k-cam { position: absolute; inset: 0; transform-origin: 50% 50%; }
+    .k-full { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; object-fit: cover; }
+    .k-p1, .k-p2 { position: absolute; inset: 0; background-size: cover; background-position: center; pointer-events: none; }
+    .k-p2 { opacity: 0.9; mix-blend-mode: multiply; }
+    .k-credit { position: absolute; right: 30px; bottom: 20px; font-size: 13px; letter-spacing: 0.08em; color: rgba(242,237,227,0.6); z-index: 6; }
+    .k-credit.ink { color: rgba(20,27,36,0.6); }
+    .k-mk { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; pointer-events: none; }
+    .k-w { display: inline-block; white-space: pre; opacity: 0; }
+    .k-ink { color: var(--ink); }
+    .k-lbox { display: inline-block; background: var(--ink); color: var(--paper); padding: 10px 18px 4px; }
+    .k-hl { position: absolute; background: var(--yellow); mix-blend-mode: multiply; transform-origin: 0 50%; opacity: 0.85; }
+    .k-scrim-b { position: absolute; left: 0; right: 0; bottom: 0; height: 440px; background: linear-gradient(180deg, rgba(15,19,24,0), rgba(15,19,24,0.82)); }
+    .k-scrim-t { position: absolute; left: 0; right: 0; top: 0; height: 360px; background: linear-gradient(0deg, rgba(15,19,24,0), rgba(15,19,24,0.75)); }
+    .k-card { position: absolute; background: #efe8d8; box-shadow: 0 26px 60px rgba(20,27,36,0.32); overflow: hidden; }
+    .k-card > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    .k-ht { position: absolute; inset: 0; background: url('assets/textures/halftone_01_norm.jpg') 0 0 / 420px auto; mix-blend-mode: overlay; opacity: 0.4; pointer-events: none; }
+    .k-desk { position: absolute; inset: 0; background: radial-gradient(ellipse 60% 70% at 52% 44%, #3a3128 0%, #1d1915 55%, #0f0e0c 100%); }
+    .k-lamp { position: absolute; inset: 0; background: radial-gradient(ellipse 45% 55% at 52% 42%, rgba(255,214,170,0.20), rgba(255,214,170,0) 70%); mix-blend-mode: screen; pointer-events: none; }
+    .k-vid { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; object-fit: cover; }
+    .k-map { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
+    .k-map > img, .k-map > svg { position: absolute; left: 0; top: 0; }
+    .k-panel { position: absolute; overflow: hidden; box-shadow: 0 22px 50px rgba(0,0,0,0.45); background: #d8d0bf; }
+    .k-panel img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    .k-ico { position: absolute; width: 64px; height: 74px; }
+    .k-ico svg { width: 100%; height: 100%; display: block; overflow: visible; }
+    .k-circ { position: absolute; width: 260px; height: 260px; border-radius: 50%; overflow: hidden; border: 8px solid var(--ink); background: #ddd5c4; }
+    .k-circ img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    .k-plate { position: absolute; overflow: hidden; box-shadow: 0 0 90px rgba(0,0,0,0.75); background: #000; }
+    .k-plate video, .k-plate img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    .k-bgblur { position: absolute; left: -120px; top: -120px; width: 2160px; height: 1320px; object-fit: cover; filter: blur(28px) brightness(0.35) grayscale(1); }
+    .k-stamp { position: absolute; color: var(--ink); border: 10px solid var(--ink); padding: 10px 30px 0; mix-blend-mode: multiply; white-space: nowrap; }
+    .k-pin { position: absolute; width: 40px; height: 55px; }
+    #c5s01-flash { position: absolute; inset: 0; background: #fbf4e6; opacity: 0; pointer-events: none; z-index: 7; }
+    #c5s01-grain, #c5s01-dust, #c5s01-vig { z-index: 8; }
+
+    /* C5S002 decade ruler */
+    .c5-dec { position: absolute; top: 400px; width: 400px; text-align: center; font-size: 140px; color: var(--ink); opacity: 0; }
+    /* C5S003 label macro */
+    #c5s01-sc003-card { position: absolute; left: 300px; top: 230px; width: 1320px; height: 620px; background: #b9976a; box-shadow: 0 40px 90px rgba(0,0,0,0.6); transform: rotate(-4deg); overflow: hidden; }
+    #c5s01-sc003-card .tx1 { position: absolute; inset: 0; background: url('assets/textures/paper_fiber_01.jpg') center / cover; mix-blend-mode: multiply; opacity: 0.8; }
+    #c5s01-sc003-card .tx2 { position: absolute; inset: 0; background: url('assets/textures/paper_stained_01.jpg') center / cover; mix-blend-mode: multiply; opacity: 0.45; }
+    #c5s01-sc003-dof { position: absolute; inset: 0; backdrop-filter: blur(7px); -webkit-backdrop-filter: blur(7px);
+      -webkit-mask-image: radial-gradient(ellipse 46% 34% at 50% 50%, transparent 40%, #000 100%); mask-image: radial-gradient(ellipse 46% 34% at 50% 50%, transparent 40%, #000 100%); pointer-events: none; }
+    /* C5S004 product cards */
+    .c5-pc { position: absolute; width: 300px; height: 380px; background: #ece4d2; box-shadow: 0 22px 44px rgba(20,27,36,0.3); }
+    .c5-pc svg { position: absolute; left: 40px; top: 34px; width: 220px; height: 220px; overflow: visible; }
+    .c5-pc .cap { position: absolute; left: 0; right: 0; top: 280px; text-align: center; font-size: 24px; }
+    /* C5S005 bars */
+    .c5-bar { position: absolute; width: 64px; transform-origin: 50% 100%; background: #8fbca5;
+      -webkit-mask: url('assets/textures/watercolour_edge_mask_01.png') top / 100% 34px no-repeat, linear-gradient(#000, #000) 0 32px / 100% 100% no-repeat;
+      mask: url('assets/textures/watercolour_edge_mask_01.png') top / 100% 34px no-repeat, linear-gradient(#000, #000) 0 32px / 100% 100% no-repeat; }
+    .c5-bar .ht { position: absolute; inset: 0; background: url('assets/textures/halftone_01_norm.jpg') 0 0 / 260px auto; mix-blend-mode: multiply; opacity: 0.35; }
+    /* C5S014 Tatung */
+    #c5s01-sc014-stage { position: absolute; inset: 0; perspective: 1800px; perspective-origin: 40% 45%; }
+    #c5s01-sc014-set { position: absolute; left: 330px; top: 150px; width: 1300px; height: 744px; transform: rotateY(-16deg) rotateZ(-1deg); transform-origin: 60% 50%; }
+    #c5s01-sc014-tube { position: absolute; left: 248px; top: 191px; width: 595px; height: 443px; border-radius: 15% / 19%; overflow: hidden; background: radial-gradient(ellipse at 50% 45%, #1c1c1b, #050505 75%); }
+    #c5s01-sc014-screen { position: absolute; inset: 0; transform-origin: 50% 50%; }
+    #c5s01-sc014-screen video { position: absolute; left: -40px; top: -30px; width: 675px; height: 503px; object-fit: cover; }
+    /* C5S023 programme */
+    .c5-row { position: absolute; left: 0; width: 1240px; height: 92px; border-top: 2px solid rgba(242,237,227,0.18); }
+    .c5-row .tm { position: absolute; left: 0; top: 26px; width: 120px; height: 16px; background: rgba(242,237,227,0.35); }
+    .c5-row .gk { position: absolute; left: 190px; top: 22px; height: 26px; background: rgba(242,237,227,0.42); }
+    .c5-row .gk2 { position: absolute; left: 190px; top: 60px; height: 12px; background: rgba(242,237,227,0.2); }
+    .c5-row .wd { position: absolute; left: 190px; top: 8px; font-size: 64px; opacity: 0; }
+    .c5-row .sb { position: absolute; left: -40px; top: 14px; width: 12px; height: 62px; background: var(--celadon); transform-origin: 50% 100%; transform: scaleY(0); }
+    /* C5S028 card stack */
+    .c5-st { position: absolute; left: 620px; top: 170px; width: 700px; height: 520px; background: #efe8d8; padding: 18px; box-shadow: 0 24px 50px rgba(20,27,36,0.35); transform-origin: 0% 50%; }
+    .c5-st img { position: absolute; left: 18px; top: 18px; width: 664px; height: 484px; object-fit: cover; filter: url(#c5s01-tint-ink); }
+  </style>
+
+  <div id="root" data-composition-id="c5s01" data-vo-start="0.00" data-duration="194.22" data-width="1920" data-height="1080">
+    <svg id="c5s01-defs" width="0" height="0" style="position:absolute"></svg>
+
+    <!-- C5S001 · 0.00–2.19 · This actually did work, by the way. · EPZ factory + pen tick -->
+    <div class="k-scene k-night" id="c5s01-sc001" data-scene="C5S001">
+      <div class="k-cam" id="c5s01-sc001-cam" style="transform-origin:58% 70%">
+        <img class="k-full" src="assets/intro/photos/nanzih_epz_ose_factory.jpg" alt="" style="filter:url(#c5s01-tint-sepia) contrast(1.06)" />
+        <svg class="k-mk" id="c5s01-sc001-mk" viewBox="0 0 1920 1080"></svg>
+      </div>
+      <div class="k-scrim-b"></div>
+      <div class="k-abs t-serif-i clean" id="c5s01-sc001-t" style="left:130px;top:860px;font-size:96px"></div>
+      <div class="k-credit t-label">Photo: OSE factory, Nanzih EPZ · Wikimedia Commons, CC BY-SA 2.0</div>
+    </div>
+
+    <!-- C5S002 · 2.19–4.93 · In the 60s, 70s, probably 80s, 90s too · decade ruler -->
+    <div class="k-scene k-paper" id="c5s01-sc002" data-scene="C5S002">
+      <div class="k-p1" style="background-image:url('assets/textures/paper_cream_01.jpg')"></div>
+      <div class="k-p2" style="background-image:url('assets/textures/paper_lined_01.jpg')"></div>
+      <div class="k-cam" id="c5s01-sc002-cam">
+        <svg class="k-mk" id="c5s01-sc002-svg" viewBox="0 0 1920 1080"></svg>
+        <div class="c5-dec t-display" id="c5s01-sc002-d0" style="left:160px">60s</div>
+        <div class="c5-dec t-display" id="c5s01-sc002-d1" style="left:560px">70s</div>
+        <div class="c5-dec t-display" id="c5s01-sc002-d2" style="left:960px">80s</div>
+        <div class="c5-dec t-display" id="c5s01-sc002-d3" style="left:1360px">90s</div>
+      </div>
+    </div>
+
+    <!-- C5S003 · 4.93–7.23 · made in Taiwan was a pretty big deal · macro rubber-stamped carton label (typographic) -->
+    <div class="k-scene k-night" id="c5s01-sc003" data-scene="C5S003">
+      <div class="k-desk"></div>
+      <div class="k-cam" id="c5s01-sc003-cam" style="transform-origin:50% 48%">
+        <div id="c5s01-sc003-card"><div class="tx1"></div><div class="tx2"></div>
+          <div class="k-abs" style="left:60px;top:40px;width:1200px;height:4px;background:rgba(20,27,36,0.35)"></div>
+          <div class="k-abs" style="left:60px;top:560px;width:1200px;height:4px;background:rgba(20,27,36,0.35)"></div>
+          <div class="k-stamp t-display" id="c5s01-sc003-stamp" style="left:110px;top:170px;font-size:150px;transform:rotate(-2deg)"><span class="k-w">MADE </span><span class="k-w">IN </span><span class="k-w">TAIWAN</span></div>
+        </div>
+        <div class="k-lamp"></div>
+      </div>
+      <div id="c5s01-sc003-dof"></div>
+      <div class="k-abs t-serif-i clean" id="c5s01-sc003-bd" style="left:150px;top:900px;font-size:64px"></div>
+    </div>
+
+    <!-- C5S004 · 7.23–14.35 · Christmas lights, radios, washers, umbrellas, textiles … made in Taiwan · product collage (D07) -->
+    <div class="k-scene k-paper" id="c5s01-sc004" data-scene="C5S004">
+      <div class="k-p1" style="background-image:url('assets/textures/paper_stained_01.jpg')"></div>
+      <div class="k-p2" style="background-image:url('assets/textures/paper_cream_02.jpg')"></div>
+      <div class="k-cam" id="c5s01-sc004-cam">
+        <div class="c5-pc" id="c5s01-sc004-c0" style="left:150px;top:200px;transform:rotate(-5deg)"></div>
+        <div class="c5-pc" id="c5s01-sc004-c1" style="left:480px;top:330px;transform:rotate(3deg)"></div>
+        <div class="c5-pc" id="c5s01-sc004-c2" style="left:810px;top:190px;transform:rotate(-2deg)"></div>
+        <div class="c5-pc" id="c5s01-sc004-c3" style="left:1140px;top:320px;transform:rotate(4deg)"></div>
+        <div class="c5-pc" id="c5s01-sc004-c4" style="left:1470px;top:200px;transform:rotate(-4deg)"></div>
+        <div class="k-stamp t-display" id="c5s01-sc004-stamp" style="left:330px;top:420px;font-size:120px;transform:rotate(-8deg);border-width:12px"><span class="k-w">MADE </span><span class="k-w">IN </span><span class="k-w">TAIWAN</span></div>
+      </div>
+    </div>
+
+    <!-- C5S005–C5S006 · 14.35–23.63 · economy grows 9 to 10% every single year, even after American aid · D01 bars + D05 band -->
+    <div class="k-scene k-paper" id="c5s01-sc005" data-scene="C5S005-C5S006">
+      <div class="k-p1" style="background-image:url('assets/textures/paper_cream_01.jpg')"></div>
+      <div class="k-p2" style="background-image:url('assets/textures/paper_graph_01.jpg')"></div>
+      <div class="k-cam" id="c5s01-sc005-cam" style="width:2400px;right:auto">
+        <img src="assets/c5/derived/c5s01/nanzih_factory_halftone.png" alt="" class="k-abs" style="left:-40px;top:620px;width:1300px;height:865px;mix-blend-mode:multiply;opacity:0.5;-webkit-mask-image:linear-gradient(180deg,transparent 0,#000 30%);mask-image:linear-gradient(180deg,transparent 0,#000 30%)" />
+        <div class="k-abs" id="c5s01-sc005-band" style="left:150px;top:150px;width:1060px;height:760px;background:rgba(120,96,70,0.18);border-right:4px solid rgba(20,27,36,0.55);transform-origin:0 50%"></div>
+        <div class="k-card" id="c5s01-sc005-ike" style="left:190px;top:170px;width:300px;height:188px;transform:rotate(-3deg);padding:10px"><img src="assets/c4/photos/eisenhower_chiang_motorcade_taipei_1960.jpg" alt="" style="inset:10px;width:280px;height:168px;filter:url(#c5s01-tint-ink)" /><div class="k-ht"></div></div>
+        <div class="k-abs t-label k-ink" id="c5s01-sc005-aid" style="left:520px;top:190px;font-size:30px"></div>
+        <div id="c5s01-sc005-bars"></div>
+        <div class="k-abs" style="left:150px;top:330px;width:2150px;border-top:5px dashed var(--ink);opacity:0.75"></div>
+        <div class="k-abs" style="left:150px;top:390px;width:2150px;border-top:5px dashed var(--ink);opacity:0.75"></div>
+        <div class="k-abs" style="left:150px;top:900px;width:2150px;height:5px;background:var(--ink)"></div>
+        <svg class="k-mk" id="c5s01-sc005-svg" viewBox="0 0 2400 1080" style="width:2400px"></svg>
+        <div class="k-abs t-serif k-ink" id="c5s01-sc005-ti" style="left:150px;top:60px;font-size:72px"></div>
+        <div class="k-abs t-display" id="c5s01-sc005-kn" style="left:1290px;top:150px;font-size:110px;white-space:nowrap"><span class="label-box" style="color:var(--yellow);opacity:0" id="c5s01-sc005-n9">0</span><span class="k-w t-serif-i k-ink" style="font-size:64px;margin:0 18px" id="c5s01-sc005-to">to</span><span class="label-box" style="color:var(--yellow);opacity:0" id="c5s01-sc005-n10">10%</span></div>
+        <div class="k-abs t-label k-ink" id="c5s01-sc005-ey" style="left:150px;top:930px;font-size:30px"></div>
+        <div class="k-abs t-serif-i k-ink" id="c5s01-sc005-is" style="left:1250px;top:930px;font-size:48px"></div>
+      </div>
+      <div class="k-credit ink t-label">Photo: Eisenhower in Taipei, 1960 · US Government, public domain</div>
+    </div>
+
+    <!-- C5S007 · 23.63–29.73 · the most popular and cutting edge companies of that time · Vox layered magazines -->
+    <div class="k-scene k-night" id="c5s01-sc007" data-scene="C5S007">
+      <div class="k-cam" id="c5s01-sc007-cam">
+        <div class="k-panel" id="c5s01-sc007-c" style="left:120px;top:150px;width:460px;height:637px;transform:rotate(-7deg)"><img src="assets/c5/documents/electronics_1965-04-19_rca_scope_ad.jpg" alt="" style="filter:url(#c5s01-tint-bone)" /><div class="k-ht"></div></div>
+        <div class="k-panel" id="c5s01-sc007-b" style="left:1240px;top:110px;width:540px;height:748px;transform:rotate(5deg)"><img src="assets/c5/documents/electronics_1965-04-19_rca_transistor_ad.jpg" alt="" style="filter:url(#c5s01-tint-bone)" /><div class="k-ht"></div></div>
+        <div class="k-panel" id="c5s01-sc007-a" style="left:620px;top:70px;width:640px;height:881px;transform:rotate(-2deg)"><img src="assets/c5/documents/electronics_magazine_1965-04-19_cover.jpg" alt="" style="filter:url(#c5s01-tint-bone) contrast(1.05)" /><div class="k-ht"></div></div>
+      </div>
+      <div class="k-scrim-b"></div>
+      <div class="k-abs t-serif-i clean" id="c5s01-sc007-mp" style="left:130px;top:820px;font-size:80px"></div>
+      <div class="k-abs t-label clean" id="c5s01-sc007-ce" style="left:136px;top:930px;font-size:34px"></div>
+      <div class="k-credit t-label">Electronics, 19 Apr 1965 (© McGraw-Hill) · RCA ads (© RCA) · fair use</div>
+    </div>
+
+    <!-- C5S008 · 29.73–35.15 · General Instrument, Texas Instruments, RCA · fanned cards -->
+    <div class="k-scene k-paper" id="c5s01-sc008" data-scene="C5S008">
+      <div class="k-p1" style="background-image:url('assets/textures/paper_cream_01.jpg')"></div>
+      <div class="k-p2" style="background-image:url('assets/textures/paper_fiber_01.jpg');opacity:0.6"></div>
+      <div class="k-cam" id="c5s01-sc008-cam" style="transform-origin:78% 45%">
+        <div class="k-abs" id="c5s01-sc008-gi" style="left:130px;top:300px;width:520px;height:520px;transform:rotate(-6deg)">
+          <div class="k-card" style="left:0;top:0;width:520px;height:330px;background:#f1ebde"><img src="assets/c5/logos/general_instrument_wordmark_1990s.png" alt="" style="left:40px;top:130px;width:440px;height:51px;inset:auto;filter:brightness(0) opacity(0.85)" /><div class="k-ht" style="opacity:0.2"></div></div>
+          <div class="k-abs t-label k-ink" id="c5s01-sc008-gil" style="left:0;top:360px;width:520px;text-align:center;font-size:30px"></div>
+        </div>
+        <div class="k-abs" id="c5s01-sc008-ti" style="left:700px;top:190px;width:500px;height:640px;transform:rotate(2deg)">
+          <div class="k-card" style="left:10px;top:0;width:480px;height:480px;padding:12px"><img src="assets/c2/documents/chm_ti_silicon_transistor_ad_1954.jpg" alt="" style="inset:12px;width:456px;height:456px;filter:grayscale(1) sepia(0.2) contrast(1.05)" /></div>
+          <div class="k-abs t-label k-ink" id="c5s01-sc008-til" style="left:0;top:510px;width:500px;text-align:center;font-size:30px"></div>
+        </div>
+        <div class="k-abs" id="c5s01-sc008-rca" style="left:1290px;top:130px;width:460px;height:760px;transform:rotate(5deg)">
+          <div class="k-card" style="left:0;top:0;width:460px;height:637px;padding:12px"><img src="assets/c5/documents/electronics_1965-04-19_rca_transistor_ad.jpg" alt="" style="inset:12px;width:436px;height:613px;filter:grayscale(1) sepia(0.2)" /></div>
+          <div class="k-abs t-label k-ink" id="c5s01-sc008-rcal" style="left:0;top:665px;width:460px;text-align:center;font-size:40px"></div>
+          <svg class="k-abs" id="c5s01-sc008-mk" viewBox="0 0 460 760" style="left:0;top:0;width:460px;height:760px;overflow:visible"></svg>
+        </div>
+        <div class="k-abs t-serif-i k-ink" id="c5s01-sc008-bp" style="left:150px;top:900px;font-size:72px"></div>
+      </div>
+      <div class="k-credit ink t-label">TI ad 1954 (© Texas Instruments, CHM) · RCA ad 1965 (© RCA) · fair use</div>
+    </div>
+
+    <!-- C5S009 · 35.15–38.59 · a big part later in the story · logo chips ride a timeline into the blur -->
+    <div class="k-scene k-night" id="c5s01-sc009" data-scene="C5S009">
+      <canvas class="streaks" id="c5s01-sc009-streaks" style="opacity:0;filter:blur(2.5px);-webkit-mask-image:linear-gradient(90deg,transparent 35%,#000 80%);mask-image:linear-gradient(90deg,transparent 35%,#000 80%)"></canvas>
+      <div class="k-cam" id="c5s01-sc009-cam" style="width:2600px;right:auto">
+        <div class="k-abs" id="c5s01-sc009-axis" style="left:120px;top:610px;width:2400px;height:4px;background:linear-gradient(90deg,rgba(242,237,227,0.9) 50%,rgba(242,237,227,0))"></div>
+        <div class="k-abs" id="c5s01-sc009-ch0" style="left:0;top:510px;width:300px;height:80px;border:3px solid rgba(242,237,227,0.8);padding:22px 20px"><img src="assets/c5/logos/general_instrument_wordmark_1990s.png" alt="" style="width:256px;height:30px;filter:brightness(0) invert(0.93)" /></div>
+        <div class="k-abs t-display" id="c5s01-sc009-ch1" style="left:0;top:510px;width:120px;height:80px;border:3px solid rgba(242,237,227,0.8);color:var(--bone);font-size:52px;text-align:center;padding-top:14px">TI</div>
+        <div class="k-abs" id="c5s01-sc009-ch2" style="left:0;top:510px;width:200px;height:80px;border:3px solid rgba(242,237,227,0.8);padding:16px 26px"><img src="assets/c5/logos/rca_wordmark_1968.svg" alt="" style="width:148px;height:42px;filter:brightness(0) invert(0.93)" /></div>
+        <div class="k-abs t-serif-i clean" id="c5s01-sc009-lt" style="left:1560px;top:380px;font-size:110px;filter:blur(0.3px)"></div>
+      </div>
+    </div>
+
+    <!-- C5S010 · 38.59–41.15 · set up factories in Taiwan · Taiwan relief, three pins -->
+    <div class="k-scene k-night" id="c5s01-sc010" data-scene="C5S010">
+      <div class="k-map" id="c5s01-sc010-cam" style="width:1623px;height:2200px">
+        <img src="assets/c5/derived/c5s01/taiwan_night_half.jpg" alt="" style="width:1623px;height:2200px;filter:brightness(1.25) contrast(1.05)" />
+        <img id="c5s01-sc010-fill" src="assets/c5/derived/c5s01/taiwan_celadon_fill.png" alt="" style="width:1623px;height:2200px;opacity:0" />
+        <img id="c5s01-sc010-glow" src="assets/c5/derived/c5s01/taiwan_celadon_glow.png" alt="" style="width:1623px;height:2200px;opacity:0;filter:blur(3px)" />
+        <div id="c5s01-sc010-pins"></div>
+      </div>
+      <div class="k-abs t-label clean" id="c5s01-sc010-f" style="left:140px;top:150px;font-size:38px"></div>
+      <div class="k-abs t-display clean" id="c5s01-sc010-tw" style="left:140px;top:800px;font-size:120px"></div>
+      <div class="k-credit t-label">Relief: AWS Terrain Tiles · Natural Earth (public domain)</div>
+    </div>
+
+    <!-- C5S011 · 41.15–45.15 · these are not high tech factories · 1960 Taiwan brickworks footage + X -->
+    <div class="k-scene k-night" id="c5s01-sc011" data-scene="C5S011">
+      <div class="k-cam" id="c5s01-sc011-cam"><div class="k-abs" id="c5s01-sc011-weave" style="inset:-16px">
+        <video class="k-vid" src="assets/c4/footage/taiwan_1960_brickworks_workers.mp4" muted playsinline data-start="41.15" data-duration="4.1" data-media-start="0.5"
+          data-color-grading='{"adjust":{"saturation":-0.75,"contrast":0.12},"effects":{"chromaticAberration":0.12,"chromaticAngle":0,"filmArtifacts":0.3}}'></video>
+      </div></div>
+      <div class="k-scrim-b"></div>
+      <div class="k-abs t-label clean" id="c5s01-sc011-not" style="left:140px;top:770px;font-size:40px"></div>
+      <div class="k-abs t-display clean" id="c5s01-sc011-ht" style="left:140px;top:830px;font-size:96px"></div>
+      <svg class="k-mk" id="c5s01-sc011-mk" viewBox="0 0 1920 1080"></svg>
+      <div class="k-credit t-label">Film: Taiwan: The Face of Free China (1960) · NARA, public domain</div>
+    </div>
+
+    <!-- C5S012 · 45.15–48.99 · producing transistors, or integrated circuits in Taiwan · EDN 1961 page, highlighter -->
+    <div class="k-scene k-paper" id="c5s01-sc012" data-scene="C5S012">
+      <div class="k-p1" style="background-image:url('assets/textures/paper_stained_01.jpg')"></div>
+      <div class="k-p2" style="background-image:url('assets/textures/paper_cream_02.jpg');opacity:0.7"></div>
+      <div class="k-abs" style="inset:0;perspective:2200px">
+        <div class="k-map" id="c5s01-sc012-cam" style="width:1400px;height:1446px">
+          <div class="k-abs" id="c5s01-sc012-page" style="left:0;top:0;width:1400px;height:1446px;transform:rotateY(-7deg) rotateX(4deg) rotate(-1.2deg);transform-origin:50% 50%;box-shadow:0 40px 90px rgba(20,27,36,0.35);background:#efe9dc;overflow:hidden">
+            <img src="assets/c2/documents/edn_jul1961_micrologic_elements_p1.jpg" alt="" style="position:absolute;left:0;top:0;width:1400px;height:1446px;filter:sepia(0.35) contrast(1.05);mix-blend-mode:multiply" />
+            <div class="k-ht" style="opacity:0.18"></div>
+            <div class="k-hl" id="c5s01-sc012-h1" style="left:1094px;top:1236px;width:116px;height:24px"></div>
+            <div class="k-hl" id="c5s01-sc012-h2" style="left:924px;top:1075px;width:440px;height:24px"></div>
+          </div>
+        </div>
+      </div>
+      <div class="k-abs t-display" id="c5s01-sc012-ic" style="left:120px;top:120px;font-size:64px;white-space:nowrap"></div>
+      <div class="k-abs t-label k-ink" id="c5s01-sc012-tw" style="left:124px;top:230px;font-size:36px"></div>
+      <svg class="k-mk" id="c5s01-sc012-mk" viewBox="0 0 1920 1080"></svg>
+      <div class="k-credit ink t-label">Electrical Design News, July 1961 (© EDN) · fair use</div>
+    </div>
+
+    <!-- C5S013 · 48.99–51.39 · All that stuff is still happening in the United States · Bell transistor film 1953 -->
+    <div class="k-scene k-night" id="c5s01-sc013" data-scene="C5S013">
+      <img class="k-bgblur" src="assets/c5/derived/c5s01/fab_rows_still.jpg" alt="" style="filter:blur(30px) brightness(0.22) grayscale(1)" />
+      <div class="k-cam" id="c5s01-sc013-cam">
+        <div class="k-plate" style="left:420px;top:80px;width:1080px;height:810px">
+          <video src="assets/c2/footage/bell_transistor1953_hands_assembling.mp4" muted playsinline data-start="48.98" data-duration="2.5" data-media-start="2.0"
+            data-color-grading='{"adjust":{"saturation":-1,"contrast":0.1},"effects":{"chromaticAberration":0.12,"chromaticAngle":0,"filmArtifacts":0.35}}'></video>
+        </div>
+      </div>
+      <div class="k-abs t-display halate" id="c5s01-sc013-us" style="left:0;top:880px;width:1920px;text-align:center;font-size:110px"></div>
+      <div class="k-credit t-label">Film: The Transistor (Bell System, 1953) · AT&amp;T Archives · fair use</div>
+    </div>
+
+    <!-- C5S014 · 51.39–55.15 · What's really happening in Taiwan … just putting stuff together · Tatung TV -->
+    <div class="k-scene k-night" id="c5s01-sc014" data-scene="C5S014">
+      <div class="k-abs" style="inset:0;background:radial-gradient(ellipse 60% 60% at 46% 45%, #2b2620, #12100e 70%, #080706 100%)"></div>
+      <div class="k-abs" style="left:0;right:0;top:840px;height:240px;background:linear-gradient(180deg,#3a2e22,#1a1410)"></div>
+      <div class="k-cam" id="c5s01-sc014-cam" style="transform-origin:42% 50%">
+        <div id="c5s01-sc014-stage"><div id="c5s01-sc014-set">
+          <div id="c5s01-sc014-tube"><div id="c5s01-sc014-screen">
+            <video src="assets/intro/footage/fab_hk_workers_microscope_rows_a.mp4" muted playsinline data-start="51.39" data-duration="3.95" data-media-start="1.0"
+              data-color-grading='{"adjust":{"saturation":-0.5,"contrast":0.1},"effects":{"chromaticAberration":0.3,"chromaticAngle":0,"scanlines":0.35,"scanlineCount":0.17,"scanlineSoftness":1,"crtCurvature":0.3}}'></video>
+            <div class="k-abs" id="c5s01-sc014-flash" style="inset:0;background:#fff;opacity:0"></div>
+          </div></div>
+          <img src="assets/intro/screens/tatung_tv20cge_frame.png" alt="" style="position:absolute;left:0;top:0;width:1300px;height:744px" />
+          <div class="k-abs" style="left:248px;top:191px;width:595px;height:443px;border-radius:15%/19%;background:radial-gradient(ellipse 60% 45% at 30% 22%, rgba(255,250,240,0.16), rgba(255,250,240,0) 70%)"></div>
+        </div></div>
+      </div>
+      <div class="k-abs t-label clean" id="c5s01-sc014-tw" style="left:1330px;top:250px;font-size:40px"></div>
+      <div class="k-abs t-serif-i clean" id="c5s01-sc014-pt" style="left:1160px;top:900px;width:700px;text-align:right;font-size:72px"></div>
+      <div class="k-credit t-label">Tatung TV: Commons, CC BY-SA 3.0 · Film: Prelinger Archives (Fairchild, Asia plant, 1960s)</div>
+    </div>
+
+    <!-- C5S015 · 55.15–61.44 · the lowest level of manufacturing … Taiwan doesn't get to capture · ladder (D04) -->
+    <div class="k-scene k-paper" id="c5s01-sc015" data-scene="C5S015">
+      <div class="k-p1" style="background-image:url('assets/textures/paper_cream_01.jpg')"></div>
+      <div class="k-p2" style="background-image:url('assets/textures/paper_lined_01.jpg')"></div>
+      <div class="k-cam" id="c5s01-sc015-cam" style="transform-origin:50% 80%">
+        <div class="k-abs t-serif k-ink" id="c5s01-sc015-ti" style="left:150px;top:90px;font-size:76px"></div>
+        <div id="c5s01-sc015-rungs"></div>
+        <div class="k-abs t-label k-ink" id="c5s01-sc015-tw" style="left:1340px;top:840px;font-size:34px"></div>
+        <div class="k-abs t-label k-ink" id="c5s01-sc015-cap" style="left:1340px;top:280px;font-size:34px"></div>
+        <svg class="k-mk" id="c5s01-sc015-mk" viewBox="0 0 1920 1080"></svg>
+      </div>
+    </div>
+
+    <!-- C5S016 · 61.44–64.96 · a business term … capture a lot of the profits · smile curve -->
+    <div class="k-scene k-paper" id="c5s01-sc016" data-scene="C5S016">
+      <div class="k-p1" style="background-image:url('assets/textures/paper_cream_02.jpg')"></div>
+      <div class="k-p2" style="background-image:url('assets/textures/paper_graph_01.jpg')"></div>
+      <div class="k-cam" id="c5s01-sc016-cam" style="transform-origin:50% 78%">
+        <svg class="k-mk" id="c5s01-sc016-svg" viewBox="0 0 1920 1080"></svg>
+        <div class="k-abs t-display" id="c5s01-sc016-bt" style="left:150px;top:110px;font-size:64px;white-space:nowrap"></div>
+        <div class="k-abs t-label k-ink" id="c5s01-sc016-tw" style="left:880px;top:880px;width:160px;text-align:center;font-size:30px"></div>
+        <div class="k-abs t-label k-ink" id="c5s01-sc016-pr" style="left:1480px;top:150px;font-size:34px"></div>
+      </div>
+    </div>
+
+    <!-- C5S017 · 64.96–67.44 · the easy work, just putting it together · microscope close-up -->
+    <div class="k-scene k-night" id="c5s01-sc017" data-scene="C5S017">
+      <div class="k-cam" id="c5s01-sc017-cam" style="transform-origin:62% 62%">
+        <video class="k-vid" id="c5s01-sc017-v" src="assets/intro/footage/fab_microscope_closeup.mp4" muted playsinline data-start="64.96" data-duration="2.7" data-media-start="3.0"
+          data-color-grading='{"adjust":{"saturation":-0.6,"contrast":0.1},"effects":{"chromaticAberration":0.12,"chromaticAngle":0}}'></video>
+      </div>
+      <div class="k-scrim-b"></div>
+      <div class="k-abs t-serif-i clean" id="c5s01-sc017-ew" style="left:140px;top:870px;font-size:84px"></div>
+      <div class="k-credit t-label">Film: Prelinger Archives (Fairchild, 1960s)</div>
+    </div>
+
+    <!-- C5S018 · 67.44–74.16 · because of cheap labor … an important point · ledger + clipped photo -->
+    <div class="k-scene k-paper" id="c5s01-sc018" data-scene="C5S018">
+      <div class="k-p1" style="background-image:url('assets/textures/paper_cream_02.jpg')"></div>
+      <div class="k-p2" style="background-image:url('assets/textures/paper_stained_01.jpg');opacity:0.75"></div>
+      <div class="k-cam" id="c5s01-sc018-cam" style="transform-origin:45% 40%">
+        <div class="k-card" id="c5s01-sc018-led" style="left:520px;top:60px;width:900px;height:922px;transform:rotate(-2deg)"><img src="assets/intro/papers/ledger_specimen_p38.jpg" alt="" style="filter:sepia(0.25)" /></div>
+        <div class="k-card" id="c5s01-sc018-ph" style="left:200px;top:300px;width:460px;height:345px;padding:14px;transform:rotate(-6deg)"><img src="assets/c5/derived/c5s01/fab_rows_still.jpg" alt="" style="inset:14px;width:432px;height:317px;filter:url(#c5s01-tint-ink)" /><div class="k-ht"></div></div>
+        <div class="k-abs" style="left:380px;top:270px;width:36px;height:92px;border:6px solid #8b8f94;border-radius:20px;transform:rotate(-6deg)"></div>
+        <div class="k-abs t-display" id="c5s01-sc018-cl" style="left:760px;top:430px;font-size:110px;white-space:nowrap"></div>
+        <svg class="k-mk" id="c5s01-sc018-mk" viewBox="0 0 1920 1080"></svg>
+        <img class="k-pin" id="c5s01-sc018-pin" src="assets/icons/pin_vermilion_top.svg" alt="" style="left:1500px;top:380px;width:60px;height:82px;opacity:0" />
+        <div class="k-abs t-serif-i k-ink" id="c5s01-sc018-ip" style="left:770px;top:640px;font-size:76px"></div>
+      </div>
+      <div class="k-credit ink t-label">Film still: Prelinger Archives (Fairchild, Asia plant, 1960s)</div>
+    </div>
+
+    <!-- C5S019 · 74.16–81.76 · move up the value chain … not where they are right now · wide smile curve -->
+    <div class="k-scene k-paper" id="c5s01-sc019" data-scene="C5S019">
+      <div class="k-p1" style="background-image:url('assets/textures/paper_fiber_01.jpg')"></div>
+      <div class="k-p2" style="background-image:url('assets/textures/paper_graph_01.jpg')"></div>
+      <div class="k-cam" id="c5s01-sc019-cam" style="transform-origin:55% 70%">
+        <svg class="k-mk" id="c5s01-sc019-svg" viewBox="0 0 1920 1080"></svg>
+        <div class="k-abs t-label k-ink" id="c5s01-sc019-mu" style="left:1180px;top:520px;font-size:34px"></div>
+        <div class="k-abs t-serif-i k-ink" id="c5s01-sc019-vc" style="left:150px;top:100px;font-size:80px"></div>
+      </div>
+    </div>
+
+    <!-- C5S020 · 81.76–86.88 · another interesting thing … very beneficial · 1959 Taiwan aluminium mill -->
+    <div class="k-scene k-night" id="c5s01-sc020" data-scene="C5S020">
+      <div class="k-cam" id="c5s01-sc020-cam">
+        <video class="k-vid" src="assets/c4/footage/formosa_1959_aluminium_factory.mp4" muted playsinline data-start="81.75" data-duration="5.2" data-media-start="0.6"
+          data-color-grading='{"adjust":{"saturation":-1,"contrast":0.12},"effects":{"chromaticAberration":0.12,"chromaticAngle":0,"filmArtifacts":0.3}}' style="filter:sepia(0.35)"></video>
+      </div>
+      <canvas class="streaks" id="c5s01-sc020-streaks" style="opacity:0;filter:blur(2.5px)"></canvas>
+      <div class="k-scrim-b"></div>
+      <div class="k-abs t-serif-i clean" id="c5s01-sc020-vb" style="left:140px;top:860px;font-size:84px"></div>
+      <div class="k-credit t-label">Film: Universal Newsreel, Free China (1959) · public domain</div>
+    </div>
+
+    <!-- C5S021 · 86.88–90.08 · while all this technological factories are getting set up · pins along the west coast -->
+    <div class="k-scene k-night" id="c5s01-sc021" data-scene="C5S021">
+      <div class="k-map" id="c5s01-sc021-cam" style="width:1623px;height:2200px">
+        <img src="assets/c5/derived/c5s01/taiwan_atlas_half.jpg" alt="" style="width:1623px;height:2200px;filter:saturate(0.55) brightness(0.62) contrast(1.1)" />
+        <img src="assets/c5/derived/c5s01/taiwan_celadon_fill.png" alt="" style="width:1623px;height:2200px;opacity:0.55;mix-blend-mode:screen" />
+        <div id="c5s01-sc021-pins"></div>
+      </div>
+      <div class="k-abs t-label clean" id="c5s01-sc021-f" style="left:140px;top:150px;font-size:38px"></div>
+      <div class="k-credit t-label">Relief: AWS Terrain Tiles · Natural Earth (public domain)</div>
+    </div>
+
+    <!-- C5S022 · 90.08–93.84 · starts setting up an annual conferences · hotel card + tear-off calendar -->
+    <div class="k-scene k-paper" id="c5s01-sc022" data-scene="C5S022">
+      <div class="k-p1" style="background-image:url('assets/textures/paper_cream_01.jpg')"></div>
+      <div class="k-p2" style="background-image:url('assets/textures/paper_fiber_01.jpg');opacity:0.6"></div>
+      <div class="k-cam" id="c5s01-sc022-cam">
+        <div class="k-card" id="c5s01-sc022-pc" style="left:150px;top:170px;width:880px;height:640px;padding:20px;transform:rotate(-3deg)"><img src="assets/c5/photos/grand_hotel_taipei_1981_balconies.jpg" alt="" style="inset:20px;width:840px;height:585px;filter:saturate(0.55) sepia(0.25) contrast(1.05)" /><div class="k-ht" style="opacity:0.25"></div></div>
+        <img class="k-pin" src="assets/icons/pin_bone_top.svg" alt="" style="left:560px;top:150px;width:50px;height:69px" />
+        <div class="k-abs" id="c5s01-sc022-cal" style="left:1240px;top:190px;width:440px;height:520px"></div>
+        <div class="k-abs t-label k-ink" id="c5s01-sc022-an" style="left:1240px;top:760px;font-size:34px"></div>
+        <div class="k-abs t-serif k-ink" id="c5s01-sc022-co" style="left:1236px;top:810px;font-size:84px"></div>
+      </div>
+      <div class="k-credit ink t-label">Photo: Grand Hotel, Taipei, 1981 · Wikimedia Commons, CC BY 2.0</div>
+    </div>
+
+    <!-- C5S023 · 93.84–100.80 · talk about technology and chips … transistors, integrated circuits · programme (D12) -->
+    <div class="k-scene k-night" id="c5s01-sc023" data-scene="C5S023">
+      <div class="k-cam" id="c5s01-sc023-cam"><div class="k-abs" id="c5s01-sc023-list" style="left:420px;top:120px;width:1240px;height:1400px"></div></div>
+      <div class="k-abs" style="left:0;right:0;top:0;height:200px;background:linear-gradient(180deg,var(--night),rgba(15,19,24,0))"></div>
+      <div class="k-abs" style="left:0;right:0;bottom:0;height:220px;background:linear-gradient(0deg,var(--night),rgba(15,19,24,0))"></div>
+    </div>
+
+    <!-- C5S024 · 100.80–106.24 · a conference for people who are in this field … in Taiwan very regularly -->
+    <div class="k-scene k-night" id="c5s01-sc024" data-scene="C5S024">
+      <img class="k-bgblur" src="assets/c5/derived/c5s01/fab_rows_still.jpg" alt="" style="filter:blur(30px) brightness(0.2) grayscale(1)" />
+      <div class="k-cam" id="c5s01-sc024-cam"><div class="k-abs" id="c5s01-sc024-weave" style="inset:0">
+        <div class="k-plate" style="left:300px;top:90px;width:1120px;height:840px">
+          <video src="assets/c2/footage/bell_transistor1953_engineers_at_benches.mp4" muted playsinline data-start="100.80" data-duration="5.65" data-media-start="4.0"
+            data-color-grading='{"adjust":{"saturation":-1,"contrast":0.1},"effects":{"chromaticAberration":0.12,"chromaticAngle":0,"filmArtifacts":0.35}}' style="filter:sepia(0.3)"></video>
+        </div>
+      </div></div>
+      <div class="k-abs" id="c5s01-sc024-badge" style="left:1300px;top:150px;width:420px;height:270px;background:#efe8d8;box-shadow:0 20px 40px rgba(0,0,0,0.5);transform:rotate(4deg);opacity:0">
+        <div class="k-abs" style="left:0;right:0;top:0;height:70px;background:var(--ink)"></div>
+        <div class="k-abs t-label" style="left:30px;top:20px;font-size:30px;color:var(--paper)" id="c5s01-sc024-cf"></div>
+        <div class="k-abs" style="left:30px;top:120px;width:300px;height:18px;background:rgba(20,27,36,0.3)"></div>
+        <div class="k-abs" style="left:30px;top:160px;width:220px;height:12px;background:rgba(20,27,36,0.2)"></div>
+        <div class="k-abs" style="left:30px;top:220px;width:360px;height:14px;background:var(--celadon)"></div>
+      </div>
+      <div class="k-abs" id="c5s01-sc024-loc" style="left:120px;top:700px;width:150px;height:200px;opacity:0"><img src="assets/c5/derived/c5s01/taiwan_celadon_fill.png" alt="" style="width:150px;height:203px;filter:drop-shadow(0 0 10px rgba(159,199,178,0.5))" /></div>
+      <div class="k-abs t-label clean" id="c5s01-sc024-tw" style="left:290px;top:800px;font-size:36px"></div>
+      <div class="k-abs t-serif-i clean" id="c5s01-sc024-vr" style="left:290px;top:860px;font-size:72px"></div>
+      <div class="k-credit t-label">Film: The Transistor (Bell System, 1953) · AT&amp;T Archives · fair use</div>
+    </div>
+
+    <!-- C5S025 · 106.24–113.36 · all the big names were coming to Taiwan · tilted Pacific atlas, converging routes (D10) -->
+    <div class="k-scene k-paper" id="c5s01-sc025" data-scene="C5S025">
+      <div class="k-p1" style="background-image:url('assets/textures/paper_cream_02.jpg')"></div>
+      <div class="k-abs" style="inset:0;perspective:1700px;perspective-origin:50% 30%">
+        <div class="k-abs" id="c5s01-sc025-plane" style="left:-500px;top:-260px;width:2920px;height:1700px;transform:rotateX(30deg) rotateZ(-4deg);transform-origin:50% 50%;overflow:hidden;background:#d8d0bd">
+          <div class="k-map" id="c5s01-sc025-cam" style="width:6380px;height:2420px">
+            <img src="assets/maps/kit/pacific_atlas.jpg" alt="" style="width:6380px;height:2420px;filter:saturate(0.8)" />
+            <svg id="c5s01-sc025-svg" viewBox="0 0 6380 2420" style="width:6380px;height:2420px;overflow:visible"></svg>
+          </div>
+          <div class="k-abs" style="inset:0;background:url('assets/textures/paper_stained_01.jpg') center / cover;mix-blend-mode:multiply;opacity:0.45"></div>
+        </div>
+      </div>
+      <div class="k-abs" style="left:0;right:0;top:0;height:300px;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);-webkit-mask-image:linear-gradient(180deg,#000 20%,transparent 100%);mask-image:linear-gradient(180deg,#000 20%,transparent 100%)"></div>
+      <div class="k-abs t-serif-i k-ink" id="c5s01-sc025-bd" style="left:140px;top:110px;font-size:80px"></div>
+      <div class="k-abs t-label k-ink" id="c5s01-sc025-bn" style="left:146px;top:220px;font-size:36px"></div>
+      <div class="k-abs t-label k-ink" id="c5s01-sc025-tw" style="left:146px;top:880px;font-size:44px"><span class="k-w" id="c5s01-sc025-tww" style="position:relative">Taiwan<span class="k-abs" id="c5s01-sc025-twu" style="left:0;right:0.18em;bottom:-12px;height:9px;background:var(--celadon);transform-origin:0 50%"></span></span></div>
+      <div class="k-credit ink t-label">Relief: AWS Terrain Tiles · Natural Earth (public domain)</div>
+    </div>
+
+    <!-- C5S026 · 113.36–120.01 · Chinese American engineers who are big names · isotype (D03) -->
+    <div class="k-scene k-paper" id="c5s01-sc026" data-scene="C5S026">
+      <div class="k-p1" style="background-image:url('assets/textures/paper_graph_01.jpg')"></div>
+      <div class="k-p2" style="background-image:url('assets/textures/paper_cream_01.jpg');opacity:0.55"></div>
+      <div class="k-cam" id="c5s01-sc026-cam">
+        <div class="k-abs t-serif k-ink" id="c5s01-sc026-ti" style="left:150px;top:90px;font-size:72px"></div>
+        <div id="c5s01-sc026-grid"></div>
+        <div class="k-abs" id="c5s01-sc026-tab" style="left:1620px;top:330px;width:200px;height:420px;background:var(--celadon);opacity:0;box-shadow:0 14px 30px rgba(20,27,36,0.2)"><div class="k-ht" style="mix-blend-mode:multiply;opacity:0.25"></div></div>
+        <div class="k-abs t-label k-ink" id="c5s01-sc026-bn" style="left:150px;top:900px;font-size:36px"></div>
+      </div>
+    </div>
+
+    <!-- C5S027 · 120.01–125.13 · Some Americans … not every single year, but they were going · 707 + year boxes -->
+    <div class="k-scene k-night" id="c5s01-sc027" data-scene="C5S027">
+      <div class="k-cam" id="c5s01-sc027-cam">
+        <video class="k-vid" src="assets/intro/footage/jet_707_takeoff_hongkong.mp4" muted playsinline data-start="120.00" data-duration="5.35" data-media-start="6.0"
+          data-color-grading='{"adjust":{"saturation":-0.7,"contrast":0.1},"effects":{"chromaticAberration":0.12,"chromaticAngle":0}}'></video>
+      </div>
+      <div class="k-scrim-b" style="height:520px"></div>
+      <div class="k-abs t-label clean" id="c5s01-sc027-am" style="left:140px;top:120px;font-size:40px"></div>
+      <svg class="k-mk" id="c5s01-sc027-svg" viewBox="0 0 1920 1080"></svg>
+      <div class="k-abs t-serif-i clean" id="c5s01-sc027-ne" style="left:0;top:740px;width:1920px;text-align:center;font-size:72px"></div>
+      <div class="k-credit t-label">Film: Prelinger Archives (Pan Am 707, 1960s)</div>
+    </div>
+
+    <!-- C5S028 · 125.13–129.31 · one guy who went there a couple of times · c1 callback card stack -->
+    <div class="k-scene k-paper" id="c5s01-sc028" data-scene="C5S028">
+      <div class="k-p1" style="background-image:url('assets/textures/paper_stained_01.jpg')"></div>
+      <div class="k-p2" style="background-image:url('assets/textures/paper_cream_02.jpg');opacity:0.6"></div>
+      <div class="k-cam" id="c5s01-sc028-cam" style="transform-origin:50% 42%">
+        <div class="c5-st" id="c5s01-sc028-k3" style="transform:rotate(3deg)"><div class="k-abs" style="inset:0;background:#e4dccb"></div><div class="k-abs" style="left:60px;top:70px;width:260px;height:14px;background:rgba(20,27,36,0.25);transform:rotate(-2deg)"></div><div class="k-abs" style="left:60px;top:110px;width:180px;height:10px;background:rgba(20,27,36,0.18)"></div></div>
+        <div class="c5-st" id="c5s01-sc028-k2" style="transform:rotate(-2deg)"><img src="assets/c1/places/santa_clara_prune_orchard.jpg" alt="" /></div>
+        <div class="c5-st" id="c5s01-sc028-k1" style="transform:rotate(2deg)"><img src="assets/c1/places/stanford_memorial_church_detroit_photochrom.jpg" alt="" /></div>
+        <div class="c5-st" id="c5s01-sc028-k0" style="transform:rotate(-3deg)"><img src="assets/c1/places/stanford_campus_aerial_c1920_quad1921.jpg" alt="" /></div>
+      </div>
+      <div class="k-abs t-label k-ink" id="c5s01-sc028-ct" style="left:0;top:900px;width:1920px;text-align:center;font-size:40px"></div>
+      <div class="k-credit ink t-label">Stanford Quad 1921 · Detroit Publishing photochrom (LOC) · Santa Clara orchards · public domain</div>
+    </div>
+
+    <!-- C5S029 · 129.31–132.49 · Fred Terman, the father of Silicon Valley -->
+    <div class="k-scene k-night" id="c5s01-sc029" data-scene="C5S029">
+      <canvas class="streaks" id="c5s01-sc029-streaks" style="opacity:0;filter:blur(2.5px)"></canvas>
+      <div class="k-cam" id="c5s01-sc029-cam" style="transform-origin:65% 50%">
+        <img src="assets/c1/cutouts/terman_1955_cutout.png" alt="" class="k-abs" style="left:1000px;top:120px;width:960px;height:936px;filter:url(#c5s01-tint-sepia) contrast(1.1)" />
+      </div>
+      <div class="k-abs t-display halate" id="c5s01-sc029-ft" style="left:120px;top:330px;font-size:150px;white-space:nowrap"></div>
+      <div class="k-abs t-serif-i clean" id="c5s01-sc029-fa" style="left:126px;top:520px;font-size:64px"></div>
+      <div class="k-credit t-label">Frederick Terman, c. 1955 · fair use</div>
+    </div>
+
+    <!-- C5S030 · 132.49–137.77 · He goes there, gives talks, talks to people, networks · Vox layered paper -->
+    <div class="k-scene k-paper" id="c5s01-sc030" data-scene="C5S030">
+      <div class="k-p1" style="background-image:url('assets/textures/paper_fiber_01.jpg')"></div>
+      <div class="k-p2" style="background-image:url('assets/textures/paper_cream_01.jpg');opacity:0.6"></div>
+      <div class="k-cam" id="c5s01-sc030-cam">
+        <div class="k-panel" id="c5s01-sc030-a" style="left:120px;top:200px;width:820px;height:486px;transform:rotate(-4deg)"><img src="assets/c1/people/terman_with_packard_hewlett_1977_ieee.jpg" alt="" style="filter:url(#c5s01-tint-warm)" /><div class="k-ht"></div></div>
+        <div class="k-abs" id="c5s01-sc030-b" style="left:1340px;top:150px;width:420px;height:270px;background:#efe8d8;box-shadow:0 20px 40px rgba(20,27,36,0.35);transform:rotate(5deg)">
+          <div class="k-abs" style="left:0;right:0;top:0;height:64px;background:var(--ink)"></div>
+          <div class="k-abs" style="left:30px;top:22px;width:200px;height:18px;background:rgba(235,228,214,0.6)"></div>
+          <div class="k-abs" style="left:30px;top:110px;width:320px;height:22px;background:rgba(20,27,36,0.35)"></div>
+          <div class="k-abs" style="left:30px;top:160px;width:220px;height:12px;background:rgba(20,27,36,0.2)"></div>
+          <div class="k-abs" style="left:30px;top:220px;width:360px;height:14px;background:var(--celadon)"></div>
+        </div>
+        <img id="c5s01-sc030-t" src="assets/c1/cutouts/terman_1940s_cutout.png" alt="" class="k-abs" style="left:880px;top:250px;width:590px;height:835px;filter:url(#c5s01-tint-ink) drop-shadow(0 20px 30px rgba(20,27,36,0.35))" />
+        <div class="k-abs t-label k-ink" id="c5s01-sc030-gt" style="left:1440px;top:520px;font-size:38px"></div>
+        <div class="k-abs t-serif-i k-ink" id="c5s01-sc030-nw" style="left:1440px;top:590px;font-size:84px"></div>
+      </div>
+      <div class="k-credit ink t-label">Terman with Packard &amp; Hewlett, 1977; Terman, 1940s (© IEEE/ETHW) · fair use</div>
+    </div>
+
+    <!-- C5S031–C5S032 · 137.77–146.97 · talks with the Taiwanese government … advice / information … goals (D15) -->
+    <div class="k-scene k-paper" id="c5s01-sc031" data-scene="C5S031-C5S032">
+      <div class="k-p1" style="background-image:url('assets/textures/paper_lined_01.jpg')"></div>
+      <div class="k-p2" style="background-image:url('assets/textures/paper_cream_02.jpg');opacity:0.55"></div>
+      <div class="k-cam" id="c5s01-sc031-cam">
+        <svg class="k-mk" id="c5s01-sc031-svg" viewBox="0 0 1920 1080"></svg>
+        <div class="k-circ" id="c5s01-sc031-a" style="left:470px;top:330px"><img src="assets/c1/people/terman_frederick_portrait_c1940s_ieee.jpg" alt="" style="object-position:50% 20%;filter:url(#c5s01-tint-sepia2)" /></div>
+        <div class="k-circ" id="c5s01-sc031-b" style="left:1190px;top:330px;border-color:var(--celadon)"><img src="assets/c5/derived/c5s01/presidential_office_1960_still.jpg" alt="" style="filter:saturate(0.5) sepia(0.2)" /></div>
+        <div class="k-abs t-label k-ink" id="c5s01-sc031-tg" style="left:1100px;top:630px;width:460px;text-align:center;font-size:24px"></div>
+        <div class="k-abs t-label k-ink" id="c5s01-sc031-ad" style="left:860px;top:210px;width:200px;text-align:center;font-size:30px"></div>
+        <div class="k-abs t-label k-ink" id="c5s01-sc031-in" style="left:800px;top:770px;width:320px;text-align:center;font-size:30px"></div>
+        <div class="k-abs" id="c5s01-sc031-gl" style="left:1520px;top:720px;width:230px;height:120px;background:#f3eddf;box-shadow:0 10px 24px rgba(20,27,36,0.25);transform:rotate(3deg);opacity:0">
+          <svg viewBox="0 0 230 120" style="position:absolute;inset:0;width:230px;height:120px;overflow:visible"><path id="c5s01-sc031-gline" d="M20 96 L70 80 L110 84 L160 50 L210 26" fill="none" stroke="#141b24" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="k-abs t-label k-ink" id="c5s01-sc031-go" style="left:1530px;top:860px;width:230px;text-align:center;font-size:30px"></div>
+      </div>
+      <div class="k-credit ink t-label">Terman 1940s (© IEEE/ETHW) · Presidential Office, Taipei, 1960 (NARA) · fair use</div>
+    </div>
+
+    <!-- C5S033 · 146.97–153.85 · definitely valuable … someone who did basically build the Silicon Valley -->
+    <div class="k-scene k-night" id="c5s01-sc033" data-scene="C5S033">
+      <div class="k-cam" id="c5s01-sc033-cam" style="transform-origin:55% 45%">
+        <img class="k-full" src="assets/intro/photos/silicon_valley_aerial.jpg" alt="" style="filter:url(#c5s01-tint-sepia) contrast(1.05)" />
+      </div>
+      <div class="k-scrim-b"></div>
+      <div class="k-circ" id="c5s01-sc033-tc" style="left:110px;top:110px;width:200px;height:200px;border-color:var(--bone);border-width:6px;opacity:0"><img src="assets/c1/people/terman_frederick_portrait_c1940s_ieee.jpg" alt="" style="object-position:50% 20%;filter:url(#c5s01-tint-sepia2)" /></div>
+      <div class="k-abs t-serif-i clean" id="c5s01-sc033-va" style="left:350px;top:170px;font-size:72px"></div>
+      <div class="k-abs t-label clean" id="c5s01-sc033-bu" style="left:140px;top:780px;font-size:40px"></div>
+      <div class="k-abs t-display clean" id="c5s01-sc033-sv" style="left:140px;top:840px;font-size:96px;white-space:nowrap"></div>
+      <div class="k-credit t-label">Photo: Silicon Valley, Patrick Nouhailler · Commons, CC BY-SA 2.0</div>
+    </div>
+
+    <!-- C5S034 · 153.85–158.41 · So Taiwan is definitely on the up and up · line over a ghost map (D13) -->
+    <div class="k-scene k-night" id="c5s01-sc034" data-scene="C5S034">
+      <div class="k-abs" style="left:560px;top:-140px;width:900px;height:1220px;opacity:0.18">
+        <img src="assets/c5/derived/c5s01/taiwan_night_half.jpg" alt="" style="position:absolute;inset:0;width:900px;height:1220px;filter:brightness(1.6)" />
+        <img src="assets/c5/derived/c5s01/taiwan_celadon_fill.png" alt="" style="position:absolute;inset:0;width:900px;height:1220px" />
+      </div>
+      <div class="k-cam" id="c5s01-sc034-cam" style="transform-origin:0 0">
+        <svg class="k-mk" id="c5s01-sc034-svg" viewBox="0 0 1920 1080"></svg>
+        <div class="k-abs t-label clean" id="c5s01-sc034-tw" style="left:200px;top:780px;font-size:40px"></div>
+        <div class="k-abs t-serif-i clean" id="c5s01-sc034-uu" style="left:1180px;top:110px;font-size:96px;white-space:nowrap"></div>
+      </div>
+      <div class="k-credit t-label">Relief: AWS Terrain Tiles · Natural Earth (public domain)</div>
+    </div>
+
+    <!-- C5S035 · 158.41–163.77 · even more satisfying probably for Taiwanese leader · Chiang Kai-shek card -->
+    <div class="k-scene k-paper" id="c5s01-sc035" data-scene="C5S035">
+      <div class="k-p1" style="background-image:url('assets/textures/paper_cream_01.jpg')"></div>
+      <div class="k-p2" style="background-image:url('assets/textures/paper_fiber_01.jpg');opacity:0.55"></div>
+      <div class="k-cam" id="c5s01-sc035-cam" style="transform-origin:40% 40%">
+        <div class="k-card" id="c5s01-sc035-card" style="left:330px;top:70px;width:700px;height:926px;padding:22px;transform:rotate(-2deg);clip-path:polygon(0 0,100% 0,100% 94%,96% 95.5%,92% 94.2%,87% 96%,82% 94.6%,76% 95.8%,70% 94.4%,64% 96.2%,58% 94.8%,52% 95.6%,46% 94.3%,40% 96%,34% 94.6%,28% 95.7%,22% 94.4%,16% 96.1%,10% 94.7%,5% 95.6%,0 94.5%)"><img src="assets/c5/photos/chiang_kaishek_official_portrait.jpg" alt="" style="inset:22px;width:656px;height:868px;filter:sepia(0.3) contrast(1.05)" /><div class="k-ht" style="opacity:0.2"></div></div>
+        <div class="k-abs t-serif-i k-ink" id="c5s01-sc035-sa" style="left:1150px;top:330px;font-size:96px"></div>
+        <div class="k-abs t-label k-ink" id="c5s01-sc035-tl" style="left:1156px;top:470px;font-size:40px"></div>
+      </div>
+      <div class="k-credit ink t-label">Chiang Kai-shek, official portrait · public domain</div>
+    </div>
+
+    <!-- C5S036 · 163.77–170.65 · China may have a bigger economy … landmass … population · East Asia (R12) -->
+    <div class="k-scene k-night" id="c5s01-sc036" data-scene="C5S036">
+      <div class="k-map" id="c5s01-sc036-cam" style="width:3199px;height:2475px">
+        <img src="assets/c5/derived/c5s01/east_asia_night_half.jpg" alt="" style="width:3199px;height:2475px;filter:brightness(1.35) contrast(1.05)" />
+        <img id="c5s01-sc036-cf" src="assets/c5/derived/c5s01/china_red_fill.png" alt="" style="width:3199px;height:2475px;opacity:0" />
+        <img id="c5s01-sc036-cg" src="assets/c5/derived/c5s01/china_red_glow.png" alt="" style="width:3199px;height:2475px;opacity:0;filter:blur(4px)" />
+        <img src="assets/c5/derived/c5s01/taiwan_cel_fill_ea.png" alt="" style="width:3199px;height:2475px" />
+        <img src="assets/c5/derived/c5s01/taiwan_cel_glow_ea.png" alt="" style="width:3199px;height:2475px;filter:blur(3px)" />
+        <svg id="c5s01-sc036-svg" viewBox="0 0 3199 2475" style="width:3199px;height:2475px;overflow:visible"></svg>
+      </div>
+      <div class="k-abs" id="c5s01-sc036-lab" style="left:1240px;top:120px;width:600px"></div>
+      <div class="k-credit t-label">Relief: AWS Terrain Tiles · Natural Earth (public domain)</div>
+    </div>
+
+    <!-- C5S037 · 170.65–176.30 · But Mao Zedong is the leader … not taking good care of the Chinese · 2.5D Tiananmen -->
+    <div class="k-scene k-night" id="c5s01-sc037" data-scene="C5S037">
+      <img id="c5s01-sc037-far" src="assets/c5/derived/c5s01/tian_far.jpg" alt="" class="k-abs" style="left:-80px;top:-260px;width:2080px;height:1560px;filter:saturate(0.55) brightness(0.8) blur(3px)" />
+      <div class="k-abs t-display halate" id="c5s01-sc037-mz" style="left:0;top:40px;width:1920px;text-align:center;font-size:150px;white-space:nowrap"></div>
+      <img id="c5s01-sc037-gate" src="assets/c5/derived/c5s01/tian_gate.png" alt="" class="k-abs" style="left:-80px;top:-260px;width:2080px;height:1560px;filter:saturate(0.6) contrast(1.05) brightness(0.9)" />
+      <img id="c5s01-sc037-near" src="assets/c5/derived/c5s01/tian_near.png" alt="" class="k-abs" style="left:-80px;top:-260px;width:2080px;height:1560px;filter:saturate(0.5) brightness(0.75) blur(1.5px)" />
+      <div class="k-scrim-b"></div>
+      <div class="k-abs t-serif-i clean" id="c5s01-sc037-nt" style="left:0;top:900px;width:1920px;text-align:center;font-size:72px"></div>
+      <div class="k-credit t-label">Photo: Tiananmen gate tower · Wikimedia Commons, CC BY-SA 4.0</div>
+    </div>
+
+    <!-- C5S038 · 176.30–179.66 · the cultural revolution happens · poster on a paper wall -->
+    <div class="k-scene k-paper" id="c5s01-sc038" data-scene="C5S038">
+      <div class="k-p1" style="background-image:url('assets/textures/paper_stained_01.jpg')"></div>
+      <div class="k-p2" style="background-image:url('assets/textures/paper_cream_02.jpg');opacity:0.5"></div>
+      <div class="k-cam" id="c5s01-sc038-cam" style="transform-origin:40% 30%">
+        <div class="k-card" id="c5s01-sc038-po" style="left:250px;top:40px;width:680px;height:985px;transform:rotate(-1.5deg);clip-path:polygon(0 0,88% 0,100% 7%,100% 100%,0 100%)"><img src="assets/c5/posters/cr_poster_raise_great_red_flag.jpg" alt="" style="filter:saturate(0.75) sepia(0.12) contrast(0.98)" /><div class="k-ht" style="opacity:0.25"></div></div>
+        <div class="k-abs" style="left:848px;top:38px;width:84px;height:70px;background:linear-gradient(225deg,#d9cfbb 48%,rgba(0,0,0,0.25) 52%,rgba(0,0,0,0) 70%);transform:rotate(-1.5deg)"></div>
+        <div class="k-abs t-display k-ink" id="c5s01-sc038-cr" style="left:1020px;top:380px;font-size:110px;line-height:1.0"></div>
+      </div>
+      <div class="k-credit ink t-label">Poster, 1960s (Stefan Landsberger collection via Commons, CC BY 2.0)</div>
+    </div>
+
+    <!-- C5S039 · 179.66–183.34 · purging anyone he's suspicious of · Red Guards, 1966 -->
+    <div class="k-scene k-night" id="c5s01-sc039" data-scene="C5S039">
+      <img class="k-bgblur" src="assets/c5/photos/red_guards_tiananmen_1966.jpg" alt="" style="filter:blur(26px) brightness(0.35) saturate(0.5)" />
+      <div class="k-cam" id="c5s01-sc039-cam"><div class="k-abs" id="c5s01-sc039-weave" style="inset:0">
+        <div class="k-card" style="left:560px;top:70px;width:800px;height:845px;padding:16px;background:#e8e0cf"><img src="assets/c5/photos/red_guards_tiananmen_1966.jpg" alt="" style="inset:16px;width:768px;height:813px;filter:saturate(0.7) sepia(0.15) contrast(1.05)" /></div>
+      </div></div>
+      <div class="k-abs t-label clean" id="c5s01-sc039-pu" style="left:140px;top:420px;font-size:44px"></div>
+      <div class="k-abs t-serif-i clean" id="c5s01-sc039-su" style="left:1400px;top:620px;font-size:80px"></div>
+      <div class="k-credit t-label">Red Guards, Tiananmen Square, 1966 · Wikimedia Commons / fair use</div>
+    </div>
+
+    <!-- C5S040 · 183.34–188.86 · launching a war against scientists, against engineers · pictograms struck through -->
+    <div class="k-scene k-night" id="c5s01-sc040" data-scene="C5S040">
+      <img class="k-bgblur" src="assets/c5/posters/cr_poster_mao_featuring.jpg" alt="" style="filter:blur(16px) brightness(0.28) saturate(0.6)" />
+      <div class="k-cam" id="c5s01-sc040-cam">
+        <div class="k-abs t-display clean" id="c5s01-sc040-war" style="left:0;top:110px;width:1920px;text-align:center;font-size:200px"></div>
+        <div id="c5s01-sc040-ic"></div>
+        <div class="k-abs t-label clean" id="c5s01-sc040-sc" style="left:300px;top:760px;width:560px;text-align:center;font-size:40px"></div>
+        <div class="k-abs t-label clean" id="c5s01-sc040-en" style="left:1060px;top:760px;width:560px;text-align:center;font-size:40px"></div>
+        <svg class="k-mk" id="c5s01-sc040-mk" viewBox="0 0 1920 1080"></svg>
+      </div>
+      <div class="k-credit t-label">Poster, 1968 · Wikimedia Commons / fair use</div>
+    </div>
+
+    <!-- C5S041 · 188.86–191.10 · Anyone who's studying, he just does not like · book crossed out -->
+    <div class="k-scene k-paper" id="c5s01-sc041" data-scene="C5S041">
+      <div class="k-p1" style="background-image:url('assets/textures/paper_lined_01.jpg')"></div>
+      <div class="k-p2" style="background-image:url('assets/textures/paper_cream_01.jpg');opacity:0.5"></div>
+      <div class="k-cam" id="c5s01-sc041-cam">
+        <svg class="k-mk" id="c5s01-sc041-book" viewBox="0 0 1920 1080"></svg>
+        <div class="k-abs t-serif-i k-ink" id="c5s01-sc041-st" style="left:0;top:880px;width:1920px;text-align:center;font-size:96px"></div>
+        <svg class="k-mk" id="c5s01-sc041-mk" viewBox="0 0 1920 1080"></svg>
+      </div>
+    </div>
+
+    <!-- C5S042 · 191.10–194.22 · All the while Taiwan is taking a different direction · Taipei 1960 + arrows -->
+    <div class="k-scene k-night" id="c5s01-sc042" data-scene="C5S042">
+      <div class="k-cam" id="c5s01-sc042-cam">
+        <video class="k-vid" src="assets/intro/footage/taiwan_1960_taipei_boulevard_high_angle.mp4" muted playsinline data-start="191.09" data-duration="3.2" data-media-start="2.0"
+          data-color-grading='{"adjust":{"saturation":-0.55,"contrast":0.1},"effects":{"chromaticAberration":0.12,"chromaticAngle":0,"filmArtifacts":0.25}}'></video>
+        <svg class="k-mk" id="c5s01-sc042-mk" viewBox="0 0 1920 1080"></svg>
+      </div>
+      <div class="k-scrim-b"></div>
+      <div class="k-abs t-serif-i clean" id="c5s01-sc042-dd" style="left:140px;top:880px;font-size:96px"></div>
+      <div class="k-credit t-label">Film: Taiwan: The Face of Free China (1960) · NARA, public domain</div>
+    </div>
+
+    <div id="c5s01-flash"></div>
+    <div id="c5s01-grain" class="tx tx-grain" style="background-image:url('assets/textures/grain_01_norm.jpg')"></div>
+    <div id="c5s01-dust" class="tx tx-dust" style="background-image:url('assets/textures/dust_02.jpg')"></div>
+    <div id="c5s01-vig" class="vignette"></div>
+    <audio id="c5s01-vo" class="temp-vo" src="vo_c5.mp3" data-start="0" data-duration="194.22" data-media-start="0.00" data-volume="1"></audio>
+  </div>
+  <script>
+  (function () {
+    const SEG = "c5s01", SEG_START = 0.00, SEG_END = 194.22, DURATION = +(SEG_END - SEG_START).toFixed(2);
+    const T = (s) => +(s - 0.00).toFixed(3);   // TEXT cues (audited) — literal word start; L = 0.06 lead
+    const S = (s) => +(s - 0.00).toFixed(3);   // STRUCTURAL cues (cuts, camera, objects)
+    const L = 0.06;
+    const tl = gsap.timeline({ paused: true });
+    const $ = (id) => document.getElementById(SEG + "-" + id);
+    const NS = "http://www.w3.org/2000/svg";
+    const defs = $("defs");
+    const E = FX.ease;
+    const C = (e, d) => FX.choppy(e, d, 12);
+    const BONE = "#f2ede3", INK = "#141b24", RED = "#e03f2c", CEL = "#9fc7b2", YEL = "#f2d33b", NAVY = "#1d5c9e";
+
+    // ---------- filters ----------
+    FX.tintDefs(defs, "c5s01-tint-sepia", "#1d1a17", "#eadfca");
+    FX.tintDefs(defs, "c5s01-tint-sepia2", "#2a241e", "#efe6d2");
+    FX.tintDefs(defs, "c5s01-tint-ink", "#1c2430", "#ece4d2");
+    FX.tintDefs(defs, "c5s01-tint-bone", "#15181d", "#e6dfcf");
+    FX.tintDefs(defs, "c5s01-tint-warm", "#2b2219", "#efe2c8");
+    const PEN = FX.markupDefs(defs, "c5s01-pen", { boil: 4 });
+    const MK = FX.markupDefs(defs, "c5s01-mk", { boil: 12 });
+
+    // ---------- helpers ----------
+    const wins = {};
+    function scene(k, a, b) {
+      const e = $("sc" + k); wins[k] = [a, b];
+      if (S(a) <= 0) gsap.set(e, { autoAlpha: 1, display: "block" });
+      else tl.fromTo(e, { autoAlpha: 0, display: "none" }, { autoAlpha: 1, display: "block", duration: 0.001, immediateRender: false }, S(a));
+      if (b < SEG_END) tl.set(e, { autoAlpha: 0, display: "none" }, S(b));
+    }
+    function gated(a, b, fn) { const o = FX.onFrame; FX.onFrame = (f) => o(FX.gate(S(a) - 0.1, S(b) + 0.1, f)); try { return fn(); } finally { FX.onFrame = o; } }
+    function rise(el, t, o) {
+      o = o || {}; if (typeof el === "string") el = $(el); const d = o.dur || 0.9;
+      tl.fromTo(el, { opacity: 0, y: o.y == null ? 18 : o.y }, { opacity: 1, y: 0, duration: d, ease: C(E.out, d), immediateRender: true }, t);
+    }
+    function pop(el, t, o) {
+      o = o || {}; if (typeof el === "string") el = $(el); const d = o.dur || 1.0;
+      tl.fromTo(el, { opacity: 0, scale: o.from || 0.6 }, { opacity: 1, scale: 1, duration: d, ease: C(E.out, d), immediateRender: true }, t);
+    }
+    const show = (el, t) => tl.fromTo(el, { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, t);
+    // words: [["text", cue], ...] → spans, each rising on its own cue
+    function words(id, list, o) {
+      o = o || {}; const line = $(id), spans = [];
+      list.forEach(([w, t], i) => {
+        if (o.br && o.br.includes(i)) line.appendChild(document.createElement("br"));
+        const s = document.createElement("span"); s.className = "k-w"; s.textContent = w + (i < list.length - 1 && !o.nospace ? " " : "");
+        line.appendChild(s); spans.push(s);
+        rise(s, t, { y: o.y == null ? 14 : o.y, dur: (o.durs && o.durs[i]) || o.dur || 0.7 });
+      });
+      return spans;
+    }
+    function ground(kind, t) {
+      const v = kind === "paper" ? [0.32, 0.14, 0.24] : [1, 0.42, 0.36];
+      tl.set([$("vig"), $("dust"), $("grain")], { opacity: (i) => v[i] }, S(t));
+    }
+    function flash(t, peak) {
+      tl.fromTo($("flash"), { opacity: 0 }, { opacity: peak || 0.85, duration: 0.08, ease: "power2.in", immediateRender: false }, S(t) - 0.08);
+      tl.to($("flash"), { opacity: 0, duration: 0.22, ease: "power2.out" }, S(t));
+    }
+    function whip(ka, kb, t, o) {
+      o = Object.assign({ dir: 1, vertical: false, flash: false }, o);
+      const a = $("sc" + ka), b = $("sc" + kb);
+      const ba = FX.whipDefs(defs, SEG + "-wa" + ka), bb = FX.whipDefs(defs, SEG + "-wb" + kb);
+      tl.set(a, { filter: `url(#${SEG}-wa${ka})` }, S(t) - 0.17);
+      tl.set(a, { filter: "none" }, S(t) + 0.06);
+      tl.set(b, { filter: `url(#${SEG}-wb${kb})` }, S(t) - 0.001);
+      tl.set(b, { filter: "none" }, S(t) + 0.2);
+      FX.whip(tl, a, b, S(t), { dir: o.dir, vertical: o.vertical, blurA: ba, blurB: bb });
+      if (o.flash) flash(t);
+    }
+    // paper slide: outgoing leaves left, incoming arrives from the right (0.42 s, centred on t)
+    function slide(ka, kb, t) {
+      tl.to($("sc" + ka), { x: -1920, duration: 0.42, ease: E.in }, S(t) - 0.21);
+      tl.fromTo($("sc" + kb), { x: 1920, boxShadow: "-30px 0 60px rgba(0,0,0,0.45)" }, { x: 0, boxShadow: "-30px 0 60px rgba(0,0,0,0)", duration: 0.42, ease: E.out, immediateRender: false }, S(t) - 0.21);
+    }
+    // push-through: the outgoing scene rushes into the lens, the incoming lands out of a blur
+    function pushThrough(ka, kb, t) {
+      tl.to($("sc" + ka), { scale: 2.6, filter: "blur(10px)", duration: 0.36, ease: E.in }, S(t) - 0.36);
+      tl.fromTo($("sc" + kb), { scale: 1.18, filter: "blur(8px)" }, { scale: 1, filter: "blur(0px)", duration: 0.3, ease: E.cam, immediateRender: false }, S(t));
+      tl.set($("sc" + kb), { filter: "none" }, S(t) + 0.31);
+    }
+    function ink(parent, d, t, dur, o) {
+      o = o || {};
+      const p = document.createElementNS(NS, "path");
+      p.setAttribute("d", d); p.setAttribute("fill", o.fill || "none");
+      p.setAttribute("stroke", o.color || INK); p.setAttribute("stroke-width", o.width || 6);
+      p.setAttribute("stroke-linecap", "round"); p.setAttribute("stroke-linejoin", "round");
+      if (o.filter) p.setAttribute("filter", o.filter);
+      if (o.opacity) p.setAttribute("opacity", o.opacity);
+      if (o.dash) p.setAttribute("data-dash", o.dash);
+      if (o.blend) p.style.mixBlendMode = o.blend;
+      parent.appendChild(p);
+      const len = p.getTotalLength() || 1;
+      if (o.dash) {   // dashed line drawn on: mask with a solid copy
+        const id = SEG + "-dm" + (++ink.n); const m = document.createElementNS(NS, "mask"); m.setAttribute("id", id); m.setAttribute("maskUnits", "userSpaceOnUse");
+        const mp = p.cloneNode(); mp.setAttribute("stroke", "#fff"); mp.removeAttribute("filter"); mp.setAttribute("stroke-width", (o.width || 6) + 10);
+        m.appendChild(mp); parent.appendChild(m); p.setAttribute("stroke-dasharray", o.dash); p.setAttribute("mask", `url(#${id})`);
+        mp.setAttribute("stroke-dasharray", `${len} ${len}`); mp.setAttribute("stroke-dashoffset", len);
+        tl.fromTo(mp, { attr: { "stroke-dashoffset": len } }, { attr: { "stroke-dashoffset": 0 }, duration: dur, ease: o.ease || C(E.inOut, dur), immediateRender: true }, t);
+        p._len = len; return p;
+      }
+      p.setAttribute("stroke-dasharray", `${len} ${len}`); p.setAttribute("stroke-dashoffset", len);
+      tl.fromTo(p, { attr: { "stroke-dashoffset": len } }, { attr: { "stroke-dashoffset": 0 }, duration: dur, ease: o.ease || C(E.inOut, dur), immediateRender: true }, t);
+      p._len = len; return p;
+    }
+    ink.n = 0;
+    function el(tag, attrs, parent) { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; }
+    const cam = (cx, cy, z) => ({ x: 960 - cx * z, y: 540 - cy * z, scale: z });
+    function drop(e, t, o) {
+      o = o || {}; if (typeof e === "string") e = $(e);
+      const r = parseFloat((e.style.transform.match(/rotate\(([-\d.]+)deg\)/) || [0, 0])[1]);
+      tl.fromTo(e, { opacity: 0, scale: 1.14, y: -30, rotation: r - 5 }, { opacity: 1, scale: 1, y: 0, rotation: r, duration: o.dur || 0.6, ease: C(E.out, o.dur || 0.6), immediateRender: true }, t);
+    }
+    const pen = (svg, pts, t, o) => FX.markup.pen(tl, svg, t, Object.assign({ points: pts, width: 6, color: INK, filter: PEN, dur: 0.6, seed: 3 }, o));
+    // pictograms (own drawings; one stroke family)
+    const PIC = {
+      lights: '<path d="M4 28 Q27 52 50 30 T96 28"/><g><path d="M18 40 v6"/><ellipse cx="18" cy="54" rx="6" ry="9"/></g><g><path d="M38 41 v6"/><ellipse cx="38" cy="55" rx="6" ry="9"/></g><g><path d="M60 37 v6"/><ellipse cx="60" cy="51" rx="6" ry="9"/></g><g><path d="M81 35 v6"/><ellipse cx="81" cy="49" rx="6" ry="9"/></g>',
+      radio: '<rect x="10" y="30" width="80" height="56" rx="8"/><circle cx="34" cy="58" r="16"/><circle cx="34" cy="58" r="7"/><path d="M60 46 h20 M60 56 h20 M60 66 h14"/><circle cx="76" cy="76" r="4"/><path d="M70 30 L86 8"/><path d="M28 30 v-6 h44 v6"/>',
+      washer: '<rect x="16" y="8" width="68" height="84" rx="6"/><path d="M16 26 h68"/><circle cx="28" cy="17" r="3"/><circle cx="40" cy="17" r="3"/><rect x="58" y="13" width="18" height="8" rx="2"/><circle cx="50" cy="58" r="22"/><circle cx="50" cy="58" r="14"/><path d="M40 52 Q50 46 60 52"/>',
+      umbrella: '<path d="M8 50 Q50 0 92 50 Q81 42 71 50 Q61 42 50 50 Q39 42 29 50 Q19 42 8 50 Z"/><path d="M50 50 V86 Q50 94 42 94 Q36 94 36 87"/><path d="M50 12 V6"/>',
+      textiles: '<path d="M14 26 Q14 18 24 18 L76 18 Q86 18 86 26 Q86 34 76 34 L24 34 Q14 34 14 26 Z"/><path d="M14 26 V44 Q14 52 24 52 L76 52"/><path d="M76 34 Q66 52 76 60 Q86 70 70 78 Q58 84 66 94"/><path d="M24 34 V52"/><path d="M14 64 Q28 58 42 64 T70 64"/><path d="M14 76 Q28 70 42 76"/>',
+      flask: '<path d="M38 10 h24 M42 10 V40 L18 84 Q15 92 24 92 H76 Q85 92 82 84 L58 40 V10"/><path d="M28 70 H72"/><circle cx="44" cy="80" r="3"/><circle cx="56" cy="76" r="2"/>',
+    };
+    const pic = (k, color, w) => `<svg viewBox="0 0 100 100"><g fill="none" stroke="${color}" stroke-width="${w || 5}" stroke-linecap="round" stroke-linejoin="round">${PIC[k]}</g></svg>`;
+    const ENGINEER = '<path d="M13 26 Q14 10 32 9 Q50 10 51 26 Z"/><rect x="9" y="25" width="46" height="5" rx="2"/><circle cx="32" cy="39" r="9"/><path d="M14 74 L16 56 C17 51 22 49 26 49 L32 56 L38 49 C42 49 47 51 48 56 L50 74 Z"/>';
+    const SCIENTIST = '<circle cx="32" cy="22" r="10"/><path d="M14 74 L16 46 C17 40 22 37 27 37 L32 46 L37 37 C42 37 47 40 48 46 L50 74 Z"/><path d="M27 37 L32 74 L37 37" fill="none" stroke="#141b24" stroke-width="2"/>';
+
+    // ---------- global textures ----------
+    FX.grain($("grain"), 501);
+    FX.dust($("dust"), 502, 2);
+    gsap.set([$("vig"), $("dust"), $("grain")], { opacity: (i) => [1, 0.42, 0.36][i] });
+
+    /* ============ C5S001 · 0.00–2.19 · "This actually did work, by the way." (NIGHT) ============ */
+    scene("001", 0, 2.39);
+    gsap.set($("sc001-cam"), { scale: 1.0 });
+    tl.fromTo($("sc001-cam"), { scale: 1.0 }, { scale: 1.05, duration: 2.4, ease: "none", immediateRender: true }, 0);
+    words("sc001-t", [["did", T(0.72) - L], ["work", T(1.04) - L]], { durs: [0.6, 0.5] });
+    pen($("sc001-mk"), [[1180, 700], [1222, 752], [1340, 590]], S(1.02), { color: BONE, width: 10, blend: "normal", dur: 0.28, jitter: 3 });
+    whip("001", "002", 2.19, { dir: 1 });
+
+    /* ============ C5S002 · 2.19–4.93 · In the 60s, 70s, probably 80s, 90s too (PAPER) ============ */
+    ground("paper", 2.19);
+    scene("002", 2.18, 4.93);
+    (function () {
+      const svg = $("sc002-svg");
+      ink(svg, "M150 642 L1780 638", S(2.22), 0.6, { width: 6, filter: PEN, ease: C(E.out, 0.6) });
+      [360, 760, 1160, 1560].forEach((x, i) => ink(svg, `M${x} 618 L${x + 2} 664`, S(2.4) + i * 0.08, 0.2, { width: 5, filter: PEN }));
+      const dot = el("circle", { cx: 360, cy: 640, r: 0, fill: CEL, stroke: INK, "stroke-width": 4 }, svg);
+      tl.to(dot, { attr: { r: 24 }, duration: 0.3, ease: C(E.out, 0.3) }, S(2.40));
+      [[760, 2.96], [1160, 3.76], [1560, 4.24]].forEach(([x, t]) => tl.to(dot, { attr: { cx: x }, duration: 0.42, ease: C(E.inOut, 0.42) }, S(t)));
+      FX.text.odometer(tl, $("sc002-d0"), T(2.43) - L, { dur: 0.45, stagger: 0.03, seed: 60 });
+      FX.text.odometer(tl, $("sc002-d1"), T(2.99) - L, { dur: 0.45, stagger: 0.03, seed: 70 });
+      FX.text.odometer(tl, $("sc002-d2"), T(3.79) - L, { dur: 0.4, stagger: 0.03, seed: 80 });
+      FX.text.odometer(tl, $("sc002-d3"), T(4.27) - L, { dur: 0.35, stagger: 0.02, seed: 90 });
+      tl.fromTo($("sc002-cam"), { x: 0, scale: 1 }, { x: -60, duration: 2.5, ease: "none", immediateRender: true }, S(2.19));
+      tl.to($("sc002-cam"), { scale: 1.12, x: -140, duration: 0.3, ease: E.in }, S(4.63));   // cut on action into the label
+    })();
+
+    /* ============ C5S003 · 4.93–7.23 · made in Taiwan was a pretty big deal (NIGHT) ============ */
+    ground("night", 4.93);
+    scene("003", 4.93, 7.43);
+    (function () {
+      const chk = FX.roughDefs(defs, "c5s01-ch003", { freq: 0.045, scale: 7, choke: 0 });
+      const st = $("sc003-stamp"); st.style.filter = "url(#c5s01-ch003)";
+      const sp = st.children;
+      [T(4.99) - L, T(5.23) - L, T(5.39) - L].forEach((c, i) => show(sp[i], c));
+      tl.fromTo(st, { scale: 1.25, opacity: 0.0 }, { scale: 1, opacity: 1, duration: 0.25, ease: C(E.out, 0.25), immediateRender: true }, T(4.99) - L);
+      FX.chokeSettle(tl, chk, st, T(4.99) - L, 9, 0.6, "none");
+      gsap.set($("sc003-cam"), { scale: 1.05 });
+      tl.fromTo($("sc003-cam"), { scale: 1.05 }, { scale: 1.12, duration: 2.5, ease: E.cam, immediateRender: true }, S(4.93));
+      FX.focusHunt(tl, $("sc003-card"), S(5.40), { dur: 0.8, base: "" });
+      words("sc003-bd", [["big", T(6.35) - L], ["deal", T(6.75) - L]], { durs: [0.4, 0.35] });
+    })();
+    whip("003", "004", 7.23, { dir: 1, flash: true });
+
+    /* ============ C5S004 · 7.23–14.35 · products … they were all made in Taiwan (PAPER) ============ */
+    ground("paper", 7.23);
+    scene("004", 7.22, 14.35);
+    (function () {
+      const items = [["lights", [["Christmas", T(8.35) - L], ["lights", T(8.75) - L]]], ["radio", [["radios", T(9.23) - L]]], ["washer", [["washers", T(10.03) - L]]], ["umbrella", [["umbrellas", T(11.07) - L]]], ["textiles", [["textiles", T(11.87) - L]]]];
+      items.forEach(([k, ws], i) => {
+        const c = $("sc004-c" + i);
+        c.innerHTML = pic(k, INK, 4.5) + '<div class="k-ht" style="mix-blend-mode:multiply;opacity:0.18"></div><div class="cap t-label" id="c5s01-sc004-cap' + i + '"></div>';
+        drop(c, ws[0][1] - 0.04, { dur: 0.7 });
+        const cap = $("sc004-cap" + i);
+        ws.forEach(([w, t], j) => { const s = document.createElement("span"); s.className = "k-w k-lbox"; s.style.margin = "0 4px 6px"; s.textContent = w; cap.appendChild(s); rise(s, t, { y: 8, dur: 0.5 }); });
+      });
+      const chk = FX.roughDefs(defs, "c5s01-ch004", { freq: 0.05, scale: 8, choke: 0 });
+      const st = $("sc004-stamp"); st.style.filter = "url(#c5s01-ch004)";
+      [T(13.31) - L, T(13.63) - L, T(13.79) - L].forEach((c, i) => show(st.children[i], c));
+      tl.fromTo(st, { scale: 1.3, opacity: 0 }, { scale: 1, opacity: 0.92, duration: 0.2, ease: C(E.out, 0.2), immediateRender: true }, T(13.31) - L);
+      FX.chokeSettle(tl, chk, st, T(13.31) - L, 10, 0.55, "none");
+      gsap.set($("sc004-cam"), { scale: 1.1 });
+      tl.fromTo($("sc004-cam"), { scale: 1.1 }, { scale: 0.97, duration: 7.2, ease: "sine.out", immediateRender: true }, S(7.23));
+    })();
+
+    /* ============ C5S005–006 · 14.35–23.63 · grows 9 to 10% every single year, even after American aid (GRID) ============ */
+    scene("005", 14.35, 23.83);
+    (function () {
+      const box = $("sc005-bars"), H = [528, 552, 516, 560, 540, 520, 566, 534, 548, 524, 558, 512, 544, 562, 530, 550, 536, 556, 518, 546, 560, 528];
+      H.forEach((h, i) => {
+        const b = document.createElement("div"); b.className = "c5-bar"; b.innerHTML = '<div class="ht"></div>';
+        b.style.left = (224 + i * 92) + "px"; b.style.top = (900 - h) + "px"; b.style.height = h + "px"; box.appendChild(b);
+        const t0 = i < 16 ? S(16.80) + i * 0.12 : S(20.95) + (i - 16) * 0.11;
+        tl.fromTo(b, { scaleY: 0 }, { scaleY: 1, duration: 0.9, ease: C(E.out, 0.9), immediateRender: true }, t0);
+      });
+      words("sc005-ti", [["Taiwanese", T(15.31) - L], ["economy", T(16.19) - L]]);
+      const n9 = $("sc005-n9");
+      show(n9, T(18.19) - L);
+      FX.text.count(tl, n9, T(18.19) - L, 0, 9, 0.28, (v) => Math.round(v));
+      rise("sc005-to", T(18.51) - L, { y: 8, dur: 0.4 });
+      pop("sc005-n10", T(18.67) - L, { from: 0.8, dur: 0.6 });
+      words("sc005-ey", [["every", T(19.47) - L], ["single", T(19.71) - L], ["year", T(20.11) - L]], { durs: [0.5, 0.5, 0.4] });
+      // C5S006: the camera keeps travelling right; the American-aid era band slides in behind the first bars and ENDS
+      tl.fromTo($("sc005-band"), { scaleX: 0, opacity: 0 }, { scaleX: 1, opacity: 1, duration: 1.0, ease: C(E.out, 1.0), immediateRender: true }, S(21.30));
+      drop("sc005-ike", S(21.45), { dur: 0.7 });
+      words("sc005-aid", [["American", T(21.55) - L], ["aid", T(22.19) - L]]);
+      words("sc005-is", [["the", T(22.83) - L], ["island", T(22.99) - L]], { durs: [0.35, 0.35] });
+      const tops = H.map((h, i) => [224 + i * 92 + 32, 900 - h + 10]);
+      ink($("sc005-svg"), "M" + tops.map((p) => p[0] + " " + p[1]).join(" L"), S(22.25), 0.65, { width: 5, filter: PEN, opacity: 0.85 });
+      tl.fromTo($("sc005-cam"), { x: 0 }, { x: -60, duration: 6.2, ease: "none", immediateRender: true }, S(14.35));
+      tl.to($("sc005-cam"), { x: -390, duration: 2.6, ease: E.cam }, S(20.59));
+    })();
+    whip("005", "007", 23.63, { dir: 1 });
+
+    /* ============ C5S007 · 23.63–29.73 · most popular and cutting edge companies (NIGHT) ============ */
+    ground("night", 23.63);
+    scene("007", 23.62, 29.73);
+    (function () {
+      tl.fromTo($("sc007-cam"), { scale: 1.0 }, { scale: 1.06, duration: 5.8, ease: "none", immediateRender: true }, S(23.63));
+      tl.to($("sc007-cam"), { scale: 1.16, duration: 0.3, ease: E.in }, S(29.44));
+      [["a", -30, 1.0], ["b", 40, 0.6], ["c", -60, 1.4]].forEach(([k, dx, d], i) => {
+        tl.fromTo($("sc007-" + k), { opacity: 0, y: 60 }, { opacity: 1, y: 0, duration: 1.1, ease: C(E.out, 1.1), immediateRender: true }, S(23.66) + i * 0.18);
+        tl.fromTo($("sc007-" + k), { x: 0 }, { x: dx, duration: 6, ease: "none", immediateRender: true }, S(23.66));
+      });
+      words("sc007-mp", [["most", T(26.75) - L], ["popular", T(27.07) - L]]);
+      words("sc007-ce", [["cutting", T(27.71) - L], ["edge", T(28.19) - L]]);
+    })();
+
+    /* ============ C5S008 · 29.73–35.15 · General Instrument, Texas Instruments, RCA … a big part (PAPER) ============ */
+    ground("paper", 29.73);
+    scene("008", 29.73, 35.36);
+    (function () {
+      const slideCard = (k, t) => tl.fromTo($("sc008-" + k), { opacity: 0, x: 260, y: 80 }, { opacity: 1, x: 0, y: 0, duration: 0.9, ease: C(E.out, 0.9), immediateRender: true }, t);
+      slideCard("gi", T(29.79) - L - 0.04);
+      slideCard("ti", T(30.83) - L - 0.04);
+      slideCard("rca", T(32.03) - L - 0.04);
+      words("sc008-gil", [["General", T(29.79) - L], ["Instrument", T(30.27) - L]]);
+      words("sc008-til", [["Texas", T(30.83) - L], ["Instruments", T(31.47) - L]]);
+      words("sc008-rcal", [["RCA", T(32.03) - L]]);
+      tl.to($("sc008-rca"), { scale: 1.1, y: -20, rotation: 2, duration: 1.0, ease: C(E.out, 1.0) }, S(32.83));
+      pen($("sc008-mk"), [[90, 690], [230, 650], [370, 690], [380, 740], [230, 770], [80, 735], [100, 680], [200, 655]], S(33.95), { dur: 0.45, width: 6, seed: 8 });
+      words("sc008-bp", [["big", T(33.95) - L], ["part", T(34.19) - L]], { durs: [0.5, 0.45] });
+      tl.fromTo($("sc008-cam"), { x: 0, scale: 1 }, { x: -40, scale: 1.08, duration: 5.4, ease: E.cam, immediateRender: true }, S(29.79));
+    })();
+    slide("008", "009", 35.15);
+
+    /* ============ C5S009 · 35.15–38.59 · gonna play a big part later in the story (NIGHT) ============ */
+    ground("night", 35.15);
+    scene("009", 34.93, 38.79);
+    (function () {
+      gated(34.9, 38.8, () => FX.streaks($("sc009-streaks"), { seed: 905, speed: 0.5, tint: [255, 214, 170], lo: 0.4, gain: 1.1 }));
+      tl.fromTo($("sc009-streaks"), { opacity: 0 }, { opacity: 0.55, duration: 1.0, ease: C(E.out, 1.0), immediateRender: true }, S(35.2));
+      tl.fromTo($("sc009-axis"), { scaleX: 0, transformOrigin: "0 50%" }, { scaleX: 1, duration: 1.2, ease: C(E.out, 1.2), immediateRender: true }, S(35.2));
+      [["ch0", 220, 840], ["ch1", 160, 1170], ["ch2", 120, 1340]].forEach(([k, x0, x1], i) => {
+        tl.fromTo($("sc009-" + k), { x: x0 - 400, opacity: 0 }, { x: x0, opacity: 1, duration: 0.6, ease: C(E.out, 0.6), immediateRender: true }, S(35.25) + i * 0.15);
+        tl.to($("sc009-" + k), { x: x1, duration: 1.6, ease: C(E.inOut, 1.6) }, S(35.9) + i * 0.1);
+      });
+      tl.fromTo($("sc009-cam"), { x: 0 }, { x: -240, duration: 3.4, ease: E.cam, immediateRender: true }, S(35.2));
+      words("sc009-lt", [["later", T(37.47) - L]], { dur: 0.9 });
+    })();
+    whip("009", "010", 38.59, { dir: -1 });
+
+    /* ============ C5S010 · 38.59–41.15 · set up factories in Taiwan (NIGHT) ============ */
+    scene("010", 38.58, 41.15);
+    (function () {
+      const c = $("sc010-cam"), pins = $("sc010-pins");
+      gsap.set(c, cam(1000, 560, 0.52));
+      tl.fromTo(c, cam(1000, 560, 0.52), Object.assign(cam(1080, 380, 0.62), { duration: 2.0, ease: E.cam, immediateRender: true }), S(38.59));
+      tl.to(c, Object.assign(cam(1110, 330, 0.66), { duration: 0.6, ease: "none" }), S(40.59));
+      tl.fromTo([$("sc010-fill"), $("sc010-glow")], { opacity: 0 }, { opacity: 1, duration: 0.8, ease: C(E.out, 0.8), immediateRender: true }, S(38.65));
+      const P = [[1268, 230, "gi"], [1119, 255, "ti"], [935, 360, "rca"]];
+      P.forEach(([x, y, k], i) => {
+        const w = document.createElement("div"); w.className = "k-abs"; w.style.left = (x - 40) + "px"; w.style.top = (y - 150) + "px"; w.style.width = "80px"; w.style.height = "160px";
+        const chip = k === "gi" ? '<img src="assets/c5/logos/general_instrument_wordmark_1990s.png" style="width:170px;height:20px;filter:brightness(0) invert(0.93)">' : k === "rca" ? '<img src="assets/c5/logos/rca_wordmark_1968.svg" style="width:100px;height:29px;filter:brightness(0) invert(0.93)">' : '<span class="t-display" style="color:#f2ede3;font-size:34px">TI</span>';
+        w.innerHTML = `<div style="position:absolute;left:${k === "gi" ? -85 : k === "rca" ? -30 : 0}px;top:-30px;padding:10px 14px;background:rgba(15,19,24,0.82);border:2px solid rgba(242,237,227,0.7);white-space:nowrap">${chip}</div><img src="assets/icons/pin_bone.svg" style="position:absolute;left:0;top:50px;width:80px;height:110px">`;
+        pins.appendChild(w);
+        tl.fromTo(w, { opacity: 0, y: -120 }, { opacity: 1, y: 0, duration: 0.42, ease: C(E.out, 0.42), immediateRender: true }, S(39.85) + i * 0.3);
+      });
+      words("sc010-f", [["factories", T(39.87) - L]]);
+      words("sc010-tw", [["Taiwan", T(40.51) - L]], { dur: 0.6 });
+    })();
+    pushThrough("010", "011", 41.15);
+
+    /* ============ C5S011 · 41.15–45.15 · these are not high tech factories (NIGHT) ============ */
+    scene("011", 41.15, 45.15);
+    (function () {
+      gated(41.1, 45.2, () => FX.weave($("sc011-weave"), { amp: 0.8, flicker: 0.03, seed: 1101 }));
+      tl.fromTo($("sc011-cam"), { scale: 1.0 }, { scale: 1.07, duration: 4.0, ease: "none", immediateRender: true }, S(41.15));
+      words("sc011-not", [["not", T(43.79) - L]], { dur: 0.5 });
+      words("sc011-ht", [["high", T(43.95) - L], ["tech", T(44.27) - L]], { durs: [0.4, 0.35] });
+      const mk = $("sc011-mk");
+      pen(mk, [[120, 845], [470, 935]], S(44.62), { color: BONE, width: 9, blend: "normal", dur: 0.14, seed: 11, filter: MK });
+      pen(mk, [[470, 842], [128, 940]], S(44.80), { color: BONE, width: 9, blend: "normal", dur: 0.14, seed: 12, filter: MK });
+    })();
+
+    /* ============ C5S012 · 45.15–48.99 · producing transistors, or integrated circuits in Taiwan (PAPER) ============ */
+    ground("paper", 45.15);
+    scene("012", 45.15, 49.19);
+    (function () {
+      const c = $("sc012-cam");
+      gsap.set(c, cam(1000, 1080, 0.9));
+      tl.fromTo(c, cam(1000, 1080, 0.9), Object.assign(cam(1080, 1150, 1.15), { duration: 2.0, ease: E.cam, immediateRender: true }), S(45.15));
+      FX.focusHunt(tl, $("sc012-page"), S(47.15), { dur: 0.7 });
+      tl.to(c, Object.assign(cam(1090, 1150, 1.2), { duration: 1.6, ease: "none" }), S(47.2));
+      tl.fromTo($("sc012-h1"), { scaleX: 0 }, { scaleX: 1, duration: 0.35, ease: "sine.inOut", immediateRender: true }, T(45.55) - L);
+      tl.fromTo($("sc012-h2"), { scaleX: 0 }, { scaleX: 1, duration: 0.7, ease: "sine.inOut", immediateRender: true }, T(47.23) - L);
+      const ic = $("sc012-ic");
+      [["integrated", T(47.23) - L], ["circuits", T(47.79) - L]].forEach(([w, t]) => { const s = document.createElement("span"); s.className = "k-w k-lbox"; s.style.marginRight = "14px"; s.textContent = w; ic.appendChild(s); rise(s, t, { y: 8, dur: 0.5 }); });
+      words("sc012-tw", [["in", T(48.35) - L], ["Taiwan", T(48.43) - L]], { durs: [0.35, 0.35] });
+      pen($("sc012-mk"), [[118, 258], [390, 248]], S(48.58), { dur: 0.22, width: 6, color: INK, seed: 14 });
+    })();
+    whip("012", "013", 48.99, { dir: 1 });
+
+    /* ============ C5S013 · 48.99–51.39 · still happening in the United States (NIGHT) ============ */
+    ground("night", 48.99);
+    scene("013", 48.98, 51.39);
+    (function () {
+      tl.fromTo($("sc013-cam"), { scale: 1.0 }, { scale: 1.06, duration: 2.1, ease: "none", immediateRender: true }, S(48.99));
+      tl.to($("sc013-cam"), { scale: 1.12, duration: 0.3, ease: E.in }, S(51.1));
+      words("sc013-us", [["United", T(50.51) - L], ["States", T(50.91) - L]], { durs: [0.4, 0.4] });
+    })();
+
+    /* ============ C5S014 · 51.39–55.15 · What's really happening in Taiwan … putting stuff together (NIGHT) ============ */
+    scene("014", 51.39, 55.35);
+    (function () {
+      gsap.set($("sc014-screen"), { scaleY: 0.012 });
+      tl.fromTo($("sc014-screen"), { scaleY: 0.012 }, { scaleY: 1, duration: 0.3, ease: "power3.out", immediateRender: true }, S(51.45));
+      tl.fromTo($("sc014-flash"), { opacity: 0.9 }, { opacity: 0, duration: 0.4, ease: "power2.out", immediateRender: true }, S(51.45));
+      tl.fromTo($("sc014-cam"), { scale: 1.0, x: 0 }, { scale: 1.08, x: 40, duration: 3.8, ease: E.cam, immediateRender: true }, S(51.39));
+      words("sc014-tw", [["Taiwan", T(52.35) - L]]);
+      words("sc014-pt", [["putting", T(53.63) - L], ["stuff", T(54.03) - L], ["together", T(54.35) - L]], { durs: [0.6, 0.5, 0.5] });
+    })();
+    whip("014", "015", 55.15, { dir: 1, vertical: true });
+
+    /* ============ C5S015 · 55.15–61.44 · the lowest level of manufacturing … capture (PAPER) ============ */
+    ground("paper", 55.15);
+    scene("015", 55.14, 61.66);
+    (function () {
+      const ti = $("sc015-ti");
+      const sp = words("sc015-ti", [["the", T(55.55) - L], ["lowest", T(55.79) - L], ["level", T(56.35) - L], ["of", T(56.67) - L], ["manufacturing", T(57.52) - L]]);
+      sp[1].classList.add("t-serif-i");
+      const rungs = $("sc015-rungs");
+      const Y = [300, 470, 640, 810];
+      Y.forEach((y, i) => {
+        const r = document.createElement("div"); r.className = "k-abs"; r.style.cssText = `left:${300 + i * 40}px;top:${y}px;width:${960 - i * 80}px;height:84px;background:${i === 3 ? "transparent" : "rgba(20,27,36,0.16)"};border:5px solid #141b24;`;
+        rungs.appendChild(r);
+        tl.fromTo(r, { scaleX: 0, transformOrigin: "0 50%" }, { scaleX: 1, duration: 0.8, ease: C(E.out, 0.8), immediateRender: true }, S(55.8) + i * 0.25);
+        if (i === 3) {
+          const f = document.createElement("div"); f.className = "k-abs"; f.style.cssText = "inset:0;background:#9fc7b2;transform-origin:0 50%"; f.innerHTML = '<div class="k-ht" style="mix-blend-mode:multiply;opacity:0.25"></div>'; r.appendChild(f);
+          tl.fromTo(f, { scaleX: 0 }, { scaleX: 1, duration: 1.0, ease: C(E.out, 1.0), immediateRender: true }, S(57.5));
+        }
+      });
+      // a vertical rail: the ladder
+      const svg = $("sc015-mk");
+      ink(svg, "M262 250 L266 940", S(55.7), 0.8, { width: 6, filter: PEN });
+      ink(svg, "M1300 250 L1296 940", S(55.8), 0.8, { width: 6, filter: PEN });
+      words("sc015-tw", [["Taiwan", T(59.84) - L]]);
+      ink(svg, "M1330 868 Q1290 860 1250 860", S(59.9), 0.4, { width: 5, filter: PEN });
+      words("sc015-cap", [["capture", T(60.96) - L]], { dur: 0.4 });
+      tl.fromTo($("sc015-cam"), { y: 0, scale: 1 }, { y: -60, scale: 1.05, duration: 6.3, ease: E.cam, immediateRender: true }, S(55.15));
+    })();
+    slide("015", "016", 61.44);
+
+    /* ============ C5S016 · 61.44–64.96 · a business term … capture a lot of the profits (GRID) ============ */
+    scene("016", 61.22, 64.96);
+    (function () {
+      const svg = $("sc016-svg");
+      el("path", { d: "M240 240 Q300 520 420 640 L240 640 Z", fill: "rgba(20,27,36,0.13)", id: "c5s01-sc016-sh1", opacity: 0 }, svg);
+      el("path", { d: "M1680 240 Q1620 520 1500 640 L1680 640 Z", fill: "rgba(20,27,36,0.13)", id: "c5s01-sc016-sh2", opacity: 0 }, svg);
+      ink(svg, "M240 240 Q300 520 420 640 Q620 830 960 840 Q1300 830 1500 640 Q1620 520 1680 240", S(61.5), 1.0, { width: 7, filter: PEN });
+      tl.to([$("sc016-sh1"), $("sc016-sh2")], { attr: { opacity: 1 }, duration: 0.6, ease: C(E.out, 0.6) }, S(62.4));
+      const dot = el("circle", { cx: 960, cy: 840, r: 0, fill: CEL, stroke: INK, "stroke-width": 5 }, svg);
+      tl.to(dot, { attr: { r: 30 }, duration: 0.6, ease: C(E.out, 0.6) }, S(62.50));
+      const bt = $("sc016-bt");
+      [["business", T(62.00) - L], ["term", T(62.24) - L]].forEach(([w, t]) => { const s = document.createElement("span"); s.className = "k-w k-lbox"; s.style.marginRight = "14px"; s.textContent = w; bt.appendChild(s); rise(s, t, { y: 8, dur: 0.5 }); });
+      words("sc016-tw", [["Taiwan", T(62.56) - L]]);
+      words("sc016-pr", [["profits", T(64.40) - L]], { dur: 0.35 });
+      tl.fromTo($("sc016-cam"), { scale: 1 }, { scale: 1.07, duration: 3.6, ease: E.cam, immediateRender: true }, S(61.44));
+      tl.to($("sc016-cam"), { scale: 1.16, duration: 0.3, ease: E.in }, S(64.70));
+    })();
+
+    /* ============ C5S017 · 64.96–67.44 · the easy work, just putting it together (NIGHT) ============ */
+    ground("night", 64.96);
+    scene("017", 64.96, 67.66);
+    (function () {
+      tl.fromTo($("sc017-cam"), { scale: 1.0 }, { scale: 1.22, duration: 0.4, ease: C(E.out, 0.4), immediateRender: true }, S(64.96));
+      FX.focusHunt(tl, $("sc017-cam"), S(65.30), { dur: 0.8 });
+      tl.to($("sc017-cam"), { scale: 1.26, duration: 2.0, ease: "none" }, S(65.4));
+      words("sc017-ew", [["easy", T(65.92) - L], ["work", T(66.24) - L]]);
+    })();
+    slide("017", "018", 67.44);
+
+    /* ============ C5S018 · 67.44–74.16 · because of cheap labor … an important point (PAPER) ============ */
+    ground("paper", 67.44);
+    scene("018", 67.22, 74.36);
+    (function () {
+      const chk = FX.roughDefs(defs, "c5s01-ch018", { freq: 0.05, scale: 7, choke: 0 });
+      const cl = $("sc018-cl"); cl.style.filter = "url(#c5s01-ch018)";
+      [["cheap", T(69.92) - L], ["labor", T(70.24) - L]].forEach(([w, t]) => { const s = document.createElement("span"); s.className = "k-w k-lbox"; s.style.marginRight = "18px"; s.textContent = w; cl.appendChild(s); show(s, t); });
+      FX.chokeSettle(tl, chk, cl, T(69.92) - L, 10, 0.6, "none");
+      pen($("sc018-mk"), [[760, 572], [1100, 566], [1420, 574]], S(71.50), { width: 7, dur: 0.6, seed: 18 });
+      tl.fromTo($("sc018-pin"), { opacity: 0, y: -60, scale: 1.3 }, { opacity: 1, y: 0, scale: 1, duration: 0.35, ease: C(E.out, 0.35), immediateRender: true }, S(71.55));
+      words("sc018-ip", [["important", T(71.52) - L], ["point", T(72.16) - L]]);
+      tl.fromTo($("sc018-cam"), { x: 0, scale: 1 }, { x: -30, scale: 1.03, duration: 4.0, ease: "none", immediateRender: true }, S(67.44));
+      tl.to($("sc018-cam"), { scale: 1.1, x: -60, duration: 1.0, ease: C(E.out, 1.0) }, S(71.50));
+    })();
+    whip("018", "019", 74.16, { dir: -1, vertical: true });
+
+    /* ============ C5S019 · 74.16–81.76 · move up the value chain … not where they are right now (GRID) ============ */
+    scene("019", 74.15, 81.96);
+    (function () {
+      const svg = $("sc019-svg");
+      const d = "M170 260 Q240 600 420 760 Q640 930 960 940 Q1280 930 1500 760 Q1680 600 1750 260";
+      el("path", { d: "M170 260 Q240 600 420 760 L170 760 Z", fill: "rgba(20,27,36,0.12)" }, svg);
+      el("path", { d: "M1750 260 Q1680 600 1500 760 L1750 760 Z", fill: "rgba(20,27,36,0.12)" }, svg);
+      const curve = el("path", { d, fill: "none", stroke: INK, "stroke-width": 7, "stroke-linecap": "round", filter: PEN }, svg);
+      ink(svg, "M1010 905 Q1300 860 1470 700 Q1600 560 1650 380", S(75.66), 1.0, { width: 5, filter: PEN, dash: "18 14" });
+      ink(svg, "M1625 405 L1652 372 L1668 414", S(76.62), 0.2, { width: 5, filter: PEN });
+      const dot = el("circle", { cx: 960, cy: 940, r: 30, fill: CEL, stroke: INK, "stroke-width": 5 }, svg);
+      // the dot climbs the right arm (12 fps), stalls, slides back
+      const L0 = curve.getTotalLength(), st = { p: 0.5 };
+      const put = () => { const q = curve.getPointAtLength(L0 * st.p); dot.setAttribute("cx", q.x.toFixed(1)); dot.setAttribute("cy", q.y.toFixed(1)); };
+      tl.fromTo(st, { p: 0.5 }, { p: 0.7, duration: 2.2, ease: C(E.out, 2.2), onUpdate: put, immediateRender: true }, S(76.30));
+      tl.to(st, { p: 0.5, duration: 0.5, ease: C(E.in, 0.5), onUpdate: put }, S(79.90));
+      pen(svg, [[900, 905], [960, 880], [1030, 905], [1030, 975], [960, 1000], [890, 975], [895, 915], [950, 885]], S(80.45), { dur: 0.5, width: 6, seed: 19 });
+      words("sc019-mu", [["move", T(75.68) - L], ["up", T(75.84) - L]]);
+      words("sc019-vc", [["value", T(77.44) - L], ["chain", T(77.84) - L]]);
+      tl.fromTo($("sc019-cam"), { scale: 0.96 }, { scale: 1.04, duration: 7.6, ease: "none", immediateRender: true }, S(74.16));
+    })();
+    whip("019", "020", 81.76, { dir: 1, flash: true });
+
+    /* ============ C5S020 · 81.76–86.88 · another interesting thing … very beneficial (NIGHT) ============ */
+    ground("night", 81.76);
+    scene("020", 81.75, 86.88);
+    (function () {
+      gated(81.7, 86.9, () => FX.streaks($("sc020-streaks"), { seed: 2001, speed: 0.4, tint: [255, 214, 170], lo: 0.5, gain: 0.8 }));
+      tl.fromTo($("sc020-streaks"), { opacity: 0 }, { opacity: 0.3, duration: 1.2, ease: C(E.out, 1.2), immediateRender: true }, S(81.8));
+      tl.fromTo($("sc020-cam"), { scale: 1.0 }, { scale: 1.1, duration: 5.2, ease: "none", immediateRender: true }, S(81.76));
+      words("sc020-vb", [["very", T(84.72) - L], ["beneficial", T(85.04) - L]]);
+    })();
+
+    /* ============ C5S021 · 86.88–90.08 · while all this technological factories are getting set up (NIGHT) ============ */
+    scene("021", 86.88, 90.30);
+    (function () {
+      const c = $("sc021-cam"), pins = $("sc021-pins");
+      gsap.set(c, cam(900, 820, 0.62));
+      tl.fromTo(c, cam(900, 820, 0.62), Object.assign(cam(880, 900, 0.5), { duration: 3.4, ease: E.cam, immediateRender: true }), S(86.88));
+      const LL = [[121.74, 25.13], [121.56, 25.04], [121.30, 24.99], [120.97, 24.81], [120.82, 24.56], [120.68, 24.15], [120.54, 24.08], [120.45, 23.48], [120.21, 23.0], [120.31, 22.73], [120.30, 22.63], [120.49, 22.67]];
+      LL.forEach(([lo, la], i) => {
+        const x = (lo - 119.3) * 559.676, y = (25.4 - la) * 611;
+        const w = document.createElement("img"); w.src = "assets/icons/pin_bone.svg"; w.className = "k-abs"; w.style.cssText = `left:${(x - 40).toFixed(0)}px;top:${(y - 104).toFixed(0)}px;width:80px;height:110px;transform-origin:50% 95%`;
+        pins.appendChild(w);
+        tl.fromTo(w, { opacity: 0, scale: 0.3 }, { opacity: 1, scale: 1, duration: 0.25, ease: C(E.out, 0.25), immediateRender: true }, S(87.90) + Math.floor(i * 1.0) / 12);
+      });
+      words("sc021-f", [["factories", T(88.72) - L]]);
+    })();
+    slide("021", "022", 90.08);
+
+    /* ============ C5S022 · 90.08–93.84 · someone in Taiwan starts setting up an annual conferences (PAPER) ============ */
+    ground("paper", 90.08);
+    scene("022", 89.86, 94.04);
+    (function () {
+      const cal = $("sc022-cal");
+      cal.innerHTML = '<div class="k-abs" style="left:0;top:50px;width:440px;height:470px;background:#f3eddf;box-shadow:0 14px 30px rgba(20,27,36,0.3)"></div>';
+      for (let i = 0; i < 5; i++) {
+        const p = document.createElement("div"); p.className = "k-abs";
+        p.style.cssText = "left:0;top:50px;width:440px;height:470px;background:#f3eddf;box-shadow:0 2px 4px rgba(20,27,36,0.15);transform-origin:50% 0%";
+        p.innerHTML = '<div class="k-abs" style="left:0;right:0;top:0;height:80px;background:#141b24"></div><div class="k-abs" style="left:70px;top:150px;width:300px;height:180px;border:6px solid rgba(20,27,36,0.6)"></div><div class="k-abs" style="left:70px;top:370px;width:300px;height:14px;background:rgba(20,27,36,0.25)"></div><div class="k-abs" style="left:110px;top:400px;width:220px;height:10px;background:rgba(20,27,36,0.18)"></div>';
+        cal.appendChild(p);
+        if (i > 0) tl.fromTo(p, { rotationX: 0, opacity: 1 }, { rotationX: -100, opacity: 0, duration: 0.25, ease: C(E.in, 0.25), immediateRender: true }, S(91.82) + (4 - i) * 0.28);
+      }
+      cal.insertAdjacentHTML("beforeend", '<div class="k-abs" style="left:40px;top:24px;width:360px;height:40px;background:repeating-linear-gradient(90deg,#6b6b6b 0 10px,transparent 10px 44px);border-radius:4px"></div>');
+      drop("sc022-pc", S(90.10), { dur: 0.8 });
+      drop("sc022-cal", S(90.40), { dur: 0.8 });
+      words("sc022-an", [["annual", T(91.84) - L]]);
+      words("sc022-co", [["conferences", T(92.32) - L]]);
+      tl.fromTo($("sc022-cam"), { x: 0 }, { x: -70, duration: 3.8, ease: "none", immediateRender: true }, S(90.08));
+    })();
+    whip("022", "023", 93.84, { dir: -1 });
+
+    /* ============ C5S023 · 93.84–100.80 · technology and chips … transistors, integrated circuits (NIGHT) ============ */
+    ground("night", 93.84);
+    scene("023", 93.83, 100.80);
+    (function () {
+      const list = $("sc023-list");
+      const rows = [null, "technology", null, "chips", null, null, "transistors", null, "integrated circuits", null, null, null, null];
+      const cues = { technology: [["technology", T(94.88) - L]], chips: [["chips", T(95.76) - L]], transistors: [["transistors", T(98.32) - L]], "integrated circuits": [["integrated", T(99.36) - L], ["circuits", T(99.84) - L]] };
+      const r = FX.rng(2300);
+      rows.forEach((w, i) => {
+        const row = document.createElement("div"); row.className = "c5-row"; row.style.top = (i * 110) + "px";
+        row.innerHTML = `<div class="tm"></div><div class="gk" style="width:${(380 + r() * 520).toFixed(0)}px"></div><div class="gk2" style="width:${(240 + r() * 420).toFixed(0)}px"></div><div class="sb"></div>`;
+        row.style.filter = "blur(5px)"; row.style.opacity = "0.6";
+        list.appendChild(row);
+        if (w) {
+          const wd = document.createElement("div"); wd.className = "wd t-serif clean"; row.appendChild(wd);
+          const cs = cues[w], t0 = cs[0][1];
+          const gk = row.querySelector(".gk"), gk2 = row.querySelector(".gk2");
+          tl.to(row, { filter: "blur(0px)", opacity: 1, duration: 0.35, ease: "sine.out" }, t0 - 0.05);
+          tl.to([gk, gk2], { opacity: 0, duration: 0.15 }, t0);
+          cs.forEach(([tx, t], j) => { const s = document.createElement("span"); s.className = "k-w"; s.textContent = tx + (j < cs.length - 1 ? " " : ""); wd.appendChild(s); });
+          tl.set(wd, { opacity: 1 }, t0);
+          cs.forEach(([tx, t], j) => rise(wd.children[j], t, { y: 10, dur: 0.6 }));
+          tl.to(row.querySelector(".sb"), { scaleY: 1, duration: 0.5, ease: C(E.out, 0.5) }, t0);
+        }
+      });
+      tl.fromTo($("sc023-cam"), { y: 120 }, { y: -320, duration: 7.0, ease: "none", immediateRender: true }, S(93.84));
+    })();
+
+    /* ============ C5S024 · 100.80–106.24 · a conference for people in this field … in Taiwan very regularly (NIGHT) ============ */
+    scene("024", 100.80, 106.44);
+    (function () {
+      gated(100.7, 106.5, () => FX.weave($("sc024-weave"), { amp: 0.5, flicker: 0.025, seed: 2401 }));
+      tl.fromTo($("sc024-cam"), { x: 0, scale: 1.02 }, { x: -60, scale: 1.06, duration: 5.5, ease: "none", immediateRender: true }, S(100.80));
+      drop("sc024-badge", T(101.28) - L - 0.04, { dur: 0.8 });
+      words("sc024-cf", [["conference", T(101.28) - L]]);
+      pop("sc024-loc", T(104.56) - L, { from: 0.7, dur: 0.8 });
+      words("sc024-tw", [["Taiwan", T(104.56) - L]]);
+      words("sc024-vr", [["very", T(105.28) - L], ["regularly", T(105.52) - L]], { durs: [0.4, 0.4] });
+    })();
+    whip("024", "025", 106.24, { dir: 1, vertical: true });
+
+    /* ============ C5S025 · 106.24–113.36 · a big deal … all the big names were coming to Taiwan (PAPER) ============ */
+    ground("paper", 106.24);
+    scene("025", 106.23, 113.36);
+    (function () {
+      const c = $("sc025-cam"), svg = $("sc025-svg");
+      // plane is 2920×1700, its centre (1460, 850); show pacific px (cx,cy) at the plane centre at zoom z
+      const at = (cx, cy, z) => ({ x: 1460 - cx * z, y: 850 - cy * z, scale: z });
+      gsap.set(c, at(4300, 1200, 0.5));
+      tl.fromTo(c, at(4300, 1200, 0.5), Object.assign(at(2900, 1300, 0.5), { duration: 5.4, ease: E.cam, immediateRender: true }), S(106.24));
+      tl.to(c, Object.assign(at(1700, 1420, 0.62), { duration: 1.8, ease: E.in }), S(111.6));
+      const tw = [949, 1538];
+      const from = [[6057, 545], [6053, 978], [6237, 1142], [6380, 760]];
+      from.forEach(([x, y], i) => {
+        const mx = (x + tw[0]) / 2, my = Math.min(y, tw[1]) - 520 - i * 60;
+        el("circle", { cx: x, cy: y, r: 16, fill: INK }, svg);
+        ink(svg, `M${x} ${y} Q${mx} ${my} ${tw[0] + 20} ${tw[1] - 10}`, S(109.66) + i * 0.18, 2.2, { width: 9, filter: PEN, dash: "34 26", ease: C(E.inOut, 2.2) });
+      });
+      const twd = el("circle", { cx: tw[0], cy: tw[1], r: 0, fill: CEL, stroke: INK, "stroke-width": 6 }, svg);
+      tl.to(twd, { attr: { r: 40 }, duration: 0.6, ease: C(E.out, 0.6) }, S(110.78));
+      words("sc025-bd", [["big", T(108.32) - L], ["deal", T(108.56) - L]]);
+      words("sc025-bn", [["big", T(109.68) - L], ["names", T(109.92) - L]]);
+      rise("sc025-tww", T(110.80) - L, { y: 10, dur: 0.7 });
+      tl.fromTo($("sc025-twu"), { scaleX: 0 }, { scaleX: 1, duration: 0.6, ease: C(E.out, 0.6), immediateRender: true }, S(110.95));
+    })();
+
+    /* ============ C5S026 · 113.36–120.01 · Chinese American engineers who are big names (GRID) ============ */
+    scene("026", 113.36, 120.21);
+    (function () {
+      const g = $("sc026-grid"), ic = [];
+      const X0 = 200, Y0 = 280, DX = 96, DY = 104;
+      for (let r = 0; r < 6; r++) for (let c = 0; c < 10; c++) {
+        const d = document.createElement("div"); d.className = "k-ico"; d.style.left = (X0 + c * DX) + "px"; d.style.top = (Y0 + r * DY) + "px";
+        d.innerHTML = `<svg viewBox="0 0 64 74" style="color:${INK}" fill="${INK}">${ENGINEER}</svg>`; g.appendChild(d); ic.push({ d, r, c });
+      }
+      ic.forEach(({ d }, i) => tl.fromTo(d, { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, S(116.16) + Math.floor(i / 6) / 12));
+      const ringed = [3, 17, 24, 38, 51];
+      ringed.forEach((k, j) => {
+        const rg = document.createElement("div"); rg.className = "k-abs"; rg.style.cssText = `left:-14px;top:-10px;width:92px;height:92px;border-radius:50%;border:7px solid ${YEL};mix-blend-mode:multiply;opacity:0`;
+        ic[k].d.appendChild(rg);
+        pop(rg, S(117.92) + j / 12, { from: 0.5, dur: 0.5 });
+      });
+      // the grid walks right toward Taiwan (12 fps)
+      ic.forEach(({ d, r, c }) => tl.to(d, { x: 420, duration: 1.2, ease: C(E.inOut, 1.2) }, S(118.4) + (9 - c) / 24));
+      tl.fromTo($("sc026-tab"), { opacity: 0, x: 60 }, { opacity: 1, x: 0, duration: 0.8, ease: C(E.out, 0.8), immediateRender: true }, S(117.0));
+      words("sc026-ti", [["Chinese", T(116.16) - L], ["American", T(116.64) - L], ["engineers", T(117.04) - L]]);
+      words("sc026-bn", [["big", T(117.92) - L], ["names", T(118.16) - L]]);
+      tl.fromTo($("sc026-cam"), { scale: 1 }, { scale: 1.05, duration: 6.6, ease: "none", immediateRender: true }, S(113.36));
+    })();
+    whip("026", "027", 120.01, { dir: -1, vertical: true });
+
+    /* ============ C5S027 · 120.01–125.13 · Some Americans … not every single year, but they were going (NIGHT) ============ */
+    ground("night", 120.01);
+    scene("027", 120.00, 125.33);
+    (function () {
+      tl.fromTo($("sc027-cam"), { scale: 1.0 }, { scale: 1.06, duration: 5.2, ease: "none", immediateRender: true }, S(120.01));
+      words("sc027-am", [["Americans", T(120.33) - L]]);
+      const svg = $("sc027-svg");
+      const tick = [0, 1, 3, 4, 6, 8];
+      for (let i = 0; i < 10; i++) {
+        const x = 440 + i * 108, y = 880;
+        const b = el("rect", { x, y, width: 80, height: 80, fill: "none", stroke: BONE, "stroke-width": 4, opacity: 0 }, svg);
+        tl.to(b, { attr: { opacity: 0.8 }, duration: 0.001 }, S(120.4) + i / 24);
+      }
+      tick.forEach((i, j) => {
+        const x = 440 + i * 108;
+        ink(svg, `M${x + 16} ${922} L${x + 34} ${942} L${x + 66} ${896}`, S(122.55) + j * 0.24, 0.18, { color: BONE, width: 7, filter: MK });
+      });
+      words("sc027-ne", [["not", T(122.57) - L], ["every", T(123.29) - L], ["single", T(123.53) - L], ["year", T(123.77) - L]]);
+    })();
+    whip("027", "028", 125.13, { dir: 1, flash: true });
+
+    /* ============ C5S028 · 125.13–129.31 · one guy who went there a couple of times (PAPER) ============ */
+    ground("paper", 125.13);
+    scene("028", 125.12, 129.31);
+    (function () {
+      ["k0", "k1", "k2"].forEach((k, i) => {
+        tl.to($("sc028-" + k), { rotationY: -100, x: -500, opacity: 0, duration: 0.5, ease: C(E.in, 0.5) }, S(125.45) + i * 0.7);
+      });
+      words("sc028-ct", [["a", T(127.13) - L], ["couple", T(127.29) - L], ["of", T(127.61) - L], ["times", T(127.69) - L]], { durs: [0.4, 0.4, 0.4, 0.4] });
+      tl.fromTo($("sc028-cam"), { scale: 1 }, { scale: 1.08, duration: 3.6, ease: E.cam, immediateRender: true }, S(125.13));
+    })();
+    pushThrough("028", "029", 129.31);
+
+    /* ============ C5S029 · 129.31–132.49 · Fred Terman, the father of Silicon Valley (NIGHT) ============ */
+    ground("night", 129.31);
+    scene("029", 129.31, 132.69);
+    (function () {
+      gated(129.2, 132.7, () => FX.streaks($("sc029-streaks"), { seed: 2901, speed: 0.55, tint: [255, 206, 158], lo: 0.4, gain: 1.1 }));
+      tl.fromTo($("sc029-streaks"), { opacity: 0 }, { opacity: 0.6, duration: 0.8, ease: C(E.out, 0.8), immediateRender: true }, S(129.35));
+      tl.fromTo($("sc029-cam"), { scale: 1.0 }, { scale: 1.06, duration: 3.2, ease: "none", immediateRender: true }, S(129.31));
+      const chk = FX.roughDefs(defs, "c5s01-ch029", { freq: 0.04, scale: 6, choke: 0 });
+      const ft = $("sc029-ft"); ft.style.filter = "url(#c5s01-ch029)";
+      words("sc029-ft", [["Fred", T(129.37) - L], ["Terman", T(129.69) - L]], { durs: [0.5, 0.5], y: 0 });
+      FX.chokeSettle(tl, chk, ft, T(129.37) - L, 10, 0.75, "blur(0.45px)");
+      words("sc029-fa", [["father", T(130.65) - L], ["of", T(130.97) - L], ["Silicon", T(131.13) - L], ["Valley", T(131.85) - L]], { durs: [0.6, 0.5, 0.5, 0.4] });
+    })();
+    whip("029", "030", 132.49, { dir: 1 });
+
+    /* ============ C5S030 · 132.49–137.77 · gives talks, talks to people, networks (PAPER) ============ */
+    ground("paper", 132.49);
+    scene("030", 132.48, 137.77);
+    (function () {
+      [["a", -40, 0], ["b", 50, 0.15], ["t", 25, 0.3]].forEach(([k, dx, dl]) => {
+        tl.fromTo($("sc030-" + k), { opacity: 0, y: 50 }, { opacity: 1, y: 0, duration: 1.1, ease: C(E.out, 1.1), immediateRender: true }, S(132.52) + dl);
+        tl.fromTo($("sc030-" + k), { x: 0 }, { x: dx, duration: 5.2, ease: "none", immediateRender: true }, S(132.52));
+      });
+      words("sc030-gt", [["gives", T(133.21) - L], ["talks", T(133.53) - L]]);
+      words("sc030-nw", [["networks", T(134.65) - L]]);
+      tl.fromTo($("sc030-cam"), { scale: 1 }, { scale: 1.05, duration: 5.0, ease: "none", immediateRender: true }, S(132.49));
+      tl.to($("sc030-cam"), { scale: 1.12, duration: 0.3, ease: E.in }, S(137.47));
+    })();
+
+    /* ============ C5S031–032 · 137.77–146.97 · Taiwanese government … advice / information … goals (PAPER) ============ */
+    scene("031", 137.77, 147.17);
+    (function () {
+      const svg = $("sc031-svg");
+      pop("sc031-a", S(137.85), { from: 0.7, dur: 1.0 });
+      pop("sc031-b", S(139.19), { from: 0.6, dur: 1.0 });
+      words("sc031-tg", [["Taiwanese", T(139.21) - L], ["government", T(139.85) - L]]);
+      FX.markup.arrow(tl, svg, S(140.40), { x1: 760, y1: 400, x2: 1180, y2: 400, bend: -110, head: 30, dur: 0.75, color: INK, width: 6, filter: MK });
+      words("sc031-ad", [["advice", T(141.29) - L]]);
+      FX.markup.arrow(tl, svg, S(142.40), { x1: 1190, y1: 600, x2: 740, y2: 600, bend: -110, head: 30, dur: 0.75, color: INK, width: 6, filter: MK });
+      words("sc031-in", [["information", T(142.81) - L]]);
+      drop("sc031-gl", S(145.20), { dur: 0.7 });
+      const gl = $("sc031-gline"); const gL = gl.getTotalLength();
+      gl.setAttribute("stroke-dasharray", `${gL} ${gL}`);
+      tl.fromTo(gl, { attr: { "stroke-dashoffset": gL } }, { attr: { "stroke-dashoffset": 0 }, duration: 0.8, ease: C(E.out, 0.8), immediateRender: true }, S(145.40));
+      words("sc031-go", [["goals", T(145.61) - L]]);
+      gsap.set($("sc031-cam"), { scale: 1.12 });
+      tl.fromTo($("sc031-cam"), { scale: 1.12 }, { scale: 1.18, duration: 4.0, ease: E.cam, immediateRender: true }, S(137.77));
+      tl.to($("sc031-cam"), { scale: 0.98, duration: 2.4, ease: E.cam }, S(141.85));   // C5S032: pull-out, same layout
+    })();
+    whip("031", "033", 146.97, { dir: 1, vertical: true });
+
+    /* ============ C5S033 · 146.97–153.85 · definitely valuable … build the Silicon Valley (NIGHT) ============ */
+    ground("night", 146.97);
+    scene("033", 146.96, 153.85);
+    (function () {
+      tl.fromTo($("sc033-cam"), { scale: 1.0 }, { scale: 1.22, duration: 3.6, ease: E.cam, immediateRender: true }, S(146.97));
+      FX.focusHunt(tl, $("sc033-cam"), S(150.60), { dur: 0.8 });
+      tl.to($("sc033-cam"), { scale: 1.26, duration: 3.2, ease: "none" }, S(150.6));
+      pop("sc033-tc", S(147.2), { from: 0.7, dur: 1.0 });
+      words("sc033-va", [["valuable", T(147.85) - L]]);
+      words("sc033-bu", [["build", T(151.85) - L]]);
+      words("sc033-sv", [["the", T(152.17) - L], ["Silicon", T(152.33) - L], ["Valley", T(152.89) - L]], { durs: [0.5, 0.5, 0.4] });
+    })();
+
+    /* ============ C5S034 · 153.85–158.41 · So Taiwan is definitely on the up and up (NIGHT) ============ */
+    scene("034", 153.85, 158.61);
+    (function () {
+      const svg = $("sc034-svg");
+      const d = "M180 900 L360 860 L520 880 L680 790 L820 810 L980 690 L1120 700 L1280 560 L1420 520 L1560 380 L1700 300";
+      ink(svg, d, S(155.80), 1.9, { color: CEL, width: 8, ease: C(E.inOut, 1.9) });
+      const dot = el("circle", { cx: 1700, cy: 300, r: 0, fill: CEL }, svg);
+      tl.to(dot, { attr: { r: 16 }, duration: 0.4, ease: C(E.out, 0.4) }, S(157.62));
+      const halo = el("circle", { cx: 1700, cy: 300, r: 16, fill: "none", stroke: CEL, "stroke-width": 4, opacity: 0 }, svg);
+      tl.fromTo(halo, { attr: { r: 16, opacity: 0.9 } }, { attr: { r: 60, opacity: 0 }, duration: 0.8, ease: "sine.out", repeat: 0, immediateRender: false }, S(157.8));
+      words("sc034-tw", [["Taiwan", T(155.85) - L]]);
+      words("sc034-uu", [["up", T(157.45) - L], ["and", T(157.69) - L], ["up", T(157.93) - L]], { durs: [0.4, 0.4, 0.35] });
+      tl.fromTo($("sc034-cam"), { x: 0, y: 0 }, { x: -80, y: 50, duration: 4.5, ease: E.cam, immediateRender: true }, S(153.85));
+    })();
+    whip("034", "035", 158.41, { dir: 1, flash: true });
+
+    /* ============ C5S035 · 158.41–163.77 · satisfying probably for Taiwanese leader (PAPER) ============ */
+    ground("paper", 158.41);
+    scene("035", 158.40, 163.97);
+    (function () {
+      drop("sc035-card", S(158.45), { dur: 0.9 });
+      words("sc035-sa", [["satisfying", T(161.05) - L]]);
+      words("sc035-tl", [["Taiwanese", T(162.25) - L], ["leader", T(162.89) - L]]);
+      tl.fromTo($("sc035-cam"), { scale: 1 }, { scale: 1.06, duration: 5.3, ease: "none", immediateRender: true }, S(158.41));
+    })();
+    whip("035", "036", 163.77, { dir: 1 });
+
+    /* ============ C5S036 · 163.77–170.65 · bigger economy … bigger landmass, bigger population (NIGHT) ============ */
+    ground("night", 163.77);
+    scene("036", 163.76, 170.65);
+    (function () {
+      const c = $("sc036-cam"), svg = $("sc036-svg");
+      gsap.set(c, cam(1350, 1150, 0.72));
+      tl.fromTo(c, cam(1350, 1150, 0.72), Object.assign(cam(1450, 1330, 0.84), { duration: 6.9, ease: E.cam, immediateRender: true }), S(163.77));
+      tl.fromTo($("sc036-cf"), { opacity: 0 }, { opacity: 0.78, duration: 1.0, ease: C(E.out, 1.0), immediateRender: true }, S(166.17));
+      tl.fromTo($("sc036-cg"), { opacity: 0 }, { opacity: 0.9, duration: 1.2, ease: C(E.out, 1.2), immediateRender: true }, S(166.30));
+      const lab = $("sc036-lab");
+      [[["bigger", T(166.17) - L], ["economy", T(166.49) - L]], [["bigger", T(167.61) - L], ["landmass", T(167.93) - L]], [["bigger", T(168.65) - L], ["population", T(169.05) - L]]].forEach((ws, i) => {
+        const ln = document.createElement("div"); ln.className = "t-label clean"; ln.id = "c5s01-sc036-l" + i; ln.style.cssText = "font-size:40px;margin-bottom:22px"; lab.appendChild(ln);
+        words("sc036-l" + i, ws);
+      });
+      // population dots: many stream into China, a few into Taiwan (shape only, no numbers)
+      const r = FX.rng(3600);
+      for (let i = 0; i < 70; i++) {
+        const tx = 300 + r() * 1300, ty = 500 + r() * 1100;
+        const d = el("circle", { cx: tx, cy: ty, r: 9, fill: BONE, opacity: 0 }, svg);
+        tl.fromTo(d, { attr: { cy: ty - 260, opacity: 0 } }, { attr: { cy: ty, opacity: 0.9 }, duration: 0.5, ease: C(E.out, 0.5), immediateRender: true }, S(168.65) + Math.floor(i / 6) / 12);
+      }
+      [[1375, 1700], [1390, 1745], [1368, 1770]].forEach(([x, y], i) => {
+        const d = el("circle", { cx: x, cy: y, r: 9, fill: BONE, opacity: 0 }, svg);
+        tl.fromTo(d, { attr: { cy: y - 200, opacity: 0 } }, { attr: { cy: y, opacity: 0.95 }, duration: 0.5, ease: C(E.out, 0.5), immediateRender: true }, S(168.9) + i * 0.25);
+      });
+    })();
+
+    /* ============ C5S037 · 170.65–176.30 · But Mao Zedong is the leader … not taking good care of the Chinese (NIGHT) ============ */
+    scene("037", 170.65, 176.50);
+    (function () {
+      // 2.5D dolly: each layer scales/moves by its depth (far < title < gate < near)
+      const D = 5.65;
+      [["far", 1.0, 1.04, -20], ["mz", 1.0, 1.06, -30], ["gate", 1.0, 1.11, -70], ["near", 1.0, 1.18, -120]].forEach(([k, s0, s1, dx]) => {
+        tl.fromTo($("sc037-" + k), { scale: s0, x: 0 }, { scale: s1, x: dx, duration: D, ease: E.cam, immediateRender: true }, S(170.65));
+      });
+      words("sc037-mz", [["Mao", T(171.37) - L], ["Zedong", T(171.93) - L]], { durs: [0.9, 0.9], y: 30 });
+      words("sc037-nt", [["not", T(173.77) - L], ["taking", T(173.93) - L], ["good", T(174.33) - L], ["care", T(174.49) - L]], { durs: [0.6, 0.6, 0.5, 0.5] });
+    })();
+    whip("037", "038", 176.30, { dir: -1, vertical: true });
+
+    /* ============ C5S038 · 176.30–179.66 · the cultural revolution happens (PAPER) ============ */
+    ground("paper", 176.30);
+    scene("038", 176.29, 179.88);
+    (function () {
+      const chk = FX.roughDefs(defs, "c5s01-ch038", { freq: 0.045, scale: 7, choke: 0 });
+      const cr = $("sc038-cr"); cr.style.filter = "url(#c5s01-ch038)";
+      words("sc038-cr", [["cultural", T(178.14) - L], ["revolution", T(178.62) - L]], { br: [1], durs: [0.5, 0.45], y: 0 });
+      FX.chokeSettle(tl, chk, cr, T(178.14) - L, 9, 0.85, "none");
+      tl.fromTo($("sc038-cam"), { y: 0, scale: 1.04 }, { y: -70, scale: 1.08, duration: 3.4, ease: "none", immediateRender: true }, S(176.30));
+    })();
+    slide("038", "039", 179.66);
+
+    /* ============ C5S039 · 179.66–183.34 · purging anyone he's suspicious of (NIGHT) ============ */
+    ground("night", 179.66);
+    scene("039", 179.44, 183.34);
+    (function () {
+      gated(179.4, 183.4, () => FX.weave($("sc039-weave"), { amp: 0.9, flicker: 0.035, seed: 3901 }));
+      tl.fromTo($("sc039-cam"), { scale: 1.0 }, { scale: 1.06, duration: 3.5, ease: "none", immediateRender: true }, S(179.66));
+      tl.to($("sc039-cam"), { scale: 1.14, duration: 0.3, ease: E.in }, S(183.06));
+      words("sc039-pu", [["purging", T(181.26) - L]]);
+      words("sc039-su", [["suspicious", T(182.46) - L]], { dur: 0.6 });
+    })();
+
+    /* ============ C5S040 · 183.34–188.86 · launching a war against scientists, against engineers (NIGHT) ============ */
+    scene("040", 183.34, 189.08);
+    (function () {
+      const ic = $("sc040-ic");
+      const mk = (x, k) => { const d = document.createElement("div"); d.className = "k-ico"; d.style.cssText = `left:${x}px;top:520px;width:96px;height:112px;opacity:0`; d.innerHTML = `<svg viewBox="0 0 64 74" fill="${BONE}">${k}</svg>`; ic.appendChild(d); return d; };
+      const sci = [380, 500, 620, 740].map((x) => mk(x, SCIENTIST)), eng = [1140, 1260, 1380, 1500].map((x) => mk(x, ENGINEER));
+      const fl = document.createElement("div"); fl.className = "k-abs"; fl.style.cssText = "left:540px;top:400px;width:110px;height:110px;opacity:0"; fl.innerHTML = pic("flask", BONE, 5); ic.appendChild(fl);
+      sci.forEach((d, i) => tl.fromTo(d, { opacity: 0, y: 30 }, { opacity: 0.95, y: 0, duration: 0.6, ease: C(E.out, 0.6), immediateRender: true }, S(184.0) + i / 12));
+      eng.forEach((d, i) => tl.fromTo(d, { opacity: 0, y: 30 }, { opacity: 0.95, y: 0, duration: 0.6, ease: C(E.out, 0.6), immediateRender: true }, S(184.3) + i / 12));
+      tl.fromTo(fl, { opacity: 0 }, { opacity: 0.9, duration: 0.6, ease: C(E.out, 0.6), immediateRender: true }, S(184.1));
+      words("sc040-war", [["war", T(186.62) - L]], { dur: 0.8, y: 30 });
+      words("sc040-sc", [["scientists", T(187.26) - L]], { dur: 0.6 });
+      words("sc040-en", [["engineers", T(188.14) - L]], { dur: 0.35 });
+      const svg = $("sc040-mk");
+      pen(svg, [[340, 470], [860, 700]], S(187.30), { color: RED, width: 12, blend: "normal", dur: 0.22, seed: 41, filter: MK });
+      pen(svg, [[1100, 690], [1620, 480]], S(188.05), { color: RED, width: 12, blend: "normal", dur: 0.22, seed: 42, filter: MK });
+      tl.fromTo($("sc040-cam"), { scale: 1.0 }, { scale: 1.07, duration: 5.5, ease: "none", immediateRender: true }, S(183.34));
+    })();
+    slide("040", "041", 188.86);
+
+    /* ============ C5S041 · 188.86–191.10 · Anyone who's studying, he just does not like (PAPER) ============ */
+    ground("paper", 188.86);
+    scene("041", 188.64, 191.30);
+    (function () {
+      const b = $("sc041-book");
+      // an open exercise book (own drawing: ruled pages, greeked lines — no real text)
+      let g = `<g transform="translate(560 170) rotate(-3 400 320)"><path d="M0 40 Q200 0 400 40 L400 640 Q200 600 0 640 Z" fill="#f3eddf" stroke="${INK}" stroke-width="4"/><path d="M400 40 Q600 0 800 40 L800 640 Q600 600 400 640 Z" fill="#efe8d8" stroke="${INK}" stroke-width="4"/>`;
+      for (let i = 0; i < 11; i++) { const y = 110 + i * 46; g += `<path d="M50 ${y} Q200 ${y - 22} ${360 - (i % 3) * 30} ${y - 2}" stroke="${INK}" stroke-width="5" opacity="0.4" fill="none"/><path d="M440 ${y - 2} Q600 ${y - 24} ${750 - (i % 4) * 26} ${y}" stroke="${INK}" stroke-width="5" opacity="0.4" fill="none"/>`; }
+      g += `<path d="M400 40 L400 640" stroke="${INK}" stroke-width="3" opacity="0.6"/></g>`;
+      b.innerHTML = g;
+      tl.fromTo(b, { opacity: 0, y: 60 }, { opacity: 1, y: 0, duration: 0.6, ease: C(E.out, 0.6), immediateRender: true }, S(188.90));
+      words("sc041-st", [["studying", T(189.42) - L]]);
+      const svg = $("sc041-mk");
+      pen(svg, [[600, 230], [1350, 800]], S(189.90), { width: 14, dur: 0.18, seed: 43, filter: MK });
+      pen(svg, [[1340, 220], [610, 810]], S(190.12), { width: 14, dur: 0.18, seed: 44, filter: MK });
+      tl.fromTo($("sc041-cam"), { rotation: 0, scale: 1 }, { rotation: -1.5, scale: 1.05, duration: 2.4, ease: "none", immediateRender: true }, S(188.86));
+    })();
+    whip("041", "042", 191.10, { dir: 1 });
+
+    /* ============ C5S042 · 191.10–194.22 · All the while Taiwan is taking a different direction (NIGHT) ============ */
+    ground("night", 191.10);
+    scene("042", 191.09, 194.22);
+    (function () {
+      tl.fromTo($("sc042-cam"), { scale: 1.0 }, { scale: 1.06, duration: 3.1, ease: "none", immediateRender: true }, S(191.10));
+      const svg = $("sc042-mk");
+      FX.markup.arrow(tl, svg, S(192.10), { x1: 900, y1: 520, x2: 420, y2: 820, bend: 60, head: 36, dur: 0.6, color: RED, width: 10, filter: MK });
+      FX.markup.arrow(tl, svg, S(192.40), { x1: 1000, y1: 520, x2: 1560, y2: 230, bend: 120, head: 36, dur: 0.7, color: CEL, width: 10, filter: MK });
+      words("sc042-dd", [["different", T(193.02) - L], ["direction", T(193.42) - L]], { durs: [0.5, 0.45] });
+      // hand-off: light-flash whip begins @194.06 — smear right, peak bone flash on the boundary frame (c5s02 resolves it)
+      const bo = FX.whipDefs(defs, SEG + "-wout");
+      tl.set($("sc042"), { filter: `url(#${SEG}-wout)` }, S(194.05));
+      const sa = { v: 0 };
+      tl.fromTo($("sc042"), { x: 0, scale: 1 }, { x: -700, scale: 1.18, duration: 0.16, ease: "power3.in", immediateRender: false }, S(194.06));
+      tl.fromTo(sa, { v: 0 }, { v: 90, duration: 0.16, ease: "power2.in", immediateRender: false, onUpdate: () => bo.setAttribute("stdDeviation", `${sa.v} 0`) }, S(194.06));
+      tl.fromTo($("flash"), { opacity: 0 }, { opacity: 0.95, duration: 0.14, ease: "power2.in", immediateRender: false }, S(194.08));
+    })();
+
+    // scenes outside their window: no layout (built above while laid out — odometers measured)
+    Object.keys(wins).forEach((k) => { if (S(wins[k][0]) > 0) gsap.set($("sc" + k), { display: "none" }); });
+
+    FX.mount(tl, DURATION);
+    window.__timelines = window.__timelines || {}; window.__timelines[SEG] = tl;
+  })();
+  </script>
+</template>
+</body>
+</html>

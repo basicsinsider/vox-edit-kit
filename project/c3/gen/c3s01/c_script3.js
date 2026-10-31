@@ -34,7 +34,7 @@
     scene("sc028", 129.56, 136.90);
     ground("night", S(129.56));
     (function () {
-      tl.fromTo($("sc028-cam"), frame(950, 1700, 0.6), Object.assign({ duration: 7.3, ease: E.cam, immediateRender: true }, frame(1000, 1750, 0.68)), S(129.56));
+      tl.fromTo($("sc028-cam"), frame(1255, 1900, 0.78), Object.assign({ duration: 7.3, ease: E.cam, immediateRender: true }, frame(1300, 1900, 0.86)), S(129.56));
       pop("sc028-65", T(129.94) - L, 0.6, 0.9);
       rise("sc028-gr", T(133.30) - L, { dur: 0.9 });
       const mk = $("sc028-mk");
@@ -50,10 +50,10 @@
       rise("sc029-l1", S(137.1), { dur: 0.6 });
       tl.fromTo($("sc029-th"), { opacity: 0, scaleX: 0, transformOrigin: "0 50%" }, { opacity: 1, scaleX: 1, duration: 0.6, ease: C(E.inOut, 0.6), immediateRender: true }, S(137.6));
       tl.fromTo($("sc029-b2"), { scaleY: 0 }, { scaleY: 1, duration: 1.5, ease: C(E.inOut, 1.5), immediateRender: true }, S(138.09));
-      tl.fromTo($("sc029-cam"), { y: 0 }, { y: 120, duration: 1.8, ease: E.cam, immediateRender: false }, S(138.3));
+      tl.fromTo($("sc029-cam"), { y: 0 }, { y: 50, duration: 1.8, ease: E.cam, immediateRender: false }, S(138.3));
       wr("sc029-nc", [T(138.09) - L, T(138.49) - L], { dur: 0.7 });
       pop("sc029-bh", T(140.73) - L, 0.6, 0.85);
-      tl.to($("sc029-cam"), { y: 140, duration: 2.0, ease: "none" }, S(140.1));
+      tl.to($("sc029-cam"), { y: 60, duration: 2.0, ease: "none" }, S(140.1));
     })();
 
     /* ============ C3S030 · 142.17–146.65 · Hoover gets some credit ============ */
@@ -136,10 +136,10 @@
       [["i1", T(170.49) - L], ["i2", T(171.21) - L], ["i3", T(171.85) - L], ["i3b", T(172.41) - L], ["i4", T(172.97) - L], ["i5", T(173.53) - L], ["i6", T(173.69) - L], ["i7", T(173.85) - L]].forEach(([k, t]) => show($("sc035-" + k), t));
       [["p1", 170.49], ["p2", 171.21], ["p3", 171.85]].forEach(([k, t]) => tl.fromTo($("sc035-" + k), { opacity: 0, scale: 1.15 }, { opacity: 1, scale: 1, duration: 1 / 12, immediateRender: true }, S(t) - 0.02));
       const mk = $("sc035-mk");
-      FX.markup.pen(tl, mk, S(173.5), { points: [[640, 470], [760, 470]], dur: 0.2, width: 6, color: INK, filter: PEN });
-      FX.markup.pen(tl, mk, S(173.5) + 0.2, { points: [[740, 455], [762, 470], [740, 486]], dur: 0.1, width: 6, color: INK, filter: PEN, jitter: 1 });
-      FX.markup.pen(tl, mk, S(173.85), { points: [[900, 640], [1020, 640]], dur: 0.2, width: 6, color: INK, filter: PEN, seed: 6 });
-      FX.markup.pen(tl, mk, S(173.85) + 0.2, { points: [[1000, 625], [1022, 640], [1000, 656]], dur: 0.1, width: 6, color: INK, filter: PEN, jitter: 1 });
+      FX.markup.pen(tl, mk, S(173.5), { points: [[780, 532], [640, 532]], dur: 0.2, width: 6, color: INK, filter: PEN });
+      FX.markup.pen(tl, mk, S(173.5) + 0.2, { points: [[662, 516], [640, 532], [662, 548]], dur: 0.1, width: 6, color: INK, filter: PEN, jitter: 1 });
+      FX.markup.pen(tl, mk, S(173.85), { points: [[800, 532], [940, 532]], dur: 0.2, width: 6, color: INK, filter: PEN, seed: 6 });
+      FX.markup.pen(tl, mk, S(173.85) + 0.2, { points: [[918, 516], [940, 532], [918, 548]], dur: 0.1, width: 6, color: INK, filter: PEN, jitter: 1 });
       tl.fromTo($("sc035-card"), { y: 0 }, { y: -40, duration: 5.4, ease: "none", immediateRender: false }, S(168.6));
       // the card flips over → blueprint (cont.)
       tl.to($("sc035-card"), { rotationY: 90, transformPerspective: 2200, duration: 0.24, ease: E.in }, S(173.98));
@@ -170,6 +170,8 @@
       const svg = $("sc037-svg");
       const tw = el("path", { d: TW.taiwan, fill: CEL, "fill-opacity": 0.85, stroke: CEL, "stroke-width": 6, opacity: 0 }, svg);
       tw.style.filter = "drop-shadow(0 0 6px rgba(159,199,178,0.8))";
+      const twr = el("circle", { cx: 930, cy: 1560, r: 110, fill: "none", stroke: CEL, "stroke-width": 9, opacity: 0 }, svg);
+      tl.fromTo(twr, { opacity: 0, attr: { r: 200 } }, { opacity: 0.9, attr: { r: 110 }, duration: 0.4, ease: C(E.out, 0.4), immediateRender: true }, S(180.43));
       const [sx, sy] = PAC.stanford, [tx, ty] = PAC.taiwan;
       const pin = el("g", { opacity: 0 }, svg);
       el("circle", { cx: sx, cy: sy, r: 70, fill: "none", stroke: RED, "stroke-width": 8, opacity: 0.6 }, pin);
@@ -218,8 +220,8 @@
         <rect x="0" y="0" width="520" height="646" fill="#fff" filter="url(#c3s01-c39)"/>`;
       s.insertAdjacentHTML("afterbegin", `<defs><pattern id="c3s01-ht39" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><circle cx="2.5" cy="2.5" r="1.1" fill="#1c2a24"/></pattern></defs>`);
       const M = (o) => "0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  -12 0 0 0 " + o.toFixed(3);
-      const b = { v: 13 }, get = (id) => document.getElementById("c3s01-" + id);
-      tl.fromTo(b, { v: 13 }, { v: -2.4, duration: 2.0, ease: C("power1.inOut", 2.0), immediateRender: true, onUpdate: () => { get("b39m").setAttribute("values", M(b.v)); get("c39a").setAttribute("values", M(b.v)); get("c39b").setAttribute("values", M(b.v + 2.2)); } }, S(186.1));
+      const b = { v: -2.4 }, get = (id) => document.getElementById("c3s01-" + id);
+      tl.fromTo(b, { v: -2.4 }, { v: 13, duration: 2.0, ease: C("power1.inOut", 2.0), immediateRender: true, onUpdate: () => { get("b39m").setAttribute("values", M(b.v)); get("c39a").setAttribute("values", M(b.v)); get("c39b").setAttribute("values", M(b.v + 2.2)); } }, S(186.1));
       tl.fromTo($("sc039-cam"), { scale: 1.0 }, { scale: 1.05, duration: 4.3, ease: "none", immediateRender: false }, S(185.55));
       FX.focusHunt(tl, $("sc039-plate"), S(188.2), { dur: 0.6, a: 3, b: 4 });
       rise("sc039-st", T(187.69) - L, { dur: 0.5 });
@@ -236,8 +238,8 @@
       wr("sc040-bs", [T(190.49) - L, T(190.97) - L], { dur: 0.6 });
       wr("sc040-vc", [T(191.93) - L, T(192.09) - L], { dur: 0.45 });
       const svg = $("sc040-svg");
-      ink(svg, "M700 402 L1222 402", S(191.93), 0.6, { width: 6, filter: PEN, ease: C(E.inOut, 0.6) });
-      ink(svg, "M700 420 L1222 420", S(192.0), 0.6, { width: 6, filter: PEN, ease: C(E.inOut, 0.6) });
+      FX.markup.pen(tl, svg, S(191.93), { points: [[700, 400], [1222, 404]], dur: 0.6, width: 6, color: INK, filter: PEN, seed: 40 });
+      FX.markup.pen(tl, svg, S(192.0), { points: [[700, 422], [1222, 418]], dur: 0.6, width: 6, color: INK, filter: PEN, seed: 41 });
       gsap.set($("sc040-hew"), { opacity: 0 }); gsap.set($("sc040-bh"), { opacity: 1 });
       // push-through into the drawn line
       tl.fromTo($("sc040-cam"), { scale: 1 }, { scale: 3.6, duration: 0.42, ease: E.in, immediateRender: false }, S(192.98));
@@ -248,7 +250,7 @@
     ground("night", S(193.37));
     (function () {
       const box = $("sc041-pages");
-      const PG = [[720, 160, -7], [980, 120, 4], [1240, 170, -2]];
+      const PG = [[640, 160, -7], [940, 110, 4], [1240, 170, -2]];
       PG.forEach(([x, y, r], i) => {
         const p = div(box, `left:${x}px;top:${y}px;width:560px;height:760px;background:#ece3cf;box-shadow:0 26px 50px rgba(0,0,0,0.55);transform:rotate(${r}deg);padding:50px 46px`, "q-abs",
           `<div class="t-serif" style="font-size:20px;color:#4a5260;letter-spacing:0.16em;border-bottom:2px solid #4a5260;padding-bottom:10px">PROCEEDINGS</div>

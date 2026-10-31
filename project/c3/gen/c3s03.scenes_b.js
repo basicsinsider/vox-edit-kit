@@ -57,7 +57,7 @@
         ink($("sc094-fl"), `M${x0.toFixed(0)} ${uy.toFixed(0)} C${(x0 + dx * 0.45).toFixed(0)} ${uy.toFixed(0)} ${(c[0] - dx * 0.45).toFixed(0)} ${c[1].toFixed(0)} ${c[0].toFixed(0)} ${c[1].toFixed(0)}`, S(495.26) + i * 0.012, 0.8, { color: CEL, width: 6, ease: C(E.out, 0.8) });
       });
       tl.fromTo($("sc094-us"), { attr: { opacity: 0 } }, { attr: { opacity: 1 }, duration: 0.25, ease: C("none", 0.25), immediateRender: true }, S(495.20));
-      tl.fromTo(cam, wat(12, 15, 0.47), Object.assign(wat(10, 15, 0.42), { duration: 6.9, ease: E.cam, immediateRender: true }), S(490.84));
+      tl.fromTo(cam, wat(4, 15, 0.47), Object.assign(wat(2, 15, 0.42), { duration: 6.9, ease: E.cam, immediateRender: true }), S(490.84));
       [T(491.90), T(492.06), T(492.14), T(492.30)].forEach((c, i) => rise(words("sc094-alc")[i], c, { dur: 0.6, y: 10 }));
       out($("sc094-alc"), S(494.90), 0.3);
       [T(495.26), T(495.58), T(495.74), T(496.14)].forEach((c, i) => rise(words("sc094-bus")[i], c, { dur: 0.6, y: 8 }));
@@ -81,6 +81,7 @@
       tl.to(cam, { scale: 1.12, y: 110, duration: 1.7, ease: E.cam }, S(502.05));
       tl.to(cam, { scale: 1.13, y: 116, duration: 0.85, ease: "none" }, S(503.75));
       [T(498.45), T(499.01)].forEach((c, i) => rise(words("sc095-tr")[i], c, { dur: 0.8, y: 10 }));
+      out($("sc095-tr"), S(501.80), 0.3);
       show($("sc095-fpb"), T(502.05));
       [T(502.05), T(502.69)].forEach((c, i) => rise(words("sc095-fp")[i], c, { dur: 0.6, y: 8 }));
     })();
@@ -189,13 +190,13 @@
     scene("sc100", 527.23, 535.25);
     ground("night", S(527.23));
     (function () {
-      const world = $("sc100-world"), flags = ["us48", "japan", "france", "italy", "belgium", "thailand", "peru", "colombia"], SP = 130;
-      world.innerHTML = flags.map((f, i) => `<div class="k-dom" id="c3s03-dom${i}" style="left:${i * SP - 455}px"><div class="tp"></div><div class="fa"><div class="fl">${FL[f]}</div><div class="sh"></div></div><div class="ed"></div></div>`).join("");
+      const world = $("sc100-world"), flags = ["us48", "japan", "france", "italy", "belgium", "thailand", "peru", "colombia"], SP = 190;
+      world.innerHTML = flags.map((f, i) => `<div class="k-dom" id="c3s03-dom${i}" style="left:${i * SP - 665}px"><div class="tp"></div><div class="fa"><div class="fl">${FL[f]}</div><div class="sh"></div></div><div class="ed"></div></div>`).join("");
       const doms = flags.map((f, i) => $("dom" + i));
-      gsap.set(world, { rotationX: -14, rotationY: 50 });
-      tl.fromTo(world, { x: 120, rotationY: 54 }, { x: -140, rotationY: 47, duration: 8.0, ease: "none", immediateRender: true }, S(527.23));
+      gsap.set(world, { rotationX: -8, rotationY: 60 });
+      tl.fromTo(world, { x: 160, rotationY: 63 }, { x: -160, rotationY: 57, duration: 8.0, ease: "none", immediateRender: true }, S(527.23));
       // the first (US) tips onto the second and rests there
-      tl.fromTo(doms[0], { rotationZ: 0 }, { rotationZ: 17, duration: 0.7, ease: C(E.out, 0.7), immediateRender: true }, S(528.91));
+      tl.fromTo(doms[0], { rotationZ: 0 }, { rotationZ: 29, duration: 0.7, ease: C(E.out, 0.7), immediateRender: true }, S(528.91));
       tl.fromTo(doms[1], { rotationZ: 0 }, { rotationZ: 2.5, duration: 0.16, ease: "sine.out", yoyo: true, repeat: 1, immediateRender: false }, S(529.30));
       // …and the whole row follows suit (12 fps)
       doms.forEach((d, i) => tl.to(d, { rotationZ: i === doms.length - 1 ? 84 : 66, duration: 0.24, ease: C("power2.in", 0.24) }, S(534.03) + i * 0.05));

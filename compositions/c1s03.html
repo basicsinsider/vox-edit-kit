@@ -703,8 +703,9 @@
       <div class="c3-pg"><img class="p1" src="assets/textures/paper_cream_01.jpg" alt="" /><img class="p2 st" src="assets/textures/paper_stained_01_hires.jpg" alt="" style="transform:scale(1.4) rotate(180deg)" /></div>
       <div id="c1s03-sc105-cam">
         <div class="c3-abs t-label c3-ink" style="left:300px;top:110px;font-size:32px"><span id="c1s03-sc105-w1" class="c3-w">Terman</span></div>
-        <div class="c3-abs t-serif c3-ink" style="left:296px;top:160px;font-size:84px"><span id="c1s03-sc105-w2" class="c3-w">Stanford </span><span id="c1s03-sc105-w3" class="c3-w">cannot </span><span id="c1s03-sc105-w4" class="c3-w">be </span><span id="c1s03-sc105-w5" class="c3-w">best </span><span id="c1s03-sc105-w6" class="c3-w">at </span><span id="c1s03-sc105-w7" class="c3-w" style="font-style:italic;color:var(--vermilion);position:relative">everything<i id="c1s03-sc105-strike" style="position:absolute;left:-3%;width:106%;top:52%;height:8px;background:var(--ink);transform-origin:0 50%;transform:scaleX(0) rotate(-2deg);border-radius:4px;filter:url(#c1s03-rough105)"></i></span></div>
+        <div class="c3-abs t-serif c3-ink" style="left:296px;top:160px;font-size:84px"><span id="c1s03-sc105-w2" class="c3-w">Stanford </span><span id="c1s03-sc105-w3" class="c3-w">cannot </span><span id="c1s03-sc105-w4" class="c3-w">be </span><span id="c1s03-sc105-w5" class="c3-w">best </span><span id="c1s03-sc105-w6" class="c3-w">at </span><span id="c1s03-sc105-w7" class="c3-w" style="font-style:italic;color:var(--vermilion);position:relative">everything</span></div>
         <div id="c1s03-sc105-bars"></div>
+        <div id="c1s03-sc105-strike" style="position:absolute;left:0;top:0;width:10px;height:9px;background:var(--ink);border-radius:5px;transform-origin:0 50%;opacity:0"></div>
       </div>
       <div class="folds"></div>
     </div>
@@ -817,7 +818,7 @@
       // camera in map px (1920x2556): centre C at scale s → x = 960 − C.x·s, y = 540 − C.y·s
       const cam = (cx, cy, s) => ({ x: 960 - cx * s, y: 540 - cy * s, scale: s });
       // enters already moving (cork-board push hand-off): sine.out keeps velocity at frame 0
-      tl.fromTo("#c1s03-sc071-cam", cam(1020, 1250, 0.62), Object.assign(cam(1150, 1540, 1.25), { duration: 5.15, ease: "sine.out", immediateRender: true }), 0);
+      tl.fromTo("#c1s03-sc071-cam", cam(960, 1250, 0.7), Object.assign(cam(1150, 1540, 1.25), { duration: 5.15, ease: "sine.out", immediateRender: true }), 0);
       const svg = $("sc071-svg"), f = mk("sc071-svg", 402.8, 408.3, "0 0 1920 2556");
       // pin on Palo Alto
       const pin = el("g", { opacity: 0 }, svg);
@@ -1527,7 +1528,7 @@
     scene("104", 591.62, 596.02);
     (function () {
       gated(591.5, 596.1, () => FX.streaks($("sc104-streaks"), { seed: 10401, speed: 0.4, gain: 0.8 }));
-      tl.fromTo("#c1s03-sc104-cam", { scale: 1.12, y: 30 }, { scale: 1.0, y: 0, duration: 4.4, ease: "sine.out", immediateRender: true }, S(591.62));
+      tl.fromTo("#c1s03-sc104-cam", { scale: 1.2, y: 30 }, { scale: 1.08, y: 0, duration: 4.4, ease: "sine.out", immediateRender: true }, S(591.62));
       rise("sc104-w1", T(593.46) - L);
       rise("sc104-w2", T(594.10) - L);
       rise("sc104-w3", T(595.14) - L, { dur: 0.5 });
@@ -1557,8 +1558,14 @@
       rise("sc105-w6", T(601.94) - L, { dur: 0.3 });
       rise("sc105-w7", T(602.18) - L, { dur: 0.25 });
       // pen strike through 'everything' (rough edge boils like a pen: permanent markup)
-      gated(595.6, 602.9, () => FX.roughDefs(defs, "c1s03-rough105", { freq: 0.05, scale: 4 }));
-      tl.fromTo("#c1s03-sc105-strike", { scaleX: 0, rotation: -2 }, { scaleX: 1, rotation: -2, duration: 0.28, ease: C("sine.inOut", 0.28), immediateRender: true }, S(602.22));
+      // measured at render time (fonts loaded): the stroke spans the word 'everything' exactly
+      const sk = { p: 0 }, strike = $("sc105-strike"), word = $("sc105-w7");
+      const drawStrike = () => {
+        const w = word.offsetWidth, x = word.offsetLeft + word.offsetParent.offsetLeft, y = word.offsetTop + word.offsetParent.offsetTop + word.offsetHeight * 0.55;
+        strike.style.left = (x - w * 0.0).toFixed(1) + "px"; strike.style.top = y.toFixed(1) + "px"; strike.style.width = (w * 1.04 * sk.p).toFixed(1) + "px";
+        strike.style.opacity = sk.p > 0 ? 1 : 0; strike.style.transform = "rotate(-2deg)";
+      };
+      tl.fromTo(sk, { p: 0 }, { p: 1, duration: 0.28, ease: C("sine.inOut", 0.28), immediateRender: false, onUpdate: drawStrike }, S(602.22));
     })();
 
     FX.mount(tl, DURATION);

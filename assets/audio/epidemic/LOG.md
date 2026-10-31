@@ -23,6 +23,14 @@ commands below. Never use the public low-quality preview MP3s in an edit. Measur
 | `pardon_my_french/` | Pardon My French — Eva Hummingbird | 4d2fcafe-48e2-49e6-9562-a21b735b3fcc | https://www.epidemicsound.com/track/u065zBNJSt/ | full, bass, instruments, melody_derived | 116 | G minor | LIGHT texture for the host intro + "face built for radio" joke (eccentric/elegant contemporary classical, from Krish's playlist) |
 | `misguided_path/` | Misguided Path — Bonnie Grace | 5c3964a0-0ec3-312a-9446-48ac7b7505e8 | https://www.epidemicsound.com/track/yIboE3Njz0/ | full, bass, drums, instruments | 92 | A minor | ALTERNATE dark build (from Krish's playlist) — spare for the stonewall/reveal if Estimations feels too busy; also good for chunk 1 |
 
+### Added for chunk c4 (2026-10-31) — cue sheet `project/c4/music_cuesheet.json`
+
+| folder | title — artist | kosmosId | public URL | stems downloaded | bpm | key (est.) | role / why |
+|---|---|---|---|---|---|---|---|
+| `silent_sun/` | Silent Sun — Anna Landström | 6e8a6f3f-0ea6-400a-bf1e-59a016166c09 | — | full, bass, instruments (melody can't be derived: stems don't sum to the master) | 116 | F major | warm/hopeful melodic layer: Japanese-rule "positives", relief on "luckily", land reform |
+| `ostinato/` | Ostinato — Vieveri (Krish's playlist) | e4a14fb1-33bf-3246-9e09-f7d9384f74dd | https://www.epidemicsound.com/track/ClT3alC0ax/ | full, instruments, melody_derived (no bass/drums stems exist) | 180 | A minor | the building ostinato of the UN vote war and the export-zone groove |
+| `still_in_blues/` | Still in Blues — (Epidemic, dark drone/suspense) | 5217f8cb-0660-4a3d-867c-bfa3f3d57ce6 | — | full, bass, drums, instruments (stems are far quieter than the full mix — use `full` as the layer) | – (drone) | G minor | cold drone for war damage and the White Terror |
+
 ### Candidates auditioned (by metadata + measured key from previews; not downloaded)
 Formations (Van Sandano, 100, Ab minor — wrong key for the set), Chrysotile (Farrell Wooten drone, C# minor — clashes with D),
 Imber (140, F# minor), Ostinato (Vieveri, 180, A minor — strong alternative for a build), City Phases (John Abbot, 150, A minor —
