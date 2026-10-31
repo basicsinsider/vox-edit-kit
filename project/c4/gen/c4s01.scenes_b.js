@@ -3,7 +3,7 @@
     ground("night", S(70.72));
     (function () {
       const svg = $("sc013-svg"), cam = $("sc013-cam"), K = 45.5111;
-      const ll = (lon, lat) => [(lon + 20) * K, (38 - lat) * K];
+      const ll = (lon, lat) => [(lon + 60) * K, (42 - lat) * K];
       const at = (lon, lat, z) => { const [x, y] = ll(lon, lat); return { x: 960 - x * z, y: 540 - y * z, scale: z }; };
       const order = ["sudan", "morocco", "tunisia", "ghana", "guinea", "cameroon", "senegal", "togo", "madagascar", "dem_rep_congo", "somalia", "benin",
         "niger", "burkina_faso", "c_te_d_ivoire", "chad", "central_african_rep", "congo", "gabon", "mali", "nigeria", "mauritania", "sierra_leone",
@@ -25,7 +25,7 @@
       tl.to(cam, Object.assign(at(23.5, -3, 0.44), { duration: 3.9, ease: "none" }), S(78.6));
       FX.focusHunt(tl, cam, S(74.30), { dur: 0.7 });
       const [qx, qy] = ll(23.5, -3);
-      FX.contrastCallout(tl, $("sc014-veil"), S(74.10), { w: 3413, h: 3413, d: MAPS.africa.d.dem_rep_congo, feather: 14, color: "rgba(20,22,26,1)", strength: 0.72 });
+      FX.contrastCallout(tl, $("sc014-veil"), S(74.10), { w: 7055, h: 3731, d: MAPS.africa.d.dem_rep_congo, feather: 14, color: "rgba(20,22,26,1)", strength: 0.72 });
       tl.to(document.getElementById("c4s01-af-dem_rep_congo"), { attr: { "fill-opacity": 0.45, "stroke-width": 9 }, duration: 0.001 }, S(74.10));
       [T(71.12), T(71.44)].forEach((c, i) => rise(words("sc013-nc")[i], c, { dur: 0.8, y: 10 }));
       rise($("sc013-af"), T(73.28), { dur: 0.25, y: 10 });
@@ -49,6 +49,7 @@
         rt.setAttribute("d", `M330 520 Q${(330 + cx) / 2} ${540 + st.s1} ${cx - 20} 548`);
         rc.setAttribute("d", `M${cx + 20} 548 Q${(cx + 1590) / 2} ${540 + st.s2} 1590 520`);
         const lt = rt.getTotalLength(), lc = rc.getTotalLength();
+        rt.setAttribute("stroke-opacity", st.a > 0.01 ? 1 : 0); rc.setAttribute("stroke-opacity", st.b > 0.01 ? 1 : 0);
         rt.setAttribute("stroke-dasharray", `${lt} ${lt}`); rt.setAttribute("stroke-dashoffset", (lt * (1 - st.a)).toFixed(1));
         rc.setAttribute("stroke-dasharray", `${lc} ${lc}`); rc.setAttribute("stroke-dashoffset", (lc * (1 - st.b)).toFixed(1));
       };
@@ -91,7 +92,7 @@
     scene("sc016", 88.64, 92.72);
     (function () {
       const svg = $("sc016-svg"), cam = $("sc016-cam"), K = 45.5111, z = 0.34;
-      const ll = (lon, lat) => [(lon + 20) * K, (38 - lat) * K];
+      const ll = (lon, lat) => [(lon + 60) * K, (42 - lat) * K];
       const [cx, cy] = ll(14, 2);
       tl.fromTo(cam, { x: 960 - cx * 0.36, y: 540 - cy * 0.36, scale: 0.36 }, { x: 960 - cx * z, y: 540 - cy * z, scale: z, duration: 4.2, ease: E.cam, immediateRender: true }, S(88.64));
       const scr = (lon, lat) => { const [x, y] = ll(lon, lat); return [960 + (x - cx) * z, 540 + (y - cy) * z]; };
@@ -122,13 +123,13 @@
       const at = (lon, lat, z) => { const [x, y] = ll(lon, lat); return { x: 960 - x * z, y: 540 - y * z, scale: z }; };
       svg.insertAdjacentHTML("beforeend", `<defs><filter id="c4s01-glowr" x="-10%" y="-10%" width="120%" height="120%"><feGaussianBlur stdDeviation="10" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
         <g id="c4s01-sc017-cn" filter="url(#c4s01-glowr)"></g><g id="c4s01-sc017-tw"></g>`);
-      pathsFill($("sc017-cn"), "eurasia", ["china"], `fill="url(#c4s01-ht-red)" stroke="${RED}" stroke-width="8"`, "c4s01-cn17-");
+      pathsFill($("sc017-cn"), "eurasia", ["china"], `fill="url(#c4s01-ht-red)" fill-opacity="0.78" stroke="${RED}" stroke-width="8"`, "c4s01-cn17-");
       pathsFill($("sc017-tw"), "eurasia", ["taiwan"], `fill="${CEL}" stroke="${CEL}" stroke-width="10"`, "c4s01-tw17-");
       tl.fromTo($("sc017-cn"), { attr: { opacity: 0.0 } }, { attr: { opacity: 1 }, duration: 0.4, ease: C("none", 0.4), immediateRender: true }, S(92.78));
       tl.fromTo($("sc017-tw"), { attr: { opacity: 0 } }, { attr: { opacity: 1 }, duration: 0.001, immediateRender: true }, S(95.10));
-      tl.fromTo(cam, at(104, 35, 0.86), Object.assign(at(104, 34.5, 0.82), { duration: 2.6, ease: "none", immediateRender: true }), S(92.72));
-      tl.to(cam, Object.assign(at(98, 34, 0.6), { duration: 1.1, ease: E.cam }), S(95.32));   // pull back: China at full size beside tiny Taiwan (lands 96.42)
-      tl.to(cam, Object.assign(at(97.5, 34, 0.585), { duration: 0.6, ease: "none" }), S(96.42));
+      tl.fromTo(cam, at(103, 35, 0.66), Object.assign(at(103, 34.5, 0.63), { duration: 2.6, ease: "none", immediateRender: true }), S(92.72));
+      tl.to(cam, Object.assign(at(96, 33, 0.47), { duration: 1.1, ease: E.cam }), S(95.32));   // pull back: China at full size beside tiny Taiwan (lands 96.42)
+      tl.to(cam, Object.assign(at(95.5, 33, 0.46), { duration: 0.6, ease: "none" }), S(96.42));
       FX.focusHunt(tl, cam, S(96.10), { dur: 0.6 });
       // "does the same thing": dashed red arrows out west (toward Africa)
       [[[95, 30], [55, 14]], [[92, 38], [52, 30]]].forEach(([a, b], i) => {
@@ -140,7 +141,7 @@
       [T(93.60), T(93.76)].forEach((c, i) => rise(words("sc017-st")[i], c, { dur: 0.7, y: 10 }));
       tl.to($("sc017-st"), { opacity: 0, duration: 0.3 }, S(95.6));
       rise($("sc017-big"), T(96.48), { dur: 0.3, y: 10 });
-      tl.to(cam, Object.assign(at(97.0, 34, 0.62), { duration: 0.2, ease: E.in }), S(96.80));     // CA into the bars
+      tl.to(cam, Object.assign(at(95.0, 33, 0.5), { duration: 0.2, ease: E.in }), S(96.80));     // CA into the bars
     })();
 
     /* =================== C4S018 · 96.96–101.36 · more access to … land and people, their resources are bigger than Taiwan =================== */

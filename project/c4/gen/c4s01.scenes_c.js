@@ -29,9 +29,11 @@
       const f = gated(140.2, 144.9, () => FX.markupDefs(w.svg, "c4s01-mk025", { boil: 4 })); w.svg.setAttribute("viewBox", "0 0 6144 3072");
       const race = (from, tos, col, t, seed) => tos.forEach(([lon, lat], i) => {
         const [x1, y1] = w.ll(from[0], from[1]), [x2, y2] = w.ll(lon, lat), mx = (x1 + x2) / 2, my = Math.min(y1, y2) - 260 - i * 60;
-        FX.markup.pen(tl, w.svg, t + i * 0.18, { points: [[x1, y1 - 60], [mx, my], [x2, y2 - 60]], dur: 1.1, width: 14, color: col, filter: f, seed: seed + i, jitter: 10, blend: "normal" });
+        const pts = [[x1, y1 - 60], [mx, my], [x2, y2 - 60]];
+        FX.markup.pen(tl, w.svg, t + i * 0.18, { points: pts, dur: 1.1, width: 22, color: INK, filter: f, seed: seed + i, jitter: 10, blend: "normal" });
+        FX.markup.pen(tl, w.svg, t + i * 0.18, { points: pts, dur: 1.1, width: 13, color: col, filter: f, seed: seed + i, jitter: 10, blend: "normal" });
       });
-      race([121.5, 24.5], [[-5.5, 7.5], [34.0, -13.5], [-58, -23], [-84, 12]], "#5f9479", S(140.30), 251);
+      race([121.5, 24.5], [[-5.5, 7.5], [34.0, -13.5], [-58, -23], [-84, 12]], CEL, S(140.30), 251);
       race([116.4, 39.9], [[35.0, -6.4], [-10.9, 10.4], [-77, 21], [3, 28]], RED, S(141.10), 261);
       rise($("sc025-comp"), T(140.35), { dur: 0.8, y: 12 });
       pop($("sc025-ccpb"), T(141.15), 0.8);
@@ -72,7 +74,9 @@
     ground("night", S(154.83));
     (function () {
       tl.fromTo($("sc028-cam"), { scale: 1.2, x: 150 }, { scale: 1.16, x: -150, duration: 6.56, ease: E.cam, immediateRender: true }, S(154.83));
+      $("sc028").style.display = "block";   // odometer measures glyph widths: build it while laid out
       FX.text.odometer(tl, $("sc028-yr"), T(157.31), { dur: 0.7, stagger: 0.05, seed: 1895 });
+      $("sc028").style.display = "none";
       tl.to($("sc028-yr"), { opacity: 0, duration: 0.35 }, S(158.75));
       gated(158.2, 161.5, () => FX.roughDefs(defs, "c4s01-rough028", { freq: 0.03, scale: 7 }));   // torn-paper edge (permanent boil allowed on torn edges)
       tl.fromTo($("sc028-card"), { opacity: 0, y: 80, rotation: 10 }, { opacity: 1, y: 0, rotation: 4, duration: 0.9, ease: C(E.out, 0.9), immediateRender: true }, S(158.37));
@@ -133,7 +137,7 @@
     (function () {
       const img = $("sc033-img");
       tl.fromTo($("sc033-cam"), { scale: 1.0 }, { scale: 1.08, duration: 3.12, ease: "none", immediateRender: true }, S(181.55));
-      tl.fromTo(img, { filter: "grayscale(1) sepia(0) brightness(0.55) contrast(1.15)" }, { filter: "grayscale(1) sepia(0.62) brightness(0.92) contrast(1.05)", duration: 1.4, ease: C(E.out, 1.4), immediateRender: true }, S(182.45));
+      tl.fromTo(img, { filter: "grayscale(1) sepia(0) brightness(0.55) contrast(1.15)" }, { filter: "grayscale(1) sepia(0.62) brightness(0.78) contrast(1.05)", duration: 1.4, ease: C(E.out, 1.4), immediateRender: true }, S(182.45));
       gated(182.3, 184.8, () => FX.streaks($("sc033-str"), { seed: 331, speed: 0.5, tint: [255, 206, 158], lo: 0.4, gain: 1.1 }));
       tl.fromTo($("sc033-str"), { opacity: 0 }, { opacity: 0.55, duration: 1.0, ease: C(E.out, 1.0), immediateRender: true }, S(182.40));
       rise($("sc033-pos"), T(182.51), { dur: 0.9, y: 14 });
