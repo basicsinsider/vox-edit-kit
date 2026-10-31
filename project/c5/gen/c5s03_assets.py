@@ -29,10 +29,14 @@ def twmask():
     from PIL import ImageFilter
     im = np.asarray(Image.open(f"{ROOT}/assets/c5/made/strait_esri_z10.jpg").convert("RGB")).astype(np.float32)
     r, g, b = im[..., 0], im[..., 1], im[..., 2]
-    land = ((r + g) / 2 > b * 0.95) & ((r + g + b) / 3 > 38)
+    land = (g > b * 1.02) | ((r + g + b) / 3 > 75)
     H, W = land.shape
     keep = np.zeros_like(land); keep[1100:3950, 2050:3600] = True       # Taiwan main island box only
-    m = Image.fromarray(((land & keep) * 255).astype("uint8")).filter(ImageFilter.MedianFilter(9)).filter(ImageFilter.GaussianBlur(1.5))
+    from scipy import ndimage
+    lk = ndimage.binary_opening(land & keep, iterations=3); lab, n = ndimage.label(lk)
+    sizes = ndimage.sum(lk, lab, range(1, n + 1)); lk = lab == (1 + int(np.argmax(sizes)))      # biggest blob = main island
+    lk = ndimage.binary_fill_holes(ndimage.binary_closing(lk, iterations=6))
+    m = Image.fromarray((lk * 255).astype("uint8")).filter(ImageFilter.GaussianBlur(1.5))
     out = Image.new("RGBA", (W, H), (255, 255, 255, 0)); out.putalpha(m)
     out.save(f"{ROOT}/assets/c5/made/strait_taiwan_mask.png", optimize=True); print("mask ok")
 

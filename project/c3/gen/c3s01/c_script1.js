@@ -158,6 +158,7 @@
       tl.to(cards.filter((_, i) => i % 3 === 1), { y: -1100, duration: 0.6, ease: C(E.inOut, 0.6) }, S(14.66));
       tl.to([$("sc004-vid"), $("sc004-ex"), mk], { opacity: 0, duration: 0.25 }, S(14.62));
       tl.fromTo($("sc004-cam"), { scale: 1.0 }, { scale: 1.08, duration: 2.0, ease: "none", immediateRender: false }, S(14.66));
+      show("sc004-svb", T(14.72) - L);
       wr("sc004-sv", [T(14.72) - L, T(15.28) - L], { dur: 0.35, y: 10 });
     })();
 
@@ -186,9 +187,9 @@
       rise("sc005-enj", T(18.07) - L, { dur: 0.8 });
       out("sc005-card", S(19.6), 0.3); out("sc005-enj", S(19.6), 0.3);
       // camera push to Si (cam ease), then pen circle + text call-out
-      tl.fromTo($("sc005-cam"), { scale: 1, x: 0, y: 0 }, { scale: 1.6, x: -200, y: -10, duration: 1.7, ease: E.cam, immediateRender: false }, S(18.5));
+      tl.fromTo($("sc005-cam"), { scale: 1, x: 0, y: 0 }, { scale: 1.6, x: -260, y: -10, duration: 1.7, ease: E.cam, immediateRender: false }, S(18.5));
       tl.to(cells.filter((c) => c !== si), { opacity: 0.22, duration: 0.6, ease: C(E.out, 0.6) }, S(20.2));
-      FX.markup.pen(tl, $("sc005-mk"), S(20.17), { points: [[1140, 330], [1214, 336], [1226, 410], [1170, 464], [1100, 440], [1092, 360], [1150, 322]], dur: 0.6, width: 7, color: INK, filter: PEN });
+      FX.markup.pen(tl, $("sc005-mk"), S(20.17), { points: [[1236, 330], [1306, 338], [1318, 410], [1262, 464], [1192, 440], [1184, 360], [1242, 322]], dur: 0.6, width: 7, color: INK, filter: PEN });
       FX.focusHunt(tl, $("sc005-cam"), S(20.8), { dur: 0.5, a: 3, b: 4 });
       wr("sc005-si", [T(20.23) - L], { dur: 0.5 });
       wr("sc005-th", [T(20.95) - L, T(21.11) - L], { dur: 0.3 });
