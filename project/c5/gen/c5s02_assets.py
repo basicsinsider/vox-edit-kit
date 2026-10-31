@@ -165,7 +165,7 @@ def maps():
 
 def tv():
     im = Image.open(ROOT+"/_tmp/c5s02/rca_xl100.jpg").convert("RGBA")
-    W, H = im.size; cx, cy, a, b, n = 521, 417, 404, 314, 4.2
+    W, H = im.size; cx, cy, a, b, n = 521, 417, 414, 323, 5.0
     yy, xx = np.mgrid[0:H, 0:W]
     v = np.abs((xx-cx)/a)**n + np.abs((yy-cy)/b)**n
     alpha = np.clip((v-1)/0.02, 0, 1)*255
