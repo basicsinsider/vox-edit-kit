@@ -1,0 +1,1234 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8" /></head>
+<body>
+<template>
+  <style>
+    #root { position: absolute; inset: 0; overflow: hidden; background: var(--night); }
+    .i2-scene { position: absolute; inset: 0; overflow: hidden; visibility: hidden; opacity: 0; }
+    .i2-night { background: var(--night); }
+    .i2-abs { position: absolute; }
+    .i2-full { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; }
+    .i2-svg { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; pointer-events: none; }
+    .i2-w { display: inline-block; opacity: 0; white-space: pre; }
+    .i2-credit { position: absolute; right: 30px; bottom: 22px; font-size: 13px; letter-spacing: 0.08em; color: rgba(242,237,227,0.55); }
+    .i2-credit.ink { color: rgba(20,27,36,0.55); }
+    /* two paper layers (MANUAL 10.6.1): cream scan + a second scan on top at ~90 % */
+    .i2-pg { position: absolute; inset: 0; background: var(--paper); }
+    .i2-pg img { position: absolute; left: 0; top: 0; width: 100%; height: 100%; object-fit: cover; }
+    .i2-pg .p0 { opacity: 1; }
+    .i2-pg .p1 { mix-blend-mode: multiply; opacity: 0.6; }
+    .i2-pg .p2 { mix-blend-mode: multiply; opacity: 0.9; filter: saturate(0.2) contrast(0.42) brightness(1.2); }
+    .i2-pg .p2.soft { filter: saturate(0.25) contrast(0.6) brightness(1.08); opacity: 0.9; }
+    .i2-lab { color: var(--ink); font-size: 26px; }
+    .i2-box { display: inline-block; background: var(--navy); color: var(--bone); padding: 10px 18px 7px; }
+    .i2-boxink { display: inline-block; background: var(--ink); color: var(--paper); padding: 12px 22px 8px; }
+    .i2-circ { position: absolute; width: 260px; height: 260px; border-radius: 50%; overflow: hidden; border: 8px solid #9a958c; background: #d9d2c4; box-shadow: 0 16px 34px rgba(20,27,36,0.28); }
+    .i2-circ img.sil { position: absolute; left: -12px; bottom: -6px; width: 270px; }
+    .i2-dot { position: absolute; width: 54px; height: 54px; border-radius: 50%; background: #9a958c; box-shadow: inset 0 -3px 0 rgba(0,0,0,0.12); }
+    .i2-halred { color: var(--bone); filter: blur(0.45px);
+      text-shadow: 0 0 1px rgba(255,236,226,0.9), 0 0 7px rgba(224,63,44,0.6), 0 0 20px rgba(224,63,44,0.4), 0 0 46px rgba(224,63,44,0.22); }
+    #intro02-grain, #intro02-dust, #intro02-vig { z-index: 20; }
+    #intro02-tear { z-index: 30; }
+
+    /* ===== IS023 footnote ===== */
+    #intro02-sc023-page { position: absolute; left: 0; top: 0; width: 1920px; height: 2100px; }
+    #intro02-sc023-title { left: 0; width: 1920px; top: 80px; text-align: center; font-size: 72px; color: var(--ink); }
+    #intro02-sc023-yes { left: 1300px; top: 250px; font-size: 120px; color: var(--ink); border: 10px solid var(--ink); padding: 8px 26px 0; transform: rotate(-9deg); filter: url(#intro02-rough-st); box-shadow: 18px 28px 30px rgba(20,27,36,0.18); }
+    #intro02-sc023-ast { left: 1610px; top: 205px; font-size: 130px; color: var(--ink); }
+    #intro02-sc023-rule { position: absolute; left: 300px; top: 1440px; width: 1320px; height: 3px; background: var(--ink); transform-origin: 0 50%; }
+    #intro02-sc023-fn { left: 300px; top: 1468px; font-size: 92px; color: var(--ink); }
+    #intro02-sc023-hl { position: absolute; left: 600px; top: 1530px; width: 345px; height: 46px; background: var(--yellow); mix-blend-mode: multiply; transform-origin: 0 50%; filter: url(#intro02-rough-hl); opacity: 0.92; }
+
+    /* ===== IS024 D15 diagram ===== */
+    #intro02-sc024-cam { position: absolute; inset: 0; transform-origin: 960px 330px; }
+    .i2-cl { position: absolute; text-align: center; width: 520px; }
+
+    /* ===== IS025 spotlit silhouette ===== */
+    #intro02-sc025-map { position: absolute; left: -200px; top: -100px; width: 2560px; height: 1280px; opacity: 0.09; filter: blur(1px) contrast(1.2); }
+    #intro02-sc025-streaks { opacity: 0.22; }
+    #intro02-sc025-spot { position: absolute; inset: 0; background: radial-gradient(ellipse 30% 75% at 66% 8%, rgba(255,222,180,0.26), rgba(255,222,180,0.06) 55%, rgba(0,0,0,0) 75%); mix-blend-mode: screen; }
+    #intro02-sc025-floor { position: absolute; left: 860px; top: 900px; width: 860px; height: 220px; background: radial-gradient(ellipse 50% 40% at 50% 50%, rgba(255,222,180,0.16), rgba(0,0,0,0) 70%); }
+    #intro02-sc025-sil { position: absolute; left: 870px; top: 340px; width: 830px; filter: drop-shadow(0 -2px 2px rgba(242,237,227,0.45)) drop-shadow(0 0 26px rgba(242,237,227,0.10)); }
+    #intro02-sc025-t1 { left: 110px; top: 330px; font-size: 128px; line-height: 1; }
+    #intro02-sc025-t2 { left: 116px; top: 500px; font-size: 38px; }
+    #intro02-sc025-t3 { left: 116px; top: 566px; font-size: 38px; }
+
+    /* ===== IS026 isotype ===== */
+    #intro02-sc026-num { left: 140px; top: 210px; }
+    #intro02-sc026-num .k { display: inline-block; background: var(--yellow); color: var(--ink); font-size: 170px; padding: 18px 26px 0; line-height: 1; }
+    #intro02-sc026-ppl { left: 146px; top: 432px; font-size: 34px; color: var(--ink); }
+    #intro02-sc026-dep { left: 140px; top: 500px; font-size: 64px; color: var(--ink); }
+    #intro02-sc026-big { left: 140px; top: 820px; font-size: 76px; color: var(--ink); }
+    #intro02-sc026-grid { position: absolute; left: 1010px; top: 250px; width: 600px; height: 600px; transform-origin: 0 0; }
+    .i2-ico { position: absolute; width: 46px; height: 52px; opacity: 0; }
+    #intro02-sc026-lead { position: absolute; left: 1650px; top: 120px; width: 150px; height: 135px; border-radius: 50%; overflow: hidden; border: 5px solid #9a958c; background: #d9d2c4; }
+    #intro02-sc026-lead img { position: absolute; left: -6px; bottom: -4px; width: 160px; }
+    #intro02-sc026-key { left: 1100px; top: 900px; font-size: 24px; color: var(--ink); }
+    #intro02-sc026-bld { position: absolute; left: 1030px; top: 40px; width: 560px; height: 1040px; opacity: 0; }
+
+    /* ===== IS027 approval chain ===== */
+    #intro02-sc027-strip { position: absolute; left: 0; top: 0; width: 3400px; height: 1080px; }
+    #intro02-sc027-mk { position: absolute; left: 0; top: 0; width: 3400px; height: 1080px; overflow: visible; }
+    .i2-chainlab { position: absolute; text-align: center; width: 400px; }
+    #intro02-sc027-folder { position: absolute; left: 520px; top: 440px; width: 170px; height: 124px; background: #d9c39a; border: 3px solid #6b5a3c; border-radius: 4px 14px 4px 4px; box-shadow: 0 12px 20px rgba(20,27,36,0.25); }
+    #intro02-sc027-folder .t { position: absolute; left: 0; right: 0; top: 40px; text-align: center; font-size: 36px; color: var(--ink); }
+    #intro02-sc027-perm { left: 2200px; top: 470px; font-size: 92px; }
+    #intro02-sc027-comp { position: absolute; left: 2860px; top: 410px; width: 230px; height: 230px; }
+
+    /* ===== IS028 flight map ===== */
+    #intro02-sc028-tilt { position: absolute; inset: 0; perspective: 1700px; perspective-origin: 960px 400px; }
+    #intro02-sc028-plane { position: absolute; inset: 0; transform: rotateX(26deg) rotateZ(-7deg) scale(1.15); transform-origin: 960px 560px; }
+    #intro02-sc028-cam { position: absolute; left: 0; top: 0; width: 2850px; height: 720px; transform-origin: 0 0; }
+    #intro02-sc028-map { position: absolute; left: 0; top: 0; width: 2850px; height: 720px; filter: sepia(0.35) saturate(0.55) contrast(1.05) brightness(1.08); mix-blend-mode: multiply; }
+    #intro02-sc028-paperon { position: absolute; left: 0; top: 0; width: 2850px; height: 720px; background-size: cover; mix-blend-mode: multiply; opacity: 0.5; }
+    #intro02-sc028-svg { position: absolute; left: 0; top: 0; width: 2850px; height: 720px; overflow: visible; }
+    #intro02-sc028-tsao { left: 210px; top: 380px; font-size: 30px; }
+    #intro02-sc028-line { left: 110px; top: 880px; font-size: 76px; color: var(--ink); }
+    #intro02-sc028-tag { position: absolute; left: 96px; top: 860px; width: 760px; height: 120px; background: rgba(235,228,214,0.82); filter: url(#intro02-rough-st); }
+    #intro02-flash { position: absolute; inset: 0; background: #fff6e6; opacity: 0; z-index: 25; pointer-events: none; }
+
+    /* ===== IS029 NY poster ===== */
+    #intro02-sc029-cam { position: absolute; inset: 0; transform-origin: 50% 60%; }
+    #intro02-sc029-cam .plate .img, #intro02-sc029-cam .plate .fringe { object-position: 50% 68%; filter: saturate(0.5) brightness(0.62) contrast(1.08); }
+    #intro02-sc029-cam .plate .fringe { filter: saturate(0.5) brightness(0.62) contrast(1.08) blur(7px); }
+    #intro02-sc029-shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(15,19,24,0.75) 0%, rgba(15,19,24,0.1) 45%, rgba(15,19,24,0.5) 100%); }
+    #intro02-sc029-ny { left: 0; width: 1920px; top: 90px; text-align: center; font-size: 230px; }
+    #intro02-sc029-sil { position: absolute; left: 1180px; top: 380px; width: 760px; filter: drop-shadow(0 -2px 2px rgba(242,237,227,0.5)) drop-shadow(0 0 30px rgba(0,0,0,0.6)); }
+
+    /* ===== dinner table (IS030 / IS042) ===== */
+    .i2-table { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; }
+    .i2-table .top { position: absolute; left: 110px; top: 110px; width: 1700px; height: 860px; background: #e7dcc6; border-radius: 30px; box-shadow: 0 30px 70px rgba(20,27,36,0.30); overflow: hidden; }
+    .i2-table .top img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; mix-blend-mode: multiply; opacity: 0.7; }
+    .i2-table .cloth { position: absolute; left: 0; right: 0; top: 380px; height: 110px; background: repeating-linear-gradient(90deg, rgba(29,92,158,0.0) 0 18px, rgba(20,27,36,0.06) 18px 20px); border-top: 2px solid rgba(20,27,36,0.12); border-bottom: 2px solid rgba(20,27,36,0.12); }
+    .i2-table .itm { position: absolute; opacity: 0; }
+    .i2-table .menu { left: 820px; top: 140px; width: 280px; height: 200px; background: #f3ecdd; box-shadow: 0 10px 22px rgba(20,27,36,0.22); transform: rotate(3deg); padding: 22px 26px; }
+    .i2-table .menu .h { font-size: 30px; color: var(--ink); text-align: center; border-bottom: 2px solid var(--ink); padding-bottom: 8px; }
+    .i2-table .menu i { display: block; height: 7px; margin: 15px 10px 0; background: rgba(20,27,36,0.35); border-radius: 3px; }
+    .i2-table .place { left: 455px; top: 800px; width: 290px; height: 92px; background: var(--navy); box-shadow: 0 10px 20px rgba(20,27,36,0.25); text-align: center; }
+    .i2-table .place .t { font-size: 46px; color: var(--bone); line-height: 92px; }
+    .i2-table .folder { left: 840px; top: 470px; width: 240px; height: 176px; background: #d9c39a; border: 3px solid #6b5a3c; border-radius: 4px 16px 4px 4px; box-shadow: 0 14px 26px rgba(20,27,36,0.3); text-align: center; }
+    .i2-table .folder .t { font-size: 30px; color: var(--ink); margin-top: 68px; }
+    .i2-table .exec { left: 1560px; top: 400px; width: 250px; height: 250px; }
+    .i2-table svg { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; }
+
+    /* ===== IS030 ===== */
+    #intro02-sc030-cam { position: absolute; inset: 0; transform-origin: 50% 50%; }
+    #intro02-sc030-meet { left: 150px; top: 40px; font-size: 40px; color: var(--ink); }
+    #intro02-sc030-din { left: 150px; top: 6px; font-size: 92px; color: var(--ink); }
+    #intro02-sc030-ny { left: 1520px; top: 40px; font-size: 34px; color: var(--ink); }
+
+    /* ===== IS031 jet + clouds ===== */
+    #intro02-sc031-weave { position: absolute; inset: -16px; }
+    #intro02-sc031-vid { position: absolute; left: -40px; top: -60px; width: 2000px; height: 1500px; object-fit: cover; filter: saturate(0.65) contrast(1.08) brightness(0.92); }
+    #intro02-sc031-sky { position: absolute; inset: 0; opacity: 0; background: linear-gradient(180deg, #121a26 0%, #2b3445 45%, #8b6f63 78%, #d1a283 100%); }
+    #intro02-sc031-sea { position: absolute; left: -300px; top: 600px; width: 2520px; opacity: 0; filter: brightness(1.05) sepia(0.3); }
+    .i2-cloud { position: absolute; opacity: 0; }
+    #intro02-sc031-home { left: 110px; top: 900px; font-size: 40px; }
+    #intro02-sc031-top { left: 0; width: 1920px; top: 330px; text-align: center; font-size: 140px; }
+    #intro02-sc031-streaks { opacity: 0; }
+
+    /* ===== IS032 semicircle drain ===== */
+    #intro02-sc032-cam { position: absolute; inset: 0; transform-origin: 960px 600px; }
+    #intro02-sc032-lab { left: 0; width: 1920px; top: 170px; text-align: center; font-size: 40px; color: var(--ink); }
+    #intro02-sc032-any { left: 1250px; top: 700px; font-size: 76px; color: var(--ink-soft); }
+
+    /* ===== IS033 stonewall ===== */
+    #intro02-sc033-bg { position: absolute; inset: 0; background: radial-gradient(ellipse 60% 70% at 50% 40%, #1b2a3d, #0f1318 75%); }
+    #intro02-sc033-tsao { position: absolute; left: 640px; top: 170px; width: 690px; filter: url(#intro02-tint-blue); }
+    .i2-course { position: absolute; left: -20px; width: 1960px; height: 290px; overflow: hidden; box-shadow: 0 -18px 30px rgba(0,0,0,0.55); }
+    .i2-course img { position: absolute; left: 0; width: 1960px; height: 1306px; filter: brightness(0.62) contrast(1.15) sepia(0.15); }
+    #intro02-sc033-what { left: 110px; top: 90px; font-size: 76px; }
+    #intro02-sc033-stone { left: 0; width: 1920px; top: 700px; text-align: center; font-size: 170px; color: var(--bone); text-shadow: 0 6px 30px rgba(0,0,0,0.7); }
+
+    /* ===== IS034 telegram ===== */
+    #intro02-sc034-slide { position: absolute; inset: 0; }
+    #intro02-sc034-cam { position: absolute; inset: 0; transform-origin: 50% 55%; }
+    #intro02-sc034-card { position: absolute; left: 200px; top: 150px; width: 1520px; height: 780px; background: #efe3c6; transform: rotate(-1.2deg); box-shadow: 0 30px 60px rgba(20,27,36,0.32); overflow: hidden; }
+    #intro02-sc034-card .tex { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; mix-blend-mode: multiply; opacity: 0.75; }
+    #intro02-sc034-head { position: absolute; left: 0; right: 0; top: 46px; text-align: center; font-size: 118px; color: var(--navy); letter-spacing: 0.16em; }
+    #intro02-sc034-rule { position: absolute; left: 70px; right: 70px; top: 190px; height: 9px; border-top: 3px solid var(--navy); border-bottom: 2px solid var(--navy); }
+    .i2-fld { position: absolute; top: 222px; height: 92px; border: 2px solid rgba(29,92,158,0.7); }
+    .i2-fld span { position: absolute; left: 12px; top: 8px; font-size: 22px; color: var(--navy); }
+    .i2-tline { position: absolute; left: 90px; right: 90px; height: 2px; background: rgba(29,92,158,0.45); }
+    .i2-ty { position: absolute; left: 110px; font-size: 64px; color: var(--ink); letter-spacing: 0.14em; }
+    #intro02-sc034-foot { position: absolute; left: 0; right: 0; bottom: 30px; height: 2px; background: rgba(29,92,158,0.6); }
+
+    /* ===== IS035 Taiwan 1984 ===== */
+    #intro02-sc035-cam { position: absolute; inset: 0; transform-origin: 700px 540px; }
+    #intro02-sc035-map { position: absolute; left: 280px; top: -10px; width: 902px; height: 1106px; }
+    #intro02-sc035-map img.base { position: absolute; inset: 0; width: 100%; height: 100%; filter: brightness(0.85) contrast(1.05); }
+    #intro02-sc035-svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; filter: drop-shadow(0 0 6px rgba(159,199,178,0.75)); }
+    #intro02-sc035-ht { position: absolute; inset: 0; background-size: 420px auto; mix-blend-mode: multiply; opacity: 0;
+      -webkit-mask-image: url('assets/intro/maps/taiwan_mask.png'); mask-image: url('assets/intro/maps/taiwan_mask.png'); -webkit-mask-size: 100% 100%; mask-size: 100% 100%; mask-mode: luminance; }
+    #intro02-sc035-tw { left: 1040px; top: 300px; font-size: 44px; }
+    #intro02-sc035-yr { left: 1150px; top: 400px; font-size: 300px; }
+    #intro02-sc035-board { left: 1210px; top: 760px; font-size: 40px; }
+
+    /* ===== idea card (IS036 / IS040) ===== */
+    .i2-card { position: absolute; width: 780px; height: 500px; background: #efe6d2; box-shadow: 0 26px 50px rgba(20,27,36,0.32); overflow: hidden; }
+    .i2-card .bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; mix-blend-mode: multiply; opacity: 0.85; filter: saturate(0.25) contrast(0.55) brightness(1.15); }
+    .i2-card svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+    .i2-card .stamp { position: absolute; right: 34px; top: 26px; font-size: 54px; color: var(--navy); border: 5px solid var(--navy); padding: 6px 14px 0; transform: rotate(6deg); opacity: 0.85; mix-blend-mode: multiply; }
+    #intro02-sc036-card { left: 570px; top: 250px; transform-origin: 50% 0%; }
+    #intro02-sc036-pin { position: absolute; left: 930px; top: 210px; width: 60px; }
+    #intro02-sc036-tsao { left: 140px; top: 120px; font-size: 56px; }
+    #intro02-sc036-drop { left: 140px; top: 860px; font-size: 92px; color: var(--ink); }
+
+    /* ===== IS037 groundbreaking ===== */
+    #intro02-sc037-weave { position: absolute; inset: -18px; }
+    #intro02-sc037-cam { position: absolute; inset: 0; transform-origin: 46% 64%; }
+    #intro02-sc037-cam .plate .img, #intro02-sc037-cam .plate .fringe { object-position: 50% 58%; filter: sepia(0.35) contrast(1.12) brightness(0.8); }
+    #intro02-sc037-cam .plate .fringe { filter: sepia(0.35) contrast(1.12) brightness(0.8) blur(7px); }
+    #intro02-sc037-scr { position: absolute; inset: 0; background-size: cover; mix-blend-mode: screen; opacity: 0.3; }
+    #intro02-sc037-shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(15,19,24,0.7) 0%, rgba(15,19,24,0) 28%, rgba(15,19,24,0) 55%, rgba(15,19,24,0.85) 100%); }
+    #intro02-sc037-k { left: 110px; top: 90px; font-size: 44px; }
+    #intro02-sc037-c { left: 110px; top: 760px; font-size: 84px; }
+    #intro02-sc037-b { left: 110px; top: 870px; font-size: 120px; }
+
+    /* ===== IS038 street map ===== */
+    #intro02-sc038-tilt { position: absolute; inset: 0; perspective: 1800px; perspective-origin: 960px 300px; }
+    #intro02-sc038-plane { position: absolute; inset: 0; transform: rotateX(24deg) rotateZ(-5deg) scale(1.2); transform-origin: 960px 560px; }
+    #intro02-sc038-cam { position: absolute; left: 0; top: 0; width: 2400px; height: 1350px; transform-origin: 0 0; }
+    #intro02-sc038-map { position: absolute; left: 0; top: 0; width: 2400px; height: 1350px; filter: sepia(0.25) saturate(0.6) contrast(1.06); }
+    #intro02-sc038-svg { position: absolute; left: 0; top: 0; width: 2400px; height: 1350px; overflow: visible; }
+    #intro02-sc038-tag { position: absolute; left: 96px; top: 70px; width: 780px; height: 128px; background: rgba(235,228,214,0.9); filter: url(#intro02-rough-st); box-shadow: 0 10px 24px rgba(20,27,36,0.18); }
+    #intro02-sc038-t { left: 130px; top: 80px; font-size: 80px; color: var(--ink); }
+    #intro02-sc038-dark { position: absolute; inset: 0; background: var(--night); opacity: 0; }
+
+    /* ===== IS039 Sankey ===== */
+    #intro02-sc039-map { position: absolute; left: -320px; top: -100px; width: 2560px; height: 1280px; opacity: 0.06; filter: contrast(1.3); }
+    #intro02-sc039-svg { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; }
+    #intro02-sc039-q { left: 760px; top: 420px; width: 300px; text-align: center; font-size: 200px; color: var(--bone); }
+    #intro02-sc039-any { left: 110px; top: 50px; font-size: 40px; }
+    #intro02-sc039-never { left: 1270px; top: 300px; font-size: 96px; }
+    #intro02-sc039-prod { left: 1290px; top: 520px; width: 400px; text-align: center; font-size: 40px; }
+    #intro02-sc039-own { left: 1270px; top: 700px; font-size: 76px; }
+
+    /* ===== IS040 overlay ===== */
+    #intro02-sc040-cam { position: absolute; inset: 0; transform-origin: 40% 50%; }
+    #intro02-sc040-doc { left: 200px; top: 250px; }
+    #intro02-sc040-card { left: 214px; top: 262px; opacity: 0.9; }
+    #intro02-sc040-card .bg { opacity: 0.35; }
+    #intro02-sc040-tp { left: 1110px; top: 190px; font-size: 60px; }
+    #intro02-sc040-bfb { left: 1110px; top: 760px; font-size: 128px; color: var(--ink); }
+    .i2-hlbar { position: absolute; height: 34px; background: var(--yellow); mix-blend-mode: multiply; transform-origin: 0 50%; filter: url(#intro02-rough-hl); opacity: 0.9; }
+
+    /* ===== IS041 face cam ===== */
+    .i2-fc { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; object-fit: cover; }
+    #intro02-sc041-plate { position: absolute; left: 70px; top: 130px; width: 700px; height: 330px; background: linear-gradient(135deg, rgba(232,238,240,0.82), rgba(205,214,220,0.74)); border: 3px solid rgba(20,27,36,0.55); border-radius: 6px; box-shadow: 0 20px 40px rgba(0,0,0,0.35); }
+    #intro02-sc041-plate .sil { position: absolute; left: 30px; top: 40px; width: 200px; height: 200px; border-radius: 50%; overflow: hidden; border: 5px solid #9a958c; background: #c9c3b8; }
+    #intro02-sc041-plate .sil img { position: absolute; left: -10px; bottom: -4px; width: 210px; }
+    #intro02-sc041-plate .nm { position: absolute; left: 270px; top: 60px; width: 390px; height: 70px; border-bottom: 4px solid rgba(20,27,36,0.6); }
+    #intro02-sc041-plate .q { position: absolute; left: 290px; top: 38px; font-size: 80px; color: rgba(20,27,36,0.55); }
+    #intro02-sc041-f { left: 270px; top: 168px; font-size: 52px; color: var(--ink); }
+    #intro02-sc041-c { left: 270px; top: 236px; font-size: 52px; color: var(--ink); }
+
+    /* ===== IS042 callback ===== */
+    #intro02-sc042-world { position: absolute; left: 0; top: 0; width: 4000px; height: 1080px; transform-origin: 0 0; }
+    #intro02-sc042-site { position: absolute; left: 200px; top: 330px; width: 520px; height: 420px; overflow: hidden; border: 6px solid #f3ecdd; box-shadow: 0 20px 40px rgba(20,27,36,0.3); transform: rotate(-3deg); }
+    #intro02-sc042-site img { position: absolute; left: -760px; top: -540px; width: 2400px; filter: sepia(0.25) saturate(0.6); }
+    #intro02-sc042-site svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+    #intro02-sc042-mk { position: absolute; left: 0; top: 0; width: 4000px; height: 1080px; overflow: visible; }
+    #intro02-sc042-same { left: 1000px; top: 650px; font-size: 76px; color: var(--ink); }
+    #intro02-sc042-tbl { position: absolute; left: 1900px; top: 0; width: 1920px; height: 1080px; }
+    #intro02-sc042-ny { left: 2050px; top: 26px; font-size: 44px; color: var(--ink); }
+
+    /* ===== IS043 reveal ===== */
+    #intro02-sc043-cam { position: absolute; inset: 0; transform-origin: 1180px 330px; }
+    #intro02-sc043-plate { position: absolute; left: 640px; top: 0; width: 1200px; height: 1080px; }
+    #intro02-sc043-photo { position: absolute; inset: 0; width: 100%; height: 100%; filter: url(#intro02-tint-red); }
+    #intro02-sc043-red { position: absolute; inset: 0; background: #e03f2c; mix-blend-mode: color; opacity: 0.38; }
+    #intro02-sc043-ht { position: absolute; inset: 0; background-size: 380px auto; mix-blend-mode: overlay; opacity: 0.45; }
+    #intro02-sc043-svg { position: absolute; inset: 0; width: 1200px; height: 1080px; overflow: visible; }
+    #intro02-sc043-scrim { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(15,19,24,0.96) 0%, rgba(15,19,24,0.85) 34%, rgba(15,19,24,0.1) 58%, rgba(15,19,24,0) 70%), linear-gradient(0deg, rgba(15,19,24,0.6), rgba(15,19,24,0) 30%); }
+    #intro02-sc043-name { left: 110px; top: 300px; font-size: 210px; line-height: 0.95; }
+    #intro02-sc043-logo { position: absolute; left: 120px; top: 760px; width: 560px; height: 141px; background: #e03f2c; opacity: 0;
+      -webkit-mask-image: url('assets/intro/logos/TSMC_wordmark.svg'); mask-image: url('assets/intro/logos/TSMC_wordmark.svg'); -webkit-mask-size: contain; mask-size: contain; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; filter: drop-shadow(0 0 14px rgba(224,63,44,0.45)); }
+
+    /* torn-paper wipe into intro03 (seed 4344) */
+    #intro02-tear { position: absolute; left: 0; top: -40px; width: 2200px; height: 1160px; transform: translateX(2000px); filter: drop-shadow(-14px 0 18px rgba(0,0,0,0.55)); }
+    #intro02-tear .fib, #intro02-tear .pap { position: absolute; inset: 0; }
+    #intro02-tear .fib { background: #f6f1e6; }
+    #intro02-tear .pap { background: var(--paper); }
+    #intro02-tear .pap img.torn { mix-blend-mode: screen; opacity: 0.32; }
+    #intro02-tear .pap img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; mix-blend-mode: multiply; opacity: 0.6; }
+  </style>
+  <div id="root" data-composition-id="intro02" data-vo-start="92.13" data-duration="92.88" data-width="1920" data-height="1080">
+    <svg id="intro02-defs" width="0" height="0" style="position:absolute"></svg>
+
+    <!-- IS023 · 92.13–94.61 · footnote "* one condition" (paper) -->
+    <div class="i2-scene" id="intro02-sc023" data-scene="IS023">
+      <div class="i2-pg"><img class="p0" src="assets/textures/paper_lined_01.jpg" alt="" /><img class="p2 soft" src="assets/textures/paper_cream_01.jpg" alt="" /></div>
+      <div id="intro02-sc023-page">
+        <div id="intro02-sc023-title" class="i2-abs t-serif">the board was pretty <i style="color:var(--navy)">excited</i></div>
+        <div id="intro02-sc023-dots"></div>
+        <div id="intro02-sc023-yes" class="i2-abs t-display">YES</div>
+        <div id="intro02-sc023-ast" class="i2-abs t-display">*</div>
+        <div id="intro02-sc023-rule"></div>
+        <div id="intro02-sc023-hl"></div>
+        <div id="intro02-sc023-fn" class="i2-abs t-serif-i"><span id="intro02-sc023-w1" class="i2-w">* one </span><span id="intro02-sc023-w2" class="i2-w">condition</span></div>
+      </div>
+      <div class="folds"></div>
+    </div>
+
+    <!-- IS024 · 94.61–99.57 · D15 relationship diagram (grid paper) -->
+    <div class="i2-scene" id="intro02-sc024" data-scene="IS024">
+      <div class="i2-pg"><img class="p1" src="assets/textures/paper_cream_02.jpg" alt="" /><img class="p2" src="assets/intro/papers/ke1960_cover_grid_blue.jpg" alt="" /></div>
+      <div id="intro02-sc024-cam">
+        <div class="i2-circ" id="intro02-sc024-c1" style="left:390px;top:570px;border-color:var(--navy);background:#e4dccb"></div>
+        <div class="i2-circ" id="intro02-sc024-c2" style="left:830px;top:200px"><img class="sil" src="assets/intro/cutouts/silhouette_exec.png" alt="" /></div>
+        <div class="i2-circ" id="intro02-sc024-c3" style="left:1270px;top:570px;border-color:#b9b1a2;background:#e9e2d2"><img src="assets/maps/us_beige_3840.png" alt="" style="position:absolute;left:-150px;top:-10px;width:560px;filter:grayscale(1) contrast(1.1)" /></div>
+        <svg id="intro02-sc024-mk" class="i2-svg"></svg>
+        <div class="i2-cl t-label i2-lab" style="left:260px;top:860px"><span id="intro02-sc024-w1" class="i2-w">board </span><span id="intro02-sc024-w2" class="i2-w">members</span></div>
+        <div id="intro02-sc024-adv" class="i2-abs t-serif-i" style="left:470px;top:330px;font-size:64px;color:var(--ink)">advice</div>
+        <div class="i2-cl t-label i2-lab" style="left:700px;top:490px"><span id="intro02-sc024-w3" class="i2-w">chip </span><span id="intro02-sc024-w4" class="i2-w">executive</span></div>
+        <div class="i2-cl t-label i2-lab" style="left:1140px;top:860px"><span id="intro02-sc024-w5" class="i2-w">United </span><span id="intro02-sc024-w6" class="i2-w">States</span></div>
+      </div>
+      <div class="folds"></div>
+    </div>
+
+    <!-- IS025 · 99.57–103.97 · spotlit silhouette (night) -->
+    <div class="i2-scene i2-night" id="intro02-sc025" data-scene="IS025">
+      <img id="intro02-sc025-map" src="assets/intro/maps/world_basemap_desat_2560.jpg" alt="" />
+      <canvas id="intro02-sc025-streaks" class="streaks"></canvas>
+      <div id="intro02-sc025-spot"></div>
+      <div id="intro02-sc025-floor"></div>
+      <img id="intro02-sc025-sil" src="assets/intro/cutouts/silhouette_exec_night.png" alt="" />
+      <div id="intro02-sc025-t1" class="i2-abs t-serif-i halate"><span id="intro02-sc025-w1" class="i2-w">most </span><span id="intro02-sc025-w2" class="i2-w">respected</span></div>
+      <div id="intro02-sc025-t2" class="i2-abs t-label clean"><span id="intro02-sc025-w3" class="i2-w">Chinese-</span><span id="intro02-sc025-w4" class="i2-w">American</span></div>
+      <div id="intro02-sc025-t3" class="i2-abs t-label clean"><span id="intro02-sc025-w5" class="i2-w">chip </span><span id="intro02-sc025-w6" class="i2-w">business</span></div>
+    </div>
+
+    <!-- IS026 · 103.97–110.45 · D03 isotype (grid paper) -->
+    <div class="i2-scene" id="intro02-sc026" data-scene="IS026">
+      <div class="i2-pg"><img class="p1" src="assets/textures/paper_cream_01.jpg" alt="" /><img class="p2" src="assets/intro/papers/ke1960_10x10_grid_black.jpg" alt="" /></div>
+      <svg id="intro02-sc026-bld" viewBox="0 0 560 1040"></svg>
+      <div id="intro02-sc026-grid"></div>
+      <div id="intro02-sc026-lead"><img src="assets/intro/cutouts/silhouette_exec.png" alt="" /></div>
+      <div id="intro02-sc026-num" class="i2-abs t-display"><span class="k" id="intro02-sc026-n">0</span></div>
+      <div id="intro02-sc026-ppl" class="i2-abs t-label">people</div>
+      <div id="intro02-sc026-dep" class="i2-abs t-serif-i"><span id="intro02-sc026-w1" class="i2-w">global </span><span id="intro02-sc026-w2" class="i2-w">chip </span><span id="intro02-sc026-w3" class="i2-w">department</span></div>
+      <div id="intro02-sc026-big" class="i2-abs t-serif-i"><span id="intro02-sc026-w4" class="i2-w">biggest </span><span id="intro02-sc026-w5" class="i2-w">companies</span></div>
+      <div class="folds"></div>
+    </div>
+
+    <!-- IS027 · 110.45–120.26 · approval chain (paper) -->
+    <div class="i2-scene" id="intro02-sc027" data-scene="IS027">
+      <div class="i2-pg"><img class="p0" src="assets/textures/paper_lined_01.jpg" alt="" style="transform:rotate(90deg) scale(1.78)" /><img class="p2 soft" src="assets/textures/paper_cream_02.jpg" alt="" /></div>
+      <div id="intro02-sc027-strip">
+        <svg id="intro02-sc027-mk"></svg>
+        <div class="i2-circ" id="intro02-sc027-c1" style="left:230px;top:390px;border-color:var(--navy);background:#e9e2d2"><img src="assets/intro/cutouts/tsao_cutout.png" alt="" style="position:absolute;left:10px;top:-8px;width:240px;filter:url(#intro02-tint-blue-l)" /></div>
+        <div class="i2-circ" id="intro02-sc027-c2" style="left:870px;top:390px"><img class="sil" src="assets/intro/cutouts/silhouette_exec.png" alt="" /></div>
+        <div class="i2-circ" id="intro02-sc027-c3" style="left:1510px;top:390px;background:#e4dccb"></div>
+        <div id="intro02-sc027-folder"><div class="t t-serif-i" id="intro02-sc027-plan">plan</div></div>
+        <div class="i2-chainlab" style="left:160px;top:690px"><span id="intro02-sc027-tsao" class="i2-w i2-box t-label" style="font-size:34px">Tsao</span></div>
+        <div class="i2-chainlab t-serif-i" style="left:800px;top:676px;font-size:64px;color:var(--ink)"><span id="intro02-sc027-adv" class="i2-w">advisor</span></div>
+        <div class="i2-abs t-serif-i" id="intro02-sc027-appr" style="left:1150px;top:300px;font-size:60px;color:var(--ink);opacity:0">approves</div>
+        <div class="i2-chainlab t-label" style="left:1440px;top:690px;font-size:34px;color:var(--ink)"><span id="intro02-sc027-brd" class="i2-w">board</span></div>
+        <div id="intro02-sc027-perm" class="i2-abs i2-boxink t-display" style="opacity:0">permission</div>
+        <svg id="intro02-sc027-comp" viewBox="0 0 230 230"></svg>
+      </div>
+      <div class="folds"></div>
+      <div class="i2-credit ink t-label">Photo: Office of the President (ROC), attribution</div>
+    </div>
+
+    <!-- IS028 · 120.26–123.30 · D10 tilted Pacific map, flight to New York (paper) -->
+    <div class="i2-scene" id="intro02-sc028" data-scene="IS028">
+      <div class="i2-pg"><img class="p1" src="assets/textures/paper_cream_01.jpg" alt="" /><img class="p2 soft" src="assets/textures/paper_fiber_01.jpg" alt="" /></div>
+      <div id="intro02-sc028-tilt"><div id="intro02-sc028-plane"><div id="intro02-sc028-cam">
+        <img id="intro02-sc028-map" src="assets/intro/maps/pacific_relief_grey_2850.jpg" alt="" />
+        <div id="intro02-sc028-paperon" style="background-image:url('assets/textures/paper_cream_02.jpg')"></div>
+        <svg id="intro02-sc028-svg" viewBox="0 0 2850 720"></svg>
+        <div id="intro02-sc028-tsao" class="i2-abs i2-box t-label" style="opacity:0">Tsao</div>
+      </div></div></div>
+      <div id="intro02-sc028-tag"></div>
+      <div id="intro02-sc028-line" class="i2-abs t-serif-i"><span id="intro02-sc028-w0" class="i2-w">the </span><span id="intro02-sc028-w1" class="i2-w">very </span><span id="intro02-sc028-w2" class="i2-w">next </span><span id="intro02-sc028-w3" class="i2-w">flight</span></div>
+      <div class="folds"></div>
+    </div>
+
+    <!-- IS029 · 123.30–125.30 · New York poster (night) -->
+    <div class="i2-scene i2-night" id="intro02-sc029" data-scene="IS029">
+      <div id="intro02-sc029-cam"><div class="plate"><img class="img" src="assets/intro/paintings/twa_new_york_1958_klein.jpg" alt="" /><img class="fringe" src="assets/intro/paintings/twa_new_york_1958_klein.jpg" alt="" /></div></div>
+      <div id="intro02-sc029-shade"></div>
+      <img id="intro02-sc029-sil" src="assets/intro/cutouts/silhouette_exec_night.png" alt="" />
+      <div id="intro02-sc029-ny" class="i2-abs t-display halate"><span id="intro02-sc029-w1" class="i2-w">NEW </span><span id="intro02-sc029-w2" class="i2-w">YORK</span></div>
+      <div class="i2-credit t-label">Poster: David Klein, 1958 (public domain)</div>
+    </div>
+
+    <!-- IS030 · 125.30–131.70 · dinner table collage (paper) -->
+    <div class="i2-scene" id="intro02-sc030" data-scene="IS030">
+      <div class="i2-pg"><img class="p1" src="assets/textures/paper_cream_02.jpg" alt="" /><img class="p2 soft" src="assets/textures/paper_fiber_01.jpg" alt="" /></div>
+      <div id="intro02-sc030-cam"><div class="i2-table" id="intro02-sc030-tbl"></div></div>
+      <div id="intro02-sc030-meet" class="i2-abs t-label" style="opacity:0">meeting</div>
+      <div id="intro02-sc030-din" class="i2-abs t-serif-i" style="opacity:0">dinner</div>
+      <div class="folds"></div>
+    </div>
+
+    <!-- IS031 · 131.70–134.98 · jet climbs → above the clouds (night) -->
+    <div class="i2-scene i2-night" id="intro02-sc031" data-scene="IS031">
+      <div id="intro02-sc031-weave">
+        <video id="intro02-sc031-vid" src="assets/intro/footage/jet_707_takeoff_hongkong.mp4" muted playsinline data-start="39.57" data-duration="2.6" data-media-start="4.2"
+          data-color-grading='{"effects":{"chromaticAberration":0.12,"chromaticAngle":0}}'></video>
+      </div>
+      <div id="intro02-sc031-sky"></div>
+      <canvas id="intro02-sc031-streaks" class="streaks"></canvas>
+      <img id="intro02-sc031-sea" src="assets/maps/clouds/cloud_06_puffy.png" alt="" />
+      <img class="i2-cloud" id="intro02-sc031-c1" src="assets/maps/clouds/cloud_05_puffy.png" alt="" style="left:-500px;width:2400px" />
+      <img class="i2-cloud" id="intro02-sc031-c2" src="assets/maps/clouds/cloud_07_puffy.png" alt="" style="left:900px;width:1500px" />
+      <div id="intro02-sc031-home" class="i2-abs t-label clean" style="opacity:0">home</div>
+      <div id="intro02-sc031-top" class="i2-abs t-serif-i halate"><span id="intro02-sc031-w1" class="i2-w">on </span><span id="intro02-sc031-w2" class="i2-w">top </span><span id="intro02-sc031-w3" class="i2-w">of </span><span id="intro02-sc031-w4" class="i2-w">the </span><span id="intro02-sc031-w5" class="i2-w">world</span></div>
+    </div>
+
+    <!-- IS032 · 134.98–140.74 · D06 semicircle drains (paper) -->
+    <div class="i2-scene" id="intro02-sc032" data-scene="IS032">
+      <div class="i2-pg"><img class="p1" src="assets/textures/paper_cream_01.jpg" alt="" /><img class="p2 soft" src="assets/textures/paper_fiber_01.jpg" alt="" /></div>
+      <div id="intro02-sc032-cam"><div id="intro02-sc032-dots"></div></div>
+      <div id="intro02-sc032-lab" class="i2-abs t-label" style="opacity:0">the board</div>
+      <div id="intro02-sc032-any" class="i2-abs t-serif-i" style="opacity:0">anymore</div>
+      <div class="folds"></div>
+    </div>
+
+    <!-- IS033 · 140.74–144.82 · stonewalled (night) -->
+    <div class="i2-scene i2-night" id="intro02-sc033" data-scene="IS033">
+      <div id="intro02-sc033-bg"></div>
+      <img id="intro02-sc033-tsao" src="assets/intro/cutouts/tsao_rally_figure.png" alt="" />
+      <div id="intro02-sc033-what" class="i2-abs t-serif-i clean"><span id="intro02-sc033-w1" class="i2-w">what </span><span id="intro02-sc033-w2" class="i2-w">had </span><span id="intro02-sc033-w3" class="i2-w">happened</span></div>
+      <div class="i2-course" id="intro02-sc033-k1" style="top:810px"><img src="assets/intro/photos/stone_wall_texture_cc0.jpg" alt="" style="top:-1000px" /></div>
+      <div class="i2-course" id="intro02-sc033-k2" style="top:540px"><img src="assets/intro/photos/stone_wall_texture_cc0.jpg" alt="" style="top:-700px" /></div>
+      <div class="i2-course" id="intro02-sc033-k3" style="top:270px"><img src="assets/intro/photos/stone_wall_texture_cc0.jpg" alt="" style="top:-400px" /></div>
+      <div class="i2-course" id="intro02-sc033-k4" style="top:-10px"><img src="assets/intro/photos/stone_wall_texture_cc0.jpg" alt="" style="top:-80px" /></div>
+      <div id="intro02-sc033-stone" class="i2-abs t-display" style="opacity:0"><span id="intro02-sc033-sw" style="display:inline-block;filter:url(#intro02-choke33)">STONEWALLED</span></div>
+    </div>
+
+    <!-- IS034 · 144.82–149.38 · D08 telegram, typeset (paper) -->
+    <div class="i2-scene" id="intro02-sc034" data-scene="IS034">
+      <div id="intro02-sc034-slide">
+        <div class="i2-pg"><img class="p1" src="assets/textures/paper_cream_02.jpg" alt="" /><img class="p2 soft" src="assets/textures/paper_fiber_01.jpg" alt="" /></div>
+        <div id="intro02-sc034-cam">
+          <div id="intro02-sc034-card">
+            <img class="tex" src="assets/textures/paper_cream_01.jpg" alt="" />
+            <div id="intro02-sc034-head" class="t-display">TELEGRAM</div>
+            <div id="intro02-sc034-rule"></div>
+            <div class="i2-fld" style="left:70px;width:330px"><span class="t-label">class</span></div>
+            <div class="i2-fld" style="left:400px;width:520px"><span class="t-label">from</span></div>
+            <div class="i2-fld" style="left:920px;width:530px"><span class="t-label">date · time</span></div>
+            <div class="i2-tline" style="top:450px"></div><div class="i2-tline" style="top:560px"></div><div class="i2-tline" style="top:670px"></div>
+            <div class="i2-ty t-label" style="top:376px" id="intro02-sc034-l1"></div>
+            <div class="i2-ty t-label" style="top:486px" id="intro02-sc034-l2"></div>
+            <div class="i2-ty t-label" style="top:596px" id="intro02-sc034-l3"></div>
+            <div id="intro02-sc034-foot"></div>
+          </div>
+        </div>
+        <div class="folds"></div>
+      </div>
+    </div>
+
+    <!-- IS035 · 149.38–154.42 · Taiwan 1984 relief + burn (night) -->
+    <div class="i2-scene i2-night" id="intro02-sc035" data-scene="IS035">
+      <div id="intro02-sc035-cam">
+        <div id="intro02-sc035-map">
+          <img class="base" src="assets/intro/maps/taiwan_relief_grey.jpg" alt="" />
+          <svg id="intro02-sc035-svg" viewBox="0 0 2480 3040"></svg>
+          <div id="intro02-sc035-ht" style="background-image:url('assets/textures/halftone_01.png')"></div>
+        </div>
+        <div id="intro02-sc035-dots"></div>
+      </div>
+      <div id="intro02-sc035-tw" class="i2-abs t-label clean" style="opacity:0">Taiwan</div>
+      <div id="intro02-sc035-yr" class="i2-abs t-display halate" style="opacity:0">1984</div>
+      <div id="intro02-sc035-board" class="i2-abs t-label clean" style="opacity:0">board</div>
+    </div>
+
+    <!-- IS036 · 154.42–157.22 · the idea card is dropped (grid) -->
+    <div class="i2-scene" id="intro02-sc036" data-scene="IS036">
+      <div class="i2-pg"><img class="p1" src="assets/textures/paper_cream_01.jpg" alt="" /><img class="p2" src="assets/intro/papers/ke1960_cross_section_green.jpg" alt="" /></div>
+      <div class="i2-card" id="intro02-sc036-card"></div>
+      <img id="intro02-sc036-pin" src="assets/icons/pin_navy_top.svg" alt="" />
+      <div id="intro02-sc036-tsao" class="i2-abs i2-box t-label" style="opacity:0">Tsao</div>
+      <div id="intro02-sc036-drop" class="i2-abs t-serif-i"><span id="intro02-sc036-w1" class="i2-w">dropping </span><span id="intro02-sc036-w2" class="i2-w">the </span><span id="intro02-sc036-w3" class="i2-w">idea</span></div>
+      <div class="folds"></div>
+    </div>
+
+    <!-- IS037 · 157.22–160.74 · groundbreaking (night, archival) -->
+    <div class="i2-scene i2-night" id="intro02-sc037" data-scene="IS037">
+      <div id="intro02-sc037-weave"><div id="intro02-sc037-cam"><div class="plate"><img class="img" src="assets/intro/photos/naca_groundbreaking_1950s_cc0.jpg" alt="" /><img class="fringe" src="assets/intro/photos/naca_groundbreaking_1950s_cc0.jpg" alt="" /></div></div>
+        <div id="intro02-sc037-scr" style="background-image:url('assets/textures/scratches_01.jpg')"></div></div>
+      <div id="intro02-sc037-shade"></div>
+      <div id="intro02-sc037-k" class="i2-abs t-label clean"><span id="intro02-sc037-w1" class="i2-w">two </span><span id="intro02-sc037-w2" class="i2-w">years </span><span id="intro02-sc037-w3" class="i2-w">later</span></div>
+      <div id="intro02-sc037-c" class="i2-abs t-serif-i clean"><span id="intro02-sc037-w4" class="i2-w">a </span><span id="intro02-sc037-w5" class="i2-w">new </span><span id="intro02-sc037-w6" class="i2-w">chip </span><span id="intro02-sc037-w7" class="i2-w">company</span></div>
+      <div id="intro02-sc037-b" class="i2-abs t-display clean"><span id="intro02-sc037-w8" class="i2-w">breaks </span><span id="intro02-sc037-w9" class="i2-w">ground</span></div>
+      <div class="i2-credit t-label">Photo: NACA / NASA (CC0)</div>
+    </div>
+
+    <!-- IS038 · 160.74–162.74 · D09 old city map: across the street from UMC (paper) -->
+    <div class="i2-scene" id="intro02-sc038" data-scene="IS038">
+      <div class="i2-pg"><img class="p0" src="assets/textures/paper_blueprint_01.jpg" alt="" style="filter:saturate(0.55) brightness(0.95)" /></div>
+      <div id="intro02-sc038-tilt"><div id="intro02-sc038-plane"><div id="intro02-sc038-cam">
+        <img id="intro02-sc038-map" src="assets/intro/maps/hsinchu_1945_town_crop.jpg" alt="" />
+        <svg id="intro02-sc038-svg" viewBox="0 0 2400 1350"></svg>
+      </div></div></div>
+      <div id="intro02-sc038-tag"></div>
+      <div id="intro02-sc038-t" class="i2-abs t-serif-i"><span id="intro02-sc038-w1" class="i2-w">across </span><span id="intro02-sc038-w2" class="i2-w">the </span><span id="intro02-sc038-w3" class="i2-w">street</span></div>
+      <div class="folds"></div>
+      <div id="intro02-sc038-dark"></div>
+    </div>
+
+    <!-- IS039 · 162.74–168.18 · D11 dark Sankey (night) -->
+    <div class="i2-scene i2-night" id="intro02-sc039" data-scene="IS039">
+      <img id="intro02-sc039-map" src="assets/intro/maps/world_basemap_desat_2560.jpg" alt="" />
+      <svg id="intro02-sc039-svg" viewBox="0 0 1920 1080"></svg>
+      <div id="intro02-sc039-q" class="i2-abs t-display" style="opacity:0">?</div>
+      <div id="intro02-sc039-any" class="i2-abs t-label clean" style="opacity:0">anyone</div>
+      <div id="intro02-sc039-never" class="i2-abs t-serif-i clean" style="opacity:0">never</div>
+      <div id="intro02-sc039-prod" class="i2-abs t-label clean" style="opacity:0">product</div>
+      <div id="intro02-sc039-own" class="i2-abs t-serif-i clean"><span id="intro02-sc039-w1" class="i2-w">of </span><span id="intro02-sc039-w2" class="i2-w">its </span><span id="intro02-sc039-w3" class="i2-w">own</span></div>
+    </div>
+
+    <!-- IS040 · 168.18–170.98 · Tsao's plan, bar for bar (grid) -->
+    <div class="i2-scene" id="intro02-sc040" data-scene="IS040">
+      <div class="i2-pg"><img class="p1" src="assets/textures/paper_cream_02.jpg" alt="" /><img class="p2" src="assets/intro/papers/ke1960_cross_section_green.jpg" alt="" /></div>
+      <div id="intro02-sc040-cam">
+        <div class="i2-card" id="intro02-sc040-doc" style="background:#f2ede2"></div>
+        <div class="i2-card" id="intro02-sc040-card"></div>
+        <div id="intro02-sc040-hls"></div>
+      </div>
+      <div id="intro02-sc040-tp" class="i2-abs t-label"><span id="intro02-sc040-w1" class="i2-w i2-box">Tsao's </span><span id="intro02-sc040-w2" class="i2-w i2-box">plan</span></div>
+      <div id="intro02-sc040-bfb" class="i2-abs t-serif-i"><span id="intro02-sc040-w3" class="i2-w">bar </span><span id="intro02-sc040-w4" class="i2-w">for </span><span id="intro02-sc040-w5" class="i2-w">bar</span></div>
+      <div class="folds"></div>
+    </div>
+
+    <!-- IS041 · 170.98–173.86 · FACE CAM insert 1 (clean): room plate → nameplate → narrator → text -->
+    <div class="i2-scene" id="intro02-sc041" data-scene="IS041">
+      <video id="intro02-sc041-bg" class="i2-fc" src="assets/facecam/fc_170.5_bg.webm" muted playsinline data-start="78.85" data-duration="2.88" data-media-start="0.48"></video>
+      <div id="intro02-sc041-plate">
+        <div class="sil"><img src="assets/intro/cutouts/silhouette_exec.png" alt="" /></div>
+        <div class="nm"></div><div class="q t-display">?</div>
+        <div id="intro02-sc041-f" class="i2-abs t-label"><span id="intro02-sc041-w1" class="i2-w">founder</span></div>
+        <div id="intro02-sc041-c" class="i2-abs t-label"><span id="intro02-sc041-w2" class="i2-w">&amp; </span><span id="intro02-sc041-w3" class="i2-w">CEO</span></div>
+      </div>
+      <video id="intro02-sc041-fg" class="i2-fc" src="assets/facecam/fc_170.5_fg.webm" muted playsinline data-start="78.85" data-duration="2.88" data-media-start="0.48"></video>
+    </div>
+
+    <!-- IS042 · 173.86–180.05 · callback: "?" site → same executive → New York dinner (paper) -->
+    <div class="i2-scene" id="intro02-sc042" data-scene="IS042">
+      <div class="i2-pg"><img class="p1" src="assets/textures/paper_cream_01.jpg" alt="" /><img class="p2" src="assets/intro/papers/ke1960_cover_grid_blue.jpg" alt="" /></div>
+      <div id="intro02-sc042-world">
+        <div id="intro02-sc042-site"><img src="assets/intro/maps/hsinchu_1945_town_crop.jpg" alt="" /><svg viewBox="0 0 520 420" id="intro02-sc042-ssvg"></svg></div>
+        <div class="i2-circ" id="intro02-sc042-c2" style="left:1130px;top:300px"><img class="sil" src="assets/intro/cutouts/silhouette_exec.png" alt="" /></div>
+        <div class="i2-table" id="intro02-sc042-tbl"></div>
+        <svg id="intro02-sc042-mk"></svg>
+        <div id="intro02-sc042-same" class="i2-abs t-serif-i"><span id="intro02-sc042-w1" class="i2-w">same </span><span id="intro02-sc042-w2" class="i2-w">executive</span></div>
+        <div id="intro02-sc042-ny" class="i2-abs t-label"><span id="intro02-sc042-w3" class="i2-w">New </span><span id="intro02-sc042-w4" class="i2-w">York</span></div>
+      </div>
+      <div class="folds"></div>
+    </div>
+
+    <!-- IS043 · 180.05–185.01 · the reveal: Morris Chang, TSMC (night) -->
+    <div class="i2-scene i2-night" id="intro02-sc043" data-scene="IS043">
+      <div id="intro02-sc043-cam">
+        <div id="intro02-sc043-plate">
+          <img id="intro02-sc043-photo" src="assets/intro/cutouts/chang_2018_crop.jpg" alt="" />
+          <div id="intro02-sc043-red"></div>
+          <div id="intro02-sc043-ht" style="background-image:url('assets/textures/halftone_01_norm.jpg')"></div>
+          <svg id="intro02-sc043-svg" viewBox="0 0 1200 1080"></svg>
+        </div>
+        <div id="intro02-sc043-scrim"></div>
+      </div>
+      <div id="intro02-sc043-name" class="i2-abs t-display i2-halred"><span id="intro02-sc043-w1" class="i2-w">MORRIS</span><br /><span id="intro02-sc043-w2" class="i2-w">CHANG</span></div>
+      <div id="intro02-sc043-logo"></div>
+      <div class="i2-credit t-label" id="intro02-sc043-cr" style="opacity:0">Photo: Office of the President (ROC), CC BY 2.0</div>
+    </div>
+
+    <!-- global overlays -->
+    <div id="intro02-flash"></div>
+    <div id="intro02-grain" class="tx tx-grain" style="background-image:url('assets/textures/grain_01_norm.jpg')"></div>
+    <div id="intro02-dust" class="tx tx-dust" style="background-image:url('assets/textures/dust_01.jpg')"></div>
+    <div id="intro02-vig" class="vignette"></div>
+    <div id="intro02-tear"><div class="fib"></div><div class="pap"><img src="assets/textures/paper_cream_01.jpg" alt="" /><img class="torn" src="assets/textures/paper_torn_01.jpg" alt="" /></div></div>
+    <audio id="intro02-vo" class="temp-vo" src="vo_intro.mp3" data-start="0" data-duration="92.88" data-media-start="92.13" data-volume="1"></audio>
+  </div>
+  <script>
+  (function () {
+    const SEG = "intro02", SEG_START = 92.13, SEG_END = 185.01, DURATION = +(SEG_END - SEG_START).toFixed(2);
+    const T = (s) => +(s - SEG_START).toFixed(3);   // TEXT cues (audited)
+    const S = T;                                     // STRUCTURAL cues (not audited)
+    const L = 0.06;                                  // text lands 60 ms before its word
+    const tl = gsap.timeline({ paused: true });
+    const $ = (id) => document.getElementById(SEG + "-" + id);
+    const NS = "http://www.w3.org/2000/svg";
+    const C = (e, d) => FX.choppy(e, d, 12);
+    const defs = $("defs");
+    const INK = "#141b24", BLUE = "#1d5c9e", SKY = "#9fc3e3", GREY = "#9a958c", RED = "#e03f2c", BONE = "#f2ede3";
+
+    // ---------- shared filters ----------
+    FX.tintDefs(defs, "intro02-tint-blue", "#0b1626", "#a9cbe8");
+    FX.tintDefs(defs, "intro02-tint-blue-l", "#13355c", "#eef3f6");
+    FX.tintDefs(defs, "intro02-tint-red", "#1c0b09", "#f1d2c6");
+    FX.roughDefs(defs, "intro02-rough-st", { freq: 0.04, scale: 6 });
+    FX.roughDefs(defs, "intro02-rough-hl", { freq: 0.05, scale: 7 });
+    const choke33 = FX.roughDefs(defs, "intro02-choke33", { freq: 0.035, scale: 8, choke: 0 });
+    const blurs = {};
+    ["023","024","025","026","027","028","029","030","031","032","033","034","035","036","037","038","039","040","041","042","043"].forEach((k) => { blurs[k] = FX.whipDefs(defs, "intro02-wb" + k); });
+
+    // ---------- helpers ----------
+    function scene(k, a, b) {
+      const el = $("sc" + k);
+      tl.fromTo(el, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.001, immediateRender: false }, S(a) <= 0 ? 0 : a);
+      if (b < SEG_END) tl.set(el, { autoAlpha: 0 }, b);
+    }
+    function show(k, a, b) { scene(k, a, b); }
+    // reveal a word/element: soft rise at 12 fps (Vox long-tail ease)
+    function rise(el, t, o) {
+      o = o || {};
+      if (typeof el === "string") el = $(el);
+      tl.fromTo(el, { opacity: 0, y: o.y == null ? 18 : o.y }, { opacity: 1, y: 0, duration: o.dur || 0.9, ease: C(FX.ease.out, o.dur || 0.9), immediateRender: true }, t);
+    }
+    function pop(el, t, o) {
+      o = o || {};
+      if (typeof el === "string") el = $(el);
+      tl.fromTo(el, { opacity: 0, scale: o.from || 0.6 }, { opacity: 1, scale: 1, duration: o.dur || 1.0, ease: C(FX.ease.out, o.dur || 1.0), immediateRender: true }, t);
+    }
+    function out(el, t, d) { if (typeof el === "string") el = $(el); tl.to(el, { opacity: 0, duration: d || 0.3, ease: C(FX.ease.in, d || 0.3) }, t); }
+    function ground(kind, t) {
+      const v = kind === "paper" ? [0.32, 0.14, 0.24] : kind === "face" ? [0, 0, 0] : [1, 0.42, 0.36];
+      tl.set(["#intro02-vig", "#intro02-dust", "#intro02-grain"], { opacity: (i) => v[i] }, t);
+    }
+    // whip with the blur filter only switched on while it runs (keeps every other frame cheap)
+    function whip(ka, kb, t, o) {
+      o = Object.assign({ dir: 1, vertical: false }, o);
+      const a = $("sc" + ka), b = $("sc" + kb);
+      tl.set(a, { filter: `url(#intro02-wb${ka})` }, t - 0.17);
+      tl.set(b, { filter: `url(#intro02-wb${kb})` }, t - 0.001);
+      FX.whip(tl, a, b, t, Object.assign({ blurA: blurs[ka], blurB: blurs[kb] }, o));
+      tl.set(b, { filter: "none" }, t + 0.2);
+    }
+    function flash(t) { tl.fromTo("#intro02-flash", { opacity: 0 }, { opacity: 0.85, duration: 0.08, ease: "power2.in", immediateRender: false }, t - 0.08); tl.to("#intro02-flash", { opacity: 0, duration: 0.22, ease: "power2.out" }, t); }
+    function ink(parent, d, t, dur, o) {
+      o = o || {};
+      const p = document.createElementNS(NS, "path");
+      p.setAttribute("d", d); p.setAttribute("fill", "none");
+      p.setAttribute("stroke", o.color || INK); p.setAttribute("stroke-width", o.width || 6);
+      p.setAttribute("stroke-linecap", "round"); p.setAttribute("stroke-linejoin", "round");
+      if (o.dash) p.setAttribute("data-dash", o.dash);
+      if (o.filter) p.setAttribute("filter", o.filter);
+      if (o.opacity) p.setAttribute("opacity", o.opacity);
+      parent.appendChild(p);
+      const len = p.getTotalLength() || 1;
+      p.setAttribute("stroke-dasharray", `${len} ${len}`); p.setAttribute("stroke-dashoffset", len);
+      tl.fromTo(p, { attr: { "stroke-dashoffset": len } }, { attr: { "stroke-dashoffset": 0 }, duration: dur, ease: o.ease || C(FX.ease.inOut, dur), immediateRender: true }, t);
+      return p;
+    }
+    function el(tag, attrs, parent) { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; }
+    function gated(a, b, fn) { const o = FX.onFrame; FX.onFrame = (f) => o(FX.gate(S(a) - 0.1, S(b) + 0.1, f)); try { fn(); } finally { FX.onFrame = o; } }
+    // D06 seat geometry (12 seats: 7 outer + 5 inner), sorted clockwise from the left
+    function seats(cx, cy) {
+      const s = [];
+      for (let i = 0; i < 7; i++) { const a = Math.PI - (i / 6) * Math.PI; s.push({ a, x: cx + Math.cos(a) * 300, y: cy - Math.sin(a) * 300 }); }
+      for (let i = 0; i < 5; i++) { const a = Math.PI - (i / 4) * Math.PI; s.push({ a, x: cx + Math.cos(a) * 186, y: cy - Math.sin(a) * 186 }); }
+      return s.sort((p, q) => q.a - p.a || p.y - q.y);
+    }
+    function dots(container, cx, cy, color) {
+      return seats(cx, cy).map((p) => { const d = document.createElement("div"); d.className = "i2-dot"; d.style.left = (p.x - 27) + "px"; d.style.top = (p.y - 27) + "px"; d.style.background = color; container.appendChild(d); return d; });
+    }
+    // small outline pictograms (customers / products) — our own drawings
+    const ICON = {
+      phone: '<rect x="10" y="22" width="44" height="30" rx="6"/><path d="M8 22 Q32 6 56 22"/><circle cx="24" cy="34" r="2.5"/><circle cx="32" cy="34" r="2.5"/><circle cx="40" cy="34" r="2.5"/><circle cx="24" cy="43" r="2.5"/><circle cx="32" cy="43" r="2.5"/><circle cx="40" cy="43" r="2.5"/>',
+      tv: '<rect x="8" y="14" width="48" height="36" rx="6"/><rect x="14" y="20" width="30" height="24" rx="4"/><circle cx="50" cy="24" r="2.5"/><path d="M22 14 L16 4 M42 14 L48 4 M18 50 L14 58 M46 50 L50 58"/>',
+      calc: '<rect x="14" y="6" width="36" height="52" rx="4"/><rect x="19" y="12" width="26" height="10"/><path d="M20 30h6M29 30h6M38 30h6M20 38h6M29 38h6M38 38h6M20 46h6M29 46h6M38 46h6"/>',
+      pc: '<rect x="10" y="8" width="44" height="32" rx="3"/><rect x="15" y="13" width="34" height="22"/><path d="M26 40 L24 48 M38 40 L40 48"/><rect x="8" y="48" width="48" height="8" rx="2"/>',
+      watch: '<rect x="20" y="4" width="24" height="12"/><rect x="20" y="48" width="24" height="12"/><circle cx="32" cy="32" r="17"/><path d="M32 22 V32 L40 36"/>',
+      game: '<path d="M14 24 H50 Q60 24 60 38 Q60 52 50 50 L42 42 H22 L14 50 Q4 52 4 38 Q4 24 14 24Z"/><path d="M18 33v8M14 37h8"/><circle cx="44" cy="34" r="2.5"/><circle cx="50" cy="40" r="2.5"/>',
+      car: '<path d="M8 40 L14 26 H44 L54 36 H58 V46 H8Z"/><circle cx="20" cy="47" r="6"/><circle cx="46" cy="47" r="6"/>',
+      radio: '<rect x="6" y="20" width="52" height="34" rx="5"/><circle cx="22" cy="37" r="9"/><path d="M38 30h14M38 37h14M38 44h14M14 20 L46 6"/>',
+      factory: '<path d="M6 58 V30 L22 40 V30 L38 40 V30 L54 40 V14 H62 V58Z"/><path d="M14 50h6M28 50h6M42 50h6"/>',
+    };
+    function icon(parent, name, x, y, s, color, w) {
+      const g = el("g", { transform: `translate(${x} ${y}) scale(${s})`, fill: "none", stroke: color, "stroke-width": w || 3, "stroke-linecap": "round", "stroke-linejoin": "round" }, parent);
+      g.innerHTML = ICON[name]; return g;
+    }
+    // the idea card (motif — intro01's IS014 card; rebuilt here: grid scan, 1983 stamp, factory → products sketch)
+    const ROWS = [118, 214, 310, 406];
+    function card(box, o) {
+      o = o || {};
+      box.innerHTML = (o.doc ? "" : '<img class="bg" src="assets/intro/papers/ke1960_cross_section_green.jpg" alt="" />') + (o.doc ? '<div class="stamp t-display" style="color:#4a5260;border-color:#4a5260">?</div>' : '<div class="stamp t-display">1983</div>');
+      const svg = el("svg", { viewBox: "0 0 780 500" }, box);
+      const col = o.doc ? "#4a5260" : BLUE;
+      icon(svg, "factory", 60, 200, 1.9, col, 3.2);
+      const prods = ["phone", "tv", "calc", "pc"];
+      ROWS.forEach((y, i) => {
+        el("path", { d: `M200 ${262} C 300 ${262} 300 ${y} 400 ${y}`, fill: "none", stroke: col, "stroke-width": 3.2, "stroke-linecap": "round" }, svg);
+        el("path", { d: `M392 ${y - 7} L404 ${y} L392 ${y + 7}`, fill: "none", stroke: col, "stroke-width": 3.2 }, svg);
+        icon(svg, prods[i], 420, y - 30, 0.95, col, 3.2);
+        el("path", { d: `M500 ${y} L${700 - i * 18} ${y}`, fill: "none", stroke: col, "stroke-width": 3, "stroke-dasharray": o.doc ? "none" : "10 8", opacity: 0.8 }, svg);
+      });
+      return svg;
+    }
+    // dinner table collage (IS030 master, IS042 callback)
+    function table(box) {
+      box.innerHTML = `
+        <div class="top"><img src="assets/textures/paper_fiber_01.jpg" alt="" /><div class="cloth"></div></div>
+        <svg viewBox="0 0 1920 1080"></svg>
+        <div class="itm menu"><div class="h t-label">Menu</div><i></i><i style="margin-right:60px"></i><i></i><i style="margin-right:90px"></i><i></i></div>
+        <div class="itm place"><div class="t t-label" style="opacity:0">Tsao's</div></div>
+        <div class="itm i2-circ exec" style="border-color:#9a958c"><img class="sil" src="assets/intro/cutouts/silhouette_exec.png" alt="" style="width:260px;left:-12px" /></div>
+        <div class="itm folder"><div class="t t-label" style="opacity:0">proposal</div></div>`;
+      const svg = box.querySelector("svg");
+      const plate = (cx, cy, rim) => {
+        const g = el("g", { opacity: 0 }, svg);
+        el("ellipse", { cx: cx + 10, cy: cy + 16, rx: 178, ry: 178, fill: "rgba(20,27,36,0.13)" }, g);
+        el("circle", { cx, cy, r: 175, fill: "#f6f1e7", stroke: rim, "stroke-width": 5 }, g);
+        el("circle", { cx, cy, r: 118, fill: "none", stroke: "rgba(20,27,36,0.18)", "stroke-width": 3 }, g);
+        el("rect", { x: cx - 250, y: cy - 90, width: 16, height: 180, rx: 8, fill: "#8d8578" }, g);
+        el("rect", { x: cx + 234, y: cy - 90, width: 16, height: 180, rx: 8, fill: "#8d8578" }, g);
+        return g;
+      };
+      const glass = (cx, cy) => { const g = el("g", { opacity: 0 }, svg); el("circle", { cx, cy, r: 46, fill: "rgba(255,255,255,0.35)", stroke: "rgba(20,27,36,0.35)", "stroke-width": 3 }, g); el("circle", { cx, cy, r: 30, fill: "rgba(150,40,40,0.18)" }, g); return g; };
+      return {
+        svg,
+        p1: plate(600, 560, BLUE), p2: plate(1320, 560, GREY),
+        g1: glass(810, 330), g2: glass(1110, 330),
+        menu: box.querySelector(".menu"), place: box.querySelector(".place"), placeT: box.querySelector(".place .t"),
+        exec: box.querySelector(".exec"), folder: box.querySelector(".folder"), folderT: box.querySelector(".folder .t"),
+      };
+    }
+
+    // ---------- global textures ----------
+    FX.grain($("grain"), 201);
+    FX.dust($("dust"), 202, 2);
+    ground("paper", 0);
+
+    /* ============ IS023 · 92.13–94.61 · "* one condition" ============ */
+    show("023", 92.13, 94.62);
+    (function () {
+      const d = dots($("sc023-dots"), 960, 560, BLUE);   // all blue (excited) — continues intro01's IS022 semicircle
+      // camera tilt continues down the same sheet (intro01 hands off at −180 px)
+      tl.fromTo("#intro02-sc023-page", { y: -180 }, { y: -900, duration: 0.95, ease: FX.ease.cam, immediateRender: true }, 0);
+      tl.fromTo("#intro02-sc023-yes", { y: -6 }, { y: 6, duration: 0.8, ease: "sine.inOut", yoyo: true, repeat: 1, immediateRender: false }, 0);
+      pop("sc023-ast", S(92.2), { from: 1.6, dur: 0.6 });
+      tl.fromTo("#intro02-sc023-rule", { scaleX: 0 }, { scaleX: 1, duration: 0.9, ease: C(FX.ease.inOut, 0.9), immediateRender: true }, S(92.7));
+      rise("sc023-w1", T(93.65) - L);
+      rise("sc023-w2", T(93.97) - L);
+      tl.fromTo("#intro02-sc023-hl", { scaleX: 0 }, { scaleX: 1, duration: 0.45, ease: C("sine.inOut", 0.45), immediateRender: true }, S(94.0));
+      tl.to("#intro02-sc023-page", { y: -930, duration: 1.0, ease: "none" }, S(93.2));
+    })();
+
+    /* ============ IS024 · 94.61–99.57 · D15 diagram ============ */
+    whip("023", "024", S(94.55), { dir: 1 });
+    show("024", 94.55, 99.6);
+    (function () {
+      const c1 = $("sc024-c1");
+      [[70, 70], [136, 62], [102, 128]].forEach(([x, y]) => { const d = document.createElement("div"); d.className = "i2-dot"; d.style.left = x + "px"; d.style.top = y + "px"; d.style.background = BLUE; c1.appendChild(d); });
+      const mk = $("sc024-mk"); const f = FX.markupDefs(mk, "intro02-mk24", { boil: 4 });
+      pop("sc024-c1", T(94.85) - L);
+      rise("sc024-w1", T(94.85) - L);
+      rise("sc024-w2", T(95.25) - L);
+      // advice arrow: from where the executive will appear, down to the board
+      ink(mk, "M820 380 Q640 380 600 548", S(96.2), 0.8, { width: 6, filter: f });
+      ink(mk, "M576 520 L600 552 L628 524", S(96.95), 0.2, { width: 6, filter: f });
+      rise("sc024-adv", T(96.29) - L);
+      rise("sc024-w3", T(97.57) - L);
+      pop("sc024-c2", T(97.57) - L);
+      rise("sc024-w4", T(97.89) - L);
+      ink(mk, "M1100 400 Q1280 400 1330 560", S(98.6), 0.6, { width: 4, filter: f });
+      pop("sc024-c3", T(98.69) - L);
+      rise("sc024-w5", T(98.69) - L);
+      rise("sc024-w6", T(99.01) - L);
+      tl.fromTo("#intro02-sc024-cam", { scale: 1 }, { scale: 1.03, duration: 4.6, ease: "none", immediateRender: false }, S(94.61));
+      // cut on action: push into the executive circle
+      tl.to("#intro02-sc024-cam", { scale: 3.2, duration: 0.32, ease: FX.ease.in }, S(99.28));
+    })();
+
+    /* ============ IS025 · 99.57–103.97 · spotlit silhouette (night) ============ */
+    show("025", 99.57, 103.95);
+    ground("night", S(99.57));
+    (function () {
+      gated(99.5, 104.0, () => FX.streaks($("sc025-streaks"), { seed: 2501, speed: 0.35, gain: 0.8 }));
+      tl.fromTo("#intro02-sc025-sil", { scale: 1.25, transformOrigin: "40% 25%" }, { scale: 1, duration: 1.4, ease: FX.ease.cam, immediateRender: true }, S(99.57));
+      tl.fromTo(["#intro02-sc025-spot", "#intro02-sc025-floor"], { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, S(99.62));
+      tl.to(["#intro02-sc025-spot", "#intro02-sc025-floor"], { opacity: 0.55, duration: 1 / 24, yoyo: true, repeat: 1 }, S(99.70));
+      tl.fromTo("#intro02-sc025-map", { x: 0 }, { x: -80, duration: 4.4, ease: "none", immediateRender: false }, S(99.57));
+      rise("sc025-w1", T(100.37) - L);
+      rise("sc025-w2", T(100.61) - L);
+      rise("sc025-w3", T(101.25) - L, { y: 10 });
+      rise("sc025-w4", T(101.73) - L, { y: 10 });
+      rise("sc025-w5", T(102.37) - L, { y: 10 });
+      rise("sc025-w6", T(102.77) - L, { y: 10 });
+    })();
+
+    /* ============ IS026 · 103.97–110.45 · 25,000 isotype ============ */
+    whip("025", "026", S(103.91), { dir: -1, vertical: true });
+    show("026", 103.91, 110.8);
+    tl.add(() => {}, S(103.97));
+    ground("paper", S(103.93));
+    (function () {
+      const g = $("sc026-grid");
+      const P = '<svg viewBox="0 0 46 52"><circle cx="23" cy="11" r="9" fill="#4a5260"/><path d="M5 52 V36 Q5 23 23 23 Q41 23 41 36 V52Z" fill="#4a5260"/></svg>';
+      const ic = [];
+      for (let r = 0; r < 10; r++) for (let c = 0; c < 10; c++) { const d = document.createElement("div"); d.className = "i2-ico"; d.style.left = c * 60 + "px"; d.style.top = r * 60 + "px"; d.innerHTML = P; g.appendChild(d); ic.push(d); }
+      ic.forEach((d, i) => tl.fromTo(d, { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, S(104.85) + Math.floor(i / 7) / 12));
+      pop("sc026-lead", S(104.7), { dur: 0.8 });
+      // number
+      tl.fromTo("#intro02-sc026-num", { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, T(104.85) - L);
+      FX.text.count(tl, $("sc026-n"), T(104.85) - L, 0, 25000, 1.2);
+      rise("sc026-ppl", T(105.81) - L);
+      rise("sc026-w1", T(106.21) - L);
+      rise("sc026-w2", T(106.61) - L);
+      rise("sc026-w3", T(107.09) - L);
+      // ghosted anonymous skyscraper; the grid shrinks into one of its windows
+      const b = $("sc026-bld");
+      el("path", { d: "M90 1040 V120 H200 V60 H360 V120 H470 V1040", fill: "rgba(235,228,214,0.6)", stroke: INK, "stroke-width": 4 }, b);
+      el("path", { d: "M280 60 V0", stroke: INK, "stroke-width": 4 }, b);
+      for (let r = 0; r < 22; r++) for (let c = 0; c < 8; c++) el("rect", { x: 112 + c * 44, y: 150 + r * 40, width: 30, height: 24, fill: "none", stroke: "rgba(20,27,36,0.45)", "stroke-width": 2 }, b);
+      tl.fromTo(b, { opacity: 0 }, { opacity: 0.9, duration: 0.8, ease: C(FX.ease.out, 0.8), immediateRender: true }, S(108.2));
+      // window r=10,c=4 → screen (1030+ (112+176)*1, 40+150+400) = (1318, 590); grid 600 → 30 px
+      tl.to(g, { x: 1318 - 1010, y: 590 - 250, scale: 0.05, duration: 1.3, ease: C(FX.ease.inOut, 1.3) }, S(108.3));
+      tl.to("#intro02-sc026-lead", { opacity: 0, duration: 0.4 }, S(108.3));
+      rise("sc026-w4", T(108.37) - L);
+      rise("sc026-w5", T(108.93) - L);
+      // paper slide out (PS) — the sheet leaves to the left while IS027 slides in
+      tl.to("#intro02-sc026", { x: -1920, duration: 0.42, ease: FX.ease.in }, S(110.36));
+    })();
+
+    /* ============ IS027 · 110.45–120.26 · approval chain ============ */
+    show("027", 110.36, 120.27);
+    tl.fromTo("#intro02-sc027", { x: 1920 }, { x: 0, duration: 0.42, ease: FX.ease.in, immediateRender: false }, S(110.36));
+    (function () {
+      const mk = $("sc027-mk"); const f = FX.markupDefs(mk, "intro02-mk27", { boil: 4 }); mk.setAttribute("viewBox", "0 0 3400 1080");
+      const c3 = $("sc027-c3");
+      [[70, 70], [136, 62], [102, 128]].forEach(([x, y]) => { const d = document.createElement("div"); d.className = "i2-dot"; d.style.left = x + "px"; d.style.top = y + "px"; d.style.background = BLUE; c3.appendChild(d); });
+      tl.fromTo("#intro02-sc027-strip", { x: 140 }, { x: -1240, duration: 9.2, ease: FX.ease.cam, immediateRender: true }, S(110.5));
+      pop("sc027-c1", T(111.81) - L);
+      rise("sc027-tsao", T(111.81) - L);
+      ink(mk, "M520 520 Q700 470 860 520", S(113.1), 0.7, { width: 6, filter: f });
+      tl.fromTo("#intro02-sc027-folder", { x: -60, opacity: 0, rotation: -6 }, { x: 0, opacity: 1, rotation: 0, duration: 0.3, ease: C(FX.ease.out, 0.3), immediateRender: true }, S(113.1));
+      rise("sc027-plan", T(113.33) - L, { y: 6 });
+      tl.to("#intro02-sc027-folder", { x: 330, y: -150, rotation: 4, duration: 1.0, ease: C(FX.ease.inOut, 1.0) }, S(113.5));
+      pop("sc027-c2", T(114.05) - L);
+      rise("sc027-adv", T(114.05) - L);
+      // check marks
+      ink(mk, "M1080 420 L1110 460 L1170 370", S(115.43), 0.35, { width: 9, filter: f, color: BLUE });
+      rise("sc027-appr", T(115.49) - L);
+      ink(mk, "M1160 520 Q1340 470 1500 520", S(115.9), 0.6, { width: 6, filter: f });
+      pop("sc027-c3", T(116.45) - L);
+      rise("sc027-brd", T(116.61) - L);
+      ink(mk, "M1720 420 L1750 460 L1810 370", S(116.6), 0.35, { width: 9, filter: f, color: BLUE });
+      ink(mk, "M1800 520 Q1980 470 2160 520", S(117.1), 0.6, { width: 6, filter: f });
+      pop("sc027-perm", T(117.73) - L, { from: 0.8 });
+      // compass + building icon turns once (the repeated "to reorient the business": no new text)
+      const cp = $("sc027-comp");
+      el("circle", { cx: 115, cy: 115, r: 104, fill: "rgba(235,228,214,0.7)", stroke: INK, "stroke-width": 3 }, cp);
+      el("path", { d: "M115 14 L128 115 L115 216 L102 115Z", fill: "none", stroke: INK, "stroke-width": 3 }, cp);
+      el("path", { d: "M14 115 L115 102 L216 115 L115 128Z", fill: "none", stroke: "rgba(20,27,36,0.5)", "stroke-width": 2 }, cp);
+      const bg = el("g", {}, cp); icon(bg, "factory", 83, 80, 1.0, BLUE, 3.4);
+      pop(cp, S(117.9), { dur: 0.8 });
+      tl.fromTo(bg, { rotation: 0, svgOrigin: "115 115" }, { rotation: 90, svgOrigin: "115 115", duration: 1.4, ease: C(FX.ease.inOut, 1.4), immediateRender: false }, S(118.82));
+      // folder keeps moving → becomes the plane of IS028 (cut on action)
+      tl.to("#intro02-sc027-folder", { x: 2500, y: -260, rotation: 10, duration: 0.75, ease: FX.ease.in }, S(119.55));
+    })();
+
+    /* ============ IS028 · 120.26–123.30 · flight to New York (D10) ============ */
+    show("028", 120.26, 123.3);
+    (function () {
+      const s = $("sc028-svg");
+      const tp = [173.5, 464.5], ny = [2640, 229.5];
+      // Taiwan celadon dot + departure ring
+      el("circle", { cx: tp[0], cy: tp[1], r: 15, fill: "#9fc7b2", stroke: INK, "stroke-width": 3 }, s);
+      const ring = el("circle", { cx: tp[0], cy: tp[1], r: 15, fill: "none", stroke: BLUE, "stroke-width": 4 }, s);
+      tl.fromTo(ring, { attr: { r: 15 }, opacity: 1 }, { attr: { r: 70 }, opacity: 0, duration: 1.2, ease: C(FX.ease.out, 1.2), immediateRender: true }, S(121.2));
+      const nyd = el("circle", { cx: ny[0], cy: ny[1], r: 12, fill: INK, opacity: 0 }, s);
+      const route = ink(s, `M${tp[0]} ${tp[1]} Q1400 -160 ${ny[0]} ${ny[1]}`, S(122.3), 0.96, { width: 7, color: INK, ease: "sine.inOut" });
+      route.setAttribute("stroke-dasharray", "");
+      // dashed look: overlay a dashed copy masked by the draw — keep simple: solid ink line with a dashed paper overlay
+      const dash = el("path", { d: route.getAttribute("d"), fill: "none", stroke: "#ebe4d6", "stroke-width": 9, "stroke-dasharray": "14 18" }, s);
+      const len = route.getTotalLength();
+      route.setAttribute("stroke-dasharray", `${len} ${len}`);
+      tl.set(nyd, { opacity: 1 }, S(123.2));
+      const plane = el("g", {}, s);
+      el("path", { d: "M-44 0 L30 -6 Q46 0 30 6 Z M-6 -4 L-22 -38 L-10 -38 L14 -4Z M-6 4 L-22 38 L-10 38 L14 4Z M-40 -2 L-50 -16 L-42 -16 L-30 -2Z M-40 2 L-50 16 L-42 16 L-30 2Z", fill: INK }, plane);
+      plane.setAttribute("opacity", 0);
+      const st = { u: 0 };
+      const place = () => { const L0 = route.getTotalLength(), p = route.getPointAtLength(st.u * L0), q = route.getPointAtLength(Math.min(L0, st.u * L0 + 4)); const a = Math.atan2(q.y - p.y, q.x - p.x) * 180 / Math.PI; plane.setAttribute("transform", `translate(${p.x.toFixed(1)} ${p.y.toFixed(1)}) rotate(${a.toFixed(1)}) scale(1.6)`); };
+      place();
+      tl.set(plane, { attr: { opacity: 1 } }, S(122.3));
+      tl.fromTo(st, { u: 0 }, { u: 1, duration: 0.96, ease: "sine.inOut", onUpdate: place, immediateRender: false }, S(122.3));
+      // camera: lands on Taiwan (whip-pan) → focus hunt → pulls out to follow the plane to New York
+      const cam = (cx, cy, z) => ({ x: 960 - cx * z, y: 560 - cy * z, scale: z });
+      tl.fromTo("#intro02-sc028-cam", cam(420, 420, 1.55), Object.assign(cam(330, 440, 1.45), { duration: 1.9, ease: FX.ease.cam, immediateRender: true }), S(120.26));
+      FX.focusHunt(tl, $("sc028-plane"), S(120.32), { dur: 0.7, a: 3, b: 5 });
+      tl.to("#intro02-sc028-cam", Object.assign(cam(1450, 330, 0.62), { duration: 1.1, ease: FX.ease.cam }), S(122.2));
+      rise("sc028-tsao", T(121.22) - L, { y: 8 });
+      tl.fromTo("#intro02-sc028-tag", { opacity: 0, scaleX: 0.2, transformOrigin: "0 50%" }, { opacity: 1, scaleX: 1, duration: 0.5, ease: C(FX.ease.out, 0.5), immediateRender: true }, S(121.9));
+      rise("sc028-w0", T(122.18) - L, { y: 8 });
+      rise("sc028-w1", T(122.34) - L, { y: 8 });
+      rise("sc028-w2", T(122.58) - L, { y: 8 });
+      rise("sc028-w3", T(122.82) - L, { y: 8 });
+    })();
+
+    /* ============ IS029 · 123.30–125.30 · New York poster ============ */
+    whip("028", "029", S(123.26), { dir: 1 });
+    flash(S(123.26));
+    show("029", 123.26, 125.3);
+    ground("night", S(123.27));
+    (function () {
+      tl.fromTo("#intro02-sc029-cam", { scale: 1.06 }, { scale: 1.12, duration: 2.1, ease: "none", immediateRender: true }, S(123.26));
+      rise("sc029-w1", T(123.30) - L);
+      rise("sc029-w2", T(123.54) - L);
+      tl.fromTo("#intro02-sc029-sil", { x: 520, opacity: 0 }, { x: 0, opacity: 1, duration: 1.0, ease: C(FX.ease.out, 1.0), immediateRender: true }, S(124.44));
+    })();
+
+    /* ============ IS030 · 125.30–131.70 · dinner table ============ */
+    whip("029", "030", S(125.24), { dir: -1 });
+    show("030", 125.24, 131.71);
+    ground("paper", S(125.25));
+    const tb30 = table($("sc030-tbl"));
+    (function () {
+      const t = tb30, st = (e, at, o) => tl.fromTo(e, Object.assign({ opacity: 0, y: -40, rotation: (o && o.r) || -4 }), { opacity: 1, y: 0, rotation: 0, duration: 0.5, ease: C(FX.ease.out, 0.5), immediateRender: true }, at);
+      st(t.p1, S(125.3)); st(t.p2, S(125.42));
+      tl.fromTo(t.exec, { opacity: 0, x: 120 }, { opacity: 1, x: 0, duration: 0.8, ease: C(FX.ease.out, 0.8), immediateRender: true }, S(125.9));
+      st(t.place, S(126.2), { r: 5 });
+      st(t.menu, S(126.6), { r: 8 });
+      st(t.g1, S(127.5)); st(t.g2, S(127.62));
+      rise("sc030-meet", T(125.46) - L);
+      out("sc030-meet", S(127.3));
+      rise("sc030-din", T(127.62) - L);
+      rise(t.placeT, T(129.14) - L, { y: 6 });
+      tl.fromTo(t.folder, { opacity: 0, x: -520, y: 260, rotation: -12 }, { opacity: 1, x: 0, y: 0, rotation: -2, duration: 0.9, ease: C(FX.ease.out, 0.9), immediateRender: true }, S(129.75));
+      rise(t.folderT, T(130.02) - L, { y: 6 });
+      tl.fromTo("#intro02-sc030-cam", { scale: 1.0 }, { scale: 1.05, duration: 6.0, ease: "none", immediateRender: true }, S(125.3));
+      // camera rises off the table (cut on action into the sky of IS031)
+      tl.to("#intro02-sc030-cam", { scale: 1.5, y: 620, duration: 0.35, ease: FX.ease.in }, S(131.38));
+    })();
+
+    /* ============ IS031 · 131.70–134.98 · jet → above the clouds ============ */
+    show("031", 131.70, 134.98);
+    ground("night", S(131.70));
+    (function () {
+      FX.weave($("sc031-weave"), { amp: 0.9, flicker: 0.03, seed: 3101, from: S(131.6), to: S(133.9) });
+      tl.fromTo("#intro02-sc031-vid", { scale: 1.0 }, { scale: 1.08, duration: 2.2, ease: "none", immediateRender: true }, S(131.70));
+      rise("sc031-home", T(133.30) - L);
+      out("sc031-home", S(133.75), 0.15);
+      // fly up through the clouds
+      tl.fromTo("#intro02-sc031-c1", { y: 1200, opacity: 1, scale: 1 }, { y: -1700, scale: 1.4, duration: 0.75, ease: "power1.inOut", immediateRender: true }, S(133.45));
+      tl.fromTo("#intro02-sc031-c2", { y: 1300, opacity: 1 }, { y: -2400, duration: 0.8, ease: "power1.inOut", immediateRender: true }, S(133.5));
+      tl.fromTo("#intro02-sc031-sky", { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, S(133.82));
+      tl.fromTo("#intro02-sc031-sea", { opacity: 0, y: 220 }, { opacity: 0.9, y: 0, duration: 1.1, ease: FX.ease.cam, immediateRender: true }, S(133.82));
+      tl.fromTo("#intro02-sc031-streaks", { opacity: 0 }, { opacity: 0.45, duration: 0.8, immediateRender: true }, S(133.9));
+      gated(133.8, 135.0, () => FX.streaks($("sc031-streaks"), { seed: 3102, speed: 0.6, gain: 1.0 }));
+      rise("sc031-w1", T(134.02) - L, { y: 10, dur: 0.6 });
+      rise("sc031-w2", T(134.18) - L, { y: 10, dur: 0.6 });
+      rise("sc031-w3", T(134.42) - L, { y: 10, dur: 0.6 });
+      rise("sc031-w4", T(134.50) - L, { y: 10, dur: 0.6 });
+      rise("sc031-w5", T(134.58) - L, { y: 10, dur: 0.6 });
+      tl.fromTo("#intro02-sc031-top", { scale: 1 }, { scale: 1.04, duration: 1.2, ease: "none", immediateRender: true }, S(133.9));
+    })();
+
+    /* ============ IS032 · 134.98–140.74 · the board drains ============ */
+    show("032", 134.98, 140.75);
+    ground("paper", S(134.98));
+    (function () {
+      const d = dots($("sc032-dots"), 960, 640, BLUE);
+      tl.fromTo("#intro02-sc032-cam", { scale: 1.0 }, { scale: 1.1, duration: 5.8, ease: "none", immediateRender: true }, S(134.98));
+      rise("sc032-lab", T(137.54) - L);
+      // drain anticlockwise (right → left), 12 fps steps, last one by 140.0
+      const order = d.slice().reverse();
+      order.forEach((e, i) => tl.to(e, { backgroundColor: GREY, duration: 0.001 }, S(137.78) + Math.round(i * 0.2 * 12) / 12));
+      rise("sc032-any", T(140.02) - L);
+    })();
+
+    /* ============ IS033 · 140.74–144.82 · stonewalled ============ */
+    whip("032", "033", S(140.68), { dir: 1 });
+    show("033", 140.68, 144.82);
+    ground("night", S(140.69));
+    (function () {
+      tl.fromTo("#intro02-sc033-tsao", { scale: 1.0, transformOrigin: "50% 30%" }, { scale: 1.05, duration: 4.1, ease: "none", immediateRender: true }, S(140.7));
+      rise("sc033-w1", T(141.94) - L);
+      rise("sc033-w2", T(142.18) - L);
+      rise("sc033-w3", T(142.42) - L);
+      // stones slam in course by course (12 fps), the last one hard
+      [["k1", 142.9], ["k2", 143.4], ["k3", 143.95], ["k4", 144.55]].forEach(([k, t], i) => {
+        tl.fromTo("#intro02-sc033-" + k, { y: -1200 }, { y: 0, duration: 0.25, ease: C("power2.in", 0.25), immediateRender: true }, S(t) - 0.25);
+        tl.fromTo("#intro02-sc033-" + k, { y: 0 }, { y: -10, duration: 1 / 12, yoyo: true, repeat: 1, ease: "none", immediateRender: false }, S(t));
+      });
+      out("sc033-what", S(143.3), 0.25);
+      tl.fromTo("#intro02-sc033-stone", { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, T(143.86) - L);
+      FX.chokeSettle(tl, choke33, $("sc033-sw"), T(143.86) - L, 14, 0.5, "none");
+      tl.fromTo("#intro02-sc033-stone", { y: 0 }, { y: -270, duration: 0.25, ease: C("power2.in", 0.25), immediateRender: false }, S(144.55) - 0.25);
+    })();
+
+    /* ============ IS034 · 144.82–149.38 · telegram ============ */
+    show("034", 144.82, 149.6);
+    ground("paper", S(144.82));
+    (function () {
+      tl.fromTo("#intro02-sc034-cam", { scale: 1.1, y: 30 }, { scale: 1.0, y: 0, duration: 1.4, ease: FX.ease.cam, immediateRender: true }, S(144.82));
+      tl.to("#intro02-sc034-cam", { scale: 1.06, duration: 3.1, ease: "none" }, S(146.2));
+      const lines = [$("sc034-l1"), $("sc034-l2"), $("sc034-l3")];
+      const W = [["DROP", 145.94, 0], ["THE", 146.34, 0], ["IDEA", 146.42, 0], ["RUN", 146.98, 1], ["THE", 147.30, 1], ["BUSINESS", 147.38, 1], ["HOW", 147.86, 2], ["HE", 148.10, 2], ["WAS", 148.34, 2], ["DOING", 148.50, 2], ["ALREADY", 148.82, 2]];
+      const spans = W.map(([w, , li]) => { const s = document.createElement("span"); s.textContent = w + " "; s.style.whiteSpace = "pre"; lines[li].appendChild(s); return FX.split(s, "chars"); });
+      const typ = (k, t) => spans[k].forEach((c, i) => tl.fromTo(c, { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, t + Math.floor(i / 2) / 24));
+      typ(0, T(145.94) - L); typ(1, T(146.34) - L); typ(2, T(146.42) - L); typ(3, T(146.98) - L); typ(4, T(147.30) - L); typ(5, T(147.38) - L);
+      typ(6, T(147.86) - L); typ(7, T(148.10) - L); typ(8, T(148.34) - L); typ(9, T(148.50) - L); typ(10, T(148.82) - L);
+      // paper slide: the telegram drops out of frame, revealing the night map beneath
+      tl.to("#intro02-sc034-slide", { y: 1150, duration: 0.4, ease: FX.ease.in }, S(149.2));
+    })();
+
+    /* ============ IS035 · 149.38–154.42 · Taiwan, 1984 ============ */
+    show("035", 149.3, 154.43);
+    ground("night", S(149.4));
+    (function () {
+      const s = $("sc035-svg");
+      s.innerHTML = `<defs>
+        <filter id="intro02-b35" filterUnits="userSpaceOnUse" x="0" y="0" width="2480" height="3040" color-interpolation-filters="sRGB">
+          <feImage href="assets/maps/burn_a.png" x="0" y="0" width="2480" height="3040" preserveAspectRatio="none" result="n"/>
+          <feColorMatrix id="intro02-b35m" in="n" type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  12 0 0 0 -12.5" result="t"/>
+          <feComposite in="SourceGraphic" in2="t" operator="in"/></filter>
+        <filter id="intro02-c35" filterUnits="userSpaceOnUse" x="0" y="0" width="2480" height="3040" color-interpolation-filters="sRGB">
+          <feImage href="assets/maps/burn_a.png" x="0" y="0" width="2480" height="3040" preserveAspectRatio="none" result="n"/>
+          <feColorMatrix id="intro02-c35a" in="n" type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  12 0 0 0 -10.3" result="e"/>
+          <feColorMatrix id="intro02-c35b" in="n" type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  12 0 0 0 -12.5" result="l"/>
+          <feComposite in="e" in2="l" operator="arithmetic" k1="0" k2="1" k3="-1" k4="0" result="ring"/>
+          <feFlood flood-color="#f2b25c" result="fl"/><feComposite in="fl" in2="ring" operator="in" result="r2"/>
+          <feComposite in="r2" in2="SourceAlpha" operator="in"/></filter></defs>
+        <image href="assets/intro/maps/taiwan_celadon_fill.png" x="0" y="0" width="2480" height="3040" opacity="0.85" filter="url(#intro02-b35)"/>
+        <image href="assets/intro/maps/taiwan_celadon_fill.png" x="0" y="0" width="2480" height="3040" filter="url(#intro02-c35)"/>`;
+      const M = (o) => "0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  12 0 0 0 " + o.toFixed(3);
+      const b = { v: -12.5 };
+      tl.fromTo(b, { v: -12.5 }, { v: 1.2, duration: 1.4, ease: C("power1.inOut", 1.4), immediateRender: false, onUpdate: () => { $("b35m").setAttribute("values", M(b.v)); $("c35a").setAttribute("values", M(b.v + 2.2)); $("c35b").setAttribute("values", M(b.v)); } }, S(149.5));
+      tl.fromTo("#intro02-sc035-ht", { opacity: 0 }, { opacity: 0.35, duration: 0.8, immediateRender: true }, S(150.4));
+      tl.fromTo("#intro02-sc035-cam", { scale: 1.12 }, { scale: 1.0, duration: 4.9, ease: FX.ease.cam, immediateRender: true }, S(149.38));
+      rise("sc035-tw", T(149.54) - L);
+      rise("sc035-yr", T(150.82) - L, { dur: 1.2 });
+      // the board's 12 seats ring the island (grey: the board went cold)
+      const box = $("sc035-dots"), N = 12, dd = [];
+      for (let i = 0; i < N; i++) { const a = -Math.PI / 2 + (i / N) * Math.PI * 2; const d = document.createElement("div"); d.className = "i2-dot"; d.style.width = d.style.height = "46px"; d.style.left = (731 - 23 + Math.cos(a) * 470) + "px"; d.style.top = (540 - 23 + Math.sin(a) * 500) + "px"; box.appendChild(d); dd.push(d); }
+      dd.forEach((d, i) => tl.fromTo(d, { opacity: 0, scale: 0.3 }, { opacity: 1, scale: 1, duration: 0.5, ease: C(FX.ease.out, 0.5), immediateRender: true }, S(153.72) + Math.floor(i / 2) / 12));
+      rise("sc035-board", T(153.78) - L);
+    })();
+
+    /* ============ IS036 · 154.42–157.22 · idea dropped ============ */
+    whip("035", "036", S(154.36), { dir: -1, vertical: true });
+    show("036", 154.36, 157.22);
+    ground("paper", S(154.37));
+    (function () {
+      card($("sc036-card"));
+      tl.fromTo("#intro02-sc036-card", { rotation: -1.5 }, { rotation: 1, duration: 1.5, ease: "sine.inOut", immediateRender: true }, S(154.42));
+      rise("sc036-tsao", T(154.82) - L);
+      // un-pin, swing, fall out of the bottom of frame (12 fps)
+      tl.to("#intro02-sc036-pin", { y: -60, x: 30, rotation: 25, opacity: 0, duration: 0.35, ease: C(FX.ease.out, 0.35) }, S(155.95));
+      tl.to("#intro02-sc036-card", { rotation: 14, duration: 0.4, ease: C("sine.inOut", 0.4) }, S(156.0));
+      tl.to("#intro02-sc036-card", { y: 1100, rotation: 32, x: 120, duration: 0.95, ease: C(FX.ease.in, 0.95) }, S(156.3));
+      rise("sc036-w1", T(156.02) - L);
+      rise("sc036-w2", T(156.50) - L);
+      rise("sc036-w3", T(156.66) - L);
+    })();
+
+    /* ============ IS037 · 157.22–160.74 · two years later: breaks ground ============ */
+    show("037", 157.22, 160.74);
+    ground("night", S(157.22));
+    (function () {
+      FX.weave($("sc037-weave"), { amp: 1.3, flicker: 0.04, seed: 3701, from: S(157.1), to: S(160.8) });
+      tl.fromTo("#intro02-sc037-cam", { scale: 1.06, y: -40 }, { scale: 1.2, y: 0, duration: 3.6, ease: "none", immediateRender: true }, S(157.22));
+      rise("sc037-w1", T(157.54) - L, { y: 8 });
+      rise("sc037-w2", T(157.78) - L, { y: 8 });
+      rise("sc037-w3", T(158.10) - L, { y: 8 });
+      rise("sc037-w4", T(158.58) - L);
+      rise("sc037-w5", T(158.74) - L);
+      rise("sc037-w6", T(158.98) - L);
+      rise("sc037-w7", T(159.38) - L);
+      rise("sc037-w8", T(159.86) - L);
+      rise("sc037-w9", T(160.34) - L);
+      tl.fromTo("#intro02-sc037-cam", { y: 0 }, { y: 7, duration: 1 / 12, yoyo: true, repeat: 1, ease: "none", immediateRender: false }, S(160.3));
+    })();
+
+    /* ============ IS038 · 160.74–162.74 · across the street from UMC ============ */
+    whip("037", "038", S(160.68), { dir: -1, vertical: true });
+    show("038", 160.68, 162.8);
+    ground("paper", S(160.69));
+    (function () {
+      const s = $("sc038-svg");
+      const mf = FX.markupDefs(s, "intro02-mk38", { boil: 12 }); s.setAttribute("viewBox", "0 0 2400 1350");
+      // UMC plot (north of the line) and the new site across the street (south) — 1945 plan as a stand-in street map
+      const U = [1430, 860, 150, 96], N = [1560, 1010, 170, 104];
+      // hatching for the unnamed site
+      const hat = el("g", { opacity: 0 }, s);
+      el("rect", { x: N[0], y: N[1], width: N[2], height: N[3], fill: "rgba(235,228,214,0.75)", stroke: INK, "stroke-width": 5 }, hat);
+      for (let k = -100; k < 180; k += 18) el("path", { d: `M${N[0] + k} ${N[1] + N[3]} L${N[0] + k + 104} ${N[1]}`, stroke: INK, "stroke-width": 3, "clip-path": "none" }, hat);
+      const q = el("text", { x: N[0] + N[2] / 2, y: N[1] + 80, "text-anchor": "middle", "font-size": 92, fill: INK, "font-weight": 800 }, hat); q.textContent = "?"; q.setAttribute("class", "t-display");
+      hat.querySelectorAll("path").forEach((p) => p.setAttribute("clip-path", "url(#intro02-c38)"));
+      s.insertAdjacentHTML("afterbegin", `<clipPath id="intro02-c38"><rect x="${N[0]}" y="${N[1]}" width="${N[2]}" height="${N[3]}"/></clipPath>`);
+      // yellow marker across the street (multiply, rough)
+      const hl = ink(s, `M${U[0] + 70} ${U[1] + 60} Q${U[0] + 110} ${U[1] + 120} ${N[0] + 80} ${N[1] + 40}`, S(160.74), 0.55, { width: 34, color: "#f2d33b", filter: mf, opacity: 0.85 });
+      hl.style.mixBlendMode = "multiply";
+      tl.fromTo(hat, { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, S(161.3));
+      const um = el("g", { opacity: 0 }, s);
+      el("rect", { x: U[0], y: U[1], width: U[2], height: U[3], fill: "rgba(29,92,158,0.25)", stroke: BLUE, "stroke-width": 7 }, um);
+      const ut = el("rect", { x: U[0] - 10, y: U[1] - 92, width: 170, height: 76, fill: BLUE }, um);
+      const tx = el("text", { x: U[0] + 75, y: U[1] - 36, "text-anchor": "middle", "font-size": 50, fill: BONE, "letter-spacing": "6" }, um); tx.textContent = "UMC"; tx.setAttribute("class", "t-label");
+      tl.fromTo(um, { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, T(161.86) - L);
+      const cam = (cx, cy, z) => ({ x: 960 - cx * z, y: 560 - cy * z, scale: z });
+      tl.fromTo("#intro02-sc038-cam", cam(1560, 980, 1.25), Object.assign(cam(1520, 960, 1.1), { duration: 1.9, ease: FX.ease.cam, immediateRender: true }), S(160.7));
+      tl.fromTo("#intro02-sc038-tag", { opacity: 0, scaleX: 0.3, transformOrigin: "0 50%" }, { opacity: 1, scaleX: 1, duration: 0.4, ease: C(FX.ease.out, 0.4), immediateRender: true }, S(160.68));
+      rise("sc038-w1", T(160.74) - L, { y: 8 });
+      rise("sc038-w2", T(161.22) - L, { y: 8 });
+      rise("sc038-w3", T(161.30) - L, { y: 8 });
+      // push-through: camera pulls up and the map fades into the dark ghost map
+      tl.to("#intro02-sc038-cam", Object.assign(cam(1520, 960, 0.75), { duration: 0.5, ease: FX.ease.in }), S(162.3));
+      tl.fromTo("#intro02-sc038-dark", { opacity: 0 }, { opacity: 1, duration: 0.42, ease: "power1.in", immediateRender: true }, S(162.36));
+    })();
+
+    /* ============ IS039 · 162.74–168.18 · D11 Sankey: chips for anyone, no product of its own ============ */
+    show("039", 162.74, 168.2);
+    ground("night", S(162.74));
+    (function () {
+      const s = $("sc039-svg");
+      const mf = FX.markupDefs(s, "intro02-mk39", { boil: 12 });
+      tl.fromTo("#intro02-sc039-map", { opacity: 0 }, { opacity: 0.06, duration: 0.6, immediateRender: true }, S(162.74));
+      // central block (the unnamed company)
+      const blk = el("rect", { x: 760, y: 340, width: 300, height: 400, fill: "#2a2e33", stroke: "rgba(242,237,227,0.45)", "stroke-width": 3 }, s);
+      tl.fromTo(blk, { opacity: 0, scaleY: 0, svgOrigin: "910 740" }, { opacity: 1, scaleY: 1, svgOrigin: "910 740", duration: 1.0, ease: C(FX.ease.out, 1.0), immediateRender: true }, S(162.9));
+      pop("sc039-q", S(163.2), { dur: 0.8 });
+      // customers: anyone (8 pictograms) → ribbons into the block
+      const names = ["phone", "tv", "calc", "pc", "watch", "game", "car", "radio"];
+      const paths = [];
+      names.forEach((n, i) => {
+        const y = 150 + i * 110, ty = 380 + i * 45;
+        const g = icon(s, n, 190, y - 32, 1.0, BONE, 3);
+        tl.fromTo(g, { opacity: 0 }, { opacity: 0.9, duration: 0.001, immediateRender: true }, S(163.94) + Math.floor(i / 2) / 12);
+        const d = `M270 ${y} C 520 ${y} 520 ${ty} 760 ${ty}`;
+        const p = ink(s, d, S(164.05) + i * 0.06, 0.8, { width: 30, color: "rgba(242,237,227,0.16)" });
+        p.setAttribute("stroke-linecap", "butt");
+        paths.push(p);
+      });
+      rise("sc039-any", T(164.02) - L);
+      // chips flow back out to the customers along the same ribbons (12 fps)
+      const chips = [];
+      for (let k = 0; k < 24; k++) { const r = el("rect", { width: 14, height: 14, fill: BONE, opacity: 0 }, s); chips.push({ r, p: paths[k % 8], t0: S(164.9) + (k * 0.37) % 3.0 }); }
+      FX.onFrame(FX.gate(S(164.8), S(168.2), (t) => {
+        const tt = Math.floor(t * 12) / 12;
+        chips.forEach((c) => { let u = (tt - c.t0) / 1.1; if (u < 0) { c.r.setAttribute("opacity", 0); return; } u = u % 1.6; if (u > 1) { c.r.setAttribute("opacity", 0); return; }
+          const L0 = c.p.getTotalLength(), pt = c.p.getPointAtLength((1 - u) * L0); c.r.setAttribute("x", (pt.x - 7).toFixed(1)); c.r.setAttribute("y", (pt.y - 7).toFixed(1)); c.r.setAttribute("opacity", 0.85); });
+      }));
+      // never … a product of its own: an empty dashed box, crossed out
+      rise("sc039-never", T(166.26) - L);
+      const ob = el("rect", { x: 1290, y: 440, width: 400, height: 220, fill: "none", stroke: "rgba(242,237,227,0.75)", "stroke-width": 4, "stroke-dasharray": "16 12" }, s);
+      tl.fromTo(ob, { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, S(166.3));
+      rise("sc039-prod", T(166.90) - L, { y: 8 });
+      rise("sc039-w1", T(167.30) - L);
+      rise("sc039-w2", T(167.46) - L);
+      rise("sc039-w3", T(167.70) - L);
+      FX.markup.cross(tl, s, S(167.66), { x: 1490, y: 550, s: 120, dur: 0.16, color: BONE, width: 9, filter: mf });
+      tl.fromTo(s, { x: 0 }, { x: -30, duration: 5.4, ease: "none", immediateRender: true }, S(162.74));
+    })();
+
+    /* ============ IS040 · 168.18–170.98 · Tsao's plan, bar for bar ============ */
+    whip("039", "040", S(168.12), { dir: -1 });
+    show("040", 168.12, 170.99);
+    ground("paper", S(168.13));
+    (function () {
+      card($("sc040-doc"), { doc: true });
+      card($("sc040-card"));
+      tl.fromTo("#intro02-sc040-card", { x: 1500, rotation: 8, opacity: 0.9 }, { x: 0, rotation: 0, duration: 1.0, ease: C(FX.ease.out, 1.0), immediateRender: true }, S(168.6));
+      rise("sc040-w1", T(168.74) - L);
+      rise("sc040-w2", T(169.46) - L);
+      // highlighter bars across the matching lines (both documents) on each "bar"
+      const box = $("sc040-hls");
+      const bars = ROWS.map((y, i) => { const d = document.createElement("div"); d.className = "i2-hlbar"; d.style.left = (200 + 404) + "px"; d.style.top = (250 + y - 17) + "px"; d.style.width = (300 - i * 18) + "px"; box.appendChild(d); return d; });
+      const sw = (e, t) => tl.fromTo(e, { scaleX: 0 }, { scaleX: 1, duration: 0.3, ease: C("sine.inOut", 0.3), immediateRender: true }, t);
+      rise("sc040-w3", T(169.86) - L); sw(bars[0], S(169.86)); sw(bars[1], S(169.98));
+      rise("sc040-w4", T(170.26) - L);
+      rise("sc040-w5", T(170.50) - L); sw(bars[2], S(170.50)); sw(bars[3], S(170.62));
+      tl.fromTo("#intro02-sc040-cam", { scale: 1.0, x: 0 }, { scale: 1.06, x: -40, duration: 2.9, ease: "none", immediateRender: true }, S(168.12));
+    })();
+
+    /* ============ IS041 · 170.98–173.86 · face cam 1 (clean) ============ */
+    show("041", 170.98, 173.87);
+    ground("face", S(170.98));
+    (function () {
+      tl.fromTo("#intro02-sc041-plate", { x: -760 }, { x: 0, duration: 1.1, ease: C(FX.ease.out, 1.1), immediateRender: true }, T(172.18) - 0.35);
+      rise("sc041-w1", T(172.18) - L, { y: 6 });
+      rise("sc041-w2", T(172.82) - L, { y: 6 });
+      rise("sc041-w3", T(173.14) - L, { y: 6 });
+    })();
+
+    /* ============ IS042 · 173.86–180.05 · callback ============ */
+    whip("041", "042", S(173.80), { dir: 1 });
+    show("042", 173.80, 180.06);
+    ground("paper", S(173.81));
+    const tb42 = table($("sc042-tbl"));
+    (function () {
+      // the "?" site (this new company)
+      const ss = $("sc042-ssvg");
+      el("rect", { x: 200, y: 150, width: 150, height: 100, fill: "rgba(235,228,214,0.8)", stroke: INK, "stroke-width": 5 }, ss);
+      for (let k = 0; k < 14; k++) el("path", { d: `M${200 + k * 18 - 90} 250 L${200 + k * 18} 150`, stroke: INK, "stroke-width": 3, "clip-path": "url(#intro02-c42)" }, ss);
+      ss.insertAdjacentHTML("afterbegin", '<clipPath id="intro02-c42"><rect x="200" y="150" width="150" height="100"/></clipPath>');
+      const q = el("text", { x: 275, y: 232, "text-anchor": "middle", "font-size": 92, fill: INK }, ss); q.textContent = "?"; q.setAttribute("class", "t-display");
+      // dinner table: all items laid (callback of IS030), Tsao place card labelled on "Tsao"
+      [tb42.p1, tb42.p2, tb42.g1, tb42.g2, tb42.menu, tb42.place, tb42.exec, tb42.folder].forEach((e) => tl.set(e, { opacity: 1 }, S(173.8)));
+      tl.set(tb42.folderT, { opacity: 1 }, S(173.8));
+      const mk = $("sc042-mk"); const f = FX.markupDefs(mk, "intro02-mk42", { boil: 4 }); mk.setAttribute("viewBox", "0 0 4000 1080");
+      const cam = (x, z) => ({ x: -x * z + (1 - z) * 0, y: (1 - z) * 540, scale: z });
+      tl.fromTo("#intro02-sc042-world", cam(0, 1.0), Object.assign(cam(60, 1.0), { duration: 2.4, ease: "none", immediateRender: true }), S(173.86));
+      pop("sc042-site", S(173.9), { from: 0.9, dur: 0.8 });
+      ink(mk, "M740 520 Q900 320 1120 420", S(176.36), 0.6, { width: 6, filter: f });
+      ink(mk, "M1084 392 L1122 422 L1080 448", S(176.9), 0.18, { width: 6, filter: f });
+      pop("sc042-c2", S(176.3), { dur: 0.9 });
+      rise("sc042-w1", T(176.42) - L);
+      rise("sc042-w2", T(176.74) - L);
+      // pan to the New York dinner table (Tsao's place card names him on "Tsao")
+      tl.to("#intro02-sc042-world", Object.assign(cam(1900, 1.0), { duration: 1.2, ease: FX.ease.cam }), S(177.0));
+      rise(tb42.placeT, T(177.54) - L, { y: 6 });
+      rise("sc042-w3", T(179.25) - L);
+      rise("sc042-w4", T(179.57) - L);
+      tl.fromTo(tb42.exec, { filter: "drop-shadow(0 0 0px rgba(255,236,200,0))" }, { filter: "drop-shadow(0 0 22px rgba(255,236,200,0.9))", duration: 1.0, ease: "sine.inOut", immediateRender: false }, S(178.4));
+      // push-through into the silhouette until it fills the frame
+      tl.to("#intro02-sc042-world", { x: -(1900 + 1685) * 3.5 + 960, y: -525 * 3.5 + 540, scale: 3.5, duration: 0.55, ease: FX.ease.in }, S(179.5));
+    })();
+
+    /* ============ IS043 · 180.05–185.01 · Morris Chang · TSMC ============ */
+    show("043", 180.05, SEG_END + 1);
+    ground("night", S(180.05));
+    (function () {
+      const s = $("sc043-svg");
+      s.innerHTML = `<defs>
+        <filter id="intro02-b43" filterUnits="userSpaceOnUse" x="0" y="0" width="1200" height="1080" color-interpolation-filters="sRGB">
+          <feImage href="assets/maps/burn_b.png" x="0" y="0" width="1200" height="1080" preserveAspectRatio="none" result="n"/>
+          <feColorMatrix id="intro02-b43m" in="n" type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  -12 0 0 0 13" result="t"/>
+          <feComposite in="SourceGraphic" in2="t" operator="in"/></filter>
+        <filter id="intro02-c43" filterUnits="userSpaceOnUse" x="0" y="0" width="1200" height="1080" color-interpolation-filters="sRGB">
+          <feImage href="assets/maps/burn_b.png" x="0" y="0" width="1200" height="1080" preserveAspectRatio="none" result="n"/>
+          <feColorMatrix id="intro02-c43a" in="n" type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  -12 0 0 0 13" result="e"/>
+          <feColorMatrix id="intro02-c43b" in="n" type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  -12 0 0 0 15.2" result="l"/>
+          <feComposite in="l" in2="e" operator="arithmetic" k1="0" k2="1" k3="-1" k4="0" result="ring"/>
+          <feFlood flood-color="#ff6a3d" result="fl"/><feComposite in="fl" in2="ring" operator="in" result="r2"/>
+          <feGaussianBlur in="r2" stdDeviation="3" result="gl"/>
+          <feMerge><feMergeNode in="gl"/><feMergeNode in="r2"/></feMerge></filter></defs>
+        <image href="assets/intro/cutouts/silhouette_exec_night.png" x="0" y="0" width="1200" height="1080" filter="url(#intro02-b43)"/>
+        <rect x="0" y="0" width="1200" height="1080" fill="#fff" filter="url(#intro02-c43)"/>`;
+      const M = (o) => "0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  -12 0 0 0 " + o.toFixed(3);
+      const b = { v: 13 };
+      tl.fromTo(b, { v: 13 }, { v: -2.4, duration: 1.0, ease: C("power1.inOut", 1.0), immediateRender: true, onUpdate: () => { $("b43m").setAttribute("values", M(b.v)); $("c43a").setAttribute("values", M(b.v)); $("c43b").setAttribute("values", M(b.v + 2.2)); } }, S(180.67));
+      // arrive from the push-through: silhouette large → settles
+      tl.fromTo("#intro02-sc043-cam", { scale: 1.9 }, { scale: 1.0, duration: 0.6, ease: FX.ease.cam, immediateRender: true }, S(180.05));
+      FX.focusHunt(tl, $("sc043-plate"), S(181.7), { dur: 0.8 });
+      tl.to("#intro02-sc043-cam", { scale: 1.06, duration: 3.2, ease: "none" }, S(181.8));
+      tl.fromTo("#intro02-sc043-cr", { opacity: 0 }, { opacity: 1, duration: 0.3, immediateRender: true }, S(181.0));
+      rise("sc043-w1", T(180.69) - L, { dur: 1.2 });
+      rise("sc043-w2", T(181.25) - L, { dur: 1.2 });
+      // TSMC wordmark stamps in (red)
+      tl.fromTo("#intro02-sc043-logo", { opacity: 0, scale: 1.5 }, { opacity: 1, scale: 1, duration: 0.25, ease: C("power3.in", 0.25), immediateRender: true }, T(183.89) - L - 0.12);
+      tl.fromTo("#intro02-sc043-cam", { x: 0 }, { x: 8, duration: 1 / 12, yoyo: true, repeat: 1, ease: "none", immediateRender: false }, S(183.9));
+      // torn-paper wipe from the right (shared with intro03: seed 4344, 35 % of frame by 185.01)
+      const r = FX.rng(4344), pts = [], pf = [];
+      for (let y = 0; y <= 1160; y += 22) { const j = (r() - 0.5) * 44 + Math.sin(y * 0.013) * 16; pts.push(`${(40 + j).toFixed(1)}px ${y}px`); pf.push(`${(28 + j + (r() - 0.5) * 14).toFixed(1)}px ${y}px`); }
+      document.querySelector("#intro02-tear .pap").style.clipPath = `polygon(${pts.join(",")}, 2200px 1160px, 2200px 0px)`;
+      document.querySelector("#intro02-tear .fib").style.clipPath = `polygon(${pf.join(",")}, 2200px 1160px, 2200px 0px)`;
+      tl.fromTo("#intro02-tear", { x: 2000 }, { x: 1248 - 40, duration: 0.21, ease: "power1.in", immediateRender: true }, S(184.80));
+    })();
+
+    FX.mount(tl, DURATION);
+    window.__timelines = window.__timelines || {};
+    window.__timelines[SEG] = tl;
+  })();
+  </script>
+</template>
+</body>
+</html>
