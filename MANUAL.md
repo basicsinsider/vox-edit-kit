@@ -382,11 +382,15 @@ built per project by `tools/audio/place_sound.py`.
    else (e.g. a title card over "I don't think I need to tell you much"). Rhetorical/filler lines get a visual that serves
    the sentence they belong to, the narrator on camera (intro only), or the previous image held — never an unrelated scene.
    The edit plan names, for every shot, the exact words it covers and why that image fits them; QA reads the contact sheet
-   with the transcript under each frame (§9).
+   with the transcript under each frame (§9). Krish's example was s04: the narration is "a student studying at Stanford
+   or UC Berkeley … in the 1920s … opportunities in the West were scarce" but the screen showed a 1932 Berkeley commencement
+   and a diploma — graduation footage under "scarce opportunities", wrong decade, wrong school. The footage must show
+   what the line says (empty job boards / closed factories / a quiet 1920s West vs. a busy East), or the line gets a
+   typographic/graphic treatment instead.
 4. **One palette per video, researched for that story** — `lib/palette.css` (loaded after fx.css by build_index /
    build_master; same token names so every effect keeps working). Swatch + meaning in `references/palette_<video>.png`.
    Current video (Taiwan chips): red = TSMC/Morris Chang, blue = UMC/Robert Tsao (their real brand colours), celadon =
-   Taiwan itself, yellow = highlighter/key number, everyone else neutral. Max two accents per frame.
+   Taiwan itself, yellow = highlighter/key number, everyone else neutral. Max two accents per frame. (Approved by Krish 2026-10-31.)
 5. **Smooth Vox easing everywhere** (reel `DLQ4Wp9pqv3`, studied in `references/reels/REELS.md` → *ease*):
    velocity jumps up at once and decays over a long tail — entrances 1.0–1.6 s, moves 1.2–2 s, still posterized to 12 fps.
    Use `FX.ease.out` (entrances/pops), `FX.ease.inOut` (A→B moves), `FX.ease.in` (exits), `FX.ease.cam` (camera, never
@@ -418,15 +422,30 @@ built per project by `tools/audio/place_sound.py`.
 Krish has an Epidemic Sound subscription: the **entire music bed comes from Epidemic Sound** (SFX may also come from other
 free sources). Vibe reference: "Melting Glass" (Epidemic) — documentary, textural. Never one music track: build the bed in
 layers (e.g. pad/drone + pulse + melodic layer + texture, using Epidemic **stems**), entering/leaving with the story beats.
-Claude never logs in: Claude lists the tracks/stems (title, artist, link, which stems, timestamps) in
-`requests/epidemic.md`; Krish downloads them into `assets/audio/epidemic/`. VO stays untouched; bed far under the voice.
+Reference playlist (Krish, "Documentaries", 13 tracks + stems, saved in `references/audio/epidemic_playlist_documentaries.json`):
+Melting Glass (Eden Avery, 134 bpm, contemporary classical, restless/sentimental) is the anchor; also Formations (Van Sandano,
+dark pulses), Terms of Gravity, Imber, City Phases, Chrysotile (drone), Ostinato, Misguided Path, When Warriors Align…
+— contemporary classical / pulses / drones, medium energy. Most have stems (bass, drums, instruments, melody).
+**Access:** the official **Epidemic Sound MCP server** (`.mcp.json` in this repo → https://www.epidemicsound.com/a/mcp-service/mcp,
+auth `Authorization: Bearer ${EPIDEMIC_SOUND_MCP_API_KEY}`). Krish creates the key at epidemicsound.com/account/api-keys and
+stores it in the cloud environment as `EPIDEMIC_SOUND_MCP_API_KEY`; a new session then has `SearchRecordings`,
+`SearchSimilarToRecording`, `DownloadRecording` (stems from the original track), `EditRecording` (cut to length),
+`SearchSoundEffects`, `DownloadSoundEffect`. Downloads use his paid subscription (no new licence). Never use the public
+low-quality preview MP3s in an edit. Fallback without the key: Claude lists tracks/stems in `requests/epidemic.md`, Krish
+downloads them into `assets/audio/epidemic/`. VO stays untouched; bed far under the voice.
 
 ### 10.4 The Taiwan long-form edit (4 h 26 min) — workflow
 - Inputs: `bash input/join.sh` → `input/Final Full Audio.mp3` (VO, 4:26:xx) and `input/Face Cam.mp4` (4:35, 29.97 fps).
   The first ~275.5 s of the full audio **is the face-cam take** (cross-correlation 0.96, face cam = full audio − 0.026 s).
   Intro VO = full audio 0–275.5 (`-c copy`); face-cam video is synced at media offset +0.026 s.
 - **Intro rules:** narrator NOT on camera for the first 10 s (VO + edit only). After that the edit still dominates; the
-  face cam may appear only for **1–3 s at a time, a few times**, on lines where he addresses the viewer.
+  face cam appears **5–6 times, 1–3 s each**, on lines where he addresses the viewer (~171 "Guess who…", ~196 "That's the
+  story…", ~246 "I'm your host, Sam", 251–270 the "face built for radio / camera lights" joke — allowed, still in 1–3 s pieces).
+  Face cam stays **clean and modern** (no film grade/texture on him). Allowed on top of / around him: our text treatments, and
+  **graphics behind him**: `npx --yes hyperframes@0.8.217 remove-background clip.mp4 -o fg.webm -b bg.webm` (≈0.7 fps on
+  CPU; clean matte incl. mic) → layer order: room plate (bg.webm) → our chart/map/newspaper with the usual animations →
+  narrator (fg.webm) → text.
+- **Spelling:** on screen always the accurate spelling of every name/place, even when the narrator mispronounces it.
 - Chunks: intro (~4.6 min), then the rest in **10-minute chunks**; each chunk is approved before the next. Krish sends
   Pinterest references per chunk → rebuild each with §6.1.
 - **Within one chunk, never use the same photo or clip more than twice** unless the story truly needs it (track usage
