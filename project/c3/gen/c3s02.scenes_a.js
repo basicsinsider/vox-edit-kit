@@ -222,7 +222,6 @@
     (function () {
       const cam = $("sc052-cam");
       tl.fromTo(cam, camAt(0.42, 1500, 1350), Object.assign(camAt(0.78, 2230, 820), { duration: 2.6, ease: E.cam, immediateRender: true }), S(254.30));
-      tl.set(cam, camAt(0.42, 1500, 1350), 0);
       tl.to(cam, Object.assign(camAt(0.84, 2200, 860), { duration: 4.1, ease: "none" }), S(256.90));
       tl.fromTo($("sc052-ht"), { opacity: 0.12 }, { opacity: 0.3, duration: 2.6, ease: E.cam, immediateRender: true }, S(254.30));
       FX.focusHunt(tl, $("sc052-stage"), S(256.95), { dur: 0.8 });

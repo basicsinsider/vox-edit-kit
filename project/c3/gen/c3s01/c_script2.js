@@ -53,7 +53,7 @@
       pop("sc015-ca", T(63.27) - L, 0.5, 0.9);
       // the code card arrives in California; a photocopy bar sweeps it and an identical copy slides out
       tl.fromTo($("sc015-c1"), { opacity: 0, y: -60, scale: 0.9 }, { opacity: 1, y: 0, scale: 1, duration: 0.6, ease: C(E.out, 0.6), immediateRender: true }, S(65.4));
-      tl.fromTo($("sc015-scan"), { opacity: 0, top: -40 }, { opacity: 1, top: 460, duration: 0.5, ease: "none", immediateRender: true }, S(66.33));
+      tl.fromTo($("sc015-scan"), { opacity: 0, y: -40 }, { opacity: 1, y: 460, duration: 0.5, ease: "none", immediateRender: true }, S(66.33));
       tl.to($("sc015-scan"), { opacity: 0, duration: 0.1 }, S(66.83));
       tl.fromTo($("sc015-c2"), { opacity: 0, x: 0, y: 0, rotation: -3 }, { opacity: 1, x: -400, y: 70, rotation: 4, duration: 0.9, ease: C(E.inOut, 0.9), immediateRender: true }, S(66.85));
       wr("sc015-cp", [T(66.39) - L, T(66.87) - L], { dur: 0.6 });

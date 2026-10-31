@@ -1,0 +1,1508 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8" /></head>
+<body>
+<template>
+  <style>
+    /* c3s02 — chunk c3, LOCAL VO 200.34–404.17 (C3S043–C3S077). Source: project/c3/gen/c3s02.src.html + c3s02.scenes_{a,b,c}.js → build_c3s02.py */
+    #root { position: absolute; inset: 0; overflow: hidden; background: var(--night); }
+    .k-scene { position: absolute; inset: 0; overflow: hidden; visibility: hidden; opacity: 0; }
+    .k-shot { position: absolute; inset: 0; overflow: hidden; transform-origin: 50% 50%; }
+    .k-night { background: var(--night); }
+    .k-paper { background: var(--paper); }
+    .k-abs { position: absolute; }
+    .k-p1, .k-p2 { position: absolute; inset: -30px; background-size: cover; background-position: center; pointer-events: none; }
+    .k-p2 { opacity: 0.9; mix-blend-mode: multiply; }
+    .k-credit { position: absolute; right: 30px; bottom: 20px; font-size: 13px; letter-spacing: 0.08em; color: rgba(242,237,227,0.6); z-index: 6; }
+    .k-credit.ink { color: rgba(20,27,36,0.62); }
+    .k-mk { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; pointer-events: none; }
+    .k-w { display: inline-block; white-space: pre; opacity: 0; }
+    .k-ink { color: var(--ink); }
+    .k-redbox { display: inline-block; background: var(--vermilion); color: var(--bone); padding: 0.1em 0.24em 0.02em; line-height: 1; }
+    .k-inkbox { display: inline-block; background: var(--ink); color: var(--paper); padding: 0.1em 0.24em 0.02em; line-height: 1; }
+    .k-celbox { display: inline-block; background: var(--celadon); color: var(--ink); padding: 0.1em 0.24em 0.02em; line-height: 1; }
+    .k-hlbar { position: absolute; background: var(--yellow); mix-blend-mode: multiply; transform-origin: 0 50%; opacity: 0.9; }
+    .k-scrim-b { position: absolute; left: 0; right: 0; bottom: 0; height: 420px; background: linear-gradient(180deg, rgba(15,19,24,0), rgba(15,19,24,0.82)); }
+    .k-scrim-t { position: absolute; left: 0; right: 0; top: 0; height: 360px; background: linear-gradient(0deg, rgba(15,19,24,0), rgba(15,19,24,0.75)); }
+    .k-scrim-l { position: absolute; left: 0; top: 0; bottom: 0; width: 900px; background: linear-gradient(90deg, rgba(15,19,24,0.8), rgba(15,19,24,0)); }
+    .k-mapcam { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
+    .k-mapcam > img { position: absolute; left: 0; top: 0; }
+    .k-mapcam > svg { position: absolute; left: 0; top: 0; overflow: visible; }
+    .k-card { position: absolute; background: #efe8d8; box-shadow: 0 26px 60px rgba(20,27,36,0.32); overflow: hidden; }
+    .k-card img, .k-card video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    .k-ht { position: absolute; inset: 0; background: url('assets/textures/halftone_01_norm.jpg') 0 0 / 420px auto; mix-blend-mode: overlay; opacity: 0.4; pointer-events: none; }
+    .k-pc { position: absolute; background: #efe8d8; padding: 14px 14px 40px; box-shadow: 0 22px 50px rgba(20,27,36,0.32); }
+    .k-pc .in { position: relative; width: 100%; height: 100%; overflow: hidden; }
+    .k-pc img, .k-pc video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    .k-plate { position: absolute; inset: 0; overflow: hidden; }
+    .k-plate .bg { position: absolute; inset: -80px; width: calc(100% + 160px); height: calc(100% + 160px); object-fit: cover; filter: blur(28px) brightness(0.42) grayscale(0.6); }
+    .k-circ { position: absolute; border-radius: 50%; overflow: hidden; background: #ddd5c4; }
+    .k-circ img, .k-circ svg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    .k-desk { position: absolute; inset: 0; background: radial-gradient(ellipse 60% 70% at 52% 44%, #333029 0%, #1b1916 55%, #0e0d0c 100%); }
+    .k-lamp { position: absolute; inset: 0; background: radial-gradient(ellipse 45% 55% at 50% 42%, rgba(255,214,170,0.16), rgba(255,214,170,0) 70%); mix-blend-mode: screen; pointer-events: none; }
+    .k-tape { position: absolute; width: 150px; height: 44px; background: rgba(236,228,206,0.72); box-shadow: 0 2px 6px rgba(0,0,0,0.12); }
+    #c3s02-flash { position: absolute; inset: 0; background: #f2ede3; opacity: 0; pointer-events: none; z-index: 7; }
+    #c3s02-grain, #c3s02-dust, #c3s02-vig { z-index: 8; }
+
+    /* C3S043 dark timeline */
+    #c3s02-sc043-svg { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; }
+    #c3s02-sc043-str { opacity: 0.55; filter: blur(2.5px); }
+    #c3s02-sc043-txt { left: 0; top: 330px; width: 1920px; text-align: center; font-size: 104px; }
+
+    /* C3S044 dissertation card → Taiwan night relief */
+    #c3s02-sc044-sea { position: absolute; inset: 0; background: #11161c; }
+    #c3s02-sc044-cam { width: 1623px; height: 2200px; }
+    #c3s02-sc044-cam > img { width: 1623px; height: 2200px; }
+    #c3s02-sc044-map { filter: brightness(1.25) contrast(1.06); }
+    #c3s02-sc044-fill { opacity: 0; filter: drop-shadow(0 0 6px rgba(159,199,178,0.85)); }
+    #c3s02-sc044-ht { position: absolute; left: 0; top: 0; width: 1623px; height: 2200px; opacity: 0;
+      background: radial-gradient(circle, rgba(111,156,134,0.85) 2.6px, transparent 3.2px) 0 0 / 11px 11px;
+      -webkit-mask-image: url('assets/c3/derived/c3s02/tw_mask.png'); mask-image: url('assets/c3/derived/c3s02/tw_mask.png'); -webkit-mask-size: 100% 100%; mask-size: 100% 100%; mix-blend-mode: multiply; }
+    #c3s02-sc044-thesis { left: 590px; top: 70px; width: 740px; height: 960px; background: #ece5d3; transform: rotate(-2.5deg); padding: 90px 70px; color: var(--ink); text-align: center; }
+    #c3s02-sc044-thesis .p1 { position: absolute; inset: 0; background: url('assets/textures/paper_stained_01.jpg') center / cover; mix-blend-mode: multiply; opacity: 0.6; }
+    #c3s02-sc044-thesis .t { position: relative; font-size: 22px; letter-spacing: 0.22em; line-height: 1.7; }
+    #c3s02-sc044-thesis .bar { position: relative; height: 16px; margin: 14px auto; background: rgba(20,27,36,0.62); border-radius: 2px; }
+    #c3s02-sc044-thesis .s { position: relative; font-size: 24px; line-height: 1.55; opacity: 0.85; }
+    #c3s02-sc044-grad { left: 120px; top: 110px; font-size: 44px; }
+    #c3s02-sc044-mip { left: 120px; top: 830px; font-size: 92px; }
+    #c3s02-sc044-tw { left: 1340px; top: 470px; font-size: 44px; }
+
+    /* C3S045 1943 map of Formosa (tilted) */
+    #c3s02-sc045-stage { position: absolute; inset: 0; perspective: 2400px; perspective-origin: 50% 40%; }
+    #c3s02-sc045-cam { position: absolute; inset: 0; transform-origin: 50% 50%; }
+    #c3s02-sc045-map { position: absolute; left: 330px; top: -40px; width: 1300px; height: 1185px; transform: rotateX(16deg) rotateZ(-4deg); transform-origin: 50% 60%; box-shadow: 0 40px 90px rgba(20,27,36,0.35); background: #e9e0c8; }
+    #c3s02-sc045-map img { position: absolute; inset: 0; width: 100%; height: 100%; filter: sepia(0.18) saturate(0.85) contrast(1.04); mix-blend-mode: multiply; }
+    #c3s02-sc045-mk { position: absolute; left: 0; top: 0; width: 1300px; height: 1185px; overflow: visible; }
+    #c3s02-sc045-nac { left: 110px; top: 120px; font-size: 84px; }
+    #c3s02-sc045-wb { left: 1300px; top: 860px; font-size: 84px; }
+    #c3s02-sc045-amk { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; }
+
+    /* C3S046 Pacific night */
+    #c3s02-sc046-cam { width: 5896px; height: 1760px; }
+    #c3s02-sc046-cam > img { width: 5896px; height: 1760px; }
+    #c3s02-sc046-map { filter: brightness(1.55) contrast(1.08); }
+    #c3s02-sc046-svg { width: 5896px; height: 1760px; }
+
+    /* C3S047 recipe card + focal call-out */
+    #c3s02-sc047-cam { position: absolute; inset: 0; transform-origin: 50% 50%; }
+    #c3s02-sc047-cards { position: absolute; inset: 0; }
+    .k-recipe { position: absolute; left: 360px; top: 170px; width: 1200px; height: 760px; background: #f4efe2; transform: rotate(-1.6deg); box-shadow: 0 30px 70px rgba(20,27,36,0.3); overflow: hidden; }
+    .k-recipe .rl { position: absolute; left: 0; right: 0; height: 2px; background: rgba(60,110,170,0.38); }
+    .k-recipe .ml { position: absolute; top: 0; bottom: 0; left: 120px; width: 2px; background: rgba(210,70,60,0.45); }
+    .k-recipe .hd { position: absolute; left: 160px; top: 46px; font-size: 60px; color: var(--ink); letter-spacing: 0.3em; }
+    .k-recipe .ln { position: absolute; left: 160px; font-size: 50px; color: #26303d; }
+    .k-recipe .chip { position: absolute; width: 200px; height: 140px; background: #efe8d8; padding: 8px; box-shadow: 0 8px 18px rgba(20,27,36,0.28); }
+    .k-recipe .chip img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(1) sepia(0.25) contrast(1.05); }
+    .k-recipe svg { position: absolute; left: 0; top: 0; width: 1200px; height: 760px; overflow: visible; }
+    #c3s02-sc047-blur { position: absolute; inset: 0; filter: blur(7px); }
+    #c3s02-sc047-gb { left: 120px; top: 60px; font-size: 76px; }
+    #c3s02-sc047-wm { left: 1000px; top: 940px; width: 820px; text-align: right; font-size: 76px; }
+
+    /* C3S048 Taiwan satellite + clouds */
+    #c3s02-sc048-sea { position: absolute; inset: 0; background: #0c1016; }
+    #c3s02-sc048-cam { width: 1919px; height: 2600px; }
+    #c3s02-sc048-cam > img { width: 1919px; height: 2600px; }
+    #c3s02-sc048-map { filter: brightness(1.12) contrast(1.05); }
+    .k-cloud { position: absolute; pointer-events: none; }
+    #c3s02-sc048-dark { position: absolute; inset: 0; background: radial-gradient(ellipse 70% 70% at 50% 55%, rgba(8,10,14,0.15), rgba(8,10,14,0.75)); opacity: 0; }
+    #c3s02-sc048-bf { left: 120px; top: 110px; font-size: 40px; }
+    #c3s02-sc048-sit { left: 120px; top: 170px; font-size: 76px; }
+    #c3s02-sc048-tw { left: 0; top: 780px; width: 1920px; text-align: center; font-size: 210px; letter-spacing: 0.04em; }
+
+    /* C3S049 vintage world atlas plate + pins */
+    #c3s02-sc049-cam { position: absolute; inset: 0; transform-origin: 0 0; }
+    #c3s02-sc049-plate { position: absolute; left: 40px; top: 205px; width: 1840px; height: 662px; box-shadow: 0 24px 60px rgba(20,27,36,0.3); background: #dfe3dc; border: 10px solid #f1ead9; outline: 2px solid rgba(20,27,36,0.6); outline-offset: -14px; }
+    #c3s02-sc049-plate img { position: absolute; inset: 0; width: 100%; height: 100%; filter: saturate(0.72) sepia(0.2) contrast(1.02); }
+    #c3s02-sc049-svg { position: absolute; left: 40px; top: 205px; width: 1840px; height: 662px; overflow: visible; }
+    #c3s02-sc049-l1 { left: 110px; top: 70px; font-size: 64px; white-space: nowrap; }
+    #c3s02-sc049-l2 { left: 110px; top: 920px; font-size: 76px; white-space: nowrap; }
+
+    /* C3S050 1960 Taipei footage */
+    #c3s02-sc050-cam { position: absolute; inset: 0; transform-origin: 50% 50%; }
+    #c3s02-sc050-wv { position: absolute; inset: -20px; }
+    #c3s02-sc050-wv video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    #c3s02-sc050-des { left: 0; top: 400px; width: 1920px; text-align: center; font-size: 190px; }
+    #c3s02-sc050-btt { left: 120px; top: 900px; font-size: 80px; }
+
+    /* C3S051 graph-paper line chart (D05) */
+    #c3s02-sc051-cam { position: absolute; left: 0; top: 0; width: 2300px; height: 1080px; transform-origin: 0 0; }
+    #c3s02-sc051-svg { position: absolute; left: 0; top: 0; width: 2300px; height: 1080px; overflow: visible; }
+    #c3s02-sc051-sv { left: 170px; top: 520px; font-size: 32px; color: var(--navy); }
+    #c3s02-sc051-uu { left: 1180px; top: 120px; font-size: 76px; }
+    #c3s02-sc051-tw { left: 170px; top: 600px; font-size: 32px; }
+    #c3s02-sc051-ec { left: 1180px; top: 870px; font-size: 92px; white-space: nowrap; }
+
+    /* C3S052 Kansan front page (tilted, halftone, push) */
+    #c3s02-sc052-bg { position: absolute; inset: -60px; background: url('assets/c3/derived/c3s02/kansan_page.jpg') center 30% / cover; filter: blur(24px) sepia(0.6) brightness(0.32); }
+    #c3s02-sc052-stage { position: absolute; inset: 0; perspective: 2600px; }
+    #c3s02-sc052-cam { position: absolute; left: 0; top: 0; width: 3000px; height: 3146px; transform-origin: 0 0; }
+    #c3s02-sc052-page { position: absolute; left: 0; top: 0; width: 3000px; height: 3146px; transform: rotateX(7deg) rotateY(-5deg) rotate(-1deg); transform-origin: 50% 30%; box-shadow: 0 40px 120px rgba(0,0,0,0.7); background: #ece3cf; overflow: hidden; }
+    #c3s02-sc052-page img { position: absolute; inset: 0; width: 100%; height: 100%; filter: sepia(0.45) contrast(1.06); mix-blend-mode: multiply; }
+    #c3s02-sc052-page .k-ht { background-size: 260px auto; opacity: 0.18; }
+    #c3s02-sc052-mk { position: absolute; left: 0; top: 0; width: 3000px; height: 3146px; overflow: visible; }
+    #c3s02-sc052-ko { left: 0; top: 860px; width: 1920px; text-align: center; font-size: 110px; }
+    #c3s02-sc052-roc { left: 0; top: 990px; width: 1920px; text-align: center; font-size: 46px; }
+
+    /* C3S053 Mao rostrum footage */
+    #c3s02-sc053-cam { position: absolute; inset: 0; transform-origin: 60% 40%; }
+    #c3s02-sc053-cam video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    #c3s02-sc053-tint { position: absolute; inset: 0; background: #e03f2c; mix-blend-mode: soft-light; opacity: 0.42; }
+    #c3s02-sc053-nst { left: 120px; top: 120px; font-size: 80px; }
+    #c3s02-sc053-ch { left: 120px; top: 760px; font-size: 170px; }
+    #c3s02-sc053-ccp { left: 760px; top: 800px; font-size: 120px; }
+
+    /* C3S054 East Asia night: China red, Taiwan drains */
+    #c3s02-sc054-cam, #c3s02-sc073-cam { width: 3600px; height: 3724px; }
+    #c3s02-sc054-cam > img, #c3s02-sc073-cam > img { width: 3600px; height: 3724px; filter: brightness(1.5) contrast(1.08); }
+    #c3s02-sc054-svg, #c3s02-sc073-svg { width: 3600px; height: 3724px; }
+    #c3s02-sc054-ccp { left: 120px; top: 110px; font-size: 64px; }
+    #c3s02-sc054-ch { left: 120px; top: 190px; font-size: 150px; }
+    #c3s02-sc054-no { left: 1240px; top: 300px; font-size: 96px; }
+    #c3s02-sc054-nac { left: 1240px; top: 420px; font-size: 64px; }
+
+    /* C3S055 AP column, text call-out */
+    #c3s02-sc055-cam { position: absolute; inset: 0; transform-origin: 66% 46%; }
+    #c3s02-sc055-col { position: absolute; left: 1080px; top: 30px; width: 680px; height: 1040px; background: #ede5d2; transform: rotate(1.4deg); box-shadow: 0 30px 70px rgba(20,27,36,0.3); overflow: hidden; }
+    #c3s02-sc055-col img { position: absolute; left: 0; top: 0; width: 680px; height: 1040px; filter: sepia(0.35) contrast(1.08); mix-blend-mode: multiply; }
+    #c3s02-sc055-dim { position: absolute; inset: 0; }
+    #c3s02-sc055-key { position: absolute; inset: 0; clip-path: inset(388px 0 474px 0); }
+    #c3s02-sc055-tws { left: 130px; top: 260px; font-size: 92px; }
+    #c3s02-sc055-dne { left: 130px; top: 420px; font-size: 92px; }
+
+    /* C3S056 ROC walk-out press photo */
+    #c3s02-sc056-cam { position: absolute; inset: 0; transform-origin: 70% 40%; }
+    #c3s02-sc056-img { position: absolute; left: 0; top: -100px; width: 1920px; height: 1327px; object-fit: cover; filter: sepia(0.5) contrast(0.92) brightness(0.86); }
+    #c3s02-sc056-nx { left: 120px; top: 820px; font-size: 140px; }
+
+    /* C3S057–058 paper timeline */
+    #c3s02-sc057-cam { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 50% 50%; }
+    #c3s02-sc057-svg { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; }
+    #c3s02-sc057-card { left: 1290px; top: 300px; width: 520px; height: 224px; transform: rotate(2deg); opacity: 0; }
+    #c3s02-sc057-card img { filter: sepia(0.35) contrast(1.05); }
+    #c3s02-sc057-ec { left: 120px; top: 110px; font-size: 84px; }
+    #c3s02-sc058-pres { left: 130px; top: 250px; width: 520px; height: 330px; opacity: 0; transform: rotate(-2deg); }
+    #c3s02-sc058-pres img { filter: grayscale(0.6) sepia(0.35) contrast(1.05); }
+    #c3s02-sc058-bk { left: 760px; top: 110px; font-size: 40px; }
+    #c3s02-sc058-tw { left: 760px; top: 170px; font-size: 92px; }
+    #c3s02-sc058-gov { left: 140px; top: 640px; font-size: 52px; }
+
+    /* C3S059 WWII newsreel */
+    #c3s02-sc059-wv { position: absolute; inset: -20px; }
+    #c3s02-sc059-wv video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: contrast(1.12) brightness(0.92); }
+    #c3s02-sc059-ww { left: 0; top: 410px; width: 1920px; text-align: center; font-size: 210px; }
+
+    /* C3S060 history-book page rewritten */
+    #c3s02-sc060-cam { position: absolute; inset: 0; transform-origin: 46% 40%; }
+    #c3s02-sc060-book { position: absolute; left: 420px; top: 60px; width: 1080px; height: 980px; transform: rotate(-1.2deg); }
+    .k-pg { position: absolute; top: 0; width: 540px; height: 980px; background: #efe7d2; overflow: hidden; }
+    .k-pg .p1 { position: absolute; inset: 0; background: url('assets/textures/paper_cream_01.jpg') center / cover; mix-blend-mode: multiply; opacity: 0.7; }
+    .k-pg .bl { position: absolute; left: 60px; height: 9px; background: rgba(20,27,36,0.45); border-radius: 2px; }
+    #c3s02-sc060-l { left: 0; box-shadow: inset -30px 0 40px rgba(20,27,36,0.18); }
+    #c3s02-sc060-r { left: 540px; box-shadow: inset 30px 0 40px rgba(20,27,36,0.18), 0 30px 70px rgba(20,27,36,0.3); }
+    #c3s02-sc060-ill { position: absolute; left: 60px; top: 150px; width: 420px; height: 407px; }
+    #c3s02-sc060-ill img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(1) sepia(0.3) contrast(1.08); mix-blend-mode: multiply; }
+    #c3s02-sc060-mk { position: absolute; left: 0; top: 0; width: 1080px; height: 980px; overflow: visible; }
+    #c3s02-sc060-ccp { left: 120px; top: 110px; font-size: 72px; }
+    #c3s02-sc060-cs { left: 1100px; top: 900px; width: 760px; text-align: right; font-size: 80px; }
+
+    /* C3S061 OWI poster */
+    #c3s02-sc061-cam { position: absolute; inset: 0; transform-origin: 62% 45%; }
+    #c3s02-sc061-poster { position: absolute; left: 980px; top: 40px; width: 714px; height: 1000px; box-shadow: 0 30px 80px rgba(0,0,0,0.6); }
+    #c3s02-sc061-poster img { width: 100%; height: 100%; object-fit: cover; filter: saturate(0.85) contrast(1.03); }
+    #c3s02-sc061-txt { left: 130px; top: 260px; font-size: 76px; line-height: 1.25; }
+    #c3s02-sc061-mk { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; }
+
+    /* C3S062 Vox layered panels */
+    #c3s02-sc062-cam { position: absolute; inset: 0; transform-origin: 50% 50%; }
+    .k-panel { position: absolute; overflow: hidden; box-shadow: 0 22px 50px rgba(0,0,0,0.5); background: #2a2826; }
+    .k-panel img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    #c3s02-sc062-a { left: 60px; top: 90px; width: 760px; height: 560px; transform: rotate(-4deg); }
+    #c3s02-sc062-a img { filter: url(#c3s02-tint-night); }
+    #c3s02-sc062-b { left: 1150px; top: 520px; width: 700px; height: 470px; transform: rotate(3deg); }
+    #c3s02-sc062-b img { filter: url(#c3s02-tint-night); }
+    #c3s02-sc062-h { left: 470px; top: 170px; width: 1000px; height: 823px; transform: rotate(-1deg); }
+    #c3s02-sc062-h img { filter: sepia(0.35) contrast(1.06) brightness(0.95); }
+    #c3s02-sc062-cp { left: 120px; top: 860px; font-size: 92px; }
+    #c3s02-sc062-aj { left: 1180px; top: 90px; font-size: 92px; }
+
+    /* C3S063 D15 diagram US ↔ CCP */
+    #c3s02-sc063-cam { position: absolute; inset: 0; transform-origin: 50% 50%; }
+    #c3s02-sc063-svg { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; }
+    #c3s02-sc063-us { left: 400px; top: 300px; width: 340px; height: 340px; border: 10px solid var(--navy); }
+    #c3s02-sc063-cn { left: 1180px; top: 300px; width: 340px; height: 340px; border: 10px solid var(--vermilion); }
+    #c3s02-sc063-cn img { filter: url(#c3s02-tint-red); }
+    #c3s02-sc063-usl { left: 330px; top: 680px; width: 480px; text-align: center; font-size: 34px; }
+    #c3s02-sc063-ccp { left: 1110px; top: 676px; width: 480px; text-align: center; font-size: 64px; }
+
+    /* C3S064 Cairo 1943 (depth plate) */
+    #c3s02-sc064-stage { position: absolute; inset: 0; perspective: 1200px; overflow: hidden; }
+    #c3s02-sc064-far { position: absolute; inset: -120px; background: url('assets/c3/derived/c3s02/cairo.jpg') 50% 30% / cover; filter: blur(22px) brightness(0.45) grayscale(1); }
+    #c3s02-sc064-cam { position: absolute; inset: 0; transform-origin: 30% 40%; }
+    #c3s02-sc064-img { position: absolute; left: -40px; top: -160px; width: 2005px; height: 1551px; filter: grayscale(1) sepia(0.22) contrast(1.06); }
+    #c3s02-sc064-mk { position: absolute; left: -40px; top: -160px; width: 2005px; height: 1551px; overflow: visible; }
+    #c3s02-sc064-roc { left: 120px; top: 760px; font-size: 96px; }
+    #c3s02-sc064-nat { left: 120px; top: 890px; font-size: 76px; }
+
+    /* C3S065–066 1945 card → BIG FOUR pillars (D02) */
+    #c3s02-sc065-cam { position: absolute; inset: 0; transform-origin: 50% 60%; }
+    #c3s02-sc065-svg { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; }
+    #c3s02-sc065-card { left: 560px; top: 160px; width: 800px; height: 756px; transform: rotate(-2deg); opacity: 0; }
+    #c3s02-sc065-card img { filter: sepia(0.35) contrast(1.05); }
+    #c3s02-sc065-we { left: 120px; top: 110px; font-size: 84px; }
+    #c3s02-sc065-bf { left: 0; top: 70px; width: 1920px; text-align: center; font-size: 110px; }
+    .k-flag { position: absolute; width: 160px; height: 160px; border: 6px solid var(--bone); box-shadow: 0 0 0 2px rgba(20,27,36,0.5), 0 10px 24px rgba(20,27,36,0.3); opacity: 0; }
+    .k-flag .k-ht { opacity: 0.25; background-size: 200px auto; }
+    #c3s02-sc066-fdr { width: 230px; height: 230px; border: 8px solid var(--ink); opacity: 0; }
+    #c3s02-sc066-us { font-size: 30px; opacity: 0; }
+    #c3s02-sc066-pwo { left: 1220px; top: 330px; font-size: 56px; }
+    #c3s02-sc066-hl { left: -6px; right: -6px; top: 26px; height: 34px; }
+
+    /* C3S067–068 world night */
+    #c3s02-sc067-cam { width: 5200px; height: 2254px; }
+    #c3s02-sc067-cam > img { width: 5200px; height: 2254px; filter: brightness(1.6) contrast(1.08); }
+    #c3s02-sc067-svg { width: 5200px; height: 2254px; }
+    #c3s02-sc067-fp { left: 0; top: 410px; width: 1920px; text-align: center; font-size: 170px; }
+    .k-plab { position: absolute; font-size: 30px; opacity: 0; white-space: nowrap; }
+
+    /* C3S069 UN Charter */
+    #c3s02-sc069-cam { position: absolute; inset: 0; transform-origin: 55% 50%; }
+    #c3s02-sc069-page { left: 820px; top: 110px; width: 900px; height: 675px; transform: rotate(3deg); }
+    #c3s02-sc069-page img { filter: grayscale(1) sepia(0.35) contrast(1.15) brightness(1.05); }
+    #c3s02-sc069-photo { left: 300px; top: 300px; width: 720px; height: 580px; transform: rotate(-3.5deg); }
+    #c3s02-sc069-photo video { filter: grayscale(1) sepia(0.25) contrast(1.1); }
+    #c3s02-sc069-clip { position: absolute; left: 560px; top: 270px; width: 54px; height: 130px; border: 7px solid #8b8f94; border-radius: 26px; transform: rotate(-3.5deg); }
+    #c3s02-sc069-fm { left: 120px; top: 110px; font-size: 80px; }
+    #c3s02-sc069-unc { left: 1140px; top: 860px; font-size: 96px; }
+
+    /* C3S070 Security Council poster */
+    #c3s02-sc070-cam { position: absolute; left: 0; top: 0; width: 2337px; height: 3000px; transform-origin: 0 0; }
+    #c3s02-sc070-img { position: absolute; left: 0; top: 0; width: 2337px; height: 3000px; filter: grayscale(1) sepia(0.2) contrast(1.05) brightness(0.92); }
+    #c3s02-sc070-mk { position: absolute; left: 0; top: 0; width: 2337px; height: 3000px; overflow: visible; }
+    #c3s02-sc070-veto { left: 120px; top: 110px; font-size: 52px; }
+    #c3s02-sc070-ps { left: 120px; top: 180px; font-size: 80px; }
+    #c3s02-sc070-sc { left: 0; top: 820px; width: 1920px; text-align: center; font-size: 150px; white-space: nowrap; }
+
+    /* C3S071 civil-war newsreel */
+    #c3s02-sc071-wv { position: absolute; inset: -20px; }
+    #c3s02-sc071-wv video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: brightness(1.7) contrast(1.15); }
+    #c3s02-sc071-cw { left: 0; top: 420px; width: 1920px; text-align: center; font-size: 220px; }
+
+    /* C3S072 torn face-off poster */
+    #c3s02-sc072-cam { position: absolute; inset: 0; transform-origin: 50% 50%; }
+    .k-half { position: absolute; top: 120px; width: 760px; height: 820px; overflow: hidden; box-shadow: 0 24px 60px rgba(20,27,36,0.3); opacity: 0; }
+    .k-half img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    #c3s02-sc072-l { left: 190px; transform: rotate(-1.5deg); clip-path: polygon(0 0, 100% 0, 96% 12%, 100% 25%, 95% 41%, 99% 57%, 94% 72%, 98% 86%, 95% 100%, 0 100%); }
+    #c3s02-sc072-l img { object-position: 50% 15%; filter: url(#c3s02-tint-cel); }
+    #c3s02-sc072-r { left: 970px; transform: rotate(1.5deg); clip-path: polygon(4% 0, 100% 0, 100% 100%, 3% 100%, 0 88%, 5% 74%, 1% 58%, 6% 43%, 2% 27%, 5% 13%); }
+    #c3s02-sc072-r img { object-position: 50% 30%; filter: url(#c3s02-tint-red); }
+    #c3s02-sc072-rs { left: 0; top: 34px; width: 1920px; text-align: center; font-size: 64px; }
+    #c3s02-sc072-roc { left: 230px; top: 780px; font-size: 96px; }
+    #c3s02-sc072-nat { left: 230px; top: 890px; font-size: 64px; }
+    #c3s02-sc072-com { left: 1030px; top: 890px; font-size: 64px; }
+    #c3s02-sc072-ccp { left: 1030px; top: 780px; font-size: 96px; }
+
+    /* C3S073–074 civil war burn (East Asia) → strait satellite */
+    #c3s02-sc073-n { left: 120px; top: 110px; font-size: 120px; color: var(--yellow); }
+    #c3s02-sc073-yr { left: 230px; top: 150px; font-size: 64px; }
+    #c3s02-sc073-win { left: 120px; top: 880px; font-size: 110px; }
+    #c3s02-sc074-cam { width: 3677px; height: 2872px; opacity: 0; }
+    #c3s02-sc074-cam > img { width: 3677px; height: 2872px; }
+    #c3s02-sc074-map { filter: brightness(1.1) contrast(1.05); }
+    #c3s02-sc074-svg { width: 3677px; height: 2872px; }
+    #c3s02-sc074-fill { opacity: 0; filter: drop-shadow(0 0 6px rgba(159,199,178,0.9)); }
+    #c3s02-sc074-fl { left: 120px; top: 110px; font-size: 52px; }
+    #c3s02-sc074-tw { left: 0; top: 820px; width: 1920px; text-align: center; font-size: 200px; letter-spacing: 0.04em; }
+
+    /* C3S075 arrival photo → 1935 painting */
+    #c3s02-sc075-cam { position: absolute; left: 0; top: 0; width: 3000px; height: 1080px; transform-origin: 0 0; }
+    #c3s02-sc075-ph { left: 220px; top: 250px; width: 640px; height: 480px; transform: rotate(-3deg); }
+    #c3s02-sc075-ph img { filter: grayscale(1) sepia(0.3) contrast(1.1) brightness(1.05); }
+    #c3s02-sc075-pt { left: 1130px; top: 250px; width: 1700px; height: 461px; transform: rotate(1.2deg); }
+    #c3s02-sc075-pt img { filter: saturate(0.85) sepia(0.12); }
+    #c3s02-sc075-ar { left: 260px; top: 800px; font-size: 92px; }
+    #c3s02-sc075-tw { left: 1820px; top: 790px; font-size: 104px; }
+    #c3s02-sc075-mk { position: absolute; left: 0; top: 0; width: 3000px; height: 1080px; overflow: visible; }
+
+    /* C3S076 Chiang in Taiwan → Presidential Office */
+    #c3s02-sc076-cam { position: absolute; inset: 0; transform-origin: 50% 45%; }
+    .k-wv { position: absolute; inset: -20px; }
+    .k-wv video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    #c3s02-sc076-nt { left: 120px; top: 860px; font-size: 92px; }
+    #c3s02-sc076-gov { left: 120px; top: 120px; font-size: 120px; }
+
+    /* C3S077 'recover the mainland' placard + typed caption */
+    #c3s02-sc077-cam { position: absolute; inset: 0; transform-origin: 40% 50%; }
+    #c3s02-sc077-pl { left: 260px; top: 90px; width: 520px; height: 912px; transform: rotate(-2deg); }
+    #c3s02-sc077-pl img { filter: saturate(0.9) contrast(1.05); }
+    #c3s02-sc077-ty { position: absolute; left: 960px; top: 300px; width: 860px; font-size: 64px; color: #26303d; }
+    #c3s02-sc077-ty .row { position: relative; height: 96px; white-space: nowrap; }
+    #c3s02-sc077-mk { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; }
+    #c3s02-sc077-st { left: 960px; top: 700px; font-size: 150px; }
+  </style>
+  <div id="root" data-composition-id="c3s02" data-vo-start="200.34" data-duration="203.83" data-width="1920" data-height="1080">
+    <svg id="c3s02-defs" width="0" height="0" style="position:absolute"></svg>
+
+    <!-- C3S043 · 200.34–205.94 · And a little bit later … a few decades later, after Silicon Valley · dark timeline racing through decades -->
+    <div class="k-scene k-night" id="c3s02-sc043" data-scene="C3S043"><div class="k-shot" id="c3s02-sc043-shot">
+      <canvas id="c3s02-sc043-str" class="streaks"></canvas>
+      <svg id="c3s02-sc043-svg" viewBox="0 0 1920 1080"><g id="c3s02-sc043-axis"></g><g id="c3s02-sc043-dot"></g></svg>
+      <div id="c3s02-sc043-txt" class="k-abs t-serif-i clean"><span class="k-w">a </span><span class="k-w">few </span><span class="k-w">decades </span><span class="k-w">later</span></div>
+    </div></div>
+
+    <!-- C3S044 · 205.94–213.14 · after graduating … one of the most important people in Taiwan · dissertation card → Taiwan relief, celadon fill -->
+    <div class="k-scene k-night" id="c3s02-sc044" data-scene="C3S044"><div class="k-shot" id="c3s02-sc044-shot">
+      <div id="c3s02-sc044-sea"></div>
+      <div id="c3s02-sc044-cam" class="k-mapcam">
+        <img id="c3s02-sc044-map" src="assets/c3/derived/c3s02/tw_night.jpg" alt="" />
+        <img id="c3s02-sc044-fill" src="assets/c3/derived/c3s02/tw_celadon.png" alt="" />
+        <div id="c3s02-sc044-ht"></div>
+        <svg id="c3s02-sc044-svg" viewBox="0 0 1623 2200" style="width:1623px;height:2200px"></svg>
+      </div>
+      <div class="k-desk" id="c3s02-sc044-desk"><div class="k-lamp"></div></div>
+      <div id="c3s02-sc044-thesis" class="k-abs"><div class="p1"></div>
+        <div class="t t-label">Stanford University</div>
+        <div style="height:70px"></div>
+        <div class="bar" style="width:86%"></div><div class="bar" style="width:72%"></div><div class="bar" style="width:54%"></div>
+        <div style="height:60px"></div>
+        <div class="s t-serif">A dissertation submitted to the Department of Electrical Engineering and the Committee on Graduate Study of Stanford University in partial fulfillment of the requirements for the degree of</div>
+        <div style="height:26px"></div>
+        <div class="t t-label">Doctor of Philosophy</div>
+        <div style="height:80px"></div>
+        <div class="s t-serif-i">By</div>
+        <div class="t t-label">Wen-Yuan Pan</div>
+      </div>
+      <div id="c3s02-sc044-grad" class="k-abs t-label clean"><span class="k-w">graduating</span></div>
+      <div class="k-scrim-b" style="height:360px"></div>
+      <div id="c3s02-sc044-mip" class="k-abs t-serif-i clean"><span class="k-w">most </span><span class="k-w">important </span><span class="k-w">people</span></div>
+      <div id="c3s02-sc044-tw" class="k-abs t-label clean"><span class="k-w">Taiwan</span></div>
+      <div class="k-credit t-label" id="c3s02-sc044-cr">Relief: AWS Terrain Tiles / Natural Earth · public domain</div>
+    </div></div>
+
+    <!-- C3S045 · 213.14–216.90 · Which is not a country at this point … but it will become a country · 1943 Japanese map of Formosa -->
+    <div class="k-scene k-paper" id="c3s02-sc045" data-scene="C3S045" style="z-index:2"><div class="k-shot" id="c3s02-sc045-shot">
+      <div class="k-p1" style="background-image:url('assets/textures/paper_stained_01_hires.jpg')"></div>
+      <div class="k-p2" style="background-image:url('assets/textures/paper_cream_01.jpg'); opacity:0.5"></div>
+      <div id="c3s02-sc045-stage"><div id="c3s02-sc045-cam">
+        <div id="c3s02-sc045-map"><img src="assets/c3/derived/c3s02/formosa_1943.jpg" alt="" /><svg id="c3s02-sc045-mk" viewBox="0 0 1300 1185"></svg></div>
+      </div></div>
+      <svg id="c3s02-sc045-amk" class="k-mk"></svg>
+      <div id="c3s02-sc045-nac" class="k-abs t-serif-i k-ink"><span class="k-w">not </span><span class="k-w">a </span><span class="k-w">country</span></div>
+      <div id="c3s02-sc045-wb" class="k-abs t-serif-i k-ink"><span class="k-w">will </span><span class="k-w">become</span></div>
+      <div class="k-credit ink t-label">Map: Japanese aviation map of Formosa, 1943 · public domain</div>
+    </div></div>
+
+    <!-- C3S046 · 216.90–223.46 · He becomes an important person in Taiwan … happening in Silicon Valley right now · Pacific night, radio rings -->
+    <div class="k-scene k-night" id="c3s02-sc046" data-scene="C3S046"><div class="k-shot" id="c3s02-sc046-shot">
+      <div id="c3s02-sc046-cam" class="k-mapcam">
+        <img id="c3s02-sc046-map" src="assets/c3/derived/c3s02/pac_night.jpg" alt="" />
+        <img id="c3s02-sc046-fill" src="assets/c3/derived/c3s02/pac_tw_fill.png" alt="" style="filter:drop-shadow(0 0 6px rgba(159,199,178,0.9))" />
+        <svg id="c3s02-sc046-svg" viewBox="0 0 5896 1760"></svg>
+      </div>
+      <div class="k-plab t-label clean" id="c3s02-sc046-twl"><span class="k-w">Taiwan</span></div>
+      <div class="k-plab t-label clean" id="c3s02-sc046-svl" style="font-size:40px"><span class="k-w">Silicon </span><span class="k-w">Valley</span></div>
+      <div class="k-credit t-label">Relief: AWS Terrain Tiles / Natural Earth · public domain</div>
+    </div></div>
+
+    <!-- C3S047 · 223.46–228.34 · But he's gonna go back and look and see what made it so · recipe card + focal call-out -->
+    <div class="k-scene k-paper" id="c3s02-sc047" data-scene="C3S047"><div class="k-shot" id="c3s02-sc047-shot">
+      <div class="k-p1" style="background-image:url('assets/textures/paper_lined_01_hires.jpg')"></div>
+      <div class="k-p2" style="background-image:url('assets/textures/paper_cream_02.jpg'); opacity:0.55"></div>
+      <div id="c3s02-sc047-cam"><div id="c3s02-sc047-cards"></div><div id="c3s02-sc047-blur"></div></div>
+      <div id="c3s02-sc047-gb" class="k-abs t-serif-i k-ink"><span class="k-w">go </span><span class="k-w">back</span></div>
+      <div id="c3s02-sc047-wm" class="k-abs t-serif-i k-ink"><span class="k-w">what </span><span class="k-w">made </span><span class="k-w">it </span><span class="k-w">so</span></div>
+    </div></div>
+
+    <!-- C3S048 · 228.34–235.94 · before we get into that story, let's look at exactly the situation Taiwan is in · satellite + clouds -->
+    <div class="k-scene k-night" id="c3s02-sc048" data-scene="C3S048"><div class="k-shot" id="c3s02-sc048-shot">
+      <div id="c3s02-sc048-sea"></div>
+      <div id="c3s02-sc048-cam" class="k-mapcam">
+        <img id="c3s02-sc048-map" src="assets/c3/derived/c3s02/tw_sat.jpg" alt="" />
+        <img class="k-cloud" id="c3s02-sc048-sh1" src="assets/maps/clouds/cloud_02_satellite.png" alt="" style="filter:brightness(0) blur(14px);opacity:0.35" />
+        <img class="k-cloud" id="c3s02-sc048-c1" src="assets/maps/clouds/cloud_02_satellite.png" alt="" />
+        <img class="k-cloud" id="c3s02-sc048-c2" src="assets/maps/clouds/cloud_03_satellite.png" alt="" />
+        <img class="k-cloud" id="c3s02-sc048-c3" src="assets/maps/clouds/cloud_01_satellite.png" alt="" />
+      </div>
+      <div id="c3s02-sc048-dark"></div>
+      <div class="k-scrim-b" style="height:360px"></div>
+      <div id="c3s02-sc048-bf" class="k-abs t-label clean"><span class="k-w">before</span></div>
+      <div id="c3s02-sc048-sit" class="k-abs t-serif-i clean"><span class="k-w">the </span><span class="k-w">situation</span></div>
+      <div id="c3s02-sc048-tw" class="k-abs t-display halate"><span class="k-w">TAIWAN</span></div>
+      <div class="k-credit t-label">Imagery: Esri, Maxar, Earthstar Geographics</div>
+    </div></div>
+
+    <!-- C3S049 · 235.94–240.50 · everyone wants Silicon Valley, but why did Taiwan want it? · vintage atlas + pins + circle -->
+    <div class="k-scene k-paper" id="c3s02-sc049" data-scene="C3S049"><div class="k-shot" id="c3s02-sc049-shot">
+      <div class="k-p1" style="background-image:url('assets/textures/paper_torn_01_hires.jpg')"></div>
+      <div class="k-p2" style="background-image:url('assets/textures/paper_fiber_01.jpg'); opacity:0.45"></div>
+      <div id="c3s02-sc049-cam">
+        <div id="c3s02-sc049-plate"><img src="assets/c3/derived/c3s02/world_atlas.jpg" alt="" /></div>
+        <svg id="c3s02-sc049-svg" viewBox="0 0 1840 662"></svg>
+      </div>
+      <div id="c3s02-sc049-l1" class="k-abs t-serif-i k-ink"><span class="k-w">everyone </span><span class="k-w">wants </span><span class="k-w">Silicon </span><span class="k-w">Valley</span></div>
+      <div id="c3s02-sc049-l2" class="k-abs t-display k-ink"><span class="k-w">why </span><span class="k-w">Taiwan</span><span class="k-w">?</span></div>
+      <div class="k-credit ink t-label">Relief: AWS Terrain Tiles / Natural Earth · public domain</div>
+    </div></div>
+
+    <!-- C3S050 · 240.50–244.74 · And why were they so desperate? This is when we come back to Taiwan · 1960 Taipei footage -->
+    <div class="k-scene k-night" id="c3s02-sc050" data-scene="C3S050"><div class="k-shot" id="c3s02-sc050-shot">
+      <div id="c3s02-sc050-cam"><div id="c3s02-sc050-wv">
+        <video id="c3s02-sc050-v" muted playsinline src="assets/intro/footage/taiwan_1960_taipei_north_gate_traffic.mp4" data-start="40.10" data-duration="5.00" data-media-start="0.6"
+          data-color-grading='{"intensity":1,"adjust":{"saturation":-0.6,"contrast":0.1},"effects":{"chromaticAberration":0.12}}'></video>
+      </div></div>
+      <div class="k-scrim-b"></div>
+      <div id="c3s02-sc050-des" class="k-abs t-display halate"><span class="k-w">desperate</span></div>
+      <div id="c3s02-sc050-btt" class="k-abs t-serif-i clean"><span class="k-w">back </span><span class="k-w">to </span><span class="k-w">Taiwan</span></div>
+      <div class="k-credit t-label">Footage: Taipei, 1960 · public domain</div>
+    </div></div>
+
+    <!-- C3S051 · 244.74–253.94 · while Silicon Valley is on the up and up, Taiwan is facing … existential crises · graph paper lines + crisis band -->
+    <div class="k-scene k-paper" id="c3s02-sc051" data-scene="C3S051" style="z-index:2"><div class="k-shot" id="c3s02-sc051-shot">
+      <div class="k-p1" style="background-image:url('assets/textures/paper_graph_01_hires.jpg')"></div>
+      <div class="k-p2" style="background-image:url('assets/textures/paper_fiber_01.jpg'); opacity:0.4"></div>
+      <div id="c3s02-sc051-cam">
+        <svg id="c3s02-sc051-svg" viewBox="0 0 2300 1080"></svg>
+        <div id="c3s02-sc051-sv" class="k-abs t-label"><span class="k-w">Silicon </span><span class="k-w">Valley</span></div>
+        <div id="c3s02-sc051-tw" class="k-abs t-label k-ink"><span class="k-w">Taiwan</span></div>
+      </div>
+      <div id="c3s02-sc051-uu" class="k-abs t-serif-i k-ink"><span class="k-w">up </span><span class="k-w">and </span><span class="k-w">up</span></div>
+      <div id="c3s02-sc051-ec" class="k-abs t-serif k-ink"><span class="k-w">existential </span><span class="k-w">crises</span></div>
+    </div></div>
+
+    <!-- C3S052 · 253.94–261.05 · the UN had just kicked out Taiwan, the Republic of China, as a country · 26 Oct 1971 front page -->
+    <div class="k-scene k-night" id="c3s02-sc052" data-scene="C3S052"><div class="k-shot" id="c3s02-sc052-shot">
+      <div id="c3s02-sc052-bg"></div>
+      <div id="c3s02-sc052-stage"><div id="c3s02-sc052-cam">
+        <div id="c3s02-sc052-page"><img src="assets/c3/derived/c3s02/kansan_page.jpg" alt="" /><div class="k-ht" id="c3s02-sc052-ht"></div><svg id="c3s02-sc052-mk" viewBox="0 0 3000 3146"></svg></div>
+      </div></div>
+      <div class="k-scrim-b" style="height:330px"></div>
+      <div id="c3s02-sc052-ko" class="k-abs t-label clean"><span class="k-w">kicked </span><span class="k-w">out</span></div>
+      <div id="c3s02-sc052-roc" class="k-abs t-serif-i clean"><span class="k-w">Republic </span><span class="k-w">of </span><span class="k-w">China</span></div>
+      <div class="k-credit t-label">University Daily Kansan, 26 Oct 1971 (AP) · KU Libraries · fair use</div>
+    </div></div>
+
+    <!-- C3S053 · 261.05–265.93 · It basically said that there's no such thing. China belongs to the CCP · Mao on the rostrum (newsreel) -->
+    <div class="k-scene k-night" id="c3s02-sc053" data-scene="C3S053"><div class="k-shot" id="c3s02-sc053-shot">
+      <div id="c3s02-sc053-cam" class="k-wv">
+        <video id="c3s02-sc053-v" muted playsinline src="assets/c3/footage/newsreel_1959_mao_rostrum_parade.mp4" data-start="60.71" data-duration="4.95" data-media-start="0"
+          data-color-grading='{"intensity":1,"adjust":{"saturation":-1,"contrast":0.12},"effects":{"chromaticAberration":0.12}}'></video>
+        <div id="c3s02-sc053-tint"></div>
+      </div>
+      <div class="k-scrim-b"></div><div class="k-scrim-t"></div>
+      <div id="c3s02-sc053-nst" class="k-abs t-serif-i clean"><span class="k-w">no </span><span class="k-w">such </span><span class="k-w">thing</span></div>
+      <div id="c3s02-sc053-ch" class="k-abs t-display clean"><span class="k-w">China</span></div>
+      <div id="c3s02-sc053-ccp" class="k-abs t-display"><span class="k-redbox k-w">CCP</span></div>
+      <div class="k-credit t-label">Newsreel: Beijing, 1959 · public domain</div>
+    </div></div>
+
+    <!-- C3S054 · 265.93–272.73 · The CCP is the governing government of China … Taiwan is just nothing. Not a country · East Asia night -->
+    <div class="k-scene k-night" id="c3s02-sc054" data-scene="C3S054"><div class="k-shot" id="c3s02-sc054-shot">
+      <div id="c3s02-sc054-cam" class="k-mapcam">
+        <img src="assets/c3/derived/c3s02/ea_night.jpg" alt="" />
+        <svg id="c3s02-sc054-svg" viewBox="0 0 3600 3724"></svg>
+        <img id="c3s02-sc054-tw" src="assets/c3/derived/c3s02/ea_tw_fill.png" alt="" style="filter:drop-shadow(0 0 6px rgba(159,199,178,0.9))" />
+      </div>
+      <div class="k-scrim-l"></div>
+      <div id="c3s02-sc054-ccp" class="k-abs t-label"><span class="k-redbox k-w">CCP</span></div>
+      <div id="c3s02-sc054-ch" class="k-abs t-display clean"><span class="k-w">China</span></div>
+      <div id="c3s02-sc054-no" class="k-abs t-serif-i clean"><span class="k-w">nothing</span></div>
+      <div id="c3s02-sc054-nac" class="k-abs t-label clean"><span class="k-w">Not </span><span class="k-w">a </span><span class="k-w">country</span></div>
+      <div class="k-credit t-label">Relief: AWS Terrain Tiles / Natural Earth · public domain</div>
+    </div></div>
+
+    <!-- C3S055 · 272.73–277.21 · from a Taiwanese point of view, this was something they did not expect · AP column, text call-out -->
+    <div class="k-scene k-paper" id="c3s02-sc055" data-scene="C3S055" style="z-index:2"><div class="k-shot" id="c3s02-sc055-shot">
+      <div class="k-p1" style="background-image:url('assets/textures/paper_stained_01_hires.jpg')"></div>
+      <div class="k-p2" style="background-image:url('assets/textures/paper_fiber_01.jpg'); opacity:0.5"></div>
+      <div id="c3s02-sc055-cam">
+        <div id="c3s02-sc055-col"><div id="c3s02-sc055-dim"><img src="assets/c3/derived/c3s02/kansan_column.jpg" alt="" /></div><div id="c3s02-sc055-key"><img src="assets/c3/derived/c3s02/kansan_column.jpg" alt="" style="filter:sepia(0.3) contrast(1.25)" /></div><div class="k-ht" style="opacity:0.15"></div></div>
+      </div>
+      <div id="c3s02-sc055-tws" class="k-abs t-display k-ink"><span class="k-inkbox k-w">Taiwanese</span></div>
+      <div id="c3s02-sc055-dne" class="k-abs t-serif-i k-ink"><span class="k-w">did </span><span class="k-w">not </span><span class="k-w">expect</span></div>
+      <div class="k-credit ink t-label">University Daily Kansan, 26 Oct 1971 (AP) · KU Libraries · fair use</div>
+    </div></div>
+
+    <!-- C3S056 · 277.21–280.17 · they didn't know what was gonna happen next · ROC delegation walks out (SCMP photo) -->
+    <div class="k-scene k-night" id="c3s02-sc056" data-scene="C3S056"><div class="k-shot" id="c3s02-sc056-shot">
+      <div id="c3s02-sc056-wv" class="k-wv"><div id="c3s02-sc056-cam" class="k-plate">
+        <img id="c3s02-sc056-img" src="assets/c3/newspapers/scmp_1971-10-27_roc_walkout_photo.png" alt="" />
+      </div></div>
+      <div class="vignette"></div>
+      <div id="c3s02-sc056-nx" class="k-abs t-serif-i clean"><span class="k-w">next</span></div>
+      <div class="k-credit t-label">Photo: South China Morning Post, 27 Oct 1971 · fair use</div>
+    </div></div>
+
+    <!-- C3S057–C3S058 · 280.17–291.29 · to truly understand … existential crisis, … background about Taiwan and how the government there came to be · paper timeline -->
+    <div class="k-scene k-paper" id="c3s02-sc057" data-scene="C3S057-C3S058" style="z-index:2"><div class="k-shot" id="c3s02-sc057-shot">
+      <div class="k-p1" style="background-image:url('assets/textures/paper_lined_01_hires.jpg')"></div>
+      <div class="k-p2" style="background-image:url('assets/textures/paper_cream_01.jpg'); opacity:0.55"></div>
+      <div id="c3s02-sc057-cam">
+        <svg id="c3s02-sc057-svg" viewBox="0 0 1920 1080"><g id="c3s02-sc057-ticks"></g></svg>
+        <div class="k-card" id="c3s02-sc057-card"><img src="assets/c3/derived/c3s02/kansan_headline_card.jpg" alt="" /></div>
+        <div class="k-pc" id="c3s02-sc058-pres"><div class="in"><img src="assets/c3/derived/c3s02/still_presoffice.jpg" alt="" /></div></div>
+      </div>
+      <div id="c3s02-sc057-ec" class="k-abs t-serif-i k-ink"><span class="k-w">existential </span><span class="k-w">crisis</span></div>
+      <div id="c3s02-sc058-bk" class="k-abs t-label k-ink"><span class="k-w">background</span></div>
+      <div id="c3s02-sc058-tw" class="k-abs t-serif-i k-ink"><span class="k-w">Taiwan</span></div>
+      <div id="c3s02-sc058-gov" class="k-abs t-display"><span class="k-inkbox k-w">government</span></div>
+    </div></div>
+
+    <!-- C3S059 · 291.29–294.01 · Our story starts in World War II · Pacific newsreel -->
+    <div class="k-scene k-night" id="c3s02-sc059" data-scene="C3S059"><div class="k-shot" id="c3s02-sc059-shot">
+      <div id="c3s02-sc059-wv"><video id="c3s02-sc059-v" muted playsinline src="assets/c3/footage/newsreel_1945_pacific_carrier_deck_launch.mp4" data-start="90.89" data-duration="3.50" data-media-start="0.3"
+        data-color-grading='{"intensity":1,"adjust":{"saturation":-1,"contrast":0.1},"effects":{"chromaticAberration":0.12,"filmArtifacts":0.3}}'></video></div>
+      <div class="vignette"></div>
+      <div id="c3s02-sc059-ww" class="k-abs t-display halate"><span class="k-w">WORLD </span><span class="k-w">WAR </span><span class="k-w">II</span></div>
+      <div class="k-credit t-label">Universal Newsreel, 1945 · public domain</div>
+    </div></div>
+
+    <!-- C3S060 · 294.01–298.97 · current China, the CCP, has tried to change the story a bit · history-book page rewritten in red pen -->
+    <div class="k-scene k-paper" id="c3s02-sc060" data-scene="C3S060" style="z-index:2"><div class="k-shot" id="c3s02-sc060-shot">
+      <div class="k-p1" style="background-image:url('assets/textures/paper_torn_01_hires.jpg')"></div>
+      <div class="k-p2" style="background-image:url('assets/textures/paper_cream_02.jpg'); opacity:0.5"></div>
+      <div id="c3s02-sc060-cam"><div id="c3s02-sc060-book">
+        <div class="k-pg" id="c3s02-sc060-l"><div class="p1"></div><div id="c3s02-sc060-ill" class="k-abs"><img src="assets/c3/derived/c3s02/ww2_22nd.jpg" alt="" /></div></div>
+        <div class="k-pg" id="c3s02-sc060-r"><div class="p1"></div></div>
+        <svg id="c3s02-sc060-mk" viewBox="0 0 1080 980"></svg>
+      </div></div>
+      <div id="c3s02-sc060-ccp" class="k-abs t-label"><span class="k-redbox k-w">CCP</span></div>
+      <div id="c3s02-sc060-cs" class="k-abs t-serif-i k-ink"><span class="k-w">change </span><span class="k-w">the </span><span class="k-w">story</span></div>
+      <div class="k-credit ink t-label">Photo: US Army Signal Corps, 1944 · public domain</div>
+    </div></div>
+
+    <!-- C3S061 · 298.97–303.53 · they claim that China fought with the United States. Which is true · OWI poster 1942 -->
+    <div class="k-scene k-night" id="c3s02-sc061" data-scene="C3S061"><div class="k-shot" id="c3s02-sc061-shot">
+      <div class="k-plate"><img class="bg" src="assets/c3/posters/owi_this_man_is_your_friend_chinese_1942.jpg" alt="" /></div>
+      <div id="c3s02-sc061-cam"><div id="c3s02-sc061-poster" class="k-abs"><img src="assets/c3/posters/owi_this_man_is_your_friend_chinese_1942.jpg" alt="" /></div></div>
+      <svg id="c3s02-sc061-mk" class="k-mk"></svg>
+      <div id="c3s02-sc061-txt" class="k-abs t-serif-i clean"><span class="k-w t-label" style="font-size:52px">China </span><br /><span class="k-w">fought </span><span class="k-w">with </span><br /><span class="k-w">the United </span><span class="k-w">States</span><br /><span class="k-w" id="c3s02-sc061-true" style="font-size:96px">true</span></div>
+      <div class="k-credit t-label">Poster: US Office of War Information, 1942 · public domain</div>
+    </div></div>
+
+    <!-- C3S062 · 303.53–310.65 · a lot of Chinese people … fought with the United States in World War II against Japan · layered panels -->
+    <div class="k-scene k-night" id="c3s02-sc062" data-scene="C3S062"><div class="k-shot" id="c3s02-sc062-shot">
+      <div class="k-desk"></div>
+      <div id="c3s02-sc062-cam">
+        <div class="k-panel" id="c3s02-sc062-a"><img src="assets/c3/derived/c3s02/ww2_22nd.jpg" alt="" /><div class="k-ht"></div></div>
+        <div class="k-panel" id="c3s02-sc062-b"><img src="assets/c3/photos/cairo_1943_participants.jpg" alt="" /><div class="k-ht"></div></div>
+        <div class="k-panel" id="c3s02-sc062-h"><img src="assets/c3/derived/c3s02/ww2_truck.jpg" alt="" /><div class="k-ht" style="opacity:0.2"></div></div>
+      </div>
+      <div id="c3s02-sc062-cp" class="k-abs t-serif-i clean"><span class="k-w">Chinese </span><span class="k-w">people</span></div>
+      <div id="c3s02-sc062-aj" class="k-abs t-serif-i clean"><span class="k-w">against </span><span class="k-w">Japan</span></div>
+      <div class="k-credit t-label">Photos: US Army Signal Corps, 1943–44 · public domain</div>
+    </div></div>
+
+    <!-- C3S063 · 310.65–317.45 · But it wasn't the CCP that was fighting with the United States … · D15 diagram, link crossed -->
+    <div class="k-scene k-paper" id="c3s02-sc063" data-scene="C3S063" style="z-index:2"><div class="k-shot" id="c3s02-sc063-shot">
+      <div class="k-p1" style="background-image:url('assets/textures/paper_stained_01_hires.jpg')"></div>
+      <div class="k-p2" style="background-image:url('assets/textures/paper_cream_01.jpg'); opacity:0.5"></div>
+      <div id="c3s02-sc063-cam">
+        <svg id="c3s02-sc063-svg" viewBox="0 0 1920 1080"></svg>
+        <div class="k-circ" id="c3s02-sc063-us"><img src="assets/c3/flags/flag_us_48star_1912_1959.png" alt="" /><div class="k-ht" style="opacity:0.22"></div></div>
+        <div class="k-circ" id="c3s02-sc063-cn"><img src="assets/c3/derived/c3s02/mao_circle.jpg" alt="" /></div>
+        <div id="c3s02-sc063-usl" class="k-abs t-label k-ink"><span class="k-w">United </span><span class="k-w">States</span></div>
+        <div id="c3s02-sc063-ccp" class="k-abs t-display"><span class="k-redbox k-w">CCP</span></div>
+      </div>
+    </div></div>
+
+    <!-- C3S064 · 317.45–324.28 · It was the ROC, the nationalists … who fought with the United States against Japan · Cairo 1943 -->
+    <div class="k-scene k-night" id="c3s02-sc064" data-scene="C3S064"><div class="k-shot" id="c3s02-sc064-shot">
+      <div id="c3s02-sc064-stage"><div id="c3s02-sc064-far"></div>
+        <div id="c3s02-sc064-cam"><img id="c3s02-sc064-img" src="assets/c3/derived/c3s02/cairo.jpg" alt="" /><svg id="c3s02-sc064-mk" viewBox="0 0 2005 1551"></svg></div>
+      </div>
+      <div class="k-scrim-b"></div>
+      <div id="c3s02-sc064-roc" class="k-abs t-display"><span class="k-celbox" id="c3s02-sc064-box" style="opacity:0"><span class="k-w">the </span><span class="k-w">ROC</span></span></div>
+      <div id="c3s02-sc064-nat" class="k-abs t-serif-i clean"><span class="k-w">nationalists</span></div>
+      <div class="k-credit t-label">Photo: Cairo Conference, Nov 1943 (US Army) · public domain</div>
+    </div></div>
+
+    <!-- C3S065–C3S066 · 324.28–335.08 · as soon as the war ended, ROC was one of the big four … maintain a post-war order · 1945 card → four pillars -->
+    <div class="k-scene k-paper" id="c3s02-sc065" data-scene="C3S065-C3S066"><div class="k-shot" id="c3s02-sc065-shot">
+      <div class="k-p1" style="background-image:url('assets/textures/paper_lined_01_hires.jpg')"></div>
+      <div class="k-p2" style="background-image:url('assets/textures/paper_cream_02.jpg'); opacity:0.55"></div>
+      <div id="c3s02-sc065-cam">
+        <svg id="c3s02-sc065-svg" viewBox="0 0 1920 1080"></svg>
+        <div class="k-circ k-flag" id="c3s02-sc065-f0"><img src="assets/c3/flags/flag_us_48star_1912_1959.png" alt="" /><div class="k-ht"></div></div>
+        <div class="k-circ k-flag" id="c3s02-sc065-f1"><svg viewBox="15 0 30 30" preserveAspectRatio="xMidYMid slice"><rect width="60" height="30" fill="#012169"/><path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" stroke-width="6"/><path d="M0,0 L60,30 M60,0 L0,30" stroke="#C8102E" stroke-width="2"/><path d="M30,0 v30 M0,15 h60" stroke="#fff" stroke-width="10"/><path d="M30,0 v30 M0,15 h60" stroke="#C8102E" stroke-width="6"/></svg><div class="k-ht"></div></div>
+        <div class="k-circ k-flag" id="c3s02-sc065-f2"><img src="assets/c3/flags/flag_ussr.png" alt="" style="object-position:22% 50%" /><div class="k-ht"></div></div>
+        <div class="k-circ k-flag" id="c3s02-sc065-f3"><img src="assets/c3/flags/flag_roc.png" alt="" style="object-position:20% 50%" /><div class="k-ht"></div></div>
+        <div class="k-circ" id="c3s02-sc066-fdr"><img src="assets/c3/derived/c3s02/fdr_circle.jpg" alt="" /></div>
+        <div class="k-abs t-label k-ink" id="c3s02-sc066-us"><span class="k-w">United </span><span class="k-w">States</span></div>
+        <div class="k-card" id="c3s02-sc065-card"><img src="assets/c3/derived/c3s02/surrender.jpg" alt="" /></div>
+      </div>
+      <div id="c3s02-sc065-we" class="k-abs t-serif-i k-ink"><span class="k-w">war </span><span class="k-w">ended</span></div>
+      <div id="c3s02-sc065-bf" class="k-abs t-display k-ink"><span class="k-w">BIG </span><span class="k-w">FOUR</span></div>
+      <div id="c3s02-sc066-pwo" class="k-abs t-serif-i k-ink"><span style="position:relative;display:inline-block"><span class="k-hlbar k-abs" id="c3s02-sc066-hl"></span><span class="k-w" style="position:relative">post-war </span><span class="k-w" style="position:relative">order</span></span></div>
+      <div class="k-credit ink t-label">Photo: The Sun, Sydney, Aug 1945 (State Library of NSW) · public domain</div>
+    </div></div>
+
+    <!-- C3S067–C3S068 · 335.08–346.20 · the four policemen of the world … United States, the UK, the Soviet Union, and the Republic of China, ROC · world night -->
+    <div class="k-scene k-night" id="c3s02-sc067" data-scene="C3S067-C3S068"><div class="k-shot" id="c3s02-sc067-shot">
+      <div id="c3s02-sc067-cam" class="k-mapcam">
+        <img src="assets/c3/derived/c3s02/world_night.jpg" alt="" />
+        <svg id="c3s02-sc067-svg" viewBox="0 0 5200 2254"></svg>
+      </div>
+      <div class="k-plab t-label clean" id="c3s02-sc067-l0"><span class="k-w">United </span><span class="k-w">States</span></div>
+      <div class="k-plab t-label clean" id="c3s02-sc067-l1"><span class="k-w">UK</span></div>
+      <div class="k-plab t-label clean" id="c3s02-sc067-l2"><span class="k-w">Soviet </span><span class="k-w">Union</span></div>
+      <div class="k-plab t-label clean" id="c3s02-sc067-l3"><span class="k-w">Republic </span><span class="k-w">of </span><span class="k-w">China</span><br /><span class="k-w k-inkbox" style="margin-top:10px;background:var(--bone);color:var(--ink);font-size:44px">ROC</span></div>
+      <div id="c3s02-sc067-fp" class="k-abs t-display halate"><span class="k-w">FOUR </span><span class="k-w">POLICEMEN</span></div>
+      <div class="k-credit t-label">Relief: AWS Terrain Tiles / Natural Earth · public domain</div>
+    </div></div>
+
+    <!-- C3S069 · 346.20–352.84 · the ROC, China was also one of the founding members that had signed the UN Charter · signing footage clipped to the Charter -->
+    <div class="k-scene k-paper" id="c3s02-sc069" data-scene="C3S069" style="z-index:2"><div class="k-shot" id="c3s02-sc069-shot">
+      <div class="k-p1" style="background-image:url('assets/textures/paper_stained_01_hires.jpg')"></div>
+      <div class="k-p2" style="background-image:url('assets/textures/paper_fiber_01.jpg'); opacity:0.5"></div>
+      <div id="c3s02-sc069-cam">
+        <div class="k-pc" id="c3s02-sc069-page"><div class="in"><img src="assets/c3/derived/c3s02/still_charter_book.jpg" alt="" /><div class="k-ht"></div></div></div>
+        <div class="k-pc" id="c3s02-sc069-photo"><div class="in"><video id="c3s02-sc069-v" muted playsinline src="assets/c3/footage/newsreel_1945_un_charter_signing_san_francisco.mp4" data-start="145.80" data-duration="6.70" data-media-start="0"></video><div class="k-ht"></div></div></div>
+        <div id="c3s02-sc069-clip"></div>
+      </div>
+      <div id="c3s02-sc069-fm" class="k-abs t-serif-i k-ink"><span class="k-w">founding </span><span class="k-w">members</span></div>
+      <div id="c3s02-sc069-unc" class="k-abs t-display"><span class="k-inkbox" id="c3s02-sc069-box" style="opacity:0"><span class="k-w">UN </span><span class="k-w">CHARTER</span></span></div>
+      <div class="k-credit ink t-label">Newsreel: UN Charter signing, San Francisco, June 1945 · public domain</div>
+    </div></div>
+
+    <!-- C3S070 · 352.84–359.00 · It had a veto … a permanent seat on the UN Security Council · 1946 Security Council poster, China circled -->
+    <div class="k-scene k-night" id="c3s02-sc070" data-scene="C3S070"><div class="k-shot" id="c3s02-sc070-shot">
+      <div id="c3s02-sc070-cam"><img id="c3s02-sc070-img" src="assets/c3/derived/c3s02/sc_poster.jpg" alt="" /><svg id="c3s02-sc070-mk" viewBox="0 0 2337 3000"></svg></div>
+      <div class="k-scrim-t"></div><div class="k-scrim-b"></div>
+      <div id="c3s02-sc070-veto" class="k-abs t-label clean"><span class="k-w">veto</span></div>
+      <div id="c3s02-sc070-ps" class="k-abs t-serif-i clean"><span class="k-w">permanent </span><span class="k-w">seat</span></div>
+      <div id="c3s02-sc070-sc" class="k-abs t-display halate"><span class="k-w">SECURITY </span><span class="k-w">COUNCIL</span></div>
+      <div class="k-credit t-label">Poster: US Department of State, 1946 (NARA) · public domain</div>
+    </div></div>
+
+    <!-- C3S071 · 359.00–365.40 · as soon as World War II ends, the civil war kicks off in China · 1949 newsreel -->
+    <div class="k-scene k-night" id="c3s02-sc071" data-scene="C3S071"><div class="k-shot" id="c3s02-sc071-shot">
+      <div id="c3s02-sc071-wv"><video id="c3s02-sc071-v" muted playsinline src="assets/c3/footage/newsreel_1949_china_reds_parade_mao_posters.mp4" data-start="158.60" data-duration="7.20" data-media-start="4.0"
+        data-color-grading='{"intensity":1,"adjust":{"saturation":-1,"contrast":0.12},"effects":{"chromaticAberration":0.12,"filmArtifacts":0.35}}'></video></div>
+      <div class="vignette"></div>
+      <div id="c3s02-sc071-cw" class="k-abs t-display halate"><span class="k-w">CIVIL </span><span class="k-w">WAR</span></div>
+      <div class="k-credit t-label">Newsreel: 1949 In Review · public domain</div>
+    </div></div>
+
+    <!-- C3S072 · 365.40–372.76 · it restarts in China … the ROC, the nationalists … the communists, the CCP · torn face-off poster -->
+    <div class="k-scene k-paper" id="c3s02-sc072" data-scene="C3S072" style="z-index:2"><div class="k-shot" id="c3s02-sc072-shot">
+      <div class="k-p1" style="background-image:url('assets/textures/paper_torn_01_hires.jpg')"></div>
+      <div class="k-p2" style="background-image:url('assets/textures/paper_cream_02.jpg'); opacity:0.5"></div>
+      <div id="c3s02-sc072-cam">
+        <div class="k-half" id="c3s02-sc072-l"><img src="assets/c3/derived/c3s02/chiang_poster.jpg" alt="" /><div class="k-ht"></div></div>
+        <div class="k-half" id="c3s02-sc072-r"><img src="assets/c3/derived/c3s02/mao_poster.jpg" alt="" /><div class="k-ht"></div></div>
+      </div>
+      <div id="c3s02-sc072-rs" class="k-abs t-serif-i k-ink"><span class="k-w">restarts</span></div>
+      <div id="c3s02-sc072-roc" class="k-abs t-display"><span class="k-inkbox k-w">ROC</span></div>
+      <div id="c3s02-sc072-nat" class="k-abs t-serif-i" style="color:var(--bone);text-shadow:0 2px 10px rgba(0,0,0,.6)"><span class="k-w">nationalists</span></div>
+      <div id="c3s02-sc072-ccp" class="k-abs t-display"><span class="k-redbox k-w">CCP</span></div>
+      <div id="c3s02-sc072-com" class="k-abs t-serif-i" style="color:var(--bone);text-shadow:0 2px 10px rgba(0,0,0,.6)"><span class="k-w">communists</span></div>
+      <div class="k-credit ink t-label">Portraits: Chiang Kai-shek, Mao Zedong · public domain</div>
+    </div></div>
+
+    <!-- C3S073–C3S074 · 372.76–383.45 · Over the next four years … the communists win … the ROC … flee to the island of Taiwan · burn → strait satellite -->
+    <div class="k-scene k-night" id="c3s02-sc073" data-scene="C3S073-C3S074"><div class="k-shot" id="c3s02-sc073-shot">
+      <div id="c3s02-sc073-cam" class="k-mapcam">
+        <img src="assets/c3/derived/c3s02/ea_night.jpg" alt="" />
+        <svg id="c3s02-sc073-svg" viewBox="0 0 3600 3724"></svg>
+      </div>
+      <div id="c3s02-sc074-cam" class="k-mapcam">
+        <img id="c3s02-sc074-map" src="assets/c3/derived/c3s02/strait_sat.jpg" alt="" />
+        <img id="c3s02-sc074-fill" src="assets/c3/derived/c3s02/strait_tw_fill.png" alt="" />
+        <svg id="c3s02-sc074-svg" viewBox="0 0 3677 2872"></svg>
+      </div>
+      <div class="k-scrim-t" style="height:300px"></div>
+      <div id="c3s02-sc073-n" class="k-abs t-display">0</div>
+      <div id="c3s02-sc073-yr" class="k-abs t-label clean"><span class="k-w">years</span></div>
+      <div id="c3s02-sc073-win" class="k-abs t-serif-i clean"><span class="k-w">win</span></div>
+      <div id="c3s02-sc074-fl" class="k-abs t-label clean"><span class="k-w">flee</span></div>
+      <div id="c3s02-sc074-tw" class="k-abs t-display halate"><span class="k-w">TAIWAN</span></div>
+      <div class="k-credit t-label" id="c3s02-sc073-cr">Relief: AWS Terrain Tiles / Natural Earth · public domain</div>
+      <div class="k-credit t-label" id="c3s02-sc074-cr" style="opacity:0">Imagery: Esri, Maxar, Earthstar Geographics</div>
+    </div></div>
+
+    <!-- C3S075 · 383.45–388.49 · they have arrived at this island, which is Taiwan. It's called Taiwan at that point too · photo card → 1935 painting -->
+    <div class="k-scene k-paper" id="c3s02-sc075" data-scene="C3S075" style="z-index:2"><div class="k-shot" id="c3s02-sc075-shot">
+      <div class="k-p1" style="background-image:url('assets/textures/paper_stained_01_hires.jpg')"></div>
+      <div class="k-p2" style="background-image:url('assets/textures/paper_cream_01.jpg'); opacity:0.5"></div>
+      <div id="c3s02-sc075-cam">
+        <div class="k-pc" id="c3s02-sc075-ph"><div class="in"><img src="assets/c3/derived/c3s02/still_chiang1949.jpg" alt="" /><div class="k-ht"></div></div></div>
+        <div class="k-tape" style="left:460px;top:228px;transform:rotate(-6deg)"></div>
+        <div class="k-pc" id="c3s02-sc075-pt" style="padding:12px"><div class="in"><img src="assets/intro/paintings/taiwan_birdseye_1935.jpg" alt="" /></div></div>
+        <div id="c3s02-sc075-ar" class="k-abs t-serif-i k-ink"><span class="k-w">arrived</span></div>
+        <div id="c3s02-sc075-tw" class="k-abs t-serif-i k-ink"><span class="k-w">Taiwan</span></div>
+        <svg id="c3s02-sc075-mk" viewBox="0 0 3000 1080"></svg>
+      </div>
+      <div class="k-credit ink t-label">Newsreel 1949 · Bird's-eye view of Taiwan, 1935 · public domain</div>
+    </div></div>
+
+    <!-- C3S076 · 388.49–396.89 · they are not Taiwanese … the government that's coming to the island … the government of Taiwan · Chiang 1959 → Presidential Office -->
+    <div class="k-scene k-night" id="c3s02-sc076" data-scene="C3S076"><div class="k-shot" id="c3s02-sc076-shot">
+      <div id="c3s02-sc076-cam">
+        <div class="k-wv" id="c3s02-sc076-w1"><video id="c3s02-sc076-v1" muted playsinline src="assets/c3/footage/newsreel_1959_chiang_and_madame_chiang_walk.mp4" data-start="188.15" data-duration="4.44" data-media-start="0.2"
+          data-color-grading='{"intensity":1,"adjust":{"saturation":-1,"contrast":0.1},"effects":{"chromaticAberration":0.12,"filmArtifacts":0.3}}'></video></div>
+        <div class="k-wv" id="c3s02-sc076-w2" style="opacity:0"><video id="c3s02-sc076-v2" muted playsinline src="assets/intro/footage/taiwan_1960_presidential_office_taipei.mp4" data-start="192.25" data-duration="4.40" data-media-start="0.5"
+          data-color-grading='{"intensity":1,"adjust":{"saturation":-0.6,"contrast":0.1},"effects":{"chromaticAberration":0.12}}'></video></div>
+      </div>
+      <div class="k-scrim-b"></div><div class="k-scrim-t"></div>
+      <div id="c3s02-sc076-nt" class="k-abs t-serif-i clean"><span class="k-w">not </span><span class="k-w">Taiwanese</span></div>
+      <div id="c3s02-sc076-gov" class="k-abs t-display clean"><span class="k-w">government</span></div>
+      <div class="k-credit t-label">Newsreel: Taiwan, 1959 · Taipei, 1960 · public domain</div>
+    </div></div>
+
+    <!-- C3S077 · 396.89–404.17 · temporary problems, temporary inconvenience, but they're still the government of Taiwan · 'recover the mainland' placard -->
+    <div class="k-scene k-paper" id="c3s02-sc077" data-scene="C3S077"><div class="k-shot" id="c3s02-sc077-shot">
+      <div class="k-p1" style="background-image:url('assets/textures/paper_lined_01_hires.jpg')"></div>
+      <div class="k-p2" style="background-image:url('assets/textures/paper_fiber_01.jpg'); opacity:0.5"></div>
+      <div id="c3s02-sc077-cam">
+        <div class="k-pc" id="c3s02-sc077-pl" style="padding:12px 12px 30px"><div class="in"><img src="assets/c3/posters/roc_1960s_slogan_recover_mainland.jpg" alt="" /></div></div>
+        <div class="k-tape" style="left:430px;top:66px;transform:rotate(4deg)"></div>
+        <div id="c3s02-sc077-ty"><div class="row"><span class="t-serif" id="c3s02-sc077-t1">temporary</span> <span class="t-serif" id="c3s02-sc077-t2">problems</span></div><div class="row"><span class="t-serif-i" id="c3s02-sc077-t3" style="margin-left:330px">inconvenience</span></div></div>
+        <svg id="c3s02-sc077-mk" class="k-mk"></svg>
+      </div>
+      <div id="c3s02-sc077-st" class="k-abs t-display k-ink"><span class="k-w">still</span></div>
+      <div class="k-credit ink t-label">Placard: Taiwan, 1960s (全力支援前線，準備反攻大陸) · fair use</div>
+    </div></div>
+
+    <!-- global overlays -->
+    <div id="c3s02-flash"></div>
+    <div id="c3s02-grain" class="tx tx-grain" style="background-image:url('assets/textures/grain_01_norm.jpg')"></div>
+    <div id="c3s02-dust" class="tx tx-dust" style="background-image:url('assets/textures/dust_02.jpg')"></div>
+    <div id="c3s02-vig" class="vignette"></div>
+    <audio id="c3s02-vo" class="temp-vo" src="vo_c3.mp3" data-start="0" data-duration="203.83" data-media-start="200.34" data-volume="1"></audio>
+  </div>
+  <script>
+  (function () {
+    const SEG = "c3s02", SEG_START = 200.34, SEG_END = 404.17, DURATION = +(SEG_END - SEG_START).toFixed(2);
+    const T = (s) => +(s - 200.34).toFixed(3);   // TEXT cues (audited) — literal word start − 0.06
+    const S = (s) => +(s - 200.34).toFixed(3);   // STRUCTURAL cues (cuts, camera, objects)
+    const tl = gsap.timeline({ paused: true });
+    const $ = (id) => document.getElementById(SEG + "-" + id);
+    const NS = "http://www.w3.org/2000/svg";
+    const defs = $("defs");
+    const E = FX.ease;
+    const C = (e, d) => FX.choppy(e, d, 12);
+    const BONE = "#f2ede3", INK = "#141b24", RED = "#e03f2c", CEL = "#9fc7b2", YEL = "#f2d33b", PAPER = "#ebe4d6", NAVY = "#1d5c9e";
+    const M = {"tw_night":{"size":[1623,2200],"sc":0.5001136621959537,"sea":[31,37,44],"corner":[19,26,34],"taipei":[1268.1882245964994,224.30097749488522],"hsinchu":[933.4621504887475,358.2314162309616]},"tw_sat":{"size":[1919,2600],"sc":0.5910434189588543,"sea":[18,23,28],"corner":[7,14,22]},"pac":{"size":[5896,1760],"sc":1.0,"tw_box":[440,1163,629,1337],"taipei":[596.9,1186.5],"sv":[5712.5199999999995,641.08]},"ea":{"size":[3600,3724],"sc":0.8275862068965517,"ox":0,"oy":300,"china":"M-2351 1304L-2360 1306L-2365 1309L-2380 1306L-2392 1307L-2398 1305L-2403 1301L-2409 1300L-2417 1301L-2424 1299L-2428 1295L-2438 1294L-2447 1292L-2451 1288L-2458 1285L-2466 1279L-2477 1274L-2483 1268L-2482 1258L-2489 1257L-2496 1259L-2501 1263L-2508 1265L-2516 1264L-2521 1266L-2527 1263L-2528 1253L-2532 1244L-2543 1242L-2550 1237L-2553 1229L-2545 1223L-2543 1215L-2541 1209L-2545 1199L-2543 1189L-2554 1164L-2564 1156L-2570 1152L-2579 1148L-2587 1146L-2593 1149L-2601 1152L-2604 1144L-2606 1134L-2610 1128L-2627 1124L-2633 1119L-2646 1119L-2653 1120L-2659 1127L-2666 1118L-2677 1115L-2681 1111L-2687 1112L-2694 1114L-2700 1112L-2703 1107L-2709 1104L-2713 1101L-2708 1096L-2703 1091L-2697 1088L-2689 1089L-2685 1086L-2679 1082L-2670 1090L-2659 1089L-2655 1086L-2650 1082L-2640 1079L-2639 1072L-2635 1069L-2636 1062L-2642 1056L-2653 1049L-2659 1043L-2658 1034L-2655 1029L-2652 1024L-2658 1016L-2657 1009L-2659 1002L-2659 994L-2667 987L-2670 983L-2672 969L-2672 957L-2666 948L-2664 941L-2666 935L-2671 930L-2679 928L-2683 925L-2703 917L-2718 910L-2727 912L-2738 910L-2743 913L-2748 918L-2748 927L-2760 927L-2765 924L-2771 921L-2777 911L-2781 904L-2781 896L-2785 889L-2786 882L-2781 878L-2772 876L-2777 865L-2784 861L-2787 853L-2792 847L-2795 843L-2794 836L-2791 827L-2792 816L-2772 811L-2768 804L-2764 798L-2763 789L-2764 783L-2768 777L-2772 774L-2771 767L-2766 763L-2764 755L-2761 751L-2758 745L-2756 739L-2746 736L-2739 733L-2732 731L-2724 733L-2714 732L-2703 723L-2693 714L-2686 710L-2678 704L-2665 705L-2663 700L-2669 695L-2668 687L-2665 682L-2651 688L-2643 690L-2635 688L-2629 689L-2623 687L-2596 669L-2592 666L-2585 669L-2583 674L-2583 681L-2578 688L-2579 695L-2578 705L-2575 709L-2568 707L-2556 708L-2550 707L-2547 702L-2536 696L-2527 699L-2522 697L-2519 693L-2513 691L-2509 701L-2503 699L-2494 693L-2489 687L-2485 678L-2477 671L-2474 654L-2470 646L-2466 643L-2461 640L-2461 632L-2458 626L-2453 621L-2446 617L-2435 615L-2426 618L-2410 620L-2403 618L-2394 619L-2388 621L-2382 623L-2374 621L-2365 621L-2351 614L-2344 613L-2330 614L-2322 616L-2311 608L-2308 604L-2305 599L-2301 592L-2294 588L-2294 578L-2291 574L-2285 571L-2275 564L-2268 563L-2262 557L-2244 549L-2235 543L-2226 541L-2214 533L-2205 531L-2196 525L-2185 525L-2172 519L-2165 517L-2159 513L-2149 512L-2141 508L-2139 502L-2136 498L-2131 495L-2125 494L-2099 494L-2093 492L-2092 484L-2095 475L-2091 471L-2091 458L-2095 452L-2097 443L-2096 436L-2099 430L-2102 423L-2103 416L-2098 409L-2094 398L-2088 394L-2077 393L-2067 389L-2060 387L-2063 382L-2075 378L-2080 372L-2075 366L-2065 363L-2057 358L-2052 356L-2042 359L-2035 356L-2037 348L-2039 338L-2044 335L-2050 332L-2044 323L-2042 315L-2055 288L-2067 259L-2071 255L-2074 249L-2076 240L-2080 237L-2081 229L-2078 220L-2083 197L-2082 187L-2079 178L-2078 172L-2078 165L-2067 162L-2084 151L-2090 148L-2114 150L-2132 143L-2133 136L-2126 133L-2115 125L-2111 122L-2102 120L-2095 121L-2087 118L-2079 119L-2073 113L-2061 112L-2044 106L-2030 108L-2014 104L-2005 103L-1997 99L-1954 88L-1946 83L-1937 82L-1931 86L-1929 91L-1928 100L-1919 102L-1911 106L-1886 96L-1880 95L-1870 99L-1861 107L-1856 110L-1849 109L-1844 102L-1841 93L-1839 82L-1839 72L-1852 66L-1868 64L-1875 58L-1874 52L-1871 45L-1867 33L-1859 22L-1856 16L-1852 1L-1848 -16L-1846 -24L-1842 -32L-1835 -41L-1832 -52L-1827 -61L-1817 -91L-1802 -117L-1802 -126L-1800 -133L-1799 -142L-1795 -151L-1787 -151L-1779 -147L-1767 -144L-1744 -132L-1704 -121L-1694 -121L-1687 -120L-1678 -123L-1666 -124L-1653 -123L-1644 -121L-1629 -122L-1620 -120L-1615 -114L-1616 -107L-1613 -102L-1605 -104L-1597 -106L-1593 -111L-1585 -113L-1580 -117L-1573 -121L-1568 -127L-1556 -129L-1543 -131L-1536 -131L-1532 -138L-1529 -146L-1520 -149L-1516 -158L-1517 -167L-1525 -182L-1527 -189L-1525 -198L-1534 -238L-1532 -244L-1529 -252L-1526 -266L-1512 -293L-1509 -297L-1482 -301L-1462 -300L-1456 -303L-1452 -307L-1447 -309L-1437 -309L-1425 -312L-1420 -320L-1412 -327L-1404 -336L-1404 -344L-1401 -348L-1401 -355L-1406 -361L-1407 -369L-1404 -373L-1398 -378L-1394 -384L-1388 -386L-1382 -384L-1364 -389L-1355 -386L-1342 -383L-1334 -381L-1326 -383L-1301 -392L-1290 -393L-1288 -388L-1290 -381L-1286 -374L-1284 -368L-1296 -362L-1299 -358L-1294 -354L-1292 -349L-1287 -345L-1280 -342L-1273 -342L-1267 -339L-1264 -333L-1269 -329L-1273 -325L-1276 -320L-1272 -317L-1265 -316L-1258 -312L-1251 -310L-1239 -307L-1230 -299L-1222 -298L-1211 -291L-1212 -284L-1210 -279L-1208 -273L-1203 -270L-1195 -269L-1189 -263L-1183 -261L-1176 -262L-1160 -247L-1147 -246L-1139 -246L-1134 -249L-1129 -252L-1122 -251L-1114 -251L-1107 -252L-1104 -247L-1100 -242L-1096 -236L-1090 -234L-1086 -228L-1071 -227L-1065 -231L-1059 -233L-1052 -230L-1053 -222L-1046 -215L-1041 -212L-1027 -208L-1022 -206L-1023 -199L-1019 -191L-1014 -187L-1012 -182L-1011 -174L-1007 -169L-1009 -163L-984 -126L-980 -123L-971 -122L-967 -119L-964 -113L-961 -109L-961 -101L-956 -96L-953 -92L-951 -87L-953 -77L-950 -72L-949 -66L-951 -61L-955 -54L-960 -43L-963 -39L-958 -21L-953 -14L-952 -8L-955 1L-961 6L-984 31L-990 63L-981 69L-978 76L-975 82L-970 89L-967 93L-966 101L-956 97L-947 97L-939 99L-935 104L-927 108L-916 110L-909 106L-898 115L-883 117L-876 115L-856 116L-850 115L-842 115L-836 117L-826 122L-819 122L-812 123L-805 123L-799 124L-786 123L-780 122L-767 119L-757 119L-750 122L-744 124L-736 124L-727 123L-716 127L-708 126L-699 129L-686 130L-668 138L-649 160L-643 165L-629 167L-619 166L-606 175L-601 183L-597 186L-590 186L-573 194L-566 200L-563 204L-559 207L-539 212L-530 216L-489 213L-491 220L-493 225L-496 230L-495 236L-496 243L-485 250L-475 251L-467 264L-456 294L-441 322L-440 332L-437 342L-433 346L-392 381L-388 386L-387 405L-373 406L-335 402L-297 399L-262 403L-228 407L-184 412L-142 417L-99 422L-56 426L-40 422L-3 413L44 419L87 425L129 431L149 429L162 430L173 433L184 439L200 462L209 471L215 474L252 481L289 489L326 496L360 512L391 526L435 520L477 513L476 538L487 540L518 541L523 543L527 548L551 528L558 527L564 524L572 520L579 516L621 497L669 479L717 461L762 455L807 448L852 442L866 440L872 441L881 443L904 443L932 447L939 446L949 441L980 444L988 442L1004 441L1024 428L1050 419L1057 417L1064 418L1069 415L1074 412L1102 401L1107 393L1119 384L1123 379L1127 374L1129 368L1143 354L1158 337L1162 333L1175 327L1201 318L1207 313L1221 311L1228 307L1245 290L1254 290L1260 288L1265 282L1265 275L1254 256L1247 250L1236 243L1232 240L1223 229L1220 225L1218 220L1215 211L1208 208L1207 200L1210 193L1214 187L1219 180L1223 174L1222 167L1243 128L1248 123L1254 119L1261 118L1265 115L1272 113L1282 116L1311 115L1317 118L1326 125L1330 131L1336 136L1350 141L1374 146L1388 150L1427 153L1441 156L1448 153L1454 147L1465 141L1471 136L1479 134L1488 132L1492 129L1495 125L1500 119L1505 116L1527 99L1532 92L1536 86L1537 78L1553 72L1561 71L1578 77L1602 75L1624 75L1638 73L1656 69L1662 66L1670 58L1693 42L1701 41L1709 38L1718 29L1721 24L1718 19L1717 11L1732 -13L1750 -28L1754 -36L1763 -39L1769 -40L1777 -45L1782 -48L1795 -46L1832 -43L1837 -47L1838 -56L1843 -63L1842 -71L1850 -73L1859 -75L1864 -68L1871 -64L1885 -65L1891 -72L1895 -75L1903 -77L1915 -83L1922 -84L1928 -87L1935 -90L1942 -90L1952 -86L1964 -85L1969 -87L1978 -85L1986 -86L1990 -91L1996 -95L1999 -90L2006 -91L2014 -85L2018 -82L2046 -76L2060 -78L2073 -77L2082 -74L2088 -75L2094 -80L2102 -82L2106 -86L2106 -96L2107 -103L2106 -109L2103 -113L2099 -119L2094 -123L2092 -133L2089 -140L2086 -144L2079 -151L2074 -154L2068 -155L2065 -159L2046 -175L2045 -183L2038 -185L2028 -188L2024 -193L2023 -202L2018 -208L2009 -210L1987 -218L1981 -223L1970 -238L1964 -244L1956 -247L1936 -248L1928 -251L1919 -252L1913 -251L1906 -248L1887 -249L1881 -247L1856 -222L1850 -218L1846 -215L1842 -209L1838 -205L1808 -225L1797 -228L1784 -232L1774 -233L1747 -228L1740 -228L1720 -231L1714 -230L1703 -224L1691 -212L1685 -209L1678 -212L1652 -234L1648 -240L1646 -247L1643 -263L1670 -276L1674 -282L1672 -307L1673 -314L1697 -343L1699 -348L1698 -354L1720 -395L1743 -434L1766 -475L1771 -472L1806 -456L1827 -450L1850 -449L1881 -436L1893 -436L1899 -443L1908 -446L1912 -449L1916 -452L1924 -456L1928 -459L1932 -463L1938 -468L1946 -470L1954 -475L1958 -480L1965 -485L1970 -488L1974 -491L1981 -490L1990 -492L2001 -494L2011 -494L2022 -495L2032 -498L2038 -503L2044 -507L2048 -512L2049 -520L2047 -531L2050 -539L2038 -539L2032 -540L2027 -543L2030 -548L2038 -552L2039 -558L2042 -568L2046 -572L2051 -576L2055 -580L2060 -583L2065 -588L2066 -595L2066 -602L2067 -609L2073 -614L2084 -623L2087 -629L2091 -633L2092 -640L2094 -648L2098 -654L2105 -660L2107 -667L2112 -669L2116 -675L2115 -681L2122 -688L2125 -697L2128 -703L2137 -705L2152 -717L2158 -720L2166 -725L2170 -729L2176 -731L2184 -733L2190 -740L2193 -745L2192 -751L2196 -754L2199 -758L2201 -764L2198 -769L2196 -777L2187 -782L2184 -789L2188 -794L2191 -803L2193 -809L2187 -815L2175 -820L2167 -824L2159 -822L2145 -821L2139 -818L2130 -817L2124 -819L2121 -824L2123 -831L2121 -839L2125 -842L2134 -845L2141 -850L2147 -852L2152 -856L2155 -861L2159 -864L2166 -870L2174 -876L2183 -881L2187 -884L2193 -892L2197 -895L2205 -898L2207 -903L2230 -905L2240 -903L2251 -905L2258 -909L2267 -908L2278 -910L2291 -917L2318 -922L2332 -922L2341 -923L2345 -926L2354 -928L2361 -930L2368 -928L2372 -925L2379 -927L2421 -928L2436 -932L2452 -933L2457 -936L2465 -940L2471 -939L2480 -936L2485 -933L2490 -939L2493 -933L2498 -938L2507 -934L2513 -931L2525 -930L2538 -926L2542 -921L2547 -918L2552 -914L2558 -915L2564 -917L2570 -914L2574 -910L2578 -903L2582 -900L2590 -897L2597 -895L2609 -895L2615 -892L2618 -887L2626 -888L2631 -883L2635 -888L2639 -893L2649 -895L2661 -895L2692 -881L2698 -879L2702 -874L2709 -876L2715 -875L2719 -870L2725 -867L2720 -861L2716 -857L2721 -854L2736 -857L2738 -852L2751 -840L2760 -842L2764 -839L2757 -835L2760 -831L2753 -827L2750 -823L2752 -818L2757 -816L2771 -813L2776 -811L2774 -805L2779 -803L2784 -799L2790 -793L2787 -784L2798 -780L2786 -773L2790 -769L2801 -765L2809 -764L2808 -752L2803 -749L2800 -745L2822 -713L2829 -710L2829 -703L2828 -697L2827 -691L2835 -688L2841 -684L2838 -680L2838 -673L2846 -672L2850 -668L2844 -665L2839 -661L2840 -654L2848 -654L2852 -661L2857 -657L2853 -653L2850 -649L2849 -641L2851 -634L2853 -627L2857 -624L2862 -617L2871 -612L2882 -594L2887 -591L2890 -587L2894 -576L2897 -572L2898 -565L2894 -562L2892 -557L2896 -550L2896 -543L2894 -537L2902 -531L2920 -524L2920 -515L2913 -504L2911 -493L2914 -489L2913 -480L2916 -470L2927 -468L2931 -464L2932 -457L2935 -453L2941 -451L2945 -448L2949 -445L2955 -444L2962 -447L2970 -442L2975 -440L2986 -439L2991 -441L2999 -440L3004 -443L3023 -446L3031 -444L3036 -448L3043 -445L3049 -443L3045 -435L3048 -430L3055 -432L3065 -428L3071 -427L3076 -419L3080 -416L3089 -420L3097 -420L3104 -415L3110 -418L3114 -426L3122 -425L3126 -422L3127 -412L3131 -407L3142 -407L3149 -402L3151 -395L3158 -394L3160 -386L3168 -383L3169 -376L3174 -374L3181 -369L3198 -358L3203 -356L3212 -358L3218 -360L3226 -359L3231 -355L3243 -357L3247 -353L3243 -347L3233 -327L3236 -321L3243 -318L3243 -309L3252 -310L3257 -306L3255 -299L3259 -294L3263 -290L3264 -283L3259 -279L3256 -272L3252 -269L3248 -265L3248 -256L3267 -239L3273 -234L3276 -226L3276 -217L3279 -212L3285 -209L3291 -208L3300 -211L3327 -216L3333 -215L3339 -211L3344 -207L3355 -210L3365 -208L3371 -209L3377 -207L3384 -210L3391 -211L3398 -210L3406 -210L3415 -214L3424 -216L3431 -215L3437 -212L3444 -212L3449 -216L3450 -224L3458 -232L3459 -238L3463 -243L3469 -241L3479 -245L3488 -251L3497 -255L3501 -260L3514 -264L3522 -263L3528 -261L3535 -262L3542 -260L3550 -260L3555 -265L3559 -270L3567 -273L3571 -279L3579 -279L3585 -282L3594 -282L3603 -288L3613 -290L3622 -293L3639 -295L3648 -291L3656 -292L3661 -288L3665 -284L3670 -281L3673 -276L3673 -265L3662 -256L3660 -250L3664 -241L3666 -236L3671 -231L3674 -223L3682 -216L3677 -207L3673 -200L3671 -195L3666 -192L3660 -184L3653 -179L3647 -177L3641 -178L3633 -176L3628 -170L3622 -166L3618 -160L3617 -154L3621 -148L3623 -141L3621 -135L3613 -133L3610 -124L3607 -115L3602 -103L3604 -98L3603 -88L3601 -80L3597 -76L3592 -73L3589 -67L3584 -60L3588 -54L3592 -51L3588 -44L3591 -39L3589 -31L3583 -25L3576 -23L3571 -19L3568 -14L3568 -3L3564 8L3559 10L3556 14L3548 17L3545 22L3549 28L3544 34L3546 41L3544 46L3538 50L3534 53L3529 56L3523 59L3516 61L3509 70L3505 89L3506 98L3508 105L3505 111L3499 114L3494 118L3486 121L3477 117L3431 106L3385 95L3379 92L3376 86L3373 82L3366 86L3359 97L3353 98L3347 104L3347 113L3333 125L3329 129L3320 128L3310 133L3301 136L3294 134L3288 136L3285 141L3276 144L3280 152L3289 164L3300 203L3310 242L3306 246L3304 251L3306 258L3303 266L3301 273L3301 282L3302 290L3303 298L3300 304L3309 314L3312 324L3309 330L3308 337L3303 344L3301 351L3302 358L3297 361L3294 366L3291 370L3291 377L3294 384L3287 385L3283 390L3267 391L3258 389L3254 394L3246 394L3239 395L3229 400L3220 405L3217 410L3223 413L3230 412L3235 416L3239 422L3237 428L3233 431L3232 424L3226 422L3225 428L3222 423L3211 416L3204 409L3203 399L3204 389L3197 384L3187 382L3191 376L3182 377L3175 377L3170 372L3166 375L3161 378L3155 393L3153 401L3151 407L3154 412L3150 417L3149 424L3148 433L3145 442L3138 441L3134 444L3129 450L3122 447L3117 442L3110 443L3104 444L3097 450L3095 457L3092 464L3090 473L3084 478L3077 477L3074 484L3066 487L3061 493L3052 491L3041 491L3029 493L3023 496L3013 495L3006 494L2992 492L2976 497L2967 499L2969 512L2975 516L2980 527L2982 532L2989 538L2993 541L2997 548L2984 570L2980 574L2974 572L2970 568L2965 562L2955 563L2951 566L2942 566L2932 566L2922 565L2917 560L2909 559L2902 561L2896 560L2888 558L2883 553L2879 556L2872 554L2876 549L2871 545L2867 542L2864 537L2862 530L2857 526L2853 522L2847 523L2845 528L2839 530L2832 530L2825 529L2830 534L2825 537L2817 541L2813 544L2814 551L2811 560L2807 565L2808 574L2805 578L2795 583L2791 590L2787 594L2783 600L2769 609L2766 615L2762 620L2758 627L2752 630L2749 634L2741 633L2735 637L2730 635L2725 637L2720 640L2715 644L2720 649L2712 650L2707 648L2703 655L2697 656L2694 662L2691 666L2683 665L2676 665L2673 669L2667 671L2661 674L2652 678L2649 682L2652 688L2643 688L2637 686L2631 691L2626 696L2620 699L2618 704L2609 708L2602 713L2599 717L2582 731L2579 735L2580 742L2574 750L2571 754L2563 760L2558 762L2554 766L2548 765L2541 768L2537 765L2532 767L2524 766L2518 767L2512 766L2506 763L2505 755L2501 761L2499 768L2495 773L2490 770L2483 777L2479 770L2471 771L2466 769L2462 772L2457 777L2462 779L2459 784L2454 786L2447 783L2442 785L2436 786L2432 793L2422 794L2413 798L2405 803L2397 806L2392 811L2387 813L2382 816L2377 818L2370 820L2365 823L2360 826L2355 830L2351 838L2342 844L2344 849L2337 856L2335 861L2328 861L2323 864L2317 866L2311 864L2317 869L2316 875L2310 872L2307 868L2303 865L2296 868L2291 870L2288 875L2293 878L2298 882L2293 887L2285 886L2278 890L2264 892L2254 895L2247 897L2245 903L2239 901L2238 893L2236 887L2240 882L2233 882L2236 876L2243 875L2251 875L2257 873L2259 866L2266 864L2273 867L2281 863L2291 860L2297 854L2293 849L2288 847L2290 841L2288 835L2296 835L2300 832L2304 825L2312 824L2320 820L2314 821L2303 819L2300 823L2282 824L2276 821L2272 810L2266 804L2257 806L2249 805L2251 799L2256 795L2264 794L2271 793L2277 788L2281 785L2276 780L2274 775L2278 767L2280 762L2289 761L2296 755L2306 755L2309 749L2314 747L2312 742L2317 740L2322 735L2329 729L2329 722L2334 720L2340 717L2341 711L2343 704L2349 701L2352 697L2355 692L2358 688L2362 682L2359 677L2354 673L2348 672L2344 667L2347 660L2341 658L2337 653L2318 644L2313 638L2313 631L2315 625L2309 626L2306 632L2302 639L2287 640L2280 637L2275 635L2270 632L2262 628L2257 632L2251 631L2245 629L2240 632L2235 636L2232 642L2224 641L2220 645L2218 650L2225 654L2220 657L2213 660L2205 661L2203 668L2199 672L2192 678L2189 682L2185 686L2181 691L2176 695L2181 699L2174 702L2171 709L2170 716L2166 720L2160 721L2153 722L2148 725L2142 728L2134 731L2113 738L2108 743L2102 747L2094 751L2087 753L2078 756L2068 758L2068 765L2064 768L2057 770L2053 775L2049 778L2045 789L2042 795L2036 796L2039 803L2043 812L2041 821L2036 825L2026 832L2022 837L2018 840L2014 845L2005 852L2007 846L1998 844L1993 849L1983 851L1975 849L1969 851L1962 851L1957 856L1949 861L1944 864L1934 864L1928 860L1926 855L1921 848L1916 844L1911 842L1903 842L1894 844L1886 850L1881 855L1876 857L1881 863L1882 869L1874 870L1862 892L1861 904L1860 912L1861 921L1871 938L1876 946L1885 957L1889 960L1895 962L1900 964L1904 969L1910 971L1915 976L1922 975L1929 975L1939 977L1951 979L1956 981L1962 984L1969 979L1975 975L1986 974L1995 974L2001 978L2007 981L2004 986L2009 994L2012 998L2017 1000L2022 1004L2024 1011L2028 1015L2034 1018L2038 1022L2039 1028L2035 1033L2025 1026L2019 1025L2015 1030L2013 1036L2009 1042L2007 1051L2006 1070L2008 1080L2014 1084L2018 1089L2024 1092L2042 1100L2059 1102L2067 1100L2082 1100L2094 1098L2105 1088L2106 1082L2103 1077L2105 1071L2116 1066L2124 1063L2138 1054L2149 1043L2152 1039L2147 1034L2141 1033L2151 1032L2157 1031L2165 1026L2177 1023L2181 1020L2189 1018L2196 1014L2205 1016L2213 1015L2218 1017L2219 1023L2225 1027L2231 1029L2238 1030L2237 1036L2238 1042L2244 1046L2256 1045L2263 1042L2269 1043L2264 1045L2269 1051L2273 1055L2276 1060L2282 1062L2293 1063L2286 1061L2291 1057L2301 1060L2323 1059L2328 1064L2329 1057L2334 1051L2341 1049L2346 1051L2344 1061L2349 1065L2355 1060L2359 1065L2378 1065L2390 1068L2400 1066L2395 1071L2392 1078L2389 1083L2392 1087L2394 1092L2389 1096L2384 1098L2379 1104L2376 1100L2377 1107L2373 1113L2384 1115L2385 1124L2383 1130L2380 1126L2373 1127L2376 1132L2371 1135L2364 1139L2351 1137L2351 1130L2358 1130L2352 1127L2349 1119L2345 1124L2339 1126L2333 1130L2335 1121L2325 1118L2324 1125L2307 1131L2303 1136L2295 1140L2290 1143L2288 1148L2283 1146L2277 1147L2280 1142L2287 1139L2279 1141L2272 1139L2273 1145L2267 1148L2263 1154L2240 1158L2233 1165L2227 1167L2218 1168L2214 1164L2209 1161L2200 1165L2197 1170L2200 1174L2204 1169L2208 1166L2213 1172L2217 1175L2218 1184L2213 1187L2210 1194L2207 1189L2203 1184L2196 1186L2190 1193L2193 1198L2188 1200L2189 1208L2190 1218L2184 1227L2177 1227L2172 1230L2164 1233L2157 1235L2150 1234L2152 1227L2156 1218L2152 1213L2147 1216L2141 1217L2137 1214L2130 1215L2127 1223L2128 1230L2136 1234L2137 1243L2142 1241L2149 1241L2144 1247L2137 1253L2129 1253L2123 1258L2120 1271L2115 1275L2108 1273L2108 1281L2106 1289L2100 1287L2094 1292L2087 1289L2083 1292L2079 1297L2076 1305L2072 1311L2070 1318L2067 1322L2062 1326L2057 1328L2055 1334L2053 1340L2051 1351L2047 1354L2042 1356L2035 1358L2032 1366L2033 1372L2032 1383L2033 1392L2032 1399L2038 1395L2046 1395L2054 1396L2061 1399L2060 1405L2068 1413L2074 1417L2080 1421L2087 1424L2096 1430L2103 1432L2112 1433L2120 1438L2126 1443L2143 1449L2146 1454L2150 1464L2152 1471L2155 1480L2157 1485L2158 1493L2161 1500L2160 1506L2165 1511L2167 1518L2171 1523L2172 1532L2174 1538L2177 1546L2184 1554L2187 1561L2188 1572L2192 1577L2197 1580L2195 1588L2201 1593L2202 1600L2205 1607L2209 1610L2212 1616L2214 1633L2211 1642L2209 1649L2214 1656L2218 1663L2226 1667L2231 1670L2235 1676L2244 1679L2253 1682L2261 1686L2265 1690L2268 1704L2262 1708L2266 1717L2269 1721L2274 1723L2280 1724L2286 1727L2293 1730L2300 1735L2305 1738L2308 1742L2314 1750L2316 1755L2319 1764L2322 1772L2316 1776L2303 1774L2295 1772L2288 1769L2282 1766L2277 1763L2268 1758L2257 1752L2248 1755L2243 1758L2236 1763L2230 1761L2224 1760L2218 1757L2216 1751L2208 1739L2204 1735L2196 1733L2185 1728L2178 1728L2170 1728L2163 1731L2156 1735L2150 1741L2146 1744L2136 1746L2127 1743L2120 1739L2110 1724L2108 1718L2106 1711L2105 1705L2101 1701L2096 1698L2085 1698L2080 1693L2084 1700L2081 1709L2076 1714L2082 1712L2088 1710L2094 1712L2093 1718L2095 1724L2102 1727L2108 1732L2111 1736L2116 1742L2122 1745L2132 1749L2142 1749L2154 1743L2162 1742L2166 1735L2172 1736L2182 1739L2189 1738L2197 1741L2200 1748L2203 1754L2205 1759L2197 1760L2206 1765L2213 1767L2222 1769L2231 1772L2239 1777L2246 1784L2249 1788L2257 1799L2262 1803L2268 1806L2281 1817L2291 1820L2301 1827L2306 1836L2317 1850L2324 1864L2327 1873L2325 1878L2320 1880L2309 1880L2301 1881L2291 1882L2281 1885L2276 1887L2267 1891L2261 1898L2252 1901L2245 1904L2240 1907L2238 1912L2229 1914L2224 1917L2218 1923L2216 1928L2216 1935L2212 1941L2208 1945L2204 1949L2198 1946L2195 1939L2188 1936L2169 1936L2163 1938L2160 1946L2158 1952L2151 1950L2145 1949L2139 1957L2133 1961L2139 1959L2144 1953L2151 1954L2157 1956L2161 1951L2166 1940L2173 1939L2184 1940L2187 1944L2190 1952L2195 1956L2191 1962L2188 1966L2185 1971L2190 1976L2198 1975L2191 1974L2186 1970L2192 1963L2197 1958L2204 1960L2208 1965L2216 1963L2223 1960L2235 1951L2240 1946L2251 1943L2257 1944L2264 1946L2269 1950L2277 1959L2282 1966L2286 1972L2290 1979L2293 1984L2299 1988L2308 1991L2314 1994L2319 1996L2323 2000L2336 2000L2343 1998L2337 2005L2328 2008L2323 2012L2319 2017L2315 2022L2306 2029L2300 2037L2296 2040L2288 2043L2280 2047L2278 2042L2273 2044L2270 2051L2273 2058L2275 2051L2278 2056L2274 2060L2281 2058L2283 2053L2292 2049L2298 2044L2304 2049L2310 2050L2314 2045L2310 2042L2303 2040L2308 2036L2314 2034L2321 2031L2326 2035L2324 2041L2323 2048L2327 2055L2322 2058L2321 2065L2320 2071L2321 2077L2326 2075L2325 2084L2318 2087L2313 2090L2307 2085L2309 2074L2307 2068L2306 2074L2304 2082L2300 2088L2292 2085L2291 2077L2291 2084L2286 2074L2282 2077L2279 2083L2277 2088L2269 2089L2272 2094L2266 2097L2276 2097L2290 2096L2289 2103L2283 2102L2280 2108L2289 2105L2296 2107L2293 2114L2299 2116L2296 2121L2290 2119L2286 2115L2282 2118L2276 2119L2280 2122L2287 2124L2290 2130L2293 2134L2290 2139L2288 2145L2277 2148L2261 2146L2255 2142L2250 2140L2246 2134L2241 2132L2247 2137L2254 2143L2251 2151L2258 2148L2264 2150L2272 2149L2278 2153L2280 2160L2282 2166L2285 2172L2286 2178L2289 2185L2291 2191L2290 2199L2286 2203L2285 2197L2277 2193L2272 2195L2267 2197L2267 2204L2262 2208L2262 2215L2256 2213L2253 2209L2248 2205L2249 2196L2245 2193L2252 2189L2243 2187L2239 2192L2233 2198L2227 2196L2232 2200L2237 2202L2235 2210L2229 2216L2225 2222L2224 2228L2222 2234L2215 2237L2208 2235L2200 2234L2193 2229L2184 2230L2180 2223L2179 2229L2188 2232L2196 2237L2206 2240L2209 2247L2205 2253L2202 2259L2199 2263L2196 2268L2187 2265L2189 2270L2188 2276L2185 2283L2181 2288L2183 2293L2188 2296L2188 2303L2187 2309L2177 2309L2171 2316L2176 2320L2173 2325L2172 2331L2169 2335L2166 2331L2162 2334L2158 2329L2152 2328L2149 2324L2151 2319L2145 2321L2142 2325L2136 2329L2143 2328L2149 2330L2157 2331L2155 2336L2160 2338L2158 2343L2148 2345L2147 2351L2141 2354L2143 2361L2134 2361L2140 2363L2141 2369L2131 2368L2125 2371L2120 2376L2124 2381L2131 2384L2128 2391L2134 2393L2129 2396L2131 2403L2126 2406L2113 2407L2111 2413L2105 2418L2100 2414L2102 2409L2106 2406L2115 2402L2118 2395L2126 2385L2112 2384L2110 2392L2106 2398L2103 2402L2100 2394L2097 2388L2101 2385L2096 2381L2102 2377L2096 2378L2093 2385L2092 2391L2089 2385L2085 2381L2083 2386L2087 2392L2080 2389L2076 2384L2072 2388L2071 2394L2076 2396L2075 2403L2069 2401L2071 2406L2075 2409L2083 2406L2089 2407L2095 2411L2093 2416L2096 2420L2099 2425L2096 2431L2088 2427L2082 2422L2075 2424L2077 2429L2081 2439L2084 2443L2091 2438L2095 2433L2099 2430L2101 2436L2108 2438L2106 2443L2099 2442L2095 2446L2089 2447L2081 2449L2081 2456L2077 2460L2075 2465L2069 2471L2064 2479L2060 2485L2055 2481L2048 2478L2041 2476L2036 2472L2029 2469L2025 2466L2028 2472L2034 2477L2037 2482L2043 2488L2052 2490L2059 2487L2064 2483L2071 2477L2078 2480L2086 2482L2083 2492L2078 2495L2075 2502L2076 2509L2075 2516L2073 2522L2068 2519L2064 2522L2060 2525L2061 2531L2064 2537L2071 2537L2075 2541L2078 2549L2080 2556L2078 2562L2074 2557L2073 2549L2068 2553L2070 2559L2063 2561L2065 2553L2061 2548L2051 2542L2052 2534L2046 2531L2041 2536L2040 2542L2037 2547L2031 2549L2025 2553L2028 2562L2036 2568L2031 2571L2037 2570L2041 2566L2046 2572L2048 2577L2042 2583L2035 2584L2029 2583L2024 2580L2026 2588L2022 2593L2018 2587L2018 2579L2010 2579L2015 2575L2010 2572L2003 2574L1999 2577L2003 2580L2008 2583L2007 2592L2002 2594L1996 2596L1999 2602L2005 2604L2011 2602L2012 2613L2006 2612L2001 2615L2005 2621L1995 2622L1988 2621L1984 2625L1982 2617L1977 2613L1976 2619L1972 2623L1967 2621L1971 2625L1973 2635L1979 2633L1985 2635L1982 2643L1977 2646L1973 2651L1976 2658L1972 2663L1966 2666L1959 2656L1953 2653L1952 2645L1951 2653L1946 2658L1936 2657L1932 2664L1927 2662L1926 2656L1925 2648L1920 2652L1918 2658L1911 2654L1908 2662L1912 2667L1906 2673L1896 2672L1888 2671L1895 2675L1887 2673L1893 2682L1905 2682L1910 2686L1908 2691L1914 2688L1918 2693L1917 2699L1912 2701L1909 2705L1904 2710L1901 2706L1896 2708L1899 2714L1896 2719L1895 2725L1889 2728L1885 2734L1881 2740L1884 2731L1882 2726L1873 2725L1874 2737L1869 2742L1867 2747L1866 2754L1863 2764L1864 2756L1863 2747L1857 2741L1850 2741L1846 2738L1850 2742L1853 2747L1849 2757L1840 2756L1837 2760L1831 2757L1829 2766L1828 2774L1826 2780L1825 2772L1820 2778L1814 2784L1808 2785L1808 2778L1804 2773L1799 2776L1792 2778L1794 2773L1790 2776L1788 2782L1785 2790L1787 2796L1776 2812L1768 2810L1760 2809L1754 2807L1751 2803L1753 2813L1759 2815L1764 2813L1769 2815L1775 2818L1776 2825L1769 2821L1767 2827L1764 2831L1760 2828L1749 2826L1755 2827L1758 2831L1752 2837L1753 2844L1753 2851L1749 2855L1747 2863L1739 2863L1731 2863L1726 2860L1719 2858L1720 2864L1715 2868L1712 2872L1706 2876L1707 2868L1699 2863L1702 2868L1700 2873L1694 2875L1688 2879L1679 2883L1676 2887L1672 2881L1670 2876L1662 2874L1665 2867L1656 2869L1650 2870L1645 2872L1642 2868L1638 2864L1631 2865L1635 2868L1641 2870L1644 2875L1651 2874L1647 2879L1644 2884L1647 2891L1649 2896L1640 2894L1635 2892L1630 2894L1625 2890L1630 2887L1632 2881L1627 2884L1623 2881L1615 2881L1620 2875L1622 2867L1617 2871L1613 2876L1607 2877L1600 2880L1594 2882L1591 2887L1589 2892L1583 2889L1577 2884L1576 2890L1582 2891L1582 2898L1578 2905L1580 2910L1576 2906L1568 2906L1561 2904L1561 2896L1561 2888L1565 2885L1569 2881L1560 2883L1553 2883L1546 2887L1542 2890L1537 2895L1542 2899L1539 2905L1536 2911L1543 2911L1547 2914L1543 2919L1537 2923L1534 2919L1532 2911L1529 2907L1526 2903L1518 2905L1512 2906L1507 2910L1501 2909L1497 2912L1490 2915L1484 2914L1477 2914L1473 2919L1470 2915L1466 2910L1463 2904L1461 2897L1457 2888L1452 2885L1447 2880L1444 2873L1441 2869L1442 2861L1443 2855L1441 2860L1442 2851L1439 2861L1438 2853L1434 2857L1433 2850L1436 2845L1444 2842L1450 2839L1460 2839L1465 2841L1457 2838L1448 2836L1443 2841L1435 2844L1430 2848L1424 2844L1428 2849L1430 2856L1428 2863L1412 2868L1399 2866L1407 2870L1414 2869L1422 2878L1429 2883L1423 2888L1417 2884L1425 2889L1431 2896L1435 2900L1440 2908L1439 2914L1436 2920L1434 2925L1438 2933L1440 2939L1438 2944L1439 2950L1434 2952L1429 2958L1422 2956L1415 2946L1409 2937L1406 2933L1402 2923L1395 2909L1393 2916L1397 2922L1401 2927L1409 2941L1411 2946L1419 2957L1411 2957L1407 2960L1403 2965L1403 2972L1397 2974L1391 2975L1388 2967L1390 2959L1388 2952L1385 2961L1379 2962L1378 2972L1379 2981L1378 2987L1375 2991L1372 2995L1364 2995L1362 2988L1356 2985L1349 2988L1345 2993L1339 2998L1338 3005L1332 3008L1317 3001L1315 2996L1316 2989L1322 2986L1314 2986L1311 2981L1312 2972L1309 2979L1310 2987L1312 2995L1314 3003L1312 3010L1306 3014L1296 3016L1292 3011L1292 3001L1280 3005L1272 3003L1275 2996L1270 3000L1266 2996L1261 2990L1259 2996L1261 3002L1265 3006L1270 3009L1262 3014L1258 3019L1255 3013L1250 3011L1242 3008L1237 3006L1245 3013L1247 3020L1248 3027L1240 3026L1235 3034L1232 3038L1228 3033L1224 3038L1218 3039L1215 3035L1211 3029L1210 3036L1202 3038L1196 3048L1197 3041L1192 3039L1187 3037L1181 3039L1189 3041L1184 3043L1180 3046L1174 3045L1179 3042L1173 3040L1168 3037L1163 3040L1165 3046L1169 3043L1164 3051L1156 3053L1149 3055L1140 3054L1134 3060L1131 3065L1128 3071L1128 3064L1126 3058L1132 3054L1139 3052L1126 3056L1124 3066L1127 3072L1120 3073L1110 3076L1104 3080L1105 3072L1110 3067L1108 3060L1104 3063L1105 3054L1098 3051L1101 3058L1096 3061L1097 3067L1101 3072L1102 3079L1096 3087L1089 3092L1082 3099L1081 3093L1078 3099L1075 3105L1075 3115L1076 3121L1081 3123L1090 3123L1098 3122L1102 3130L1101 3138L1096 3135L1096 3128L1093 3133L1094 3140L1091 3146L1095 3149L1101 3154L1107 3157L1113 3162L1115 3168L1114 3174L1109 3178L1107 3183L1102 3190L1096 3191L1090 3195L1081 3194L1072 3197L1066 3193L1060 3192L1053 3196L1051 3191L1050 3185L1044 3177L1049 3174L1053 3179L1056 3184L1059 3178L1057 3171L1052 3165L1050 3172L1048 3166L1041 3164L1043 3156L1038 3151L1032 3149L1034 3143L1041 3141L1033 3137L1035 3132L1033 3123L1029 3127L1024 3118L1023 3112L1026 3108L1027 3098L1025 3090L1027 3082L1033 3080L1035 3070L1034 3059L1042 3059L1051 3058L1050 3052L1054 3047L1050 3043L1042 3041L1040 3047L1038 3042L1038 3035L1032 3036L1035 3042L1028 3044L1022 3039L1024 3034L1025 3027L1020 3029L1018 3023L1013 3021L1013 3014L1005 3017L1008 3021L1011 3027L1014 3031L1012 3037L1009 3042L1004 3045L998 3047L989 3047L982 3049L978 3043L976 3048L971 3052L963 3051L958 3049L960 3044L967 3042L968 3035L965 3030L960 3027L952 3028L945 3027L942 3020L939 3016L941 3010L940 3004L932 3002L936 3008L934 3015L931 3010L934 3016L934 3023L929 3025L924 3023L927 3018L924 3013L919 3016L918 3010L919 3002L915 3005L914 3011L910 3008L908 3002L913 2995L910 2989L905 2987L901 2990L899 2997L896 2993L898 2986L895 2993L897 3000L900 3004L899 3012L901 3018L907 3019L904 3024L901 3028L897 3031L892 3034L890 3029L894 3026L897 3021L892 3018L883 3017L880 3023L878 3030L877 3036L871 3040L873 3033L871 3026L866 3032L860 3033L854 3034L847 3035L848 3041L856 3042L849 3045L844 3050L846 3044L841 3037L836 3033L831 3027L827 3023L820 3022L814 3026L806 3028L799 3028L793 3031L790 3025L785 3023L782 3027L773 3018L770 3014L764 3016L751 3007L744 3004L740 3001L743 2995L740 2987L733 2990L728 2985L720 2983L714 2979L708 2983L706 2974L705 2965L704 2959L706 2952L703 2942L696 2939L692 2930L693 2922L696 2908L699 2904L706 2909L709 2901L712 2895L714 2889L719 2883L714 2880L708 2874L700 2874L697 2868L690 2866L685 2868L669 2873L660 2872L659 2866L653 2859L643 2858L635 2858L632 2863L626 2865L618 2865L612 2858L608 2854L604 2850L597 2849L589 2848L586 2838L579 2831L576 2825L573 2820L566 2817L563 2810L555 2814L552 2822L536 2826L531 2830L524 2835L518 2834L515 2839L512 2843L511 2861L505 2868L501 2875L494 2879L486 2879L482 2875L473 2884L462 2893L456 2892L450 2889L448 2879L437 2880L431 2882L426 2890L424 2901L422 2907L422 2914L415 2913L412 2908L407 2905L403 2900L395 2890L387 2881L382 2883L378 2889L376 2899L372 2906L365 2902L361 2896L360 2888L356 2883L346 2889L344 2895L335 2902L331 2907L327 2916L323 2921L321 2926L313 2922L306 2919L303 2911L300 2905L294 2903L285 2896L279 2894L274 2891L268 2893L266 2887L261 2884L257 2887L253 2895L252 2903L239 2918L237 2924L231 2927L225 2928L213 2924L207 2925L199 2928L195 2932L189 2921L181 2918L177 2922L174 2927L172 2936L170 2944L162 2947L164 2955L166 2961L166 2971L168 2976L170 2983L173 2987L178 2991L181 2996L185 3002L183 3010L185 3017L186 3023L191 3028L184 3033L185 3040L183 3045L183 3057L182 3066L189 3069L193 3074L190 3078L186 3086L179 3085L173 3080L168 3078L163 3074L146 3076L139 3080L133 3081L129 3074L128 3065L131 3058L125 3054L126 3041L124 3035L123 3029L123 3022L119 3017L115 3008L105 3015L93 3019L88 3022L84 3026L80 3033L75 3039L70 3042L66 3045L61 3047L53 3046L46 3044L42 3039L35 3038L32 3042L26 3046L21 3050L14 3044L10 3038L10 3031L13 3025L9 3018L-0 3018L-6 3007L-8 2998L-5 2989L-5 2980L-6 2974L-14 2972L-18 2977L-27 2971L-32 2974L-37 2970L-49 2966L-60 2964L-67 2967L-79 2967L-84 2965L-91 2960L-88 2954L-85 2949L-83 2941L-80 2937L-76 2928L-69 2921L-69 2914L-68 2906L-73 2890L-71 2885L-66 2878L-62 2873L-62 2865L-55 2866L-49 2864L-53 2856L-55 2847L-63 2847L-69 2840L-76 2844L-81 2847L-85 2844L-91 2842L-100 2841L-103 2837L-109 2835L-121 2833L-116 2818L-121 2815L-117 2810L-119 2800L-122 2796L-129 2789L-122 2783L-126 2771L-127 2763L-133 2759L-140 2757L-141 2745L-141 2737L-136 2732L-131 2728L-121 2721L-120 2713L-125 2715L-136 2716L-144 2719L-150 2722L-154 2719L-159 2716L-166 2715L-175 2718L-181 2719L-189 2717L-201 2718L-223 2728L-229 2735L-234 2737L-239 2739L-244 2745L-252 2750L-257 2743L-261 2740L-243 2715L-241 2710L-242 2703L-249 2693L-246 2689L-247 2683L-249 2677L-263 2678L-261 2657L-261 2641L-254 2633L-250 2630L-241 2628L-236 2625L-241 2620L-243 2612L-243 2603L-241 2597L-238 2593L-235 2587L-233 2577L-226 2577L-223 2581L-214 2573L-208 2570L-205 2563L-200 2559L-200 2551L-199 2542L-197 2532L-187 2534L-183 2538L-177 2536L-173 2528L-168 2521L-165 2515L-163 2508L-159 2504L-152 2506L-146 2507L-140 2502L-139 2496L-142 2492L-146 2487L-151 2483L-153 2474L-154 2468L-148 2465L-144 2471L-140 2467L-137 2461L-140 2453L-144 2449L-142 2444L-138 2439L-136 2434L-135 2416L-133 2408L-133 2401L-134 2394L-132 2387L-136 2378L-134 2373L-136 2359L-134 2350L-139 2347L-141 2337L-140 2329L-137 2321L-138 2313L-141 2300L-140 2290L-142 2283L-148 2285L-154 2279L-162 2277L-167 2274L-170 2282L-171 2290L-177 2294L-183 2288L-185 2278L-190 2268L-191 2262L-194 2254L-195 2248L-196 2241L-199 2235L-198 2221L-207 2210L-213 2208L-214 2200L-218 2197L-223 2190L-233 2192L-239 2187L-244 2174L-250 2173L-258 2169L-263 2173L-266 2180L-270 2186L-270 2195L-276 2199L-282 2205L-294 2200L-299 2195L-305 2189L-314 2190L-318 2193L-325 2193L-329 2190L-330 2181L-335 2175L-342 2170L-350 2161L-359 2159L-364 2162L-368 2168L-369 2174L-369 2181L-375 2174L-379 2170L-374 2164L-377 2159L-371 2155L-360 2146L-361 2140L-363 2134L-368 2127L-371 2119L-376 2114L-385 2106L-386 2098L-394 2101L-403 2107L-405 2097L-390 2089L-387 2084L-387 2076L-392 2078L-399 2080L-405 2075L-408 2066L-416 2064L-422 2065L-428 2066L-438 2070L-445 2066L-451 2068L-450 2076L-454 2083L-461 2082L-467 2079L-471 2082L-474 2090L-479 2093L-482 2087L-486 2094L-497 2093L-501 2096L-500 2104L-507 2100L-517 2097L-525 2093L-531 2091L-541 2090L-549 2089L-554 2084L-561 2075L-565 2072L-572 2071L-579 2082L-585 2084L-594 2085L-599 2091L-605 2092L-607 2098L-603 2103L-599 2107L-605 2113L-609 2119L-617 2119L-621 2123L-627 2125L-632 2127L-636 2130L-642 2131L-645 2136L-650 2138L-656 2140L-665 2148L-673 2150L-683 2150L-694 2151L-704 2157L-708 2160L-713 2165L-718 2167L-725 2173L-727 2182L-732 2189L-741 2196L-749 2202L-753 2205L-756 2209L-760 2212L-772 2215L-778 2221L-780 2226L-774 2229L-774 2238L-777 2242L-781 2245L-786 2247L-790 2251L-797 2254L-804 2253L-807 2257L-812 2255L-815 2261L-820 2253L-824 2258L-834 2258L-840 2260L-846 2267L-857 2268L-867 2265L-886 2264L-887 2256L-886 2250L-886 2242L-896 2238L-904 2237L-917 2231L-922 2223L-930 2225L-939 2233L-943 2238L-952 2239L-957 2235L-963 2230L-969 2229L-979 2228L-987 2224L-993 2225L-1005 2225L-1008 2219L-1004 2215L-999 2211L-996 2206L-1001 2204L-1011 2199L-1018 2197L-1024 2203L-1031 2197L-1035 2190L-1040 2194L-1046 2193L-1060 2195L-1068 2195L-1074 2199L-1080 2205L-1085 2212L-1101 2216L-1110 2224L-1116 2229L-1120 2235L-1126 2246L-1129 2251L-1133 2254L-1138 2256L-1142 2263L-1144 2268L-1148 2276L-1151 2281L-1158 2282L-1163 2287L-1166 2292L-1168 2299L-1170 2305L-1167 2315L-1174 2318L-1183 2313L-1189 2308L-1191 2301L-1192 2293L-1189 2286L-1186 2277L-1180 2254L-1184 2245L-1184 2237L-1188 2231L-1193 2228L-1202 2226L-1206 2221L-1212 2225L-1216 2230L-1228 2235L-1250 2240L-1257 2241L-1260 2250L-1268 2248L-1277 2248L-1286 2247L-1292 2251L-1296 2257L-1303 2258L-1309 2256L-1314 2259L-1318 2256L-1326 2256L-1336 2259L-1338 2252L-1343 2256L-1352 2256L-1364 2254L-1370 2246L-1373 2242L-1380 2241L-1388 2240L-1391 2235L-1401 2233L-1404 2226L-1409 2222L-1416 2224L-1422 2221L-1425 2227L-1428 2233L-1428 2240L-1432 2243L-1439 2245L-1443 2242L-1451 2238L-1457 2236L-1462 2229L-1463 2223L-1464 2216L-1475 2225L-1474 2232L-1472 2237L-1470 2244L-1475 2248L-1484 2249L-1488 2245L-1488 2235L-1492 2232L-1494 2227L-1496 2221L-1499 2215L-1505 2211L-1511 2207L-1514 2201L-1515 2193L-1518 2197L-1524 2203L-1529 2200L-1538 2200L-1544 2198L-1548 2202L-1554 2200L-1560 2201L-1566 2200L-1570 2197L-1579 2197L-1579 2190L-1580 2180L-1576 2173L-1572 2169L-1571 2162L-1577 2159L-1585 2156L-1589 2161L-1595 2167L-1607 2167L-1614 2162L-1621 2160L-1622 2154L-1627 2151L-1636 2147L-1641 2144L-1648 2141L-1649 2135L-1653 2132L-1657 2127L-1664 2126L-1669 2123L-1672 2118L-1670 2107L-1676 2103L-1680 2095L-1678 2088L-1683 2083L-1686 2078L-1694 2077L-1700 2074L-1707 2075L-1711 2079L-1716 2081L-1727 2082L-1730 2089L-1738 2090L-1743 2088L-1746 2083L-1748 2076L-1753 2073L-1757 2067L-1759 2062L-1762 2055L-1765 2050L-1772 2052L-1773 2043L-1776 2039L-1780 2035L-1787 2033L-1792 2038L-1796 2035L-1803 2028L-1810 2025L-1815 2028L-1821 2024L-1826 2018L-1833 2014L-1834 2007L-1840 2006L-1848 1996L-1856 1993L-1860 1990L-1866 1986L-1871 1983L-1879 1981L-1884 1978L-1891 1978L-1892 1972L-1890 1966L-1894 1961L-1897 1957L-1896 1947L-1905 1944L-1911 1943L-1918 1942L-1927 1941L-1944 1935L-1951 1938L-1957 1945L-1967 1940L-1972 1945L-1973 1953L-1974 1961L-1976 1968L-1983 1970L-1985 1978L-1988 1983L-1996 1983L-2002 1984L-2004 1977L-2007 1971L-2010 1965L-2012 1960L-2014 1955L-2026 1950L-2035 1946L-2040 1939L-2044 1935L-2055 1929L-2064 1929L-2073 1924L-2083 1918L-2091 1916L-2099 1917L-2096 1911L-2100 1904L-2096 1901L-2093 1896L-2097 1893L-2100 1889L-2106 1890L-2113 1886L-2117 1881L-2125 1878L-2131 1873L-2136 1867L-2143 1865L-2151 1866L-2161 1869L-2169 1866L-2172 1861L-2178 1859L-2182 1854L-2187 1849L-2192 1847L-2195 1841L-2199 1834L-2203 1826L-2204 1820L-2208 1816L-2213 1812L-2222 1809L-2224 1814L-2226 1822L-2230 1819L-2234 1822L-2240 1826L-2250 1825L-2251 1816L-2249 1811L-2252 1804L-2256 1799L-2245 1790L-2245 1783L-2249 1779L-2254 1775L-2256 1769L-2256 1760L-2254 1752L-2251 1745L-2258 1736L-2271 1719L-2275 1712L-2281 1708L-2283 1692L-2281 1686L-2286 1679L-2289 1672L-2282 1668L-2267 1667L-2259 1664L-2256 1660L-2250 1662L-2251 1670L-2249 1677L-2239 1688L-2233 1694L-2226 1693L-2217 1692L-2213 1682L-2209 1678L-2203 1675L-2196 1676L-2188 1671L-2178 1663L-2173 1658L-2170 1649L-2173 1642L-2177 1636L-2180 1628L-2186 1622L-2188 1615L-2187 1606L-2184 1600L-2184 1593L-2196 1591L-2208 1586L-2214 1587L-2218 1579L-2225 1576L-2232 1566L-2242 1557L-2245 1553L-2247 1545L-2245 1522L-2246 1513L-2248 1506L-2253 1490L-2252 1480L-2244 1474L-2234 1470L-2226 1463L-2225 1457L-2226 1451L-2232 1444L-2241 1440L-2250 1431L-2259 1424L-2265 1422L-2290 1418L-2298 1412L-2301 1408L-2307 1384L-2312 1377L-2314 1372L-2315 1363L-2326 1341L-2330 1332L-2328 1322L-2325 1316L-2324 1309L-2331 1304L-2339 1311L-2347 1309L-2351 1304ZM1166 3267L1168 3272L1161 3273L1156 3279L1153 3283L1146 3278L1144 3286L1142 3293L1139 3298L1133 3300L1130 3306L1129 3312L1126 3319L1123 3327L1120 3332L1113 3333L1118 3337L1119 3344L1115 3349L1113 3356L1113 3363L1109 3366L1105 3372L1108 3376L1112 3372L1115 3378L1109 3379L1104 3389L1100 3392L1091 3394L1083 3396L1075 3404L1070 3409L1062 3412L1067 3415L1066 3423L1063 3428L1056 3428L1061 3425L1058 3421L1050 3424L1041 3428L1033 3426L1030 3438L1024 3442L1031 3444L1029 3449L1025 3445L1020 3448L1018 3453L1013 3451L1009 3448L1004 3452L1007 3447L1004 3443L1000 3440L988 3438L976 3438L971 3440L968 3435L965 3431L953 3430L949 3427L941 3423L935 3418L931 3415L923 3414L918 3407L921 3391L919 3382L916 3375L913 3371L916 3364L916 3356L915 3349L912 3339L917 3334L918 3328L913 3325L913 3318L916 3313L918 3308L923 3305L931 3299L939 3295L943 3290L948 3285L952 3281L960 3276L967 3272L973 3267L975 3262L982 3261L985 3254L978 3257L972 3260L970 3254L974 3249L979 3244L983 3240L989 3241L995 3244L1002 3246L1009 3245L1008 3239L1014 3229L1024 3227L1030 3228L1034 3231L1038 3234L1045 3233L1048 3229L1054 3232L1056 3239L1061 3235L1064 3231L1073 3228L1066 3229L1071 3227L1075 3221L1085 3223L1093 3220L1099 3224L1101 3230L1102 3236L1100 3228L1099 3220L1104 3222L1109 3224L1115 3225L1120 3228L1122 3234L1123 3225L1120 3221L1122 3214L1130 3208L1134 3218L1139 3222L1151 3228L1156 3226L1162 3244L1163 3252L1165 3259L1164 3265ZM1267 3022L1271 3026L1263 3029L1257 3032L1252 3034L1254 3028L1258 3023L1265 3023ZM1339 3015L1338 3021L1335 3027L1328 3029L1330 3023L1336 3016ZM1360 3007L1357 3014L1356 3020L1355 3028L1348 3025L1352 3021L1345 3018L1350 3012L1353 3007L1361 3007ZM1418 2976L1411 2978L1413 2971L1418 2976ZM1415 2960L1412 2967L1407 2971L1405 2964L1409 2961ZM1439 2882L1434 2884L1429 2878L1423 2874L1419 2870L1422 2866L1432 2874L1437 2876L1439 2881ZM1808 2796L1815 2799L1814 2806L1809 2804L1799 2803L1805 2797ZM1850 2762L1856 2763L1852 2767L1851 2773L1845 2775L1846 2783L1840 2784L1836 2781L1842 2771L1840 2765L1843 2759L1848 2763ZM2044 2478L2051 2481L2053 2487L2045 2484L2039 2483L2036 2477L2034 2470L2038 2476L2044 2478ZM2251 2217L2254 2222L2248 2226L2243 2229L2238 2223L2241 2216L2245 2211L2248 2207L2252 2210L2251 2217ZM2355 1947L2351 1950L2348 1955L2342 1953L2337 1950L2342 1947L2350 1944L2355 1947ZM2372 1930L2375 1935L2368 1932L2362 1934L2359 1928L2365 1929ZM2312 1816L2317 1820L2312 1826L2308 1816ZM2105 1722L2107 1728L2103 1725L2095 1722L2098 1714L2091 1710L2088 1704L2095 1702L2100 1707L2105 1719ZM2397 840L2406 839L2403 845L2397 841ZM2402 836L2392 837L2386 835L2398 834ZM2269 810L2270 821L2261 823L2263 817L2257 818L2253 821L2251 816L2257 813L2261 809L2269 810ZM1122 3108L1126 3111L1123 3116L1117 3114L1120 3110ZM1117 3099L1115 3105L1114 3111L1111 3106L1107 3103L1097 3103L1091 3106L1085 3105L1088 3099L1094 3095L1100 3092L1103 3098L1110 3095L1117 3099ZM1124 3080L1120 3087L1114 3090L1112 3085L1106 3083L1108 3078L1115 3079L1117 3084L1120 3080ZM1916 2662L1923 2665L1926 2669L1923 2673L1918 2678L1914 2675L1917 2671L1914 2667ZM2102 2540L2097 2545L2102 2550L2096 2549L2092 2553L2088 2556L2086 2550L2083 2546L2091 2544L2088 2539L2085 2533L2088 2529L2093 2525L2096 2532L2102 2537ZM2325 2095L2323 2103L2319 2099L2316 2095L2319 2090L2325 2092ZM2345 2019L2348 2024L2344 2027L2341 2023L2336 2021L2339 2013L2343 2018ZM2371 2001L2368 2005L2367 1997L2365 1992L2373 1994L2371 2001ZM2317 1977L2320 1981L2318 1988L2311 1986L2314 1976ZM2364 1983L2362 1988L2359 1994L2355 1990L2349 1987L2340 1984L2333 1986L2329 1982L2328 1976L2326 1970L2339 1968L2344 1971L2349 1974L2356 1977L2361 1979ZM2313 1787L2321 1790L2328 1795L2327 1803L2320 1805L2314 1808L2307 1804L2301 1802L2296 1799L2289 1797L2281 1793L2275 1790L2267 1786L2260 1782L2256 1779L2248 1771L2243 1766L2247 1759L2258 1759L2265 1761L2274 1766L2280 1772L2288 1776L2294 1781L2300 1784L2313 1787ZM1406 2989L1404 2994L1400 2990L1404 2986ZM1427 2967L1431 2963L1434 2968L1428 2970ZM1434 2887L1437 2892L1444 2898L1444 2905L1436 2898L1432 2894L1427 2890L1432 2887ZM2070 2581L2066 2586L2061 2582L2062 2576L2066 2580ZM2049 2536L2048 2543L2047 2551L2044 2555L2042 2549L2044 2540L2047 2536ZM2243 2251L2242 2257L2234 2256L2240 2254ZM2315 2094L2313 2099L2309 2096L2313 2093ZM2366 1956L2360 1957L2364 1953L2370 1952L2373 1956L2367 1955ZM2304 1816L2307 1820L2300 1818L2287 1809L2297 1810L2303 1814ZM1973 860L1969 872L1961 879L1956 873L1957 864L1965 869L1970 865ZM1507 2910L1511 2913L1514 2917L1511 2922L1505 2923L1505 2930L1508 2925L1512 2928L1515 2923L1519 2927L1521 2922L1525 2925L1522 2930L1521 2936L1516 2931L1512 2935L1513 2941L1515 2946L1510 2942L1503 2942L1499 2939L1494 2934L1488 2935L1480 2932L1474 2931L1478 2923L1482 2919L1487 2917L1492 2914L1497 2912L1501 2909L1507 2910ZM1505 2944L1509 2950L1505 2953L1502 2949L1496 2948L1499 2944ZM1466 2955L1467 2948L1473 2943L1481 2941L1487 2936L1484 2942L1482 2949L1475 2952L1468 2954ZM1436 2959L1439 2963L1435 2966L1433 2959Z","taiwan":"M2320 2613L2312 2623L2311 2625L2310 2628L2309 2631L2309 2634L2309 2638L2310 2644L2310 2646L2310 2648L2310 2651L2311 2654L2314 2656L2317 2656L2316 2657L2314 2657L2314 2660L2314 2663L2314 2665L2312 2667L2312 2669L2312 2670L2313 2671L2312 2672L2309 2674L2306 2677L2306 2682L2306 2684L2305 2685L2305 2688L2304 2690L2305 2692L2305 2694L2303 2696L2300 2700L2298 2701L2298 2702L2295 2706L2294 2707L2293 2710L2291 2715L2289 2720L2288 2722L2288 2723L2289 2726L2290 2727L2290 2728L2290 2731L2288 2733L2288 2735L2288 2737L2286 2744L2284 2752L2281 2769L2279 2773L2274 2801L2273 2813L2272 2815L2269 2819L2268 2821L2267 2824L2266 2828L2266 2833L2266 2837L2264 2841L2263 2842L2261 2844L2261 2845L2259 2848L2257 2852L2256 2858L2255 2860L2251 2867L2251 2868L2245 2873L2244 2875L2244 2879L2243 2881L2243 2883L2241 2885L2239 2887L2232 2892L2228 2897L2227 2898L2226 2899L2224 2905L2223 2907L2219 2911L2218 2914L2218 2919L2216 2927L2212 2934L2211 2936L2211 2943L2211 2950L2211 2972L2210 2976L2209 2978L2208 2979L2206 2981L2206 2985L2207 2989L2207 2991L2205 2988L2202 2986L2199 2984L2196 2984L2196 2986L2195 2987L2193 2987L2192 2986L2192 2982L2190 2977L2190 2976L2190 2970L2190 2968L2192 2967L2184 2943L2183 2941L2181 2939L2179 2934L2178 2933L2175 2930L2174 2929L2172 2929L2172 2927L2170 2925L2166 2923L2164 2922L2163 2920L2161 2919L2160 2919L2159 2919L2153 2915L2148 2907L2153 2914L2153 2911L2152 2909L2151 2908L2149 2905L2145 2901L2144 2900L2143 2897L2144 2896L2145 2894L2144 2891L2143 2889L2141 2885L2139 2881L2139 2879L2139 2876L2139 2874L2138 2872L2137 2870L2136 2864L2135 2861L2134 2859L2133 2858L2135 2856L2136 2853L2136 2851L2133 2851L2132 2853L2131 2854L2130 2854L2129 2850L2127 2848L2127 2849L2126 2850L2125 2851L2124 2850L2123 2848L2124 2847L2125 2845L2127 2845L2128 2844L2128 2843L2124 2841L2127 2841L2127 2839L2125 2838L2124 2836L2124 2835L2126 2834L2127 2833L2127 2831L2126 2830L2126 2828L2127 2827L2128 2826L2128 2823L2129 2820L2131 2819L2129 2818L2130 2816L2133 2815L2133 2814L2132 2814L2131 2813L2132 2810L2133 2810L2135 2810L2134 2806L2132 2802L2133 2801L2132 2799L2132 2797L2134 2794L2131 2794L2131 2791L2133 2788L2133 2781L2133 2776L2134 2772L2136 2768L2136 2764L2137 2760L2138 2759L2140 2756L2141 2754L2143 2752L2144 2750L2145 2747L2145 2746L2148 2743L2149 2742L2150 2739L2152 2735L2154 2728L2155 2726L2156 2725L2157 2724L2159 2723L2159 2721L2161 2719L2162 2718L2162 2713L2163 2712L2164 2711L2168 2705L2169 2704L2170 2702L2171 2700L2172 2694L2176 2687L2177 2683L2178 2681L2184 2674L2187 2671L2187 2669L2188 2666L2188 2664L2191 2660L2192 2657L2192 2656L2195 2655L2196 2654L2196 2652L2198 2650L2200 2648L2203 2648L2205 2648L2205 2646L2206 2644L2208 2643L2208 2640L2210 2639L2211 2636L2213 2632L2214 2630L2214 2628L2214 2626L2215 2625L2216 2622L2216 2621L2217 2620L2218 2619L2219 2617L2220 2614L2220 2613L2224 2607L2227 2603L2230 2601L2237 2598L2239 2597L2241 2596L2242 2595L2246 2593L2254 2592L2259 2591L2261 2590L2263 2588L2265 2587L2267 2588L2268 2589L2269 2590L2270 2590L2269 2588L2267 2585L2266 2584L2266 2583L2267 2582L2269 2579L2270 2577L2272 2574L2277 2572L2281 2571L2285 2572L2287 2573L2291 2579L2293 2582L2294 2582L2296 2582L2295 2585L2297 2586L2298 2587L2300 2588L2318 2593L2320 2594L2319 2595L2319 2599L2320 2603L2321 2604L2325 2604L2328 2605L2329 2606L2330 2607L2322 2611L2320 2613ZM2283 2974L2285 2975L2286 2976L2284 2978L2281 2977L2278 2975L2277 2973L2277 2971L2276 2969L2284 2969L2283 2971L2283 2974ZM1948 2666L1951 2666L1954 2668L1956 2674L1955 2678L1954 2679L1951 2678L1949 2677L1946 2677L1943 2679L1941 2682L1940 2683L1938 2682L1936 2681L1937 2679L1937 2677L1937 2674L1936 2673L1937 2671L1940 2670L1944 2673L1946 2672L1947 2669L1948 2666ZM2081 2780L2083 2784L2083 2786L2083 2787L2082 2786L2080 2785L2078 2786L2076 2787L2076 2789L2073 2791L2071 2791L2070 2790L2068 2788L2068 2787L2069 2788L2071 2789L2073 2788L2074 2787L2072 2786L2071 2784L2070 2785L2070 2784L2070 2782L2072 2782L2075 2780L2077 2779L2076 2781L2079 2782L2081 2780ZM2062 2780L2064 2776L2065 2774L2066 2776L2065 2778L2064 2782L2064 2784L2063 2784L2061 2785L2059 2785L2060 2784L2061 2784L2062 2783L2062 2780ZM2073 2777L2072 2776L2071 2775L2070 2773L2072 2771L2073 2772L2075 2773L2075 2774L2074 2775L2075 2777L2074 2778ZM2272 2897L2272 2896L2276 2895L2277 2896L2277 2898L2276 2900L2275 2900L2274 2900L2272 2897ZM2120 2799L2126 2793L2130 2787L2127 2793L2126 2795L2124 2797L2123 2798L2122 2799L2120 2801L2119 2801L2120 2799Z","lon":[100,134],"lat":[16,46],"places":{"taipei":[2283.558620689655,2602.7586206896553],"beijing":[1737.3517241379311,756.744827586207],"shanghai":[2273.8758620689655,1833.4344827586208],"fuzhou":[2043.3103448275863,2473.489655172414],"xiamen":[1915.4482758620688,2671.448275862069],"nanjing":[1990.4275862068964,1730.4827586206895],"guangzhou":[1404.5793103448277,2839.11724137931]},"tw_box":[1921,2557,2345,3006]},"burn":[900,2400],"world":{"size":[5200,2254],"sc":0.38086867355160037,"lon0":-135,"lat0":80,"deg":17.33375228887424},"atlas":{"size":[6000,2160],"sc":0.3766714796911294,"lon0":-170,"lat0":76,"deg":17.14273337937096},"strait":{"size":[3677,2872],"z":9,"X0":107588,"Y0":55074,"fuzhou":[1383.804444444453,620.589586571019],"tw_c":[1984.5511111111118,1595.8235715889605],"xiamen":[943.2568888889073,1264.8598717532877],"taipei":[2208.611413333332,1043.1406459870632],"keelung":[2272.181333333341,1004.1471544867018],"kaohsiung":[1747.8933333333407,2003.637760514328],"mid":[1747.8933333333407,975.9882867275956],"tw_box":[1372,884,2382,2301]},"kansan":[3000,3146],"kansan_sc":0.7317073170731707,"kansan_card":[1400,604],"kansan_col":[680,1040],"park_chip":[700,550],"quad_chip":[500,343],"hp_chip":[500,404],"formosa":[3000,2734],"sc_poster":[2337,3000],"fdr":[700,700],"chiang":[1300,1560],"mao":[740,1024],"mao_c":[600,600],"ww2a":[2400,1976],"ww2b":[1669,1616],"cairo":[2005,1551],"surrender":[1600,1511]};
+
+    function gated(a, b, fn) { const on = FX.onFrame; FX.onFrame = (f) => on(FX.gate(S(a) - 0.1, S(b) + 0.1, f)); try { return fn(); } finally { FX.onFrame = on; } }
+    // scene window (LOCAL c3 seconds): hidden (display none) outside [a, b]
+    function scene(id, a, b) {
+      const el = $(id);
+      gsap.set(el, { autoAlpha: 0, display: "none" });
+      tl.fromTo(el, { autoAlpha: 0, display: "none" }, { autoAlpha: 1, display: "block", duration: 0.001, immediateRender: false }, S(a));
+      if (b < SEG_END) tl.set(el, { autoAlpha: 0, display: "none" }, S(b));
+    }
+    function ground(kind, t) {
+      const v = kind === "paper" ? [0.32, 0.14, 0.26] : [1, 0.42, 0.36];
+      tl.set([$("vig"), $("dust"), $("grain")], { opacity: (i) => v[i] }, t);
+    }
+    const show = (el, t) => tl.fromTo(el, { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, t);
+    const hide = (el, t, d) => tl.to(el, { opacity: 0, duration: d || 0.3, ease: "power1.in" }, t);
+    const rise = (el, t, o) => { o = o || {}; const d = o.dur || 1.0;
+      tl.fromTo(el, { opacity: 0, y: o.y == null ? 22 : o.y }, { opacity: 1, y: 0, duration: d, ease: C(E.out, d), immediateRender: true }, t); };
+    const pop = (el, t, d) => { d = d || 0.8; tl.fromTo(el, { opacity: 0, scale: 0.8 }, { opacity: 1, scale: 1, duration: d, ease: C(E.out, d), immediateRender: true }, t); };
+    const words = (id) => $(id).querySelectorAll(".k-w");
+    // camera: map/canvas px (cx, cy) at screen centre at scale s (transform-origin 0 0)
+    const camAt = (s, cx, cy, sx, sy) => ({ scale: s, x: (sx == null ? 960 : sx) - cx * s, y: (sy == null ? 540 : sy) - cy * s });
+    const whipN = { n: 0 };
+    function whip(a, b, t, o) {
+      o = Object.assign({ dir: 1, vertical: false, flash: false, dur: 0.32 }, o);
+      const k = ++whipN.n, ba = FX.whipDefs(defs, `${SEG}-wa${k}`), bb = FX.whipDefs(defs, `${SEG}-wb${k}`);
+      const h = o.dur / 2;
+      if (o.vertical) { [ba, bb].forEach((n) => n.parentNode.setAttribute("y", "-30%")); [ba, bb].forEach((n) => { n.parentNode.setAttribute("height", "160%"); n.parentNode.setAttribute("x", "-10%"); n.parentNode.setAttribute("width", "120%"); }); }
+      tl.set(a, { filter: `url(#${SEG}-wa${k})` }, t - h - 0.01); tl.set(a, { filter: "none" }, t + 0.06);
+      tl.set(b, { filter: `url(#${SEG}-wb${k})` }, t - 0.001); tl.set(b, { filter: "none" }, t + h + 0.02);
+      FX.whip(tl, a, b, t, { dir: o.dir, vertical: o.vertical, dur: o.dur, blurA: ba, blurB: bb });
+      if (o.flash) tl.fromTo($("flash"), { opacity: 0 }, { opacity: 0.9, duration: 0.08, yoyo: true, repeat: 1, ease: "power2.in", immediateRender: false }, t - 0.08);
+    }
+    // paper slide: the incoming (paper) shot slides in over the outgoing one, 12 fps, slight rotation
+    function slideIn(b, t, o) {
+      o = Object.assign({ from: "right", dur: 0.42 }, o);
+      const v = { right: { x: 2050 }, left: { x: -2050 }, up: { y: 1200 }, down: { y: -1200 } }[o.from];
+      tl.fromTo(b, Object.assign({ rotation: o.from === "left" ? -3 : 3, boxShadow: "0 0 80px rgba(0,0,0,0.6)" }, v),
+        { x: 0, y: 0, rotation: 0, duration: o.dur, ease: C(E.inOut, o.dur), immediateRender: false }, t);
+    }
+    function ink(parent, d, t, dur, o) {
+      o = o || {};
+      const p = document.createElementNS(NS, "path");
+      p.setAttribute("d", d); p.setAttribute("fill", o.fill || "none");
+      p.setAttribute("stroke", o.color || INK); p.setAttribute("stroke-width", o.width || 6);
+      p.setAttribute("stroke-linecap", "round"); p.setAttribute("stroke-linejoin", "round");
+      if (o.filter) p.setAttribute("filter", o.filter);
+      if (o.opacity != null) p.setAttribute("opacity", o.opacity);
+      parent.appendChild(p);
+      const len = p.getTotalLength() || 1;
+      p.setAttribute("stroke-dasharray", `${len} ${len}`); p.setAttribute("stroke-dashoffset", len);
+      tl.fromTo(p, { attr: { "stroke-dashoffset": len } }, { attr: { "stroke-dashoffset": 0 }, duration: dur, ease: o.ease || C(E.out, dur), immediateRender: true }, t);
+      p._len = len; return p;
+    }
+    function pin(svg, x, y, color, r, id) {
+      svg.insertAdjacentHTML("beforeend", `<g id="${id}" opacity="0"><ellipse cx="${x + r * 0.6}" cy="${y + r * 0.5}" rx="${r * 0.9}" ry="${r * 0.35}" fill="rgba(10,12,16,0.45)"/><path d="M${x} ${y} L${x} ${y - r * 2.6}" stroke="#555" stroke-width="${r * 0.25}"/><circle cx="${x}" cy="${y - r * 2.6}" r="${r}" fill="${color}" stroke="${INK}" stroke-width="${r * 0.18}"/><circle cx="${x - r * 0.3}" cy="${y - r * 2.9}" r="${r * 0.28}" fill="rgba(255,255,255,0.55)"/></g>`);
+      return document.getElementById(id);
+    }
+    function typeOn(el, t, per) {
+      const chars = FX.split(el, "chars"); per = per || 1 / 24;
+      chars.forEach((c, i) => tl.fromTo(c, { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, t + i * per));
+      return t + chars.length * per;
+    }
+    // Pan Wen-Yuan circle (no portrait reachable from the cloud: ink silhouette in the motif's celadon ring)
+    const PANSIL = (sz) => `<svg viewBox="0 0 220 220" style="width:${sz}px;height:${sz}px"><circle cx="110" cy="110" r="106" fill="#d9d1bf"/><path d="M110 46c-24 0-40 18-40 42 0 18 9 33 22 40-34 8-56 30-60 70h156c-4-40-26-62-60-70 13-7 22-22 22-40 0-24-16-42-40-42z" fill="${INK}" opacity="0.88"/><circle cx="110" cy="110" r="106" fill="none" stroke="${CEL}" stroke-width="8"/></svg>`;
+
+    FX.tintDefs(defs, "c3s02-tint-night", "#0e1013", "#bdb6a8");
+    FX.tintDefs(defs, "c3s02-tint-red", "#5a1710", "#efe3d0");
+    FX.tintDefs(defs, "c3s02-tint-cel", "#1f3a30", "#e6efe8");
+    defs.insertAdjacentHTML("beforeend", `
+      <pattern id="c3s02-ht-red" width="22" height="22" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="22" height="22" fill="${RED}" opacity="0.5"/><circle cx="11" cy="11" r="6.2" fill="${RED}"/></pattern>
+      <filter id="c3s02-glow" x="-10%" y="-10%" width="120%" height="120%"><feGaussianBlur in="SourceGraphic" stdDeviation="9" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>`);
+    FX.grain($("grain"), 4301);
+    FX.dust($("dust"), 4302, 2);
+
+    /* =================== C3S043 · 200.34–205.94 · And a little bit later … I mean a few decades later, after Silicon Valley =================== */
+    scene("sc043", 200.34, 205.94);
+    ground("night", 0);
+    (function () {
+      // hand-off: c3s01's light-flash whip lands here — frame 0 = bone flash, smear decays over 0.2 s
+      gsap.set($("flash"), { opacity: 1 });
+      tl.fromTo($("flash"), { opacity: 1 }, { opacity: 0, duration: 0.22, ease: "power2.out", immediateRender: true }, 0);
+      const shot = $("sc043-shot"), wb = FX.whipDefs(defs, "c3s02-w043"), sb = { v: 90 };
+      tl.set(shot, { filter: "url(#c3s02-w043)" }, 0); tl.set(shot, { filter: "none" }, 0.24);
+      tl.fromTo(sb, { v: 90 }, { v: 0, duration: 0.22, ease: "power2.out", immediateRender: true, onUpdate: () => wb.setAttribute("stdDeviation", `${sb.v.toFixed(1)} 0`) }, 0);
+      tl.fromTo(shot, { x: 380, scale: 1.18 }, { x: 0, scale: 1, duration: 0.22, ease: "power3.out", immediateRender: true }, 0);
+      // the decade axis: minor tick = a year, tall tick = a decade (no year labels — he says none)
+      const ax = $("sc043-axis"), Y = 640;
+      let d = `M-200 ${Y} L12000 ${Y}`;
+      for (let x = 0, k = 0; x <= 11600; x += 48, k++) { const h = k % 10 === 0 ? 46 : 14; d += ` M${x} ${Y - h} L${x} ${Y + (k % 10 === 0 ? 20 : 0)}`; }
+      ax.innerHTML = `<path d="${d}" stroke="${BONE}" stroke-width="3" fill="none" opacity="0.85"/>`;
+      for (let x = 0; x <= 11600; x += 480) ax.insertAdjacentHTML("beforeend", `<circle cx="${x}" cy="${Y - 70}" r="4" fill="${BONE}" opacity="0.5"/>`);
+      const axb = FX.whipDefs(defs, "c3s02-ax043"); ax.setAttribute("filter", "url(#c3s02-ax043)");
+      const ab = { v: 40 };
+      tl.fromTo(ab, { v: 40 }, { v: 0, duration: 3.2, ease: E.out, immediateRender: true, onUpdate: () => axb.setAttribute("stdDeviation", `${ab.v.toFixed(1)} 0`) }, S(200.40));
+      tl.fromTo(ax, { x: 0 }, { x: -9600, duration: 3.76, ease: E.out, immediateRender: true }, S(200.34));   // races, stops @204.10
+      tl.to(ax, { x: -9660, duration: 1.84, ease: "none" }, S(204.10));                                   // still drifting at the cut (CA)
+      $("sc043-dot").innerHTML = `<circle cx="960" cy="${Y}" r="44" fill="none" stroke="${CEL}" stroke-width="3" opacity="0.45"/><circle cx="960" cy="${Y}" r="17" fill="${CEL}" stroke="${INK}" stroke-width="3"/>`;
+      gated(200.34, 205.94, () => FX.streaks($("sc043-str"), { seed: 4300, speed: 0.9, tint: [190, 220, 205], gain: 1.1 }));
+      tl.fromTo($("sc043-str"), { opacity: 0.6 }, { opacity: 0.18, duration: 3.6, ease: E.out, immediateRender: true }, S(200.6));
+      [T(203.32), T(203.40), T(203.64), T(204.04)].forEach((c, i) => rise(words("sc043-txt")[i], c, { dur: 0.7, y: 14 }));
+    })();
+
+    /* =================== C3S044 · 205.94–213.14 · after graduating … one of the most important people in Taiwan =================== */
+    scene("sc044", 205.94, 213.50);
+    (function () {
+      const J = M.tw_night, cam = $("sc044-cam");
+      $("sc044-sea").style.background = `rgb(${J.corner.join(",")})`;
+      tl.fromTo(cam, camAt(0.5, 811, 1100), Object.assign(camAt(0.6, 830, 830), { duration: 4.9, ease: E.cam, immediateRender: true }), S(208.0));
+      FX.focusHunt(tl, $("sc044-cam"), S(212.95 - 0.95), { dur: 0.8 });
+      // dissertation title page (typeset recreation, no seal) slides onto the desk, then away
+      const th = $("sc044-thesis");
+      tl.fromTo(th, { y: 760, rotation: 6 }, { y: 0, rotation: -2.5, duration: 1.0, ease: C(E.out, 1.0), immediateRender: true }, S(205.94));
+      rise(words("sc044-grad")[0], T(206.20), { dur: 0.8, y: 12 });
+      hide($("sc044-grad"), S(207.9));
+      tl.to(th, { x: -1500, y: -120, rotation: -14, duration: 0.6, ease: C(E.in, 0.6) }, S(207.95));
+      tl.to($("sc044-desk"), { opacity: 0, duration: 0.6, ease: "power1.inOut" }, S(208.0));
+      // Pan Wen-Yuan: circle pinned off the Hsinchu coast, leader to the city
+      const svg = $("sc044-svg"), hs = J.hsinchu, px = hs[0] - 330, py = hs[1] - 40;
+      const pc = document.createElement("div"); pc.className = "k-abs"; pc.style.cssText = `left:${px - 140}px;top:${py - 140}px;width:280px;height:280px;opacity:0`;
+      pc.innerHTML = PANSIL(280); cam.appendChild(pc);
+      svg.insertAdjacentHTML("beforeend", `<circle id="c3s02-sc044-hd" cx="${hs[0]}" cy="${hs[1]}" r="9" fill="${BONE}" stroke="${INK}" stroke-width="3" opacity="0"/>`);
+      pop(pc, S(210.44), 0.8);
+      show($("sc044-hd"), S(210.44));
+      ink(svg, `M${px + 140} ${py + 10} L${hs[0] - 10} ${hs[1]}`, S(210.70), 0.5, { color: BONE, width: 4 });
+      [T(210.44), T(210.76), T(211.40)].forEach((c, i) => rise(words("sc044-mip")[i], c, { dur: 0.8, y: 14 }));
+      // celadon fill (motif: watercolour edge + halftone + 6 px glow)
+      tl.fromTo($("sc044-fill"), { opacity: 0 }, { opacity: 0.9, duration: 0.3, ease: C(E.out, 0.3), immediateRender: true }, S(212.28));
+      tl.fromTo($("sc044-ht"), { opacity: 0 }, { opacity: 0.5, duration: 0.3, ease: C(E.out, 0.3), immediateRender: true }, S(212.28));
+      rise(words("sc044-tw")[0], T(212.28), { dur: 0.3, y: 8 });
+      gsap.set($("sc044-cr"), { opacity: 0 }); show($("sc044-cr"), S(208.3));
+    })();
+    slideIn($("sc045-shot"), S(213.08));
+
+    /* =================== C3S045 · 213.14–216.90 · Which is not a country at this point … but it will become a country =================== */
+    scene("sc045", 213.08, 216.92);
+    ground("paper", S(213.30));
+    (function () {
+      tl.fromTo($("sc045-cam"), { scale: 1.0, x: 0 }, { scale: 1.05, x: -20, duration: 3.8, ease: "none", immediateRender: true }, S(213.08));
+      const mf = gated(213.0, 217.0, () => FX.markupDefs(defs, "c3s02-mk045", { boil: 4 }));
+      FX.markup.circle(tl, $("sc045-mk"), S(213.80), { cx: 482, cy: 470, rx: 225, ry: 370, rot: 8, dur: 0.8, color: INK, width: 8, filter: mf, seed: 4501 });
+      [T(213.48), T(213.64), T(213.80)].forEach((c, i) => rise(words("sc045-nac")[i], c, { dur: 0.6, y: 12 }));
+      FX.markup.arrow(tl, $("sc045-amk"), S(215.80), { x1: 1080, y1: 700, x2: 1280, y2: 880, bend: -60, head: 30, dur: 0.35, color: INK, width: 7, filter: mf });
+      rise(words("sc045-wb")[0], T(215.80), { dur: 0.3, y: 8 });
+      show(words("sc045-wb")[1], T(216.04));
+    })();
+    whip($("sc045-shot"), $("sc046-shot"), S(216.84), { dir: -1 });
+
+    /* =================== C3S046 · 216.90–223.46 · He becomes an important person in Taiwan … happening in Silicon Valley right now =================== */
+    scene("sc046", 216.84, 223.46);
+    ground("night", S(216.86));
+    (function () {
+      const J = M.pac, cam = $("sc046-cam"), svg = $("sc046-svg"), tw = J.taipei, sv = J.sv;
+      // ghost map: soft top/bottom edges so the band floats on the night ground
+      const mimg = "linear-gradient(180deg, transparent 0%, #000 14%, #000 86%, transparent 100%)";
+      $("sc046-map").style.webkitMaskImage = mimg; $("sc046-map").style.maskImage = mimg;
+      const f = $("sc046-fill"); Object.assign(f.style, { left: J.tw_box[0] + "px", top: J.tw_box[1] + "px" });
+      const a = camAt(0.9, tw[0] + 140, tw[1]), b = camAt(0.335, (tw[0] + sv[0]) / 2, (tw[1] + sv[1]) / 2 + 10);
+      b.x = Math.min(0, Math.max(1920 - 5896 * 0.335, b.x));
+      tl.fromTo(cam, a, Object.assign({}, a, { x: a.x - 30, duration: 2.4, ease: "none", immediateRender: true }), S(216.84));
+      tl.to(cam, Object.assign({}, b, { duration: 2.4, ease: E.cam }), S(219.24));
+      tl.to(cam, { x: b.x - 12, duration: 1.8, ease: "none" }, S(221.64));
+      // Pan's small circle on Taiwan
+      const pc = document.createElement("div"); pc.className = "k-abs"; pc.style.cssText = `left:${tw[0] + 50}px;top:${tw[1] - 230}px;width:150px;height:150px;opacity:0`;
+      pc.innerHTML = PANSIL(150); cam.appendChild(pc);
+      svg.insertAdjacentHTML("beforeend", `<path d="M${tw[0] + 60} ${tw[1] - 100} L${tw[0] + 8} ${tw[1] - 6}" stroke="${BONE}" stroke-width="4" opacity="0.8"/>`);
+      pop(pc, S(217.10), 0.8);
+      // labels (screen space, placed from the camera at that moment)
+      const lt = $("sc046-twl"); lt.style.left = (a.x - 30 + tw[0] * 0.9 + 70) + "px"; lt.style.top = (a.y + tw[1] * 0.9 + 40) + "px";
+      tl.set(lt, { opacity: 1 }, T(218.44)); rise(words("sc046-twl")[0], T(218.44), { dur: 0.6, y: 10 });
+      hide(lt, S(219.20), 0.25);
+      const ls = $("sc046-svl"); ls.style.left = (b.x - 12 + sv[0] * 0.335 - 420) + "px"; ls.style.top = (b.y + sv[1] * 0.335 + 50) + "px";
+      tl.set(ls, { opacity: 1 }, T(221.88));
+      rise(words("sc046-svl")[0], T(221.88), { dur: 0.6, y: 10 }); rise(words("sc046-svl")[1], T(222.44), { dur: 0.4, y: 8 });
+      // Silicon Valley emits (vermilion rings), the signal arcs across the Pacific and reaches Taiwan
+      svg.insertAdjacentHTML("beforeend", `<circle cx="${sv[0]}" cy="${sv[1]}" r="20" fill="${RED}" stroke="${INK}" stroke-width="4" id="c3s02-sc046-svd" opacity="0"/>`);
+      show($("sc046-svd"), S(221.70));
+      gated(221.6, 223.6, () => FX.radioWaves(svg, sv[0], sv[1], { rings: 4, max: 560, period: 1.3, width: 16, color: RED, from: S(221.88), to: S(223.6) }));
+      const mx = (tw[0] + sv[0]) / 2, my = Math.min(tw[1], sv[1]) - 520;
+      ink(svg, `M${sv[0]} ${sv[1]} Q${mx} ${my} ${tw[0] + 10} ${tw[1] - 10}`, S(221.94), 0.9, { color: BONE, width: 9, ease: C(E.inOut, 0.9), opacity: 0.85 });
+      svg.insertAdjacentHTML("beforeend", `<circle cx="${tw[0]}" cy="${tw[1]}" r="60" fill="none" stroke="${CEL}" stroke-width="10" id="c3s02-sc046-twr" opacity="0"/>`);
+      tl.fromTo($("sc046-twr"), { attr: { opacity: 0, r: 30 } }, { attr: { opacity: 1, r: 80 }, duration: 0.4, ease: C(E.out, 0.4), immediateRender: true }, S(222.84));
+    })();
+
+    /* =================== C3S047 · 223.46–228.34 · But he's gonna go back and look and see what made it so =================== */
+    scene("sc047", 223.46, 228.34);
+    ground("paper", S(223.46));
+    (function () {
+      // the recipe index card (C3S035 motif, rebuilt here: c3s01 owns the master)
+      const rows = [["a great university", "quad_chip.jpg"], ["company", "hp_chip.jpg"], ["industrial park", "park_chip.jpg"], ["people in and out", null]];
+      let h = `<div class="k-recipe">`;
+      for (let y = 150; y < 760; y += 110) h += `<div class="rl" style="top:${y}px"></div>`;
+      h += `<div class="ml"></div><div class="hd t-label">Recipe</div>`;
+      rows.forEach((r, i) => {
+        h += `<div class="ln t-serif" style="top:${170 + i * 110}px">${r[0]}</div>`;
+        if (r[1]) h += `<div class="chip" style="left:${830 + (i % 2) * 40}px;top:${158 + i * 110}px;transform:rotate(${i % 2 ? 3 : -3}deg)"><img src="assets/c3/derived/c3s02/${r[1]}" alt="" /></div>`;
+      });
+      h += `<svg viewBox="0 0 1200 760"><g fill="none" stroke="${INK}" stroke-width="6" stroke-linecap="round"><path d="M860 540 L960 540 M940 524 L962 540 L940 556"/><path d="M1080 570 L980 570 M1000 554 L978 570 L1000 586"/></g></svg></div>`;
+      $("sc047-cards").innerHTML = h; $("sc047-blur").innerHTML = h;
+      const cam = $("sc047-cam");
+      tl.fromTo(cam, { scale: 1.0 }, { scale: 1.15, duration: 1.4, ease: E.cam, immediateRender: true }, S(223.46));
+      tl.to(cam, { scale: 1.18, duration: 3.4, ease: "none" }, S(224.86));
+      FX.focusHunt(tl, $("sc047-cards"), S(224.90), { dur: 0.8 });
+      FX.focalBlur(tl, $("sc047-blur"), [
+        { t: S(223.46), x: 760, y: 395, r: 200 },
+        { t: S(225.64), x: 830, y: 505, r: 190, dur: 0.9 },
+        { t: S(226.55), x: 830, y: 615, r: 190, dur: 0.6 },
+        { t: S(227.15), x: 860, y: 725, r: 210, dur: 0.6 },
+      ]);
+      [T(224.28), T(224.44)].forEach((c, i) => rise(words("sc047-gb")[i], c, { dur: 0.7, y: 12 }));
+      [T(226.28), T(226.76), T(227.24)].forEach((c, i) => rise(words("sc047-wm")[i], c, { dur: 0.5, y: 10 }));
+      show(words("sc047-wm")[3], T(227.56));
+    })();
+    whip($("sc047-shot"), $("sc048-shot"), S(228.28), { vertical: true, dir: -1 });
+
+    /* =================== C3S048 · 228.34–235.94 · before we get into that story, let's look at exactly the situation Taiwan is in =================== */
+    scene("sc048", 228.28, 235.94);
+    ground("night", S(228.30));
+    (function () {
+      const cam = $("sc048-cam");
+      tl.fromTo(cam, camAt(0.42, 960, 1250), Object.assign(camAt(0.56, 960, 1380), { duration: 7.66, ease: E.cam, immediateRender: true }), S(228.28));
+      // clouds drift in from the north-west, a shadow under the big one
+      const cl = [["sc048-c1", -700, -200, 1700, 0.9, 380, 260], ["sc048-sh1", -640, -120, 1700, 1, 380, 260], ["sc048-c2", -900, 900, 1500, 0.8, 300, 160], ["sc048-c3", 1300, -500, 1400, 0.7, -160, 220]];
+      cl.forEach(([id, x, y, w, o, dx, dy]) => {
+        const el = $(id); Object.assign(el.style, { left: x + "px", top: y + "px", width: w + "px" });
+        const base = id === "sc048-sh1" ? 0.35 : o;
+        tl.fromTo(el, { x: 0, y: 0, opacity: 0 }, { x: dx, y: dy, opacity: base, duration: 7.66, ease: "none", immediateRender: true }, S(228.28));
+      });
+      tl.fromTo($("sc048-dark"), { opacity: 0 }, { opacity: 1, duration: 1.4, ease: E.inOut, immediateRender: true }, S(233.64));
+      rise(words("sc048-bf")[0], T(230.84), { dur: 0.9, y: 10 });
+      hide($("sc048-bf"), S(233.30));
+      [T(233.64), T(233.96)].forEach((c, i) => rise(words("sc048-sit")[i], c, { dur: 0.7, y: 12 }));
+      rise(words("sc048-tw")[0], T(234.60), { dur: 0.6, y: 16 });
+    })();
+
+    /* =================== C3S049 · 235.94–240.50 · Now, of course, everyone wants Silicon Valley, but why did Taiwan want it? =================== */
+    scene("sc049", 235.94, 240.50);
+    ground("paper", S(235.94));
+    (function () {
+      const A = M.atlas, k = 1840 / A.size[0] * A.deg, P = (lon, lat) => [(lon - A.lon0) * k, (A.lat0 - lat) * k];
+      const svg = $("sc049-svg");
+      const spots = [[-77, 38.9], [-99.1, 19.4], [-47.9, -15.8], [-58.4, -34.6], [-0.1, 51.5], [2.35, 48.9], [13.4, 52.5], [37.6, 55.8], [34.8, 32.1], [3.4, 6.5], [36.8, -1.3], [77.6, 13.0], [103.8, 1.35], [127.0, 37.6], [139.7, 35.7], [151.2, -33.9]];
+      spots.forEach(([lon, lat], i) => { const [x, y] = P(lon, lat); const g = pin(svg, x, y, PAPER, 9, `c3s02-sc049-p${i}`);
+        tl.fromTo(g, { attr: { opacity: 0 } }, { attr: { opacity: 1 }, duration: 0.001, immediateRender: true }, S(236.68) + i / 12); });
+      const [tx, ty] = P(121.0, 23.7);
+      svg.insertAdjacentHTML("beforeend", `<circle cx="${tx}" cy="${ty}" r="7" fill="${CEL}" stroke="${INK}" stroke-width="2"/>`);
+      const mf = gated(235.9, 240.6, () => FX.markupDefs(defs, "c3s02-mk049", { boil: 4 }));
+      FX.markup.circle(tl, svg, S(239.48), { cx: tx, cy: ty, rx: 46, ry: 38, rot: -10, dur: 0.5, color: INK, width: 5, filter: mf, seed: 4901 });
+      const cam = $("sc049-cam");
+      tl.fromTo(cam, { scale: 1, x: 0, y: 0 }, { scale: 1.06, x: -40, y: -20, duration: 3.06, ease: "none", immediateRender: true }, S(235.94));
+      tl.to(cam, Object.assign(camAt(1.9, 40 + tx, 205 + ty), { duration: 1.5, ease: E.in }), S(239.0));   // push to Taiwan, into the flash
+      [T(236.68), T(237.08), T(237.40), T(238.12)].forEach((c, i) => rise(words("sc049-l1")[i], c, { dur: 0.6, y: 12 }));
+      rise(words("sc049-l2")[0], T(239.00), { dur: 0.4, y: 10 });
+      rise(words("sc049-l2")[1], T(239.48), { dur: 0.4, y: 10 });
+      show(words("sc049-l2")[2], T(239.48));
+    })();
+    whip($("sc049-shot"), $("sc050-shot"), S(240.44), { dir: 1, flash: true });
+
+    /* =================== C3S050 · 240.50–244.74 · And why were they so desperate? This is when we come back to Taiwan =================== */
+    scene("sc050", 240.44, 245.10);
+    ground("night", S(240.46));
+    (function () {
+      tl.fromTo($("sc050-cam"), { scale: 1.0 }, { scale: 1.07, duration: 4.66, ease: "none", immediateRender: true }, S(240.44));
+      gated(240.44, 245.1, () => FX.weave($("sc050-wv"), { amp: 0.8, flicker: 0.03, seed: 5001 }));
+      rise(words("sc050-des")[0], T(241.56), { dur: 1.0, y: 18 });
+      hide($("sc050-des"), S(243.30));
+      rise(words("sc050-btt")[0], T(243.72), { dur: 0.3, y: 8 });
+      show(words("sc050-btt")[1], T(243.88)); show(words("sc050-btt")[2], T(244.12));
+    })();
+    slideIn($("sc051-shot"), S(244.68), { from: "up" });
+
+    /* =================== C3S051 · 244.74–253.94 · while the Silicon Valley is on the up and up, Taiwan is … facing … existential crises =================== */
+    scene("sc051", 244.68, 253.98);
+    ground("paper", S(244.90));
+    (function () {
+      const svg = $("sc051-svg");
+      svg.innerHTML = `<defs><pattern id="c3s02-hatch" width="16" height="16" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="16" height="16" fill="${INK}" opacity="0.05"/><line x1="0" y1="0" x2="0" y2="16" stroke="${INK}" stroke-width="3" opacity="0.18"/></pattern></defs>
+        <path d="M150 120 L150 940 L2150 940" fill="none" stroke="${INK}" stroke-width="4" opacity="0.7"/>
+        <rect id="c3s02-sc051-band" x="1290" y="110" width="520" height="830" fill="url(#c3s02-hatch)" opacity="0"/>`;
+      ink(svg, "M300 560 C500 552 650 540 800 515 C1000 480 1150 420 1350 330 C1550 240 1750 190 1950 150", S(246.76), 1.3, { color: NAVY, width: 8 });
+      ink(svg, "M300 640 C520 636 760 630 980 632 C1120 634 1200 650 1300 700 C1420 760 1540 830 1700 862", S(248.84), 1.2, { color: INK, width: 8 });
+      svg.insertAdjacentHTML("beforeend", `<circle id="c3s02-sc051-dot" cx="1700" cy="862" r="17" fill="${CEL}" stroke="${INK}" stroke-width="4" opacity="0"/>`);
+      pop($("sc051-dot"), S(250.0), 0.6);
+      tl.fromTo($("sc051-band"), { attr: { opacity: 0 } }, { attr: { opacity: 1 }, duration: 0.8, ease: C(E.out, 0.8), immediateRender: true }, S(250.12));
+      tl.fromTo($("sc051-cam"), { x: 0 }, { x: -330, duration: 8.6, ease: E.cam, immediateRender: true }, S(244.90));
+      [T(245.32), T(245.96)].forEach((c, i) => rise(words("sc051-sv")[i], c, { dur: 0.6, y: 8 }));
+      [T(246.76), T(247.08), T(247.24)].forEach((c, i) => rise(words("sc051-uu")[i], c, { dur: 0.6, y: 10 }));
+      rise(words("sc051-tw")[0], T(247.80), { dur: 0.6, y: 8 });
+      [T(250.12), T(251.00)].forEach((c, i) => rise(words("sc051-ec")[i], c, { dur: 0.8, y: 12 }));
+      $("sc051-ec").style.left = "170px"; $("sc051-ec").style.top = "900px"; $("sc051-uu").style.left = "640px"; $("sc051-uu").style.top = "70px";
+    })();
+    whip($("sc051-shot"), $("sc052-shot"), S(253.88), { dir: 1 });
+
+    /* =================== C3S052 · 253.94–261.05 · the UN had just kicked out Taiwan, the Republic of China, as a country =================== */
+    scene("sc052", 253.88, 261.05);
+    ground("night", S(253.90));
+    (function () {
+      const cam = $("sc052-cam");
+      tl.fromTo(cam, camAt(0.42, 1500, 1350), Object.assign(camAt(0.78, 2230, 820), { duration: 2.6, ease: E.cam, immediateRender: true }), S(254.30));
+      tl.to(cam, Object.assign(camAt(0.84, 2200, 860), { duration: 4.1, ease: "none" }), S(256.90));
+      tl.fromTo($("sc052-ht"), { opacity: 0.12 }, { opacity: 0.3, duration: 2.6, ease: E.cam, immediateRender: true }, S(254.30));
+      FX.focusHunt(tl, $("sc052-stage"), S(256.95), { dur: 0.8 });
+      const mf = gated(253.8, 261.2, () => FX.markupDefs(defs, "c3s02-mk052", { boil: 12 }));
+      FX.markup.box(tl, $("sc052-mk"), S(257.16), { x: 1470, y: 590, w: 1500, h: 300, dur: 0.7, color: INK, width: 12, filter: mf });
+      [T(257.16), T(257.56)].forEach((c, i) => rise(words("sc052-ko")[i], c, { dur: 0.7, y: 12 }));
+      [T(258.44), T(258.92), T(259.08)].forEach((c, i) => rise(words("sc052-roc")[i], c, { dur: 0.6, y: 8 }));
+    })();
+    /* =================== C3S053 · 261.05–265.93 · It basically said that there's no such thing. China belongs to the CCP =================== */
+    scene("sc053", 261.05, 265.93);
+    (function () {
+      tl.fromTo($("sc053-cam"), { scale: 1.0 }, { scale: 1.09, duration: 4.9, ease: "none", immediateRender: true }, S(261.05));
+      gated(261.05, 265.95, () => FX.weave($("sc053-cam"), { amp: 0.7, flicker: 0.03, seed: 5301 }));
+      [T(262.75), T(262.99), T(263.31)].forEach((c, i) => rise(words("sc053-nst")[i], c, { dur: 0.45, y: 10 }));
+      hide($("sc053-nst"), S(263.70), 0.2);
+      rise(words("sc053-ch")[0], T(263.87), { dur: 0.7, y: 14 });
+      pop(words("sc053-ccp")[0], T(265.15), 0.25);
+    })();
+    whip($("sc053-shot"), $("sc054-shot"), S(265.87), { vertical: true, dir: -1 });
+
+    /* =================== C3S054 · 265.93–272.73 · The CCP is the governing government of China … Taiwan is just nothing. Not a country =================== */
+    scene("sc054", 265.87, 273.09);
+    (function () {
+      const J = M.ea, cam = $("sc054-cam"), svg = $("sc054-svg");
+      svg.innerHTML = `<g id="c3s02-sc054-cn" opacity="0" filter="url(#c3s02-glow)"><path d="${J.china}" fill="url(#c3s02-ht-red)" fill-opacity="0.78" stroke="${RED}" stroke-width="7" stroke-linejoin="round"/></g>
+        <path id="c3s02-sc054-two" d="${J.taiwan}" fill="none" stroke="${BONE}" stroke-width="4" stroke-dasharray="10 9" opacity="0"/>`;
+      const tw = $("sc054-tw"); Object.assign(tw.style, { left: J.tw_box[0] + "px", top: J.tw_box[1] + "px", opacity: 0.88 });
+      const a = camAt(0.62, 1900, 1750), b = camAt(1.15, 2150, 2620);
+      tl.fromTo(cam, a, Object.assign({}, b, { duration: 6.4, ease: E.cam, immediateRender: true }), S(265.87));
+      tl.fromTo($("sc054-cn"), { attr: { opacity: 0 } }, { attr: { opacity: 1 }, duration: 0.8, ease: C(E.out, 0.8), immediateRender: true }, S(266.03));
+      pop(words("sc054-ccp")[0], T(266.03), 0.5);
+      rise(words("sc054-ch")[0], T(267.79), { dur: 0.9, y: 14 });
+      hide([$("sc054-ccp"), $("sc054-ch")], S(270.30));
+      // Taiwan's celadon drains away (motif: fill 0.88 → 0 at 12 fps), the dashed outline is all that's left
+      tl.fromTo(tw, { opacity: 0.88 }, { opacity: 0, duration: 1.0, ease: C(E.inOut, 1.0), immediateRender: false }, S(270.59));
+      tl.fromTo($("sc054-two"), { attr: { opacity: 0 } }, { attr: { opacity: 0.85 }, duration: 0.5, ease: C(E.out, 0.5), immediateRender: true }, S(270.90));
+      rise(words("sc054-no")[0], T(270.59), { dur: 0.8, y: 12 });
+      rise(words("sc054-nac")[0], T(271.47), { dur: 0.3, y: 8 });
+      show(words("sc054-nac")[1], T(271.79)); show(words("sc054-nac")[2], T(271.95));
+    })();
+    slideIn($("sc055-shot"), S(272.67));
+
+    /* =================== C3S055 · 272.73–277.21 · from a Taiwanese point of view, this was something they did not expect =================== */
+    scene("sc055", 272.67, 277.21);
+    ground("paper", S(272.90));
+    (function () {
+      tl.fromTo($("sc055-col"), { y: 0 }, { y: -20, duration: 4.5, ease: "none", immediateRender: true }, S(272.67));
+      FX.textCallout(tl, $("sc055-cam"), $("sc055-dim"), $("sc055-key"), S(274.00), { dim: 0.22, punch: 1.1, dur: 1.1, wipe: 0.8, delay: 0.35 });
+      pop(words("sc055-tws")[0], T(273.23), 0.8);
+      [T(276.19), T(276.43)].forEach((c, i) => rise(words("sc055-dne")[i], c, { dur: 0.25, y: 8 }));
+      show(words("sc055-dne")[2], T(276.59));
+    })();
+
+    /* =================== C3S056 · 277.21–280.17 · they didn't know what was gonna happen next =================== */
+    scene("sc056", 277.21, 280.53);
+    ground("night", S(277.21));
+    (function () {
+      tl.fromTo($("sc056-cam"), { scale: 1.0 }, { scale: 1.08, duration: 3.3, ease: "none", immediateRender: true }, S(277.21));
+      gated(277.21, 280.6, () => FX.weave($("sc056-wv"), { amp: 1.0, flicker: 0.04, seed: 5601 }));
+      rise(words("sc056-nx")[0], T(279.55), { dur: 0.5, y: 12 });
+    })();
+    slideIn($("sc057-shot"), S(280.11), { from: "left" });
+
+    /* =================== C3S057–058 · 280.17–291.29 · to truly understand … existential crisis … background about Taiwan and how the government there came to be =================== */
+    scene("sc057", 280.11, 291.29);
+    ground("paper", S(280.30));
+    (function () {
+      const svg = $("sc057-svg"), g = $("sc057-ticks"), Y = 620;
+      let d = `M-600 ${Y} L1790 ${Y}`;
+      for (let x = -560, k = 0; x <= 1780; x += 40, k++) { const h = k % 5 === 0 ? 30 : 12; d += ` M${x} ${Y - h} L${x} ${Y}`; }
+      const axis = document.createElementNS(NS, "path"); axis.setAttribute("d", d); axis.setAttribute("stroke", INK); axis.setAttribute("stroke-width", "4"); axis.setAttribute("fill", "none"); g.appendChild(axis);
+      const axb = FX.whipDefs(defs, "c3s02-ax057"); g.setAttribute("filter", "url(#c3s02-ax057)");
+      const ab = { v: 0 };
+      tl.fromTo(ab, { v: 0 }, { v: 22, duration: 0.5, ease: "power2.in", immediateRender: true, onUpdate: () => axb.setAttribute("stdDeviation", `${ab.v.toFixed(1)} 0`) }, S(286.43));
+      tl.to(ab, { v: 0, duration: 0.7, ease: "power2.out", onUpdate: () => axb.setAttribute("stdDeviation", `${ab.v.toFixed(1)} 0`) }, S(286.93));
+      // the 1971 page pins at the right end of the line
+      const card = $("sc057-card");
+      tl.fromTo(card, { opacity: 0, y: -260, rotation: 7 }, { opacity: 1, y: 0, rotation: 2, duration: 0.8, ease: C(E.out, 0.8), immediateRender: true }, S(282.83));
+      const pn = pin(svg, 1560, 312, RED, 13, "c3s02-sc057-pin");
+      tl.fromTo(pn, { attr: { opacity: 0 } }, { attr: { opacity: 1 }, duration: 0.001, immediateRender: true }, S(283.55));
+      ink(svg, `M1560 526 L1772 ${Y - 6}`, S(283.30), 0.5, { color: INK, width: 3 });
+      svg.insertAdjacentHTML("beforeend", `<circle id="c3s02-sc057-dot" cx="1780" cy="${Y}" r="16" fill="${INK}" opacity="0"/><path id="c3s02-sc057-stop" d="M300 ${Y - 70} L300 ${Y + 30}" stroke="${INK}" stroke-width="7" opacity="0"/>`);
+      [T(282.83), T(283.63)].forEach((c, i) => rise(words("sc057-ec")[i], c, { dur: 0.6, y: 12 }));
+      hide($("sc057-ec"), S(284.70));
+      // C3S058: the dot rewinds left fast, ticks blur, the camera tracks left; it stops at the government's origin
+      show($("sc057-dot"), S(284.70));
+      tl.fromTo($("sc057-dot"), { attr: { cx: 1780 } }, { attr: { cx: 300 }, duration: 1.3, ease: C(E.inOut, 1.3), immediateRender: false }, S(286.43));
+      tl.fromTo($("sc057-cam"), { x: 0 }, { x: 260, duration: 1.6, ease: E.cam, immediateRender: true }, S(286.30));
+      tl.fromTo($("sc057-stop"), { attr: { opacity: 0 } }, { attr: { opacity: 1 }, duration: 0.001, immediateRender: true }, S(287.75));
+      tl.fromTo($("sc058-pres"), { opacity: 0, scale: 0.85, y: 30 }, { opacity: 1, scale: 1, y: 0, duration: 0.9, ease: C(E.out, 0.9), immediateRender: true }, S(289.07));
+      $("sc058-pres").style.left = "40px"; $("sc058-pres").style.top = "40px";
+      $("sc058-bk").style.left = "1000px"; $("sc058-tw").style.left = "1000px"; $("sc058-gov").style.left = "300px"; $("sc058-gov").style.top = "700px";
+      rise(words("sc058-bk")[0], T(286.43), { dur: 0.7, y: 10 });
+      rise(words("sc058-tw")[0], T(287.39), { dur: 0.8, y: 12 });
+      pop(words("sc058-gov")[0], T(289.07), 0.7);
+      tl.to($("sc057-cam"), { x: 280, scale: 1.03, duration: 3.4, ease: "none" }, S(287.90));
+    })();
+    whip($("sc057-shot"), $("sc059-shot"), S(291.23), { dir: 1, flash: true });
+
+    /* =================== C3S059 · 291.29–294.01 · Our story starts in World War II =================== */
+    scene("sc059", 291.23, 294.37);
+    ground("night", S(291.25));
+    (function () {
+      gated(291.23, 294.4, () => FX.weave($("sc059-wv"), { amp: 1.4, flicker: 0.05, seed: 5901 }));
+      tl.fromTo($("sc059-wv"), { scale: 1.0 }, { scale: 1.05, duration: 3.1, ease: "none", immediateRender: true }, S(291.23));
+      [T(292.75), T(293.15)].forEach((c, i) => rise(words("sc059-ww")[i], c, { dur: 0.5, y: 14 }));
+      show(words("sc059-ww")[2], T(293.47));
+    })();
+    slideIn($("sc060-shot"), S(293.95));
+
+    /* =================== C3S060 · 294.01–298.97 · this is where current China, the CCP, has tried to change the story a bit =================== */
+    scene("sc060", 293.95, 298.97);
+    ground("paper", S(294.20));
+    (function () {
+      // book spread (typeset recreation: no title, no real book) — body text as rules
+      const L = $("sc060-l"), R = $("sc060-r"), r = FX.rng(6000);
+      const bars = (pg, y0, y1, x0, w0) => { let h = ""; for (let y = y0; y < y1; y += 26) h += `<div class="bl" style="top:${y}px;left:${x0}px;width:${(w0 - r() * (y % 130 === 0 ? 160 : 30)).toFixed(0)}px"></div>`; pg.insertAdjacentHTML("beforeend", h); };
+      L.insertAdjacentHTML("beforeend", `<div class="bl" style="top:80px;left:60px;width:260px;height:16px;background:rgba(20,27,36,0.7)"></div>`);
+      bars(L, 590, 940, 60, 420);
+      R.insertAdjacentHTML("beforeend", `<div class="bl" style="top:74px;left:60px;width:380px;height:22px;background:rgba(20,27,36,0.75)"></div><div class="bl" style="top:112px;left:60px;width:300px;height:14px;background:rgba(20,27,36,0.6)"></div>`);
+      bars(R, 170, 940, 60, 420);
+      tl.fromTo($("sc060-cam"), { scale: 1.0 }, { scale: 1.08, duration: 5.0, ease: "none", immediateRender: true }, S(293.95));
+      // the red pen (the CCP's side) strikes the heading and writes over it
+      const mk = $("sc060-mk"), mf = gated(293.9, 299.1, () => FX.markupDefs(defs, "c3s02-mk060", { boil: 4 }));
+      FX.markup.pen(tl, mk, S(297.31), { points: [[592, 92], [990, 84]], jitter: 4, seed: 6001, dur: 0.4, width: 7, color: RED, filter: mf });
+      FX.markup.pen(tl, mk, S(297.40), { points: [[592, 124], [910, 118]], jitter: 4, seed: 6002, dur: 0.35, width: 7, color: RED, filter: mf });
+      const hw = []; for (let i = 0; i <= 24; i++) { const x = 600 + i * 15; hw.push([x, 40 + Math.sin(i * 1.9) * 13 + (i % 3 === 0 ? -10 : 0)]); }
+      FX.markup.pen(tl, mk, S(297.75), { points: hw, jitter: 3, seed: 6003, dur: 0.55, width: 5, color: RED, filter: mf, ease: "none" });
+      pop(words("sc060-ccp")[0], T(295.87), 0.6);
+      [T(297.31), T(297.63), T(297.79)].forEach((c, i) => rise(words("sc060-cs")[i], c, { dur: 0.5, y: 10 }));
+    })();
+    whip($("sc060-shot"), $("sc061-shot"), S(298.91), { dir: 1 });
+
+    /* =================== C3S061 · 298.97–303.53 · where they claim that China fought with the United States. Which is true, by the way =================== */
+    scene("sc061", 298.91, 303.53);
+    ground("night", S(298.93));
+    (function () {
+      tl.fromTo($("sc061-cam"), { scale: 1.0 }, { scale: 1.06, duration: 4.6, ease: "none", immediateRender: true }, S(298.91));
+      const w = words("sc061-txt");
+      [T(300.11), T(300.51), T(300.99), T(301.15), T(301.63)].forEach((c, i) => rise(w[i], c, { dur: 0.6, y: 10 }));
+      rise(w[5], T(302.51), { dur: 0.4, y: 10 });
+      const mf = gated(298.9, 303.6, () => FX.markupDefs(defs, "c3s02-mk061", { boil: 4 }));
+      FX.markup.pen(tl, $("sc061-mk"), S(302.57), { points: [[350, 600], [380, 640], [460, 548]], jitter: 2, seed: 6101, dur: 0.3, width: 9, color: BONE, filter: mf, blend: "normal" });
+    })();
+
+    /* =================== C3S062 · 303.53–310.65 · a lot of Chinese people … fought with the United States in World War II against Japan =================== */
+    scene("sc062", 303.53, 311.01);
+    (function () {
+      tl.fromTo($("sc062-cam"), { x: 0 }, { x: -40, duration: 7.5, ease: "none", immediateRender: true }, S(303.53));
+      tl.fromTo($("sc062-a"), { y: 30 }, { y: -20, duration: 7.5, ease: "none", immediateRender: true }, S(303.53));
+      tl.fromTo($("sc062-b"), { y: -20 }, { y: 24, duration: 7.5, ease: "none", immediateRender: true }, S(303.53));
+      tl.fromTo($("sc062-h"), { scale: 1.0 }, { scale: 1.05, duration: 7.5, ease: "none", immediateRender: true }, S(303.53));
+      [T(304.27), T(304.67)].forEach((c, i) => rise(words("sc062-cp")[i], c, { dur: 0.8, y: 12 }));
+      hide($("sc062-cp"), S(306.8));
+      rise(words("sc062-aj")[0], T(309.39), { dur: 0.3, y: 8 });
+      show(words("sc062-aj")[1], T(309.71));
+    })();
+    slideIn($("sc063-shot"), S(310.59));
+
+    /* =================== C3S063 · 310.65–317.45 · But it wasn't the CCP that was fighting with the United States. In fact, CCP stay out of World War II =================== */
+    scene("sc063", 310.59, 317.45);
+    ground("paper", S(310.80));
+    (function () {
+      const svg = $("sc063-svg");
+      pop($("sc063-us"), S(310.80), 0.8); pop($("sc063-cn"), S(310.88), 0.8);
+      pop(words("sc063-ccp")[0], T(311.87), 0.4);
+      // the link US ↔ CCP draws … and gets crossed out
+      ink(svg, "M770 470 L1150 470", S(311.93), 0.6, { color: INK, width: 8 });
+      ink(svg, "M800 446 L768 470 L800 494", S(312.40), 0.15, { color: INK, width: 8 });
+      ink(svg, "M1120 446 L1152 470 L1120 494", S(312.40), 0.15, { color: INK, width: 8 });
+      const mf = gated(310.5, 317.5, () => FX.markupDefs(defs, "c3s02-mk063", { boil: 4 }));
+      FX.markup.cross(tl, svg, S(312.89), { x: 960, y: 470, s: 64, dur: 0.14, color: RED, width: 14, filter: mf });
+      [T(313.95), T(314.27)].forEach((c, i) => rise(words("sc063-usl")[i], c, { dur: 0.7, y: 10 }));
+      tl.fromTo($("sc063-cam"), { scale: 1.0 }, { scale: 1.05, duration: 6.5, ease: "none", immediateRender: true }, S(310.80));
+      tl.to([$("sc063-cn"), $("sc063-ccp")], { x: 1000, duration: 0.42, ease: E.in }, S(317.05));   // CCP slides off (cut on action)
+    })();
+
+    /* =================== C3S064 · 317.45–324.28 · It was the ROC, the nationalists who were ruling China at the time … =================== */
+    scene("sc064", 317.45, 324.32);
+    ground("night", S(317.45));
+    (function () {
+      tl.fromTo($("sc064-cam"), { scale: 1.0, x: 30 }, { scale: 1.12, x: -40, duration: 6.9, ease: E.cam, immediateRender: true }, S(317.45));
+      tl.fromTo($("sc064-far"), { x: -20, scale: 1.0 }, { x: 30, scale: 1.04, duration: 6.9, ease: "none", immediateRender: true }, S(317.45));
+      const mf = gated(317.4, 324.4, () => FX.markupDefs(defs, "c3s02-mk064", { boil: 4 }));
+      FX.markup.circle(tl, $("sc064-mk"), S(318.00), { cx: 330, cy: 560, rx: 250, ry: 470, rot: 2, dur: 0.9, color: CEL, width: 10, filter: mf, seed: 6401 });
+      show($("sc064-box"), T(317.71));
+      rise(words("sc064-roc")[0], T(317.71), { dur: 0.6, y: 10 });
+      rise(words("sc064-roc")[1], T(317.95), { dur: 0.6, y: 10 });
+      rise(words("sc064-nat")[0], T(318.91), { dur: 0.9, y: 12 });
+    })();
+    whip($("sc064-shot"), $("sc065-shot"), S(324.22), { vertical: true, dir: 1 });
+    /* =================== C3S065–066 · 324.28–335.08 · as soon as the war ended, ROC was one of the big four … maintain a post-war order =================== */
+    scene("sc065", 324.22, 335.08);
+    ground("paper", S(324.40));
+    (function () {
+      const svg = $("sc065-svg"), XS = [470, 770, 1070, 1370], BW = 190, BASE = 960, TOP = 450;
+      svg.innerHTML = `<path d="M330 ${BASE} L1610 ${BASE}" stroke="${INK}" stroke-width="4"/>`;
+      XS.forEach((x, i) => svg.insertAdjacentHTML("beforeend", `<rect id="c3s02-sc065-b${i}" x="${x - BW / 2}" y="${TOP}" width="${BW}" height="${BASE - TOP}" fill="${INK}" opacity="0.88"/>`));
+      // the 1945 'war ends' paper (The Sun, Sydney) drops in, then slides off
+      tl.fromTo($("sc065-card"), { opacity: 0, y: 500, rotation: 6 }, { opacity: 1, y: 0, rotation: -2, duration: 1.0, ease: C(E.out, 1.0), immediateRender: true }, S(325.30));
+      [T(325.50), T(325.90)].forEach((c, i) => rise(words("sc065-we")[i], c, { dur: 0.7, y: 10 }));
+      tl.to($("sc065-card"), { x: -1500, rotation: -10, duration: 0.6, ease: C(E.in, 0.6) }, S(327.10));
+      hide($("sc065-we"), S(327.10));
+      // four equal pillars rise at 12 fps, flags on top (US 48-star, UK, USSR, ROC); the ROC pillar turns celadon
+      XS.forEach((x, i) => {
+        const b = $("sc065-b" + i);
+        gsap.set(b, { attr: { y: BASE, height: 0 } });
+        tl.fromTo(b, { attr: { y: BASE, height: 0 } }, { attr: { y: TOP, height: BASE - TOP }, duration: 1.2, ease: C(E.out, 1.2), immediateRender: false }, S(327.60) + i * 0.1);
+        const f = $("sc065-f" + i); f.style.left = (x - 86) + "px"; f.style.top = (TOP - 172) + "px";
+        pop(f, S(329.00) + i / 12, 0.6);
+      });
+      tl.to($("sc065-b3"), { attr: { fill: CEL, opacity: 1 }, duration: 0.4, ease: C(E.out, 0.4) }, S(329.02));
+      [T(329.02), T(329.42)].forEach((c, i) => rise(words("sc065-bf")[i], c, { dur: 0.6, y: 12 }));
+      hide($("sc065-bf"), S(330.80));
+      // C3S066: FDR lowers over the US pillar — the plan was his
+      const fdr = $("sc066-fdr"); fdr.style.left = (XS[0] - 115) + "px"; fdr.style.top = "40px";
+      tl.fromTo(fdr, { opacity: 0, y: -360 }, { opacity: 1, y: 0, duration: 1.0, ease: C(E.out, 1.0), immediateRender: true }, S(331.18));
+      const us = $("sc066-us"); us.style.left = (XS[0] + 135) + "px"; us.style.top = "130px";
+      tl.set(us, { opacity: 1 }, T(331.18));
+      [T(331.18), T(331.58)].forEach((c, i) => rise(words("sc066-us")[i], c, { dur: 0.6, y: 8 }));
+      $("sc066-pwo").style.left = "1480px"; $("sc066-pwo").style.top = "170px";
+      rise(words("sc066-pwo")[0], T(333.90), { dur: 0.3, y: 8 });
+      show(words("sc066-pwo")[1], T(334.54));
+      tl.fromTo($("sc066-hl"), { scaleX: 0 }, { scaleX: 1, duration: 0.5, ease: "sine.inOut", immediateRender: true }, S(333.95));
+      tl.fromTo($("sc065-cam"), { scale: 1.0 }, { scale: 1.08, duration: 4.5, ease: "none", immediateRender: true }, S(330.52));
+    })();
+    whip($("sc065-shot"), $("sc067-shot"), S(335.02), { dir: 1, flash: true });
+
+    /* =================== C3S067–068 · 335.08–346.20 · the four policemen of the world … the United States, the UK, the Soviet Union, and the Republic of China, ROC =================== */
+    scene("sc067", 335.02, 346.56);
+    ground("night", S(335.04));
+    (function () {
+      const W = M.world, P = (lon, lat) => [(lon - W.lon0) * W.deg, (W.lat0 - lat) * W.deg];
+      const cam = $("sc067-cam"), svg = $("sc067-svg");
+      const fit = (s, lon, lat) => { const [cx, cy] = P(lon, lat), c = camAt(s, cx, cy);
+        c.x = Math.min(0, Math.max(1920 - W.size[0] * s, c.x)); c.y = Math.min(0, Math.max(1080 - W.size[1] * s, c.y)); return c; };
+      const a = fit(0.62, -30, 34), b = fit(0.5, 26, 34);
+      tl.fromTo(cam, a, Object.assign(fit(0.6, -26, 34), { duration: 4.4, ease: "none", immediateRender: true }), S(335.02));
+      tl.to(cam, Object.assign({}, b, { duration: 4.0, ease: E.cam }), S(339.45));
+      tl.to(cam, { x: b.x - 20, duration: 2.7, ease: "none" }, S(343.45));
+      // a thin bone ring orbits the world
+      const [ox, oy] = P(-10, 30);
+      svg.insertAdjacentHTML("beforeend", `<ellipse id="c3s02-sc067-ring" cx="${ox}" cy="${oy}" rx="2300" ry="760" fill="none" stroke="${BONE}" stroke-width="4" stroke-dasharray="60 34" opacity="0.4"/>`);
+      tl.fromTo($("sc067-ring"), { attr: { "stroke-dashoffset": 0 } }, { attr: { "stroke-dashoffset": -1400 }, duration: 5.0, ease: "none", immediateRender: true }, S(335.02));
+      tl.to($("sc067-ring"), { attr: { opacity: 0 }, duration: 0.6 }, S(339.0));
+      [T(335.74), T(336.06)].forEach((c, i) => rise(words("sc067-fp")[i], c, { dur: 0.9, y: 16 }));
+      hide($("sc067-fp"), S(337.70), 0.4);
+      // four pins + labels (labels live in map space so they ride the camera)
+      const four = [[-77.0, 38.9, BONE, 338.86, [T(338.86), T(339.26)]], [-0.13, 51.5, BONE, 340.78, [T(340.78)]], [37.6, 55.75, BONE, 341.98, [T(341.98), T(342.54)]],
+        [118.8, 32.06, CEL, 343.82, [T(343.82), T(344.30), T(344.46), T(345.02)]]];
+      const pts = [];
+      four.forEach(([lon, lat, col, t, cues], i) => {
+        const [x, y] = P(lon, lat); pts.push([x, y]);
+        const g = pin(svg, x, y, col, 22, `c3s02-sc067-p${i}`);
+        tl.fromTo(g, { attr: { opacity: 0 } }, { attr: { opacity: 1 }, duration: 0.001, immediateRender: true }, S(t));
+        tl.fromTo(g, { y: -40 }, { y: 0, duration: 0.4, ease: C(E.out, 0.4), immediateRender: true }, S(t));
+        const lab = $("sc067-l" + i); cam.appendChild(lab);
+        Object.assign(lab.style, { left: (x + 40) + "px", top: (y - 70) + "px", fontSize: "56px" });
+        if (i === 1) lab.style.left = (x - 140) + "px";
+        tl.set(lab, { opacity: 1 }, S(t) - 0.07);
+        const ws = lab.querySelectorAll(".k-w");
+        cues.forEach((c, k) => rise(ws[k], c, { dur: k === 3 ? 0.4 : 0.6, y: 8 }));
+      });
+      // dashed arcs tie the four together
+      for (let i = 0; i < 3; i++) {
+        const [x1, y1] = pts[i], [x2, y2] = pts[i + 1], mx = (x1 + x2) / 2, my = Math.min(y1, y2) - 220;
+        ink(svg, `M${x1} ${y1 - 58} Q${mx} ${my} ${x2} ${y2 - 58}`, S(344.90) + i * 0.1, 0.5, { color: BONE, width: 5, opacity: 0.7 });
+      }
+    })();
+    slideIn($("sc069-shot"), S(346.14), { from: "up" });
+
+    /* =================== C3S069 · 346.20–352.84 · the ROC, China was also one of the founding members that had signed the UN Charter =================== */
+    scene("sc069", 346.14, 352.84);
+    ground("paper", S(346.40));
+    (function () {
+      tl.fromTo($("sc069-cam"), { scale: 1.0 }, { scale: 1.08, duration: 6.7, ease: "none", immediateRender: true }, S(346.14));
+      tl.fromTo($("sc069-photo"), { y: -60, rotation: -8, opacity: 0 }, { y: 0, rotation: -3.5, opacity: 1, duration: 1.0, ease: C(E.out, 1.0), immediateRender: true }, S(346.70));
+      tl.fromTo($("sc069-clip"), { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, S(347.62));
+      [T(349.82), T(350.30)].forEach((c, i) => rise(words("sc069-fm")[i], c, { dur: 0.8, y: 12 }));
+      tl.fromTo($("sc069-box"), { opacity: 0, scale: 1.3 }, { opacity: 1, scale: 1, duration: 0.2, ease: "power2.in", immediateRender: true }, T(351.66));
+      show(words("sc069-unc")[0], T(351.66));
+      show(words("sc069-unc")[1], T(352.14));
+    })();
+
+    /* =================== C3S070 · 352.84–359.00 · It had a veto, it had a permanent seat on the UN Security Council =================== */
+    scene("sc070", 352.84, 359.00);
+    ground("night", S(352.84));
+    (function () {
+      const cam = $("sc070-cam");
+      tl.fromTo(cam, camAt(0.62, 1168, 870), Object.assign(camAt(1.45, 1800, 700), { duration: 2.1, ease: E.cam, immediateRender: true }), S(352.95));
+      FX.focusHunt(tl, $("sc070-img"), S(355.60), { dur: 0.8, base: "grayscale(1) sepia(0.2) contrast(1.05) brightness(0.92)" });
+      tl.to(cam, Object.assign(camAt(1.2, 1700, 760), { duration: 3.9, ease: E.inOut }), S(355.10));
+      const mf = gated(352.8, 359.1, () => FX.markupDefs(defs, "c3s02-mk070", { boil: 4 }));
+      FX.markup.circle(tl, $("sc070-mk"), S(355.02), { cx: 1832, cy: 640, rx: 165, ry: 205, rot: -4, dur: 0.7, color: CEL, width: 12, filter: mf, seed: 7001 });
+      rise(words("sc070-veto")[0], T(353.26), { dur: 0.8, y: 10 });
+      [T(354.38), T(355.02)].forEach((c, i) => rise(words("sc070-ps")[i], c, { dur: 0.7, y: 10 }));
+      [T(356.70), T(357.42)].forEach((c, i) => rise(words("sc070-sc")[i], c, { dur: 0.8, y: 16 }));
+    })();
+    whip($("sc070-shot"), $("sc071-shot"), S(358.94), { dir: -1 });
+
+    /* =================== C3S071 · 359.00–365.40 · as soon as World War II ends, the civil war kicks off in China … =================== */
+    scene("sc071", 358.94, 365.76);
+    (function () {
+      gated(358.94, 365.8, () => FX.weave($("sc071-wv"), { amp: 1.6, flicker: 0.06, seed: 7101 }));
+      tl.fromTo($("sc071-wv"), { scale: 1.0 }, { scale: 1.06, duration: 6.8, ease: "none", immediateRender: true }, S(358.94));
+      [T(361.66), T(362.06)].forEach((c, i) => rise(words("sc071-cw")[i], c, { dur: 0.8, y: 16 }));
+      hide($("sc071-cw"), S(364.40), 0.5);
+    })();
+    slideIn($("sc072-shot"), S(365.34), { from: "left" });
+
+    /* =================== C3S072 · 365.40–372.76 · it restarts in China, where the ROC, who are the nationalists, are fighting against the communists, which is the CCP =================== */
+    scene("sc072", 365.34, 372.80);
+    ground("paper", S(365.55));
+    (function () {
+      tl.fromTo($("sc072-cam"), { scale: 1.0 }, { scale: 1.06, duration: 7.4, ease: "none", immediateRender: true }, S(365.34));
+      rise(words("sc072-rs")[0], T(365.58), { dur: 0.8, y: 10 });
+      tl.fromTo($("sc072-l"), { opacity: 0, x: -260 }, { opacity: 1, x: 0, duration: 1.0, ease: C(E.out, 1.0), immediateRender: true }, S(367.34));
+      pop(words("sc072-roc")[0], T(367.34), 0.6);
+      rise(words("sc072-nat")[0], T(368.38), { dur: 0.8, y: 10 });
+      tl.fromTo($("sc072-r"), { opacity: 0, x: 260 }, { opacity: 1, x: 0, duration: 1.0, ease: C(E.out, 1.0), immediateRender: true }, S(370.38));
+      rise(words("sc072-com")[0], T(370.38), { dur: 0.8, y: 10 });
+      pop(words("sc072-ccp")[0], T(371.66), 0.4);
+    })();
+    whip($("sc072-shot"), $("sc073-shot"), S(372.70), { vertical: true, dir: -1 });
+
+    /* =================== C3S073–074 · 372.76–383.45 · over the next four years … the communists win the civil war, and the ROC … flee to the island of Taiwan =================== */
+    scene("sc073", 372.70, 383.81);
+    ground("night", S(372.72));
+    (function () {
+      const J = M.ea, cam = $("sc073-cam"), svg = $("sc073-svg"), HM = 2 * J.size[1];
+      svg.innerHTML = `<defs><mask id="c3s02-burn" maskUnits="userSpaceOnUse" x="0" y="0" width="${J.size[0]}" height="${J.size[1]}"><image id="c3s02-sc073-bm" href="assets/c3/derived/c3s02/burn_mask.png" x="0" y="${-HM / 2 - 300}" width="${J.size[0]}" height="${HM}" preserveAspectRatio="none"/></mask></defs>
+        <g mask="url(#c3s02-burn)"><g filter="url(#c3s02-glow)"><path d="${J.china}" fill="url(#c3s02-ht-red)" fill-opacity="0.8" stroke="${RED}" stroke-width="7" stroke-linejoin="round"/></g></g>
+        <path d="${J.taiwan}" fill="none" stroke="${BONE}" stroke-width="4" stroke-dasharray="10 9" opacity="0.7"/>`;
+      const fit = (s, cx, cy) => { const c = camAt(s, cx, cy); c.x = Math.min(0, Math.max(1920 - J.size[0] * s, c.x)); c.y = Math.min(0, Math.max(1080 - J.size[1] * s, c.y)); return c; };
+      tl.fromTo(cam, fit(0.66, 2000, 1500), Object.assign(fit(0.56, 1900, 1750), { duration: 5.2, ease: E.cam, immediateRender: true }), S(372.70));
+      // ink burns south in four steps (one per year), 12 fps
+      const bm = $("sc073-bm"), edges = [700, 1500, 2400, 3500];
+      edges.forEach((e, i) => tl.to(bm, { attr: { y: e - HM / 2 }, duration: 0.55, ease: C(E.out, 0.55) }, S(374.00) + i * 0.95));
+      const n = $("sc073-n"); gsap.set(n, { opacity: 0 });
+      show(n, T(373.50)); FX.text.count(tl, n, T(373.50), 1, 4, 0.45, (v) => String(Math.round(v)));
+      rise(words("sc073-yr")[0], T(373.74), { dur: 0.6, y: 8 });
+      hide([n, $("sc073-yr")], S(377.20));
+      rise(words("sc073-win")[0], T(377.50), { dur: 0.6, y: 12 });
+      hide($("sc073-win"), S(378.60));
+      // C3S074: fast push into the strait, dissolve to the satellite plate, the flight route, Taiwan turns celadon
+      const lonx = (lon) => (lon - 100) * 127.95 * J.sc, laty = (lat) => ((48 - lat) * 150 - J.oy) * J.sc;
+      tl.to(cam, Object.assign(camAt(3.2, lonx(120.4), laty(24.9)), { duration: 1.1, ease: E.in }), S(378.00));
+      const K = M.strait, Z = 256 * Math.pow(2, K.z);
+      const mx = (lon) => (lon + 180) / 360 * Z - K.X0, my = (lat) => { const r = lat * Math.PI / 180; return (1 - Math.log(Math.tan(r) + 1 / Math.cos(r)) / Math.PI) / 2 * Z - K.Y0; };
+      const sc = $("sc074-cam"), s2 = $("sc074-svg");
+      const f = $("sc074-fill"); Object.assign(f.style, { left: K.tw_box[0] + "px", top: K.tw_box[1] + "px" });
+      const sfit = (s, lon, lat) => { const c = camAt(s, mx(lon), my(lat)); c.x = Math.min(0, Math.max(1920 - K.size[0] * s, c.x)); c.y = Math.min(0, Math.max(1080 - K.size[1] * s, c.y)); return c; };
+      const s0 = sfit(0.93, 120.4, 24.9), s1 = sfit(0.86, 120.6, 25.0), s2c = sfit(0.62, 120.9, 23.75);
+      tl.fromTo(sc, Object.assign({ opacity: 0 }, s0), Object.assign({ opacity: 1 }, s0, { duration: 0.35, ease: "power1.inOut", immediateRender: true }), S(378.75));
+      tl.to(sc, Object.assign({}, s1, { duration: 2.2, ease: E.cam }), S(379.10));
+      tl.to(sc, Object.assign({}, s2c, { duration: 1.9, ease: E.cam }), S(381.30));
+      tl.to(sc, { scale: s2c.scale * 0.985, x: s2c.x + 12, y: s2c.y + 8, duration: 0.6, ease: "none" }, S(383.20));
+      FX.focusHunt(tl, $("sc074-map"), S(379.10), { dur: 0.8, base: "brightness(1.1) contrast(1.05)" });
+      tl.set($("sc073-cr"), { opacity: 0 }, S(378.90)); tl.set($("sc074-cr"), { opacity: 1 }, S(378.90));
+      const mf = gated(378.6, 383.9, () => FX.markupDefs(defs, "c3s02-mk074", { boil: 12 }));
+      const x0 = mx(119.45), y0 = my(25.95), x1 = mx(121.55), y1 = my(25.05);
+      FX.markup.pen(tl, s2, S(380.94), { points: [[x0, y0], [(x0 + x1) / 2, Math.min(y0, y1) - 40], [x1 - 30, y1 - 10]], jitter: 6, seed: 7401, dur: 1.2, width: 16, color: YEL, filter: mf, blend: "normal", ease: C(E.inOut, 1.2) });
+      FX.markup.pen(tl, s2, S(382.10), { points: [[x1 - 70, y1 - 46], [x1 - 28, y1 - 10], [x1 - 78, y1 + 16]], jitter: 2, seed: 7402, dur: 0.18, width: 16, color: YEL, filter: mf, blend: "normal" });
+      tl.fromTo(f, { opacity: 0 }, { opacity: 0.9, duration: 0.3, ease: C(E.out, 0.3), immediateRender: true }, S(382.30));
+      rise(words("sc074-fl")[0], T(380.94), { dur: 0.7, y: 10 });
+      rise(words("sc074-tw")[0], T(382.30), { dur: 0.5, y: 14 });
+    })();
+    slideIn($("sc075-shot"), S(383.39));
+
+    /* =================== C3S075 · 383.45–388.49 · they have arrived at this island, which is Taiwan. It's called Taiwan at that point too =================== */
+    scene("sc075", 383.39, 388.49);
+    ground("paper", S(383.60));
+    (function () {
+      const cam = $("sc075-cam");
+      tl.fromTo($("sc075-ph"), { y: -40, rotation: -7 }, { y: 0, rotation: -3, duration: 0.9, ease: C(E.out, 0.9), immediateRender: true }, S(383.70));
+      rise(words("sc075-ar")[0], T(384.19), { dur: 0.8, y: 12 });
+      tl.fromTo(cam, { x: 0 }, { x: -60, duration: 1.6, ease: "none", immediateRender: true }, S(383.39));
+      tl.to(cam, { x: -1080, duration: 1.6, ease: E.cam }, S(385.10));
+      tl.to(cam, { x: -1140, duration: 1.8, ease: "none" }, S(386.70));
+      rise(words("sc075-tw")[0], T(386.83), { dur: 0.5, y: 10 });
+      const mf = gated(383.3, 388.6, () => FX.markupDefs(defs, "c3s02-mk075", { boil: 4 }));
+      FX.markup.pen(tl, $("sc075-mk"), S(386.89), { points: [[1815, 920], [1990, 914], [2140, 922]], jitter: 4, seed: 7501, dur: 0.4, width: 6, color: INK, filter: mf });
+    })();
+
+    /* =================== C3S076 · 388.49–396.89 · they are not Taiwanese … the government that's coming to the island … the government of Taiwan =================== */
+    scene("sc076", 388.49, 396.89);
+    ground("night", S(388.49));
+    (function () {
+      tl.fromTo($("sc076-cam"), { scale: 1.0 }, { scale: 1.07, duration: 8.4, ease: "none", immediateRender: true }, S(388.49));
+      gated(388.49, 392.7, () => FX.weave($("sc076-w1"), { amp: 1.1, flicker: 0.04, seed: 7601 }));
+      gated(392.5, 396.95, () => FX.weave($("sc076-w2"), { amp: 0.7, flicker: 0.025, seed: 7602 }));
+      tl.set($("sc076-w2"), { opacity: 1 }, S(392.59)); tl.set($("sc076-w1"), { opacity: 0 }, S(392.60));
+      [T(389.15), T(389.31)].forEach((c, i) => rise(words("sc076-nt")[i], c, { dur: 0.8, y: 12 }));
+      hide($("sc076-nt"), S(391.90));
+      rise(words("sc076-gov")[0], T(392.59), { dur: 0.9, y: 14 });
+    })();
+    whip($("sc076-shot"), $("sc077-shot"), S(396.83), { dir: 1, flash: true });
+
+    /* =================== C3S077 · 396.89–404.17 · temporary problems, temporary inconvenience, but they're still the government of Taiwan =================== */
+    scene("sc077", 396.83, 404.17);
+    ground("paper", S(396.90));
+    (function () {
+      tl.fromTo($("sc077-cam"), { scale: 1.0 }, { scale: 1.07, duration: 7.3, ease: "none", immediateRender: true }, S(396.83));
+      typeOn($("sc077-t1"), T(398.51));
+      typeOn($("sc077-t2"), T(399.47));
+      typeOn($("sc077-t3"), T(401.15));
+      // strike 'problems' (fixed coordinates, checked on the snapshot)
+      const x1 = 1238, x2 = 1500, y = 352;
+      const mf = gated(396.8, 404.2, () => FX.markupDefs(defs, "c3s02-mk077", { boil: 4 }));
+      FX.markup.pen(tl, $("sc077-mk"), S(400.80), { points: [[x1, y + 4], [x2, y - 4]], jitter: 3, seed: 7701, dur: 0.3, width: 7, color: INK, filter: mf });
+      rise(words("sc077-st")[0], T(402.59), { dur: 0.6, y: 14 });
+      FX.markup.pen(tl, $("sc077-mk"), S(402.95), { points: [[965, 870], [1100, 864], [1250, 872]], jitter: 4, seed: 7702, dur: 0.3, width: 7, color: INK, filter: mf });
+      // hand-off to c3s03: whip right — outgoing smears off to the right by 404.17
+      const wb = FX.whipDefs(defs, "c3s02-w077"), sh = $("sc077-shot"), v = { b: 0 };
+      tl.set(sh, { filter: "url(#c3s02-w077)" }, S(404.00));
+      tl.fromTo(sh, { x: 0, scale: 1 }, { x: 700, scale: 1.18, duration: 0.16, ease: "power3.in", immediateRender: false }, S(404.01));
+      tl.fromTo(v, { b: 0 }, { b: 90, duration: 0.16, ease: "power2.in", immediateRender: false, onUpdate: () => wb.setAttribute("stdDeviation", `${v.b.toFixed(1)} 0`) }, S(404.01));
+    })();
+
+    FX.mount(tl, DURATION);
+    window.__timelines = window.__timelines || {}; window.__timelines[SEG] = tl;
+  })();
+  </script>
+</template>
+</body>
+</html>

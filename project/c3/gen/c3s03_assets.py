@@ -57,7 +57,7 @@ P = paths(K / "east_asia_overlay.svg", ["china", "taiwan"])
 res["east_asia"] = {"size": [3199, 2475], "d": {k: to_d(v, lambda x, y: (x * 0.5, y * 0.5), 1.2, 4) for k, v in P.items()}}
 
 # --- Africa Blue Marble satdesat crop: lon -25..60, lat -38..40 at 36 px/deg — C3S104
-A = dict(lon0=-25, lon1=60, lat0=-38, lat1=40, k=36.0)
+A = dict(lon0=-55, lon1=95, lat0=-40, lat1=44, k=36.0)
 W, H = int((A["lon1"] - A["lon0"]) * A["k"]), int((A["lat1"] - A["lat0"]) * A["k"])
 if not (O / "africa_satdesat.jpg").exists():
     big = Image.open(K / "world_satdesat_21600.jpg"); KB = 60.0

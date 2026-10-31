@@ -12,10 +12,11 @@
     const BONE = "#f2ede3", INK = "#141b24", NAVY = "#1d5c9e", SKY = "#9fc3e3", VER = "#e03f2c", YEL = "#f2d33b";
 
     function gated(a, b, fn) { const on = FX.onFrame; FX.onFrame = (f) => on(FX.gate(S(a) - 0.1, S(b) + 0.1, f)); try { return fn(); } finally { FX.onFrame = on; } }
+    // scenes are display:none outside their window (keeps the render's heavy-overlay count low, MANUAL §4.4)
     function scene(id, a, b) {
-      if (a <= 0) gsap.set($(id), { autoAlpha: 1 });
-      else tl.fromTo($(id), { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.001, immediateRender: false }, S(a));
-      if (b < SEG_END) tl.set($(id), { autoAlpha: 0 }, S(b));
+      if (a <= 0) gsap.set($(id), { autoAlpha: 1, display: "block" });
+      else { gsap.set($(id), { display: "none" }); tl.fromTo($(id), { autoAlpha: 0, display: "none" }, { autoAlpha: 1, display: "block", duration: 0.001, immediateRender: false }, S(a)); }
+      if (b < SEG_END) tl.set($(id), { autoAlpha: 0, display: "none" }, S(b));
     }
     function ground(kind, t) {
       const v = kind === "paper" ? [0.32, 0.14, 0.26] : [1, 0.42, 0.36];
