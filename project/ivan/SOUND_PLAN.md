@@ -145,8 +145,8 @@ A segment re-run = edit its `compositions/ivsNN.sfx.json`, run the place_sound l
 - Cue-sheet layers may name a `"file"` (e.g. `sfx/heartbeat_cinematic_54bpm.wav`) instead of track/stem.
 
 ## 7. Phase 2 (full mix with the editors' markers)
-**Interim build 2026-11-01 09:58** (markers from ivs04 only — 45 markers, 35 kept by the restraint pass; ivs03 landed just after;
-ivs01/02/05/06/07 still missing). `measure_mix.py`: mix −36.8 LUFS-I = VO alone −36.8 (**Δ 0.0 LU**, < 1 ✓), true peak −12.1 dBTP;
-music bed −50.7 LUFS (−14.9 LU re the VO while he speaks); SFX median −19.0 dB re the local VO peak (max −33.5 dBFS);
-ambience −68.6 LUFS (≈ 32 LU under). Music in VO pauses −57.3 LUFS (the pauses are mostly the ducked insert windows).
-**Re-run when the remaining sfx.json files exist: the §6 commands (≈ 3 min), nothing else changes.**
+**Final build 2026-11-01** (all seven `compositions/ivs0*.sfx.json`: 355 markers; 2 editor booms duplicating stingers dropped
+(399.66, 767.4); restraint pass kept 265, dropped 90 — see `assets/audio/ivan/sfx_hierarchy.json`). `measure_mix.py`: mix −36.8 LUFS-I =
+VO alone −36.8 (**Δ 0.0 LU** ✓), true peak −12.1 dBTP; music bed −50.7 LUFS (**−14.9 LU** re the VO while he speaks; per act −12.5…−16.0,
+table §5 unchanged); SFX median −20.8 dB re the local VO peak (max −33.4 dBFS); ambience −68.0 LUFS (≈ 32 LU under).
+If a segment's timing changes: edit its sfx.json and re-run the §6 commands (≈ 3 min).
