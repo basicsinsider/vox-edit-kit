@@ -284,6 +284,12 @@ use, attribution optional; never redistribute the files publicly, never use them
   paper slides fired at 247 s / 318 s of a 199 s segment (the dumped timeline was 318 s long; the transitions never happened). Check
   `tl.duration()` == `data-duration` in the timeline dump. Burn/char-ring feImage filters: start the alpha offset BELOW the noise range
   (−15, ring −12.8), not −12.5/−10.3 — at −10.3 the ring layer already shows the highest-noise pixels as orange blobs before the burn.
+- (Ivan editors, 2026-11-01) Never name a composition class `tx` (fx.css `.tx` shifts it −40 px). `remove-background -b` returns the
+  full frame with the person still in it — put graphics beside the narrator, not behind his body; it ran at 0.3 fps on a shared box.
+  BBC-doc trims of 4–7 s usually contain a cut: run scene detection on every clip. GSAP x/y/scale on an SVG `<g>` (even with
+  `svgOrigin`) misplaced figures — tween a proxy object and write the inner `transform` in `onUpdate`. Face-cam punch-ins: put the
+  scale origin ~120 px above the face or the head is cropped. Russia's kit outline crosses the antimeridian: clamp, don't drop sub-paths.
+  On night maps an oxblood overlay at 0.6 still reads as a slab — 0.42 Russia / 0.55 Ukraine. `FX.split` loses colour spans inside text.
 ### 4.3 Check, look, render
 ```bash
 python3 tools/build_index.py s05            # put one (or several) compositions in index.html
@@ -730,6 +736,14 @@ on action. Use it whenever the narrator quotes someone or introduces a historic 
 - [ ] Smooth long eases, 12 fps. [ ] Cuts on action; whips, no iris. [ ] No photo/clip used > 2× in a chunk.
 
 ## Changelog
+- 2026-11-01 — Ivan (15:46, `project/ivan/`): raw face-cam take cut to the script by an EDL (`project/ivan/gen/build_edl.py` +
+  `render_vo.py`: cut points at the quietest 10 ms, 60 fps frame grid so picture and VO never drift, silence-only second pass caps
+  pauses at 0.5 s — Parakeet word times drift several seconds inside 30 s phrases, so never trust them for cut points alone; check the
+  edited VO for silences > 1 s afterwards). Master-aligned face cam (`input/ivan_join.sh`, black in insert slots). A 30 fps face cam
+  rendered at 24 fps needs NO lip-sync offset (pixel-matched; Taiwan's 29.97 source needed +0.104 s). `build_master/build_index` load
+  `lib/palette_ivan.css` for `iv*`. 7 parallel editors + map + sound agents (~55 min), 7 render helpers (~20 min), final mix
+  `tools/final_mix_ivan.sh` (lossless VO + insert audio + beds, optional CUT for removing dead air from picture+audio together).
+  A deliveries branch can't be deleted/overwritten through the proxy — deliver a new version as `deliveries/<name>-v2`.
 - 2026-11-01 — Map kit, Ivan project: `eastern_europe_*` (20–62°E × 42–62°N, 6206×4800, atlas/night/sat/satdesat), `russia_*` (20°E–170°W × 40–78°N, 6566×2850, atlas/night), 8 Esri aerials (Moscow Kirillov/Sarvarov sites, Olenya, Belaya, Dyagilevo, Ivanovo Severny, Alabuga SEZ, Kazan aircraft plant) — see `assets/maps/kit/README.md`. Lessons: Natural Earth (world-atlas) puts Crimea inside Russia — overlays now move it to `#c-ukraine` and add `#c-crimea` (`crimea_fix()`); Caspian bathymetry tiles show seams → `flat_water` boxes in REGIONS; the Alabuga coordinates in the brief were 5 km off — always locate factories by eye at z12–z14 first.
 - 2026-11-01 — §10.10 Krish's design notes (placement on a grid, clean meaningful text, contrast) — binding; Ivan project started (`project/ivan/`).
 - 2026-10-31 — c6s03 editor: segment C6S077–C6S107 finished (lint 0 errors, audit clean); derived assets logged in `assets/c6/derived/c6s03/SOURCES.md`. Lessons: map pins on a pulled-back camera (scale ≈ 0.23) need r ≥ 66 + a dark centre or they read as specks; when a whip/slide follows the last spoken words, shorten the tail word rises (0.2–0.4 s) so the text finishes before the transition; Commons originals under 960 px can't be fetched as thumbs, and the original URL also 429s from this IP, so use the fetch relay (`requests/fetch.json`).
