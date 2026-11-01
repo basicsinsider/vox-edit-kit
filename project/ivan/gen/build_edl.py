@@ -39,3 +39,30 @@ print('noise', round(noise, 1), 'segments', len(segs), 'edited length', round(su
 for s in segs:
     if max(s['in_db'], s['out_db']) > noise + 20: print('LOUD CUT', s['w'], s['in_db'], s['out_db'], s['note'][:50])
 for f in fill: print('FILLER?', f)
+
+# --- pass 2: no dead air. Inside every kept range, any silence (< -70 dBFS, 50 ms hop) longer than 0.8 s is cut down to
+# 0.5 s (0.25 s kept on each side), and segment heads/tails keep at most 0.3 s of silence. Silence-only cuts; speech untouched.
+h = int(0.05 * sr)
+def sil_runs(a, b):
+    i0, i1 = int(a * sr), int(b * sr); v = m[i0:i1]; n = len(v) // h
+    d = 20 * np.log10(np.sqrt((v[:n * h].reshape(n, h) ** 2).mean(1)) + 1e-9) < -70
+    runs = []; s = None
+    for k, q in enumerate(list(d) + [False]):
+        if q and s is None: s = k
+        if not q and s is not None: runs.append((a + s * 0.05, a + k * 0.05)); s = None
+    return runs
+out = []
+for s in segs:
+    a, b = s['in'], s['out']; pieces = []; cur = a
+    for r0, r1 in sil_runs(a, b):
+        if r0 <= a + 0.01 and r1 - a > 0.3: cur = r1 - 0.3; continue          # long head silence
+        if r1 >= b - 0.06 and b - r0 > 0.3: b = r0 + 0.3; break                # long tail silence
+        if r1 - r0 > 0.8: pieces.append((cur, r0 + 0.25)); cur = r1 - 0.25
+    pieces.append((cur, b))
+    for k, (p0, p1) in enumerate(pieces):
+        q = dict(s); q['in'], q['out'] = round(p0, 3), round(p1, 3)
+        if k > 0: q['in_db'] = -100.0; q['note'] = s['note'] + ' [silence trimmed]'
+        if k < len(pieces) - 1: q['out_db'] = -100.0
+        out.append(q)
+E = json.load(open('project/ivan/EDL.json')); E['segments'] = out; json.dump(E, open('project/ivan/EDL.json', 'w'), indent=1)
+print('pass2: segments', len(out), 'edited length', round(sum(q['out'] - q['in'] for q in out), 1))

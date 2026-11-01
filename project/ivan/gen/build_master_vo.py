@@ -3,7 +3,8 @@ vo_ivan_master.wav (VO samples untouched, silence inserted), transcript_ivan_mas
 project/ivan/inserts.json (slot start/dur in master time + what goes there)."""
 import json, numpy as np, soundfile as sf
 E = json.load(open('project/ivan/edl_frames.json'))
-by = {tuple(s['w']): s for s in E['segments']}
+by = {}
+for s in E['segments']: by.setdefault(tuple(s['w']), s)
 INS = [((392, 410), 8.0, 'protest chants (script: insert 0:02-0:10 of the BBC doc)'),
        ((1419, 1449), 18.0, 'dubbed video clip (script: BBC doc 0:58-1:16) after Kirillov attack line'),
        ((1804, 1875), 11.0, 'fast-paced clip (script: BBC doc 4:05-4:16) after the cargo-truck line — Spiderweb footage')]
