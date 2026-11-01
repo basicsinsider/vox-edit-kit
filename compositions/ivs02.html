@@ -1,0 +1,987 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8" /></head>
+<body>
+<template>
+  <style>
+    #root { position: absolute; inset: 0; overflow: hidden; background: var(--night); }
+    .v2-scene { position: absolute; inset: 0; overflow: hidden; visibility: hidden; opacity: 0; }
+    .v2-shot { position: absolute; inset: 0; overflow: hidden; transform-origin: 50% 50%; }
+    .v2-night { background: var(--night); }
+    .v2-paper { background: var(--paper); }
+    .v2-abs { position: absolute; }
+    .v2-vid { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; object-fit: cover; }
+    .v2-fcw { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: hidden; }
+    .v2-cam { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
+    .v2-p1, .v2-p2 { position: absolute; inset: 0; background-size: cover; background-position: center; pointer-events: none; }
+    .v2-p2 { opacity: 0.9; mix-blend-mode: multiply; }
+    .v2-credit { position: absolute; right: 30px; bottom: 20px; font-size: 13px; letter-spacing: 0.08em; color: rgba(240,237,230,0.66); z-index: 6; }
+    .v2-credit.ink { color: rgba(27,29,32,0.66); }
+    .v2-mk { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; pointer-events: none; }
+    .v2-ink { color: var(--ink); }
+    .v2-sky { color: var(--sky); }
+    .v2-oxl { color: var(--oxblood-light); }
+    .v2-scrim-b { position: absolute; left: 0; right: 0; bottom: 0; height: 460px; background: linear-gradient(180deg, rgba(16,17,19,0), rgba(16,17,19,0.86)); }
+    .v2-scrim-l { position: absolute; left: 0; top: 0; bottom: 0; width: 1000px; background: linear-gradient(90deg, rgba(16,17,19,0.82), rgba(16,17,19,0)); }
+    .v2-scrim-r { position: absolute; right: 0; top: 0; bottom: 0; width: 1000px; background: linear-gradient(270deg, rgba(16,17,19,0.82), rgba(16,17,19,0)); }
+    .v2-scrim-t { position: absolute; left: 0; right: 0; top: 0; height: 380px; background: linear-gradient(0deg, rgba(16,17,19,0), rgba(16,17,19,0.78)); }
+    .v2-card { position: absolute; background: #ece8df; box-shadow: 0 26px 60px rgba(16,17,19,0.34); overflow: hidden; }
+    .v2-card .tx2 { position: absolute; inset: 0; background: url('assets/textures/paper_cream_01.jpg') center / cover; mix-blend-mode: multiply; opacity: 0.65; pointer-events: none; }
+    .v2-ln { height: 12px; background: rgba(27,29,32,0.26); margin: 0 0 22px; border-radius: 2px; position: relative; }
+    .v2-red { position: absolute; left: -6px; top: -7px; height: 26px; background: var(--ink); transform-origin: 0 50%; }
+    .v2-tape { position: absolute; width: 170px; height: 44px; background: rgba(226,221,208,0.78); box-shadow: 0 2px 6px rgba(0,0,0,0.15); }
+    .v2-fcline { position: absolute; font-size: 58px; line-height: 1.04; color: var(--ink); }
+    .v2-fckick { position: absolute; width: 64px; height: 6px; background: var(--ink); transform-origin: 0 50%; }
+    .v2-fcscrim { position: absolute; left: 0; top: 0; width: 760px; height: 520px; background: radial-gradient(ellipse 70% 70% at 25% 30%, rgba(240,237,230,0.55), rgba(240,237,230,0)); }
+    .v2-bub { position: absolute; width: 500px; background: #e9e5dc; border-radius: 26px 26px 26px 8px; padding: 14px; box-shadow: 0 18px 40px rgba(0,0,0,0.45); }
+    .v2-bub .th { position: relative; width: 472px; height: 266px; border-radius: 16px; overflow: hidden; background-size: cover; background-position: center; filter: brightness(1.35) saturate(0.4); }
+    .v2-bub .pl { position: absolute; left: 196px; top: 93px; width: 80px; height: 80px; border-radius: 50%; background: rgba(16,17,19,0.62); }
+    .v2-bub .pl::after { content: ""; position: absolute; left: 31px; top: 23px; border-left: 28px solid #f0ede6; border-top: 17px solid transparent; border-bottom: 17px solid transparent; }
+    .v2-bub .du { position: absolute; left: 30px; top: 230px; font-size: 22px; color: #f0ede6; text-shadow: 0 1px 3px rgba(0,0,0,0.6); }
+    .v2-bub .tk { position: absolute; right: 26px; bottom: 6px; font-size: 22px; color: var(--azure); }
+    .v2-frame { position: absolute; width: 520px; height: 292px; border: 3px solid rgba(240,237,230,0.85); background-size: cover; background-position: center; box-shadow: 0 18px 40px rgba(0,0,0,0.5); }
+    .v2-q { position: absolute; right: 18px; bottom: 18px; width: 70px; height: 70px; border-radius: 50%; background: var(--bone); color: var(--ink); font-size: 50px; line-height: 74px; text-align: center; }
+    .v2-pin { position: absolute; width: 28px; height: 28px; margin: -14px 0 0 -14px; border-radius: 50%; border: 5px solid var(--bone); box-shadow: 0 0 0 3px rgba(16,17,19,0.55), 0 6px 14px rgba(0,0,0,0.5); }
+    .v2-maplbl { position: absolute; white-space: nowrap; }
+    .v2-stamp { position: absolute; border: 8px solid currentColor; border-radius: 14px; padding: 10px 34px; font-size: 92px; line-height: 1; letter-spacing: 0.04em; }
+    .v2-stamp::before { content: ""; position: absolute; inset: 7px; border: 3px solid currentColor; border-radius: 8px; }
+    .v2-box { position: absolute; padding: 12px 22px 10px; background: var(--ink); color: var(--paper); }
+    .v2-brk { position: absolute; width: 60px; height: 60px; border-color: rgba(240,237,230,0.9); border-style: solid; }
+    #ivs02-flash { position: absolute; inset: 0; background: #f7f3ea; opacity: 0; pointer-events: none; z-index: 7; }
+    #ivs02-grain, #ivs02-dust, #ivs02-vig { z-index: 8; }
+
+    /* sc002 */
+    #ivs02-sc002-kick { left: 96px; top: 800px; font-size: 32px; }
+    #ivs02-sc002-rule { left: 96px; top: 852px; width: 560px; height: 4px; background: var(--bone); transform-origin: 0 50%; }
+    #ivs02-sc002-name { left: 92px; top: 872px; font-size: 104px; }
+    /* sc003 */
+    #ivs02-sc003-cam { position: absolute; inset: 0; transform-origin: 40% 50%; }
+    #ivs02-sc003-card { left: 96px; top: 150px; width: 1120px; height: 690px; transform: rotate(-1.6deg); padding: 22px 22px 70px; }
+    #ivs02-sc003-ph { position: absolute; left: 22px; top: 22px; width: 1076px; height: 605px; background: url('assets/ivan/ivs02/photos/moscow_nemtsov_march_2015.jpg') center 40% / cover; filter: grayscale(1) contrast(1.12) brightness(1.02) sepia(0.12); }
+    #ivs02-sc003-cap { left: 26px; top: 640px; font-size: 22px; color: var(--ink-soft); }
+    #ivs02-sc003-a { left: 1300px; top: 330px; width: 540px; font-size: 76px; line-height: 1.02; }
+    #ivs02-sc003-b { left: 1300px; top: 330px; width: 540px; font-size: 80px; line-height: 0.98; }
+    /* sc004 */
+    #ivs02-sc004-stack { position: absolute; left: 1324px; top: 0; width: 500px; height: 1080px; }
+    #ivs02-sc004-txt { left: 96px; top: 860px; font-size: 66px; }
+    /* sc005 */
+    #ivs02-sc005-a { left: 96px; top: 760px; font-size: 46px; }
+    #ivs02-sc005-b { left: 96px; top: 822px; font-size: 64px; }
+    /* sc006 */
+    #ivs02-sc006-rec { left: 140px; top: 104px; font-size: 30px; }
+    #ivs02-sc006-dot { position: absolute; left: 104px; top: 108px; width: 22px; height: 22px; border-radius: 50%; background: var(--oxblood-light); }
+    #ivs02-sc006-tc { right: 140px; top: 104px; font-size: 30px; text-align: right; width: 400px; }
+    #ivs02-sc006-txt { left: 96px; top: 880px; font-size: 64px; }
+    /* sc011 */
+    #ivs02-sc011-doc { left: 460px; top: 70px; width: 1000px; height: 940px; transform: rotate(-0.8deg); padding: 70px 90px; }
+    #ivs02-sc011-hd { position: relative; font-size: 60px; line-height: 1.05; margin: 0 0 40px; min-height: 130px; }
+    /* sc012 */
+    #ivs02-sc012-t { left: 144px; top: 130px; font-size: 52px; }
+    /* sc014 */
+    #ivs02-sc014-por { left: 300px; top: 300px; width: 400px; height: 480px; padding: 18px; }
+    #ivs02-sc014-por .in { position: absolute; left: 18px; top: 18px; right: 18px; bottom: 18px; background: #c9c7c2; overflow: hidden; }
+    #ivs02-sc014-por img { position: absolute; left: 32px; top: 40px; width: 300px; }
+    #ivs02-sc014-tag { left: 1100px; top: 470px; font-size: 46px; background: var(--azure); color: var(--bone); }
+    #ivs02-sc014-ornot { left: 1104px; top: 580px; font-size: 64px; }
+    /* sc015 */
+    #ivs02-sc015-map { position: absolute; left: 0; top: 0; width: 6206px; height: 4800px; filter: brightness(1.05) contrast(1.05); }
+    #ivs02-sc015-lbl { left: 96px; top: 80px; font-size: 46px; }
+    #ivs02-sc015-gur { font-size: 150px; }
+    /* sc016 */
+    #ivs02-sc016-file { left: 300px; top: 110px; width: 1320px; height: 860px; transform: rotate(0.8deg); background: #d8d2c4; }
+    #ivs02-sc016-por { left: 90px; top: 110px; width: 360px; height: 440px; padding: 16px; transform: rotate(-3deg); }
+    #ivs02-sc016-por .in { position: absolute; left: 16px; top: 16px; right: 16px; bottom: 16px; background: #c9c7c2; overflow: hidden; }
+    #ivs02-sc016-por img { position: absolute; left: 30px; top: 36px; width: 268px; }
+    #ivs02-sc016-lines { position: absolute; left: 560px; top: 150px; width: 640px; }
+    #ivs02-sc016-stamp { left: 600px; top: 560px; color: var(--azure); transform: rotate(-8deg); }
+    /* sc019 */
+    #ivs02-sc019-map { position: absolute; left: 0; top: 0; width: 6206px; height: 4800px; filter: saturate(0.55) contrast(1.05); }
+    #ivs02-sc019-t { left: 96px; top: 80px; font-size: 48px; }
+    /* sc020 */
+    #ivs02-sc020-stamp { left: 150px; top: 110px; color: rgba(27,29,32,0.86); transform: rotate(-7deg); font-size: 84px; }
+    /* sc021 */
+    #ivs02-sc021-t { left: 96px; top: 96px; font-size: 50px; }
+    /* sc022 */
+    #ivs02-sc022-map { position: absolute; left: 0; top: 0; width: 6206px; height: 4800px; filter: brightness(0.9) contrast(1.08); }
+    #ivs02-sc022-t { left: 96px; top: 80px; font-size: 48px; }
+    #ivs02-sc022-card { position: absolute; width: 150px; height: 96px; margin: -48px 0 0 -75px; border: 4px solid var(--bone); background: url('assets/ivan/ivs02/derived/still_air.jpg') center / cover; box-shadow: 0 8px 20px rgba(0,0,0,0.6); }
+    /* sc023 */
+    #ivs02-sc023-sat { position: absolute; left: 1160px; top: 230px; width: 700px; height: 480px; border: 10px solid #ece8df; box-shadow: 0 20px 50px rgba(0,0,0,0.35); overflow: hidden; }
+    #ivs02-sc023-sat div { position: absolute; left: -620px; top: -540px; width: 1792px; height: 1408px; background: url('assets/ivan/ivs02/derived/kazan_aviation_plant_esri_z15.jpg') 0 0 / 1792px 1408px; filter: saturate(0.45) contrast(1.1); }
+    /* sc025 */
+    .v2-panel { position: absolute; top: 250px; width: 816px; height: 640px; overflow: hidden; border: 3px solid rgba(240,237,230,0.8); box-shadow: 0 24px 60px rgba(0,0,0,0.55); }
+    #ivs02-sc025-pl { left: 96px; }
+    #ivs02-sc025-pr { left: 1008px; }
+    #ivs02-sc025-sat { position: absolute; left: -900px; top: -820px; width: 3584px; height: 2816px; background: url('assets/ivan/ivs02/derived/kazan_aviation_plant_esri_z15.jpg') 0 0 / 3584px 2816px; filter: saturate(0.4) contrast(1.1) brightness(0.95); transform-origin: 1300px 1140px; }
+    #ivs02-sc025-gr { left: 1008px; top: 150px; font-size: 54px; }
+    #ivs02-sc025-sp { left: 96px; top: 150px; font-size: 54px; }
+    /* sc026 */
+    #ivs02-sc026-img { position: absolute; left: 0; top: 0; width: 3584px; height: 2816px; filter: saturate(0.45) contrast(1.12); }
+    #ivs02-sc026-t { left: 96px; top: 880px; font-size: 64px; }
+    /* sc028 */
+    #ivs02-sc028-t { left: 1060px; top: 860px; font-size: 66px; }
+    /* sc029 */
+    #ivs02-sc029-t { left: 960px; top: 860px; width: 864px; text-align: right; font-size: 64px; }
+    /* sc030 */
+    #ivs02-sc030-cam { position: absolute; inset: 0; }
+    #ivs02-sc030-fh { left: 1120px; top: 700px; font-size: 104px; padding: 14px 30px 8px; background: var(--ink); color: var(--brass); }
+    /* sc031 */
+    #ivs02-sc031-t { left: 96px; top: 880px; font-size: 64px; }
+    /* sc032 */
+    #ivs02-sc032-t { left: 96px; top: 880px; font-size: 70px; }
+    /* sc034 */
+    #ivs02-sc034-t { left: 96px; top: 880px; font-size: 64px; }
+  </style>
+
+  <div id="root" data-composition-id="ivs02" data-vo-start="144.02" data-duration="152.16" data-width="1920" data-height="1080">
+    <svg id="ivs02-defs" width="0" height="0" style="position:absolute"></svg>
+    <audio id="ivs02-vo" class="temp-vo" src="vo_iv.mp3" data-start="0" data-duration="152.16" data-media-start="144.02" data-volume="1"></audio>
+
+    <!-- sc001 · 144.02–148.34 · FACE wide · "Now, one person who had begun to see just how far Ivan had gone" -->
+    <div class="v2-scene" id="ivs02-sc001"><div class="v2-shot" id="ivs02-sc001-shot">
+      <div class="v2-fcw" id="ivs02-sc001-fw"><video id="ivs02-sc001-fc" class="v2-vid" src="assets/facecam/ivan_facecam_master.mp4" muted playsinline data-start="0.000" data-duration="4.420" data-media-start="144.02"></video></div>
+      <div class="v2-fckick" id="ivs02-sc001-k" style="left:96px;top:120px"></div>
+      <div class="v2-fcline t-display" id="ivs02-sc001-t" style="left:96px;top:150px;width:370px">how far Ivan had gone</div>
+    </div></div>
+
+    <!-- sc002 · 148.34–151.22 · BBC Mamoń walking · name card -->
+    <div class="v2-scene v2-night" id="ivs02-sc002"><div class="v2-shot" id="ivs02-sc002-shot">
+      <video id="ivs02-sc002-v" class="v2-vid" src="assets/ivan/ivs02/footage/bbc_marcin_walk.mp4" muted playsinline data-start="4.320" data-duration="2.980" data-media-start="0.6"></video>
+      <div class="v2-scrim-b"></div><div class="v2-scrim-l" style="width:900px;opacity:0.6"></div>
+      <div id="ivs02-sc002-kick" class="v2-abs t-label clean">Polish journalist</div>
+      <div id="ivs02-sc002-rule" class="v2-abs"></div>
+      <div id="ivs02-sc002-name" class="v2-abs t-display clean">Marcin Mamoń</div>
+      <div class="v2-credit t-label">Video: BBC World Service</div>
+    </div></div>
+
+    <!-- sc003 · 151.22–156.98 · 2015 Moscow opposition march print on paper -->
+    <div class="v2-scene v2-paper" id="ivs02-sc003"><div class="v2-shot v2-paper" id="ivs02-sc003-shot">
+      <div class="v2-p1" style="background-image:url('assets/textures/paper_cream_02.jpg')"></div>
+      <div class="v2-p2" style="background-image:url('assets/textures/paper_stained_01_hires.jpg')"></div>
+      <div id="ivs02-sc003-cam">
+        <div class="v2-card" id="ivs02-sc003-card"><div id="ivs02-sc003-ph"></div><div class="tx2"></div>
+          <div id="ivs02-sc003-cap" class="v2-abs t-label">Moscow · opposition march</div></div>
+        <div class="v2-tape" style="left:150px;top:126px;transform:rotate(-8deg)"></div>
+        <div class="v2-tape" style="left:1040px;top:118px;transform:rotate(6deg)"></div>
+      </div>
+      <div id="ivs02-sc003-a" class="v2-abs t-serif-i v2-ink">about a decade earlier</div>
+      <div id="ivs02-sc003-b" class="v2-abs t-display v2-ink">Russia's political opposition</div>
+      <div class="folds"></div>
+      <div class="v2-credit t-label ink">Photo: putnik / Wikimedia Commons, CC BY 4.0</div>
+    </div></div>
+
+    <!-- sc004 · 156.98–161.94 · Mamoń on his phone + message bubbles -->
+    <div class="v2-scene v2-night" id="ivs02-sc004"><div class="v2-shot" id="ivs02-sc004-shot">
+      <video id="ivs02-sc004-v" class="v2-vid" src="assets/ivan/ivs02/footage/bbc_marcin_phone.mp4" muted playsinline data-start="12.960" data-duration="5.060" data-media-start="0.3"></video>
+      <div class="v2-scrim-r" style="width:760px;opacity:0.75"></div><div class="v2-scrim-b" style="height:380px"></div>
+      <div id="ivs02-sc004-stack">
+        <div class="v2-bub" id="ivs02-sc004-b1" style="left:0;top:150px"><div class="th" style="background-image:url('assets/ivan/ivs02/derived/still_air.jpg')"><div class="pl"></div><div class="du t-label">0:14</div></div></div>
+        <div class="v2-bub" id="ivs02-sc004-b2" style="left:0;top:480px"><div class="th" style="background-image:url('assets/ivan/ivs02/derived/still_27.jpg')"><div class="pl"></div><div class="du t-label">0:09</div></div></div>
+        <div class="v2-bub" id="ivs02-sc004-b3" style="left:0;top:810px"><div class="th" style="background-image:url('assets/ivan/ivs02/derived/still_855.jpg')"><div class="pl"></div><div class="du t-label">0:21</div></div></div>
+      </div>
+      <div id="ivs02-sc004-txt" class="v2-abs t-serif-i clean">rather strange videos</div>
+      <div class="v2-credit t-label">Video: BBC World Service</div>
+    </div></div>
+
+    <!-- sc005 · 161.94–166.42 · the phone with the device -->
+    <div class="v2-scene v2-night" id="ivs02-sc005"><div class="v2-shot" id="ivs02-sc005-shot">
+      <video id="ivs02-sc005-v" class="v2-vid" src="assets/ivan/ivs02/footage/bbc_phone_bomb.mp4" muted playsinline data-start="17.920" data-duration="4.580" data-media-start="0.1"></video>
+      <div class="v2-scrim-l" style="width:900px"></div><div class="v2-scrim-b" style="height:360px;opacity:0.8"></div>
+      <svg id="ivs02-sc005-mk" class="v2-mk" viewBox="0 0 1920 1080"></svg>
+      <div id="ivs02-sc005-a" class="v2-abs t-label clean">an explosive device</div>
+      <div id="ivs02-sc005-b" class="v2-abs t-serif-i clean">meant for a drone</div>
+      <div class="v2-credit t-label">Video: BBC World Service</div>
+    </div></div>
+
+    <!-- sc006 · 166.42–171.22 · Ivan's night video near an airfield · surveillance frame -->
+    <div class="v2-scene v2-night" id="ivs02-sc006"><div class="v2-shot" id="ivs02-sc006-shot">
+      <video id="ivs02-sc006-v" class="v2-vid" src="assets/ivan/ivs02/footage/bbc_airfield_night.mp4" muted playsinline data-start="22.400" data-duration="4.900" data-media-start="0.2"></video>
+      <div class="v2-scrim-b" style="height:420px"></div>
+      <div class="v2-brk" style="left:72px;top:64px;border-width:4px 0 0 4px"></div><div class="v2-brk" style="right:72px;top:64px;border-width:4px 4px 0 0"></div>
+      <div class="v2-brk" style="left:72px;bottom:64px;border-width:0 0 4px 4px"></div><div class="v2-brk" style="right:72px;bottom:64px;border-width:0 4px 4px 0"></div>
+      <div id="ivs02-sc006-dot"></div><div id="ivs02-sc006-rec" class="v2-abs t-label clean">REC</div>
+      <div id="ivs02-sc006-tc" class="v2-abs t-label clean">00:00:00</div>
+      <svg id="ivs02-sc006-mk" class="v2-mk" viewBox="0 0 1920 1080"></svg>
+      <div id="ivs02-sc006-txt" class="v2-abs t-display clean">near a military airfield</div>
+      <div class="v2-credit t-label">Video: BBC World Service</div>
+    </div></div>
+
+    <!-- sc007 · 171.22–176.82 · FACE medium · "democracy campaigner" -->
+    <div class="v2-scene" id="ivs02-sc007"><div class="v2-shot" id="ivs02-sc007-shot">
+      <div class="v2-fcw" id="ivs02-sc007-fw"><video id="ivs02-sc007-fc" class="v2-vid" src="assets/facecam/ivan_facecam_master.mp4" muted playsinline data-start="27.200" data-duration="5.700" data-media-start="171.22"></video></div>
+      <div class="v2-fckick" id="ivs02-sc007-k" style="left:96px;top:120px"></div>
+      <div class="v2-fcline t-serif-i" id="ivs02-sc007-t" style="left:96px;top:146px;width:520px;font-size:66px">democracy campaigner</div>
+    </div></div>
+
+    <!-- sc008 · 176.82–181.46 · Mamoń in profile -->
+    <div class="v2-scene v2-night" id="ivs02-sc008"><div class="v2-shot" id="ivs02-sc008-shot">
+      <video id="ivs02-sc008-v" class="v2-vid" src="assets/ivan/ivs02/footage/bbc_marcin_profile.mp4" muted playsinline data-start="32.800" data-duration="4.740" data-media-start="0.05"></video>
+      <div class="v2-credit t-label ink" style="color:rgba(27,29,32,0.7)">Video: BBC World Service</div>
+    </div></div>
+
+    <!-- sc009 · 181.46–185.15 · FACE close · "wasn't as simple" -->
+    <div class="v2-scene" id="ivs02-sc009"><div class="v2-shot" id="ivs02-sc009-shot">
+      <div class="v2-fcw" id="ivs02-sc009-fw"><video id="ivs02-sc009-fc" class="v2-vid" src="assets/facecam/ivan_facecam_master.mp4" muted playsinline data-start="37.440" data-duration="3.790" data-media-start="181.46"></video></div>
+      <div class="v2-fckick" id="ivs02-sc009-k" style="left:96px;top:120px"></div>
+      <div class="v2-fcline t-display" id="ivs02-sc009-t" style="left:96px;top:146px;width:460px">wasn't as simple</div>
+    </div></div>
+
+    <!-- sc010 · 185.15–187.87 · BBC two men in a field (face to face) -->
+    <div class="v2-scene v2-night" id="ivs02-sc010"><div class="v2-shot" id="ivs02-sc010-shot">
+      <video id="ivs02-sc010-v" class="v2-vid" src="assets/ivan/ivs02/footage/bbc_field_meet.mp4" muted playsinline data-start="41.130" data-duration="3.530" data-media-start="0.2"></video>
+      <div class="v2-scrim-b" style="height:420px"></div>
+      <div id="ivs02-sc010-t" class="v2-abs t-display clean" style="left:96px;top:870px;font-size:84px">face to face</div>
+      <div class="v2-credit t-label">Video: BBC World Service</div>
+    </div></div>
+
+    <!-- sc011 · 187.87–190.43 · redacted page -->
+    <div class="v2-scene" id="ivs02-sc011"><div class="v2-shot v2-paper" id="ivs02-sc011-shot">
+      <div class="v2-p1" style="background-image:url('assets/textures/paper_cream_01.jpg')"></div>
+      <div class="v2-p2" style="background-image:url('assets/textures/paper_fiber_01.jpg');opacity:0.5"></div>
+      <div class="v2-card" id="ivs02-sc011-doc"><div class="tx2"></div>
+        <div id="ivs02-sc011-hd" class="t-serif-i v2-ink">careful about what he revealed</div>
+        <div id="ivs02-sc011-lines"></div>
+      </div>
+      <div class="folds"></div>
+    </div></div>
+
+    <!-- sc012 · 190.43–194.59 · grid of Ivan's video stills -->
+    <div class="v2-scene v2-night" id="ivs02-sc012"><div class="v2-shot" id="ivs02-sc012-shot">
+      <div id="ivs02-sc012-board" class="v2-abs" style="inset:0"></div>
+      <div id="ivs02-sc012-t" class="v2-abs t-label clean">journalists could not identify</div>
+      <div class="v2-credit t-label">Stills: BBC World Service</div>
+    </div></div>
+
+    <!-- sc013 · 194.59–201.07 · FACE wide · "impossible to verify" -->
+    <div class="v2-scene" id="ivs02-sc013"><div class="v2-shot" id="ivs02-sc013-shot">
+      <div class="v2-fcw" id="ivs02-sc013-fw"><video id="ivs02-sc013-fc" class="v2-vid" src="assets/facecam/ivan_facecam_master.mp4" muted playsinline data-start="50.570" data-duration="6.580" data-media-start="194.59"></video></div>
+      <div class="v2-fckick" id="ivs02-sc013-k" style="left:96px;top:120px"></div>
+      <div class="v2-fcline t-display" id="ivs02-sc013-t" style="left:96px;top:146px;width:500px">impossible to verify</div>
+    </div></div>
+
+    <!-- sc014 · 201.07–203.87 · grey man card → Ukrainian intelligence? -->
+    <div class="v2-scene v2-paper" id="ivs02-sc014"><div class="v2-shot v2-paper" id="ivs02-sc014-shot">
+      <div class="v2-p1" style="background-image:url('assets/textures/paper_cream_02.jpg')"></div>
+      <div class="v2-p2" style="background-image:url('assets/textures/paper_graph_01_hires.jpg');opacity:0.35"></div>
+      <div class="v2-card" id="ivs02-sc014-por"><div class="in"><img src="assets/ivan/motifs/grey_man.svg" alt="" /></div><div class="tx2"></div></div>
+      <svg id="ivs02-sc014-mk" class="v2-mk" viewBox="0 0 1920 1080"></svg>
+      <div id="ivs02-sc014-tag" class="v2-box t-label">Ukrainian intelligence</div>
+      <div id="ivs02-sc014-ornot" class="v2-abs t-serif-i v2-ink">or not</div>
+      <div class="folds"></div>
+    </div></div>
+
+    <!-- sc015 · 203.87–209.23 · map Warsaw → Kyiv · GUR -->
+    <div class="v2-scene v2-night" id="ivs02-sc015" style="background:#0d0f12"><div class="v2-shot" id="ivs02-sc015-shot">
+      <div class="v2-cam" id="ivs02-sc015-cam" style="width:6206px;height:4800px">
+        <img id="ivs02-sc015-map" src="assets/maps/kit/eastern_europe_night.jpg" alt="" />
+        <svg id="ivs02-sc015-svg" class="v2-mk" style="width:6206px;height:4800px" viewBox="0 0 6206 4800"></svg>
+        <div id="ivs02-sc015-mam" style="position:absolute;left:520px;top:2560px;width:240px;height:240px;border-radius:50%;border:8px solid var(--bone);background:url('assets/ivan/ivs02/derived/mamon_circle.jpg') center / cover;filter:grayscale(0.7);box-shadow:0 14px 34px rgba(0,0,0,0.6)"></div>
+        <div class="v2-pin" id="ivs02-sc015-pk" style="left:1555px;top:2772px;border-color:var(--sky)"></div>
+        <div class="v2-maplbl t-label clean" id="ivs02-sc015-lw" style="left:520px;top:2826px;width:256px;text-align:center;font-size:34px">Mamoń</div>
+        <div class="v2-maplbl t-display halate cool v2-sky" id="ivs02-sc015-gur" style="left:1610px;top:2790px">GUR</div>
+      </div>
+      <div class="v2-scrim-t"></div>
+      <div id="ivs02-sc015-lbl" class="v2-abs t-label clean">Ukraine's military intelligence</div>
+      <div class="v2-credit t-label">Relief: AWS Terrain Tiles (PD) · borders: Natural Earth (PD)</div>
+    </div></div>
+
+    <!-- sc016 · 209.23–212.91 · case file · CONFIRMED -->
+    <div class="v2-scene v2-paper" id="ivs02-sc016"><div class="v2-shot v2-paper" id="ivs02-sc016-shot">
+      <div class="v2-p1" style="background-image:url('assets/textures/paper_cream_01.jpg');filter:brightness(0.9)"></div>
+      <div class="v2-card" id="ivs02-sc016-file"><div class="tx2"></div>
+        <div class="v2-card" id="ivs02-sc016-por"><div class="in"><img src="assets/ivan/motifs/grey_man.svg" alt="" /></div><div class="tx2"></div></div>
+        <div id="ivs02-sc016-lines"></div>
+        <div id="ivs02-sc016-stamp" class="v2-stamp t-display">CONFIRMED</div>
+      </div>
+      <div class="folds"></div>
+    </div></div>
+
+    <!-- sc017 · 212.91–215.23 · FACE medium · "his story checked out" -->
+    <div class="v2-scene" id="ivs02-sc017"><div class="v2-shot" id="ivs02-sc017-shot">
+      <div class="v2-fcw" id="ivs02-sc017-fw"><video id="ivs02-sc017-fc" class="v2-vid" src="assets/facecam/ivan_facecam_master.mp4" muted playsinline data-start="68.890" data-duration="2.940" data-media-start="212.91"></video></div>
+      <div class="v2-fckick" id="ivs02-sc017-k" style="left:96px;top:120px"></div>
+      <div class="v2-fcline t-display" id="ivs02-sc017-t" style="left:96px;top:146px;width:340px">his story checked out</div>
+    </div></div>
+
+    <!-- sc018 · 215.23–221.05 · FACE close (question) -->
+    <div class="v2-scene" id="ivs02-sc018"><div class="v2-shot" id="ivs02-sc018-shot">
+      <div class="v2-fcw" id="ivs02-sc018-fw"><video id="ivs02-sc018-fc" class="v2-vid" src="assets/facecam/ivan_facecam_master.mp4" muted playsinline data-start="71.730" data-duration="5.400" data-media-start="215.75"></video></div>
+    </div></div>
+
+    <!-- sc019 · 221.05–225.15 · atlas: Russian military facilities -->
+    <div class="v2-scene v2-paper" id="ivs02-sc019"><div class="v2-shot" id="ivs02-sc019-shot">
+      <div class="v2-cam" id="ivs02-sc019-cam" style="width:6206px;height:4800px">
+        <img id="ivs02-sc019-map" src="assets/maps/kit/eastern_europe_atlas.jpg" alt="" />
+        <svg id="ivs02-sc019-svg" class="v2-mk" style="width:6206px;height:4800px" viewBox="0 0 6206 4800"></svg>
+      </div>
+      <div id="ivs02-sc019-t" class="v2-box t-label">Russian military facilities</div>
+      <div class="v2-credit t-label ink">Relief: AWS Terrain Tiles (PD) · borders: Natural Earth (PD)</div>
+    </div></div>
+
+    <!-- sc020 · 225.15–228.51 · Astana · KAZAKHSTAN stamp -->
+    <div class="v2-scene v2-night" id="ivs02-sc020"><div class="v2-shot" id="ivs02-sc020-shot">
+      <video id="ivs02-sc020-v" class="v2-vid" src="assets/ivan/ivs02/footage/bbc_astana.mp4" muted playsinline data-start="81.130" data-duration="3.460" data-media-start="0.1"></video>
+      <div id="ivs02-sc020-stamp" class="v2-stamp t-display">KAZAKHSTAN</div>
+      <div class="v2-credit t-label">Video: BBC World Service</div>
+    </div></div>
+
+    <!-- sc021 · 228.51–230.55 · Ivan's hands on the phone -->
+    <div class="v2-scene v2-night" id="ivs02-sc021"><div class="v2-shot" id="ivs02-sc021-shot">
+      <video id="ivs02-sc021-v" class="v2-vid" src="assets/ivan/ivs02/footage/bbc_phone_footage.mp4" muted playsinline data-start="84.490" data-duration="2.140" data-media-start="0.3"></video>
+      <div class="v2-scrim-t" style="height:300px"></div>
+      <div id="ivs02-sc021-t" class="v2-abs t-label clean">one particular mission</div>
+      <div class="v2-credit t-label">Video: BBC World Service</div>
+    </div></div>
+
+    <!-- sc022 · 230.55–238.75 · satellite map: Kazan plant → Moscow → Kyiv -->
+    <div class="v2-scene v2-night" id="ivs02-sc022" style="background:#101215"><div class="v2-shot" id="ivs02-sc022-shot">
+      <div class="v2-cam" id="ivs02-sc022-cam" style="width:6206px;height:4800px">
+        <img id="ivs02-sc022-map" src="assets/maps/kit/eastern_europe_satdesat.jpg" alt="" />
+        <svg id="ivs02-sc022-svg" class="v2-mk" style="width:6206px;height:4800px" viewBox="0 0 6206 4800"></svg>
+        <div class="v2-pin" id="ivs02-sc022-pz" style="left:4304.5px;top:1473.6px;border-color:var(--oxblood-light)"></div>
+        <div class="v2-pin" id="ivs02-sc022-pm" style="left:2603.3px;top:1498.6px;border-color:var(--oxblood-light)"></div>
+        <div class="v2-pin" id="ivs02-sc022-pk" style="left:1555px;top:2772px;border-color:var(--sky)"></div>
+        <div class="v2-maplbl t-display clean" id="ivs02-sc022-ltat" style="left:4250px;top:1510px;font-size:52px">Tatarstan</div>
+        <div class="v2-maplbl t-label clean" id="ivs02-sc022-lm" style="left:2470px;top:1530px;font-size:50px">Moscow</div>
+        <div class="v2-maplbl t-serif-i clean" id="ivs02-sc022-ld" style="left:3060px;top:1330px;font-size:60px">hundreds of miles east</div>
+        <div class="v2-maplbl t-label v2-sky" id="ivs02-sc022-lh" style="left:1700px;top:2380px;font-size:78px;text-shadow:0 2px 6px rgba(0,0,0,0.7)">his Ukrainian handlers</div>
+        <div id="ivs02-sc022-card"></div>
+      </div>
+      <div class="v2-scrim-t" style="height:300px"></div>
+      <div id="ivs02-sc022-t" class="v2-abs t-label clean">a strategic aviation facility</div>
+      <div class="v2-credit t-label">Imagery: Esri, Maxar, Earthstar Geographics</div>
+    </div></div>
+
+    <!-- sc023 · 238.75–243.87 · FACE wide + satellite print behind him (remove-background cut-out from 239.95) -->
+    <div class="v2-scene" id="ivs02-sc023"><div class="v2-shot" id="ivs02-sc023-shot">
+      <div class="v2-fcw" id="ivs02-sc023-fw">
+        <video id="ivs02-sc023-fc" class="v2-vid" src="assets/facecam/ivan_facecam_master.mp4" muted playsinline data-start="94.730" data-duration="5.220" data-media-start="238.75"></video>
+        <div id="ivs02-sc023-sat"><div></div></div>
+        <video id="ivs02-sc023-fg" class="v2-vid" src="assets/ivan/ivs02/facecam/fc_239.9_fg.webm" muted playsinline data-start="95.930" data-duration="4.020" data-media-start="0.05"></video>
+      </div>
+      <div class="v2-fckick" id="ivs02-sc023-k" style="left:96px;top:120px"></div>
+      <div class="v2-fcline t-display" id="ivs02-sc023-t" style="left:96px;top:146px;width:460px">a satellite image</div>
+    </div></div>
+
+    <!-- sc024 · 243.87–246.10 · FACE close -->
+    <div class="v2-scene" id="ivs02-sc024"><div class="v2-shot" id="ivs02-sc024-shot">
+      <div class="v2-fcw" id="ivs02-sc024-fw"><video id="ivs02-sc024-fc" class="v2-vid" src="assets/facecam/ivan_facecam_master.mp4" muted playsinline data-start="99.850" data-duration="2.330" data-media-start="243.87"></video></div>
+    </div></div>
+
+    <!-- sc025 · 246.10–252.02 · split: from space | on the ground -->
+    <div class="v2-scene v2-night" id="ivs02-sc025"><div class="v2-shot" id="ivs02-sc025-shot">
+      <div class="v2-panel" id="ivs02-sc025-pl"><div id="ivs02-sc025-sat"></div></div>
+      <div class="v2-panel" id="ivs02-sc025-pr"><video id="ivs02-sc025-v" class="v2-vid" style="left:-552px;top:-220px" src="assets/ivan/ivs02/footage/bbc_airfield_night.mp4" muted playsinline data-start="102.080" data-duration="6.300" data-media-start="0.6"></video></div>
+      <div id="ivs02-sc025-gr" class="v2-abs t-display clean">on the ground</div>
+      <div id="ivs02-sc025-sp" class="v2-abs t-display clean">from space</div>
+      <div class="v2-credit t-label">Imagery: Esri, Maxar, Earthstar Geographics · Video: BBC World Service</div>
+    </div></div>
+
+    <!-- sc026 · 252.02–256.26 · satellite close-up · confirm details -->
+    <div class="v2-scene v2-night" id="ivs02-sc026"><div class="v2-shot" id="ivs02-sc026-shot">
+      <div class="v2-cam" id="ivs02-sc026-cam" style="width:3584px;height:2816px">
+        <img id="ivs02-sc026-img" src="assets/ivan/ivs02/derived/kazan_aviation_plant_esri_z15.jpg" alt="" />
+        <svg id="ivs02-sc026-svg" class="v2-mk" style="width:3584px;height:2816px" viewBox="0 0 3584 2816"></svg>
+      </div>
+      <div class="v2-scrim-b" style="height:380px"></div>
+      <div id="ivs02-sc026-t" class="v2-abs t-display clean">confirm details</div>
+      <div class="v2-credit t-label">Imagery: Esri, Maxar, Earthstar Geographics</div>
+    </div></div>
+
+    <!-- sc027 · 256.26–259.54 · FACE medium · "one rather big problem" -->
+    <div class="v2-scene" id="ivs02-sc027"><div class="v2-shot" id="ivs02-sc027-shot">
+      <div class="v2-fcw" id="ivs02-sc027-fw"><video id="ivs02-sc027-fc" class="v2-vid" src="assets/facecam/ivan_facecam_master.mp4" muted playsinline data-start="112.240" data-duration="3.380" data-media-start="256.26"></video></div>
+      <div class="v2-fckick" id="ivs02-sc027-k" style="left:96px;top:120px;background:var(--oxblood)"></div>
+      <div class="v2-fcline t-display" id="ivs02-sc027-t" style="left:96px;top:146px;width:460px">one rather big problem</div>
+    </div></div>
+
+    <!-- sc028 · 259.54–262.66 · hooded figure at night -->
+    <div class="v2-scene v2-night" id="ivs02-sc028"><div class="v2-shot" id="ivs02-sc028-shot">
+      <video id="ivs02-sc028-v" class="v2-vid" src="assets/ivan/ivs02/footage/bbc_hooded_night.mp4" muted playsinline data-start="115.520" data-duration="3.220" data-media-start="0.6"></video>
+      <div id="ivs02-sc028-t" class="v2-abs t-display clean">get close enough</div>
+      <div class="v2-credit t-label">Video: BBC World Service</div>
+    </div></div>
+
+    <!-- sc029 · 262.66–266.18 · CCTV cameras · Russia's security services -->
+    <div class="v2-scene v2-night" id="ivs02-sc029"><div class="v2-shot" id="ivs02-sc029-shot">
+      <video id="ivs02-sc029-v" class="v2-vid" src="assets/ivan/ivs02/footage/bbc_cctv.mp4" muted playsinline data-start="118.640" data-duration="4.040" data-media-start="0"></video>
+      <div class="v2-scrim-r" style="width:1100px"></div><div class="v2-scrim-b" style="height:400px"></div>
+      <svg id="ivs02-sc029-mk" class="v2-mk" viewBox="0 0 1920 1080"></svg>
+      <div id="ivs02-sc029-t" class="v2-abs t-display v2-oxl" style="text-shadow:0 2px 10px rgba(0,0,0,0.6)">Russia's security services</div>
+      <div class="v2-credit t-label">Video: BBC World Service</div>
+    </div></div>
+
+    <!-- sc030 · 266.18–271.62 · notebook sketch · FIVE HOURS -->
+    <div class="v2-scene" id="ivs02-sc030"><div class="v2-shot v2-paper" id="ivs02-sc030-shot">
+      <div id="ivs02-sc030-cam">
+        <div class="v2-p1" style="background-image:url('assets/textures/paper_cream_02.jpg')"></div>
+        <div class="v2-p2" style="background-image:url('assets/textures/paper_lined_01_hires.jpg');background-size:135% auto;background-position:100% 50%"></div>
+        <svg id="ivs02-sc030-mk" class="v2-mk" viewBox="0 0 1920 1080"></svg>
+        <div id="ivs02-sc030-fh" class="v2-abs t-display">FIVE HOURS</div>
+      </div>
+      <div class="folds"></div>
+    </div></div>
+
+    <!-- sc031 · 271.62–277.14 · Ivan's video: the cache -->
+    <div class="v2-scene v2-night" id="ivs02-sc031"><div class="v2-shot" id="ivs02-sc031-shot">
+      <video id="ivs02-sc031-v" class="v2-vid" style="filter:brightness(1.7) contrast(1.1) saturate(0.6)" src="assets/ivan/ivs02/footage/bbc_cache_dig.mp4" muted playsinline data-start="127.600" data-duration="5.980" data-media-start="0"></video>
+      <div class="v2-scrim-b" style="height:420px"></div>
+      <svg id="ivs02-sc031-mk" class="v2-mk" viewBox="0 0 1920 1080"></svg>
+      <div id="ivs02-sc031-t" class="v2-abs t-display clean">someone might catch him</div>
+      <div class="v2-credit t-label">Video: BBC World Service</div>
+    </div></div>
+
+    <!-- sc032 · 277.14–282.18 · home, a normal day -->
+    <div class="v2-scene v2-night" id="ivs02-sc032"><div class="v2-shot" id="ivs02-sc032-shot">
+      <video id="ivs02-sc032-v" class="v2-vid" src="assets/ivan/ivs02/footage/bbc_home.mp4" muted playsinline data-start="133.480" data-duration="5.100" data-media-start="0.3"></video>
+      <div class="v2-scrim-b" style="height:420px"></div>
+      <div id="ivs02-sc032-t" class="v2-abs t-serif-i clean">a normal day</div>
+      <div class="v2-credit t-label">Video: BBC World Service</div>
+    </div></div>
+
+    <!-- sc033 · 282.18–284.82 · FACE close · "no idea" -->
+    <div class="v2-scene" id="ivs02-sc033"><div class="v2-shot" id="ivs02-sc033-shot">
+      <div class="v2-fcw" id="ivs02-sc033-fw"><video id="ivs02-sc033-fc" class="v2-vid" src="assets/facecam/ivan_facecam_master.mp4" muted playsinline data-start="138.480" data-duration="2.420" data-media-start="282.50"></video></div>
+      <div class="v2-fckick" id="ivs02-sc033-k" style="left:96px;top:120px"></div>
+      <div class="v2-fcline t-display" id="ivs02-sc033-t" style="left:96px;top:146px;width:460px;font-size:72px">no idea</div>
+    </div></div>
+
+    <!-- sc034 · 284.82–289.30 · Guardian: arrests -->
+    <div class="v2-scene v2-night" id="ivs02-sc034"><div class="v2-shot" id="ivs02-sc034-shot">
+      <video id="ivs02-sc034-v" class="v2-vid" style="filter:saturate(0.35) contrast(1.05)" src="assets/ivan/ivs02/footage/guardian_arrests.mp4" muted playsinline data-start="140.800" data-duration="4.900" data-media-start="0"></video>
+      <div class="v2-scrim-b" style="height:440px"></div>
+      <div id="ivs02-sc034-t" class="v2-abs t-display clean">accused of helping <span class="v2-sky">Ukraine</span></div>
+      <div class="v2-credit t-label">Video: The Guardian</div>
+    </div></div>
+
+    <!-- sc035 · 289.30–296.18 · FACE medium → push · "kept on taking more assignments" -->
+    <div class="v2-scene" id="ivs02-sc035"><div class="v2-shot" id="ivs02-sc035-shot">
+      <div class="v2-fcw" id="ivs02-sc035-fw"><video id="ivs02-sc035-fc" class="v2-vid" src="assets/facecam/ivan_facecam_master.mp4" muted playsinline data-start="145.600" data-duration="6.660" data-media-start="289.62"></video></div>
+      <div class="v2-fckick" id="ivs02-sc035-k" style="left:96px;top:120px"></div>
+      <div class="v2-fcline t-display" id="ivs02-sc035-t" style="left:96px;top:146px;width:500px">kept on taking more assignments</div>
+    </div></div>
+
+    <div id="ivs02-flash"></div>
+    <div id="ivs02-grain" class="tx tx-grain" style="background-image:url('assets/textures/grain_01_norm.jpg')"></div>
+    <div id="ivs02-dust" class="tx tx-dust" style="background-image:url('assets/textures/dust_02.jpg')"></div>
+    <div id="ivs02-vig" class="vignette"></div>
+  </div>
+
+  <script>
+  (function () {
+    const SEG = "ivs02", SEG_START = 144.02, SEG_END = 296.18, DURATION = 152.16;
+    const T = (s) => +(s - SEG_START).toFixed(3);   // TEXT cues (audited): literal master word starts, minus L
+    const S = (s) => +(s - SEG_START).toFixed(3);   // STRUCTURAL cues (cuts, camera, objects)
+    const L = 0.06;
+    const tl = gsap.timeline({ paused: true });
+    const $ = (id) => document.getElementById(SEG + "-" + id);
+    const NS = "http://www.w3.org/2000/svg";
+    const defs = $("defs");
+    const E = FX.ease;
+    const C = (e, d) => FX.choppy(e, d, 12);
+    const BONE = "#f0ede6", INK = "#1b1d20", OXL = "#e3a199", OX = "#b32a22", AZ = "#2563b0", SKY = "#93bde8", ASH = "#8f9196";
+    const EE = {"russia": "M6246,-40L6246,-20L6246,-30L6246,-40L6246,-23L6246,-10L6246,13L6246,4L6246,13L6246,23L6246,33L6246,45L6246,54L6246,64L6246,76L6246,67L6246,79L6246,88L6246,98L6246,109L6246,122L6246,145L6246,134L6246,147L6246,159L6246,173L6246,162L6246,177L6246,192L6246,202L6246,212L6246,222L6246,231L6246,216L6246,233L6246,246L6246,257L6246,267L6246,255L6246,265L6246,275L6246,284L6246,294L6246,304L6246,314L6246,304L6246,294L6246,308L6246,323L6246,332L6246,346L6246,355L6246,366L6246,375L6246,387L6246,396L6246,407L6246,424L6246,436L6246,461L6246,477L6246,488L6246,499L6246,490L6246,480L6246,469L6246,451L6246,441L6246,430L6246,420L6246,410L6246,399L6246,388L6246,377L6246,368L6246,352L6246,333L6246,343L6246,357L6246,347L6246,358L6246,371L6246,383L6246,394L6246,384L6246,398L6246,408L6246,418L6246,427L6246,448L6246,479L6246,508L6246,518L6246,502L6246,488L6246,475L6246,451L6246,437L6246,426L6246,417L6246,406L6246,394L6246,380L6246,370L6246,360L6246,371L6246,387L6246,375L6246,392L6246,403L6246,415L6246,428L6246,418L6246,429L6246,439L6246,455L6246,446L6246,458L6246,469L6246,479L6246,495L6246,516L6246,528L6246,518L6246,508L6246,490L6246,481L6246,460L6246,471L6246,482L6246,492L6246,503L6246,515L6246,502L6246,491L6246,481L6246,471L6246,484L6246,498L6246,513L6246,524L6246,536L6246,553L6246,563L6246,575L6246,584L6246,594L6246,605L6246,616L6246,626L6246,641L6246,651L6246,661L6246,651L6246,662L6246,674L6246,684L6246,694L6246,705L6246,694L6246,681L6246,691L6246,708L6246,718L6246,728L6246,738L6246,727L6246,742L6246,755L6246,787L6246,803L6246,821L6246,845L6246,862L6246,911L6246,923L6246,939L6246,958L6246,977L6246,988L6246,1003L6246,1012L6246,1022L6246,1034L6246,1019L6246,1008L6246,996L6246,987L6246,975L6246,999L6246,1009L6246,1018L6246,1030L6246,1039L6246,1052L6246,1063L6246,1077L6246,1089L6246,1100L6246,1117L6246,1139L6246,1156L6246,1165L6246,1178L6246,1188L6246,1207L6246,1219L6246,1234L6246,1243L6246,1257L6246,1267L6246,1279L6246,1290L6246,1305L6246,1316L6246,1327L6246,1337L6246,1355L6246,1368L6246,1384L6246,1396L6246,1406L6246,1416L6246,1425L6246,1439L6246,1428L6246,1418L6246,1404L6246,1387L6246,1375L6246,1365L6246,1355L6246,1343L6246,1333L6246,1320L6246,1332L6246,1343L6246,1360L6246,1371L6246,1381L6246,1391L6246,1401L6246,1414L6246,1423L6246,1435L6246,1446L6246,1456L6246,1475L6246,1489L6246,1500L6246,1511L6246,1523L6246,1534L6246,1547L6246,1557L6246,1568L6246,1590L6246,1602L6246,1624L6246,1637L6246,1649L6246,1661L6246,1672L6246,1690L6246,1703L6246,1713L6246,1725L6246,1734L6246,1744L6246,1753L6246,1762L6246,1774L6246,1791L6246,1802L6246,1790L6246,1777L6246,1792L6246,1815L6246,1829L6246,1844L6246,1853L6246,1864L6246,1878L6246,1888L6246,1908L6246,1919L6246,1969L6246,1982L6246,1994L6246,2004L6246,2013L6246,2000L6246,2023L6246,2041L6246,2031L6246,2042L6246,2053L6246,2064L6246,2076L6246,2086L6246,2096L6246,2108L6246,2096L6246,2107L6246,2117L6246,2126L6246,2136L6246,2125L6246,2114L6246,2102L6246,2092L6246,2102L6246,2118L6246,2128L6246,2141L6246,2161L6246,2183L6246,2171L6246,2161L6246,2150L6246,2162L6246,2173L6246,2182L6246,2173L6246,2184L6246,2194L6246,2207L6246,2218L6246,2228L6246,2240L6246,2250L6246,2262L6246,2272L6246,2282L6246,2295L6246,2306L6246,2317L6246,2328L6246,2342L6246,2352L6246,2363L6246,2376L6246,2387L6246,2397L6246,2408L6246,2418L6246,2436L6246,2446L6246,2456L6246,2468L6246,2478L6246,2489L6246,2499L6246,2509L6246,2524L6246,2534L6246,2546L6246,2556L6246,2569L6246,2580L6246,2590L6246,2600L6246,2610L6246,2623L6246,2635L6246,2646L6246,2655L6246,2667L6246,2644L6246,2631L6246,2621L6246,2612L6246,2602L6246,2593L6246,2580L6246,2570L6246,2560L6246,2541L6246,2532L6246,2521L6246,2506L6246,2495L6246,2485L6246,2454L6246,2410L6246,2348L6246,2303L6246,2292L6246,2282L6246,2293L6246,2282L6246,2273L6246,2262L6246,2249L6246,2208L6246,2175L6246,2150L6246,2108L6246,2092L6246,2071L6246,2021L6246,2006L6246,1984L6246,1971L6246,1957L6246,1942L6246,1925L6246,1914L6246,1903L6246,1871L6246,1818L6246,1735L6246,1725L6246,1710L6246,1612L6246,1593L6246,1576L6246,1555L6246,1540L6246,1527L6246,1459L6246,1449L6246,1438L6246,1428L6246,1418L6246,1405L6246,1381L6246,1370L6246,1300L6246,1291L6246,1279L6246,1256L6246,1240L6246,1256L6246,1268L6246,1254L6246,1244L6246,1235L6246,1221L6246,1209L6246,1195L6246,1179L6246,1189L6246,1178L6246,1169L6246,1149L6246,1135L6246,1120L6246,1106L6246,1090L6246,1069L6246,1054L6246,1045L6246,1027L6246,1014L6246,994L6246,1005L6246,1015L6246,998L6246,987L6246,977L6246,964L6246,954L6246,964L6246,954L6246,967L6246,954L6246,941L6246,924L6246,912L6246,895L6246,885L6246,874L6246,860L6246,846L6246,835L6246,805L6246,796L6246,785L6246,772L6246,762L6246,752L6246,738L6246,727L6246,717L6246,704L6246,686L6246,650L6246,640L6246,611L6246,600L6246,590L6246,577L6246,560L6246,550L6246,541L6246,521L6246,511L6246,493L6246,472L6246,463L6246,450L6246,431L6246,415L6246,405L6246,391L6246,380L6246,364L6246,351L6246,341L6246,331L6246,315L6246,304L6246,293L6246,305L6246,295L6246,284L6246,274L6246,263L6246,251L6246,241L6246,229L6246,215L6246,205L6246,195L6246,186L6246,176L6246,162L6246,151L6246,139L6246,125L6246,115L6246,101L6246,90L6246,80L6246,66L6246,52L6246,40L6246,31L6246,18L6246,8L6246,-2L6246,-12L6246,-22L6246,-34L6246,-25L6246,-16L6246,-5L6246,6L6246,17L6246,30L6246,41L6246,51L6246,61L6246,70L6246,82L6246,93L6246,103L6246,116L6246,103L6246,93L6246,84L6246,73L6246,87L6246,98L6246,84L6246,96L6246,105L6246,114L6246,124L6246,135L6246,151L6246,137L6246,148L6246,160L6246,150L6246,160L6246,171L6246,183L6246,194L6246,203L6246,214L6246,226L6246,237L6246,247L6246,257L6246,269L6246,285L6246,299L6246,308L6246,322L6246,334L6246,324L6246,313L6246,304L6246,290L6246,279L6246,266L6246,253L6246,244L6246,231L6246,241L6246,252L6246,240L6246,229L6246,217L6246,207L6246,196L6246,187L6246,176L6246,164L6246,154L6246,145L6246,133L6246,124L6246,114L6246,104L6246,94L6246,85L6246,75L6246,61L6246,49L6246,38L6246,28L6246,15L6246,25L6246,34L6246,45L6246,58L6246,68L6246,78L6246,69L6246,59L6246,47L6246,57L6246,45L6246,35L6246,26L6246,42L6246,56L6246,68L6246,78L6246,93L6246,107L6246,117L6246,128L6246,138L6246,151L6246,161L6246,174L6246,186L6246,197L6246,220L6246,240L6246,253L6246,263L6246,274L6246,284L6246,295L6246,311L6246,323L6246,333L6246,345L6246,355L6246,364L6246,375L6246,388L6246,403L6246,415L6246,425L6246,447L6246,467L6246,487L6246,473L6246,458L6246,471L6246,484L6246,493L6246,502L6246,516L6246,505L6246,516L6246,525L6246,538L6246,552L6246,580L6246,570L6246,560L6246,569L6246,580L6246,591L6246,603L6246,615L6246,603L6246,592L6246,603L6246,612L6246,622L6246,612L6246,598L6246,589L6246,602L6246,612L6246,622L6246,633L6246,645L6246,657L6246,667L6246,678L6246,688L6246,679L6246,668L6246,682L6246,693L6246,705L6246,695L6246,683L6246,673L6246,661L6246,673L6246,664L6246,678L6246,688L6246,698L6246,709L6246,718L6246,728L6246,738L6246,724L6246,714L6246,706L6246,715L6246,730L6246,745L6246,756L6246,744L6246,734L6246,725L6246,714L6246,703L6246,693L6246,683L6246,672L6246,661L6246,650L6246,640L6246,628L6246,616L6246,604L6246,595L6246,586L6246,575L6246,586L6246,601L6246,613L6246,602L6246,591L6246,581L6246,571L6246,559L6246,542L6246,560L6246,570L6246,584L6246,594L6246,608L6246,595L6246,607L6246,616L6246,627L6246,644L6246,654L6246,664L6246,654L6246,663L6246,652L6246,640L6246,629L6246,644L6246,655L6246,646L6246,633L6246,622L6246,613L6246,624L6246,644L6246,653L6246,663L6246,677L6246,686L6246,675L6246,665L6246,654L6246,642L6246,629L6246,618L6246,631L6246,618L6246,639L6246,628L6246,648L6246,666L6246,690L6246,706L6246,720L6246,734L6246,776L6246,796L6246,812L6246,830L6246,845L6246,860L6246,895L6246,914L6246,933L6246,976L6246,992L6246,1003L6246,1020L6246,1029L6246,1043L6246,1057L6246,1078L6246,1088L6246,1108L6246,1118L6246,1129L6246,1138L6246,1150L6246,1160L6246,1172L6246,1186L6246,1196L6246,1205L6246,1219L6246,1228L6246,1242L6246,1252L6246,1234L6246,1244L6246,1254L6246,1264L6246,1274L6246,1283L6246,1292L6246,1303L6246,1313L6246,1325L6246,1338L6246,1348L6246,1358L6246,1370L6246,1386L6246,1398L6246,1408L6246,1425L6246,1439L6246,1448L6246,1460L6246,1473L6246,1483L6246,1495L6246,1505L6246,1516L6246,1532L6246,1544L6246,1558L6246,1570L6246,1580L6246,1590L6246,1601L6246,1611L6246,1621L6246,1631L6246,1647L6246,1659L6246,1673L6246,1685L6246,1697L6246,1711L6246,1723L6246,1747L6246,1760L6246,1773L6246,1783L6246,1773L6246,1760L6246,1771L6246,1781L6246,1792L6246,1803L6246,1814L6246,1824L6246,1836L6246,1849L6246,1858L6246,1868L6246,1878L6246,1888L6246,1901L6246,1912L6246,1922L6246,1933L6246,1957L6246,1968L6246,1957L6246,1966L6246,1956L6246,1934L6246,1914L6246,1902L6246,1885L6246,1870L6246,1860L6246,1850L6246,1841L6246,1854L6246,1871L6246,1882L6246,1893L6246,1904L6246,1927L6246,1941L6246,1952L6246,1962L6246,1974L6246,1983L6246,1996L6246,2006L6246,2016L6246,2028L6246,2004L6246,1989L6246,1978L6246,1951L6246,1942L6246,1932L6246,1922L6246,1934L6246,1949L6246,1961L6246,1971L6246,1996L6246,2008L6246,2020L6246,2032L6246,2042L6246,2030L6246,2019L6246,1984L6246,1964L6246,1950L6246,1936L6246,1926L6246,1916L6246,1906L6246,1895L6246,1882L6246,1872L6246,1862L6246,1852L6246,1866L6246,1856L6246,1866L6246,1875L6246,1890L6246,1906L6246,1917L6246,1926L6246,1937L6246,1946L6246,1970L6246,1984L6246,1994L6246,2006L6246,2021L6246,2042L6246,2053L6246,2063L6246,2073L6246,2084L6246,2099L6246,2109L6246,2120L6246,2130L6246,2141L6246,2151L6246,2163L6246,2150L6246,2140L6246,2129L6246,2138L6246,2149L6246,2160L6246,2169L6246,2178L6246,2188L6246,2209L6246,2220L6246,2232L6246,2242L6246,2252L6246,2261L6246,2274L6246,2287L6246,2299L6246,2312L6246,2322L6246,2336L6246,2346L6246,2357L6246,2369L6246,2380L6246,2391L6246,2402L6246,2411L6246,2422L6246,2434L6246,2446L6246,2460L6246,2471L6246,2482L6246,2492L6246,2505L6246,2522L6246,2531L6246,2540L6246,2551L6246,2565L6246,2576L6246,2586L6246,2606L6246,2618L6246,2632L6246,2646L6246,2655L6246,2669L6246,2680L6246,2690L6246,2701L6246,2712L6246,2732L6246,2742L6246,2753L6246,2770L6246,2779L6246,2790L6246,2801L6246,2813L6246,2823L6246,2833L6246,2844L6246,2860L6246,2873L6246,2884L6246,2898L6246,2908L6246,2927L6246,2938L6246,2954L6246,2968L6246,2982L6246,2994L6246,3003L6246,3015L6246,3032L6246,3047L6246,3056L6246,3067L6246,3078L6246,3088L6246,3098L6246,3109L6246,3118L6246,3128L6246,3118L6246,3130L6246,3142L6246,3153L6246,3165L6246,3176L6246,3190L6246,3204L6246,3215L6246,3226L6246,3238L6246,3249L6246,3262L6246,3272L6246,3281L6246,3314L6246,3329L6246,3343L6246,3358L6246,3369L6246,3383L6246,3411L6246,3423L6246,3434L6246,3444L6246,3456L6246,3472L6246,3481L6246,3491L6246,3504L6246,3516L6246,3525L6246,3575L6246,3593L6246,3603L6246,3614L6246,3625L6246,3653L6246,3675L6246,3687L6246,3697L6246,3708L6246,3724L6246,3770L6246,3781L6246,3802L6246,3813L6246,3822L6246,3832L6246,3853L6246,3865L6246,3875L6246,3884L6246,3914L6246,3930L6246,3943L6246,3963L6246,3990L6246,4019L6246,4031L6246,4049L6246,4059L6246,4070L6246,4092L6246,4104L6246,4117L6246,4132L6246,4141L6246,4150L6246,4164L6246,4179L6246,4191L6246,4201L6246,4212L6246,4222L6246,4231L6246,4241L6246,4250L6246,4260L6246,4272L6246,4282L6246,4292L6246,4303L6246,4314L6246,4328L6246,4339L6246,4349L6246,4360L6246,4373L6246,4383L6246,4394L6246,4384L6246,4393L6246,4405L6246,4418L6246,4428L6246,4437L6246,4450L6246,4460L6246,4484L6246,4494L6246,4505L6246,4516L6246,4527L6246,4537L6246,4547L6246,4558L6246,4588L6246,4602L6246,4613L6246,4623L6246,4633L6246,4622L6246,4613L6246,4603L6246,4617L6246,4606L6246,4596L6246,4585L6246,4595L6246,4584L6246,4574L6246,4584L6246,4594L6246,4584L6246,4572L6246,4561L6246,4549L6246,4539L6246,4529L6246,4519L6246,4508L6246,4497L6246,4484L6246,4495L6246,4505L6246,4514L6246,4530L6246,4540L6246,4527L6246,4516L6246,4505L6246,4491L6246,4482L6246,4492L6246,4482L6246,4497L6246,4506L6246,4515L6246,4530L6246,4548L6246,4558L6246,4567L6246,4577L6246,4590L6246,4600L6246,4612L6246,4624L6246,4634L6246,4646L6246,4655L6246,4664L6246,4655L6246,4645L6246,4654L6246,4643L6246,4634L6246,4646L6246,4661L6246,4671L6246,4682L6246,4691L6246,4704L6246,4715L6246,4729L6246,4720L6246,4708L6246,4696L6246,4684L6246,4673L6246,4663L6246,4651L6246,4640L6246,4624L6246,4613L6246,4601L6246,4592L6246,4581L6246,4568L6246,4555L6246,4546L6246,4534L6246,4523L6246,4512L6246,4500L6246,4483L6246,4472L6246,4455L6246,4435L6246,4422L6246,4412L6246,4402L6246,4392L6246,4373L6246,4354L6246,4342L6246,4330L6246,4318L6246,4309L6246,4232L6246,4156L6246,4141L6246,4122L6246,4110L6246,4100L6246,4090L6246,4081L6246,4059L6246,4044L6246,4032L6246,4007L6246,4018L6246,4045L6246,4066L6246,4054L6246,4043L6246,4029L6246,4016L6246,3988L6246,3976L6246,3961L6246,3950L6246,3941L6246,3931L6246,3921L6246,3910L6246,3896L6246,3886L6246,3873L6246,3863L6246,3834L6246,3825L6246,3812L6246,3802L6246,3790L6246,3780L6246,3770L6246,3759L6246,3746L6246,3735L6246,3725L6246,3713L6246,3702L6246,3690L6246,3680L6246,3670L6246,3660L6246,3646L6246,3622L6246,3608L6246,3586L6246,3577L6246,3567L6246,3554L6246,3543L6246,3531L6246,3521L6246,3512L6246,3502L6246,3488L6246,3474L6246,3462L6246,3448L6246,3429L6246,3409L6246,3398L6246,3387L6246,3378L6246,3364L6246,3350L6246,3336L6246,3307L6246,3297L6246,3284L6246,3274L6246,3284L6246,3294L6246,3304L6246,3315L6246,3325L6246,3336L6246,3345L6246,3355L6246,3366L6246,3375L6246,3386L6246,3401L6246,3411L6246,3420L6246,3430L6246,3439L6246,3427L6246,3437L6246,3420L6246,3411L6246,3388L6246,3377L6246,3348L6246,3336L6246,3321L6246,3306L6246,3292L6246,3280L6246,3268L6246,3257L6246,3243L6246,3233L6246,3221L6246,3212L6246,3169L6246,3158L6246,3149L6246,3127L6246,3116L6246,3106L6246,3096L6246,3083L6246,3073L6246,3062L6246,3053L6246,3043L6246,3031L6246,3022L6246,3031L6246,3017L6246,3007L6246,2995L6246,2984L6246,2973L6246,2983L6246,2970L6246,2956L6246,2943L6246,2930L6246,2917L6246,2906L6246,2894L6246,2874L6246,2849L6246,2835L6246,2814L6246,2801L6246,2790L6246,2780L6246,2768L6246,2757L6246,2747L6246,2735L6246,2720L6246,2710L6246,2700L6246,2663L6246,2648L6246,2633L6246,2619L6246,2605L6246,2594L6246,2584L6246,2573L6246,2562L6246,2572L6246,2562L6246,2550L6246,2539L6246,2530L6246,2518L6246,2509L6246,2499L6246,2488L6246,2475L6246,2464L6246,2404L6246,2392L6246,2373L6246,2364L6246,2354L6246,2337L6246,2327L6246,2314L6246,2300L6246,2289L6246,2277L6246,2258L6246,2248L6246,2239L6246,2226L6246,2214L6246,2196L6246,2187L6246,2176L6246,2164L6246,2154L6246,2145L6246,2111L6246,2123L6246,2134L6246,2125L6246,2116L6246,2105L6246,2095L6246,2081L6246,2070L6246,2060L6246,2051L6246,2041L6246,2028L6246,2037L6246,2027L6246,2037L6246,2046L6246,2055L6246,2068L6246,2081L6246,2091L6246,2101L6246,2115L6246,2130L6246,2147L6246,2158L6246,2171L6246,2180L6246,2190L6246,2204L6246,2218L6246,2231L6246,2242L6246,2253L6246,2262L6246,2276L6246,2286L6246,2299L6246,2308L6246,2318L6246,2328L6246,2338L6246,2349L6246,2359L6246,2368L6246,2379L6246,2392L6246,2403L6246,2418L6246,2428L6246,2438L6246,2454L6246,2476L6246,2485L6246,2497L6246,2507L6246,2519L6246,2528L6246,2539L6246,2551L6246,2561L6246,2570L6246,2582L6246,2592L6246,2602L6246,2613L6246,2623L6246,2636L6246,2647L6246,2663L6246,2672L6246,2685L6246,2700L6246,2713L6246,2726L6246,2735L6246,2755L6246,2764L6246,2778L6246,2789L6246,2798L6246,2808L6246,2828L6246,2846L6246,2858L6246,2868L6246,2878L6246,2888L6246,2899L6246,2910L6246,2920L6246,2931L6246,2945L6246,2956L6246,2966L6246,2977L6246,2987L6246,2997L6246,2973L6246,2958L6246,2928L6246,2913L6246,2899L6246,2882L6246,2908L6246,2887L6246,2862L6246,2851L6246,2823L6246,2814L6246,2826L6246,2836L6246,2861L6246,2875L6246,2885L6246,2899L6246,2923L6246,2933L6246,2955L6246,2972L6246,2982L6246,2992L6246,3002L6246,2992L6246,3014L6246,3025L6246,3037L6246,3050L6246,3070L6246,3081L6246,3071L6246,3062L6246,3073L6246,3060L6246,3049L6246,3040L6246,3015L6246,3004L6246,2994L6246,2979L6246,2968L6246,2956L6246,2944L6246,2932L6246,2921L6246,2908L6246,2898L6246,2888L6246,2878L6246,2868L6246,2854L6246,2844L6246,2833L6246,2810L6246,2800L6246,2810L6246,2802L6246,2791L6246,2781L6246,2766L6246,2784L6246,2794L6246,2805L6246,2815L6246,2825L6246,2839L6246,2849L6246,2836L6246,2821L6246,2809L6246,2790L6246,2780L6246,2759L6246,2749L6246,2738L6246,2724L6246,2713L6246,2700L6246,2688L6246,2674L6246,2661L6246,2648L6246,2635L6246,2617L6246,2599L6246,2587L6246,2571L6246,2562L6246,2552L6246,2541L6246,2532L6246,2522L6246,2507L6246,2474L6246,2463L6246,2451L6246,2439L6246,2429L6246,2416L6246,2405L6246,2389L6246,2373L6246,2387L6246,2402L6246,2417L6246,2437L6246,2449L6246,2461L6246,2483L6246,2496L6246,2506L6246,2516L6246,2526L6246,2536L6246,2552L6246,2564L6246,2580L6246,2600L6246,2611L6246,2640L6246,2654L6246,2665L6246,2677L6246,2689L6246,2706L6246,2726L6246,2743L6246,2755L6246,2770L6246,2784L6246,2800L6246,2812L6246,2865L6246,2874L6246,2887L6246,2897L6246,2909L6246,2923L6246,2940L6246,2930L6246,2912L6246,2901L6246,2911L6246,2900L6246,2882L6246,2892L6246,2882L6246,2893L6246,2904L6246,2893L6246,2882L6246,2870L6246,2857L6246,2846L6246,2836L6246,2826L6246,2808L6246,2783L6246,2762L6246,2749L6246,2740L6246,2730L6246,2713L6246,2702L6246,2690L6246,2699L6246,2711L6246,2702L6246,2691L6246,2676L6246,2686L6246,2707L6246,2722L6246,2741L6246,2751L6246,2765L6246,2776L6246,2799L6246,2810L6246,2819L6246,2830L6246,2853L6246,2863L6246,2874L6246,2888L6246,2898L6246,2915L6246,2926L6246,2937L6246,2947L6246,2961L6246,2970L6246,2980L6246,2969L6246,2983L6246,2995L6246,3009L6246,2998L6246,3014L6246,3004L6246,3014L6246,3025L6246,3035L6246,3049L6246,3060L6246,3074L6246,3091L6246,3102L6246,3092L6246,3076L6246,3065L6246,3054L6246,3042L6246,3031L6246,3019L6246,3007L6246,2995L6246,2982L6246,2971L6246,2960L6246,2949L6246,2938L6246,2929L6246,2942L6246,2953L6246,2970L6246,2980L6246,3001L6246,2988L6246,2975L6246,2951L6246,2932L6246,2916L6246,2905L6246,2896L6246,2882L6246,2872L6246,2862L6246,2850L6246,2839L6246,2826L6246,2813L6246,2803L6246,2789L6246,2775L6246,2762L6246,2747L6246,2736L6246,2715L6246,2692L6246,2683L6246,2672L6246,2658L6246,2649L6246,2639L6246,2651L6246,2666L6246,2685L6246,2695L6246,2709L6246,2699L6246,2710L6246,2700L6246,2685L6246,2674L6246,2658L6246,2649L6246,2632L6246,2607L6246,2598L6246,2588L6246,2575L6246,2590L6246,2600L6246,2612L6246,2622L6246,2634L6246,2650L6246,2659L6246,2670L6246,2682L6246,2699L6246,2686L6246,2669L6246,2652L6246,2637L6246,2608L6246,2580L6246,2551L6246,2522L6246,2492L6246,2475L6246,2462L6246,2432L6246,2402L6246,2363L6246,2324L6246,2286L6246,2247L6246,2219L6246,2192L6246,2164L6246,2137L6246,2120L6246,2095L6246,2081L6246,2054L6246,2038L6246,2017L6246,1996L6246,1974L6246,1953L6246,1939L6246,1929L6246,1913L6246,1884L6246,1874L6246,1862L6246,1849L6246,1837L6246,1826L6246,1816L6246,1828L6246,1842L6246,1854L6246,1869L6246,1881L6246,1893L6246,1906L6246,1923L6246,1940L6246,1952L6246,1966L6246,1976L6246,1995L6246,2015L6246,2045L6246,2033L6246,2024L6246,2014L6246,2023L6246,2034L6246,2052L6246,2035L6246,2023L6246,2009L6246,1998L6246,1974L6246,1961L6246,1950L6246,1906L6246,1915L6246,1927L6246,1915L6246,1899L6246,1890L6246,1904L6246,1915L6246,1930L6246,1941L6246,1931L6246,1916L6246,1906L6246,1895L6246,1882L6246,1866L6246,1857L6246,1847L6246,1834L6246,1845L6246,1854L6246,1865L6246,1877L6246,1887L6246,1868L6246,1885L6246,1894L6246,1882L6246,1873L6246,1887L6246,1876L6246,1866L6246,1857L6246,1847L6246,1833L6246,1824L6246,1812L6246,1802L6246,1785L6246,1774L6246,1761L6246,1749L6246,1734L6246,1720L6246,1710L6246,1698L6246,1686L6246,1676L6246,1664L6246,1655L6246,1637L6246,1624L6246,1612L6246,1625L6246,1636L6246,1646L6246,1635L6246,1614L6246,1600L6246,1587L6246,1600L6246,1589L6246,1576L6246,1591L6246,1606L6246,1596L6246,1606L6246,1619L6246,1628L6246,1639L6246,1650L6246,1662L6246,1675L6246,1688L6246,1704L6246,1715L6246,1725L6246,1736L6246,1745L6246,1767L6246,1754L6246,1764L6246,1776L6246,1786L6246,1796L6246,1807L6246,1838L6246,1847L6246,1827L6246,1840L6246,1829L6246,1839L6246,1849L6246,1859L6246,1868L6246,1879L6246,1890L6246,1899L6246,1914L6246,1923L6246,1934L6246,1948L6246,1938L6246,1926L6246,1916L6206,1916L6207,1936L6190,1936L6181,1929L6178,1920L6168,1925L6150,1922L6147,1932L6140,1922L6129,1919L6122,1909L6109,1905L6099,1913L6087,1916L6092,1929L6090,1942L6082,1935L6073,1931L6061,1932L6054,1940L6059,1949L6068,1949L6076,1955L6085,1960L6088,1969L6081,1976L6076,1986L6066,1991L6065,2003L6044,2002L6045,2013L6066,2014L6076,2022L6100,2030L6112,2020L6133,2019L6140,2038L6130,2045L6123,2053L6111,2052L6104,2042L6093,2039L6090,2049L6082,2065L6078,2076L6082,2088L6095,2095L6110,2095L6129,2108L6140,2109L6153,2102L6163,2111L6171,2120L6182,2124L6214,2130L6222,2139L6223,2150L6220,2162L6211,2171L6200,2175L6185,2167L6164,2167L6155,2167L6148,2173L6135,2162L6125,2155L6114,2162L6101,2164L6092,2158L6082,2158L6071,2165L6055,2167L6067,2179L6042,2202L6035,2212L6027,2218L6013,2224L6010,2233L6014,2244L6020,2250L6029,2249L6031,2259L6030,2271L6047,2282L6052,2299L6064,2320L6053,2328L6043,2339L6026,2347L6018,2359L6010,2366L5994,2364L5974,2369L5962,2378L5940,2402L5915,2402L5909,2411L5917,2431L5928,2433L5951,2440L5978,2446L5979,2455L5975,2465L5966,2471L5966,2481L5982,2484L6047,2493L6049,2504L6052,2514L6060,2521L6070,2525L6079,2528L6093,2527L6102,2531L6111,2530L6123,2536L6132,2544L6138,2562L6146,2573L6156,2578L6142,2584L6134,2602L6127,2642L6124,2670L6121,2680L6113,2692L6072,2707L6032,2721L6017,2723L5955,2716L5942,2707L5934,2695L5933,2686L5931,2677L5914,2675L5905,2681L5899,2697L5899,2714L5892,2727L5884,2745L5877,2752L5862,2753L5850,2759L5840,2766L5832,2758L5834,2747L5846,2747L5837,2736L5828,2729L5806,2732L5798,2725L5752,2717L5735,2706L5729,2692L5717,2691L5710,2684L5711,2675L5702,2674L5696,2666L5700,2655L5704,2645L5703,2635L5692,2625L5674,2625L5669,2614L5663,2606L5652,2609L5645,2620L5636,2626L5628,2621L5616,2618L5605,2618L5594,2615L5585,2610L5579,2617L5575,2631L5577,2647L5574,2662L5555,2660L5546,2662L5540,2672L5529,2673L5520,2667L5513,2657L5510,2645L5503,2638L5495,2632L5494,2622L5478,2623L5458,2624L5447,2628L5435,2622L5426,2622L5420,2632L5424,2644L5411,2645L5395,2624L5386,2626L5382,2635L5384,2646L5373,2650L5370,2661L5362,2669L5345,2662L5340,2672L5335,2701L5310,2725L5285,2739L5274,2751L5263,2748L5256,2739L5248,2733L5241,2722L5226,2723L5217,2720L5184,2689L5181,2673L5156,2661L5147,2650L5135,2642L5126,2634L5106,2637L5105,2651L5102,2660L5119,2667L5120,2677L5116,2685L5120,2696L5119,2705L5123,2728L5120,2742L5112,2750L5098,2754L5088,2748L5083,2741L5080,2731L5084,2716L5085,2700L5095,2684L5095,2675L5085,2672L5069,2665L5061,2656L5053,2650L5046,2642L5043,2630L5042,2620L5030,2614L5023,2603L5015,2595L5003,2596L4976,2587L4971,2579L4964,2570L4964,2559L4966,2547L4958,2540L4944,2534L4938,2526L4928,2519L4911,2520L4901,2517L4882,2522L4872,2529L4862,2528L4850,2523L4842,2519L4834,2524L4814,2528L4803,2525L4798,2516L4794,2501L4784,2481L4781,2465L4774,2454L4770,2464L4754,2466L4745,2479L4734,2483L4722,2479L4709,2478L4702,2488L4694,2498L4697,2513L4691,2526L4676,2532L4673,2519L4667,2512L4660,2518L4649,2526L4637,2528L4626,2527L4620,2519L4616,2509L4631,2507L4637,2499L4636,2489L4626,2487L4618,2477L4609,2478L4570,2477L4562,2467L4554,2460L4543,2462L4550,2490L4546,2501L4536,2504L4536,2493L4522,2488L4518,2499L4511,2504L4512,2522L4507,2530L4500,2538L4489,2539L4484,2549L4484,2560L4464,2576L4437,2582L4410,2604L4403,2614L4365,2616L4353,2612L4346,2620L4344,2632L4338,2642L4340,2654L4348,2668L4340,2682L4327,2687L4306,2692L4287,2716L4260,2737L4247,2737L4228,2724L4222,2732L4233,2736L4238,2748L4237,2765L4241,2800L4245,2816L4252,2830L4254,2838L4253,2853L4263,2857L4268,2873L4265,2882L4254,2896L4239,2905L4208,2917L4201,2926L4191,2920L4183,2913L4173,2913L4170,2904L4161,2893L4157,2884L4154,2875L4152,2861L4141,2849L4138,2839L4131,2831L4125,2821L4116,2812L4109,2803L4102,2797L4092,2787L4082,2774L4072,2772L4059,2781L4054,2790L4050,2800L4038,2807L4034,2817L4036,2827L4029,2835L4038,2854L4036,2869L4026,2882L4016,2893L3983,2908L3975,2923L3966,2982L3956,3040L3965,3044L3987,3061L3994,3071L3996,3084L3993,3097L3987,3109L3979,3119L3962,3131L3954,3141L3933,3199L3913,3261L3950,3276L3987,3290L4002,3294L4006,3302L4001,3311L4007,3323L4005,3336L4015,3340L4010,3354L3998,3361L4008,3380L4013,3390L4008,3400L4010,3410L4043,3436L4047,3420L4047,3405L4086,3416L4144,3415L4154,3420L4163,3429L4191,3482L4198,3493L4207,3499L4217,3506L4240,3576L4286,3655L4278,3667L4250,3676L4243,3665L4229,3655L4220,3657L4212,3664L4208,3676L4216,3687L4218,3696L4222,3706L4236,3706L4246,3712L4258,3725L4270,3724L4279,3733L4290,3743L4319,3761L4324,3770L4330,3777L4320,3775L4309,3770L4307,3760L4298,3769L4294,3779L4302,3787L4303,3802L4296,3794L4284,3799L4275,3806L4279,3814L4270,3805L4268,3814L4264,3806L4266,3816L4258,3810L4260,3819L4248,3811L4239,3811L4234,3819L4244,3832L4241,3842L4233,3847L4247,3847L4247,3858L4253,3874L4244,3879L4242,3868L4234,3863L4225,3850L4215,3851L4206,3854L4197,3869L4197,3880L4182,3878L4180,3888L4172,3896L4173,3906L4164,3903L4151,3900L4141,3907L4132,3904L4122,3914L4117,3906L4115,3917L4115,3929L4105,3923L4101,3914L4093,3910L4086,3904L4079,3896L4079,3908L4082,3917L4080,3926L4085,3938L4076,3930L4070,3920L4060,3918L4054,3911L4064,3908L4052,3904L4050,3913L4058,3922L4068,3925L4072,3936L4074,3946L4065,3943L4067,3954L4064,3965L4063,3975L4052,3978L4057,3984L4052,3993L4048,4003L4046,4012L4046,4032L4036,4033L4030,4051L4027,4064L4021,4082L4013,4092L4006,4111L4002,4124L3993,4118L3991,4104L3990,4117L3986,4132L3973,4140L3966,4150L3955,4156L3949,4163L3947,4183L3942,4193L3945,4208L3950,4220L3963,4225L3990,4232L3998,4241L4000,4252L4005,4263L4014,4271L4023,4264L4029,4280L4032,4298L4037,4306L4042,4315L4047,4331L4052,4342L4057,4351L4056,4361L4064,4373L4057,4379L4054,4388L4055,4397L4050,4407L4044,4415L4046,4426L4049,4437L4058,4427L4060,4418L4060,4406L4065,4395L4065,4386L4068,4374L4070,4360L4072,4349L4082,4344L4094,4350L4085,4361L4079,4376L4070,4409L4066,4435L4062,4449L4061,4459L4061,4469L4062,4481L4065,4490L4072,4482L4075,4491L4066,4502L4061,4511L4060,4522L4060,4532L4057,4540L4058,4555L4068,4569L4077,4574L4082,4583L4093,4592L4095,4602L4096,4614L4096,4633L4101,4647L4114,4655L4129,4684L4137,4699L4149,4713L4170,4758L4180,4771L4183,4780L4186,4790L4195,4815L4206,4824L4219,4830L4216,4840L4206,4840L4196,4840L4180,4840L4168,4840L4150,4840L4138,4840L4128,4840L4118,4840L4100,4840L4084,4840L4074,4840L4064,4840L4045,4840L4029,4840L4020,4840L4010,4840L4000,4840L3990,4840L3979,4840L3970,4840L3956,4840L3947,4840L3936,4840L3926,4840L3922,4830L3913,4827L3902,4820L3890,4817L3879,4806L3871,4801L3861,4804L3852,4796L3842,4793L3832,4793L3826,4778L3814,4772L3798,4758L3788,4752L3803,4692L3797,4678L3786,4673L3773,4670L3753,4674L3742,4673L3738,4662L3722,4638L3713,4631L3704,4635L3680,4619L3670,4624L3664,4639L3662,4652L3655,4637L3649,4628L3641,4623L3629,4619L3617,4622L3606,4629L3586,4631L3581,4643L3574,4650L3555,4652L3546,4658L3540,4667L3530,4661L3516,4658L3506,4650L3510,4638L3518,4628L3514,4619L3497,4613L3488,4602L3475,4594L3456,4587L3428,4577L3406,4556L3399,4550L3399,4540L3386,4531L3378,4523L3368,4518L3355,4520L3344,4526L3330,4520L3322,4512L3314,4505L3305,4504L3278,4506L3262,4515L3252,4516L3243,4512L3234,4510L3224,4512L3210,4508L3194,4509L3184,4506L3178,4498L3166,4492L3161,4482L3144,4480L3134,4473L3125,4469L3109,4471L3085,4450L3065,4441L3057,4434L3046,4432L3037,4437L3026,4438L2990,4422L2980,4422L2970,4425L2954,4462L2942,4458L2938,4446L2933,4438L2920,4429L2913,4423L2910,4413L2901,4408L2892,4395L2875,4375L2865,4357L2856,4345L2825,4314L2817,4302L2809,4296L2804,4284L2792,4280L2774,4257L2763,4250L2748,4240L2706,4232L2692,4227L2682,4215L2676,4201L2669,4194L2661,4188L2652,4177L2650,4168L2641,4155L2630,4147L2634,4160L2626,4168L2617,4166L2606,4160L2597,4163L2588,4158L2579,4151L2569,4143L2564,4133L2559,4117L2558,4106L2554,4097L2540,4082L2530,4078L2522,4073L2504,4064L2489,4054L2480,4053L2470,4056L2459,4049L2452,4040L2452,4031L2469,4032L2477,4026L2487,4025L2502,4016L2508,4007L2481,4010L2476,3998L2483,4005L2485,3995L2480,3987L2466,4000L2468,3986L2488,3974L2496,3977L2522,3995L2532,3998L2528,4007L2523,4016L2537,4020L2547,4018L2559,4015L2544,4008L2535,4003L2564,4002L2576,4003L2586,3993L2597,3998L2601,4006L2610,4005L2618,4008L2616,3999L2621,3990L2619,3980L2616,3970L2614,3961L2616,3950L2611,3941L2606,3949L2609,3958L2607,3971L2604,3980L2600,3965L2599,3944L2600,3927L2604,3920L2608,3930L2610,3921L2625,3906L2633,3901L2639,3886L2646,3852L2648,3842L2656,3830L2665,3826L2674,3826L2666,3832L2667,3842L2667,3851L2670,3862L2662,3874L2662,3884L2667,3875L2674,3854L2679,3842L2681,3833L2684,3816L2691,3808L2700,3807L2707,3818L2720,3829L2731,3832L2741,3832L2745,3819L2704,3788L2701,3779L2692,3766L2678,3749L2670,3744L2658,3743L2662,3752L2646,3741L2640,3731L2632,3719L2627,3699L2624,3685L2638,3691L2649,3692L2665,3689L2675,3678L2689,3674L2699,3665L2705,3676L2728,3685L2745,3683L2747,3673L2736,3664L2723,3661L2716,3669L2714,3659L2719,3651L2721,3640L2730,3633L2742,3636L2762,3633L2773,3627L2785,3616L2796,3614L2806,3605L2813,3597L2822,3593L2846,3598L2851,3583L2862,3574L2853,3573L2845,3566L2845,3556L2849,3544L2841,3536L2831,3533L2820,3531L2809,3539L2799,3540L2798,3552L2789,3558L2774,3561L2761,3565L2742,3568L2733,3569L2735,3559L2741,3550L2774,3541L2781,3534L2772,3538L2748,3542L2736,3549L2733,3558L2726,3566L2699,3572L2690,3569L2690,3554L2696,3546L2704,3539L2701,3530L2690,3530L2690,3520L2698,3506L2698,3482L2703,3465L2712,3454L2743,3450L2755,3438L2765,3438L2771,3424L2774,3413L2777,3403L2790,3393L2813,3394L2822,3400L2833,3399L2855,3397L2866,3402L2875,3400L2892,3400L2911,3405L2920,3400L2923,3387L2924,3375L2923,3362L2931,3352L2930,3342L2932,3331L2940,3316L2950,3307L2955,3294L2941,3293L2928,3286L2938,3277L2944,3270L2940,3258L2935,3247L2936,3238L2934,3227L2927,3220L2909,3217L2912,3181L2918,3172L2926,3164L2946,3171L2958,3165L2963,3156L2957,3147L2948,3155L2940,3149L2923,3147L2917,3140L2909,3130L2908,3115L2918,3114L2931,3109L2942,3110L2944,3099L2948,3090L2961,3080L2969,3068L2976,3061L2978,3044L2970,3028L2965,3018L2960,3003L2966,2993L2974,2986L2958,2974L2943,2985L2934,2989L2923,2988L2915,2981L2904,2976L2896,2964L2893,2954L2881,2945L2873,2940L2862,2944L2850,2944L2843,2936L2834,2914L2825,2913L2818,2923L2798,2927L2791,2917L2770,2907L2762,2901L2758,2889L2744,2890L2733,2892L2725,2888L2715,2886L2706,2868L2697,2866L2688,2865L2685,2884L2684,2894L2676,2899L2663,2902L2657,2894L2652,2885L2642,2874L2625,2865L2606,2838L2599,2831L2601,2820L2601,2810L2583,2798L2578,2784L2574,2776L2559,2778L2546,2789L2520,2800L2509,2798L2499,2799L2490,2802L2465,2817L2459,2827L2449,2830L2443,2823L2440,2814L2431,2810L2422,2806L2415,2812L2404,2812L2389,2788L2380,2779L2354,2777L2340,2778L2333,2785L2323,2791L2316,2798L2307,2796L2300,2786L2299,2776L2291,2769L2280,2760L2273,2731L2286,2720L2282,2710L2281,2697L2273,2688L2271,2677L2267,2666L2265,2657L2258,2651L2266,2640L2265,2630L2247,2630L2238,2626L2231,2596L2225,2589L2216,2592L2202,2593L2190,2598L2180,2600L2168,2600L2161,2589L2154,2583L2144,2585L2129,2579L2118,2580L2110,2586L2096,2580L2105,2574L2115,2560L2108,2553L2098,2547L2101,2537L2102,2524L2101,2512L2092,2502L2090,2493L2082,2488L2088,2476L2113,2470L2124,2470L2130,2463L2130,2453L2126,2444L2117,2436L2110,2429L2102,2423L2093,2414L2083,2412L2084,2402L2079,2393L2078,2380L2080,2369L2077,2359L2062,2346L2057,2335L2048,2327L2042,2317L2030,2313L2010,2320L2000,2331L1995,2318L1986,2318L1977,2315L1965,2314L1950,2312L1942,2318L1934,2325L1910,2341L1900,2338L1885,2340L1851,2324L1832,2322L1824,2331L1827,2341L1820,2352L1819,2366L1814,2375L1787,2390L1776,2388L1762,2393L1757,2383L1748,2375L1738,2376L1738,2364L1729,2355L1726,2345L1719,2336L1709,2325L1714,2318L1714,2308L1712,2297L1712,2284L1707,2277L1716,2272L1711,2261L1704,2249L1698,2240L1707,2230L1710,2216L1705,2208L1701,2198L1692,2194L1683,2187L1676,2170L1662,2156L1672,2142L1679,2134L1682,2116L1694,2112L1704,2113L1713,2109L1725,2113L1735,2114L1741,2129L1750,2133L1760,2138L1770,2136L1785,2140L1796,2137L1804,2132L1813,2130L1820,2121L1830,2115L1841,2103L1844,2094L1853,2089L1861,2086L1869,2080L1880,2080L1880,2057L1870,2051L1867,2042L1858,2042L1852,2035L1840,2029L1834,2020L1832,2009L1844,2001L1842,1990L1828,1989L1822,1981L1798,1972L1789,1966L1754,1974L1742,1970L1743,1954L1748,1934L1750,1925L1747,1909L1738,1906L1733,1897L1711,1889L1700,1886L1674,1865L1670,1854L1669,1841L1664,1833L1659,1817L1652,1811L1640,1805L1638,1791L1646,1780L1650,1771L1641,1760L1628,1758L1622,1751L1600,1735L1592,1731L1591,1721L1598,1713L1600,1703L1611,1693L1615,1683L1612,1674L1622,1675L1625,1664L1621,1656L1620,1646L1611,1634L1606,1622L1596,1614L1598,1602L1611,1590L1611,1579L1609,1568L1614,1552L1612,1541L1603,1534L1592,1538L1583,1529L1572,1523L1564,1517L1564,1508L1549,1499L1547,1490L1518,1481L1510,1475L1498,1482L1476,1477L1464,1478L1455,1485L1449,1495L1435,1494L1417,1503L1405,1516L1391,1506L1384,1499L1380,1491L1385,1479L1387,1469L1395,1464L1391,1455L1363,1445L1351,1437L1335,1434L1318,1442L1309,1446L1305,1455L1291,1453L1285,1445L1283,1433L1276,1424L1262,1416L1240,1419L1232,1428L1222,1426L1207,1410L1209,1396L1211,1384L1214,1375L1208,1356L1206,1346L1206,1335L1198,1324L1201,1313L1186,1302L1181,1290L1181,1279L1165,1266L1167,1252L1169,1243L1160,1235L1151,1231L1132,1238L1130,1229L1140,1210L1141,1200L1145,1190L1141,1181L1138,1172L1152,1166L1158,1157L1159,1136L1156,1127L1139,1116L1129,1107L1113,1100L1112,1088L1112,1073L1086,1074L1083,1063L1090,1056L1090,1045L1095,1035L1107,1031L1108,1019L1116,1009L1138,1002L1147,998L1151,988L1134,981L1134,971L1130,960L1128,946L1120,930L1114,919L1108,907L1106,896L1108,884L1117,865L1108,832L1101,802L1098,790L1095,779L1100,764L1105,750L1124,736L1137,726L1142,716L1148,707L1159,681L1163,663L1165,654L1176,646L1193,647L1182,640L1199,637L1209,635L1204,626L1198,615L1188,609L1190,593L1193,581L1190,570L1185,562L1181,551L1183,542L1190,530L1201,530L1210,538L1213,550L1232,560L1242,556L1244,543L1244,530L1248,520L1256,514L1268,520L1278,523L1285,530L1295,528L1305,531L1313,524L1324,522L1332,514L1335,504L1327,497L1336,494L1343,485L1354,479L1369,481L1404,488L1449,494L1458,500L1495,511L1506,509L1511,496L1514,486L1478,477L1468,464L1461,456L1461,444L1434,432L1408,432L1398,437L1368,438L1344,437L1332,433L1322,417L1313,411L1306,404L1303,394L1293,398L1285,393L1275,390L1259,363L1249,350L1257,346L1260,355L1274,363L1283,370L1285,360L1280,352L1280,341L1284,332L1278,323L1287,319L1289,307L1279,305L1271,312L1259,316L1245,319L1239,330L1230,331L1224,338L1217,346L1207,348L1198,351L1187,354L1168,353L1162,344L1155,353L1166,335L1179,324L1204,298L1218,290L1232,274L1253,256L1273,249L1279,242L1284,233L1293,225L1300,217L1309,213L1319,205L1327,200L1349,189L1360,181L1369,170L1377,159L1398,141L1404,130L1419,120L1445,98L1451,86L1475,65L1499,36L1528,2L1549,-16L1567,-36L1576,-40L1595,-40L1612,-40L1622,-40L1644,-40L1658,-40L1667,-40L1677,-40L1686,-40L1696,-40L1710,-40L1700,-40L1691,-40L1682,-40L1668,-40L1659,-40L1622,-40L1599,-40L1550,-40L1534,-40L1514,-40L1478,-40L1508,-40L1517,-40L1526,-40L1553,-40L1564,-40L1552,-40L1540,-40L1525,-40L1502,-40L1492,-40L1483,-40L1474,-40L1498,-40L1487,-40L1460,-40L1445,-40L1433,-40L1424,-40L1451,-40L1422,-40L1436,-40L1452,-40L1438,-40L1478,-40L1487,-40L1477,-40L1466,-40L1447,-40L1426,-40L1414,-40L1391,-40L1377,-40L1343,-40L1393,-40L1402,-40L1465,-40L1475,-40L1435,-40L1426,-40L1401,-40L1383,-40L1374,-40L1332,-40L1290,-40L1280,-40L1253,-40L1288,-40L1301,-40L1290,-40L1278,-40L1248,-40L1287,-40L1306,-40L1323,-40L1340,-40L1356,-40L1366,-40L1375,-40L1386,-40L1419,-40L1437,-40L1463,-40L1473,-40L1496,-40L1506,-40L1496,-40L1512,-40L1521,-40L1549,-40L1590,-40L1604,-40L1614,-40L1602,-40L1630,-40L1645,-40L1655,-40L1664,-40L1677,-40L1692,-40L1702,-40L1745,-40L1732,-40L1751,-40L1768,-40L1777,-40L1788,-40L1772,-40L1761,-40L1771,-40L1781,-40L1809,-40L1826,-40L1845,-40L1866,-40L1880,-40L1909,-40L1922,-40L1933,-40L1902,-40L1848,-40L1838,-40L1828,-40L1806,-40L1797,-40L1782,-40L1768,-40L1777,-40L1793,-40L1802,-40L1811,-40L1830,-40L1848,-40L1838,-40L1829,-40L1809,-40L1830,-40L1840,-40L1850,-40L1860,-40L1872,-40L1890,-40L1903,-40L1890,-40L1905,-40L1919,-40L1934,-40L1901,-40L1910,-40L1919,-40L1965,-40L1975,-40L1987,-40L1999,-40L1986,-40L1977,-40L1960,-40L1980,-40L1991,-40L1978,-40L1968,-40L1981,-40L1991,-40L2001,-40L1979,-40L1968,-40L1956,-40L1944,-40L1930,-40L1954,-40L1968,-40L1984,-40L2004,-40L2028,-40L2038,-40L2048,-40L2089,-40L2131,-40L2149,-40L2158,-40L2214,-40L2230,-40L2240,-40L2250,-40L2238,-40L2257,-40L2336,-40L2346,-40L2359,-40L2370,-40L2401,-40L2410,-40L2441,-40L2466,-40L2475,-40L2489,-40L2514,-40L2526,-40L2540,-40L2551,-40L2565,-40L2576,-40L2586,-40L2596,-40L2612,-40L2632,-40L2652,-40L2664,-40L2673,-40L2686,-40L2707,-40L2718,-40L2728,-40L2766,-40L2749,-40L2739,-40L2751,-40L2772,-40L2793,-40L2812,-40L2845,-40L2860,-40L2884,-40L2898,-40L2909,-40L2926,-40L2935,-40L2925,-40L2914,-40L2925,-40L2936,-40L2945,-40L2954,-40L2964,-40L2973,-40L2999,-40L3009,-40L3024,-40L3035,-40L3046,-40L3056,-40L3074,-40L3092,-40L3106,-40L3116,-40L3139,-40L3149,-40L3159,-40L3148,-40L3130,-40L3109,-40L3091,-40L3078,-40L3068,-40L3055,-40L3044,-40L3030,-40L3021,-40L3001,-40L2978,-40L2968,-40L2933,-40L2922,-40L2912,-40L2876,-40L2865,-40L2817,-40L2804,-40L2742,-40L2696,-40L2649,-40L2633,-40L2609,-40L2593,-40L2577,-40L2565,-40L2552,-40L2496,-40L2475,-40L2458,-40L2442,-40L2424,-40L2405,-40L2368,-40L2331,-40L2316,-40L2299,-40L2273,-40L2263,-40L2250,-40L2200,-40L2188,-40L2176,-40L2164,-40L2152,-40L2140,-40L2127,-40L2139,-40L2111,-40L2100,-40L2090,-40L2079,-40L2061,-40L2052,-40L2041,-40L2026,-40L2016,-40L2004,-40L2014,-40L2002,-40L1993,-40L2003,-40L1992,-40L1936,-40L1898,-40L1911,-40L1893,-40L1882,-40L1867,-40L1841,-40L1832,-40L1822,-40L1810,-40L1801,-40L1784,-40L1765,-40L1755,-40L1787,-40L1803,-40L1818,-40L1830,-40L1848,-40L1836,-40L1846,-40L1835,-40L1851,-40L1861,-40L1870,-40L1905,-40L1893,-40L1917,-40L1948,-40L1967,-40L1954,-40L1944,-40L1935,-40L1922,-40L1912,-40L1901,-40L1936,-40L1950,-40L1959,-40L1984,-40L1999,-40L1950,-40L1938,-40L1925,-40L1916,-40L1928,-40L1948,-40L1964,-40L1974,-40L1996,-40L2007,-40L2025,-40L2004,-40L2016,-40L1991,-40L1978,-40L1967,-40L1992,-40L2009,-40L2050,-40L2059,-40L2082,-40L2091,-40L2103,-40L2117,-40L2142,-40L2153,-40L2162,-40L2174,-40L2184,-40L2193,-40L2202,-40L2212,-40L2202,-40L2183,-40L2173,-40L2183,-40L2173,-40L2162,-40L2150,-40L2138,-40L2128,-40L2116,-40L2134,-40L2146,-40L2160,-40L2169,-40L2182,-40L2173,-40L2184,-40L2193,-40L2203,-40L2193,-40L2180,-40L2199,-40L2209,-40L2218,-40L2206,-40L2195,-40L2207,-40L2194,-40L2180,-40L2192,-40L2203,-40L2212,-40L2225,-40L2234,-40L2258,-40L2268,-40L2277,-40L2296,-40L2308,-40L2324,-40L2336,-40L2349,-40L2358,-40L2368,-40L2377,-40L2388,-40L2398,-40L2408,-40L2418,-40L2432,-40L2446,-40L2456,-40L2465,-40L2478,-40L2488,-40L2500,-40L2511,-40L2537,-40L2549,-40L2577,-40L2591,-40L2602,-40L2618,-40L2634,-40L2651,-40L2670,-40L2660,-40L2647,-40L2660,-40L2649,-40L2635,-40L2623,-40L2614,-40L2601,-40L2588,-40L2569,-40L2554,-40L2530,-40L2520,-40L2488,-40L2474,-40L2459,-40L2447,-40L2438,-40L2448,-40L2458,-40L2467,-40L2477,-40L2486,-40L2497,-40L2509,-40L2521,-40L2531,-40L2544,-40L2560,-40L2571,-40L2586,-40L2596,-40L2611,-40L2630,-40L2667,-40L2681,-40L2698,-40L2712,-40L2704,-40L2684,-40L2673,-40L2682,-40L2696,-40L2710,-40L2725,-40L2735,-40L2752,-40L2769,-40L2781,-40L2796,-40L2814,-40L2828,-40L2844,-40L2857,-40L2873,-40L2891,-40L2916,-40L2929,-40L2941,-40L2928,-40L2939,-40L2965,-40L2978,-40L2987,-40L3008,-40L3026,-40L3017,-40L3030,-40L3020,-40L3009,-40L2999,-40L2975,-40L2936,-40L2923,-40L2914,-40L2930,-40L2952,-40L2965,-40L2997,-40L3025,-40L3049,-40L3060,-40L3073,-40L3106,-40L3119,-40L3154,-40L3163,-40L3172,-40L3185,-40L3195,-40L3230,-40L3254,-40L3268,-40L3281,-40L3305,-40L3346,-40L3336,-40L3362,-40L3390,-40L3417,-40L3436,-40L3447,-40L3459,-40L3474,-40L3496,-40L3474,-40L3463,-40L3454,-40L3443,-40L3454,-40L3465,-40L3475,-40L3459,-40L3470,-40L3482,-40L3492,-40L3504,-40L3522,-40L3539,-40L3553,-40L3571,-40L3561,-40L3571,-40L3581,-40L3598,-40L3610,-40L3630,-40L3618,-40L3602,-40L3615,-40L3601,-40L3591,-40L3602,-40L3589,-40L3577,-40L3560,-40L3544,-40L3534,-40L3519,-40L3547,-40L3557,-40L3568,-40L3558,-40L3573,-40L3583,-40L3568,-40L3578,-40L3567,-40L3596,-40L3607,-40L3592,-40L3578,-40L3508,-40L3447,-40L3469,-40L3490,-40L3501,-40L3515,-40L3526,-40L3544,-40L3582,-40L3622,-40L3689,-40L3739,-40L3780,-40L3825,-40L3834,-40L3844,-40L3854,-40L3866,-40L3883,-40L3894,-40L3904,-40L3921,-40L3910,-40L3920,-40L3930,-40L3939,-40L3949,-40L3940,-40L3926,-40L3917,-40L3907,-40L3897,-40L3873,-40L3842,-40L3786,-40L3760,-40L3746,-40L3733,-40L3718,-40L3708,-40L3698,-40L3689,-40L3702,-40L3717,-40L3727,-40L3740,-40L3755,-40L3770,-40L3782,-40L3792,-40L3810,-40L3820,-40L3837,-40L3846,-40L3887,-40L3914,-40L3928,-40L3916,-40L3901,-40L3914,-40L3923,-40L3964,-40L3979,-40L3994,-40L4050,-40L4072,-40L4082,-40L4092,-40L4104,-40L4124,-40L4112,-40L4139,-40L4152,-40L4168,-40L4183,-40L4203,-40L4216,-40L4234,-40L4247,-40L4274,-40L4285,-40L4297,-40L4281,-40L4268,-40L4256,-40L4224,-40L4237,-40L4255,-40L4281,-40L4305,-40L4332,-40L4361,-40L4382,-40L4403,-40L4429,-40L4415,-40L4433,-40L4443,-40L4463,-40L4472,-40L4485,-40L4497,-40L4528,-40L4540,-40L4550,-40L4565,-40L4589,-40L4599,-40L4610,-40L4630,-40L4644,-40L4653,-40L4665,-40L4684,-40L4737,-40L4755,-40L4737,-40L4755,-40L4772,-40L4782,-40L4773,-40L4752,-40L4765,-40L4776,-40L4788,-40L4799,-40L4813,-40L4829,-40L4817,-40L4807,-40L4818,-40L4805,-40L4795,-40L4773,-40L4784,-40L4796,-40L4848,-40L4868,-40L4888,-40L4900,-40L4913,-40L4927,-40L4941,-40L5006,-40L5039,-40L5068,-40L5102,-40L5087,-40L5077,-40L5022,-40L4967,-40L4981,-40L5018,-40L5028,-40L5017,-40L5006,-40L4997,-40L4988,-40L4998,-40L5008,-40L4998,-40L4986,-40L4973,-40L4961,-40L4972,-40L4958,-40L4942,-40L4932,-40L4921,-40L4911,-40L4925,-40L4946,-40L4996,-40L5006,-40L5023,-40L5037,-40L5046,-40L5056,-40L5093,-40L5103,-40L5120,-40L5133,-40L5147,-40L5156,-40L5171,-40L5182,-40L5200,-40L5230,-40L5245,-40L5261,-40L5275,-40L5288,-40L5313,-40L5327,-40L5342,-40L5394,-40L5404,-40L5413,-40L5422,-40L5445,-40L5481,-40L5516,-40L5529,-40L5547,-40L5556,-40L5605,-40L5640,-40L5652,-40L5664,-40L5674,-40L5663,-40L5654,-40L5702,-40L5745,-40L5793,-40L5782,-40L5759,-40L5747,-40L5758,-40L5779,-40L5824,-40L5815,-40L5803,-40L5793,-40L5782,-40L5771,-40L5780,-40L5821,-40L5863,-40L5889,-40L5905,-40L5892,-40L5880,-40L5897,-40L5916,-40L5980,-40L5993,-40L6014,-40L6025,-40L6039,-40L6054,-40L6045,-40L6035,-40L6026,-40L6016,-40L6003,-40L5994,-40L5982,-40L5972,-40L5959,-40L5950,-40L5939,-40L6008,-40L6017,-40L6047,-40L6062,-40L6072,-40L6082,-40L6103,-40L6113,-40L6172,-40L6230,-40L6246,-40ZM409,1835L399,1838L371,1836L337,1835L295,1833L254,1830L190,1827L137,1824L95,1822L52,1820L-5,1817L-36,1816L-40,1807L-39,1794L-25,1777L-17,1762L-14,1753L-6,1738L-6,1729L-11,1712L-10,1700L-6,1692L3,1692L21,1692L30,1690L54,1693L71,1686L94,1668L120,1638L137,1612L146,1614L139,1620L132,1628L127,1636L122,1646L114,1653L102,1668L82,1684L81,1693L113,1693L127,1701L143,1704L154,1703L163,1702L176,1698L184,1689L180,1677L177,1647L174,1634L185,1632L188,1621L200,1611L217,1629L237,1634L254,1644L269,1651L277,1657L286,1661L296,1658L300,1669L310,1673L332,1663L360,1666L376,1662L383,1671L386,1682L392,1691L401,1692L406,1702L415,1705L420,1720L419,1733L410,1742L402,1748L399,1757L400,1767L396,1783L395,1802L396,1811L400,1820L409,1835ZM1276,336L1267,341L1265,329L1274,329ZM1447,481L1437,480L1427,474L1446,481ZM1165,477L1155,484L1154,475L1163,477ZM1038,470L1029,466L1027,456L1034,464ZM1287,409L1282,417L1266,410L1263,400L1272,399L1283,408ZM1259,399L1249,398L1258,397ZM4115,4320L4103,4337L4092,4335L4083,4331L4088,4321L4105,4321L4115,4320ZM4137,3968L4129,3960L4125,3943L4125,3934L4130,3925L4132,3935L4135,3945L4137,3955L4137,3968Z", "ukraine": "M1738,2376L1748,2375L1756,2379L1757,2391L1770,2389L1785,2391L1808,2380L1819,2366L1820,2352L1827,2343L1824,2334L1826,2323L1844,2326L1880,2340L1894,2337L1905,2342L1925,2327L1936,2322L1945,2314L1965,2314L1974,2314L1983,2319L1992,2314L1994,2327L2010,2320L2023,2314L2036,2314L2043,2320L2054,2331L2060,2344L2072,2352L2078,2362L2077,2375L2078,2388L2080,2397L2084,2406L2093,2414L2099,2421L2103,2429L2112,2430L2120,2438L2130,2453L2130,2463L2124,2470L2113,2470L2088,2476L2080,2486L2090,2491L2091,2500L2099,2509L2102,2522L2100,2531L2100,2541L2103,2552L2113,2552L2111,2568L2096,2580L2107,2585L2118,2580L2129,2579L2140,2583L2154,2583L2161,2589L2166,2599L2180,2600L2190,2598L2202,2593L2211,2588L2222,2590L2231,2596L2235,2618L2242,2630L2257,2628L2268,2631L2258,2642L2259,2653L2267,2660L2267,2670L2273,2680L2275,2691L2283,2704L2282,2715L2274,2725L2280,2760L2288,2768L2296,2772L2300,2782L2304,2793L2313,2798L2322,2795L2330,2788L2338,2779L2354,2777L2380,2779L2389,2788L2404,2812L2415,2812L2422,2806L2431,2810L2440,2814L2443,2823L2449,2830L2458,2829L2463,2819L2490,2802L2499,2799L2509,2798L2520,2800L2541,2793L2554,2780L2574,2776L2578,2784L2583,2798L2596,2805L2601,2820L2599,2831L2606,2838L2619,2861L2636,2870L2648,2879L2657,2894L2660,2904L2669,2898L2684,2894L2685,2884L2684,2873L2697,2866L2706,2868L2711,2882L2722,2887L2733,2892L2744,2890L2753,2891L2760,2898L2770,2907L2786,2912L2794,2923L2812,2926L2822,2915L2831,2910L2843,2936L2850,2944L2862,2944L2873,2940L2881,2945L2890,2946L2896,2964L2900,2973L2909,2977L2923,2988L2934,2989L2943,2985L2951,2975L2973,2978L2972,2989L2964,2995L2962,3011L2970,3028L2977,3036L2976,3052L2975,3063L2964,3076L2952,3086L2945,3096L2944,3106L2935,3109L2918,3114L2908,3115L2907,3127L2915,3135L2920,3145L2935,3150L2946,3154L2954,3150L2963,3151L2961,3161L2952,3170L2930,3164L2920,3170L2912,3179L2902,3213L2927,3220L2934,3227L2935,3236L2934,3246L2940,3258L2943,3268L2938,3277L2928,3286L2939,3293L2949,3290L2954,3299L2942,3313L2932,3331L2930,3342L2932,3351L2923,3353L2925,3367L2923,3379L2922,3394L2916,3404L2897,3401L2883,3402L2869,3402L2858,3398L2833,3399L2824,3401L2814,3394L2790,3393L2777,3403L2774,3413L2771,3424L2770,3434L2760,3435L2749,3445L2712,3454L2703,3465L2698,3482L2699,3499L2694,3513L2688,3524L2698,3530L2704,3539L2696,3546L2690,3554L2690,3569L2689,3578L2681,3591L2679,3582L2670,3576L2658,3578L2639,3576L2623,3582L2598,3578L2583,3591L2568,3616L2564,3624L2556,3619L2546,3615L2536,3622L2519,3630L2510,3636L2496,3647L2490,3659L2485,3670L2482,3683L2483,3670L2476,3658L2467,3653L2458,3653L2442,3658L2428,3664L2419,3670L2409,3682L2406,3694L2399,3686L2392,3679L2374,3679L2353,3683L2338,3690L2331,3696L2314,3715L2292,3730L2282,3743L2275,3749L2259,3778L2248,3799L2241,3809L2231,3815L2222,3819L2224,3809L2238,3800L2250,3787L2255,3778L2260,3770L2267,3760L2256,3756L2256,3744L2259,3735L2248,3729L2244,3717L2242,3726L2246,3734L2248,3745L2241,3754L2233,3768L2221,3779L2207,3784L2193,3790L2188,3800L2191,3821L2198,3858L2202,3867L2210,3890L2217,3905L2204,3901L2198,3894L2188,3892L2185,3881L2185,3871L2182,3856L2170,3846L2158,3845L2147,3845L2138,3851L2130,3843L2125,3833L2118,3823L2109,3820L2099,3816L2084,3817L2073,3812L2060,3803L2053,3798L2040,3791L2027,3793L2019,3805L2009,3802L2000,3811L2003,3819L1994,3824L1984,3827L1978,3819L1970,3814L1953,3809L1956,3786L1950,3797L1942,3806L1933,3804L1925,3799L1924,3809L1908,3812L1899,3811L1890,3808L1879,3811L1860,3815L1848,3822L1818,3812L1811,3805L1812,3795L1801,3793L1792,3790L1785,3780L1776,3778L1757,3763L1756,3773L1746,3772L1739,3764L1746,3756L1757,3758L1768,3756L1778,3747L1774,3732L1760,3730L1740,3721L1730,3721L1727,3737L1724,3727L1703,3704L1711,3709L1737,3707L1751,3715L1766,3715L1778,3719L1790,3717L1806,3721L1814,3727L1827,3728L1836,3720L1837,3710L1848,3700L1858,3697L1865,3690L1853,3691L1834,3704L1823,3705L1813,3699L1803,3699L1795,3706L1791,3694L1779,3690L1772,3682L1769,3673L1766,3662L1764,3648L1770,3634L1774,3625L1772,3614L1764,3611L1769,3600L1759,3597L1758,3584L1756,3572L1749,3564L1746,3553L1737,3548L1736,3539L1733,3547L1744,3554L1746,3571L1754,3578L1750,3587L1749,3598L1760,3599L1759,3610L1762,3618L1768,3628L1762,3636L1753,3646L1759,3661L1758,3673L1758,3684L1746,3690L1725,3683L1716,3684L1711,3692L1700,3690L1706,3666L1710,3656L1717,3645L1708,3652L1703,3660L1694,3652L1695,3661L1699,3670L1694,3678L1689,3687L1677,3694L1667,3692L1653,3689L1642,3692L1627,3695L1619,3700L1606,3706L1596,3706L1590,3714L1592,3726L1594,3735L1592,3745L1586,3754L1575,3756L1579,3766L1574,3778L1564,3794L1559,3805L1552,3818L1533,3841L1516,3865L1508,3875L1498,3883L1498,3867L1493,3879L1480,3878L1472,3884L1471,3895L1469,3886L1466,3895L1468,3906L1462,3899L1452,3901L1449,3911L1456,3917L1450,3924L1440,3931L1437,3920L1431,3913L1430,3900L1431,3890L1425,3882L1426,3892L1422,3903L1419,3914L1418,3923L1418,3935L1417,3946L1426,3949L1434,3942L1428,3954L1422,3961L1422,3971L1429,3965L1435,3975L1438,3966L1442,3977L1441,3987L1442,4003L1440,4012L1437,4023L1429,4029L1429,4014L1428,4005L1422,3993L1414,3985L1394,3977L1382,3976L1373,3978L1363,3978L1356,3986L1346,3991L1333,4001L1324,4005L1317,4011L1305,4003L1299,4010L1296,4019L1287,4025L1267,4021L1255,4013L1242,4009L1231,4002L1224,3984L1221,3974L1212,3969L1222,3955L1233,3956L1244,3959L1253,3959L1256,3947L1260,3938L1258,3928L1253,3919L1258,3912L1266,3906L1267,3897L1277,3896L1281,3886L1290,3881L1293,3871L1290,3859L1294,3849L1320,3842L1321,3824L1322,3815L1330,3802L1332,3791L1322,3782L1321,3771L1319,3752L1319,3736L1333,3723L1354,3711L1360,3720L1361,3740L1357,3749L1368,3745L1372,3734L1381,3736L1392,3729L1401,3724L1400,3734L1408,3740L1414,3748L1424,3752L1426,3740L1435,3734L1445,3739L1449,3749L1452,3758L1461,3753L1483,3752L1494,3746L1493,3736L1480,3729L1477,3720L1465,3715L1469,3706L1468,3694L1469,3684L1471,3666L1468,3656L1467,3646L1460,3640L1450,3634L1441,3634L1435,3625L1426,3621L1418,3616L1413,3606L1416,3595L1419,3585L1411,3578L1401,3575L1410,3568L1410,3549L1416,3538L1414,3526L1407,3519L1398,3526L1393,3533L1385,3527L1383,3515L1375,3509L1367,3498L1358,3495L1351,3485L1348,3472L1353,3460L1358,3444L1359,3428L1365,3419L1358,3412L1359,3401L1365,3391L1356,3386L1353,3375L1348,3366L1339,3367L1333,3377L1322,3376L1312,3366L1306,3356L1304,3346L1302,3337L1296,3330L1280,3329L1267,3323L1256,3333L1255,3342L1244,3331L1245,3321L1236,3326L1232,3318L1237,3309L1226,3303L1218,3309L1210,3302L1199,3303L1197,3292L1190,3283L1177,3281L1168,3273L1162,3264L1151,3254L1127,3252L1120,3243L1109,3246L1096,3260L1088,3256L1071,3269L1060,3273L1045,3267L1038,3274L1026,3276L1016,3268L1006,3271L1003,3282L1001,3291L992,3285L980,3289L978,3298L955,3305L945,3306L935,3310L930,3322L927,3338L919,3349L913,3359L905,3365L891,3365L882,3368L872,3368L860,3371L850,3376L778,3384L757,3415L751,3422L742,3426L730,3428L721,3428L712,3412L696,3402L689,3395L687,3385L675,3375L663,3374L652,3371L643,3379L625,3385L613,3381L605,3375L595,3371L573,3376L561,3364L548,3364L539,3361L529,3360L519,3360L511,3367L502,3362L493,3358L486,3351L480,3343L467,3337L458,3343L455,3354L446,3364L437,3360L431,3370L420,3368L421,3358L422,3349L414,3338L406,3332L387,3336L380,3322L366,3302L358,3303L348,3302L341,3290L340,3278L334,3270L330,3260L321,3262L316,3246L316,3228L318,3219L328,3211L334,3202L342,3196L344,3187L346,3177L350,3161L352,3152L356,3142L362,3127L370,3124L373,3112L375,3103L387,3107L397,3110L407,3109L416,3117L420,3106L413,3093L406,3085L398,3082L400,3073L404,3057L403,3032L398,3023L394,3005L390,2993L394,2984L405,2968L409,2958L418,2953L427,2935L434,2928L442,2915L459,2890L464,2883L474,2872L508,2834L522,2822L538,2805L543,2795L548,2788L580,2786L592,2775L592,2765L602,2757L605,2746L604,2735L603,2719L603,2709L593,2701L587,2694L587,2682L598,2681L610,2679L598,2665L588,2655L585,2646L578,2638L577,2625L572,2616L571,2605L564,2597L553,2588L545,2570L536,2562L542,2552L545,2544L539,2531L536,2522L536,2513L532,2499L535,2490L551,2485L564,2489L574,2491L582,2500L610,2479L627,2468L635,2446L643,2433L686,2426L695,2428L739,2421L753,2414L766,2412L791,2419L820,2419L840,2420L852,2417L884,2423L894,2423L908,2432L947,2436L951,2446L985,2448L1013,2460L1022,2462L1037,2457L1051,2457L1061,2461L1061,2476L1068,2483L1073,2493L1083,2497L1095,2498L1102,2492L1126,2497L1137,2498L1137,2510L1133,2522L1140,2529L1151,2518L1152,2507L1154,2496L1164,2494L1172,2504L1193,2506L1204,2493L1210,2485L1219,2489L1222,2497L1229,2504L1234,2514L1246,2504L1268,2506L1273,2515L1275,2529L1283,2535L1290,2544L1293,2528L1296,2518L1305,2508L1314,2505L1323,2505L1334,2493L1342,2489L1352,2492L1356,2504L1362,2511L1364,2522L1363,2531L1371,2541L1374,2550L1386,2546L1396,2547L1403,2538L1414,2532L1421,2524L1431,2522L1437,2532L1452,2537L1459,2530L1476,2525L1500,2524L1508,2528L1514,2536L1523,2542L1526,2551L1526,2561L1532,2568L1541,2570L1549,2578L1558,2584L1563,2570L1572,2559L1572,2549L1569,2539L1566,2530L1565,2520L1564,2510L1555,2505L1554,2495L1559,2488L1563,2475L1571,2468L1573,2459L1577,2450L1577,2441L1583,2432L1588,2424L1598,2420L1603,2412L1608,2403L1617,2402L1613,2393L1616,2383L1640,2381L1649,2384L1659,2391L1667,2380L1682,2372L1695,2372L1722,2377L1738,2376ZM1466,3914L1489,3890L1464,3920L1449,3933L1438,3938L1449,3931L1456,3924L1463,3917ZM1919,3830L1930,3834L1865,3826L1889,3829L1899,3826L1908,3830L1918,3827ZM1764,3791L1784,3796L1796,3802L1734,3787L1711,3777L1703,3765L1700,3755L1708,3769L1717,3778L1764,3791ZM2014,3810L2020,3798L2019,3790L2033,3794L2046,3793L2060,3803L2073,3812L2084,3817L2099,3816L2109,3820L2118,3823L2125,3833L2130,3843L2138,3851L2147,3845L2158,3845L2170,3846L2182,3856L2185,3871L2185,3881L2188,3892L2198,3894L2204,3901L2213,3908L2223,3919L2266,3991L2288,4008L2319,4001L2326,3993L2333,3982L2335,3972L2343,3968L2342,3978L2357,3991L2368,3992L2374,3978L2382,3970L2402,3969L2410,3974L2422,3974L2434,3973L2441,3979L2450,3978L2458,3990L2453,4000L2441,3996L2436,4004L2431,4012L2426,4025L2425,4039L2426,4049L2432,4058L2419,4068L2406,4069L2400,4077L2384,4075L2376,4069L2366,4078L2352,4080L2342,4082L2336,4072L2331,4064L2321,4057L2310,4053L2298,4051L2286,4056L2278,4063L2276,4074L2270,4083L2271,4094L2264,4087L2254,4090L2248,4100L2239,4104L2233,4122L2222,4128L2217,4119L2208,4118L2200,4124L2191,4125L2180,4123L2165,4134L2148,4139L2139,4146L2132,4154L2125,4168L2119,4186L2111,4189L2104,4198L2096,4202L2091,4212L2084,4218L2062,4228L2047,4224L2030,4225L2016,4218L2012,4209L2007,4201L1998,4202L1977,4185L1985,4175L1995,4172L2006,4171L1997,4168L2000,4159L2002,4150L1999,4138L1999,4128L2002,4119L2009,4114L2012,4102L2011,4087L2008,4076L2004,4057L1990,4044L1982,4036L1968,4038L1959,4042L1953,4035L1944,4030L1939,4023L1933,4015L1918,4002L1906,3995L1884,3993L1873,4002L1861,4003L1852,3999L1845,3985L1846,3976L1868,3955L1877,3952L1884,3946L1893,3946L1895,3937L1901,3929L1912,3921L1945,3903L1945,3893L1955,3900L1971,3891L1982,3882L1990,3876L1999,3878L2007,3872L2016,3870L2024,3860L2033,3858L2022,3850L2012,3852L2016,3844L2016,3834L2014,3824L2016,3815Z", "crimea": "M2014,3810L2020,3798L2019,3790L2033,3794L2046,3793L2060,3803L2073,3812L2084,3817L2099,3816L2109,3820L2118,3823L2125,3833L2130,3843L2138,3851L2147,3845L2158,3845L2170,3846L2182,3856L2185,3871L2185,3881L2188,3892L2198,3894L2204,3901L2213,3908L2223,3919L2266,3991L2288,4008L2319,4001L2326,3993L2333,3982L2335,3972L2343,3968L2342,3978L2357,3991L2368,3992L2374,3978L2382,3970L2402,3969L2410,3974L2422,3974L2434,3973L2441,3979L2450,3978L2458,3990L2453,4000L2441,3996L2436,4004L2431,4012L2426,4025L2425,4039L2426,4049L2432,4058L2419,4068L2406,4069L2400,4077L2384,4075L2376,4069L2366,4078L2352,4080L2342,4082L2336,4072L2331,4064L2321,4057L2310,4053L2298,4051L2286,4056L2278,4063L2276,4074L2270,4083L2271,4094L2264,4087L2254,4090L2248,4100L2239,4104L2233,4122L2222,4128L2217,4119L2208,4118L2200,4124L2191,4125L2180,4123L2165,4134L2148,4139L2139,4146L2132,4154L2125,4168L2119,4186L2111,4189L2104,4198L2096,4202L2091,4212L2084,4218L2062,4228L2047,4224L2030,4225L2016,4218L2012,4209L2007,4201L1998,4202L1977,4185L1985,4175L1995,4172L2006,4171L1997,4168L2000,4159L2002,4150L1999,4138L1999,4128L2002,4119L2009,4114L2012,4102L2011,4087L2008,4076L2004,4057L1990,4044L1982,4036L1968,4038L1959,4042L1953,4035L1944,4030L1939,4023L1933,4015L1918,4002L1906,3995L1884,3993L1873,4002L1861,4003L1852,3999L1845,3985L1846,3976L1868,3955L1877,3952L1884,3946L1893,3946L1895,3937L1901,3929L1912,3921L1945,3903L1945,3893L1955,3900L1971,3891L1982,3882L1990,3876L1999,3878L2007,3872L2016,3870L2024,3860L2033,3858L2022,3850L2012,3852L2016,3844L2016,3834L2014,3824L2016,3815Z"};
+
+    function gated(a, b, fn) { const on = FX.onFrame; FX.onFrame = (f) => on(FX.gate(S(a) - 0.1, S(b) + 0.1, f)); try { return fn(); } finally { FX.onFrame = on; } }
+    const ALL = [];
+    function scene(id, a, b) {
+      ALL.push($(id));
+      tl.fromTo($(id), { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.001, immediateRender: false }, S(a));
+      if (b < SEG_END) tl.set($(id), { autoAlpha: 0 }, S(b));
+    }
+    function ground(kind, t) {
+      const v = kind === "paper" ? [0.3, 0.14, 0.24] : kind === "face" ? [0, 0, 0] : [0.85, 0.36, 0.32];
+      tl.set([$("vig"), $("dust"), $("grain")], { opacity: (i) => v[i] }, t);
+    }
+    const rise = (el, t, o) => { o = o || {}; const d = o.dur || 0.9;
+      tl.fromTo(el, { opacity: 0, y: o.y == null ? 18 : o.y }, { opacity: 1, y: 0, duration: d, ease: C(E.out, d), immediateRender: true }, t); };
+    const pop = (el, t, o) => { o = o || {}; const d = o.dur || 0.9;
+      tl.fromTo(el, { opacity: 0, scale: o.from == null ? 0.5 : o.from }, { opacity: 1, scale: 1, duration: d, ease: C(E.out, d), immediateRender: true }, t); };
+    const out = (el, t, d) => tl.to(el, { opacity: 0, duration: d || 0.3, ease: E.in }, t);
+    function words(el) { const all = FX.split(el, "words"); all.forEach((s) => { if (!s.textContent.trim().length) { s.style.display = "inline"; s.style.whiteSpace = "normal"; } }); return all.filter((s) => s.textContent.trim().length); }
+    // word-by-word reveal: cues are literal T() values (already minus L)
+    function wd(id, cues, o) { const ws = words($(id)); ws.forEach((w, i) => { w.style.opacity = 0; rise(w, cues[Math.min(i, cues.length - 1)], o); }); return ws; }
+    function el(parent, tag, attrs) { const n = document.createElementNS(NS, tag); for (const k in attrs) n.setAttribute(k, attrs[k]); parent.appendChild(n); return n; }
+    function ink(parent, d, t, dur, o) {
+      o = o || {};
+      const p = el(parent, "path", { d: d, fill: "none", stroke: o.color || INK, "stroke-width": o.width || 6, "stroke-linecap": "round", "stroke-linejoin": "round" });
+      if (o.filter) p.setAttribute("filter", o.filter);
+      if (o.dash) p.setAttribute("stroke-dasharray", o.dash);
+      if (o.opacity != null) p.setAttribute("opacity", o.opacity);
+      const len = (p.getTotalLength && p.getTotalLength()) || 1000;
+      if (!o.dash) { p.setAttribute("stroke-dasharray", len + " " + len); p.setAttribute("stroke-dashoffset", len);
+        tl.fromTo(p, { attr: { "stroke-dashoffset": len } }, { attr: { "stroke-dashoffset": 0 }, duration: dur, ease: o.ease || C(E.out, dur), immediateRender: true }, t); }
+      else { tl.fromTo(p, { opacity: 0 }, { opacity: o.opacity == null ? 1 : o.opacity, duration: dur, ease: C(E.out, dur), immediateRender: true }, t); }
+      p._len = len; return p;
+    }
+    const at = (px, py, s) => ({ x: 960 - px * s, y: 540 - py * s, scale: s });
+    // face-cam framing: wrapper scales about (ox, oy); slow push s0 → s1 over the shot
+    function frame(id, a, b, s0, s1, ox, oy) {
+      const w = $(id + "-fw");
+      gsap.set(w, { transformOrigin: ox + "px " + oy + "px", scale: s0 });
+      tl.fromTo(w, { scale: s0 }, { scale: s1, duration: b - a, ease: "none", immediateRender: false }, S(a));
+    }
+    // face-cam key phrase (kicker bar + words); fades before the cut
+    function fcText(sc, cues, outAt, dur) {
+      const k = $(sc + "-k");
+      tl.fromTo(k, { scaleX: 0 }, { scaleX: 1, duration: 0.5, ease: C(E.out, 0.5), immediateRender: true }, cues[0]);
+      wd(sc + "-t", cues, { dur: dur || 0.4, y: 12 });
+      if (outAt) { out($(sc + "-t"), outAt, 0.3); out(k, outAt, 0.3); }
+    }
+    const whipN = { n: 0 };
+    function whip(a, b, t, o) {
+      o = Object.assign({ dir: 1, vertical: false, flash: false, dur: 0.32 }, o);
+      const A = $(a + "-shot"), B = $(b + "-shot");
+      const k = ++whipN.n, ba = FX.whipDefs(defs, SEG + "-wa" + k), bb = FX.whipDefs(defs, SEG + "-wb" + k), h = o.dur / 2;
+      tl.set(A, { filter: "url(#" + SEG + "-wa" + k + ")" }, t - h - 0.01); tl.set(A, { filter: "none" }, t + 0.06);
+      tl.set(B, { filter: "url(#" + SEG + "-wb" + k + ")" }, t - 0.001); tl.set(B, { filter: "none" }, t + h + 0.02);
+      FX.whip(tl, A, B, t, { dir: o.dir, vertical: o.vertical, dur: o.dur, blurA: ba, blurB: bb });
+      if (o.flash) tl.fromTo($("flash"), { opacity: 0 }, { opacity: 0.85, duration: 0.08, yoyo: true, repeat: 1, ease: "power2.in", immediateRender: false }, t - 0.08);
+    }
+    // incoming shot lands from a slight overscale + blur (push-through / punch)
+    function landIn(b, t, o) {
+      o = o || {}; const B = $(b + "-shot"), d = o.d || 0.45;
+      tl.fromTo(B, { scale: o.from || 1.22, filter: "blur(10px)" }, { scale: 1, filter: "blur(0px)", duration: d, ease: E.out, immediateRender: false }, t);
+      tl.set(B, { filter: "none" }, t + d + 0.01);
+    }
+    function pushOut(a, t, o) {
+      o = o || {}; const A = $(a + "-shot"), d = o.d || 0.36;
+      tl.fromTo(A, { scale: 1, filter: "blur(0px)" }, { scale: o.to || 2.4, filter: "blur(9px)", duration: d, ease: E.in, immediateRender: false, transformOrigin: o.origin || "50% 50%" }, t - d);
+    }
+    function slideIn(b, t, o) {
+      o = Object.assign({ axis: "y", from: 1, d: 0.45 }, o);
+      const B = $(b + "-shot"), dist = (o.axis === "x" ? 1980 : 1140) * o.from;
+      tl.fromTo(B, { [o.axis]: dist, boxShadow: "0 0 80px rgba(0,0,0,0.5)" }, { [o.axis]: 0, duration: o.d, ease: C(E.inOut, o.d), immediateRender: false }, t - o.d);
+      tl.set(B, { boxShadow: "none" }, t);
+    }
+
+    FX.tintDefs(defs, SEG + "-tint-ash", "#16171a", "#e6e2d8");
+    const PEN = FX.markupDefs(defs, SEG + "-pen", { boil: 4 });
+    const MRK = FX.markupDefs(defs, SEG + "-mrk", { boil: 12 });
+    defs.setAttribute("viewBox", "0 0 1 1");
+    FX.grain($("grain"), 201);
+    FX.dust($("dust"), 202, 2);
+    gsap.set([$("vig"), $("dust"), $("grain")], { opacity: 0 });
+
+    /* ============ sc001 · 144.02–148.34 · FACE wide ============ */
+    scene("sc001", 144.02, 148.34);
+    gsap.set($("sc001"), { autoAlpha: 1 });
+    ground("face", S(144.02));
+    frame("sc001", 144.02, 148.34, 1.0, 1.03, 1018, 380);
+    fcText("sc001", [T(146.42) - L, T(146.58) - L, T(146.90) - L, T(147.46) - L, T(147.62) - L], null, 0.3);
+
+    /* ============ sc002 · 148.34–151.22 · Mamoń, name card ============ */
+    scene("sc002", 148.34, 151.22);
+    ground("night", S(148.34));
+    tl.fromTo($("sc002-v"), { scale: 1.04 }, { scale: 1.09, duration: 3.0, ease: "none", immediateRender: true }, S(148.34));
+    wd("sc002-kick", [T(148.34) - L, T(148.82) - L], { dur: 0.6, y: 10 });
+    tl.fromTo($("sc002-rule"), { scaleX: 0 }, { scaleX: 1, duration: 0.8, ease: C(E.out, 0.8), immediateRender: true }, S(148.60));
+    wd("sc002-name", [T(149.54) - L, T(150.18) - L], { dur: 0.5, y: 14 });
+    whip("sc002", "sc003", S(151.22), { dir: 1 });
+
+    /* ============ sc003 · 151.22–156.98 · opposition march print ============ */
+    scene("sc003", 151.22, 156.98);
+    ground("paper", S(151.22));
+    tl.fromTo($("sc003-cam"), { scale: 1.0 }, { scale: 1.05, duration: 5.9, ease: "none", immediateRender: true }, S(151.22));
+    wd("sc003-a", [T(152.10) - L, T(152.26) - L, T(152.42) - L, T(152.82) - L], { dur: 0.7 });
+    out($("sc003-a"), S(154.30), 0.35);
+    wd("sc003-b", [T(155.06) - L, T(155.70) - L, T(156.18) - L], { dur: 0.35 });
+
+    /* ============ sc004 · 156.98–161.94 · Mamoń's phone + bubbles ============ */
+    scene("sc004", 156.98, 161.94);
+    ground("night", S(156.98));
+    tl.fromTo($("sc004-v"), { scale: 1.02 }, { scale: 1.07, duration: 5.0, ease: "none", immediateRender: true }, S(156.98));
+    // cut on action from sc003's push
+    landIn("sc004", S(156.98), { from: 1.08, d: 0.3 });
+    pop($("sc004-b1"), S(158.80), { from: 0.6, dur: 0.8 });
+    pop($("sc004-b2"), S(159.80), { from: 0.6, dur: 0.8 });
+    tl.to($("sc004-stack"), { y: -330, duration: 0.7, ease: C(E.inOut, 0.7) }, S(160.60));
+    tl.to($("sc004-b1"), { opacity: 0, duration: 0.4, ease: E.in }, S(160.60));
+    pop($("sc004-b3"), S(160.62), { from: 0.6, dur: 0.7 });
+    wd("sc004-txt", [T(159.46) - L, T(159.86) - L, T(160.34) - L], { dur: 0.6 });
+    whip("sc004", "sc005", S(161.94), { vertical: true, dir: -1 });
+
+    /* ============ sc005 · 161.94–166.42 · the device ============ */
+    scene("sc005", 161.94, 166.42);
+    tl.fromTo($("sc005-v"), { scale: 1.0 }, { scale: 1.06, duration: 4.6, ease: "none", immediateRender: true }, S(161.94));
+    FX.markupDefs($("sc005-mk"), SEG + "-pen5", { boil: 4 });
+    const c5 = FX.markup.circle(tl, $("sc005-mk"), S(164.20), { cx: 945, cy: 482, rx: 215, ry: 175, rot: -18, color: BONE, width: 7, dur: 0.7, filter: "url(#" + SEG + "-pen5)", seed: 5 });
+    wd("sc005-a", [T(164.10) - L, T(164.26) - L, T(164.82) - L], { dur: 0.6, y: 10 });
+    wd("sc005-b", [T(165.22) - L, T(165.46) - L, T(165.62) - L, T(165.78) - L], { dur: 0.2, y: 6 });
+    whip("sc005", "sc006", S(166.42), { dir: -1, flash: true });
+
+    /* ============ sc006 · 166.42–171.22 · airfield at night, surveillance frame ============ */
+    scene("sc006", 166.42, 171.22);
+    tl.fromTo($("sc006-v"), { scale: 1.03 }, { scale: 1.08, duration: 4.9, ease: "none", immediateRender: true }, S(166.42));
+    tl.fromTo($("sc006-dot"), { opacity: 1 }, { opacity: 0.15, duration: 0.5, repeat: 9, yoyo: true, ease: "steps(1)", immediateRender: true }, S(166.42));
+    (function () { const tc = $("sc006-tc"), st = { v: 0 };
+      tl.fromTo(st, { v: 0 }, { v: 4.8, duration: 4.8, ease: "none", immediateRender: true, onUpdate: () => {
+        const f = Math.floor(st.v * 24) % 24, s = 14 + Math.floor(st.v); tc.textContent = "00:00:" + String(s).padStart(2, "0") + ":" + String(f).padStart(2, "0"); } }, S(166.42)); })();
+    ink($("sc006-mk"), "M560 868 C 590 740 610 560 650 448", S(169.20), 0.7, { color: BONE, width: 3 });
+    pop(el($("sc006-mk"), "circle", { cx: 655, cy: 432, r: 16, fill: "none", stroke: BONE, "stroke-width": 4 }), S(169.70), { dur: 0.6, from: 0.3 });
+    wd("sc006-txt", [T(169.14) - L, T(169.54) - L, T(169.70) - L, T(170.10) - L], { dur: 0.6 });
+
+    /* ============ sc007 · 171.22–176.82 · FACE medium ============ */
+    scene("sc007", 171.22, 176.82);
+    ground("face", S(171.22));
+    frame("sc007", 171.22, 176.82, 1.25, 1.29, 1018, 380);
+    fcText("sc007", [T(174.98) - L, T(175.78) - L], null);
+
+    /* ============ sc008 · 176.82–181.46 · Mamoń in profile ============ */
+    scene("sc008", 176.82, 181.46);
+    ground("night", S(176.82));
+    tl.fromTo($("sc008-v"), { scale: 1.02, x: 0 }, { scale: 1.09, x: -30, duration: 4.7, ease: "none", immediateRender: true }, S(176.82));
+
+    /* ============ sc009 · 181.46–185.15 · FACE close ============ */
+    scene("sc009", 181.46, 185.15);
+    ground("face", S(181.46));
+    frame("sc009", 181.46, 185.15, 1.55, 1.58, 1018, 330);
+    fcText("sc009", [T(183.31) - L, T(183.55) - L, T(183.71) - L], null);
+    whip("sc009", "sc010", S(185.15), { dir: -1 });
+
+    /* ============ sc010 · 185.15–187.87 · face to face ============ */
+    scene("sc010", 185.15, 188.58);
+    ground("night", S(185.15));
+    tl.fromTo($("sc010-v"), { scale: 1.06 }, { scale: 1.12, duration: 2.8, ease: "none", immediateRender: true }, S(185.15));
+    wd("sc010-t", [T(186.99) - L, T(187.31) - L, T(187.47) - L], { dur: 0.3, y: 8 });
+
+    /* ============ sc011 · 187.87–190.43 · redacted page ============ */
+    scene("sc011", 188.18, 190.43);
+    slideIn("sc011", S(188.58), { axis: "y", from: 1, d: 0.4 });
+    ground("paper", S(188.58));
+    (function () {
+      const box = $("sc011-lines"), W = [760, 690, 800, 540, 740, 620, 790, 700, 480, 760, 650, 720, 560, 780, 610, 700, 430];
+      const bars = [];
+      W.forEach((w, i) => {
+        const ln = document.createElement("div"); ln.className = "v2-ln"; ln.style.width = w + "px"; box.appendChild(ln);
+        if (i !== 3 && i !== 8 && i !== 13) { const r = document.createElement("div"); r.className = "v2-red"; r.style.width = (w * (0.55 + 0.4 * ((i * 37) % 10) / 10) + 12) + "px"; ln.appendChild(r); bars.push(r); }
+      });
+      bars.forEach((r, i) => tl.fromTo(r, { scaleX: 0 }, { scaleX: 1, duration: 0.17, ease: C(E.out, 0.17), immediateRender: true }, S(188.70) + i * 0.06));
+      tl.fromTo($("sc011-doc"), { scale: 1 }, { scale: 1.03, duration: 1.9, ease: "none", immediateRender: true }, S(188.58));
+    })();
+    wd("sc011-hd", [T(188.67) - L, T(189.15) - L, T(189.31) - L, T(189.55) - L, T(189.71) - L], { dur: 0.3, y: 8 });
+    // push-through into the black bars → night grid
+    pushOut("sc011", S(190.43), { to: 3.4, origin: "46% 40%", d: 0.28 });
+
+    /* ============ sc012 · 190.43–194.59 · grid of stills ============ */
+    scene("sc012", 190.43, 194.59);
+    ground("night", S(190.43));
+    landIn("sc012", S(190.43), { from: 1.3, d: 0.45 });
+    (function () {
+      const b = $("sc012-board"), src = ["still_air", "still_18", "still_27", "still_855", "still_845", "still_9"];
+      src.forEach((s, i) => {
+        const c = i % 3, r = Math.floor(i / 3), f = document.createElement("div");
+        f.className = "v2-frame"; f.style.left = (144 + c * 556) + "px"; f.style.top = (250 + r * 328) + "px";
+        f.style.backgroundImage = "url('assets/ivan/ivs02/derived/" + s + ".jpg')";
+        f.style.backgroundPosition = s === "still_9" ? "center 15%" : "center";
+        f.style.filter = "brightness(" + (s === "still_air" || s === "still_9" ? 1.05 : 1.6) + ") saturate(0.35)";
+        b.appendChild(f);
+        tl.fromTo(f, { opacity: 0, scale: 0.92 }, { opacity: 1, scale: 1, duration: 0.6, ease: C(E.out, 0.6), immediateRender: true }, S(190.55) + i * 0.08);
+        const q = document.createElement("div"); q.className = "v2-q t-display"; q.textContent = "?"; f.appendChild(q);
+        pop(q, S(191.85) + [0, 3, 1, 4, 2, 5][i] * 0.17, { from: 0.3, dur: 0.6 });
+      });
+      tl.fromTo(b, { scale: 1 }, { scale: 1.04, duration: 4.2, ease: "none", immediateRender: true, transformOrigin: "50% 55%" }, S(190.43));
+    })();
+    wd("sc012-t", [T(190.67) - L, T(191.31) - L, T(191.55) - L, T(191.79) - L], { dur: 0.5, y: 10 });
+
+    /* ============ sc013 · 194.59–201.07 · FACE wide ============ */
+    scene("sc013", 194.59, 201.07);
+    ground("face", S(194.59));
+    frame("sc013", 194.59, 201.07, 1.0, 1.04, 1018, 380);
+    fcText("sc013", [T(197.31) - L, T(197.87) - L, T(198.03) - L], S(200.20));
+    whip("sc013", "sc014", S(201.07), { dir: 1 });
+
+    /* ============ sc014 · 201.07–203.87 · grey man → Ukrainian intelligence? ============ */
+    scene("sc014", 201.07, 204.35);
+    ground("paper", S(201.07));
+    (function () {
+      const svg = $("sc014-mk");
+      FX.markupDefs(svg, SEG + "-pen14", { boil: 4 });
+      tl.fromTo($("sc014-por"), { rotation: -3 }, { rotation: -2, duration: 3.3, ease: "none", immediateRender: true }, S(201.07));
+      FX.markup.pen(tl, svg, S(201.40), { points: [[730, 540], [860, 520], [960, 528], [1080, 512]], color: INK, width: 5, dur: 0.6, filter: "url(#" + SEG + "-pen14)", seed: 14 });
+      FX.markup.pen(tl, svg, S(203.25), { points: [[1500, 640], [1520, 600], [1560, 596], [1572, 628], [1540, 660], [1536, 690]], color: OX, width: 7, dur: 0.4, filter: "url(#" + SEG + "-pen14)", seed: 15 });
+      const dot = el(svg, "circle", { cx: 1536, cy: 716, r: 6, fill: OX, opacity: 0 });
+      tl.set(dot, { opacity: 1 }, S(203.62));
+    })();
+    tl.fromTo($("sc014-tag"), { scaleX: 0, transformOrigin: "0% 50%" }, { scaleX: 1, duration: 0.5, ease: C(E.out, 0.5), immediateRender: true }, T(202.11) - L);
+    wd("sc014-tag", [T(202.11) - L, T(202.75) - L], { dur: 0.45, y: 6 });
+    wd("sc014-ornot", [T(203.23) - L, T(203.39) - L], { dur: 0.35, y: 8 });
+    whip("sc014", "sc015", S(204.35), { dir: 1 });
+
+    /* ============ sc015 · 203.87–209.23 · map Warsaw → Kyiv · GUR ============ */
+    scene("sc015", 204.35, 209.45);
+    ground("night", S(204.35));
+    (function () {
+      const cam = $("sc015-cam"), svg = $("sc015-svg");
+      gsap.set(cam, at(1240, 2730, 1.0));
+      tl.fromTo(cam, at(1240, 2730, 1.0), Object.assign(at(1300, 2750, 1.06), { duration: 5.2, ease: E.cam, immediateRender: false }), S(204.35));
+      const ua = el(svg, "path", { d: EE.ukraine + EE.crimea, fill: SKY, "fill-opacity": 0, stroke: SKY, "stroke-width": 4, "stroke-opacity": 0 });
+      ua.style.mixBlendMode = "screen";
+      tl.fromTo(ua, { attr: { "fill-opacity": 0, "stroke-opacity": 0 } }, { attr: { "fill-opacity": 0.28, "stroke-opacity": 0.9 }, duration: 1.0, ease: C(E.out, 1.0), immediateRender: true }, S(206.40));
+      pop($("sc015-mam"), S(204.42), { dur: 0.8, from: 0.6 });
+      rise($("sc015-lw"), T(204.75) - L, { dur: 0.6, y: 8 });
+      const arc = ink(svg, "M770 2640 C 980 2480 1330 2520 1540 2752", S(205.45), 1.2, { color: BONE, width: 6, ease: C(E.inOut, 1.2) });
+      pop($("sc015-pk"), S(206.50), { dur: 0.6, from: 0.3 });
+      gated(206.5, 209.5, () => FX.radioWaves(svg, 1555, 2772, { color: SKY, from: S(206.6), to: S(209.5), max: 300, width: 7 }));
+      pop($("sc015-gur"), T(208.35) - L, { dur: 0.5, from: 0.6 });
+    })();
+    wd("sc015-lbl", [T(206.43) - L, T(207.07) - L, T(207.47) - L], { dur: 0.5, y: 8 });
+    out($("sc015-lbl"), S(208.10), 0.25);
+    whip("sc015", "sc016", S(209.45), { dir: -1 });
+
+    /* ============ sc016 · 209.23–212.91 · case file · CONFIRMED ============ */
+    scene("sc016", 209.45, 212.91);
+    ground("paper", S(209.45));
+    (function () {
+      const box = $("sc016-lines");
+      [600, 520, 640, 380, 560, 600, 300].forEach((w) => { const ln = document.createElement("div"); ln.className = "v2-ln"; ln.style.width = w + "px"; box.appendChild(ln); });
+      tl.fromTo($("sc016-file"), { scale: 1 }, { scale: 1.035, duration: 3.5, ease: "none", immediateRender: true }, S(209.45));
+      tl.fromTo($("sc016-stamp"), { opacity: 0, scale: 1.7 }, { opacity: 0.92, scale: 1, duration: 0.18, ease: "power3.in", immediateRender: true }, T(209.63) - L);
+      tl.fromTo($("sc016-shot"), { x: 0, y: 0 }, { x: 6, y: -5, duration: 0.05, yoyo: true, repeat: 3, ease: "none", immediateRender: false }, T(209.63) - L + 0.18);
+    })();
+
+    /* ============ sc017 · 212.91–215.23 · FACE medium ============ */
+    scene("sc017", 212.91, 215.75);
+    ground("face", S(212.91));
+    frame("sc017", 212.91, 215.75, 1.3, 1.32, 1018, 380);
+    fcText("sc017", [T(213.95) - L, T(214.11) - L, T(214.51) - L, T(214.91) - L], null);
+
+    /* ============ sc018 · 215.23–221.05 · FACE close (question) ============ */
+    scene("sc018", 215.75, 221.05);
+    frame("sc018", 215.75, 221.05, 1.55, 1.6, 1018, 330);
+    whip("sc018", "sc019", S(221.05), { dir: 1 });
+
+    /* ============ sc019 · 221.05–225.15 · atlas: Russian military facilities ============ */
+    scene("sc019", 221.05, 225.15);
+    ground("paper", S(221.05));
+    (function () {
+      const cam = $("sc019-cam"), svg = $("sc019-svg");
+      gsap.set(cam, at(3560, 1860, 0.6));
+      tl.fromTo(cam, at(3560, 1860, 0.6), Object.assign(at(3600, 1880, 0.65), { duration: 4.2, ease: E.cam, immediateRender: false }), S(221.05));
+      const ru = el(svg, "path", { d: EE.russia, fill: OX, "fill-opacity": 0.16, stroke: OX, "stroke-width": 6, "stroke-opacity": 0.85 });
+      ru.style.mixBlendMode = "multiply";
+      const ua = el(svg, "path", { d: EE.ukraine + EE.crimea, fill: AZ, "fill-opacity": 0.28, stroke: AZ, "stroke-width": 5, "stroke-opacity": 0.7 });
+      ua.style.mixBlendMode = "multiply";
+      const P = [[2891.8, 1765.9], [3873, 2524.8], [4304.5, 1473.6], [4736, 1490.4], [2837.2, 2478.7], [3546.7, 1361.5], [2452.7, 2736.1]];
+      P.forEach((p, i) => {
+        const g = el(svg, "g", {});
+        el(g, "rect", { x: p[0] - 22, y: p[1] - 22, width: 44, height: 44, fill: OX, stroke: "#f0ede6", "stroke-width": 6, transform: "rotate(45 " + p[0] + " " + p[1] + ")" });
+        gsap.set(g, { transformOrigin: p[0] + "px " + p[1] + "px" });
+        tl.fromTo(g, { opacity: 0, scale: 0.2 }, { opacity: 1, scale: 1, duration: 0.5, ease: C(E.out, 0.5), immediateRender: true }, S(221.30) + i * 0.12);
+      });
+      // crosshairs lock on three of them at "attack" (azure = Ukraine)
+      [[2891.8, 1765.9], [3873, 2524.8], [4304.5, 1473.6]].forEach((p, i) => {
+        const g = el(svg, "g", { fill: "none", stroke: AZ, "stroke-width": 8 });
+        el(g, "circle", { cx: p[0], cy: p[1], r: 70 });
+        el(g, "path", { d: "M" + (p[0] - 110) + " " + p[1] + " L" + (p[0] - 40) + " " + p[1] + " M" + (p[0] + 40) + " " + p[1] + " L" + (p[0] + 110) + " " + p[1] + " M" + p[0] + " " + (p[1] - 110) + " L" + p[0] + " " + (p[1] - 40) + " M" + p[0] + " " + (p[1] + 40) + " L" + p[0] + " " + (p[1] + 110) });
+        gsap.set(g, { transformOrigin: p[0] + "px " + p[1] + "px" });
+        tl.fromTo(g, { opacity: 0, scale: 2.2, rotation: -45 }, { opacity: 1, scale: 1, rotation: 0, duration: 0.5, ease: C(E.out, 0.5), immediateRender: true }, S(223.80) + i * 0.08);
+      });
+    })();
+    tl.fromTo($("sc019-t"), { scaleX: 0, transformOrigin: "0% 50%" }, { scaleX: 1, duration: 0.5, ease: C(E.out, 0.5), immediateRender: true }, T(221.23) - L);
+    wd("sc019-t", [T(221.23) - L, T(221.63) - L, T(222.03) - L], { dur: 0.45, y: 6 });
+    whip("sc019", "sc020", S(225.15), { dir: 1 });
+
+    /* ============ sc020 · 225.15–228.51 · Astana · stamp ============ */
+    scene("sc020", 225.15, 228.51);
+    ground("night", S(225.15));
+    tl.fromTo($("sc020-v"), { scale: 1.02 }, { scale: 1.07, duration: 3.4, ease: "none", immediateRender: true }, S(225.15));
+    tl.fromTo($("sc020-stamp"), { opacity: 0, scale: 1.6 }, { opacity: 1, scale: 1, duration: 0.18, ease: "power3.in", immediateRender: true }, T(226.27) - L);
+    tl.fromTo($("sc020-shot"), { x: 0, y: 0 }, { x: 5, y: -4, duration: 0.05, yoyo: true, repeat: 3, ease: "none", immediateRender: false }, T(226.27) - L + 0.18);
+
+    /* ============ sc021 · 228.51–230.55 · Ivan's hands on the phone ============ */
+    scene("sc021", 228.51, 230.55);
+    tl.fromTo($("sc021-v"), { scale: 1.0 }, { scale: 1.05, duration: 2.1, ease: "none", immediateRender: true }, S(228.51));
+    wd("sc021-t", [T(228.51) - L, T(228.75) - L, T(229.23) - L], { dur: 0.45, y: 8 });
+    pushOut("sc021", S(230.55), { to: 2.6, origin: "40% 40%", d: 0.32 });
+
+    /* ============ sc022 · 230.55–238.75 · satellite map ============ */
+    scene("sc022", 230.55, 238.75);
+    (function () {
+      const cam = $("sc022-cam"), svg = $("sc022-svg");
+      const KZ = [4304.5, 1473.6], MO = [2603.3, 1498.6], KY = [1555, 2772];
+      gsap.set(cam, at(KZ[0], KZ[1] + 60, 1.45));
+      tl.fromTo(cam, at(KZ[0], KZ[1] + 60, 1.45), Object.assign(at(KZ[0], KZ[1] + 80, 1.3), { duration: 2.7, ease: "none", immediateRender: false }), S(230.55));
+      tl.to(cam, Object.assign(at(3454, 1520, 0.85), { duration: 1.6, ease: E.cam }), S(233.30));
+      tl.to(cam, Object.assign(at(2900, 2180, 0.5), { duration: 1.9, ease: E.cam }), S(235.70));
+      landIn("sc022", S(230.55), { from: 1.35, d: 0.45 });
+      const ru = el(svg, "path", { d: EE.russia, fill: OX, "fill-opacity": 0, stroke: OXL, "stroke-width": 5, "stroke-opacity": 0 });
+      tl.fromTo(ru, { attr: { "fill-opacity": 0, "stroke-opacity": 0 } }, { attr: { "fill-opacity": 0.1, "stroke-opacity": 0.8 }, duration: 0.8, ease: C(E.out, 0.8), immediateRender: true }, S(233.40));
+      const ua = el(svg, "path", { d: EE.ukraine + EE.crimea, fill: SKY, "fill-opacity": 0, stroke: SKY, "stroke-width": 5, "stroke-opacity": 0 });
+      tl.fromTo(ua, { attr: { "fill-opacity": 0, "stroke-opacity": 0 } }, { attr: { "fill-opacity": 0.2, "stroke-opacity": 0.85 }, duration: 0.8, ease: C(E.out, 0.8), immediateRender: true }, S(235.90));
+      pop($("sc022-pz"), S(231.10), { dur: 0.6, from: 0.3 });
+      const ring = el(svg, "circle", { cx: KZ[0], cy: KZ[1], r: 120, fill: "none", stroke: OXL, "stroke-width": 5, opacity: 0 });
+      gsap.set(ring, { transformOrigin: KZ[0] + "px " + KZ[1] + "px" });
+      tl.fromTo(ring, { opacity: 0.9, scale: 0.3 }, { opacity: 0, scale: 1.6, duration: 1.2, ease: "power2.out", immediateRender: true }, S(231.20));
+      tl.fromTo(ring, { opacity: 0.9, scale: 0.3 }, { opacity: 0, scale: 1.6, duration: 1.2, ease: "power2.out", immediateRender: false }, S(232.40));
+      rise($("sc022-ltat"), T(232.51) - L, { dur: 0.6, y: 10 });
+      ink(svg, "M" + MO[0] + " " + MO[1] + " C 3100 1380 3800 1380 " + KZ[0] + " " + KZ[1], S(233.55), 1.1, { color: BONE, width: 7, ease: C(E.inOut, 1.1) });
+      pop($("sc022-pm"), S(234.40), { dur: 0.5, from: 0.3 });
+      wd("sc022-ld", [T(233.63) - L, T(234.11) - L, T(234.27) - L, T(234.67) - L], { dur: 0.5, y: 10 });
+      rise($("sc022-lm"), T(235.15) - L, { dur: 0.5, y: 8 });
+      out($("sc022-ltat"), S(235.65), 0.3); out($("sc022-ld"), S(235.65), 0.3);
+      // the footage travels Kazan → Kyiv (azure route)
+      const route = "M" + KZ[0] + " " + KZ[1] + " C 3700 2300 2400 2900 " + KY[0] + " " + KY[1];
+      ink(svg, route, S(236.00), 1.6, { color: SKY, width: 9, ease: C(E.inOut, 1.6) });
+      const probe = el(svg, "path", { d: route, fill: "none", stroke: "none" }), RL = probe.getTotalLength(), pts = [];
+      for (let i = 0; i <= 60; i++) { const q = probe.getPointAtLength(RL * i / 60); pts.push([q.x, q.y]); }
+      const card = $("sc022-card"), cs = { k: 0 };
+      gsap.set(card, { left: KZ[0], top: KZ[1], opacity: 0, scale: 2.4 });
+      tl.set(card, { opacity: 1 }, S(236.00));
+      tl.fromTo(cs, { k: 0 }, { k: 60, duration: 1.6, ease: C(E.inOut, 1.6), immediateRender: false, onUpdate: () => { const p = pts[Math.round(cs.k)]; card.style.left = p[0] + "px"; card.style.top = p[1] + "px"; } }, S(236.00));
+      pop($("sc022-pk"), S(237.40), { dur: 0.5, from: 0.3 });
+      wd("sc022-lh", [T(237.07) - L, T(237.23) - L, T(237.87) - L], { dur: 0.4, y: 10 });
+    })();
+    wd("sc022-t", [T(230.67) - L, T(230.83) - L, T(231.39) - L, T(231.95) - L], { dur: 0.5, y: 8 });
+    out($("sc022-t"), S(232.30), 0.25);
+
+    /* ============ sc023 · 238.75–243.87 · FACE wide + satellite print behind him ============ */
+    scene("sc023", 238.75, 243.87);
+    ground("face", S(238.75));
+    frame("sc023", 238.75, 243.87, 1.0, 1.03, 1018, 380);
+    gsap.set($("sc023-sat"), { opacity: 0 });
+    tl.fromTo($("sc023-sat"), { opacity: 0, y: 60, scale: 0.9 }, { opacity: 1, y: 0, scale: 1, duration: 0.9, ease: C(E.out, 0.9), immediateRender: true }, S(241.45));
+    tl.fromTo($("sc023-sat").firstElementChild, { scale: 1.15 }, { scale: 1.0, duration: 2.3, ease: E.cam, immediateRender: true }, S(241.45));
+    fcText("sc023", [T(241.39) - L, T(241.55) - L, T(242.19) - L], null);
+
+    /* ============ sc024 · 243.87–246.10 · FACE close ============ */
+    scene("sc024", 243.87, 246.10);
+    frame("sc024", 243.87, 246.10, 1.5, 1.53, 1018, 330);
+    whip("sc024", "sc025", S(246.10), { dir: -1 });
+
+    /* ============ sc025 · 246.10–252.02 · split: from space | on the ground ============ */
+    scene("sc025", 246.10, 252.30);
+    ground("night", S(246.10));
+    tl.fromTo($("sc025-pr"), { opacity: 0, x: 80 }, { opacity: 1, x: 0, duration: 0.8, ease: C(E.out, 0.8), immediateRender: true }, S(246.30));
+    tl.fromTo($("sc025-pl"), { opacity: 0, x: -80 }, { opacity: 1, x: 0, duration: 0.8, ease: C(E.out, 0.8), immediateRender: true }, S(246.45));
+    tl.fromTo($("sc025-sat"), { scale: 1.0 }, { scale: 1.08, duration: 5.9, ease: "none", immediateRender: true }, S(246.10));
+    wd("sc025-gr", [T(246.90) - L, T(247.06) - L, T(247.22) - L], { dur: 0.45, y: 10 });
+    tl.to($("sc025-pr"), { opacity: 0.45, duration: 0.5 }, S(250.50));
+    out($("sc025-gr"), S(250.40), 0.3);
+    wd("sc025-sp", [T(251.14) - L, T(251.38) - L], { dur: 0.4, y: 10 });
+
+    /* ============ sc026 · 252.02–256.26 · satellite close-up ============ */
+    scene("sc026", 252.30, 256.26);
+    landIn("sc026", S(252.30), { from: 1.18, d: 0.45 });
+    (function () {
+      const cam = $("sc026-cam"), svg = $("sc026-svg");
+      gsap.set(cam, at(1500, 1420, 0.9));
+      tl.fromTo(cam, at(1500, 1420, 0.9), Object.assign(at(1480, 1430, 1.08), { duration: 4.0, ease: E.cam, immediateRender: false }), S(252.30));
+      FX.markupDefs(svg, SEG + "-mk26", { boil: 12 }); svg.setAttribute("viewBox", "0 0 3584 2816");
+      FX.markup.box(tl, svg, S(253.40), { x: 1330, y: 1290, w: 260, h: 220, color: BONE, width: 9, dur: 0.6, filter: "url(#" + SEG + "-mk26)" });
+      const q = el(svg, "text", { x: 1610, y: 1300, "font-size": 120, fill: BONE, class: "t-display" }); q.textContent = "?";
+      tl.fromTo(q, { opacity: 0 }, { opacity: 1, duration: 0.2, immediateRender: true }, S(253.60));
+      tl.to(q, { opacity: 0, duration: 0.15 }, S(254.50));
+      ink(svg, "M1600 1250 L1640 1300 L1720 1170", S(254.55), 0.45, { color: SKY, width: 14 });
+    })();
+    wd("sc026-t", [T(253.38) - L, T(253.70) - L], { dur: 0.5, y: 10 });
+    whip("sc026", "sc027", S(256.26), { dir: 1 });
+
+    /* ============ sc027 · 256.26–259.54 · FACE medium ============ */
+    scene("sc027", 256.26, 259.54);
+    ground("face", S(256.26));
+    frame("sc027", 256.26, 259.54, 1.25, 1.28, 1018, 380);
+    fcText("sc027", [T(257.38) - L, T(257.62) - L, T(258.02) - L, T(258.34) - L], null);
+
+    /* ============ sc028 · 259.54–262.66 · hooded figure ============ */
+    scene("sc028", 259.54, 262.66);
+    ground("night", S(259.54));
+    tl.fromTo($("sc028-v"), { scale: 1.02 }, { scale: 1.08, duration: 3.2, ease: "none", immediateRender: true }, S(259.54));
+    wd("sc028-t", [T(260.50) - L, T(260.66) - L, T(260.98) - L], { dur: 0.5, y: 10 });
+
+    /* ============ sc029 · 262.66–266.18 · CCTV ============ */
+    scene("sc029", 262.66, 266.60);
+    landIn("sc029", S(262.66), { from: 1.1, d: 0.3 });
+    tl.fromTo($("sc029-v"), { scale: 1.0 }, { scale: 1.06, duration: 3.6, ease: "none", immediateRender: true }, S(262.66));
+    (function () {
+      const svg = $("sc029-mk"), g = el(svg, "g", { fill: "none", stroke: OXL, "stroke-width": 5 });
+      const x = 470, y = 110, w = 640, h = 660, k = 54;
+      el(g, "path", { d: "M" + x + " " + (y + k) + " L" + x + " " + y + " L" + (x + k) + " " + y + " M" + (x + w - k) + " " + y + " L" + (x + w) + " " + y + " L" + (x + w) + " " + (y + k) + " M" + (x + w) + " " + (y + h - k) + " L" + (x + w) + " " + (y + h) + " L" + (x + w - k) + " " + (y + h) + " M" + (x + k) + " " + (y + h) + " L" + x + " " + (y + h) + " L" + x + " " + (y + h - k) });
+      gsap.set(g, { transformOrigin: (x + w / 2) + "px " + (y + h / 2) + "px" });
+      tl.fromTo(g, { opacity: 0, scale: 1.5 }, { opacity: 1, scale: 1, duration: 0.5, ease: C(E.out, 0.5), immediateRender: true }, S(263.20));
+    })();
+    wd("sc029-t", [T(264.26) - L, T(264.90) - L, T(265.46) - L], { dur: 0.35, y: 8 });
+    slideIn("sc030", S(266.60), { axis: "x", from: 1, d: 0.45 });
+
+    /* ============ sc030 · 266.18–271.62 · notebook: five hours ============ */
+    scene("sc030", 266.15, 271.62);
+    ground("paper", S(266.60));
+    (function () {
+      const svg = $("sc030-mk");
+      FX.markupDefs(svg, SEG + "-pen30", { boil: 4 });
+      const F = "url(#" + SEG + "-pen30)";
+      // the "area": a rough block plan with roads (pencil), the X (the spot), loops of checking around it
+      FX.markup.pen(tl, svg, S(266.62), { points: [[180, 300], [520, 290], [880, 310]], color: "#4d5157", width: 4, dur: 0.5, filter: F, seed: 31 });
+      FX.markup.pen(tl, svg, S(266.75), { points: [[300, 180], [320, 560], [300, 900]], color: "#4d5157", width: 4, dur: 0.5, filter: F, seed: 32 });
+      FX.markup.pen(tl, svg, S(266.88), { points: [[160, 720], [600, 700], [960, 740]], color: "#4d5157", width: 4, dur: 0.5, filter: F, seed: 33 });
+      const cx = 600, cy = 520;
+      FX.markup.cross(tl, svg, S(267.20), { x: cx, y: cy, s: 30, color: OX, width: 9, filter: F });
+      // loops: an ever-tighter spiral path around the X, drawn over the five hours
+      const pts = []; for (let i = 0; i <= 140; i++) { const a = i / 140 * Math.PI * 2 * 3.2, r = 330 - i * 1.7; pts.push([cx + Math.cos(a) * r * 1.15, cy + Math.sin(a) * r * 0.8]); }
+      FX.markup.pen(tl, svg, S(267.30), { points: pts, color: INK, width: 4, dur: 3.4, jitter: 3, filter: F, seed: 34, ease: "none" });
+      // clock: ring + hour hand turning five hours (150°)
+      const g = el(svg, "g", {}), ox = 1400, oy = 420;
+      el(g, "circle", { cx: ox, cy: oy, r: 190, fill: "none", stroke: INK, "stroke-width": 7 });
+      for (let i = 0; i < 12; i++) { const a = i / 12 * Math.PI * 2; el(g, "path", { d: "M" + (ox + Math.sin(a) * 160) + " " + (oy - Math.cos(a) * 160) + " L" + (ox + Math.sin(a) * 178) + " " + (oy - Math.cos(a) * 178), stroke: INK, "stroke-width": 6 }); }
+      const sweep = el(g, "path", { d: "", fill: "rgba(242,194,50,0.55)", stroke: "none" });
+      const hand = el(g, "path", { d: "M" + ox + " " + (oy + 20) + " L" + ox + " " + (oy - 130), stroke: INK, "stroke-width": 10, "stroke-linecap": "round" });
+      el(g, "circle", { cx: ox, cy: oy, r: 12, fill: INK });
+      tl.fromTo(g, { opacity: 0, scale: 0.8, transformOrigin: ox + "px " + oy + "px" }, { opacity: 1, scale: 1, duration: 0.6, ease: C(E.out, 0.6), immediateRender: true }, S(267.80));
+      const hs = { a: 0 };
+      tl.fromTo(hs, { a: 0 }, { a: 150, duration: 2.0, ease: C(E.inOut, 2.0), immediateRender: true, onUpdate: () => {
+        hand.setAttribute("transform", "rotate(" + hs.a.toFixed(1) + " " + ox + " " + oy + ")");
+        const r = 150, a1 = hs.a * Math.PI / 180, large = hs.a > 180 ? 1 : 0;
+        sweep.setAttribute("d", hs.a < 0.5 ? "" : "M" + ox + " " + oy + " L" + ox + " " + (oy - r) + " A" + r + " " + r + " 0 " + large + " 1 " + (ox + Math.sin(a1) * r).toFixed(1) + " " + (oy - Math.cos(a1) * r).toFixed(1) + " Z"); } }, S(268.40));
+      sweep.style.mixBlendMode = "multiply";
+    })();
+    tl.fromTo($("sc030-fh"), { scaleX: 0, transformOrigin: "0% 50%" }, { scaleX: 1, duration: 0.45, ease: C(E.out, 0.45), immediateRender: true }, T(268.90) - L);
+    wd("sc030-fh", [T(268.90) - L, T(269.30) - L], { dur: 0.45, y: 8 });
+    tl.fromTo($("sc030-cam"), { scale: 1 }, { scale: 1.04, duration: 5.0, ease: "none", immediateRender: true, transformOrigin: "31% 48%" }, S(266.18));
+    pushOut("sc030", S(271.62), { to: 3.0, origin: "31% 48%", d: 0.36 });
+
+    /* ============ sc031 · 271.62–277.14 · the cache ============ */
+    scene("sc031", 271.62, 277.50);
+    ground("night", S(271.62));
+    landIn("sc031", S(271.62), { from: 1.25, d: 0.45 });
+    tl.fromTo($("sc031-v"), { scale: 1.0 }, { scale: 1.07, duration: 5.6, ease: "none", immediateRender: true }, S(271.62));
+    (function () {
+      const svg = $("sc031-mk"), g = el(svg, "g", { fill: "none", stroke: BONE, "stroke-width": 4 });
+      const x = 1180, y = 380, w = 420, h = 420, k = 46;
+      el(g, "path", { d: "M" + x + " " + (y + k) + " L" + x + " " + y + " L" + (x + k) + " " + y + " M" + (x + w - k) + " " + y + " L" + (x + w) + " " + y + " L" + (x + w) + " " + (y + k) + " M" + (x + w) + " " + (y + h - k) + " L" + (x + w) + " " + (y + h) + " L" + (x + w - k) + " " + (y + h) + " M" + (x + k) + " " + (y + h) + " L" + x + " " + (y + h) + " L" + x + " " + (y + h - k) });
+      gsap.set(g, { transformOrigin: (x + w / 2) + "px " + (y + h / 2) + "px" });
+      tl.fromTo(g, { opacity: 0, scale: 1.6 }, { opacity: 1, scale: 1, duration: 0.5, ease: C(E.out, 0.5), immediateRender: true }, S(273.10));
+      tl.to(g, { opacity: 0, duration: 0.3 }, S(275.40));
+    })();
+    wd("sc031-t", [T(275.86) - L, T(276.18) - L, T(276.42) - L, T(276.74) - L], { dur: 0.3, y: 8 });
+
+    /* ============ sc032 · 277.14–282.18 · home ============ */
+    scene("sc032", 277.50, 282.50);
+    tl.fromTo($("sc032-v"), { scale: 1.02 }, { scale: 1.07, duration: 5.1, ease: "none", immediateRender: true }, S(277.50));
+    wd("sc032-t", [T(280.98) - L, T(281.14) - L, T(281.54) - L], { dur: 0.45, y: 8 });
+
+    /* ============ sc033 · 282.18–284.82 · FACE close ============ */
+    scene("sc033", 282.50, 284.82);
+    ground("face", S(282.50));
+    frame("sc033", 282.50, 284.82, 1.5, 1.53, 1018, 330);
+    fcText("sc033", [T(283.46) - L, T(283.62) - L], null);
+
+    /* ============ sc034 · 284.82–289.30 · arrests ============ */
+    scene("sc034", 284.82, 289.62);
+    ground("night", S(284.82));
+    tl.fromTo($("sc034-v"), { scale: 1.0 }, { scale: 1.05, duration: 4.9, ease: "none", immediateRender: true }, S(284.82));
+    wd("sc034-t", [T(287.54) - L, T(287.94) - L, T(288.10) - L, T(288.50) - L], { dur: 0.45, y: 8 })[3].style.color = SKY;
+    whip("sc034", "sc035", S(289.62), { dir: 1 });
+
+    /* ============ sc035 · 289.30–296.18 · FACE medium → push (segment end, motion continues) ============ */
+    scene("sc035", 289.62, 296.18);
+    ground("face", S(289.62));
+    frame("sc035", 289.62, 296.18, 1.22, 1.34, 1018, 380);
+    fcText("sc035", [T(292.90) - L, T(293.22) - L, T(293.38) - L, T(293.94) - L, T(294.18) - L], null);
+
+    FX.mount(tl, DURATION);
+    window.__timelines = window.__timelines || {}; window.__timelines[SEG] = tl;
+  })();
+  </script>
+</template>
+</body>
+</html>

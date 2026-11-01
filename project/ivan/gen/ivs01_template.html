@@ -1,0 +1,899 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8" /></head>
+<body>
+<template>
+  <style>
+    #root { position: absolute; inset: 0; overflow: hidden; background: var(--night); }
+    .v1-scene { position: absolute; inset: 0; overflow: hidden; visibility: hidden; opacity: 0; }
+    .v1-shot { position: absolute; inset: 0; overflow: hidden; transform-origin: 50% 50%; }
+    .v1-night { background: var(--night); }
+    .v1-paperbg { background: var(--paper); }
+    .v1-abs { position: absolute; }
+    .v1-cam { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
+    .v1-full { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; object-fit: cover; }
+    .v1-wrap { position: absolute; inset: 0; transform-origin: 50% 50%; }
+    .v1-p1, .v1-p2 { position: absolute; inset: 0; background-size: cover; background-position: center; pointer-events: none; }
+    .v1-p2 { opacity: 0.9; mix-blend-mode: multiply; }
+    .v1-credit { position: absolute; right: 30px; bottom: 20px; font-size: 13px; letter-spacing: 0.08em; color: rgba(240,237,230,0.66); z-index: 5; }
+    .v1-credit.ink { color: rgba(27,29,32,0.62); }
+    .v1-mk { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; pointer-events: none; }
+    .v1-w { display: inline-block; white-space: pre; opacity: 0; }
+    .v1-ink { color: var(--ink); }
+    .v1-sky { color: var(--sky); }
+    .v1-oxl { color: var(--oxblood-light); }
+    .v1-scrim-b { position: absolute; left: 0; right: 0; bottom: 0; height: 460px; background: linear-gradient(180deg, rgba(16,17,19,0), rgba(16,17,19,0.86)); pointer-events: none; }
+    .v1-scrim-l { position: absolute; left: 0; top: 0; bottom: 0; width: 1100px; background: linear-gradient(90deg, rgba(16,17,19,0.82), rgba(16,17,19,0)); pointer-events: none; }
+    .v1-lamp { position: absolute; inset: 0; background: radial-gradient(ellipse 55% 65% at 62% 45%, #2c2b2a 0%, #181818 55%, #0d0d0e 100%); }
+    .v1-print { position: absolute; background: #ece8df; padding: 18px; box-shadow: 0 30px 70px rgba(0,0,0,0.45); }
+    .v1-print .in { position: relative; width: 100%; height: 100%; overflow: hidden; background: #222; }
+    .v1-print img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    .v1-node { position: absolute; border-radius: 50%; overflow: hidden; box-shadow: 0 16px 36px rgba(27,29,32,0.28); }
+    .v1-ln { height: 12px; background: rgba(27,29,32,0.22); margin: 0 0 22px; border-radius: 2px; }
+    .v1-fill { position: absolute; left: 0; top: 0; mask-size: 100% 100%; -webkit-mask-size: 100% 100%; opacity: 0; }
+    .v1-fc { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; object-fit: cover; }
+    .v1-fcw { position: absolute; inset: 0; }
+    .v1-box { display: inline-block; background: var(--ink); padding: 14px 22px 10px; }
+    #ivs01-flash { position: absolute; inset: 0; background: #f6f2ea; opacity: 0; pointer-events: none; z-index: 7; }
+    #ivs01-grain, #ivs01-dust, #ivs01-vig { z-index: 8; }
+
+    /* sc001 map */
+    #ivs01-sc001-cam { width: 2626px; height: 1140px; }
+    #ivs01-sc001-cam > img { position: absolute; left: 0; top: 0; width: 2626px; height: 1140px; }
+    #ivs01-sc001-txt { left: 96px; top: 96px; font-size: 42px; }
+    /* sc002 */
+    #ivs01-sc002-name { left: 96px; top: 560px; font-size: 230px; }
+    #ivs01-sc002-dbl { left: 96px; top: 640px; font-size: 84px; }
+    #ivs01-sc002-cut { position: absolute; left: 1180px; top: 0; width: 1920px; height: 1080px; overflow: hidden; }
+    #ivs01-sc002-cut .v1-full { left: -1180px; }
+    #ivs01-sc002-cutint { position: absolute; inset: 0; background: var(--ash-dark); mix-blend-mode: multiply; opacity: 0.8; }
+    #ivs01-sc002-line { position: absolute; left: 1178px; top: 0; width: 4px; height: 1080px; background: var(--bone); transform-origin: 50% 0; transform: scaleY(0); }
+    /* sc003 */
+    #ivs01-sc003-card { left: 240px; top: 150px; width: 820px; height: 616px; transform: rotate(-1.5deg); }
+    #ivs01-sc003-txt { left: 1160px; top: 700px; font-size: 76px; }
+    /* sc004 */
+    #ivs01-sc004-txt { left: 96px; top: 800px; font-size: 76px; }
+    /* sc005 */
+    #ivs01-sc005-ivan { left: 810px; top: 300px; width: 300px; height: 300px; background: var(--paper-2); border: 8px solid var(--ash-dark); }
+    #ivs01-sc005-ivan img { position: absolute; left: 40px; top: 40px; width: 220px; }
+    #ivs01-sc005-gur { left: 1210px; top: 300px; width: 300px; height: 300px; background: #f0ede6; border: 10px solid var(--azure); }
+    #ivs01-sc005-gur img { position: absolute; left: 14px; top: 14px; width: 252px; filter: saturate(0.55); }
+    #ivs01-sc005-l1 { left: 360px; top: 650px; width: 400px; text-align: center; font-size: 34px; }
+    #ivs01-sc005-l2 { left: 950px; top: 650px; width: 840px; text-align: center; font-size: 34px; }
+    /* sc006 */
+    #ivs01-sc006-txt { left: 96px; top: 760px; font-size: 76px; line-height: 1.02; }
+    /* sc007 */
+    #ivs01-sc007-txt { left: 96px; top: 852px; font-size: 128px; }
+    /* sc009 */
+    #ivs01-sc009-cam, #ivs01-sc013-cam, #ivs01-sc015-cam, #ivs01-sc025-cam { width: 1921px; height: 1800px; }
+    .v1-map { position: absolute; left: 0; top: 0; width: 1921px; height: 1800px; }
+    #ivs01-sc009-txt { left: 96px; top: 900px; font-size: 56px; }
+    /* sc010 */
+    #ivs01-sc010-frame { left: 1180px; top: 140px; width: 560px; height: 760px; background: #2a2725; padding: 22px; box-shadow: 0 40px 90px rgba(0,0,0,0.7); transform-origin: 50% 0; }
+    #ivs01-sc010-frame .mat { position: absolute; inset: 22px; background: #d9d3c7; padding: 26px; }
+    #ivs01-sc010-frame .ph { position: relative; width: 100%; height: 100%; overflow: hidden; }
+    #ivs01-sc010-frame img { position: absolute; left: -10%; top: -2%; width: 120%; }
+    #ivs01-sc010-nail { left: 1454px; top: 112px; width: 12px; height: 12px; border-radius: 50%; background: #9a958c; }
+    #ivs01-sc010-t1 { left: 96px; top: 470px; font-size: 76px; }
+    #ivs01-sc010-t2 { left: 96px; top: 470px; font-size: 100px; }
+    /* sc011 */
+    #ivs01-sc011-txt { left: 96px; top: 110px; font-size: 76px; }
+    /* sc012 */
+    #ivs01-sc012-txt { left: 96px; top: 850px; font-size: 76px; }
+    /* sc013 */
+    #ivs01-sc013-l1 { font-size: 32px; width: 560px; text-align: center; }
+    #ivs01-sc013-txt { left: 96px; top: 96px; font-size: 72px; }
+    /* sc014 */
+    #ivs01-sc014-folder { left: 150px; top: 110px; width: 1620px; height: 880px; background: #cdc5b4; border-radius: 6px; box-shadow: 0 30px 70px rgba(27,29,32,0.3); }
+    #ivs01-sc014-tab { left: 150px; top: 70px; width: 360px; height: 60px; background: #cdc5b4; border-radius: 10px 10px 0 0; }
+    #ivs01-sc014-card { left: 260px; top: 200px; width: 900px; height: 600px; transform: rotate(-1deg); }
+    #ivs01-sc014-txt { left: 1240px; top: 380px; font-size: 76px; line-height: 1.02; }
+    /* sc015 */
+    #ivs01-sc015-txt { left: 96px; top: 96px; font-size: 80px; }
+    /* sc017 */
+    #ivs01-sc017-txt { left: 96px; top: 860px; font-size: 76px; }
+    /* sc019 */
+    #ivs01-sc019-txt { left: 96px; top: 880px; font-size: 42px; }
+    /* sc020 */
+    #ivs01-sc020-txt { left: 96px; top: 860px; font-size: 76px; }
+    /* sc022 */
+    #ivs01-sc022-cam { width: 1920px; height: 1080px; transform-origin: 0 0; }
+    #ivs01-sc022-folder { left: 170px; top: 120px; width: 1580px; height: 860px; background: #cdc5b4; border-radius: 6px; box-shadow: 0 30px 70px rgba(27,29,32,0.3); }
+    #ivs01-sc022-id { left: 270px; top: 220px; width: 480px; height: 640px; background: #ece8df; box-shadow: 0 14px 30px rgba(27,29,32,0.25); transform: rotate(-1.2deg); }
+    #ivs01-sc022-id .ph { position: absolute; left: 40px; top: 40px; width: 400px; height: 400px; background: var(--paper-2); overflow: hidden; }
+    #ivs01-sc022-id .ph img { position: absolute; left: 50px; top: 50px; width: 300px; }
+    #ivs01-sc022-id .lines { position: absolute; left: 40px; top: 480px; width: 400px; }
+    #ivs01-sc022-stamp { left: 330px; top: 600px; font-size: 96px; color: var(--ash-dark); border: 8px solid var(--ash-dark); padding: 6px 26px 0; transform: rotate(-8deg); }
+    #ivs01-sc022-print { left: 900px; top: 300px; width: 760px; height: 505px; transform: rotate(2deg); }
+    #ivs01-sc022-txt { left: 409px; top: 905px; font-size: 64px; }
+    /* sc023/24 */
+    #ivs01-sc023-txt { left: 96px; top: 860px; font-size: 76px; }
+    .v1-wall { position: absolute; top: 0; height: 1080px; width: 1000px; background: var(--oxblood-dark); box-shadow: 0 0 60px rgba(0,0,0,0.6); }
+    .v1-wall::after { content: ""; position: absolute; inset: 0; background: url('assets/textures/paper_fiber_01.jpg') center / cover; mix-blend-mode: multiply; opacity: 0.5; }
+    #ivs01-sc024-txt { left: 0; top: 860px; width: 1920px; text-align: center; font-size: 68px; }
+    /* sc025 */
+    #ivs01-sc025-txt { left: 96px; top: 96px; font-size: 120px; }
+    /* sc027 */
+    #ivs01-sc027-txt { left: 96px; top: 860px; font-size: 76px; }
+    /* sc028 */
+    #ivs01-sc028-doc { left: 410px; top: 80px; width: 1100px; height: 920px; background: #efebe2; box-shadow: 0 30px 70px rgba(27,29,32,0.3); transform: rotate(-0.8deg); padding: 70px 90px; }
+    #ivs01-sc028-doc .art { font-size: 24px; color: var(--ink-soft); }
+    #ivs01-sc028-doc .rule { height: 4px; background: var(--ink); margin: 18px 0 30px; opacity: 0.8; }
+    #ivs01-sc028-head { font-size: 96px; color: var(--ink); margin: 0 0 40px; }
+    #ivs01-sc028-line { position: relative; font-size: 50px; color: var(--ink); margin: 0 0 30px; }
+    #ivs01-sc028-hl { position: absolute; left: -8px; top: 12px; height: 42px; width: 0; background: var(--brass); mix-blend-mode: multiply; opacity: 0.9; }
+    #ivs01-sc028-stamp { left: 1080px; top: 640px; font-size: 54px; line-height: 1.05; color: var(--oxblood); border: 7px solid var(--oxblood); padding: 14px 24px 6px; transform: rotate(-7deg); text-align: center; mix-blend-mode: multiply; }
+    /* sc029 */
+    #ivs01-sc029-txt { left: 96px; top: 860px; font-size: 76px; }
+    /* sc030 */
+    #ivs01-sc030-card { left: 1130px; top: 120px; width: 620px; height: 824px; transform: rotate(1.5deg); }
+    #ivs01-sc030-txt { left: 96px; top: 430px; font-size: 80px; line-height: 1.04; }
+    /* sc032/33 */
+    #ivs01-sc032-txt { left: 96px; top: 860px; font-size: 76px; }
+    #ivs01-sc033-txt { left: 96px; top: 850px; font-size: 120px; }
+  </style>
+
+  <div id="root" data-composition-id="ivs01" data-vo-start="0" data-duration="144.02" data-width="1920" data-height="1080">
+    <svg id="ivs01-defs" width="0" height="0" style="position:absolute"></svg>
+    <audio id="ivs01-vo" class="temp-vo" src="vo_iv.mp3" data-start="0" data-duration="144.02" data-media-start="0" data-volume="1"></audio>
+
+    <!-- sc001 · 0.00–2.20 · Somewhere inside Russia · night map, outline, reticle -->
+    <div class="v1-scene v1-night" id="ivs01-sc001"><div class="v1-shot" id="ivs01-sc001-shot">
+      <div class="v1-cam" id="ivs01-sc001-cam">
+        <img src="assets/ivan/ivs01/derived/ru_night.jpg" alt="" />
+        <div class="v1-fill" id="ivs01-sc001-fill" style="width:2626px;height:1140px;background:var(--oxblood);mask-image:url('assets/ivan/ivs01/derived/ru_ru.png');-webkit-mask-image:url('assets/ivan/ivs01/derived/ru_ru.png')"></div>
+        <svg id="ivs01-sc001-svg" class="v1-mk" style="width:2626px;height:1140px" viewBox="0 0 2626 1140"></svg>
+      </div>
+      <svg id="ivs01-sc001-ret" class="v1-mk" viewBox="0 0 1920 1080"></svg>
+      <div id="ivs01-sc001-txt" class="v1-abs t-label clean"><span class="v1-w">somewhere </span><span class="v1-w">inside </span><span class="v1-w">Russia</span></div>
+    </div></div>
+
+    <!-- sc002 · 2.20–5.92 · a man named Ivan … dangerous double life · BBC dusk, split frame -->
+    <div class="v1-scene v1-night" id="ivs01-sc002"><div class="v1-shot" id="ivs01-sc002-shot">
+      <div class="v1-wrap" id="ivs01-sc002-w">
+        <video id="ivs01-sc002-v" class="v1-full" src="assets/ivan/ivs01/footage/bbc_dusk_watch.mp4" muted playsinline data-start="2.2" data-duration="3.98" data-media-start="0.3"></video>
+        <div id="ivs01-sc002-cut"><video id="ivs01-sc002-v2" class="v1-full" src="assets/ivan/ivs01/footage/bbc_dusk_watch.mp4" muted playsinline data-start="4.82" data-duration="1.36" data-media-start="2.92" style="filter:grayscale(1) contrast(1.1)"></video><div id="ivs01-sc002-cutint"></div></div>
+        <div id="ivs01-sc002-line"></div>
+      </div>
+      <div class="v1-scrim-l"></div>
+      <div id="ivs01-sc002-name" class="v1-abs t-display halate">IVAN</div>
+      <div id="ivs01-sc002-dbl" class="v1-abs t-serif-i clean"><span class="v1-w">dangerous </span><span class="v1-w">double </span><span class="v1-w">life</span></div>
+      <div class="v1-credit">Video: BBC World Service</div>
+    </div></div>
+
+    <!-- sc003 · 5.92–9.52 · To people around him, he seems an ordinary Russian · paper contact print + pen circle -->
+    <div class="v1-scene v1-paperbg" id="ivs01-sc003"><div class="v1-shot v1-paperbg" id="ivs01-sc003-shot">
+      <div class="v1-p1" style="background-image:url('assets/textures/paper_cream_01.jpg')"></div>
+      <div class="v1-p2" style="background-image:url('assets/textures/paper_fiber_01.jpg'); filter:saturate(0.2)"></div>
+      <div class="v1-wrap" id="ivs01-sc003-w">
+        <div id="ivs01-sc003-card" class="v1-print"><div class="in"><img src="assets/ivan/ivs01/photos/moscow_metro_passengers_2012.jpg" alt="" style="filter:grayscale(0.85) contrast(1.05)" /></div></div>
+        <svg id="ivs01-sc003-svg" class="v1-mk" viewBox="0 0 1920 1080"></svg>
+      </div>
+      <div id="ivs01-sc003-txt" class="v1-abs t-serif-i v1-ink"><span class="v1-w">an </span><span class="v1-w">ordinary </span><span class="v1-w">Russian</span></div>
+      <div class="v1-credit ink">Photo: Moscow metro passengers, 2012 · CC BY 2.0</div>
+    </div></div>
+
+    <!-- sc004 · 9.52–13.84 · daily business … avoid attracting attention · BBC ferry -->
+    <div class="v1-scene v1-night" id="ivs01-sc004"><div class="v1-shot" id="ivs01-sc004-shot">
+      <div class="v1-wrap" id="ivs01-sc004-w"><video id="ivs01-sc004-v" class="v1-full" src="assets/ivan/ivs01/footage/bbc_ferry_ushanka.mp4" muted playsinline data-start="9.52" data-duration="4.62" data-media-start="0"></video></div>
+      <div class="v1-scrim-l"></div>
+      <div id="ivs01-sc004-txt" class="v1-abs t-serif-i clean"><span class="v1-w">avoid </span><span class="v1-w">attracting </span><span class="v1-w">attention</span></div>
+      <div class="v1-credit">Video: BBC World Service</div>
+    </div></div>
+
+    <!-- sc005 · 13.84–19.92 · secretly working with Ukrainian military intelligence · D15 link diagram on paper -->
+    <div class="v1-scene v1-paperbg" id="ivs01-sc005"><div class="v1-shot v1-paperbg" id="ivs01-sc005-shot">
+      <div class="v1-p1" style="background-image:url('assets/textures/paper_cream_02.jpg')"></div>
+      <div class="v1-p2" style="background-image:url('assets/textures/paper_graph_01_hires.jpg'); filter:saturate(0) contrast(1.1) brightness(1.08); opacity:0.5"></div>
+      <svg id="ivs01-sc005-svg" class="v1-mk" viewBox="0 0 1920 1080"></svg>
+      <div id="ivs01-sc005-ivan" class="v1-node"><img src="assets/ivan/motifs/grey_man.svg" alt="" /></div>
+      <div id="ivs01-sc005-gur" class="v1-node"><img src="assets/ivan/ivs01/photos/gur_emblem.png" alt="" /></div>
+      <div id="ivs01-sc005-l1" class="v1-abs t-label v1-ink"><span class="v1-w">Ivan</span></div>
+      <div id="ivs01-sc005-l2" class="v1-abs t-label" style="color:var(--azure-dark)"><span class="v1-w">Ukrainian </span><span class="v1-w">military </span><span class="v1-w">intelligence</span></div>
+      <div class="v1-credit ink">Emblem: Defence Intelligence of Ukraine (GUR) · CC0</div>
+    </div></div>
+
+    <!-- sc006 · 19.92–23.52 · prepare attacks against Russia's own military · BBC explosives at night -->
+    <div class="v1-scene v1-night" id="ivs01-sc006"><div class="v1-shot" id="ivs01-sc006-shot">
+      <div class="v1-wrap" id="ivs01-sc006-w"><video id="ivs01-sc006-v" class="v1-full" src="assets/ivan/ivs01/footage/bbc_explosives_night.mp4" muted playsinline data-start="20.04" data-duration="3.54" data-media-start="2.8" style="filter:saturate(0.4) brightness(1.45) contrast(1.08)"></video></div>
+      <div class="v1-scrim-b"></div>
+      <div id="ivs01-sc006-txt" class="v1-abs t-serif-i clean"><span class="v1-w">attacks </span><span class="v1-w">against</span><br /><span class="v1-w v1-oxl">Russia's </span><span class="v1-w v1-oxl">own </span><span class="v1-w v1-oxl">military</span></div>
+      <div class="v1-credit">Video: BBC World Service</div>
+    </div></div>
+
+    <!-- sc007 · 23.52–30.56 · despite everything … a Russian patriot · BBC walk → masked Ivan -->
+    <div class="v1-scene v1-night" id="ivs01-sc007"><div class="v1-shot" id="ivs01-sc007-shot">
+      <div class="v1-wrap" id="ivs01-sc007-w">
+        <video id="ivs01-sc007-va" class="v1-full" src="assets/ivan/ivs01/footage/bbc_walk_drone.mp4" muted playsinline data-start="23.52" data-duration="2.96" data-media-start="0.4"></video>
+        <video id="ivs01-sc007-vb" class="v1-full" src="assets/ivan/ivs01/footage/bbc_patriot_masked.mp4" muted playsinline data-start="26.48" data-duration="4.08" data-media-start="0.6"></video>
+      </div>
+      <div class="v1-scrim-b"></div>
+      <div id="ivs01-sc007-txt" class="v1-abs t-display halate"><span class="v1-w">a </span><span class="v1-w">Russian </span><span class="v1-w">patriot</span></div>
+      <div class="v1-credit">Video: BBC World Service</div>
+    </div></div>
+
+    <!-- sc008 · 30.56–32.40 · FACE CAM pop 1 (wide) -->
+    <div class="v1-scene" id="ivs01-sc008"><div class="v1-fcw" id="ivs01-sc008-w">
+      <video id="ivs01-sc008-v" class="v1-fc" src="assets/facecam/ivan_facecam_master.mp4" muted playsinline data-start="30.56" data-duration="1.84" data-media-start="30.56"></video>
+    </div></div>
+
+    <!-- sc009 · 32.40–36.80 · loves his country … help Ukraine to sabotage the Russian military · atlas map -->
+    <div class="v1-scene v1-paperbg" id="ivs01-sc009"><div class="v1-shot" id="ivs01-sc009-shot">
+      <div class="v1-cam" id="ivs01-sc009-cam">
+        <img class="v1-map" src="assets/ivan/ivs01/derived/ee_atlas.jpg" alt="" style="filter:saturate(0.12) brightness(1.04) contrast(1.02)" />
+        <div class="v1-fill" id="ivs01-sc009-ru" style="width:1921px;height:1800px;background:var(--oxblood);mask-image:url('assets/ivan/ivs01/derived/ee_ru.png');-webkit-mask-image:url('assets/ivan/ivs01/derived/ee_ru.png');mix-blend-mode:multiply"></div>
+        <div class="v1-fill" id="ivs01-sc009-ua" style="width:1921px;height:1800px;background:var(--azure);mask-image:url('assets/ivan/ivs01/derived/ee_ua.png');-webkit-mask-image:url('assets/ivan/ivs01/derived/ee_ua.png');mix-blend-mode:multiply"></div>
+        <svg id="ivs01-sc009-svg" class="v1-mk" style="width:1921px;height:1800px" viewBox="0 0 1921 1800"></svg>
+      </div>
+      <div id="ivs01-sc009-txt" class="v1-abs t-label"><span id="ivs01-sc009-box" class="v1-box" style="opacity:0"><span class="v1-w" style="color:var(--paper)">sabotage </span><span class="v1-w" style="color:var(--paper)">the </span><span class="v1-w" style="color:var(--oxblood-light)">Russian </span><span class="v1-w" style="color:var(--oxblood-light)">military</span></span></div>
+    </div></div>
+
+    <!-- sc010 · 36.80–43.12 · get rid of Vladimir Putin's government … Russia to lose this war · framed portrait -->
+    <div class="v1-scene v1-night" id="ivs01-sc010"><div class="v1-shot" id="ivs01-sc010-shot">
+      <div class="v1-lamp"></div>
+      <div class="v1-wrap" id="ivs01-sc010-w">
+        <div id="ivs01-sc010-nail" class="v1-abs"></div>
+        <div id="ivs01-sc010-frame" class="v1-abs"><div class="mat"><div class="ph"><img src="assets/ivan/ivs01/photos/putin_2022_06_30.jpg" alt="" style="filter:url(#ivs01-tint-ox)" /></div></div></div>
+      </div>
+      <div id="ivs01-sc010-t1" class="v1-abs t-serif-i clean"><span class="v1-w">Vladimir </span><span class="v1-w">Putin's </span><span class="v1-w">government</span></div>
+      <div id="ivs01-sc010-t2" class="v1-abs t-display clean"><span class="v1-w">Russia </span><span class="v1-w">to </span><span class="v1-w v1-oxl">lose </span><span class="v1-w">this </span><span class="v1-w">war</span></div>
+      <div class="v1-credit">Photo: Kremlin.ru · CC BY 4.0</div>
+    </div></div>
+
+    <!-- sc011 · 43.12–47.44 · far from the only Russian · isotype of grey men -->
+    <div class="v1-scene v1-paperbg" id="ivs01-sc011"><div class="v1-shot v1-paperbg" id="ivs01-sc011-shot">
+      <div class="v1-p1" style="background-image:url('assets/textures/paper_cream_01.jpg')"></div>
+      <div class="v1-p2" style="background-image:url('assets/textures/paper_stained_01_hires.jpg'); filter:saturate(0.15); opacity:0.55"></div>
+      <div class="v1-wrap" id="ivs01-sc011-w"><svg id="ivs01-sc011-svg" class="v1-mk" viewBox="0 0 1920 1080"></svg></div>
+      <div id="ivs01-sc011-txt" class="v1-abs t-serif-i v1-ink"><span class="v1-w">far </span><span class="v1-w">from </span><span class="v1-w">the </span><span class="v1-w">only </span><span class="v1-w">Russian</span></div>
+    </div></div>
+
+    <!-- sc012 · 47.44–50.64 · Russia fighting Ukraine on the battlefield · BBC tanks -->
+    <div class="v1-scene v1-night" id="ivs01-sc012"><div class="v1-shot" id="ivs01-sc012-shot">
+      <div class="v1-wrap" id="ivs01-sc012-w"><video id="ivs01-sc012-v" class="v1-full" src="assets/ivan/ivs01/footage/bbc_tanks_road.mp4" muted playsinline data-start="47.44" data-duration="3.26" data-media-start="0" style="filter:saturate(0.35)"></video></div>
+      <div class="v1-scrim-b"></div>
+      <div id="ivs01-sc012-txt" class="v1-abs t-serif-i clean"><span class="v1-w">on </span><span class="v1-w">the </span><span class="v1-w">battlefield</span></div>
+      <div class="v1-credit">Video: BBC World Service</div>
+    </div></div>
+
+    <!-- sc013 · 50.64–56.25 · Ukrainian intelligence … Russians willing to turn against their own government · night network map -->
+    <div class="v1-scene v1-night" id="ivs01-sc013"><div class="v1-shot" id="ivs01-sc013-shot">
+      <div class="v1-cam" id="ivs01-sc013-cam">
+        <img class="v1-map" src="assets/ivan/ivs01/derived/ee_night.jpg" alt="" />
+        <div class="v1-fill" id="ivs01-sc013-ru" style="width:1921px;height:1800px;background:var(--oxblood);mask-image:url('assets/ivan/ivs01/derived/ee_ru.png');-webkit-mask-image:url('assets/ivan/ivs01/derived/ee_ru.png')"></div>
+        <svg id="ivs01-sc013-svg" class="v1-mk" style="width:1921px;height:1800px" viewBox="0 0 1921 1800"></svg>
+        <div id="ivs01-sc013-l1" class="v1-abs t-label v1-sky clean"><span class="v1-w">Ukrainian </span><span class="v1-w">intelligence</span></div>
+      </div>
+      <div id="ivs01-sc013-txt" class="v1-abs t-serif-i clean"><span class="v1-w">turn </span><span class="v1-w">against </span><span class="v1-w">their </span><span class="v1-w">own </span><span class="v1-w">government</span></div>
+    </div></div>
+
+    <!-- sc014 · 56.25–60.25 · information about senior military officers · case file -->
+    <div class="v1-scene" id="ivs01-sc014"><div class="v1-shot v1-paperbg" id="ivs01-sc014-shot">
+      <div class="v1-p1" style="background-image:url('assets/textures/paper_cream_02.jpg')"></div>
+      <div class="v1-p2" style="background-image:url('assets/textures/paper_fiber_01.jpg'); filter:saturate(0.2); opacity:0.6"></div>
+      <div class="v1-wrap" id="ivs01-sc014-w">
+        <div id="ivs01-sc014-tab" class="v1-abs"></div>
+        <div id="ivs01-sc014-folder" class="v1-abs"></div>
+        <div id="ivs01-sc014-card" class="v1-print"><div class="in"><img src="assets/ivan/ivs01/photos/gerasimov_shoigu_alabino.jpg" alt="" style="filter:grayscale(0.88) contrast(1.06)" /></div></div>
+        <svg id="ivs01-sc014-svg" class="v1-mk" viewBox="0 0 1920 1080"></svg>
+      </div>
+      <div id="ivs01-sc014-txt" class="v1-abs t-serif-i v1-ink"><span class="v1-w">senior </span><span class="v1-w">military</span><br /><span class="v1-w">officers</span></div>
+      <div class="v1-credit ink">Photo: Mil.ru · CC BY 4.0</div>
+    </div></div>
+
+    <!-- sc015 · 60.25–64.89 · prepare attacks deep inside Russia itself · sat-desat map, radio rings -->
+    <div class="v1-scene v1-night" id="ivs01-sc015"><div class="v1-shot" id="ivs01-sc015-shot">
+      <div class="v1-cam" id="ivs01-sc015-cam">
+        <img class="v1-map" src="assets/ivan/ivs01/derived/ee_satdesat.jpg" alt="" style="filter:saturate(0.3) brightness(0.85)" />
+        <div class="v1-fill" id="ivs01-sc015-ru" style="width:1921px;height:1800px;background:var(--oxblood);mask-image:url('assets/ivan/ivs01/derived/ee_ru.png');-webkit-mask-image:url('assets/ivan/ivs01/derived/ee_ru.png')"></div>
+        <svg id="ivs01-sc015-svg" class="v1-mk" style="width:1921px;height:1800px" viewBox="0 0 1921 1800"></svg>
+      </div>
+      <div id="ivs01-sc015-txt" class="v1-abs t-serif-i clean"><span class="v1-w">deep </span><span class="v1-w">inside </span><span class="v1-w">Russia</span></div>
+      <div class="v1-credit">Imagery: Esri, Maxar, Earthstar Geographics</div>
+    </div></div>
+
+    <!-- sc016 · 64.89–66.65 · FACE CAM pop 2 (medium) -->
+    <div class="v1-scene" id="ivs01-sc016"><div class="v1-fcw" id="ivs01-sc016-w">
+      <video id="ivs01-sc016-v" class="v1-fc" src="assets/facecam/ivan_facecam_master.mp4" muted playsinline data-start="64.89" data-duration="1.76" data-media-start="64.89"></video>
+    </div></div>
+
+    <!-- sc017 · 66.65–70.09 · serious headache for Russia's security services · Lubyanka -->
+    <div class="v1-scene v1-night" id="ivs01-sc017"><div class="v1-shot" id="ivs01-sc017-shot">
+      <div class="v1-wrap" id="ivs01-sc017-w"><img class="v1-full" src="assets/ivan/ivs01/photos/lubyanka_fsb.jpg" alt="" style="filter:url(#ivs01-tint-ash)" /><svg id="ivs01-sc017-svg" class="v1-mk" viewBox="0 0 1920 1080"></svg></div>
+      <div class="v1-scrim-b"></div>
+      <div id="ivs01-sc017-txt" class="v1-abs t-serif-i clean"><span class="v1-w">Russia's </span><span class="v1-w">security </span><span class="v1-w">services</span></div>
+      <div class="v1-credit">Photo: FSB headquarters, Lubyanka · CC BY 4.0</div>
+    </div></div>
+
+    <!-- sc018 · 70.09–71.69 · FACE CAM pop 3 (close) -->
+    <div class="v1-scene" id="ivs01-sc018"><div class="v1-fcw" id="ivs01-sc018-w">
+      <video id="ivs01-sc018-v" class="v1-fc" src="assets/facecam/ivan_facecam_master.mp4" muted playsinline data-start="70.09" data-duration="1.6" data-media-start="70.09"></video>
+    </div></div>
+
+    <!-- sc019 · 71.69–74.49 · attacks inside your country · Kazan tower strike -->
+    <div class="v1-scene v1-night" id="ivs01-sc019"><div class="v1-shot" id="ivs01-sc019-shot">
+      <div class="v1-wrap" id="ivs01-sc019-w"><video id="ivs01-sc019-v" class="v1-full" src="assets/ivan/ivs01/footage/bbc_kazan_tower.mp4" muted playsinline data-start="71.69" data-duration="3.07" data-media-start="0" style="filter:saturate(0.5)"></video></div>
+      <div id="ivs01-sc019-txt" class="v1-abs t-label"><span id="ivs01-sc019-box" class="v1-box" style="opacity:0"><span class="v1-w" style="color:var(--bone)">attacks </span><span class="v1-w" style="color:var(--bone)">inside </span><span class="v1-w" style="color:var(--bone)">your </span><span class="v1-w" style="color:var(--bone)">country</span></span></div>
+      <div class="v1-credit">Video: BBC World Service</div>
+    </div></div>
+
+    <!-- sc020 · 74.49–81.29 · some of your own people are helping them do it · Moscow street, focal blur -->
+    <div class="v1-scene v1-night" id="ivs01-sc020"><div class="v1-shot" id="ivs01-sc020-shot">
+      <div class="v1-wrap" id="ivs01-sc020-w">
+        <img class="v1-full" src="assets/ivan/ivs01/photos/moscow_street_2003.jpg" alt="" style="filter:saturate(0.25) brightness(0.92)" />
+        <img id="ivs01-sc020-blur" class="v1-full" src="assets/ivan/ivs01/photos/moscow_street_2003.jpg" alt="" style="filter:saturate(0.2) brightness(0.62) blur(7px)" />
+        <svg id="ivs01-sc020-svg" class="v1-mk" viewBox="0 0 1920 1080"></svg>
+      </div>
+      <div class="v1-scrim-b"></div>
+      <div id="ivs01-sc020-txt" class="v1-abs t-serif-i clean"><span class="v1-w">some </span><span class="v1-w">of </span><span class="v1-w">your </span><span class="v1-w">own </span><span class="v1-w">people</span></div>
+      <div class="v1-credit">Photo: Moscow street, 2003 · CC BY 4.0</div>
+    </div></div>
+
+    <!-- sc021 · 81.29–83.13 · FACE CAM pop 4 (medium) -->
+    <div class="v1-scene" id="ivs01-sc021"><div class="v1-fcw" id="ivs01-sc021-w">
+      <video id="ivs01-sc021-v" class="v1-fc" src="assets/facecam/ivan_facecam_master.mp4" muted playsinline data-start="81.29" data-duration="1.84" data-media-start="81.29"></video>
+    </div></div>
+
+    <!-- sc022 · 83.13–92.09 · start with Ivan … Russia's political opposition · dossier -->
+    <div class="v1-scene" id="ivs01-sc022"><div class="v1-shot v1-paperbg" id="ivs01-sc022-shot">
+      <div class="v1-p1" style="background-image:url('assets/textures/paper_cream_01.jpg')"></div>
+      <div class="v1-p2" style="background-image:url('assets/textures/paper_lined_01_hires.jpg'); filter:saturate(0.1); opacity:0.45"></div>
+      <div class="v1-cam" id="ivs01-sc022-cam">
+        <div id="ivs01-sc022-folder" class="v1-abs"></div>
+        <div id="ivs01-sc022-id" class="v1-abs"><div class="ph"><img src="assets/ivan/motifs/grey_man.svg" alt="" /></div><div class="lines"><div class="v1-ln" style="width:90%"></div><div class="v1-ln" style="width:70%"></div><div class="v1-ln" style="width:80%"></div></div></div>
+        <div id="ivs01-sc022-stamp" class="v1-abs t-display"><span class="v1-w">IVAN</span></div>
+        <div id="ivs01-sc022-print" class="v1-print"><div class="in"><img src="assets/ivan/ivs01/photos/bolotnaya_2011_12_10.jpg" alt="" style="filter:grayscale(0.85) contrast(1.05)" /></div></div>
+        <svg id="ivs01-sc022-svg" class="v1-mk" viewBox="0 0 1920 1080"></svg>
+      </div>
+      <div id="ivs01-sc022-txt" class="v1-abs t-serif-i v1-ink"><span class="v1-w">Russia's </span><span class="v1-w">political </span><span class="v1-w">opposition</span></div>
+      <div class="v1-credit ink" id="ivs01-sc022-cr">Photo: Bolotnaya Square rally, Moscow, 10 Dec 2011 · CC0</div>
+    </div></div>
+
+    <!-- sc023 · 92.09–97.85 · He wanted change in the country · Feb 2012 march -->
+    <div class="v1-scene v1-night" id="ivs01-sc023"><div class="v1-shot" id="ivs01-sc023-shot">
+      <div class="v1-wrap" id="ivs01-sc023-w"><img class="v1-full" src="assets/ivan/ivs01/photos/rally_2012_feb4_03.jpg" alt="" style="filter:saturate(0.3) contrast(1.05)" /></div>
+      <div class="v1-scrim-b"></div>
+      <div id="ivs01-sc023-txt" class="v1-abs t-serif-i clean"><span class="v1-w">change </span><span class="v1-w">in </span><span class="v1-w">the </span><span class="v1-w">country</span></div>
+      <div class="v1-credit">Photo: Moscow opposition march, 4 Feb 2012 · CC BY-SA 3.0</div>
+    </div></div>
+
+    <!-- sc024 · 97.85–102.17 · making that harder and harder · rally crowd squeezed by closing walls -->
+    <div class="v1-scene v1-night" id="ivs01-sc024"><div class="v1-shot" id="ivs01-sc024-shot">
+      <div class="v1-wrap" id="ivs01-sc024-w"><img class="v1-full" src="assets/ivan/ivs01/photos/rally_2012_feb4_20.jpg" alt="" style="filter:saturate(0.25) contrast(1.05)" /></div>
+      <div class="v1-scrim-b"></div>
+      <div class="v1-wall" id="ivs01-sc024-wl" style="left:-1000px"></div>
+      <div class="v1-wall" id="ivs01-sc024-wr" style="left:1920px"></div>
+      <div id="ivs01-sc024-txt" class="v1-abs t-serif-i clean"><span class="v1-w">harder </span><span class="v1-w">and </span><span class="v1-w">harder</span></div>
+      <div class="v1-credit">Photo: Moscow rally, 4 Feb 2012 · CC BY-SA 3.0</div>
+    </div></div>
+
+    <!-- sc025 · 102.17–108.70 · full scale invasion of Ukraine in February 2022 · night map, arrows -->
+    <div class="v1-scene v1-night" id="ivs01-sc025"><div class="v1-shot" id="ivs01-sc025-shot">
+      <div class="v1-cam" id="ivs01-sc025-cam">
+        <img class="v1-map" src="assets/ivan/ivs01/derived/ee_night.jpg" alt="" style="filter:brightness(1.1)" />
+        <div class="v1-fill" id="ivs01-sc025-ru" style="width:1921px;height:1800px;background:var(--oxblood);mask-image:url('assets/ivan/ivs01/derived/ee_ru.png');-webkit-mask-image:url('assets/ivan/ivs01/derived/ee_ru.png')"></div>
+        <div class="v1-fill" id="ivs01-sc025-ua" style="width:1921px;height:1800px;background:var(--sky);mask-image:url('assets/ivan/ivs01/derived/ee_ua.png');-webkit-mask-image:url('assets/ivan/ivs01/derived/ee_ua.png')"></div>
+        <svg id="ivs01-sc025-svg" class="v1-mk" style="width:1921px;height:1800px" viewBox="0 0 1921 1800"></svg>
+      </div>
+      <div id="ivs01-sc025-txt" class="v1-abs t-display halate yellow" style="color:var(--brass)"><span class="v1-w">February </span><span class="v1-w">2022</span></div>
+    </div></div>
+
+    <!-- sc026 · 108.70–116.70 · INSERT 1 (Guardian, "No to war!") -->
+    <div class="v1-scene v1-night" id="ivs01-sc026"><div class="v1-shot" id="ivs01-sc026-shot">
+      <video id="ivs01-sc026-v" class="v1-full" src="assets/ivan/inserts/insert1.mp4" muted playsinline data-start="108.7" data-duration="8.0" data-media-start="0"></video>
+      <div class="v1-credit">Video: The Guardian</div>
+    </div></div>
+
+    <!-- sc027 · 116.70–119.61 · Thousands of anti-war protesters filled the streets · Guardian raw -->
+    <div class="v1-scene v1-night" id="ivs01-sc027"><div class="v1-shot" id="ivs01-sc027-shot">
+      <div class="v1-wrap" id="ivs01-sc027-w"><video id="ivs01-sc027-v" class="v1-full" src="assets/ivan/ivs01/footage/guardian_protest_street.mp4" muted playsinline data-start="116.7" data-duration="2.98" data-media-start="1.2" style="filter:saturate(0.4)"></video></div>
+      <div class="v1-scrim-b"></div>
+      <div id="ivs01-sc027-txt" class="v1-abs t-serif-i clean"><span class="v1-w">Thousands </span><span class="v1-w">of </span><span class="v1-w">anti-</span><span class="v1-w">war </span><span class="v1-w">protesters</span></div>
+      <div class="v1-credit">Video: The Guardian</div>
+    </div></div>
+
+    <!-- sc028 · 119.61–124.50 · new laws … criticizing the military a criminal offense · law page -->
+    <div class="v1-scene" id="ivs01-sc028"><div class="v1-shot v1-paperbg" id="ivs01-sc028-shot">
+      <div class="v1-p1" style="background-image:url('assets/textures/paper_cream_02.jpg')"></div>
+      <div class="v1-p2" style="background-image:url('assets/textures/paper_stained_01_hires.jpg'); filter:saturate(0.1); opacity:0.5"></div>
+      <div class="v1-wrap" id="ivs01-sc028-w">
+        <div id="ivs01-sc028-doc" class="v1-abs">
+          <div class="art t-label">Criminal Code of the Russian Federation · Article 280.3</div>
+          <div class="rule"></div>
+          <div id="ivs01-sc028-head" class="t-display"><span class="v1-w">new </span><span class="v1-w">laws</span></div>
+          <div class="v1-ln" style="width:94%"></div><div class="v1-ln" style="width:88%"></div>
+          <div id="ivs01-sc028-line" class="t-serif"><div id="ivs01-sc028-hl"></div><span class="v1-w" style="position:relative">criticizing </span><span class="v1-w" style="position:relative">the </span><span class="v1-w" style="position:relative">military</span></div>
+          <div class="v1-ln" style="width:91%"></div><div class="v1-ln" style="width:76%"></div><div class="v1-ln" style="width:84%"></div><div class="v1-ln" style="width:58%"></div>
+        </div>
+        <div id="ivs01-sc028-stamp" class="v1-abs t-label" style="opacity:0"><span class="v1-w">a criminal</span><br /><span class="v1-w">offense</span></div>
+      </div>
+    </div></div>
+
+    <!-- sc029 · 124.50–126.66 · thousands of arrests · Tverskaya 24 Feb 2022 -->
+    <div class="v1-scene v1-night" id="ivs01-sc029"><div class="v1-shot" id="ivs01-sc029-shot">
+      <div class="v1-wrap" id="ivs01-sc029-w"><img class="v1-full" src="assets/ivan/ivs01/photos/arrests_tverskaya_2022.jpg" alt="" style="filter:saturate(0.3) contrast(1.05)" /></div>
+      <div class="v1-scrim-b"></div>
+      <div id="ivs01-sc029-txt" class="v1-abs t-serif-i clean"><span class="v1-w">thousands </span><span class="v1-w">of </span><span class="v1-w">arrests</span></div>
+      <div class="v1-credit">Photo: arrests at an anti-war protest, Moscow, 24 Feb 2022 · CC0</div>
+    </div></div>
+
+    <!-- sc030 · 126.66–131.78 · leaving the country altogether · Vladikavkaz jam print -->
+    <div class="v1-scene v1-night" id="ivs01-sc030"><div class="v1-shot" id="ivs01-sc030-shot">
+      <div class="v1-lamp"></div>
+      <div class="v1-wrap" id="ivs01-sc030-w"><div id="ivs01-sc030-card" class="v1-print"><div class="in"><img src="assets/ivan/ivs01/photos/vladikavkaz_jam_2022.jpg" alt="" style="filter:saturate(0.3)" /></div></div></div>
+      <div id="ivs01-sc030-txt" class="v1-abs t-serif-i clean"><span class="v1-w">leaving </span><span class="v1-w">the </span><span class="v1-w">country</span><br /><span class="v1-w">altogether</span></div>
+      <div class="v1-credit">Photo: traffic leaving Vladikavkaz for the Georgian border, Sept 2022 · CC BY-SA 4.0</div>
+    </div></div>
+
+    <!-- sc031 · 131.78–133.62 · FACE CAM pop 5 (wide push) -->
+    <div class="v1-scene" id="ivs01-sc031"><div class="v1-fcw" id="ivs01-sc031-w">
+      <video id="ivs01-sc031-v" class="v1-fc" src="assets/facecam/ivan_facecam_master.mp4" muted playsinline data-start="131.78" data-duration="1.84" data-media-start="131.78"></video>
+    </div></div>
+
+    <!-- sc032 · 133.62–139.94 · losing the war would weaken his grip on power · Kremlin at dusk -->
+    <div class="v1-scene v1-night" id="ivs01-sc032"><div class="v1-shot" id="ivs01-sc032-shot">
+      <div class="v1-wrap" id="ivs01-sc032-w"><img id="ivs01-sc032-img" class="v1-full" src="assets/ivan/ivs01/photos/kremlin_evening.jpg" alt="" style="filter:saturate(0.3) brightness(0.95)" /></div>
+      <div class="v1-scrim-b"></div>
+      <div id="ivs01-sc032-txt" class="v1-abs t-serif-i clean"><span class="v1-w">weaken </span><span class="v1-w">his </span><span class="v1-w">grip </span><span class="v1-w">on </span><span class="v1-w">power</span></div>
+      <div class="v1-credit">Photo: Moscow Kremlin, evening · CC BY-SA 4.0</div>
+    </div></div>
+
+    <!-- sc033 · 139.94–144.02 · convinced him to help Ukraine · Ivan's silhouette at a window -->
+    <div class="v1-scene v1-night" id="ivs01-sc033"><div class="v1-shot" id="ivs01-sc033-shot">
+      <div class="v1-wrap" id="ivs01-sc033-w"><video id="ivs01-sc033-v" class="v1-full" src="assets/ivan/ivs01/footage/bbc_window_silhouette.mp4" muted playsinline data-start="139.94" data-duration="4.08" data-media-start="0"></video></div>
+      <div class="v1-scrim-b"></div>
+      <div id="ivs01-sc033-txt" class="v1-abs t-display clean v1-sky"><span class="v1-w">help </span><span class="v1-w">Ukraine</span></div>
+      <div class="v1-credit">Video: BBC World Service</div>
+    </div></div>
+
+    <div id="ivs01-flash"></div>
+    <div id="ivs01-grain" class="tx tx-grain" style="background-image:url('assets/textures/grain_01_norm.jpg')"></div>
+    <div id="ivs01-dust" class="tx tx-dust" style="background-image:url('assets/textures/dust_02.jpg')"></div>
+    <div id="ivs01-vig" class="vignette"></div>
+  </div>
+
+  <script>
+  (function () {
+    const SEG = "ivs01", SEG_START = 0.00, SEG_END = 144.02, DURATION = 144.02;
+    const T = (s) => +(s - SEG_START).toFixed(3);   // TEXT cues (audited): literal master word starts, drawn at T(..) - L
+    const S = T;                                     // STRUCTURAL cues
+    const L = 0.06;
+    const tl = gsap.timeline({ paused: true });
+    const $ = (id) => document.getElementById(SEG + "-" + id);
+    const NS = "http://www.w3.org/2000/svg";
+    const defs = $("defs");
+    const E = FX.ease;
+    const C = (e, d) => FX.choppy(e, d, 12);
+    const BONE = "#f0ede6", INK = "#1b1d20", OX = "#b32a22", OXL = "#e3a199", OXD = "#6e1914", AZ = "#2563b0", AZD = "#163c6b", SKY = "#93bde8", ASH = "#8f9196", ASHD = "#3a3c40";
+    const MAP = __PATHS__;
+    const GREYMAN = "M200 40c-52 0-86 40-86 96 0 40 18 74 44 92-4 14-10 24-22 30-58 22-96 52-108 104-6 26-8 58-8 118h360c0-60-2-92-8-118-12-52-50-82-108-104-12-6-18-16-22-30 26-18 44-52 44-92 0-56-34-96-86-96z";
+    const ALL = [];
+
+    function scene(id, a, b) {
+      ALL.push($(id));
+      tl.fromTo($(id), { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.001, immediateRender: false }, S(a));
+      if (b < SEG_END) tl.set($(id), { autoAlpha: 0 }, S(b));
+    }
+    function ground(kind, t) {
+      const v = { paper: [0.32, 0.16, 0.26], night: [1, 0.42, 0.36], cam: [0, 0, 0], insert: [0.55, 0, 0.18] }[kind];
+      tl.set([$("vig"), $("dust"), $("grain")], { opacity: (i) => v[i] }, t);
+    }
+    const rise = (el, t, o) => { o = o || {}; const d = o.dur || 0.8;
+      tl.fromTo(el, { opacity: 0, y: o.y == null ? 18 : o.y }, { opacity: 1, y: 0, duration: d, ease: C(E.out, d), immediateRender: true }, t); };
+    const pop = (el, t, o) => { o = o || {}; const d = o.dur || 0.9;
+      tl.fromTo(el, { opacity: 0, scale: o.from == null ? 0.5 : o.from }, { opacity: 1, scale: 1, duration: d, ease: C(E.out, d), immediateRender: true }, t); };
+    const fadeOut = (el, t, d) => tl.to(el, { opacity: 0, duration: d || 0.25, ease: "power1.in" }, t);
+    const W = (id) => Array.from($(id).querySelectorAll(".v1-w"));
+    const words = (id, cues, o) => W(id).forEach((w, i) => rise(w, cues[i], o));
+    const push = (el, a, b, s0, s1, o) => { o = o || {};
+      tl.fromTo(el, { scale: s0, x: o.x0 || 0, y: o.y0 || 0 }, { scale: s1, x: o.x1 || 0, y: o.y1 || 0, duration: S(b) - S(a), ease: o.ease || "none", immediateRender: false }, S(a)); };
+    const whipN = { n: 0 };
+    function whip(a, b, t, o) {
+      o = Object.assign({ dir: 1, vertical: false, flash: false, dur: 0.32 }, o);
+      const k = ++whipN.n, ba = FX.whipDefs(defs, SEG + "-wa" + k), bb = FX.whipDefs(defs, SEG + "-wb" + k), h = o.dur / 2;
+      tl.set(a, { filter: "url(#" + SEG + "-wa" + k + ")" }, t - h - 0.01); tl.set(a, { filter: "none" }, t + 0.06);
+      tl.set(b, { filter: "url(#" + SEG + "-wb" + k + ")" }, t - 0.001); tl.set(b, { filter: "none" }, t + h + 0.02);
+      FX.whip(tl, a, b, t, { dir: o.dir, vertical: o.vertical, dur: o.dur, blurA: ba, blurB: bb });
+      if (o.flash) tl.fromTo($("flash"), { opacity: 0 }, { opacity: 0.85, duration: 0.08, yoyo: true, repeat: 1, ease: "power2.in", immediateRender: false }, t - 0.08);
+    }
+    function slide(a, b, t, o) {
+      o = Object.assign({ axis: "x", from: 1, d: 0.45 }, o);
+      const dist = (o.axis === "x" ? 1980 : 1140) * o.from;
+      tl.fromTo(b, { [o.axis]: dist, boxShadow: "0 0 80px rgba(0,0,0,0.5)" }, { [o.axis]: 0, duration: o.d, ease: C(E.inOut, o.d), immediateRender: false }, t - o.d);
+      tl.set(b, { boxShadow: "none" }, t);
+      tl.fromTo(a, { [o.axis]: 0 }, { [o.axis]: -dist * 0.12, duration: o.d, ease: E.in, immediateRender: false }, t - o.d);
+    }
+    function el(parent, tag, attrs) { const n = document.createElementNS(NS, tag); for (const k in attrs) n.setAttribute(k, attrs[k]); parent.appendChild(n); return n; }
+    function ink(parent, d, t, dur, o) {
+      o = o || {};
+      const p = el(parent, "path", { d: d, fill: "none", stroke: o.color || INK, "stroke-width": o.width || 6, "stroke-linecap": "round", "stroke-linejoin": "round" });
+      if (o.opacity != null) p.setAttribute("opacity", o.opacity);
+      if (o.dash) p.setAttribute("stroke-dasharray", o.dash);
+      const len = p.getTotalLength() || 1;
+      if (!o.dash) {
+        p.setAttribute("stroke-dasharray", len + " " + len); p.setAttribute("stroke-dashoffset", len);
+        tl.fromTo(p, { attr: { "stroke-dashoffset": len } }, { attr: { "stroke-dashoffset": 0 }, duration: dur, ease: o.ease || C(E.out, dur), immediateRender: true }, t);
+      }
+      return p;
+    }
+    // arrow: shaft drawn on, head pops at the end (no dot before draw: hidden until t)
+    function arrow(svg, x1, y1, x2, y2, t, o) {
+      o = Object.assign({ bend: 60, color: OXL, width: 8, dur: 0.8, head: 30 }, o);
+      const mx = (x1 + x2) / 2, my = (y1 + y2) / 2, dx = x2 - x1, dy = y2 - y1, Lh = Math.hypot(dx, dy);
+      const cx = mx - (dy / Lh) * o.bend, cy = my + (dx / Lh) * o.bend;
+      const sh = ink(svg, "M" + x1 + " " + y1 + " Q" + cx.toFixed(1) + " " + cy.toFixed(1) + " " + x2 + " " + y2, t, o.dur, { color: o.color, width: o.width, ease: C(E.inOut, o.dur) });
+      const ang = Math.atan2(y2 - cy, x2 - cx), h = o.head;
+      const hd = el(svg, "path", { d: "M" + (x2 - h * Math.cos(ang - 0.45)).toFixed(1) + " " + (y2 - h * Math.sin(ang - 0.45)).toFixed(1) + " L" + x2 + " " + y2 + " L" + (x2 - h * Math.cos(ang + 0.45)).toFixed(1) + " " + (y2 - h * Math.sin(ang + 0.45)).toFixed(1),
+        fill: "none", stroke: o.color, "stroke-width": o.width, "stroke-linecap": "round", "stroke-linejoin": "round", opacity: 0 });
+      tl.set(hd, { opacity: 1 }, t + o.dur * 0.92);
+      gsap.set(sh, { opacity: 0 }); tl.set(sh, { opacity: 1 }, t);
+      return [sh, hd];
+    }
+    const at = (px, py, s) => ({ x: 960 - px * s, y: 540 - py * s, scale: s });
+    // per-scene gating of per-frame helpers
+    function gated(a, b, fn) { const on = FX.onFrame; FX.onFrame = (f) => on(FX.gate(S(a) - 0.1, S(b) + 0.1, f)); try { return fn(); } finally { FX.onFrame = on; } }
+    function greyman(svg, x, y, s, fill) {
+      const g = el(svg, "g", {}); const gi = el(g, "g", { transform: "translate(" + x + " " + y + ") scale(" + s + ") translate(-200 -480)" });
+      el(gi, "path", { d: GREYMAN, fill: fill || ASH }); return g;
+    }
+    function penCircle(svg, t, o) { return FX.markup.circle(tl, svg, t, Object.assign({ color: OX, width: 6, filter: PEN, dur: 0.7 }, o)); }
+
+    FX.tintDefs(defs, SEG + "-tint-ox", "#1e0a08", "#ead2cc");
+    FX.tintDefs(defs, SEG + "-tint-ash", "#121314", "#e8e4dc");
+    const PEN = FX.markupDefs(defs, SEG + "-pen", { boil: 4 });
+    defs.setAttribute("viewBox", "0 0 1 1");
+    FX.grain($("grain"), 101);
+    FX.dust($("dust"), 102, 2);
+
+    /* ============ sc001 · 0.00–2.20 · Somewhere inside Russia ============ */
+    scene("sc001", 0, 2.20); ground("night", 0);
+    (function () {
+      const cam = $("sc001-cam"), svg = $("sc001-svg");
+      gsap.set(cam, at(1313, 600, 0.95));
+      tl.fromTo(cam, at(1313, 600, 0.95), Object.assign(at(768, 660, 1.28), { duration: 2.7, ease: E.cam, immediateRender: false }), 0);
+      const p = ink(svg, MAP.ru.ru, S(0.05), 1.5, { color: OXL, width: 2.6, ease: C(E.inOut, 1.5) });
+      tl.fromTo($("sc001-fill"), { opacity: 0 }, { opacity: 0.2, duration: 1.0, ease: "none", immediateRender: true }, S(0.5));
+      // reticle hunts, then locks on a point west of the Urals (Kazan region: map 450,666 → screen at the end ≈ 563,548)
+      const ret = $("sc001-ret"), g = el(ret, "g", {}), gi = el(g, "g", {});
+      const br = "M-60 -30 L-60 -60 L-30 -60 M30 -60 L60 -60 L60 -30 M60 30 L60 60 L30 60 M-30 60 L-60 60 L-60 30";
+      el(gi, "path", { d: br, fill: "none", stroke: BONE, "stroke-width": 3 });
+      el(gi, "path", { d: "M-14 0 L14 0 M0 -14 L0 14", stroke: BONE, "stroke-width": 2 });
+      gsap.set(g, { x: 1480, y: 330, scale: 1.8, opacity: 0 });
+      tl.fromTo(g, { x: 1480, y: 330, scale: 1.8, opacity: 0 }, { x: 1180, y: 610, scale: 1.4, opacity: 0.9, duration: 0.5, ease: E.inOut, immediateRender: true }, S(0.1));
+      tl.to(g, { x: 800, y: 470, scale: 1.2, duration: 0.45, ease: E.inOut }, S(0.6));
+      tl.to(g, { x: 568, y: 548, scale: 0.85, duration: 0.45, ease: E.inOut }, S(1.05));
+      tl.to(gi.firstChild, { attr: { stroke: OXL }, duration: 0.001 }, S(1.50));
+      tl.fromTo(g, { scale: 0.85 }, { scale: 0.72, duration: 0.25, ease: C(E.out, 0.25), immediateRender: false }, S(1.50));
+      FX.focusHunt(tl, cam, S(1.50), { dur: 0.5, a: 2, b: 3 });
+    })();
+    words("sc001-txt", [T(0.24) - L, T(0.72) - L, T(1.12) - L], { dur: 0.6, y: 10 });
+
+    /* ============ sc002 · 2.20–5.92 · a man named Ivan … dangerous double life ============ */
+    scene("sc002", 2.20, 6.18);
+    push($("sc002-w"), 2.20, 6.18, 1.06, 1.12);
+    tl.fromTo($("sc002-name"), { opacity: 0, scale: 0.94, transformOrigin: "0% 100%" }, { opacity: 1, scale: 1, duration: 1.0, ease: C(E.out, 1.0), immediateRender: true }, T(2.32) - L);
+    fadeOut($("sc002-name"), S(4.05), 0.2);
+    words("sc002-dbl", [T(4.32) - L, T(4.88) - L, T(5.36) - L], { dur: 0.3, y: 12 });
+    tl.fromTo($("sc002-line"), { scaleY: 0 }, { scaleY: 1, duration: 0.25, ease: C(E.out, 0.25), immediateRender: true }, S(4.82));
+    gsap.set($("sc002-cut"), { opacity: 0 });
+    tl.set($("sc002-cut"), { opacity: 1 }, S(4.82));
+    tl.fromTo($("sc002-cut"), { y: 0 }, { y: 34, duration: 0.5, ease: C(E.out, 0.5), immediateRender: false }, S(4.86));
+
+    /* ============ sc003 · 5.92–9.52 · an ordinary Russian ============ */
+    scene("sc003", 6.12, 9.58); ground("paper", S(6.12));
+    whip($("sc002-shot"), $("sc003-shot"), S(6.12), { dir: 1 });
+    push($("sc003-w"), 6.12, 9.58, 1.0, 1.05);
+    penCircle($("sc003-svg"), S(7.04), { cx: 460, cy: 430, rx: 92, ry: 128, rot: -4, seed: 3 });
+    words("sc003-txt", [T(7.84) - L, T(8.00) - L, T(8.48) - L], { dur: 0.45, y: 12 });
+
+    /* ============ sc004 · 9.52–13.84 · avoid attracting attention ============ */
+    scene("sc004", 9.52, 14.10); ground("night", S(9.52));
+    whip($("sc003-shot"), $("sc004-shot"), S(9.52), { vertical: true, dir: 1 });
+    push($("sc004-w"), 9.52, 14.10, 1.02, 1.12);
+    words("sc004-txt", [T(12.16) - L, T(12.56) - L, T(13.12) - L], { dur: 0.4, y: 12 });
+
+    /* ============ sc005 · 13.84–19.92 · Ivan … secretly working with Ukrainian military intelligence ============ */
+    scene("sc005", 14.10, 20.10); ground("paper", S(14.10));
+    (function () {
+      const svg = $("sc005-svg");
+      pop($("sc005-ivan"), S(14.12), { dur: 1.0, from: 0.6 });
+      tl.to($("sc005-ivan"), { x: -400, duration: 1.0, ease: C(E.inOut, 1.0) }, S(15.75));
+      rise(W("sc005-l1")[0], T(16.00) - L, { dur: 0.7, y: 10 });
+      // the secret line: a dashed azure thread revealed left → right (clip), slight curve so it is never a straight filtered path
+      const cp = el(defs.ownerDocument.getElementById(SEG + "-defs"), "clipPath", { id: SEG + "-sc005-clip" });
+      const cr = el(cp, "rect", { x: 720, y: 380, width: 0, height: 240 });
+      const line = el(svg, "path", { d: "M724 452 Q960 404 1206 452", fill: "none", stroke: AZ, "stroke-width": 7, "stroke-dasharray": "22 16", "stroke-linecap": "round", "clip-path": "url(#" + SEG + "-sc005-clip)" });
+      tl.fromTo(cr, { attr: { width: 0 } }, { attr: { width: 500 }, duration: 0.9, ease: C(E.inOut, 0.9), immediateRender: true }, S(16.96));
+      pop($("sc005-gur"), S(17.75), { dur: 1.0, from: 0.55 });
+      push($("sc005-shot"), 14.10, 20.10, 1.0, 1.04);
+    })();
+    words("sc005-l2", [T(18.08) - L, T(18.72) - L, T(19.12) - L], { dur: 0.4, y: 10 });
+
+    /* ============ sc006 · 19.92–23.52 · attacks against Russia's own military ============ */
+    scene("sc006", 20.04, 23.52); ground("night", S(20.04));
+    whip($("sc005-shot"), $("sc006-shot"), S(20.04), { flash: true, dir: 1 });
+    push($("sc006-w"), 20.04, 23.52, 1.04, 1.14);
+    words("sc006-txt", [T(21.28) - L, T(21.76) - L, T(22.08) - L, T(22.56) - L, T(22.80) - L], { dur: 0.35, y: 12 });
+
+    /* ============ sc007 · 23.52–30.56 · despite everything … a Russian patriot ============ */
+    scene("sc007", 23.52, 30.56);
+    push($("sc007-w"), 23.52, 26.48, 1.0, 1.06);
+    push($("sc007-w"), 26.48, 30.56, 1.04, 1.12);
+    words("sc007-txt", [T(28.64) - L, T(28.80) - L, T(29.44) - L], { dur: 0.7, y: 14 });
+
+    /* ============ sc008 · 30.56–32.40 · FACE CAM pop 1 (wide, 2 % push) ============ */
+    scene("sc008", 30.56, 32.40); ground("cam", S(30.56));
+    tl.fromTo($("sc008-w"), { scale: 1.0, transformOrigin: "1080px 330px" }, { scale: 1.025, duration: 1.84, ease: "none", immediateRender: false }, S(30.56));
+
+    /* ============ sc009 · 32.40–36.80 · loves his country … help Ukraine … sabotage the Russian military ============ */
+    scene("sc009", 32.40, 37.16); ground("paper", S(32.40));
+    (function () {
+      const cam = $("sc009-cam"), svg = $("sc009-svg");
+      gsap.set(cam, at(960.5, 700, 1.0));
+      tl.fromTo(cam, at(960.5, 700, 1.0), Object.assign(at(960.5, 690, 1.06), { duration: 4.76, ease: "none", immediateRender: false }), S(32.40));
+      tl.fromTo($("sc009-ru"), { opacity: 0 }, { opacity: 0.55, duration: 0.8, ease: C(E.out, 0.8), immediateRender: true }, S(33.14));
+      tl.fromTo($("sc009-ua"), { opacity: 0 }, { opacity: 0.6, duration: 0.8, ease: C(E.out, 0.8), immediateRender: true }, S(34.18));
+      const P = MAP.ee.places;
+      const tgts = [[P.moscow, [760, 640]], [P.ryazan, [880, 760]], [P.voronezh, [980, 900]]];
+      tgts.forEach((q, i) => {
+        const a = q[1], b = q[0];
+        arrow(svg, a[0], a[1], Math.round(b[0] - 18), Math.round(b[1] + 14), S(34.82) + i * 0.22, { color: AZD, width: 9, bend: 28, dur: 0.7 });
+        FX.markup.cross(tl, svg, S(35.65) + i * 0.16, { x: b[0], y: b[1], s: 22, color: INK, width: 7, dur: 0.12 });
+      });
+    })();
+    tl.set($("sc009-box"), { opacity: 1 }, T(34.88) - L);
+    words("sc009-txt", [T(34.88) - L, T(35.60) - L, T(35.68) - L, T(36.00) - L], { dur: 0.35, y: 0 });
+
+    /* ============ sc010 · 36.80–43.12 · Vladimir Putin's government … Russia to lose this war ============ */
+    scene("sc010", 37.10, 43.80); ground("night", S(37.10));
+    whip($("sc009-shot"), $("sc010-shot"), S(37.10), { dir: -1 });
+    push($("sc010-w"), 37.10, 43.80, 1.0, 1.05);
+    words("sc010-t1", [T(39.76) - L, T(40.40) - L, T(40.88) - L], { dur: 0.6, y: 12 });
+    fadeOut($("sc010-t1"), S(41.40), 0.2);
+    words("sc010-t2", [T(41.68) - L, T(42.08) - L, T(42.16) - L, T(42.40) - L, T(42.64) - L], { dur: 0.4, y: 12 });
+    tl.fromTo($("sc010-frame"), { rotation: 0, y: 0 }, { rotation: -7, y: 16, duration: 0.45, ease: C(E.out, 0.45), immediateRender: false }, S(42.16));
+
+    /* ============ sc011 · 43.12–47.44 · far from the only Russian (isotype) ============ */
+    scene("sc011", 43.35, 47.44);
+    slide($("sc010-shot"), $("sc011-shot"), S(43.80), { axis: "y", from: 1, d: 0.45 });
+    ground("paper", S(43.80));
+    (function () {
+      const svg = $("sc011-svg"), cols = 16, rows = 5, dx = 108, dy = 132, x0 = 96 + 54, y0 = 300 + 118;
+      const cells = [];
+      for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) cells.push([x0 + c * dx, y0 + r * dy, Math.hypot(c - 7.5, (r - 2) * 1.2)]);
+      const ivanIdx = 2 * cols + 7;
+      const order = cells.map((q, i) => [q[2], i]).sort((a, b) => a[0] - b[0]).map((q) => q[1]).filter((i) => i !== ivanIdx);
+      // Ivan: one big grey man, then he shrinks into his cell
+      const ivan = greyman(svg, 960, 760, 0.9, ASHD), ig = ivan.firstChild, pr = { x: 960, y: 760, s: 0.9 };
+      const setI = () => ig.setAttribute("transform", "translate(" + pr.x.toFixed(1) + " " + pr.y.toFixed(1) + ") scale(" + pr.s.toFixed(4) + ") translate(-200 -480)");
+      tl.fromTo(pr, { x: 960, y: 760, s: 0.9 }, { x: cells[ivanIdx][0], y: cells[ivanIdx][1], s: 0.2, duration: 0.9, ease: C(E.inOut, 0.9), immediateRender: false, onUpdate: setI }, S(44.70));
+      order.forEach((idx, k) => {
+        const g = greyman(svg, cells[idx][0], cells[idx][1], 0.2, ASH);
+        gsap.set(g, { opacity: 0 });
+        tl.set(g, { opacity: 1 }, S(45.15) + Math.floor((k / order.length) * 1.4 * 12) / 12);
+      });
+      tl.fromTo($("sc011-w"), { scale: 1 }, { scale: 1.07, duration: 0.6, ease: E.in, immediateRender: false, transformOrigin: "960px 640px" }, S(46.84));
+    })();
+    words("sc011-txt", [T(44.88) - L, T(45.12) - L, T(45.36) - L, T(45.52) - L, T(45.76) - L], { dur: 0.5, y: 12 });
+
+    /* ============ sc012 · 47.44–50.64 · on the battlefield ============ */
+    scene("sc012", 47.44, 50.70); ground("night", S(47.44));
+    push($("sc012-w"), 47.44, 50.70, 1.04, 1.13);
+    words("sc012-txt", [T(49.60) - L, T(49.68) - L, T(49.76) - L], { dur: 0.3, y: 12 });
+
+    /* ============ sc013 · 50.64–56.25 · Ukrainian intelligence … turn against their own government ============ */
+    scene("sc013", 50.64, 56.57);
+    whip($("sc012-shot"), $("sc013-shot"), S(50.64), { dir: 1 });
+    (function () {
+      const cam = $("sc013-cam"), svg = $("sc013-svg"), P = MAP.ee.places;
+      gsap.set(cam, at(960.5, 640, 1.0));
+      tl.fromTo(cam, at(960.5, 640, 1.0), Object.assign(at(1000, 600, 1.08), { duration: 5.93, ease: "none", immediateRender: false }), S(50.64));
+      tl.set($("sc013-ru"), { opacity: 0.28 }, S(50.64));
+      el(svg, "path", { d: MAP.ee.ru, fill: "none", stroke: OXL, "stroke-width": 2.2, opacity: 0.8 });
+      el(svg, "path", { d: MAP.ee.ua, fill: "none", stroke: SKY, "stroke-width": 2.2, opacity: 0.9 });
+      const K = P.kyiv;
+      const kn = el(svg, "circle", { cx: K[0], cy: K[1], r: 20, fill: AZ, stroke: SKY, "stroke-width": 5, opacity: 0 });
+      pop(kn, S(50.64), { dur: 0.7, from: 0.2 });
+      const l1 = $("sc013-l1"); Object.assign(l1.style, { left: K[0] - 280 + "px", top: K[1] + 40 + "px" });
+      words("sc013-l1", [T(50.64) - L, T(51.28) - L], { dur: 0.5, y: 8 });
+      fadeOut(l1, S(53.95), 0.25);
+      const ns = ["moscow", "voronezh", "ryazan", "kursk", "belgorod", "nizhny_novgorod", "saratov", "ivanovo", "rostov_on_don", "volgograd"];
+      ns.forEach((n, i) => {
+        const q = P[n], mx = (K[0] + q[0]) / 2, my = (K[1] + q[1]) / 2 - 60;
+        const t0 = S(52.48) + i * 0.09;
+        ink(svg, "M" + K[0] + " " + K[1] + " Q" + mx.toFixed(1) + " " + my.toFixed(1) + " " + q[0] + " " + q[1], t0, 0.8, { color: SKY, width: 2.5, opacity: 0.85, ease: C(E.inOut, 0.8) });
+        const g = greyman(svg, q[0], q[1] + 22, 0.1, "#c4c4c2");
+        gsap.set(g, { opacity: 0 }); tl.set(g, { opacity: 1 }, t0 + 0.75);
+      });
+    })();
+    words("sc013-txt", [T(54.32) - L, T(54.56) - L, T(54.88) - L, T(55.12) - L, T(55.36) - L], { dur: 0.35, y: 12 });
+
+    /* ============ sc014 · 56.25–60.25 · senior military officers (case file) ============ */
+    scene("sc014", 56.12, 60.57); ground("paper", S(56.57));
+    slide($("sc013-shot"), $("sc014-shot"), S(56.57), { axis: "x", from: 1, d: 0.45 });
+    push($("sc014-w"), 56.57, 60.57, 1.0, 1.04);
+    (function () {
+      const svg = $("sc014-svg");
+      // paper clip on the print's top edge
+      const clip = el(svg, "path", { d: "M330 236 L330 150 Q330 128 352 128 Q374 128 374 150 L374 250 Q374 270 352 270 Q340 270 340 250 L340 168", fill: "none", stroke: "#7d7f84", "stroke-width": 6, "stroke-linecap": "round" });
+      penCircle(svg, S(59.13), { cx: 400, cy: 470, rx: 96, ry: 70, rot: -10, seed: 5 });
+    })();
+    words("sc014-txt", [T(58.65) - L, T(59.13) - L, T(59.61) - L], { dur: 0.5, y: 12 });
+
+    /* ============ sc015 · 60.25–64.89 · prepare attacks deep inside Russia itself ============ */
+    scene("sc015", 60.57, 64.89); ground("night", S(60.57));
+    (function () {
+      const cam = $("sc015-cam"), svg = $("sc015-svg"), P = MAP.ee.places;
+      gsap.set(cam, at(1150, 830, 1.32));
+      tl.fromTo(cam, at(1150, 830, 1.32), Object.assign(at(1140, 560, 1.0), { duration: 2.3, ease: E.cam, immediateRender: false }), S(60.60));
+      tl.to(cam, Object.assign(at(1140, 555, 0.995), { duration: 1.8, ease: "none" }), S(62.90));
+      tl.set($("sc015-ru"), { opacity: 0.34 }, S(60.57));
+      el(svg, "path", { d: MAP.ee.ru, fill: "none", stroke: OXL, "stroke-width": 2.4, opacity: 0.85 });
+      el(svg, "path", { d: MAP.ee.ua, fill: "none", stroke: SKY, "stroke-width": 2.6 });
+      const B = P.belgorod, tg = [P.moscow, P.engels_airbase, P.dyagilevo_airbase, P.ivanovo_severny_airbase];
+      tg.forEach((q, i) => {
+        const t0 = S(61.53) + i * 0.3;
+        arrow(svg, B[0] - 10, B[1] + 6, q[0], q[1], t0, { color: SKY, width: 5, bend: 40 * (i % 2 ? 1 : -1), dur: 0.8, head: 22 });
+        const d = el(svg, "circle", { cx: q[0], cy: q[1], r: 9, fill: BONE, opacity: 0 });
+        tl.set(d, { opacity: 1 }, t0 + 0.8);
+        gated(60.57, 64.89, () => FX.radioWaves(svg, q[0], q[1], { rings: 3, max: 120, period: 1.4, width: 5, color: SKY, from: t0 + 0.8, to: S(64.95) }));
+      });
+    })();
+    words("sc015-txt", [T(63.21) - L, T(63.45) - L, T(63.85) - L], { dur: 0.5, y: 12 });
+
+    /* ============ sc016 · 64.89–66.65 · FACE CAM pop 2 (medium 1.28) ============ */
+    scene("sc016", 64.89, 66.65); ground("cam", S(64.89));
+    tl.fromTo($("sc016-w"), { scale: 1.28, transformOrigin: "1060px 340px" }, { scale: 1.31, duration: 1.76, ease: "none", immediateRender: false }, S(64.89));
+
+    /* ============ sc017 · 66.65–70.09 · Russia's security services ============ */
+    scene("sc017", 66.65, 70.09); ground("night", S(66.65));
+    push($("sc017-w"), 66.65, 70.09, 1.0, 1.06);
+    (function () {
+      const svg = $("sc017-svg"), x = 560, y = 230, w = 820, h = 360, c = 46;
+      const d = "M" + x + " " + (y + c) + " L" + x + " " + y + " L" + (x + c) + " " + y + " M" + (x + w - c) + " " + y + " L" + (x + w) + " " + y + " L" + (x + w) + " " + (y + c) +
+        " M" + (x + w) + " " + (y + h - c) + " L" + (x + w) + " " + (y + h) + " L" + (x + w - c) + " " + (y + h) + " M" + (x + c) + " " + (y + h) + " L" + x + " " + (y + h) + " L" + x + " " + (y + h - c);
+      const b = el(svg, "path", { d: d, fill: "none", stroke: OXL, "stroke-width": 4, opacity: 0 });
+      tl.fromTo(b, { opacity: 0, scale: 1.25, transformOrigin: "970px 410px" }, { opacity: 1, scale: 1, duration: 0.5, ease: C(E.out, 0.5), immediateRender: true }, S(67.40));
+      const dot = el(svg, "circle", { cx: x + w - 26, cy: y + 26, r: 9, fill: OX, opacity: 0 });
+      [67.9, 68.9, 69.9].forEach((t) => { tl.set(dot, { opacity: 1 }, S(t)); tl.set(dot, { opacity: 0 }, S(t + 0.5)); });
+    })();
+    words("sc017-txt", [T(68.41) - L, T(68.89) - L, T(69.37) - L], { dur: 0.3, y: 12 });
+
+    /* ============ sc018 · 70.09–71.69 · FACE CAM pop 3 (close 1.55) ============ */
+    scene("sc018", 70.09, 71.69); ground("cam", S(70.09));
+    tl.fromTo($("sc018-w"), { scale: 1.55, transformOrigin: "1080px 330px" }, { scale: 1.58, duration: 1.6, ease: "none", immediateRender: false }, S(70.09));
+
+    /* ============ sc019 · 71.69–74.49 · attacks inside your country ============ */
+    scene("sc019", 71.69, 74.76); ground("night", S(71.69));
+    push($("sc019-w"), 71.69, 74.76, 1.0, 1.08);
+    tl.set($("sc019-box"), { opacity: 1 }, T(72.97) - L);
+    words("sc019-txt", [T(72.97) - L, T(73.45) - L, T(73.77) - L, T(74.01) - L], { dur: 0.2, y: 0 });
+
+    /* ============ sc020 · 74.49–81.29 · some of your own people (focal blur + circles) ============ */
+    scene("sc020", 74.70, 81.29);
+    whip($("sc019-shot"), $("sc020-shot"), S(74.70), { vertical: true, dir: -1 });
+    push($("sc020-w"), 74.70, 81.29, 1.0, 1.08);
+    (function () {
+      const svg = $("sc020-svg");
+      const keys = [[620, 740], [880, 760], [1560, 800]];
+      FX.focalBlur(tl, $("sc020-blur"), [{ t: S(74.70), x: 300, y: 600, r: 150 }, { t: S(75.30), x: keys[0][0], y: keys[0][1] - 40, r: 170, dur: 0.8 }, { t: S(76.20), x: keys[1][0], y: keys[1][1] - 40, r: 170, dur: 0.8 }, { t: S(77.10), x: keys[2][0], y: keys[2][1] - 40, r: 170, dur: 0.8 }, { t: S(78.40), x: 1000, y: 700, r: 900, dur: 2.2 }]);
+      keys.forEach((k, i) => penCircle(svg, S(75.70) + i * 0.9, { cx: k[0], cy: k[1] - 40, rx: 70, ry: 150, rot: -3, seed: 7 + i, color: BONE, width: 5 }));
+    })();
+    words("sc020-txt", [T(74.81) - L, T(74.97) - L, T(75.13) - L, T(75.37) - L, T(75.77) - L], { dur: 0.5, y: 12 });
+
+    /* ============ sc021 · 81.29–83.13 · FACE CAM pop 4 (medium 1.32) ============ */
+    scene("sc021", 81.29, 83.13); ground("cam", S(81.29));
+    tl.fromTo($("sc021-w"), { scale: 1.32, transformOrigin: "1100px 340px" }, { scale: 1.29, duration: 1.84, ease: "none", immediateRender: false }, S(81.29));
+
+    /* ============ sc022 · 83.13–92.09 · start with Ivan … Russia's political opposition (dossier) ============ */
+    scene("sc022", 83.13, 92.09); ground("paper", S(83.13));
+    (function () {
+      const cam = $("sc022-cam");
+      tl.fromTo($("sc022-folder"), { y: 1100 }, { y: 0, duration: 0.9, ease: C(E.out, 0.9), immediateRender: true }, S(83.13));
+      tl.fromTo($("sc022-id"), { y: 1100, rotation: 4 }, { y: 0, rotation: -1.2, duration: 1.0, ease: C(E.out, 1.0), immediateRender: true }, S(83.35));
+      tl.fromTo(W("sc022-stamp")[0], { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, T(85.69) - L);
+      tl.fromTo($("sc022-stamp"), { scale: 1.5, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.25, ease: C(E.out, 0.25), immediateRender: true }, T(85.69) - L);
+      tl.fromTo($("sc022-print"), { x: 900, rotation: 8 }, { x: 0, rotation: 2, duration: 0.9, ease: C(E.out, 0.9), immediateRender: true }, S(87.10));
+      gsap.set($("sc022-cr"), { opacity: 0 }); tl.set($("sc022-cr"), { opacity: 1 }, S(87.10));
+      // push to the print: centre (1280,552) → screen (960,500) at 1.45
+      gsap.set(cam, { x: 0, y: 0, scale: 1 });
+      tl.fromTo(cam, { x: 0, y: 0, scale: 1 }, { x: 960 - 1280 * 1.45, y: 500 - 552 * 1.45, scale: 1.45, duration: 1.5, ease: E.cam, immediateRender: false }, S(88.30));
+      tl.to(cam, { x: 960 - 1280 * 1.48, y: 500 - 552 * 1.48, scale: 1.48, duration: 2.3, ease: "none" }, S(89.80));
+      FX.focusHunt(tl, $("sc022-print"), S(89.80), { dur: 0.6 });
+    })();
+    words("sc022-txt", [T(89.93) - L, T(90.57) - L, T(91.05) - L], { dur: 0.45, y: 12 });
+
+    /* ============ sc023 · 92.09–97.85 · change in the country ============ */
+    scene("sc023", 92.09, 97.85); ground("night", S(92.09));
+    whip($("sc022-shot"), $("sc023-shot"), S(92.09), { vertical: true, dir: 1 });
+    push($("sc023-w"), 92.09, 97.85, 1.0, 1.1);
+    words("sc023-txt", [T(93.37) - L, T(93.69) - L, T(93.77) - L, T(93.93) - L], { dur: 0.6, y: 12 });
+
+    /* ============ sc024 · 97.85–102.17 · harder and harder (walls close in) ============ */
+    scene("sc024", 97.85, 102.41);
+    push($("sc024-w"), 97.85, 102.41, 1.1, 1.16);
+    [[S(98.49), 160, 0.7], [T(100.73) - L, 440, 0.25], [T(101.53) - L, 640, 0.25]].forEach((k, i) => {
+      tl.to($("sc024-wl"), { x: k[1], duration: k[2], ease: C(E.out, k[2]) }, k[0]);
+      tl.to($("sc024-wr"), { x: -k[1], duration: k[2], ease: C(E.out, k[2]) }, k[0]);
+    });
+    words("sc024-txt", [T(100.73) - L, T(101.29) - L, T(101.53) - L], { dur: 0.35, y: 10 });
+
+    /* ============ sc025 · 102.17–108.70 · full scale invasion … February 2022 … even worse ============ */
+    scene("sc025", 102.41, 108.76);
+    (function () {
+      const cam = $("sc025-cam"), svg = $("sc025-svg"), P = MAP.ee.places;
+      gsap.set(cam, at(960.5, 900, 1.0));
+      tl.fromTo(cam, at(960.5, 900, 1.0), Object.assign(at(860, 920, 1.08), { duration: 6.35, ease: "none", immediateRender: false }), S(102.41));
+      tl.fromTo($("sc025-ru"), { opacity: 0 }, { opacity: 0.5, duration: 0.6, ease: C(E.out, 0.6), immediateRender: true }, S(102.60));
+      tl.set($("sc025-ua"), { opacity: 0.3 }, S(102.41));
+      el(svg, "path", { d: MAP.ee.ua, fill: "none", stroke: SKY, "stroke-width": 2.8 });
+      const K = P.kyiv, KH = P.kharkiv;
+      const arr = [[[590, 700], [K[0] + 8, K[1] - 26]], [[1150, 820], [KH[0] - 20, KH[1] + 6]], [[1320, 1180], [1090, 1150]], [[850, 1560], [870, 1330]]];
+      arr.forEach((a, i) => arrow(svg, a[0][0], a[0][1], a[1][0], a[1][1], S(102.95) + i * 0.25, { color: OXL, width: 10, bend: 30 * (i % 2 ? 1 : -1), dur: 0.75, head: 32 }));
+      // things got even worse: fires spread across Ukraine at 12 fps
+      const r = FX.rng(2500);
+      for (let k = 0; k < 26; k++) {
+        const x = 520 + r() * 640, y = 860 + r() * 460;
+        const c = el(svg, "circle", { cx: x.toFixed(1), cy: y.toFixed(1), r: (5 + r() * 7).toFixed(1), fill: OXL, opacity: 0 });
+        tl.set(c, { opacity: 0.9 }, S(107.15) + Math.floor(k / 26 * 0.75 * 12) / 12);
+      }
+    })();
+    words("sc025-txt", [T(105.21) - L, T(105.69) - L], { dur: 0.6, y: 14 });
+
+    /* ============ sc026 · 108.70–116.70 · INSERT 1 ============ */
+    scene("sc026", 108.70, 116.70); ground("insert", S(108.70));
+    whip($("sc025-shot"), $("sc026-shot"), S(108.70), { flash: true, dir: 1 });
+
+    /* ============ sc027 · 116.70–119.61 · Thousands of anti-war protesters ============ */
+    scene("sc027", 116.70, 119.61); ground("night", S(116.70));
+    push($("sc027-w"), 116.70, 119.61, 1.02, 1.1);
+    words("sc027-txt", [T(116.73) - L, T(117.37) - L, T(117.53) - L, T(117.85) - L, T(118.17) - L], { dur: 0.45, y: 12 });
+
+    /* ============ sc028 · 119.61–124.50 · new laws … criticizing the military … a criminal offense ============ */
+    scene("sc028", 119.16, 124.56); ground("paper", S(119.61));
+    slide($("sc027-shot"), $("sc028-shot"), S(119.61), { axis: "x", from: 1, d: 0.45 });
+    push($("sc028-w"), 119.61, 124.56, 1.0, 1.05);
+    words("sc028-head", [T(120.73) - L, T(120.97) - L], { dur: 0.5, y: 10 });
+    words("sc028-line", [T(121.69) - L, T(122.41) - L, T(122.49) - L], { dur: 0.35, y: 6 });
+    tl.fromTo($("sc028-hl"), { width: 0 }, { width: 470, duration: 0.55, ease: C("sine.inOut", 0.55), immediateRender: true }, S(122.45));
+    tl.set($("sc028-stamp"), { opacity: 1 }, T(123.13) - L);
+    tl.fromTo($("sc028-stamp"), { scale: 1.45 }, { scale: 1, duration: 0.22, ease: C(E.out, 0.22), immediateRender: false }, T(123.13) - L);
+    tl.fromTo(W("sc028-stamp")[0], { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, T(123.13) - L);
+    tl.fromTo(W("sc028-stamp")[1], { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, T(123.61) - L);
+
+    /* ============ sc029 · 124.50–126.66 · thousands of arrests ============ */
+    scene("sc029", 124.50, 126.90); ground("night", S(124.50));
+    whip($("sc028-shot"), $("sc029-shot"), S(124.50), { vertical: true, dir: -1 });
+    push($("sc029-w"), 124.50, 126.90, 1.04, 1.12);
+    words("sc029-txt", [T(125.54) - L, T(125.94) - L, T(126.10) - L], { dur: 0.35, y: 10 });
+
+    /* ============ sc030 · 126.66–131.78 · leaving the country altogether ============ */
+    scene("sc030", 126.90, 131.78);
+    tl.fromTo($("sc030-card"), { y: 160, opacity: 0 }, { y: 0, opacity: 1, duration: 1.1, ease: C(E.out, 1.1), immediateRender: true }, S(126.90));
+    push($("sc030-w"), 128.00, 131.78, 1.0, 1.04, { y0: 0, y1: -20 });
+    words("sc030-txt", [T(130.02) - L, T(130.34) - L, T(130.50) - L, T(130.90) - L], { dur: 0.45, y: 12 });
+
+    /* ============ sc031 · 131.78–133.62 · FACE CAM pop 5 (wide push) ============ */
+    scene("sc031", 131.78, 133.62); ground("cam", S(131.78));
+    tl.fromTo($("sc031-w"), { scale: 1.0, transformOrigin: "1080px 330px" }, { scale: 1.07, duration: 1.84, ease: E.cam, immediateRender: false }, S(131.78));
+
+    /* ============ sc032 · 133.62–139.94 · weaken his grip on power ============ */
+    scene("sc032", 133.62, 140.00); ground("night", S(133.62));
+    push($("sc032-w"), 133.62, 140.00, 1.0, 1.09);
+    tl.fromTo($("sc032-img"), { filter: "saturate(0.3) brightness(0.95)" }, { filter: "saturate(0.2) brightness(0.72)", duration: 1.6, ease: "none", immediateRender: false }, S(137.10));
+    words("sc032-txt", [T(138.10) - L, T(138.50) - L, T(138.66) - L], { dur: 0.4, y: 12 });
+    rise(W("sc032-txt")[3], T(138.98) - L, { dur: 0.25, y: 8 }); rise(W("sc032-txt")[4], T(139.14) - L, { dur: 0.25, y: 8 });
+
+    /* ============ sc033 · 139.94–144.02 · convinced him to help Ukraine ============ */
+    scene("sc033", 139.94, 144.02);
+    whip($("sc032-shot"), $("sc033-shot"), S(139.94), { dir: 1 });
+    push($("sc033-w"), 139.94, 144.02, 1.0, 1.1);
+    words("sc033-txt", [T(142.98) - L, T(143.22) - L], { dur: 0.45, y: 12 });
+
+    FX.mount(tl, DURATION);
+    window.__timelines = window.__timelines || {}; window.__timelines[SEG] = tl;
+  })();
+  </script>
+</template>
+</body>
+</html>

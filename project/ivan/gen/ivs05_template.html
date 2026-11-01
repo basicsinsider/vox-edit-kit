@@ -1,0 +1,702 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8" /></head>
+<body>
+<template>
+  <style>
+    #root { position: absolute; inset: 0; overflow: hidden; background: var(--night); }
+    .v5-scene { position: absolute; inset: 0; overflow: hidden; visibility: hidden; opacity: 0; }
+    .v5-shot { position: absolute; inset: 0; overflow: hidden; transform-origin: 50% 50%; }
+    .v5-night { background: var(--night); }
+    .v5-abs { position: absolute; }
+    .v5-full { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; }
+    .v5-cam { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
+    .v5-w { display: inline-block; white-space: pre; opacity: 0; }
+    .v5-pg { position: absolute; inset: 0; background: var(--paper); }
+    .v5-pg img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
+    .v5-pg .p1 { mix-blend-mode: multiply; opacity: 0.55; }
+    .v5-pg .p2 { mix-blend-mode: multiply; opacity: 0.9; }
+    .v5-ink { color: var(--ink); }
+    .v5-bone { color: var(--bone); }
+    .v5-credit { position: absolute; right: 30px; bottom: 20px; font-size: 13px; letter-spacing: 0.08em; color: rgba(240,237,230,0.66); z-index: 5; }
+    .v5-credit.ink { color: rgba(27,29,32,0.66); }
+    .v5-mk { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; pointer-events: none; }
+    .v5-fc { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: hidden; }
+    .v5-fc video { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; object-fit: cover; }
+    .v5-vid { position: absolute; left: 0; top: 0; width: 100%; height: 100%; object-fit: cover; }
+    /* face-cam label box (ink on the light wall would fight the bookshelf/mic: a dark box keeps contrast) */
+    .v5-lb { position: absolute; background: rgba(16,17,19,0.9); padding: 24px 34px 26px; border-left: 6px solid var(--ash-light); transform-origin: 0 50%; opacity: 0; }
+    .v5-lb .k { font-size: 24px; color: var(--ash-light); margin-bottom: 12px; }
+    .v5-lb .m { font-size: 60px; color: var(--bone); line-height: 1.02; }
+    .v5-scrim-bl { position: absolute; left: 0; bottom: 0; width: 1300px; height: 520px; background: radial-gradient(ellipse 100% 100% at 0% 100%, rgba(10,11,12,0.86) 0%, rgba(10,11,12,0.55) 45%, rgba(10,11,12,0) 75%); pointer-events: none; }
+    .v5-print { position: absolute; background: #e9e5dc; padding: 16px; box-shadow: 0 30px 70px rgba(0,0,0,0.6); }
+    .v5-print .in { position: relative; width: 100%; height: 100%; overflow: hidden; background: #111; }
+    .v5-print video, .v5-print img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    #ivs05-flash { position: absolute; inset: 0; background: #f4f1ea; opacity: 0; pointer-events: none; z-index: 7; }
+    #ivs05-grain, #ivs05-dust, #ivs05-vig { z-index: 8; }
+
+    /* sc02 timeline */
+    #ivs05-sc02-sw { left: 1104px; top: 380px; width: 600px; text-align: right; font-size: 112px; color: var(--azure); }
+    #ivs05-sc02-yr { left: 360px; top: 790px; font-size: 76px; }
+
+    /* sc03 Mamoń + message */
+    #ivs05-sc03-clipw { position: absolute; left: 0; top: 0; width: 1150px; height: 1080px; overflow: hidden;
+      -webkit-mask-image: linear-gradient(90deg, #000 72%, transparent 100%); mask-image: linear-gradient(90deg, #000 72%, transparent 100%); }
+    #ivs05-sc03-v { position: absolute; left: -640px; top: -150px; width: 2400px; height: 1350px; object-fit: cover; filter: saturate(0.35) contrast(1.05) brightness(0.9); }
+    #ivs05-sc03-msg { left: 1180px; top: 210px; width: 644px; }
+    #ivs05-sc03-msg .hd { display: flex; align-items: center; gap: 18px; margin-bottom: 18px; }
+    #ivs05-sc03-msg .av { width: 64px; height: 64px; border-radius: 50%; background: var(--ash-dark) url('assets/ivan/motifs/grey_man.svg') center 8px / 52px auto no-repeat; border: 2px solid var(--ash); }
+    #ivs05-sc03-msg .nm { font-size: 24px; color: var(--ash-light); }
+    #ivs05-sc03-bub { position: relative; background: #2b2d31; border-radius: 6px 30px 30px 30px; padding: 22px 22px 26px; box-shadow: 0 24px 60px rgba(0,0,0,0.5); transform-origin: 0 0; }
+    #ivs05-sc03-att { position: relative; width: 600px; height: 300px; border-radius: 18px; overflow: hidden; background: #1c1d20; }
+    #ivs05-sc03-att img { position: absolute; left: -556px; top: -175px; width: 1320px; filter: grayscale(1) contrast(1.1) brightness(0.95); }
+    #ivs05-sc03-t1 { font-size: 46px; color: var(--bone); margin: 22px 6px 2px; }
+    #ivs05-sc03-t2 { font-size: 56px; color: var(--oxblood-light); margin: 0 6px; line-height: 1.05; }
+    #ivs05-sc03-tick { position: absolute; right: 24px; bottom: 16px; }
+
+    /* sc04 received video */
+    #ivs05-sc04-v { filter: saturate(0.3) contrast(1.08) brightness(0.92); }
+    #ivs05-sc04-rec { left: 150px; top: 120px; font-size: 26px; color: var(--bone); }
+    #ivs05-sc04-rec .dot { display: inline-block; width: 18px; height: 18px; border-radius: 50%; background: var(--oxblood-light); margin-right: 14px; vertical-align: 1px; }
+    #ivs05-sc04-tc { left: 1470px; top: 120px; width: 300px; text-align: right; font-size: 26px; color: var(--bone); }
+    #ivs05-sc04-k { left: 150px; top: 760px; font-size: 26px; color: var(--ash-light); }
+    #ivs05-sc04-m { left: 150px; top: 806px; font-size: 92px; }
+
+    /* sc05 case card */
+    #ivs05-sc05-cam { position: absolute; inset: 0; transform-origin: 960px 540px; }
+    #ivs05-sc05-card { position: absolute; left: 480px; top: 220px; width: 960px; height: 650px; background: #e2dccf; transform: rotate(-1.5deg); box-shadow: 0 34px 80px rgba(27,29,32,0.35); overflow: hidden; }
+    #ivs05-sc05-card .tx2 { position: absolute; inset: 0; background: url('assets/textures/paper_cream_01.jpg') center / cover; mix-blend-mode: multiply; opacity: 0.7; }
+    #ivs05-sc05-card .tab { position: absolute; left: 80px; top: 70px; font-size: 24px; color: var(--ink-soft); }
+    #ivs05-sc05-card .rule { position: absolute; left: 80px; top: 116px; width: 800px; height: 4px; background: var(--ink); opacity: 0.8; }
+    .v5-fl { position: absolute; left: 80px; font-size: 44px; color: var(--ink); }
+    .v5-bar { position: absolute; left: 80px; width: 700px; height: 78px; background: var(--ink); transform-origin: 0 50%; }
+    .v5-bar .tx3 { position: absolute; inset: 0; background: url('assets/textures/paper_stained_01.jpg') center / cover; mix-blend-mode: screen; opacity: 0.18; }
+
+    /* sc06 SBU strike */
+    #ivs05-sc06-v { filter: saturate(0.45) contrast(1.05); }
+    #ivs05-sc06-m { left: 96px; top: 860px; font-size: 92px; }
+
+    /* sc08 nodes */
+    .v5-node { position: absolute; width: 360px; height: 360px; border-radius: 50%; text-align: center; line-height: 360px; font-size: 128px; color: var(--bone); box-shadow: 0 22px 50px rgba(27,29,32,0.28); overflow: hidden; }
+    .v5-node .tx2 { position: absolute; inset: 0; background: url('assets/textures/paper_cream_02.jpg') center / cover; mix-blend-mode: multiply; opacity: 0.55; }
+    .v5-node span { position: relative; }
+    #ivs05-sc08-sbu { left: 420px; top: 360px; background: var(--azure); }
+    #ivs05-sc08-gur { left: 1140px; top: 360px; background: var(--azure-dark); }
+    #ivs05-sc08-op { left: 420px; top: 760px; width: 360px; text-align: center; font-size: 28px; color: var(--ink-soft); }
+    #ivs05-sc08-cd { left: 600px; top: 250px; width: 720px; text-align: center; font-size: 58px; }
+    #ivs05-sc08-gm { position: absolute; left: 1252px; top: 782px; width: 136px; height: 163px; background: url('assets/ivan/motifs/grey_man.svg') center / contain no-repeat; }
+    #ivs05-sc08-iv { left: 1410px; top: 852px; font-size: 32px; color: var(--ink); }
+
+    /* sc10 chat history */
+    #ivs05-sc10-col { position: absolute; left: 1056px; top: 72px; width: 768px; height: 936px; background: #f1eee8; box-shadow: 0 30px 70px rgba(27,29,32,0.28); overflow: hidden; border-radius: 10px; }
+    #ivs05-sc10-hd { position: absolute; left: 0; top: 0; width: 768px; height: 86px; background: #e3dfd7; border-bottom: 2px solid rgba(27,29,32,0.12); z-index: 2; }
+    #ivs05-sc10-hd .av { position: absolute; left: 28px; top: 14px; width: 58px; height: 58px; border-radius: 50%; background: var(--ash-dark) url('assets/ivan/motifs/grey_man.svg') center 7px / 46px auto no-repeat; }
+    #ivs05-sc10-hd .nm { position: absolute; left: 108px; top: 30px; font-size: 24px; color: var(--ink); }
+    #ivs05-sc10-list { position: absolute; left: 0; top: 0; width: 768px; }
+    .v5-b { position: absolute; left: 34px; width: 520px; background: #c9c8c5; border-radius: 6px 26px 26px 26px; padding: 22px 26px; }
+    .v5-b i { display: block; height: 14px; background: rgba(27,29,32,0.32); border-radius: 7px; margin: 9px 0; }
+    .v5-b.att .ph { height: 230px; border-radius: 14px; overflow: hidden; position: relative; background: #2a2b2e; margin-bottom: 10px; }
+    .v5-b.att .ph img { position: absolute; left: -479px; top: -161px; width: 1100px; filter: grayscale(1) contrast(1.1); }
+    #ivs05-sc10-t { left: 96px; top: 330px; font-size: 128px; line-height: 0.98; }
+
+    /* sc11 / sc12 maps */
+    #ivs05-sc11-map { position: absolute; left: 0; top: 0; width: 3360px; height: 1728px; filter: brightness(0.9) contrast(1.06); }
+    #ivs05-sc11-m { left: 96px; top: 880px; font-size: 92px; }
+    #ivs05-sc12-map { position: absolute; left: 0; top: 0; width: 2068px; height: 1680px; filter: brightness(0.9) contrast(1.06); }
+    .v5-cl { position: absolute; white-space: nowrap; }
+
+    /* sc13 Yelabuga plate */
+    #ivs05-sc13-plate { left: 96px; top: 181px; width: 1100px; height: 718px; }
+    #ivs05-sc13-plate video { filter: saturate(0.45) contrast(1.05); }
+    #ivs05-sc13-sh { position: absolute; left: 1300px; top: 300px; width: 524px; filter: grayscale(1) brightness(0.92) contrast(1.05) drop-shadow(0 18px 30px rgba(0,0,0,0.6)); }
+    #ivs05-sc13-m { left: 1300px; top: 640px; width: 560px; font-size: 92px; line-height: 0.98; }
+
+    /* sc14 satellite */
+    #ivs05-sc14-cam { position: absolute; inset: 0; transform-origin: 960px 600px; }
+    #ivs05-sc14-img { filter: saturate(0.22) brightness(0.78) contrast(1.12); }
+    #ivs05-sc14-box { position: absolute; left: 96px; top: 72px; background: rgba(16,17,19,0.88); padding: 20px 30px 24px; transform-origin: 0 50%; opacity: 0; }
+    #ivs05-sc14-box .k { font-size: 24px; color: var(--ash-light); margin-bottom: 10px; }
+    #ivs05-sc14-box .m { font-size: 64px; color: var(--bone); }
+
+    /* sc16 cork board */
+    #ivs05-sc16-cam { position: absolute; inset: 0; transform-origin: 960px 520px; }
+    #ivs05-sc16-cork { position: absolute; inset: -40px; background: url('assets/textures/cork_01.jpg') center / cover; filter: saturate(0.22) brightness(0.62) contrast(1.05); }
+    #ivs05-sc16-lamp { position: absolute; inset: 0; background: radial-gradient(ellipse 58% 62% at 50% 42%, rgba(255,240,215,0.18), rgba(0,0,0,0) 62%, rgba(0,0,0,0.55) 100%); }
+    .v5-card { position: absolute; background: #e6e1d7; padding: 18px 18px 64px; box-shadow: 0 26px 50px rgba(0,0,0,0.55); }
+    .v5-card .in { position: relative; width: 100%; height: 100%; overflow: hidden; }
+    .v5-card .cap { position: absolute; left: 18px; bottom: 16px; font-size: 26px; color: var(--ink); }
+    .v5-pin { position: absolute; width: 26px; height: 26px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #8f9196, #3a3c40 70%); box-shadow: 0 6px 10px rgba(0,0,0,0.5); }
+    #ivs05-sc16-c1 { left: 300px; top: 210px; width: 340px; height: 400px; transform: rotate(-3deg); }
+    #ivs05-sc16-c1 .in { background: #cfcac0 url('assets/ivan/motifs/grey_man.svg') center 40px / 240px auto no-repeat; }
+    #ivs05-sc16-c2 { left: 1080px; top: 240px; width: 560px; height: 360px; transform: rotate(2.5deg); }
+    #ivs05-sc16-c2 img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: saturate(0.25) contrast(1.1); }
+    #ivs05-sc16-note { position: absolute; left: 510px; top: 760px; width: 900px; height: 190px; background: #ebe7de; box-shadow: 0 22px 44px rgba(0,0,0,0.5); transform: rotate(-1deg); }
+    #ivs05-sc16-st { position: absolute; left: 0; top: 34px; width: 900px; text-align: center; font-size: 104px; color: var(--ink); }
+  </style>
+  <div id="root" data-composition-id="ivs05" data-vo-start="594.35" data-duration="81.24" data-width="1920" data-height="1080">
+    <svg id="ivs05-defs" width="0" height="0" style="position:absolute"></svg>
+
+    <!-- sc01 · 594.35–597.71 · "Now here's where Ivan's story gets particularly interesting." · FACE A medium -->
+    <div class="v5-scene" id="ivs05-sc01" data-scene="IVS05-001"><div class="v5-shot" id="ivs05-sc01-shot">
+      <div class="v5-fc" id="ivs05-sc01-fw"><video id="ivs05-sc01-v" src="assets/facecam/ivan_facecam_master.mp4" muted playsinline data-start="0" data-duration="3.4" data-media-start="594.35"></video></div>
+    </div></div>
+
+    <!-- sc02 · 597.71–600.67 · "More than a year before Spiderweb, he had actually been" · paper timeline -->
+    <div class="v5-scene" id="ivs05-sc02" data-scene="IVS05-002"><div class="v5-shot" id="ivs05-sc02-shot">
+      <div class="v5-pg"><img class="p1" src="assets/textures/paper_cream_02.jpg" alt="" /><img class="p2" src="assets/textures/paper_graph_01_hires.jpg" alt="" style="opacity:0.7;transform:scale(1.3);filter:saturate(0.3) contrast(1.15) brightness(1.06)" /></div>
+      <div id="ivs05-sc02-cam" class="v5-full" style="transform-origin:960px 600px">
+        <svg id="ivs05-sc02-svg" class="v5-mk" viewBox="0 0 1920 1080"></svg>
+        <div id="ivs05-sc02-sw" class="v5-abs t-display"><span class="v5-w">Spiderweb</span></div>
+        <div id="ivs05-sc02-yr" class="v5-abs t-serif-i v5-ink"><span class="v5-w">more </span><span class="v5-w">than </span><span class="v5-w">a </span><span class="v5-w">year </span><span class="v5-w">before</span></div>
+      </div>
+      <div class="folds"></div>
+    </div></div>
+
+    <!-- sc03 · 600.67–605.47 · "telling this journalist about plans to attack Russian strategic bombers." · Mamoń + message -->
+    <div class="v5-scene v5-night" id="ivs05-sc03" data-scene="IVS05-003"><div class="v5-shot v5-night" id="ivs05-sc03-shot">
+      <div id="ivs05-sc03-clipw"><video id="ivs05-sc03-v" src="assets/ivan/ivs05/footage/bbc_mamon_walk.mp4" muted playsinline data-start="6.32" data-duration="4.85" data-media-start="0.2"
+        data-color-grading='{"effects":{"chromaticAberration":0.12,"chromaticAngle":0}}'></video></div>
+      <div id="ivs05-sc03-msg" class="v5-abs">
+        <div class="hd" id="ivs05-sc03-hd" style="opacity:0"><div class="av"></div><div class="nm t-label">Ivan</div></div>
+        <div id="ivs05-sc03-bub" style="opacity:0">
+          <div id="ivs05-sc03-att"><img src="assets/ivan/ivs05/photos/tu95_voronezh_2014.jpg" alt="" /></div>
+          <div id="ivs05-sc03-t1" class="t-serif"><span class="v5-w">plans </span><span class="v5-w">to </span><span class="v5-w">attack</span></div>
+          <div id="ivs05-sc03-t2" class="t-display"><span class="v5-w">Russian </span><span class="v5-w">strategic </span><span class="v5-w">bombers</span></div>
+          <svg id="ivs05-sc03-tick" width="46" height="22" viewBox="0 0 46 22"><path d="M2 12 L9 19 L22 4 M18 14 L23 19 L40 3" fill="none" stroke="#93bde8" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+      </div>
+      <div class="v5-credit">Video: BBC World Service · Photo: Roman Dergunov, CC BY-SA 4.0</div>
+    </div></div>
+
+    <!-- sc04 · 605.47–610.03 · "He had even sent him footage of what he claimed were preparation for an attack." · received video -->
+    <div class="v5-scene v5-night" id="ivs05-sc04" data-scene="IVS05-004"><div class="v5-shot v5-night" id="ivs05-sc04-shot">
+      <div id="ivs05-sc04-vw" class="v5-full"><video id="ivs05-sc04-v" class="v5-vid" src="assets/ivan/ivs05/footage/bbc_ivan_airfield_dusk.mp4" muted playsinline data-start="11.12" data-duration="4.8" data-media-start="0.0"
+        data-color-grading='{"effects":{"chromaticAberration":0.14,"chromaticAngle":0}}'></video></div>
+      <div class="v5-scrim-bl"></div>
+      <svg id="ivs05-sc04-svg" class="v5-mk" viewBox="0 0 1920 1080"></svg>
+      <div id="ivs05-sc04-rec" class="v5-abs t-label"><span class="dot"></span>REC</div>
+      <div id="ivs05-sc04-tc" class="v5-abs t-label">00:00:00</div>
+      <div id="ivs05-sc04-k" class="v5-abs t-label"><span class="v5-w">footage</span></div>
+      <div id="ivs05-sc04-m" class="v5-abs t-display clean"><span class="v5-w">preparation </span><span class="v5-w">for </span><span class="v5-w">an </span><span class="v5-w">attack</span></div>
+      <div class="v5-credit">Video: BBC World Service</div>
+    </div></div>
+
+    <!-- sc05 · 610.03–614.03 · "Although he never exactly said when and where that attack would take place." · redacted case card -->
+    <div class="v5-scene" id="ivs05-sc05" data-scene="IVS05-005"><div class="v5-shot" id="ivs05-sc05-shot">
+      <div class="v5-pg"><img class="p1" src="assets/textures/paper_cream_01.jpg" alt="" /><img class="p2" src="assets/textures/paper_stained_01_hires.jpg" alt="" style="filter:saturate(0.25)" /></div>
+      <div id="ivs05-sc05-cam">
+        <div id="ivs05-sc05-card"><div class="tx2"></div>
+          <div class="tab t-label">Ivan · the attack</div><div class="rule"></div>
+          <div id="ivs05-sc05-l1" class="v5-fl t-label" style="top:200px"><span class="v5-w">when</span></div>
+          <div id="ivs05-sc05-b1" class="v5-bar" style="top:270px"><div class="tx3"></div></div>
+          <div id="ivs05-sc05-l2" class="v5-fl t-label" style="top:450px"><span class="v5-w">where</span></div>
+          <div id="ivs05-sc05-b2" class="v5-bar" style="top:520px"><div class="tx3"></div></div>
+          <svg id="ivs05-sc05-svg" viewBox="0 0 960 780" style="position:absolute;left:0;top:0;width:960px;height:780px;overflow:visible"></svg>
+        </div>
+      </div>
+      <div class="folds"></div>
+    </div></div>
+
+    <!-- sc06 · 614.03–617.36 · "Then eventually, Ukraine actually struck those airfields." · SBU FPV footage -->
+    <div class="v5-scene v5-night" id="ivs05-sc06" data-scene="IVS05-006"><div class="v5-shot v5-night" id="ivs05-sc06-shot">
+      <div id="ivs05-sc06-vw" class="v5-full" style="transform-origin:1000px 500px"><video id="ivs05-sc06-v" class="v5-vid" src="assets/ivan/ivs05/footage/sbu_bomber_strike.mp4" muted playsinline data-start="19.68" data-duration="3.36" data-media-start="0.35"
+        data-color-grading='{"effects":{"chromaticAberration":0.12,"chromaticAngle":0}}'></video></div>
+      <div class="v5-scrim-bl"></div>
+      <div id="ivs05-sc06-m" class="v5-abs t-display clean"><span class="v5-w">struck </span><span class="v5-w">those </span><span class="v5-w">airfields</span></div>
+      <div class="v5-credit">Video: Security Service of Ukraine (SBU)</div>
+    </div></div>
+
+    <!-- sc07 · 617.36–623.12 · "Now I want to be clear… doesn't necessarily mean that Ivan was involved in Spider-Web." · FACE B close → wide -->
+    <div class="v5-scene" id="ivs05-sc07" data-scene="IVS05-007"><div class="v5-shot" id="ivs05-sc07-shot">
+      <div class="v5-fc" id="ivs05-sc07-fw1"><video id="ivs05-sc07-v1" src="assets/facecam/ivan_facecam_master.mp4" muted playsinline data-start="23.01" data-duration="1.72" data-media-start="617.36"></video></div>
+      <div class="v5-fc" id="ivs05-sc07-fw2"><video id="ivs05-sc07-v2" src="assets/facecam/ivan_facecam_master.mp4" muted playsinline data-start="24.69" data-duration="4.1" data-media-start="619.04"></video></div>
+      <div id="ivs05-sc07-lb" class="v5-lb" style="left:96px;top:722px">
+        <div class="k t-label"><span class="v5-w">doesn't </span><span class="v5-w">necessarily </span><span class="v5-w">mean</span></div>
+        <div class="m t-display"><span class="v5-w">Ivan </span><span class="v5-w">was </span><span class="v5-w">involved</span><br /><span class="v5-w">in </span><span class="v5-w">Spiderweb</span></div>
+      </div>
+    </div></div>
+
+    <!-- sc08 · 623.12–630.96 · "the operation was carried out by the SBU … completely different … the agency that Ivan was working with, which was GRU (GUR)" · node diagram -->
+    <div class="v5-scene" id="ivs05-sc08" data-scene="IVS05-008"><div class="v5-shot" id="ivs05-sc08-shot" style="background:var(--paper)">
+      <div class="v5-pg"><img class="p1" src="assets/textures/paper_cream_02.jpg" alt="" /><img class="p2" src="assets/textures/paper_graph_01_hires.jpg" alt="" style="transform:scale(1.5);object-position:30% 60%;filter:saturate(0.3) contrast(1.15) brightness(1.06)" /></div>
+      <div id="ivs05-sc08-cam" class="v5-full" style="transform-origin:960px 540px">
+        <svg id="ivs05-sc08-svg" class="v5-mk" viewBox="0 0 1920 1080"></svg>
+        <div id="ivs05-sc08-op" class="v5-abs t-label"><span class="v5-w">the operation</span></div>
+        <div id="ivs05-sc08-sbu" class="v5-node t-display" style="opacity:0"><div class="tx2"></div><span>SBU</span></div>
+        <div id="ivs05-sc08-gur" class="v5-node t-display" style="opacity:0"><div class="tx2"></div><span>GUR</span></div>
+        <div id="ivs05-sc08-cd" class="v5-abs t-serif-i v5-ink"><span class="v5-w">completely </span><span class="v5-w">different</span></div>
+        <div id="ivs05-sc08-gm" style="opacity:0"></div>
+        <div id="ivs05-sc08-iv" class="v5-abs t-label"><span class="v5-w">Ivan</span></div>
+      </div>
+      <div class="folds"></div>
+    </div></div>
+
+    <!-- sc09 · 630.96–633.92 · "But Ukraine had just pulled off the kind of attack" · FACE C' medium-left -->
+    <div class="v5-scene" id="ivs05-sc09" data-scene="IVS05-009"><div class="v5-shot" id="ivs05-sc09-shot">
+      <div class="v5-fc" id="ivs05-sc09-fw"><video id="ivs05-sc09-v" src="assets/facecam/ivan_facecam_master.mp4" muted playsinline data-start="36.61" data-duration="3.0" data-media-start="630.96"></video></div>
+    </div></div>
+
+    <!-- sc10 · 633.92–637.40 · "that Ivan had been talking about for more than a year. And of course" · chat history -->
+    <div class="v5-scene" id="ivs05-sc10" data-scene="IVS05-010"><div class="v5-shot" id="ivs05-sc10-shot" style="background:var(--paper)">
+      <div class="v5-pg"><img class="p1" src="assets/textures/paper_cream_01.jpg" alt="" /><img class="p2" src="assets/textures/paper_lined_01_hires.jpg" alt="" style="filter:saturate(0.3) brightness(1.04);transform:scale(1.2);transform-origin:100% 50%" /></div>
+      <div id="ivs05-sc10-col"><div id="ivs05-sc10-list"></div><div id="ivs05-sc10-hd"><div class="av"></div><div class="nm t-label">Ivan</div></div></div>
+      <div id="ivs05-sc10-t" class="v5-abs t-display v5-ink"><span class="v5-w">for </span><span class="v5-w">more</span><br /><span class="v5-w">than </span><span class="v5-w">a </span><span class="v5-w">year</span></div>
+      <div class="v5-credit ink">Photo: Roman Dergunov, CC BY-SA 4.0</div>
+    </div></div>
+
+    <!-- sc11 · 637.40–640.64 · "the attack was just on an extraordinary scale." · Russia-wide map, four airfields -->
+    <div class="v5-scene v5-night" id="ivs05-sc11" data-scene="IVS05-011"><div class="v5-shot" id="ivs05-sc11-shot" style="background:#1b1d22">
+      <div class="v5-cam" id="ivs05-sc11-cam" style="width:3360px;height:1728px">
+        <img id="ivs05-sc11-map" src="assets/ivan/ivs05/derived/russia_wide_night.jpg" alt="" />
+        <svg id="ivs05-sc11-svg" viewBox="0 0 3360 1728" style="position:absolute;left:0;top:0;width:3360px;height:1728px;overflow:visible"></svg>
+      </div>
+      <div class="v5-scrim-bl"></div>
+      <div id="ivs05-sc11-m" class="v5-abs t-display clean"><span class="v5-w">an </span><span class="v5-w">extraordinary </span><span class="v5-w">scale</span></div>
+      <div class="v5-credit">Map: AWS Terrain Tiles, Natural Earth</div>
+    </div></div>
+
+    <!-- sc12 · 640.64–645.12 · "On top of this, Ukrainian drones had also struck Yelabuga in Tatarstan," · EE map, drone route -->
+    <div class="v5-scene v5-night" id="ivs05-sc12" data-scene="IVS05-012"><div class="v5-shot" id="ivs05-sc12-shot" style="background:#1b1d22">
+      <div class="v5-cam" id="ivs05-sc12-cam" style="width:2068px;height:1680px">
+        <img id="ivs05-sc12-map" src="assets/ivan/ivs05/derived/ee_night_crop.jpg" alt="" />
+        <svg id="ivs05-sc12-svg" viewBox="0 0 2068 1680" style="position:absolute;left:0;top:0;width:2068px;height:1680px;overflow:visible"></svg>
+        <div id="ivs05-sc12-ud" class="v5-cl t-label" style="font-size:26px;color:var(--sky)"><span class="v5-w">Ukrainian </span><span class="v5-w">drones</span></div>
+        <div id="ivs05-sc12-yl" class="v5-cl t-display clean" style="font-size:58px;text-align:right;width:420px"><span class="v5-w">Yelabuga</span></div>
+        <div id="ivs05-sc12-tt" class="v5-cl t-label" style="font-size:24px;color:var(--ash-light);text-align:right;width:420px"><span class="v5-w">Tatarstan</span></div>
+      </div>
+      <div class="v5-credit">Map: AWS Terrain Tiles, Natural Earth</div>
+    </div></div>
+
+    <!-- sc13 · 645.12–649.68 · "where Russia produces the Shahed type drones it uses against Ukraine." · Yelabuga strike plate + Shahed -->
+    <div class="v5-scene v5-night" id="ivs05-sc13" data-scene="IVS05-013"><div class="v5-shot v5-night" id="ivs05-sc13-shot">
+      <div id="ivs05-sc13-plate" class="v5-print"><div class="in"><video id="ivs05-sc13-v" src="assets/ivan/ivs05/footage/bbc_yelabuga_strike.mp4" muted playsinline data-start="50.77" data-duration="4.62" data-media-start="0.5"
+        data-color-grading='{"effects":{"chromaticAberration":0.12,"chromaticAngle":0}}'></video></div></div>
+      <img id="ivs05-sc13-sh" src="assets/ivan/ivs05/photos/shahed136_rendering.png" alt="" style="opacity:0" />
+      <div id="ivs05-sc13-m" class="v5-abs t-display clean"><span class="v5-w">Shahed-</span><span class="v5-w">type</span><br /><span class="v5-w">drones</span></div>
+      <div class="v5-credit">Video: Ostorozhno Novosti via BBC World Service · Render: Idmental, CC BY 4.0</div>
+    </div></div>
+
+    <!-- sc14 · 649.68–654.88 · "After those strikes, satellite images showed new defensive towers being built around the complex." · Esri satellite + markup -->
+    <div class="v5-scene v5-night" id="ivs05-sc14" data-scene="IVS05-014"><div class="v5-shot v5-night" id="ivs05-sc14-shot">
+      <div id="ivs05-sc14-cam">
+        <img id="ivs05-sc14-img" class="v5-full" src="assets/ivan/ivs05/derived/alabuga_sez_esri_z16.jpg" alt="" />
+        <svg id="ivs05-sc14-svg" class="v5-mk" viewBox="0 0 1920 1080"></svg>
+      </div>
+      <div id="ivs05-sc14-box"><div class="k t-label"><span class="v5-w">satellite </span><span class="v5-w">images</span></div><div class="m t-display"><span class="v5-w">new </span><span class="v5-w">defensive </span><span class="v5-w">towers</span></div></div>
+      <div class="v5-credit">Imagery: Esri, Maxar, Earthstar Geographics</div>
+    </div></div>
+
+    <!-- sc15 · 654.88–659.52 · "Foma had an interesting theory, and after speaking with some of his intelligence contacts," · FACE C close -->
+    <div class="v5-scene" id="ivs05-sc15" data-scene="IVS05-015"><div class="v5-shot" id="ivs05-sc15-shot">
+      <div class="v5-fc" id="ivs05-sc15-fw"><video id="ivs05-sc15-v" src="assets/facecam/ivan_facecam_master.mp4" muted playsinline data-start="60.53" data-duration="4.7" data-media-start="654.88"></video></div>
+      <div id="ivs05-sc15-lb" class="v5-lb" style="left:96px;top:846px"><div class="m t-display"><span class="v5-w">an </span><span class="v5-w">interesting </span><span class="v5-w">theory</span></div></div>
+    </div></div>
+
+    <!-- sc16 · 659.52–664.56 · "he suspected that Ivan might have helped plan an attack there, but he couldn't prove it." · cork board -->
+    <div class="v5-scene v5-night" id="ivs05-sc16" data-scene="IVS05-016"><div class="v5-shot v5-night" id="ivs05-sc16-shot" style="background:#1d1b19">
+      <div id="ivs05-sc16-cam">
+        <div id="ivs05-sc16-cork"></div>
+        <div class="v5-card" id="ivs05-sc16-c1"><div class="in"></div><div class="cap t-label">Ivan</div></div>
+        <div class="v5-card" id="ivs05-sc16-c2"><div class="in"><img src="assets/ivan/ivs05/derived/alabuga_sez_esri_z16.jpg" alt="" /></div><div class="cap t-label">Yelabuga</div></div>
+        <div class="v5-pin" id="ivs05-sc16-p1" style="left:457px;top:216px"></div>
+        <div class="v5-pin" id="ivs05-sc16-p2" style="left:1347px;top:244px"></div>
+        <svg id="ivs05-sc16-svg" class="v5-mk" viewBox="0 0 1920 1080"></svg>
+        <div id="ivs05-sc16-note" style="opacity:0"><div id="ivs05-sc16-st" class="t-display"><span class="v5-w">couldn't </span><span class="v5-w">prove </span><span class="v5-w">it</span></div></div>
+        <div id="ivs05-sc16-lamp"></div>
+      </div>
+      <div class="v5-credit">Cork texture: Trougnouf (Benoit Brummer), CC BY 4.0 · Imagery: Esri, Maxar, Earthstar Geographics</div>
+    </div></div>
+
+    <!-- sc17 · 664.56–668.80 · "Mamoń still couldn't tell which attacks Ivan had actually helped prepare." · FACE D wide -->
+    <div class="v5-scene" id="ivs05-sc17" data-scene="IVS05-017"><div class="v5-shot" id="ivs05-sc17-shot">
+      <div class="v5-fc" id="ivs05-sc17-fw"><video id="ivs05-sc17-v" src="assets/facecam/ivan_facecam_master.mp4" muted playsinline data-start="70.21" data-duration="4.3" data-media-start="664.56"></video></div>
+    </div></div>
+
+    <!-- sc18 · 668.80–675.59 · "Yet, through all this sabotage, there was one thing about Ivan that … this journalist, still couldn't understand." · FACE E medium → push -->
+    <div class="v5-scene" id="ivs05-sc18" data-scene="IVS05-018"><div class="v5-shot" id="ivs05-sc18-shot">
+      <div class="v5-fc" id="ivs05-sc18-fw"><video id="ivs05-sc18-v" src="assets/facecam/ivan_facecam_master.mp4" muted playsinline data-start="74.45" data-duration="6.79" data-media-start="668.8"></video></div>
+      <div id="ivs05-sc18-lb" class="v5-lb" style="left:96px;top:846px"><div class="m t-display"><span class="v5-w">still </span><span class="v5-w">couldn't </span><span class="v5-w">understand</span></div></div>
+    </div></div>
+
+    <div id="ivs05-flash"></div>
+    <div id="ivs05-grain" class="tx tx-grain" style="background-image:url('assets/textures/grain_01_norm.jpg')"></div>
+    <div id="ivs05-dust" class="tx tx-dust" style="background-image:url('assets/textures/dust_02.jpg')"></div>
+    <div id="ivs05-vig" class="vignette"></div>
+    <audio id="ivs05-vo" class="temp-vo" src="vo_iv.mp3" data-start="0" data-duration="81.24" data-media-start="594.35" data-volume="1"></audio>
+  </div>
+  <script>
+  (function () {
+    const SEG = "ivs05", SEG_START = 594.35, SEG_END = 675.59, DURATION = 81.24;
+    const T = (s) => +(s - SEG_START).toFixed(3);   // TEXT cues (audited) — literal master word starts
+    const S = (s) => +(s - SEG_START).toFixed(3);   // STRUCTURAL cues — not audited
+    const L = 0.06;
+    const MAP = /*MAPDATA*/null;
+    const tl = gsap.timeline({ paused: true });
+    const $ = (id) => document.getElementById(SEG + "-" + id);
+    const NS = "http://www.w3.org/2000/svg";
+    const defs = $("defs");
+    const E = FX.ease;
+    const C = (e, d) => FX.choppy(e, d, 12);
+    const BONE = "#f0ede6", INK = "#1b1d20", OX = "#b32a22", OXL = "#e3a199", AZ = "#2563b0", AZD = "#163c6b", SKY = "#93bde8", ASH = "#8f9196", ASHL = "#c4c4c2";
+    const scenes = [];
+
+    function scene(id, a, b) {
+      scenes.push([$(id), a, b]);
+      tl.fromTo($(id), { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.001, immediateRender: false }, S(a));
+      if (b < SEG_END) tl.set($(id), { autoAlpha: 0 }, S(b));
+    }
+    // texture overlays per ground: [vig, dust, grain]; face cam = clean (no texture on Krish)
+    function ground(kind, t) {
+      const v = kind === "paper" ? [0.32, 0.16, 0.26] : kind === "face" ? [0, 0, 0] : [1, 0.42, 0.36];
+      tl.set([$("vig"), $("dust"), $("grain")], { opacity: (i) => v[i] }, t);
+    }
+    const W = (id) => Array.from($(id).querySelectorAll(".v5-w"));
+    const rise = (el, t, o) => { o = o || {}; const d = o.dur || 0.6;
+      tl.fromTo(el, { opacity: 0, y: o.y == null ? 18 : o.y }, { opacity: 1, y: 0, duration: d, ease: C(E.out, d), immediateRender: true }, t); };
+    const pop = (el, t, o) => { o = o || {}; const d = o.dur || 0.8;
+      tl.fromTo(el, { opacity: 0, scale: o.from == null ? 0.6 : o.from }, { opacity: 1, scale: 1, duration: d, ease: C(E.out, d), immediateRender: true }, t); };
+    const popSvg = (node, t, cx, cy, o) => { o = o || {}; const d = o.dur || 0.6;
+      tl.fromTo(node, { opacity: 0, scale: o.from == null ? 0.2 : o.from, svgOrigin: cx + " " + cy }, { opacity: 1, scale: 1, svgOrigin: cx + " " + cy, duration: d, ease: C(E.out, d), immediateRender: true }, t); };
+    const fadeOut = (el, t, d) => tl.to(el, { opacity: 0, duration: d || 0.3, ease: "power1.in" }, t);
+    const whipN = { n: 0 };
+    function whip(a, b, t, o) {
+      o = Object.assign({ dir: 1, vertical: false, flash: false, dur: 0.32 }, o);
+      const k = ++whipN.n, ba = FX.whipDefs(defs, SEG + "-wa" + k), bb = FX.whipDefs(defs, SEG + "-wb" + k), h = o.dur / 2;
+      tl.set(a, { filter: "url(#" + SEG + "-wa" + k + ")" }, t - h - 0.01); tl.set(a, { filter: "none" }, t + 0.06);
+      tl.set(b, { filter: "url(#" + SEG + "-wb" + k + ")" }, t - 0.001); tl.set(b, { filter: "none" }, t + h + 0.02);
+      FX.whip(tl, a, b, t, { dir: o.dir, vertical: o.vertical, dur: o.dur, blurA: ba, blurB: bb });
+      if (o.flash) tl.fromTo($("flash"), { opacity: 0 }, { opacity: 0.85, duration: 0.08, yoyo: true, repeat: 1, ease: "power2.in", immediateRender: false }, t - 0.08);
+    }
+    // paper slide: shot b slides over a and lands at t (scene b visible from t - d)
+    function slide(a, b, t, o) {
+      o = Object.assign({ axis: "x", from: 1, d: 0.45 }, o);
+      const dist = (o.axis === "x" ? 1980 : 1140) * o.from;
+      tl.fromTo(b, { [o.axis]: dist, boxShadow: "0 0 80px rgba(0,0,0,0.5)" }, { [o.axis]: 0, duration: o.d, ease: C(E.inOut, o.d), immediateRender: false }, t - o.d);
+      tl.set(b, { boxShadow: "none" }, t);
+      tl.fromTo(a, { [o.axis]: 0 }, { [o.axis]: -dist * 0.12, duration: o.d, ease: E.in, immediateRender: false }, t - o.d);
+    }
+    function el(parent, tag, attrs) { const n = document.createElementNS(NS, tag); for (const k in attrs) n.setAttribute(k, attrs[k]); parent.appendChild(n); return n; }
+    // hand-drawn stroke (trim paths); slight bend so filtered straight lines never vanish (MANUAL §4.2)
+    function ink(parent, d, t, dur, o) {
+      o = o || {};
+      const p = el(parent, "path", { d: d, fill: "none", stroke: o.color || INK, "stroke-width": o.width || 6, "stroke-linecap": "round", "stroke-linejoin": "round" });
+      if (o.filter) p.setAttribute("filter", o.filter);
+      if (o.opacity != null) p.setAttribute("opacity", o.opacity);
+      if (o.dash) p.style.strokeDasharray = o.dash;
+      const len = p.getTotalLength() || 1;
+      if (!o.dash) {
+        p.setAttribute("stroke-dasharray", len + " " + len); p.setAttribute("stroke-dashoffset", len);
+        tl.fromTo(p, { attr: { "stroke-dashoffset": len } }, { attr: { "stroke-dashoffset": 0 }, duration: dur, ease: o.ease || C(E.out, dur), immediateRender: true }, t);
+      }
+      p._len = len; return p;
+    }
+    // face-cam framing: scale around the face (ox, oy); slow push inside the shot (clean: no grain/grade)
+    function frame(fw, t0, dur, s0, s1, ox, oy, ease) {
+      gsap.set(fw, { scale: s0, transformOrigin: ox + "px " + oy + "px" });
+      tl.fromTo(fw, { scale: s0 }, { scale: s1, duration: dur, ease: ease || "none", immediateRender: false }, t0);
+    }
+    function labelBox(box, t, fromRight) {
+      tl.fromTo(box, { opacity: 0, scaleX: 0.02 }, { opacity: 1, scaleX: 1, duration: 0.45, ease: C(E.out, 0.45), immediateRender: true }, t);
+    }
+
+    const PEN = FX.markupDefs(defs, SEG + "-pen", { boil: 4 });
+    defs.setAttribute("viewBox", "0 0 1 1");
+    FX.grain($("grain"), 501);
+    FX.dust($("dust"), 502, 2);
+
+    /* ===== sc01 · 594.35–597.71 · FACE A (medium 1.25, 2 % push) ===== */
+    scene("sc01", 594.35, 597.71);
+    ground("face", S(594.35));
+    frame($("sc01-fw"), S(594.35), 3.36, 1.25, 1.28, 1010, 150);
+
+    /* ===== sc02 · 597.71–600.67 · paper timeline: more than a year before Spiderweb ===== */
+    scene("sc02", 597.71, 600.67);
+    ground("paper", S(597.71));
+    tl.fromTo($("sc02-cam"), { scale: 1.0 }, { scale: 1.035, duration: 2.96, ease: "none", immediateRender: true }, S(597.71));
+    (function () {
+      const svg = $("sc02-svg");
+      // axis (already drawing when we cut in = cut on action)
+      const ax = ink(svg, "M216 640 C 700 637, 1200 643, 1704 639", S(597.71) - 0.25, 1.1, { width: 6, ease: C(E.out, 1.1) });
+      const ticks = [];
+      for (let i = 0; i <= 12; i++) { const x = 300 + i * 105; ticks.push(el(svg, "path", { d: "M" + x + " 626 L" + (x + 1) + " 654", stroke: INK, "stroke-width": 3, opacity: 0 })); }
+      ticks.forEach((tk, i) => tl.fromTo(tk, { opacity: 0 }, { opacity: 0.55, duration: 0.001, immediateRender: true }, S(597.71) + i / 24));
+      const d0 = el(svg, "circle", { cx: 360, cy: 640, r: 16, fill: INK, opacity: 0 });
+      const d1 = el(svg, "circle", { cx: 1560, cy: 640, r: 26, fill: AZ, stroke: "#e8e4dc", "stroke-width": 5, opacity: 0 });
+      popSvg(d0, S(597.80), 360, 640);
+      popSvg(d1, S(597.95), 1560, 640, { dur: 0.7 });
+      // pen bracket arcing back in time: from Spiderweb to "a year before"
+      FX.markup.pen(tl, svg, S(598.15), { points: [[1548, 690], [1400, 760], [960, 786], [520, 760], [376, 694]], jitter: 5, seed: 21, dur: 1.0, width: 6, color: INK, filter: PEN });
+      FX.markup.pen(tl, svg, S(599.10), { points: [[404, 664], [376, 694], [412, 712]], jitter: 2, seed: 23, dur: 0.3, width: 6, color: INK, filter: PEN });
+    })();
+    [T(597.71) - L, T(597.95) - L, T(598.11) - L, T(598.19) - L, T(598.43) - L].forEach((c, i) => rise(W("sc02-yr")[i], c, { dur: 0.5, y: 14 }));
+    rise(W("sc02-sw")[0], T(598.75) - L, { dur: 0.7, y: 22 });
+    whip($("sc02-shot"), $("sc03-shot"), S(600.67), { dir: 1, vertical: true });
+
+    /* ===== sc03 · 600.67–605.47 · Mamoń + Ivan's message (Tu-95 attachment) ===== */
+    scene("sc03", 600.67, 605.47);
+    ground("night", S(600.67));
+    tl.fromTo($("sc03-clipw"), { scale: 1.0 }, { scale: 1.04, duration: 4.8, ease: "none", immediateRender: true, transformOrigin: "600px 500px" }, S(600.67));
+    rise($("sc03-hd"), S(601.40), { dur: 0.7, y: 12 });
+    tl.fromTo($("sc03-bub"), { opacity: 0, scale: 0.86, y: 30 }, { opacity: 1, scale: 1, y: 0, duration: 0.9, ease: C(E.out, 0.9), immediateRender: true }, S(601.62));
+    tl.fromTo($("sc03-att").firstChild, { x: 40 }, { x: 0, duration: 3.6, ease: "none", immediateRender: true }, S(601.62));
+    [T(602.27) - L, T(602.91) - L, T(603.15) - L].forEach((c, i) => rise(W("sc03-t1")[i], c, { dur: 0.5, y: 10 }));
+    [T(603.63) - L, T(604.19) - L, T(604.67) - L].forEach((c, i) => rise(W("sc03-t2")[i], c, { dur: 0.5, y: 10 }));
+    tl.fromTo($("sc03-tick"), { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, S(604.85));
+    whip($("sc03-shot"), $("sc04-shot"), S(605.47), { dir: -1, flash: true });
+
+    /* ===== sc04 · 605.47–610.03 · Ivan's footage as a received video ===== */
+    scene("sc04", 605.47, 610.25);
+    ground("night", S(605.47));
+    tl.fromTo($("sc04-vw"), { scale: 1.02 }, { scale: 1.07, duration: 4.8, ease: "none", immediateRender: true, transformOrigin: "700px 500px" }, S(605.47));
+    (function () {
+      const svg = $("sc04-svg"), c = 54, x0 = 120, y0 = 92, x1 = 1800, y1 = 988;
+      [[x0, y0 + c, x0, y0, x0 + c, y0], [x1 - c, y0, x1, y0, x1, y0 + c], [x1, y1 - c, x1, y1, x1 - c, y1], [x0 + c, y1, x0, y1, x0, y1 - c]].forEach((q) =>
+        el(svg, "path", { d: "M" + q[0] + " " + q[1] + " L" + q[2] + " " + q[3] + " L" + q[4] + " " + q[5], fill: "none", stroke: BONE, "stroke-width": 4, opacity: 0.85 }));
+      // REC dot blinks (12 fps steps), counter runs in whole seconds
+      const dot = $("sc04-rec").querySelector(".dot");
+      for (let k = 0; k < 10; k++) tl.set(dot, { opacity: k % 2 ? 0.15 : 1 }, S(605.47) + k * 0.5);
+      const tc = $("sc04-tc"), st = { v: 0 };
+      tl.fromTo(st, { v: 0 }, { v: 4.78, duration: 4.78, ease: "none", immediateRender: true, onUpdate: () => { tc.textContent = "00:00:0" + Math.floor(st.v); } }, S(605.47));
+    })();
+    rise(W("sc04-k")[0], T(606.51) - L, { dur: 0.6, y: 10 });
+    [T(608.11) - L, T(608.91) - L, T(609.15) - L, T(609.31) - L].forEach((c, i) => rise(W("sc04-m")[i], c, { dur: 0.4, y: 14 }));
+    slide($("sc04-shot"), $("sc05-shot"), S(610.25), { axis: "x", from: 1, d: 0.45 });
+
+    /* ===== sc05 · 610.03–614.03 · redacted WHEN / WHERE ===== */
+    scene("sc05", 609.80, 614.03);
+    ground("paper", S(610.25));
+    tl.fromTo($("sc05-cam"), { scale: 1.0 }, { scale: 1.05, duration: 4.23, ease: "none", immediateRender: true }, S(609.80));
+    rise(W("sc05-l1")[0], T(611.71) - L, { dur: 0.5, y: 10 });
+    tl.fromTo($("sc05-b1"), { scaleX: 0 }, { scaleX: 1, duration: 0.42, ease: C("sine.inOut", 0.42), immediateRender: true }, S(611.90));
+    rise(W("sc05-l2")[0], T(612.27) - L, { dur: 0.5, y: 10 });
+    tl.fromTo($("sc05-b2"), { scaleX: 0 }, { scaleX: 1, duration: 0.42, ease: C("sine.inOut", 0.42), immediateRender: true }, S(612.45));
+    (function () {   // pen question marks after each redaction
+      const svg = $("sc05-svg"), q = (x, y) => [[x, y + 6], [x + 6, y - 22], [x + 30, y - 30], [x + 50, y - 14], [x + 40, y + 10], [x + 24, y + 24], [x + 24, y + 42]];
+      FX.markup.pen(tl, svg, S(612.68), { points: q(820, 296), jitter: 2, seed: 31, dur: 0.45, width: 7, color: INK, filter: PEN });
+      FX.markup.pen(tl, svg, S(612.88), { points: q(820, 546), jitter: 2, seed: 33, dur: 0.45, width: 7, color: INK, filter: PEN });
+      [[844, 356], [844, 606]].forEach((p, i) => { const c = el(svg, "circle", { cx: p[0], cy: p[1], r: 5.5, fill: INK, opacity: 0 }); tl.set(c, { opacity: 1 }, S(613.13) + i * 0.2); });
+    })();
+    whip($("sc05-shot"), $("sc06-shot"), S(614.03), { dir: 1 });
+
+    /* ===== sc06 · 614.03–617.36 · SBU FPV: Ukraine struck those airfields ===== */
+    scene("sc06", 614.03, 617.36);
+    ground("night", S(614.03));
+    tl.fromTo($("sc06-vw"), { scale: 1.06 }, { scale: 1.12, duration: 3.33, ease: "none", immediateRender: true }, S(614.03));
+    [T(615.79) - L, T(616.19) - L, T(616.35) - L].forEach((c, i) => rise(W("sc06-m")[i], c, { dur: 0.4, y: 14 }));
+
+    /* ===== sc07 · 617.36–623.12 · FACE B close → wide + label ===== */
+    scene("sc07", 617.36, 623.12);
+    ground("face", S(617.36));
+    frame($("sc07-fw1"), S(617.36), 1.68, 1.55, 1.57, 1000, 200);
+    tl.set($("sc07-fw1"), { autoAlpha: 0 }, S(619.04));
+    gsap.set($("sc07-fw2"), { autoAlpha: 0 });
+    tl.set($("sc07-fw2"), { autoAlpha: 1 }, S(619.04));
+    frame($("sc07-fw2"), S(619.04), 4.08, 1.0, 1.03, 1000, 420);
+    labelBox($("sc07-lb"), T(619.28) - L - 0.04);
+    [T(619.28) - L, T(619.60) - L, T(620.16) - L].forEach((c, i) => rise(W("sc07-lb")[i], c, { dur: 0.4, y: 8 }));
+    [T(620.64) - L, T(621.20) - L, T(621.36) - L, T(621.68) - L, T(621.84) - L].forEach((c, i) => rise(W("sc07-lb")[3 + i], c, { dur: 0.4, y: 10 }));
+    slide($("sc07-shot"), $("sc08-shot"), S(623.12), { axis: "y", from: 1, d: 0.45 });
+
+    /* ===== sc08 · 623.12–630.96 · SBU ≠ GUR node diagram ===== */
+    scene("sc08", 622.67, 630.96);
+    ground("paper", S(623.12));
+    tl.fromTo($("sc08-cam"), { scale: 1.0 }, { scale: 1.04, duration: 8.3, ease: "none", immediateRender: true }, S(622.67));
+    rise(W("sc08-op")[0], T(623.68) - L, { dur: 0.6, y: 10 });
+    pop($("sc08-sbu"), S(625.08), { dur: 0.8, from: 0.4 });
+    (function () {
+      const svg = $("sc08-svg");
+      // ≠ (Haskoy has no "=": two pen bars + a slash)
+      FX.markup.pen(tl, svg, S(626.52), { points: [[900, 522], [1020, 518]], jitter: 2, seed: 41, dur: 0.25, width: 9, color: INK, filter: PEN });
+      FX.markup.pen(tl, svg, S(626.66), { points: [[900, 564], [1020, 560]], jitter: 2, seed: 43, dur: 0.25, width: 9, color: INK, filter: PEN });
+      FX.markup.pen(tl, svg, S(626.84), { points: [[984, 480], [936, 606]], jitter: 2, seed: 45, dur: 0.25, width: 9, color: INK, filter: PEN });
+      // the agency: dashed outline first, filled GUR node on the word
+      const ring = el(svg, "circle", { cx: 1320, cy: 540, r: 180, fill: "none", stroke: INK, "stroke-width": 4, "stroke-dasharray": "14 12", opacity: 0 });
+      tl.fromTo(ring, { opacity: 0 }, { opacity: 0.6, duration: 0.3, immediateRender: true }, S(627.54));
+      // Ivan wired to the agency
+      const wire = ink(svg, "M1322 784 C 1316 765, 1326 745, 1320 722", S(628.60), 0.6, { width: 5, color: INK });
+      tl.set(ring, { opacity: 0 }, S(629.70));
+    })();
+    [T(626.64) - L, T(626.96) - L].forEach((c, i) => rise(W("sc08-cd")[i], c, { dur: 0.5, y: 12 }));
+    pop($("sc08-gm"), S(628.18), { dur: 0.7, from: 0.5 });
+    rise(W("sc08-iv")[0], T(628.24) - L, { dur: 0.5, y: 8 });
+    tl.fromTo($("sc08-gur"), { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.6, ease: C(E.out, 0.6), immediateRender: true }, T(629.76) - L);
+
+    /* ===== sc09 · 630.96–633.92 · FACE C' medium-left ===== */
+    scene("sc09", 630.96, 633.92);
+    ground("face", S(630.96));
+    frame($("sc09-fw"), S(630.96), 2.96, 1.3, 1.32, 1400, 240);
+    slide($("sc09-shot"), $("sc10-shot"), S(633.92), { axis: "x", from: 1, d: 0.45 });
+
+    /* ===== sc10 · 633.92–637.40 · message history scrolls back to the first bomber message ===== */
+    scene("sc10", 633.47, 637.40);
+    ground("paper", S(633.92));
+    (function () {
+      const list = $("sc10-list"), H = [150, 118, 182, 150, 118, 150, 182, 118, 150, 150, 118, 182], gap = 26;
+      let y = 120;
+      // index 0 = the oldest message (the Tu-95 attachment from sc03)
+      const att = document.createElement("div");
+      att.className = "v5-b att"; att.style.top = y + "px";
+      att.innerHTML = '<div class="ph"><img src="assets/ivan/ivs05/photos/tu95_voronezh_2014.jpg" alt="" /></div><i style="width:82%"></i><i style="width:56%"></i>';
+      list.appendChild(att); y += 360 + gap;
+      H.forEach((h, i) => {
+        const b = document.createElement("div"); b.className = "v5-b"; b.style.top = y + "px";
+        const n = Math.round((h - 44) / 32), ws = [88, 72, 94, 60, 80];
+        b.innerHTML = Array.from({ length: n }, (_, k) => '<i style="width:' + ws[(i + k) % 5] + '%"></i>').join("");
+        list.appendChild(b); y += h + gap;
+      });
+      const end = -(y - 936 + 40), start = 120 - 0;   // list starts showing the newest (bottom) messages, scrolls up to the oldest
+      gsap.set(list, { y: end });
+      tl.fromTo(list, { y: end }, { y: 0, duration: 1.9, ease: E.inOut, immediateRender: false }, S(633.70));
+      tl.fromTo(att, { boxShadow: "0 0 0 0 rgba(37,99,176,0)" }, { boxShadow: "0 0 0 6px rgba(37,99,176,0.9)", duration: 0.4, ease: C(E.out, 0.4), immediateRender: true }, S(635.70));
+    })();
+    [T(635.84) - L, T(636.08) - L, T(636.24) - L, T(636.40) - L, T(636.56) - L].forEach((c, i) => rise(W("sc10-t")[i], c, { dur: 0.35, y: 14 }));
+    whip($("sc10-shot"), $("sc11-shot"), S(637.40), { dir: 1, vertical: true });
+
+    /* ===== sc11 · 637.40–640.64 · Russia-wide map: the four Spiderweb airfields (scale) ===== */
+    scene("sc11", 637.40, 640.64);
+    ground("night", S(637.40));
+    (function () {
+      const P = 32, X = (lon) => (lon - 15) * P, Y = (lat) => (82 - lat) * P;
+      const cam = $("sc11-cam"), svg = $("sc11-svg"), at = (cx, cy, s) => ({ x: 960 - cx * s, y: 540 - cy * s, scale: s });
+      svg.insertAdjacentHTML("beforeend", '<path d="' + MAP.wide.russia + '" fill="' + OX + '" fill-opacity="0.6" style="mix-blend-mode:overlay"/>' +
+        '<path d="' + MAP.wide.russia + '" fill="none" stroke="' + OXL + '" stroke-width="3" stroke-opacity="0.7"/>' +
+        '<path d="' + MAP.wide.ukraine + '" fill="' + SKY + '" fill-opacity="0.8" style="mix-blend-mode:overlay"/>' +
+        '<path d="' + MAP.wide.ukraine + '" fill="none" stroke="' + SKY + '" stroke-width="3" stroke-opacity="0.8"/>');
+      const MO = [X(37.62), Y(55.76)];
+      gsap.set(cam, at(MO[0], MO[1], 1.45));
+      tl.fromTo(cam, at(MO[0], MO[1], 1.45), Object.assign(at(1700, 760, 0.72), { duration: 2.05, ease: E.cam, immediateRender: false }), S(637.40));
+      // cut-on-the-curve exit: accelerate back toward Ukraine / western Russia
+      tl.to(cam, Object.assign(at(930, 928, 1.05), { duration: 0.6, ease: E.in }), S(640.04));
+      // Spiderweb airfields: Olenya, Ivanovo, Dyagilevo, Belaya
+      const AF = [[33.46, 68.15], [40.98, 57.06], [39.57, 54.64], [103.57, 52.92]];
+      AF.forEach((a, i) => {
+        const x = X(a[0]), y = Y(a[1]), t0 = S(637.75) + i * 0.32;
+        const dot = el(svg, "circle", { cx: x, cy: y, r: 16, fill: BONE, stroke: OX, "stroke-width": 5, opacity: 0 });
+        popSvg(dot, t0, x, y, { dur: 0.5 });
+        const on = FX.onFrame; FX.onFrame = (f) => on(FX.gate(S(637.30), S(640.70), f));
+        FX.radioWaves(svg, x, y, { rings: 3, max: 120, period: 1.2, width: 7, color: OXL, from: t0, to: S(640.70) });
+        FX.onFrame = on;
+      });
+      FX.focusHunt(tl, $("sc11-map"), S(639.45), { dur: 0.6, a: 2, b: 3, base: "brightness(0.9) contrast(1.06)" });
+    })();
+    [T(638.72) - L, T(638.96) - L, T(639.92) - L].forEach((c, i) => rise(W("sc11-m")[i], c, { dur: 0.4, y: 14 }));
+    tl.fromTo($("sc11-shot"), { filter: "blur(0px)" }, { filter: "blur(3px)", duration: 0.08, ease: "none", immediateRender: false }, S(640.56));
+
+    /* ===== sc12 · 640.64–645.12 · EE map: Ukrainian drones → Yelabuga, Tatarstan ===== */
+    scene("sc12", 640.64, 645.12);
+    ground("night", S(640.64));
+    (function () {
+      const KX = MAP.ee.kx, KY = MAP.ee.ky, X = (lon) => (lon - 28) * KX, Y = (lat) => (60 - lat) * KY;
+      const cam = $("sc12-cam"), svg = $("sc12-svg"), at = (cx, cy, s) => ({ x: 960 - cx * s, y: 540 - cy * s, scale: s });
+      svg.insertAdjacentHTML("beforeend", '<path d="' + MAP.ee.russia + '" fill="' + OX + '" fill-opacity="0.42" style="mix-blend-mode:overlay"/>' +
+        '<path d="' + MAP.ee.russia + '" fill="none" stroke="' + OXL + '" stroke-width="2.5" stroke-opacity="0.65"/>' +
+        '<path d="' + MAP.ee.ukraine + '" fill="' + SKY + '" fill-opacity="0.8" style="mix-blend-mode:overlay"/>' +
+        '<path d="' + MAP.ee.ukraine + '" fill="none" stroke="' + SKY + '" stroke-width="2.5" stroke-opacity="0.8"/>');
+      tl.fromTo($("sc12-shot"), { filter: "blur(3px)" }, { filter: "blur(0px)", duration: 0.1, ease: "none", immediateRender: true }, S(640.64));
+      gsap.set(cam, at(1012, 880, 0.95));
+      tl.fromTo(cam, at(1012, 880, 0.95), Object.assign(at(1262, 640, 1.2), { duration: 2.2, ease: E.out, immediateRender: false }), S(640.64));
+      tl.to(cam, Object.assign(at(1264, 632, 1.235), { duration: 1.6, ease: "none" }), S(642.84));
+      const A = [X(34.8), Y(50.9)], B = [X(52.0547), Y(55.7564)];
+      const d = "M" + A[0] + " " + A[1] + " Q" + (A[0] + B[0]) / 2 + " " + (Math.min(A[1], B[1]) - 120) + " " + B[0] + " " + B[1];
+      const route = ink(svg, d, S(641.10), 1.7, { width: 6, color: SKY, ease: C(E.inOut, 1.7) });
+      const glow = ink(svg, d, S(641.10), 1.7, { width: 18, color: SKY, opacity: 0.22, ease: C(E.inOut, 1.7) });
+      const src = el(svg, "circle", { cx: A[0], cy: A[1], r: 11, fill: SKY, opacity: 0 });
+      tl.set(src, { opacity: 1 }, S(641.05));
+      // route label rides above the arc's middle; leaves before the place name (one text idea at a time)
+      const probe = el(svg, "path", { d: d, fill: "none", stroke: "none" }), mid = probe.getPointAtLength(probe.getTotalLength() * 0.42);
+      Object.assign($("sc12-ud").style, { left: mid.x - 150 + "px", top: mid.y - 66 + "px" });
+      [T(641.52) - L, T(642.08) - L].forEach((c, i) => rise(W("sc12-ud")[i], c, { dur: 0.5, y: 8 }));
+      fadeOut($("sc12-ud"), S(642.90), 0.3);
+      // Yelabuga pin + rings
+      const pin = el(svg, "g", {});
+      el(pin, "circle", { cx: B[0], cy: B[1], r: 15, fill: BONE, stroke: AZ, "stroke-width": 5 });
+      popSvg(pin, S(642.75), B[0], B[1]);
+      const on = FX.onFrame; FX.onFrame = (f) => on(FX.gate(S(640.60), S(645.20), f));
+      FX.radioWaves(svg, B[0], B[1], { rings: 3, max: 60, period: 1.3, width: 6, color: BONE, from: S(642.85), to: S(645.20) });
+      FX.onFrame = on;
+      Object.assign($("sc12-yl").style, { left: B[0] + 24 - 420 + "px", top: B[1] + 60 + "px" });
+      Object.assign($("sc12-tt").style, { left: B[0] + 24 - 420 + "px", top: B[1] + 128 + "px" });
+      rise(W("sc12-yl")[0], T(643.28) - L, { dur: 0.6, y: 12 });
+      rise(W("sc12-tt")[0], T(644.32) - L, { dur: 0.5, y: 8 });
+    })();
+    whip($("sc12-shot"), $("sc13-shot"), S(645.12), { dir: -1 });
+
+    /* ===== sc13 · 645.12–649.68 · Yelabuga plant hit + Shahed-type drones ===== */
+    scene("sc13", 645.12, 649.68);
+    ground("night", S(645.12));
+    tl.fromTo($("sc13-plate"), { scale: 1.0 }, { scale: 1.03, duration: 4.56, ease: "none", immediateRender: true, transformOrigin: "50% 50%" }, S(645.12));
+    tl.fromTo($("sc13-sh"), { opacity: 0, x: 120 }, { opacity: 1, x: 0, duration: 1.2, ease: C(E.out, 1.2), immediateRender: true }, S(645.90));
+    tl.to($("sc13-sh"), { x: -40, duration: 2.5, ease: "none" }, S(647.10));
+    [T(646.32) - L, T(646.88) - L, T(647.20) - L].forEach((c, i) => rise(W("sc13-m")[i], c, { dur: 0.5, y: 14 }));
+    whip($("sc13-shot"), $("sc14-shot"), S(649.68), { dir: 1, vertical: true, flash: true });
+
+    /* ===== sc14 · 649.68–654.88 · Esri satellite: towers around the complex ===== */
+    scene("sc14", 649.68, 654.88);
+    ground("night", S(649.68));
+    tl.fromTo($("sc14-cam"), { scale: 1.0 }, { scale: 1.04, duration: 5.2, ease: E.cam, immediateRender: true }, S(649.68));
+    FX.focusHunt(tl, $("sc14-img"), S(650.05), { dur: 0.7, a: 3, b: 4, base: "saturate(0.22) brightness(0.78) contrast(1.12)" });
+    (function () {
+      const svg = $("sc14-svg");
+      const MK = FX.markupDefs(svg, SEG + "-mk14", { boil: 12 });
+      svg.setAttribute("viewBox", "0 0 1920 1080");
+      // the complex outline (pen, light oxblood = Russian facility, readable on the dark-graded imagery)
+      FX.markup.pen(tl, svg, S(650.90), { points: [[322, 302], [960, 292], [1600, 288], [1610, 620], [1606, 958], [960, 962], [314, 952], [318, 620], [324, 308]], jitter: 6, seed: 51, dur: 1.2, width: 7, color: OXL, blend: "normal", filter: MK });
+      // new towers popping along the perimeter
+      const TW = [[322, 302], [640, 297], [960, 292], [1280, 290], [1600, 288], [1605, 454], [1610, 620], [1608, 790], [1606, 958], [1283, 960], [960, 962], [637, 957], [314, 952], [316, 786], [318, 620], [320, 462]];
+      TW.forEach((p, i) => {
+        const g = el(svg, "g", {});
+        el(g, "rect", { x: p[0] - 13, y: p[1] - 13, width: 26, height: 26, fill: OX, stroke: BONE, "stroke-width": 4 });
+        popSvg(g, S(652.68) + i * (0.9 / TW.length), p[0], p[1], { dur: 0.45, from: 0.1 });
+      });
+    })();
+    labelBox($("sc14-box"), T(650.72) - L - 0.04);
+    [T(650.72) - L, T(651.28) - L].forEach((c, i) => rise(W("sc14-box")[i], c, { dur: 0.4, y: 8 }));
+    [T(652.00) - L, T(652.24) - L, T(652.72) - L].forEach((c, i) => rise(W("sc14-box")[2 + i], c, { dur: 0.4, y: 10 }));
+
+    /* ===== sc15 · 654.88–659.52 · FACE C close + label ===== */
+    scene("sc15", 654.88, 659.52);
+    ground("face", S(654.88));
+    frame($("sc15-fw"), S(654.88), 4.64, 1.5, 1.53, 1010, 210);
+    labelBox($("sc15-lb"), T(655.76) - L - 0.04);
+    [T(655.76) - L, T(655.84) - L, T(656.16) - L].forEach((c, i) => rise(W("sc15-lb")[i], c, { dur: 0.4, y: 8 }));
+    fadeOut($("sc15-lb"), S(658.60), 0.4);
+    slide($("sc15-shot"), $("sc16-shot"), S(659.52), { axis: "x", from: -1, d: 0.45 });
+
+    /* ===== sc16 · 659.52–664.56 · cork board: Ivan ↔ Yelabuga string, couldn't prove it ===== */
+    scene("sc16", 659.07, 664.56);
+    ground("night", S(659.52));
+    tl.fromTo($("sc16-cam"), { scale: 1.0 }, { scale: 1.05, duration: 5.5, ease: "none", immediateRender: true }, S(659.07));
+    [["sc16-c1", 659.60], ["sc16-c2", 659.85]].forEach((c) => tl.fromTo($(c[0]), { opacity: 0, y: -40 }, { opacity: 1, y: 0, duration: 0.5, ease: C(E.out, 0.5), immediateRender: true }, S(c[1])));
+    [["sc16-p1", 659.95], ["sc16-p2", 660.20]].forEach((c) => pop($(c[0]), S(c[1]), { dur: 0.3, from: 1.8 }));
+    (function () {
+      const svg = $("sc16-svg");
+      const d = "M470 229 C 760 420, 1080 430, 1360 257";
+      ink(svg, d, S(661.30), 1.1, { width: 9, color: "rgba(0,0,0,0.35)", ease: C(E.inOut, 1.1) });   // shadow
+      ink(svg, d.replace("M470 229", "M470 222"), S(661.30), 1.1, { width: 5, color: BONE, ease: C(E.inOut, 1.1) });
+    })();
+    tl.fromTo($("sc16-note"), { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.25, ease: C(E.out, 0.25), immediateRender: true }, S(663.18));
+    [T(663.44) - L, T(663.84) - L, T(664.16) - L].forEach((c, i) => tl.fromTo(W("sc16-st")[i], { opacity: 0, scale: 1.5 }, { opacity: 1, scale: 1, duration: 0.14, ease: "power2.in", immediateRender: true }, c));
+
+    /* ===== sc17 · 664.56–668.80 · FACE D wide ===== */
+    scene("sc17", 664.56, 668.80);
+    ground("face", S(664.56));
+    frame($("sc17-fw"), S(664.56), 4.24, 1.0, 1.025, 1000, 420);
+
+    /* ===== sc18 · 668.80–675.59 · FACE E medium → accelerating push (hand-off) ===== */
+    scene("sc18", 668.80, 675.59);
+    ground("face", S(668.80));
+    gsap.set($("sc18-fw"), { scale: 1.35, transformOrigin: "1000px 210px" });
+    tl.fromTo($("sc18-fw"), { scale: 1.35 }, { scale: 1.39, duration: 5.6, ease: "none", immediateRender: false }, S(668.80));
+    tl.to($("sc18-fw"), { scale: 1.47, duration: 1.19, ease: E.in }, S(674.40));
+    labelBox($("sc18-lb"), T(674.16) - L - 0.04);
+    [T(674.16) - L, T(674.40) - L, T(674.72) - L].forEach((c, i) => rise(W("sc18-lb")[i], c, { dur: 0.35, y: 8 }));
+
+    // hide scenes outside their window (after every measuring call), then mount
+    scenes.forEach((s) => gsap.set(s[0], { autoAlpha: 0 }));
+    FX.mount(tl, DURATION);
+    window.__timelines = window.__timelines || {}; window.__timelines[SEG] = tl;
+  })();
+  </script>
+</template>
+</body>
+</html>

@@ -1,0 +1,878 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8" /></head>
+<body>
+<template>
+  <style>
+    #root { position: absolute; inset: 0; overflow: hidden; background: var(--night); }
+    .v6-scene { position: absolute; inset: 0; overflow: hidden; visibility: hidden; opacity: 0; }
+    .v6-shot { position: absolute; inset: 0; overflow: hidden; transform-origin: 50% 50%; }
+    .v6-night { background: var(--night); }
+    .v6-paper { background: var(--paper); }
+    .v6-abs { position: absolute; }
+    .v6-full { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; object-fit: cover; }
+    .v6-fcw { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 0 0; }
+    .v6-fc { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; object-fit: cover; }
+    .v6-lamp { position: absolute; inset: 0; background: radial-gradient(ellipse 62% 72% at 50% 44%, #2a2b2f 0%, #17181b 55%, #0c0d0f 100%); }
+    .v6-p1, .v6-p2 { position: absolute; inset: 0; background-size: cover; background-position: center; pointer-events: none; }
+    .v6-p2 { opacity: 0.9; mix-blend-mode: multiply; }
+    .v6-credit { position: absolute; right: 30px; bottom: 20px; font-size: 13px; letter-spacing: 0.08em; color: rgba(240,237,230,0.66); z-index: 5; }
+    .v6-credit.ink { color: rgba(27,29,32,0.66); }
+    .v6-w { display: inline-block; white-space: pre; opacity: 0; }
+    .v6-scrim-b { position: absolute; left: 0; right: 0; bottom: 0; height: 460px; background: linear-gradient(180deg, rgba(12,13,15,0), rgba(12,13,15,0.86)); }
+    .v6-scrim-br { position: absolute; right: 0; bottom: 0; width: 1300px; height: 600px; background: radial-gradient(ellipse 100% 100% at 100% 100%, rgba(12,13,15,0.94) 0%, rgba(12,13,15,0.7) 45%, rgba(12,13,15,0) 80%); }
+    /* night caption: lower-left grid line */
+    .v6-cap { position: absolute; left: 120px; top: 850px; font-size: 76px; white-space: nowrap; }
+    .v6-sky { color: var(--sky); }
+    .v6-oxl { color: var(--oxblood-light); }
+    .v6-ink { color: var(--ink); }
+    /* face-cam label: ink boxes in the empty column, one per line */
+    .v6-fcl { position: absolute; left: 150px; top: 300px; }
+    .v6-ln { position: relative; display: block; width: max-content; margin: 0 0 12px; padding: 14px 26px 8px; font-size: 70px; color: var(--bone); }
+    .v6-ln .bx { position: absolute; inset: 0; background: var(--ink); transform-origin: 0 50%; box-shadow: 0 14px 30px rgba(0,0,0,0.28); }
+    .v6-ln .lt { position: relative; }
+    .v6-ln .rule { position: absolute; left: 0; top: 0; bottom: 0; width: 8px; background: var(--oxblood); }
+    .v6-print { position: absolute; background: #e6e2da; padding: 16px; box-shadow: 0 30px 70px rgba(0,0,0,0.6); }
+    .v6-print .in { position: relative; width: 100%; height: 100%; overflow: hidden; background: #000; }
+    .v6-print video, .v6-print img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    .v6-svg { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; pointer-events: none; }
+    #ivs06-flash { position: absolute; inset: 0; background: #f4f1ea; opacity: 0; pointer-events: none; z-index: 7; }
+    #ivs06-grain, #ivs06-dust, #ivs06-vig { z-index: 8; }
+
+    /* sc002 case file */
+    #ivs06-sc002-card { position: absolute; left: 330px; top: 150px; width: 1260px; height: 760px; background: #ece8df; box-shadow: 0 30px 70px rgba(27,29,32,0.35); transform: rotate(-1.2deg); }
+    #ivs06-sc002-card .tx2 { position: absolute; inset: 0; background: url('assets/textures/paper_cream_01.jpg') center / cover; mix-blend-mode: multiply; opacity: 0.75; }
+    #ivs06-sc002-tab { position: absolute; left: 60px; top: -46px; width: 300px; height: 52px; background: #ddd7ca; border-radius: 8px 8px 0 0; }
+    #ivs06-sc002-ph { position: absolute; left: 70px; top: 80px; width: 360px; height: 450px; background: #c9c7c2; border: 10px solid #f4f1ea; box-shadow: 0 10px 24px rgba(27,29,32,0.3); overflow: hidden; }
+    #ivs06-sc002-ph svg { position: absolute; left: 20px; top: 40px; width: 320px; height: 384px; }
+    #ivs06-sc002-clip { position: absolute; left: 200px; top: 50px; width: 46px; height: 120px; border: 7px solid #8f9196; border-radius: 24px; }
+    .v6-bar { position: absolute; height: 14px; background: rgba(27,29,32,0.22); border-radius: 2px; }
+    #ivs06-sc002-ty { position: absolute; left: 500px; top: 470px; font-size: 64px; color: var(--ink); white-space: nowrap; }
+    #ivs06-sc002-hl { position: absolute; left: 488px; top: 498px; width: 640px; height: 46px; background: var(--brass); mix-blend-mode: multiply; transform-origin: 0 50%; opacity: 0.9; }
+
+    /* sc004 Ivan's video */
+    #ivs06-sc004-pr { left: 340px; top: 110px; width: 1240px; height: 700px; transform: rotate(0.6deg); }
+
+    /* sc005 passport */
+    #ivs06-sc005-cam { position: absolute; inset: 0; transform-origin: 960px 480px; }
+    #ivs06-sc005-book { position: absolute; left: 310px; top: 100px; width: 1300px; height: 700px; background: #3a3c40; border-radius: 22px; box-shadow: 0 30px 70px rgba(27,29,32,0.4); }
+    .v6-page { position: absolute; top: 16px; width: 634px; height: 668px; background: #e9e5dc; overflow: hidden; }
+    .v6-page .gu { position: absolute; inset: 0; opacity: 0.35;
+      background: repeating-radial-gradient(circle at 30% 40%, rgba(143,145,150,0) 0 14px, rgba(143,145,150,0.55) 14px 15px), repeating-linear-gradient(35deg, rgba(143,145,150,0) 0 22px, rgba(143,145,150,0.4) 22px 23px); }
+    .v6-page .tx2 { position: absolute; inset: 0; background: url('assets/textures/paper_cream_02.jpg') center / cover; mix-blend-mode: multiply; opacity: 0.6; }
+    #ivs06-sc005-fold { position: absolute; left: 648px; top: 16px; width: 4px; height: 668px; background: linear-gradient(90deg, rgba(27,29,32,0.35), rgba(27,29,32,0.05)); }
+    .v6-cap5 { position: absolute; left: 310px; top: 850px; font-size: 72px; white-space: nowrap; color: var(--ink); }
+
+    /* sc008 double agent card behind Krish */
+    #ivs06-sc008-card { position: absolute; left: 1420px; top: 130px; width: 400px; height: 500px; background: #1b1d20; border-radius: 6px; box-shadow: 0 24px 50px rgba(0,0,0,0.35); overflow: hidden; }
+    #ivs06-sc008-card svg { position: absolute; left: 0; top: 0; width: 400px; height: 500px; }
+    #ivs06-sc008-l { left: 120px; top: 140px; }
+    #ivs06-sc008-l .v6-ln { font-size: 64px; }
+
+    /* sc010 Warsaw */
+    #ivs06-sc010-cam { position: absolute; inset: 0; transform-origin: 960px 460px; }
+    #ivs06-sc010-pr { left: 410px; top: 130px; width: 1100px; height: 620px; transform: rotate(-0.8deg); }
+    #ivs06-sc010-cap { left: 410px; top: 800px; font-size: 110px; }
+
+    /* sc011 map */
+    #ivs06-sc011-cam { position: absolute; left: 0; top: 0; width: 4137px; height: 2280px; transform-origin: 0 0; }
+    #ivs06-sc011-map { position: absolute; left: 0; top: 0; width: 4137px; height: 2280px; filter: brightness(1.18) contrast(1.06); }
+    #ivs06-sc011-svg { position: absolute; left: 0; top: 0; width: 4137px; height: 2280px; overflow: visible; }
+    #ivs06-sc011-cap { left: 120px; top: 110px; font-size: 76px; }
+    #ivs06-sc011-wl { position: absolute; font-size: 30px; opacity: 0; white-space: nowrap; }
+
+    /* sc013 volunteers row */
+    #ivs06-sc013-row { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; }
+    .v6-gm { position: absolute; width: 110px; height: 132px; top: 610px; opacity: 0; }
+    .v6-gm svg { width: 110px; height: 132px; display: block; }
+
+    /* phone (sc017 / sc019) */
+    .v6-phone { position: absolute; left: 300px; top: 72px; width: 470px; height: 936px; background: #0b0c0e; border-radius: 58px; box-shadow: 0 30px 80px rgba(0,0,0,0.65), inset 0 0 0 3px #3a3c40; }
+    .v6-phone .scr { position: absolute; left: 18px; top: 18px; right: 18px; bottom: 18px; border-radius: 44px; background: #1e2024; overflow: hidden; }
+    .v6-phone .hd { position: absolute; left: 0; top: 0; right: 0; height: 128px; background: #26282c; z-index: 2; }
+    .v6-phone .av { position: absolute; left: 28px; top: 44px; width: 64px; height: 64px; border-radius: 50%; background: #3a3c40; overflow: hidden; }
+    .v6-phone .av svg { width: 64px; height: 77px; margin-top: 6px; }
+    .v6-phone .nm { position: absolute; left: 112px; top: 58px; font-size: 32px; color: var(--bone); letter-spacing: 0.14em; }
+    .v6-phone .col { position: absolute; left: 0; right: 0; top: 0; height: 900px; }
+    .v6-bub { position: absolute; width: 270px; height: 92px; border-radius: 26px; }
+    .v6-bub.out { right: 22px; background: #8f9196; border-bottom-right-radius: 8px; }
+    .v6-bub.in { left: 22px; background: #c4c4c2; border-bottom-left-radius: 8px; }
+    .v6-bub .l1, .v6-bub .l2 { position: absolute; left: 22px; height: 12px; border-radius: 6px; background: rgba(27,29,32,0.45); }
+    .v6-bub .l1 { top: 24px; width: 200px; } .v6-bub .l2 { top: 48px; width: 130px; }
+    .v6-bub svg { position: absolute; right: 16px; bottom: 10px; width: 26px; height: 18px; }
+    .v6-div { position: absolute; left: 165px; width: 100px; height: 28px; border-radius: 14px; background: #3a3c40; }
+    .v6-div .l1 { position: absolute; left: 20px; top: 9px; width: 60px; height: 10px; border-radius: 5px; background: #8f9196; }
+    .v6-pcap { position: absolute; left: 900px; top: 400px; font-size: 92px; line-height: 1.04; }
+    .v6-typing { position: absolute; left: 22px; width: 120px; height: 64px; border-radius: 26px; background: #c4c4c2; opacity: 0; }
+    .v6-typing i { position: absolute; top: 26px; width: 13px; height: 13px; border-radius: 50%; background: #3a3c40; }
+
+    /* sc021 police */
+    #ivs06-sc021-ph { position: absolute; left: 0; top: -330px; width: 1920px; height: 1440px; filter: grayscale(0.82) contrast(1.08) brightness(0.86); }
+    #ivs06-sc021-cam { position: absolute; inset: 0; transform-origin: 1100px 520px; }
+
+    /* sc023 x-ray */
+    #ivs06-sc023-car { position: absolute; left: 210px; top: 230px; width: 1500px; height: 581px; }
+    #ivs06-sc023-car img { position: absolute; left: 0; top: 0; width: 1500px; height: 581px; }
+    #ivs06-sc023-base { filter: grayscale(0.9) brightness(0.62) contrast(1.05); }
+    #ivs06-sc023-xr { mix-blend-mode: screen; opacity: 0.95; filter: brightness(1.1); }
+    #ivs06-sc023-bar { position: absolute; top: -40px; width: 10px; height: 661px; background: var(--bone); box-shadow: 0 0 30px 10px rgba(240,237,230,0.45); opacity: 0; }
+    #ivs06-sc023-pk { position: absolute; left: 0; top: 0; width: 1500px; height: 581px; overflow: visible; }
+    #ivs06-sc023-veil { position: absolute; inset: 0; background: rgba(8,9,10,0.78); opacity: 0; }
+    #ivs06-sc023-floor { position: absolute; left: 0; right: 0; top: 806px; height: 4px; background: linear-gradient(90deg, rgba(196,196,194,0), rgba(196,196,194,0.35), rgba(196,196,194,0)); }
+    #ivs06-sc023-c1 { left: 210px; top: 870px; font-size: 76px; }
+    #ivs06-sc023-c2 { left: 210px; top: 870px; font-size: 76px; }
+  </style>
+
+  <div id="root" data-composition-id="ivs06" data-vo-start="675.59" data-duration="105.79" data-width="1920" data-height="1080">
+    <svg id="ivs06-defs" width="0" height="0" style="position:absolute"></svg>
+
+    <!-- sc001 · 675.59–679.19 · How had Ivan managed to avoid getting caught all this time? · face medium -->
+    <div class="v6-scene" id="ivs06-sc001" data-scene="IVS06-001"><div class="v6-shot" id="ivs06-sc001-shot">
+      <div class="v6-fcw" id="ivs06-sc001-w"><video id="ivs06-sc001-v" class="v6-fc" src="assets/facecam/ivan_facecam_master.mp4" muted playsinline data-start="0" data-duration="3.85" data-media-start="675.59"></video></div>
+      <div class="v6-fcl" id="ivs06-sc001-l" style="top:330px"><div class="v6-ln t-display"><div class="bx"></div><div class="lt"><span class="v6-w">avoid </span><span class="v6-w">getting</span></div></div><div class="v6-ln t-display"><div class="bx"></div><div class="lt"><span class="v6-w">caught</span></div></div></div>
+    </div></div>
+
+    <!-- sc002 · 679.19–683.27 · involved in opposition politics before the war · case file -->
+    <div class="v6-scene" id="ivs06-sc002" data-scene="IVS06-002"><div class="v6-shot v6-paper" id="ivs06-sc002-shot">
+      <div class="v6-p1" style="background-image:url('assets/textures/paper_cream_02.jpg'); filter:brightness(0.8) saturate(0.4)"></div>
+      <div class="v6-p2" style="background-image:url('assets/textures/paper_fiber_01.jpg'); opacity:0.5"></div>
+      <div id="ivs06-sc002-cam" style="position:absolute; inset:0; transform-origin:860px 520px">
+        <div id="ivs06-sc002-card"><div id="ivs06-sc002-tab"></div><div class="tx2"></div>
+          <div id="ivs06-sc002-ph"><svg viewBox="0 0 400 480"><path fill="#8f9196" d="M200 40c-52 0-86 40-86 96 0 40 18 74 44 92-4 14-10 24-22 30-58 22-96 52-108 104-6 26-8 58-8 118h360c0-60-2-92-8-118-12-52-50-82-108-104-12-6-18-16-22-30 26-18 44-52 44-92 0-56-34-96-86-96z"/></svg></div>
+          <div id="ivs06-sc002-clip"></div>
+          <div class="v6-bar" style="left:500px; top:110px; width:520px; height:22px; background:rgba(27,29,32,0.5)"></div>
+          <div class="v6-bar" style="left:500px; top:170px; width:640px"></div>
+          <div class="v6-bar" style="left:500px; top:210px; width:580px"></div>
+          <div class="v6-bar" style="left:500px; top:250px; width:610px"></div>
+          <div class="v6-bar" style="left:500px; top:330px; width:300px"></div>
+          <div class="v6-bar" style="left:500px; top:370px; width:460px"></div>
+          <div class="v6-bar" style="left:500px; top:620px; width:600px"></div>
+          <div class="v6-bar" style="left:500px; top:660px; width:420px"></div>
+          <div id="ivs06-sc002-hl"></div>
+          <div id="ivs06-sc002-ty" class="t-serif">opposition politics</div>
+        </div>
+      </div>
+    </div></div>
+
+    <!-- sc003 · 683.27–687.43 · Russia's security services might already have known about him · face close -->
+    <div class="v6-scene" id="ivs06-sc003" data-scene="IVS06-003"><div class="v6-shot" id="ivs06-sc003-shot">
+      <div class="v6-fcw" id="ivs06-sc003-w"><video id="ivs06-sc003-v" class="v6-fc" src="assets/facecam/ivan_facecam_master.mp4" muted playsinline data-start="7.68" data-duration="4.4" data-media-start="683.27"></video></div>
+      <div class="v6-fcl" id="ivs06-sc003-l" style="top:300px"><div class="v6-ln t-display"><div class="bx"></div><div class="rule"></div><div class="lt"><span class="v6-w">Russia's</span></div></div><div class="v6-ln t-display"><div class="bx"></div><div class="rule"></div><div class="lt"><span class="v6-w">security </span><span class="v6-w">services</span></div></div></div>
+    </div></div>
+
+    <!-- sc004 · 687.43–691.11 · now he was supposedly helping Ukraine prepare attacks · Ivan's airfield video -->
+    <div class="v6-scene" id="ivs06-sc004" data-scene="IVS06-004"><div class="v6-shot v6-night" id="ivs06-sc004-shot">
+      <div class="v6-lamp"></div>
+      <div id="ivs06-sc004-cam" style="position:absolute; inset:0; transform-origin:960px 460px">
+        <div id="ivs06-sc004-pr" class="v6-print"><div class="in">
+          <video id="ivs06-sc004-v" src="assets/ivan/ivs06/footage/scout.mp4" muted playsinline data-start="11.84" data-duration="3.85" data-media-start="0"
+            data-color-grading='{"adjust":{"saturation":-0.75,"contrast":0.1},"effects":{"chromaticAberration":0.12,"chromaticAngle":0}}'></video></div></div>
+      </div>
+      <div id="ivs06-sc004-cap" class="v6-cap t-display clean" style="left:340px; top:860px; font-size:72px"><span class="v6-w">helping </span><span class="v6-w v6-sky">Ukraine </span><span class="v6-w">prepare </span><span class="v6-w">attacks</span></div>
+      <div class="v6-credit">Video: BBC World Service</div>
+    </div></div>
+
+    <!-- sc005 · 691.11–697.75 · leave Russia, meet journalists abroad, come back … without any trouble · passport -->
+    <div class="v6-scene" id="ivs06-sc005" data-scene="IVS06-005"><div class="v6-shot v6-paper" id="ivs06-sc005-shot">
+      <div class="v6-p1" style="background-image:url('assets/textures/paper_stained_01_hires.jpg'); filter:brightness(0.92) saturate(0.3)"></div>
+      <div class="v6-p2" style="background-image:url('assets/textures/paper_cream_01.jpg'); opacity:0.55"></div>
+      <div id="ivs06-sc005-cam">
+        <div id="ivs06-sc005-book">
+          <div class="v6-page" style="left:16px"><div class="gu"></div><div class="tx2"></div></div>
+          <div class="v6-page" style="left:650px"><div class="gu" style="background-position:200px 80px"></div><div class="tx2"></div></div>
+          <div id="ivs06-sc005-fold"></div>
+          <svg id="ivs06-sc005-st" viewBox="0 0 1300 700" style="position:absolute; left:0; top:0; width:1300px; height:700px; overflow:visible"></svg>
+        </div>
+      </div>
+      <div id="ivs06-sc005-c1" class="v6-cap5 t-display"><span class="v6-w">leave </span><span class="v6-w">Russia</span></div>
+      <div id="ivs06-sc005-c2" class="v6-cap5 t-display"><span class="v6-w">meet </span><span class="v6-w">with </span><span class="v6-w">journalists </span><span class="v6-w">abroad</span></div>
+      <div id="ivs06-sc005-c3" class="v6-cap5 t-display"><span class="v6-w">without </span><span class="v6-w">any </span><span class="v6-w">trouble</span></div>
+    </div></div>
+
+    <!-- sc006 · 697.75–699.99 · Maybe he had just been very careful · Ivan from behind (BBC) -->
+    <div class="v6-scene" id="ivs06-sc006" data-scene="IVS06-006"><div class="v6-shot v6-night" id="ivs06-sc006-shot">
+      <div id="ivs06-sc006-cam" style="position:absolute; inset:0; transform-origin:700px 400px">
+        <video id="ivs06-sc006-v" class="v6-full" src="assets/ivan/ivs06/footage/careful.mp4" muted playsinline data-start="22.16" data-duration="2.45" data-media-start="0.3"
+          data-color-grading='{"adjust":{"saturation":-0.6,"contrast":0.08},"effects":{"chromaticAberration":0.12,"chromaticAngle":0}}'></video>
+      </div>
+      <div class="v6-scrim-b"></div>
+      <div id="ivs06-sc006-cap" class="v6-cap t-display clean"><span class="v6-w">very </span><span class="v6-w">careful</span></div>
+      <div class="v6-credit">Video: BBC World Service</div>
+    </div></div>
+
+    <!-- sc007 · 699.99–702.47 · But what if there was another explanation? · face medium -->
+    <div class="v6-scene" id="ivs06-sc007" data-scene="IVS06-007"><div class="v6-shot" id="ivs06-sc007-shot">
+      <div class="v6-fcw" id="ivs06-sc007-w"><video id="ivs06-sc007-v" class="v6-fc" src="assets/facecam/ivan_facecam_master.mp4" muted playsinline data-start="24.4" data-duration="2.7" data-media-start="699.99"></video></div>
+      <div class="v6-fcl" id="ivs06-sc007-l" style="top:330px"><div class="v6-ln t-display"><div class="bx"></div><div class="lt"><span class="v6-w">another</span></div></div><div class="v6-ln t-display"><div class="bx"></div><div class="lt"><span class="v6-w">explanation</span></div></div></div>
+    </div></div>
+
+    <!-- sc008 · 702.47–706.63 · What if Ivan was secretly working for Russian intelligence, too? · face wide, graphic behind -->
+    <div class="v6-scene" id="ivs06-sc008" data-scene="IVS06-008"><div class="v6-shot" id="ivs06-sc008-shot">
+      <video id="ivs06-sc008-bg" class="v6-fc" src="assets/ivan/ivs06/facecam/fc_702.40_bg.webm" muted playsinline data-start="26.88" data-duration="4.2" data-media-start="0.07"></video>
+      <div id="ivs06-sc008-card"><svg viewBox="0 0 400 500">
+        <defs><clipPath id="ivs06-sc008-cl"><rect id="ivs06-sc008-clr" x="0" y="0" width="200" height="500"/></clipPath><clipPath id="ivs06-sc008-cr"><rect id="ivs06-sc008-crr" x="200" y="0" width="200" height="500"/></clipPath></defs>
+        <g transform="translate(40 40) scale(0.8)"><path fill="#8f9196" d="M200 40c-52 0-86 40-86 96 0 40 18 74 44 92-4 14-10 24-22 30-58 22-96 52-108 104-6 26-8 58-8 118h360c0-60-2-92-8-118-12-52-50-82-108-104-12-6-18-16-22-30 26-18 44-52 44-92 0-56-34-96-86-96z"/>
+          <g clip-path="url(#ivs06-sc008-cl)"><path id="ivs06-sc008-az" fill="#2563b0" d="M200 40c-52 0-86 40-86 96 0 40 18 74 44 92-4 14-10 24-22 30-58 22-96 52-108 104-6 26-8 58-8 118h360c0-60-2-92-8-118-12-52-50-82-108-104-12-6-18-16-22-30 26-18 44-52 44-92 0-56-34-96-86-96z" opacity="0"/></g>
+          <g clip-path="url(#ivs06-sc008-cr)"><path id="ivs06-sc008-ox" fill="#b32a22" d="M200 40c-52 0-86 40-86 96 0 40 18 74 44 92-4 14-10 24-22 30-58 22-96 52-108 104-6 26-8 58-8 118h360c0-60-2-92-8-118-12-52-50-82-108-104-12-6-18-16-22-30 26-18 44-52 44-92 0-56-34-96-86-96z" opacity="0"/></g></g>
+        <path id="ivs06-sc008-split" d="M200 30 L201 470" stroke="#f0ede6" stroke-width="4" stroke-dasharray="14 10" fill="none" opacity="0"/>
+      </svg></div>
+      <video id="ivs06-sc008-fg" class="v6-fc" src="assets/ivan/ivs06/facecam/fc_702.40_fg.webm" muted playsinline data-start="26.88" data-duration="4.2" data-media-start="0.07"></video>
+      <div class="v6-fcl" id="ivs06-sc008-l"><div class="v6-ln t-display"><div class="bx"></div><div class="rule"></div><div class="lt v6-oxl"><span class="v6-w">Russian</span></div></div><div class="v6-ln t-display"><div class="bx"></div><div class="rule"></div><div class="lt"><span class="v6-w">intelligence,</span></div></div><div class="v6-ln t-display"><div class="bx"></div><div class="rule"></div><div class="lt"><span class="v6-w">too?</span></div></div></div>
+    </div></div>
+
+    <!-- sc009 · 706.63–709.99 · Now, I know that might sound a little far-fetched · face close -->
+    <div class="v6-scene" id="ivs06-sc009" data-scene="IVS06-009"><div class="v6-shot" id="ivs06-sc009-shot">
+      <div class="v6-fcw" id="ivs06-sc009-w"><video id="ivs06-sc009-v" class="v6-fc" src="assets/facecam/ivan_facecam_master.mp4" muted playsinline data-start="31.04" data-duration="3.6" data-media-start="706.63"></video></div>
+    </div></div>
+
+    <!-- sc010 · 709.99–714.79 · Mamoń … had come across something in Warsaw that made him wonder · Warsaw print -->
+    <div class="v6-scene" id="ivs06-sc010" data-scene="IVS06-010"><div class="v6-shot v6-night" id="ivs06-sc010-shot">
+      <div class="v6-lamp"></div>
+      <div id="ivs06-sc010-cam">
+        <div id="ivs06-sc010-pr" class="v6-print"><div class="in">
+          <video id="ivs06-sc010-v" src="assets/ivan/ivs06/footage/warsaw.mp4" muted playsinline data-start="34.4" data-duration="4.95" data-media-start="0.2"
+            data-color-grading='{"adjust":{"saturation":-0.65,"contrast":0.06},"effects":{"chromaticAberration":0.12,"chromaticAngle":0}}'></video></div></div>
+        <div id="ivs06-sc010-cap" class="v6-abs t-display halate"><span class="v6-w">Warsaw</span></div>
+      </div>
+      <div class="v6-credit">Video: BBC World Service</div>
+    </div></div>
+
+    <!-- sc011 · 714.79–720.55 · Russians helping volunteers travel to Ukraine to fight against Putin's army · map -->
+    <div class="v6-scene" id="ivs06-sc011" data-scene="IVS06-011"><div class="v6-shot v6-night" id="ivs06-sc011-shot" style="background:#35383f">
+      <div id="ivs06-sc011-cam">
+        <img id="ivs06-sc011-map" src="assets/ivan/ivs06/derived/ee_night_warsaw_pad.jpg" alt="" />
+        <svg id="ivs06-sc011-svg" viewBox="0 0 4137 2280"></svg>
+        <div id="ivs06-sc011-wl" class="t-label clean">Warsaw</div>
+      </div>
+      <div id="ivs06-sc011-c1" class="v6-cap t-display clean" style="top:110px"><span class="v6-w">helping </span><span class="v6-w">volunteers</span></div>
+      <div id="ivs06-sc011-c2" class="v6-cap t-display clean" style="top:110px"><span class="v6-w">fight </span><span class="v6-w">against </span><span class="v6-w v6-oxl">Putin's </span><span class="v6-w v6-oxl">army</span></div>
+      <div class="v6-credit">Relief: AWS Terrain Tiles (public domain) · borders: Natural Earth</div>
+    </div></div>
+
+    <!-- sc012 · 720.55–722.31 · And as he later discovered, · face wide -->
+    <div class="v6-scene" id="ivs06-sc012" data-scene="IVS06-012"><div class="v6-shot" id="ivs06-sc012-shot">
+      <div class="v6-fcw" id="ivs06-sc012-w"><video id="ivs06-sc012-v" class="v6-fc" src="assets/facecam/ivan_facecam_master.mp4" muted playsinline data-start="44.96" data-duration="1.95" data-media-start="720.55"></video></div>
+    </div></div>
+
+    <!-- sc013 · 722.31–727.19 · one of the men traveling with those volunteers was actually a Russian double agent -->
+    <div class="v6-scene" id="ivs06-sc013" data-scene="IVS06-013"><div class="v6-shot v6-night" id="ivs06-sc013-shot">
+      <video id="ivs06-sc013-v" class="v6-full" src="assets/ivan/ivs06/footage/road_volunteers.mp4" muted playsinline data-start="46.72" data-duration="4.95" data-media-start="0.2"
+        data-color-grading='{"adjust":{"saturation":-0.9,"contrast":0.08},"effects":{"chromaticAberration":0.12,"chromaticAngle":0}}'></video>
+      <div class="v6-scrim-b" style="height:640px"></div>
+      <div id="ivs06-sc013-row"></div>
+      <svg id="ivs06-sc013-svg" class="v6-svg" viewBox="0 0 1920 1080"></svg>
+      <div id="ivs06-sc013-cap" class="v6-cap t-display clean" style="left:335px; top:840px"><span class="v6-w">a </span><span class="v6-w v6-oxl">Russian </span><span class="v6-w">double </span><span class="v6-w">agent</span></div>
+      <div class="v6-credit">Video: BBC World Service</div>
+    </div></div>
+
+    <!-- sc014 · 727.19–730.95 · when Mamoń asked one of Ivan's Ukrainian handlers · handler (BBC) -->
+    <div class="v6-scene" id="ivs06-sc014" data-scene="IVS06-014"><div class="v6-shot v6-night" id="ivs06-sc014-shot">
+      <div id="ivs06-sc014-cam" style="position:absolute; inset:0; transform-origin:1150px 380px">
+        <video id="ivs06-sc014-v" class="v6-full" src="assets/ivan/ivs06/footage/handler.mp4" muted playsinline data-start="51.6" data-duration="3.9" data-media-start="0.1"
+          data-color-grading='{"adjust":{"saturation":-0.6,"contrast":0.08},"effects":{"chromaticAberration":0.12,"chromaticAngle":0}}'></video>
+      </div>
+      <div class="v6-scrim-b"></div>
+      <div id="ivs06-sc014-cap" class="v6-cap t-display clean"><span class="v6-w">Ivan's </span><span class="v6-w v6-sky">Ukrainian </span><span class="v6-w">handlers</span></div>
+      <div class="v6-credit">Video: BBC World Service</div>
+    </div></div>
+
+    <!-- sc015 · 730.95–736.34 · also working for Moscow, even the handlers could not rule it out · face medium -->
+    <div class="v6-scene" id="ivs06-sc015" data-scene="IVS06-015"><div class="v6-shot" id="ivs06-sc015-shot">
+      <div class="v6-fcw" id="ivs06-sc015-w"><video id="ivs06-sc015-v" class="v6-fc" src="assets/facecam/ivan_facecam_master.mp4" muted playsinline data-start="55.36" data-duration="5.6" data-media-start="730.95"></video></div>
+      <div class="v6-fcl" id="ivs06-sc015-l" style="top:330px"><div class="v6-ln t-display"><div class="bx"></div><div class="lt"><span class="v6-w">could </span><span class="v6-w">not</span></div></div><div class="v6-ln t-display"><div class="bx"></div><div class="lt"><span class="v6-w">rule </span><span class="v6-w">it </span><span class="v6-w">out</span></div></div></div>
+    </div></div>
+
+    <!-- sc016 · 736.34–739.86 · just as Mamoń was trying to make sense of all of this · Marcin Mamoń (BBC) -->
+    <div class="v6-scene" id="ivs06-sc016" data-scene="IVS06-016"><div class="v6-shot v6-night" id="ivs06-sc016-shot">
+      <div id="ivs06-sc016-cam" style="position:absolute; inset:0; transform-origin:600px 400px">
+        <video id="ivs06-sc016-v" class="v6-full" src="assets/ivan/ivs06/footage/mamon.mp4" muted playsinline data-start="60.75" data-duration="3.65" data-media-start="0.3"
+          data-color-grading='{"adjust":{"saturation":-0.6,"contrast":0.06},"effects":{"chromaticAberration":0.12,"chromaticAngle":0}}'></video>
+      </div>
+      <div class="v6-scrim-br"></div>
+      <div id="ivs06-sc016-nm" class="v6-abs" style="left:1180px; top:860px; width:640px">
+        <div id="ivs06-sc016-rule" style="width:620px; height:4px; background:var(--bone); transform-origin:0 50%; margin-bottom:16px"></div>
+        <div class="t-display clean" style="font-size:72px"><span class="v6-w">Marcin </span><span class="v6-w">Mamoń</span></div>
+      </div>
+      <div class="v6-credit">Video: BBC World Service</div>
+    </div></div>
+
+    <!-- sc017 · 739.86–746.34 · Ivan suddenly stopped answering his messages … weeks … months … still nothing · phone -->
+    <div class="v6-scene" id="ivs06-sc017" data-scene="IVS06-017"><div class="v6-shot v6-night" id="ivs06-sc017-shot">
+      <div class="v6-lamp" style="background:radial-gradient(ellipse 50% 70% at 30% 50%, #2a2b2f 0%, #141518 60%, #0b0c0e 100%)"></div>
+      <div class="v6-phone" id="ivs06-sc017-ph"><div class="scr"><div class="col" id="ivs06-sc017-col"></div>
+        <div class="hd"><div class="av"><svg viewBox="0 0 400 480"><path fill="#8f9196" d="M200 40c-52 0-86 40-86 96 0 40 18 74 44 92-4 14-10 24-22 30-58 22-96 52-108 104-6 26-8 58-8 118h360c0-60-2-92-8-118-12-52-50-82-108-104-12-6-18-16-22-30 26-18 44-52 44-92 0-56-34-96-86-96z"/></svg></div><div class="nm t-label">Ivan</div></div></div></div>
+      <div id="ivs06-sc017-c1" class="v6-pcap t-display clean"><span class="v6-w">stopped </span><span class="v6-w">answering</span><br><span class="v6-w">his </span><span class="v6-w">messages</span></div>
+      <div id="ivs06-sc017-c2" class="v6-pcap t-display clean"><span class="v6-w">a </span><span class="v6-w">few </span><span class="v6-w">weeks</span></div>
+      <div id="ivs06-sc017-c3" class="v6-pcap t-display clean"><span class="v6-w">and </span><span class="v6-w">then </span><span class="v6-w">months</span></div>
+      <div id="ivs06-sc017-c4" class="v6-pcap t-display clean"><span class="v6-w">still </span><span class="v6-w">nothing</span></div>
+    </div></div>
+
+    <!-- sc018 · 746.34–750.18 · For all Mamoń knew, the Russians had finally caught him · face medium -->
+    <div class="v6-scene" id="ivs06-sc018" data-scene="IVS06-018"><div class="v6-shot" id="ivs06-sc018-shot">
+      <div class="v6-fcw" id="ivs06-sc018-w"><video id="ivs06-sc018-v" class="v6-fc" src="assets/facecam/ivan_facecam_master.mp4" muted playsinline data-start="70.75" data-duration="4.0" data-media-start="746.34"></video></div>
+      <div class="v6-fcl" id="ivs06-sc018-l" style="top:330px"><div class="v6-ln t-display"><div class="bx"></div><div class="rule"></div><div class="lt"><span class="v6-w">finally</span></div></div><div class="v6-ln t-display"><div class="bx"></div><div class="rule"></div><div class="lt"><span class="v6-w">caught </span><span class="v6-w">him</span></div></div></div>
+    </div></div>
+
+    <!-- sc019 · 750.18–754.10 · But eventually Ivan got back in touch. And when they spoke again · phone callback -->
+    <div class="v6-scene" id="ivs06-sc019" data-scene="IVS06-019"><div class="v6-shot v6-night" id="ivs06-sc019-shot">
+      <div class="v6-lamp" style="background:radial-gradient(ellipse 50% 70% at 30% 50%, #2a2b2f 0%, #141518 60%, #0b0c0e 100%)"></div>
+      <div class="v6-phone" id="ivs06-sc019-ph"><div class="scr"><div class="col" id="ivs06-sc019-col"></div>
+        <div class="hd"><div class="av"><svg viewBox="0 0 400 480"><path fill="#8f9196" d="M200 40c-52 0-86 40-86 96 0 40 18 74 44 92-4 14-10 24-22 30-58 22-96 52-108 104-6 26-8 58-8 118h360c0-60-2-92-8-118-12-52-50-82-108-104-12-6-18-16-22-30 26-18 44-52 44-92 0-56-34-96-86-96z"/></svg></div><div class="nm t-label">Ivan</div></div></div></div>
+      <div id="ivs06-sc019-c1" class="v6-pcap t-display clean"><span class="v6-w">Ivan </span><span class="v6-w">got </span><span class="v6-w">back</span><br><span class="v6-w">in </span><span class="v6-w">touch</span></div>
+    </div></div>
+
+    <!-- sc020 · 754.10–758.58 · an encounter with the Russian authorities while driving · Ivan driving (BBC) -->
+    <div class="v6-scene" id="ivs06-sc020" data-scene="IVS06-020"><div class="v6-shot v6-night" id="ivs06-sc020-shot">
+      <div id="ivs06-sc020-cam" style="position:absolute; inset:0; transform-origin:1300px 300px">
+        <video id="ivs06-sc020-v" class="v6-full" src="assets/ivan/ivs06/footage/driving.mp4" muted playsinline data-start="78.51" data-duration="4.6" data-media-start="0.2"
+          data-color-grading='{"adjust":{"saturation":-0.6,"contrast":0.08},"effects":{"chromaticAberration":0.12,"chromaticAngle":0}}'></video>
+      </div>
+      <div class="v6-scrim-b"></div>
+      <div id="ivs06-sc020-cap" class="v6-cap t-display clean"><span class="v6-w">the </span><span class="v6-w v6-oxl">Russian </span><span class="v6-w v6-oxl">authorities</span></div>
+      <div class="v6-credit">Video: BBC World Service</div>
+    </div></div>
+
+    <!-- sc021 · 758.58–762.34 · when he was stopped, the officers wanted to inspect his car · night stop → police photo -->
+    <div class="v6-scene" id="ivs06-sc021" data-scene="IVS06-021"><div class="v6-shot v6-night" id="ivs06-sc021-shot">
+      <div id="ivs06-sc021-a" style="position:absolute; inset:0">
+        <video id="ivs06-sc021-v" class="v6-full" src="assets/ivan/ivs06/footage/redlights.mp4" muted playsinline data-start="82.99" data-duration="1.72" data-media-start="0"
+          data-color-grading='{"adjust":{"saturation":-0.45,"contrast":0.08},"effects":{"chromaticAberration":0.14,"chromaticAngle":0}}'></video>
+        <div class="v6-credit">Video: BBC World Service</div>
+      </div>
+      <div id="ivs06-sc021-b" style="position:absolute; inset:0; visibility:hidden">
+        <div id="ivs06-sc021-cam"><img id="ivs06-sc021-ph" src="assets/ivan/ivs06/photos/dps_post_officer_car.jpg" alt="" />
+          <svg id="ivs06-sc021-svg" class="v6-svg" viewBox="0 0 1920 1080"></svg></div>
+        <div class="v6-scrim-b" style="height:380px"></div>
+        <div id="ivs06-sc021-cap" class="v6-cap t-display clean"><span class="v6-w">inspect </span><span class="v6-w">his </span><span class="v6-w">car</span></div>
+        <div class="v6-credit">Photo: Ivan Abaturov / Wikimedia Commons, CC BY-SA 4.0</div>
+      </div>
+    </div></div>
+
+    <!-- sc022 · 762.34–766.18 · which might not sound like a big deal, except there was one problem · face close -->
+    <div class="v6-scene" id="ivs06-sc022" data-scene="IVS06-022"><div class="v6-shot" id="ivs06-sc022-shot">
+      <div class="v6-fcw" id="ivs06-sc022-w"><video id="ivs06-sc022-v" class="v6-fc" src="assets/facecam/ivan_facecam_master.mp4" muted playsinline data-start="86.75" data-duration="4.0" data-media-start="762.34"></video></div>
+      <div class="v6-fcl" id="ivs06-sc022-l" style="top:420px"><div class="v6-ln t-display"><div class="bx"></div><div class="rule"></div><div class="lt"><span class="v6-w">one </span><span class="v6-w">problem</span></div></div></div>
+    </div></div>
+
+    <!-- sc023 · 766.18–773.96 · explosives in his car … got through the inspection without the officers finding anything · X-ray -->
+    <div class="v6-scene" id="ivs06-sc023" data-scene="IVS06-023"><div class="v6-shot v6-night" id="ivs06-sc023-shot">
+      <div class="v6-lamp" style="background:radial-gradient(ellipse 70% 60% at 50% 55%, #26272b 0%, #131416 60%, #0a0b0c 100%)"></div>
+      <div id="ivs06-sc023-floor"></div>
+      <div id="ivs06-sc023-car">
+        <img id="ivs06-sc023-base" src="assets/ivan/ivs06/derived/lada_cut.png" alt="" />
+        <img id="ivs06-sc023-xr" src="assets/ivan/ivs06/derived/lada_xray.png" alt="" />
+        <svg id="ivs06-sc023-pk" viewBox="0 0 1500 581"></svg>
+        <div id="ivs06-sc023-bar"></div>
+      </div>
+      <div id="ivs06-sc023-veil"></div>
+      <div id="ivs06-sc023-c1" class="v6-cap t-display clean"><span class="v6-w">explosives </span><span class="v6-w">in </span><span class="v6-w">his </span><span class="v6-w">car</span></div>
+      <div id="ivs06-sc023-c2" class="v6-cap t-display clean"><span class="v6-w">without </span><span class="v6-w">the </span><span class="v6-w">officers </span><span class="v6-w">finding </span><span class="v6-w">anything</span></div>
+      <div class="v6-credit">Car: Throwawayacc222 / Wikimedia Commons, CC0</div>
+    </div></div>
+
+    <!-- sc024 · 773.96–777.38 · No journalists could actually verify that this happened · face wide -->
+    <div class="v6-scene" id="ivs06-sc024" data-scene="IVS06-024"><div class="v6-shot" id="ivs06-sc024-shot">
+      <div class="v6-fcw" id="ivs06-sc024-w"><video id="ivs06-sc024-v" class="v6-fc" src="assets/facecam/ivan_facecam_master.mp4" muted playsinline data-start="98.37" data-duration="3.6" data-media-start="773.96"></video></div>
+      <div class="v6-fcl" id="ivs06-sc024-l" style="left:120px; top:140px"><div class="v6-ln t-display" style="font-size:62px"><div class="bx"></div><div class="lt"><span class="v6-w">No </span><span class="v6-w">journalists</span></div></div><div class="v6-ln t-display" style="font-size:62px"><div class="bx"></div><div class="lt"><span class="v6-w">could </span><span class="v6-w">actually</span></div></div><div class="v6-ln t-display" style="font-size:62px"><div class="bx"></div><div class="lt"><span class="v6-w">verify</span></div></div></div>
+    </div></div>
+
+    <!-- sc025 · 777.38–781.38 · but Ivan said that the fear of getting caught never really went away · Ivan's silhouette (BBC) -->
+    <div class="v6-scene" id="ivs06-sc025" data-scene="IVS06-025"><div class="v6-shot v6-night" id="ivs06-sc025-shot">
+      <div id="ivs06-sc025-cam" style="position:absolute; inset:0; transform-origin:640px 360px">
+        <video id="ivs06-sc025-v" class="v6-full" src="assets/ivan/ivs06/footage/fear.mp4" muted playsinline data-start="101.79" data-duration="4.0" data-media-start="0.5"
+          data-color-grading='{"adjust":{"saturation":-0.55,"contrast":0.08},"effects":{"chromaticAberration":0.12,"chromaticAngle":0}}'></video>
+      </div>
+      <div class="v6-scrim-br"></div>
+      <div id="ivs06-sc025-cap" class="v6-abs t-display clean" style="right:120px; top:820px; text-align:right; font-size:76px; line-height:1.02"><span class="v6-w">the </span><span class="v6-w">fear </span><span class="v6-w">of</span><br><span class="v6-w">getting </span><span class="v6-w">caught</span></div>
+      <div class="v6-credit">Video: BBC World Service</div>
+    </div></div>
+
+    <div id="ivs06-flash"></div>
+    <div id="ivs06-grain" class="tx tx-grain" style="background-image:url('assets/textures/grain_01_norm.jpg')"></div>
+    <div id="ivs06-dust" class="tx tx-dust" style="background-image:url('assets/textures/dust_02.jpg')"></div>
+    <div id="ivs06-vig" class="vignette"></div>
+    <audio id="ivs06-vo" class="temp-vo" src="vo_iv.mp3" data-start="0" data-duration="105.79" data-media-start="675.59" data-volume="1"></audio>
+  </div>
+  <script>
+  (function () {
+    const SEG = "ivs06", SEG_START = 675.59, SEG_END = 781.38, DURATION = +(SEG_END - SEG_START).toFixed(2);
+    const T = (s) => +(s - SEG_START).toFixed(3);   // TEXT cues (audited) — literal master word start, minus L
+    const S = (s) => +(s - SEG_START).toFixed(3);   // STRUCTURAL cues — not audited
+    const L = 0.06;
+    const tl = gsap.timeline({ paused: true });
+    const $ = (id) => document.getElementById(SEG + "-" + id);
+    const NS = "http://www.w3.org/2000/svg";
+    const defs = $("defs");
+    const E = FX.ease;
+    const C = (e, d) => FX.choppy(e, d, 12);
+    const BONE = "#f0ede6", INK = "#1b1d20", OX = "#b32a22", OXL = "#e3a199", AZ = "#2563b0", SKY = "#93bde8", ASH = "#8f9196", ASHL = "#c4c4c2";
+    const GM_D = "M200 40c-52 0-86 40-86 96 0 40 18 74 44 92-4 14-10 24-22 30-58 22-96 52-108 104-6 26-8 58-8 118h360c0-60-2-92-8-118-12-52-50-82-108-104-12-6-18-16-22-30 26-18 44-52 44-92 0-56-34-96-86-96z";
+    const BORDERS = {"c-russia":"M4300,-150L4300,-142L4300,-135L4300,-127L4300,-134L4300,-142L4300,-150L4300,-141L4300,-134L4300,-125L4300,-114L4300,-104L4300,-95L4300,-85L4300,-78L4300,-71L4300,-60L4300,-49L4300,-37L4300,-31L4300,-13L4300,-3L4300,8L4300,30L4300,42L4300,50L4300,64L4300,77L4300,89L4300,101L4300,112L4300,130L4300,138L4300,149L4300,156L4300,162L4300,170L4300,177L4300,184L4300,192L4300,198L4300,204L4300,211L4300,218L4300,231L4300,238L4300,230L4300,223L4300,217L4300,223L4300,232L4300,255L4300,262L4300,269L4300,284L4300,293L4300,300L4300,308L4300,318L4300,328L4300,337L4300,348L4300,359L4300,409L4300,422L4300,434L4300,442L4300,448L4300,458L4300,449L4300,440L4300,463L4300,481L4300,471L4300,478L4300,484L4300,493L4300,502L4300,512L4300,519L4300,526L4300,532L4300,539L4300,548L4300,541L4300,534L4300,542L4300,550L4300,557L4300,566L4300,576L4300,570L4300,554L4300,547L4300,538L4300,532L4300,542L4300,549L4300,558L4300,564L4300,581L4300,601L4300,623L4300,616L4300,606L4300,600L4300,590L4300,584L4300,592L4300,599L4300,606L4300,613L4300,619L4300,613L4300,620L4300,626L4300,632L4300,639L4300,647L4300,653L4300,661L4300,668L4300,675L4300,685L4300,691L4300,684L4300,690L4300,696L4300,702L4300,712L4300,718L4300,726L4300,735L4300,741L4300,748L4300,754L4300,760L4300,768L4300,774L4300,782L4300,790L4300,799L4300,808L4300,816L4300,822L4300,830L4300,837L4300,848L4300,854L4300,863L4300,876L4300,884L4300,894L4300,902L4300,910L4300,918L4300,927L4300,937L4300,949L4300,964L4300,974L4300,981L4300,993L4300,1001L4300,1009L4300,1020L4300,1030L4300,1040L4300,1050L4300,1063L4300,1072L4300,1081L4300,1087L4300,1095L4300,1101L4300,1107L4300,1084L4300,1076L4300,1065L4300,1058L4300,1052L4300,1042L4300,1033L4300,1020L4300,1013L4300,1005L4300,981L4300,975L4300,969L4300,961L4300,946L4300,938L4300,928L4300,894L4300,850L4300,788L4300,743L4300,732L4300,724L4300,713L4300,720L4300,728L4300,722L4300,714L4300,707L4300,696L4300,689L4300,681L4300,648L4300,615L4300,590L4300,548L4300,532L4300,511L4300,461L4300,446L4300,424L4300,411L4300,397L4300,382L4300,365L4300,354L4300,343L4300,311L4300,258L4300,175L4300,165L4300,150L4300,52L4300,33L4300,16L4300,-5L4300,-20L4300,-33L4300,-101L4300,-111L4300,-118L4300,-127L4300,-140L4300,-146L4300,-135L4300,-127L4300,-121L4300,-114L4300,-107L4300,-100L4300,-93L4300,-77L4300,-70L4300,-59L4300,-51L4300,-44L4300,-35L4300,-28L4300,-19L4300,-8L4300,3L4300,10L4300,18L4300,30L4300,38L4300,44L4300,51L4300,59L4300,65L4300,71L4300,78L4300,87L4300,96L4300,106L4300,113L4300,119L4300,137L4300,145L4300,151L4300,163L4300,187L4300,200L4300,213L4300,220L4300,213L4300,200L4300,207L4300,213L4300,205L4300,213L4300,221L4300,228L4300,234L4300,243L4300,250L4300,256L4300,264L4300,272L4300,280L4300,289L4300,298L4300,305L4300,314L4300,322L4300,328L4300,335L4300,341L4300,352L4300,362L4300,368L4300,376L4300,397L4300,406L4300,414L4300,405L4300,397L4300,403L4300,396L4300,374L4300,365L4300,354L4300,348L4300,342L4300,325L4300,310L4300,300L4300,293L4300,286L4300,294L4300,311L4300,318L4300,327L4300,335L4300,328L4300,336L4300,344L4300,351L4300,367L4300,373L4300,381L4300,389L4300,395L4300,402L4300,410L4300,419L4300,425L4300,432L4300,439L4300,446L4300,452L4300,459L4300,468L4300,459L4300,444L4300,437L4300,429L4300,423L4300,391L4300,382L4300,372L4300,362L4300,374L4300,389L4300,401L4300,411L4300,436L4300,448L4300,454L4300,461L4300,472L4300,480L4300,474L4300,465L4300,424L4300,404L4300,395L4300,384L4300,376L4300,366L4300,356L4300,346L4300,335L4300,343L4300,337L4300,327L4300,320L4300,313L4300,305L4300,296L4300,289L4300,299L4300,306L4300,314L4300,296L4300,289L4300,296L4300,303L4300,315L4300,330L4300,346L4300,354L4300,362L4300,369L4300,377L4300,386L4300,410L4300,424L4300,430L4300,436L4300,446L4300,461L4300,482L4300,491L4300,497L4300,503L4300,510L4300,518L4300,524L4300,533L4300,542L4300,549L4300,556L4300,562L4300,568L4300,578L4300,585L4300,591L4300,600L4300,590L4300,583L4300,573L4300,585L4300,591L4300,600L4300,609L4300,615L4300,621L4300,628L4300,634L4300,649L4300,656L4300,664L4300,672L4300,679L4300,686L4300,695L4300,704L4300,714L4300,727L4300,739L4300,752L4300,759L4300,767L4300,776L4300,784L4300,791L4300,797L4300,804L4300,812L4300,818L4300,827L4300,835L4300,842L4300,851L4300,858L4300,866L4300,874L4300,882L4300,895L4300,907L4300,914L4300,922L4300,929L4300,937L4300,945L4300,962L4300,968L4300,974L4300,984L4300,991L4300,998L4300,1005L4300,1012L4300,1021L4300,1028L4300,1034L4300,1046L4300,1054L4300,1062L4300,1072L4300,1081L4300,1088L4300,1095L4300,1109L4300,1120L4300,1127L4300,1137L4300,1144L4300,1152L4300,1172L4300,1182L4300,1189L4300,1197L4300,1210L4300,1216L4300,1224L4300,1238L4300,1244L4300,1253L4300,1263L4300,1273L4300,1284L4300,1293L4300,1300L4300,1313L4300,1320L4300,1326L4300,1338L4300,1346L4300,1353L4300,1367L4300,1373L4300,1381L4300,1394L4300,1408L4300,1416L4300,1427L4300,1434L4300,1442L4300,1455L4300,1472L4300,1487L4300,1493L4300,1502L4300,1510L4300,1518L4300,1526L4300,1532L4300,1538L4300,1545L4300,1553L4300,1560L4300,1567L4300,1558L4300,1570L4300,1577L4300,1586L4300,1593L4300,1599L4300,1608L4300,1616L4300,1622L4300,1630L4300,1644L4300,1655L4300,1664L4300,1671L4300,1678L4300,1689L4300,1696L4300,1702L4300,1710L4300,1719L4300,1727L4300,1754L4300,1761L4300,1769L4300,1777L4300,1783L4300,1798L4300,1807L4300,1818L4300,1851L4300,1863L4300,1871L4300,1878L4300,1884L4300,1891L4300,1898L4300,1904L4300,1912L4300,1921L4300,1931L4300,1940L4300,1947L4300,1953L4300,1960L4300,1967L4300,2015L4300,2024L4300,2033L4300,2043L4300,2054L4300,2065L4300,2072L4300,2093L4300,2115L4300,2127L4300,2137L4300,2148L4300,2155L4300,2164L4300,2171L4300,2210L4300,2221L4300,2242L4300,2249L4300,2256L4300,2262L4300,2272L4300,2278L4300,2293L4300,2305L4300,2315L4300,2324L4300,2333L4300,2354L4300,2370L4300,2383L4300,2403L4300,2410L4300,2430L4300,2450L4300,2440L4300,2450L4300,2428L4300,2419L4300,2401L4300,2394L4300,2388L4300,2381L4300,2372L4300,2365L4300,2358L4300,2352L4300,2345L4300,2336L4300,2329L4300,2321L4300,2313L4300,2307L4300,2299L4300,2274L4300,2265L4300,2252L4300,2246L4300,2237L4300,2230L4300,2223L4300,2213L4300,2205L4300,2199L4300,2191L4300,2182L4300,2175L4300,2167L4300,2153L4300,2145L4300,2138L4300,2130L4300,2120L4300,2110L4300,2100L4300,2091L4300,2083L4300,2062L4300,2048L4300,2040L4300,2026L4300,2020L4300,2012L4300,2003L4300,1994L4300,1985L4300,1978L4300,1971L4300,1961L4300,1955L4300,1945L4300,1938L4300,1928L4300,1914L4300,1902L4300,1894L4300,1884L4300,1869L4300,1862L4300,1849L4300,1842L4300,1832L4300,1825L4300,1818L4300,1804L4300,1798L4300,1790L4300,1776L4300,1768L4300,1747L4300,1739L4300,1732L4300,1724L4300,1714L4300,1721L4300,1732L4300,1739L4300,1751L4300,1757L4300,1765L4300,1773L4300,1781L4300,1787L4300,1794L4300,1804L4300,1812L4300,1819L4300,1826L4300,1841L4300,1848L4300,1856L4300,1862L4300,1869L4300,1863L4300,1872L4300,1879L4300,1871L4300,1864L4300,1870L4300,1877L4300,1868L4300,1860L4300,1851L4300,1843L4300,1828L4300,1817L4300,1788L4300,1779L4300,1772L4300,1761L4300,1755L4300,1746L4300,1732L4300,1724L4300,1718L4300,1708L4300,1701L4300,1693L4300,1683L4300,1675L4300,1668L4300,1661L4300,1652L4300,1609L4300,1598L4300,1591L4300,1585L4300,1591L4300,1567L4300,1559L4300,1550L4300,1540L4300,1534L4300,1523L4300,1516L4300,1502L4300,1494L4300,1487L4300,1471L4300,1465L4300,1459L4300,1471L4300,1478L4300,1470L4300,1476L4300,1470L4300,1457L4300,1447L4300,1439L4300,1432L4300,1424L4300,1415L4300,1422L4300,1428L4300,1419L4300,1410L4300,1404L4300,1396L4300,1388L4300,1376L4300,1363L4300,1351L4300,1342L4300,1334L4300,1326L4300,1314L4300,1305L4300,1289L4300,1280L4300,1270L4300,1254L4300,1241L4300,1233L4300,1226L4300,1218L4300,1212L4300,1206L4300,1197L4300,1189L4300,1181L4300,1175L4300,1167L4300,1160L4300,1153L4300,1147L4300,1140L4300,1131L4300,1103L4300,1096L4300,1088L4300,1073L4300,1065L4300,1054L4300,1045L4300,1034L4300,1027L4300,1018L4300,1009L4300,1002L4300,1009L4300,1015L4300,1006L4300,999L4300,990L4300,982L4300,975L4300,966L4300,958L4300,952L4300,945L4300,939L4300,933L4300,924L4300,915L4300,908L4300,844L4300,836L4300,828L4300,813L4300,804L4300,794L4300,785L4300,777L4300,767L4300,754L4300,746L4300,740L4300,732L4300,723L4300,717L4300,709L4300,698L4300,704L4300,693L4300,683L4300,677L4300,666L4300,659L4300,652L4300,636L4300,630L4300,622L4300,628L4300,620L4300,613L4300,604L4300,594L4300,585L4300,578L4300,551L4300,559L4300,568L4300,574L4300,565L4300,558L4300,550L4300,543L4300,535L4300,527L4300,516L4300,508L4300,515L4300,506L4300,500L4300,494L4300,483L4300,475L4300,468L4300,474L4300,467L4300,474L4300,465L4300,473L4300,486L4300,495L4300,508L4300,521L4300,528L4300,534L4300,541L4300,550L4300,570L4300,576L4300,587L4300,598L4300,611L4300,618L4300,624L4300,632L4300,644L4300,652L4300,664L4300,671L4300,679L4300,687L4300,693L4300,700L4300,693L4300,687L4300,695L4300,702L4300,710L4300,718L4300,726L4300,735L4300,744L4300,751L4300,757L4300,768L4300,778L4300,785L4300,791L4300,799L4300,806L4300,814L4300,822L4300,828L4300,835L4300,843L4300,850L4300,858L4300,864L4300,872L4300,878L4300,887L4300,894L4300,916L4300,925L4300,932L4300,942L4300,951L4300,959L4300,968L4300,979L4300,986L4300,996L4300,1002L4300,1010L4300,1022L4300,1028L4300,1039L4300,1046L4300,1053L4300,1060L4300,1071L4300,1085L4300,1093L4300,1103L4300,1112L4300,1120L4300,1130L4300,1140L4300,1153L4300,1159L4300,1166L4300,1174L4300,1181L4300,1195L4300,1201L4300,1213L4300,1220L4300,1229L4300,1235L4300,1243L4300,1249L4300,1268L4300,1276L4300,1286L4300,1294L4300,1301L4300,1308L4300,1316L4300,1323L4300,1331L4300,1339L4300,1345L4300,1351L4300,1358L4300,1365L4300,1371L4300,1385L4300,1393L4300,1404L4300,1410L4300,1417L4300,1424L4300,1437L4300,1413L4300,1398L4300,1368L4300,1353L4300,1344L4300,1322L4300,1348L4300,1327L4300,1302L4300,1291L4300,1285L4300,1263L4300,1254L4300,1266L4300,1276L4300,1301L4300,1315L4300,1322L4300,1330L4300,1339L4300,1363L4300,1373L4300,1395L4300,1403L4300,1412L4300,1419L4300,1432L4300,1440L4300,1434L4300,1454L4300,1461L4300,1467L4300,1477L4300,1483L4300,1490L4300,1510L4300,1521L4300,1528L4300,1516L4300,1502L4300,1513L4300,1520L4300,1509L4300,1500L4300,1494L4300,1487L4300,1480L4300,1455L4300,1444L4300,1438L4300,1430L4300,1419L4300,1412L4300,1402L4300,1396L4300,1387L4300,1381L4300,1372L4300,1361L4300,1352L4300,1344L4300,1338L4300,1332L4300,1326L4300,1318L4300,1308L4300,1300L4300,1291L4300,1284L4300,1275L4300,1250L4300,1242L4300,1250L4300,1243L4300,1237L4300,1231L4300,1224L4300,1218L4300,1206L4300,1224L4300,1234L4300,1242L4300,1250L4300,1259L4300,1265L4300,1279L4300,1286L4300,1276L4300,1289L4300,1276L4300,1268L4300,1261L4300,1249L4300,1230L4300,1224L4300,1199L4300,1192L4300,1185L4300,1178L4300,1171L4300,1164L4300,1158L4300,1148L4300,1140L4300,1133L4300,1121L4300,1114L4300,1108L4300,1101L4300,1095L4300,1088L4300,1082L4300,1075L4300,1066L4300,1057L4300,1048L4300,1039L4300,1031L4300,1025L4300,1011L4300,1002L4300,992L4300,985L4300,979L4300,973L4300,967L4300,956L4300,947L4300,914L4300,906L4300,891L4300,879L4300,869L4300,856L4300,850L4300,842L4300,829L4300,821L4300,813L4300,827L4300,834L4300,842L4300,857L4300,877L4300,883L4300,893L4300,901L4300,908L4300,923L4300,936L4300,946L4300,956L4300,966L4300,976L4300,992L4300,1000L4300,1008L4300,1020L4300,1028L4300,1040L4300,1051L4300,1059L4300,1080L4300,1087L4300,1094L4300,1105L4300,1113L4300,1120L4300,1129L4300,1146L4300,1166L4300,1174L4300,1183L4300,1191L4300,1202L4300,1210L4300,1224L4300,1232L4300,1240L4300,1248L4300,1305L4300,1314L4300,1327L4300,1337L4300,1331L4300,1337L4300,1345L4300,1357L4300,1363L4300,1371L4300,1380L4300,1374L4300,1368L4300,1352L4300,1341L4300,1351L4300,1344L4300,1338L4300,1322L4300,1328L4300,1335L4300,1328L4300,1322L4300,1315L4300,1322L4300,1330L4300,1337L4300,1344L4300,1335L4300,1329L4300,1322L4300,1314L4300,1306L4300,1297L4300,1290L4300,1283L4300,1276L4300,1266L4300,1260L4300,1248L4300,1223L4300,1202L4300,1193L4300,1186L4300,1180L4300,1174L4300,1163L4300,1153L4300,1142L4300,1133L4300,1147L4300,1154L4300,1142L4300,1135L4300,1125L4300,1116L4300,1126L4300,1147L4300,1155L4300,1162L4300,1181L4300,1191L4300,1200L4300,1209L4300,1216L4300,1224L4300,1239L4300,1247L4300,1259L4300,1266L4300,1275L4300,1293L4300,1300L4300,1308L4300,1314L4300,1322L4300,1328L4300,1334L4300,1342L4300,1355L4300,1362L4300,1369L4300,1377L4300,1383L4300,1390L4300,1401L4300,1410L4300,1416L4300,1409L4300,1416L4300,1423L4300,1429L4300,1439L4300,1449L4300,1442L4300,1434L4300,1446L4300,1454L4300,1444L4300,1451L4300,1465L4300,1475L4300,1482L4300,1489L4300,1495L4300,1508L4300,1518L4300,1531L4300,1538L4300,1516L4300,1505L4300,1498L4300,1491L4300,1482L4300,1475L4300,1468L4300,1459L4300,1452L4300,1442L4300,1435L4300,1428L4300,1419L4300,1411L4300,1403L4300,1396L4300,1389L4300,1381L4300,1373L4300,1382L4300,1390L4300,1398L4300,1410L4300,1420L4300,1428L4300,1441L4300,1449L4300,1442L4300,1435L4300,1442L4300,1428L4300,1422L4300,1415L4300,1391L4300,1384L4300,1372L4300,1365L4300,1356L4300,1348L4300,1336L4300,1322L4300,1315L4300,1304L4300,1297L4300,1290L4300,1284L4300,1276L4300,1266L4300,1259L4300,1248L4300,1238L4300,1229L4300,1222L4300,1215L4300,1202L4300,1193L4300,1187L4300,1180L4300,1169L4300,1155L4300,1148L4300,1132L4300,1125L4300,1115L4300,1108L4300,1098L4300,1091L4300,1082L4300,1091L4300,1100L4300,1106L4300,1125L4300,1135L4300,1149L4300,1142L4300,1150L4300,1140L4300,1132L4300,1141L4300,1131L4300,1125L4300,1114L4300,1107L4300,1098L4300,1090L4300,1072L4300,1047L4300,1038L4300,1031L4300,1024L4300,1015L4300,1008L4300,1017L4300,1024L4300,1030L4300,1040L4300,1047L4300,1055L4300,1062L4300,1070L4300,1078L4300,1090L4300,1096L4300,1104L4300,1114L4300,1122L4300,1116L4300,1126L4300,1139L4300,1131L4300,1122L4300,1109L4300,1092L4300,1077L4300,1048L4300,1020L4300,991L4300,962L4300,932L4300,915L4300,902L4300,872L4300,842L4300,803L4300,764L4300,726L4300,687L4300,659L4300,632L4300,604L4300,577L4300,560L4300,535L4300,521L4300,513L4300,494L4300,478L4300,457L4300,436L4300,414L4300,393L4300,379L4300,369L4300,362L4300,353L4300,324L4300,317L4300,309L4300,302L4300,293L4300,283L4300,275L4300,266L4300,258L4300,251L4300,259L4300,268L4300,275L4300,282L4300,290L4300,300L4300,309L4300,321L4300,329L4300,336L4300,346L4300,363L4300,380L4300,392L4300,406L4300,399L4300,406L4300,413L4300,419L4300,435L4300,443L4300,455L4300,461L4300,485L4300,476L4300,467L4300,460L4300,454L4300,448L4300,457L4300,463L4300,470L4300,476L4300,492L4300,475L4300,463L4300,454L4300,446L4300,438L4300,414L4300,406L4300,396L4300,384L4300,346L4300,355L4300,362L4300,371L4300,362L4300,355L4300,348L4300,339L4300,332L4300,339L4300,348L4300,355L4300,362L4300,370L4300,381L4300,371L4300,362L4300,353L4300,346L4300,338L4300,330L4300,322L4300,306L4300,299L4300,287L4300,280L4300,272L4300,280L4300,288L4300,294L4300,302L4300,309L4300,317L4300,324L4300,330L4300,308L4300,300L4300,309L4300,325L4300,331L4300,322L4300,316L4300,327L4300,336L4300,324L4300,316L4300,306L4300,297L4300,287L4300,280L4300,273L4300,266L4300,260L4300,252L4300,246L4300,225L4300,218L4300,212L4300,201L4300,189L4300,180L4300,174L4300,166L4300,160L4300,150L4300,142L4300,136L4300,126L4300,119L4300,109L4300,101L4300,95L4300,77L4300,64L4300,56L4300,49L4300,55L4300,65L4300,72L4300,78L4300,86L4300,75L4300,69L4300,54L4300,40L4300,27L4300,40L4300,29L4300,16L4300,23L4300,31L4300,46L4300,53L4300,42L4300,36L4300,42L4300,51L4300,59L4300,68L4300,76L4300,83L4300,90L4300,102L4300,109L4300,115L4300,122L4300,128L4300,135L4300,144L4300,152L4300,159L4300,169L4300,176L4300,185L4300,207L4300,213L4300,194L4300,204L4300,212L4300,222L4300,233L4300,242L4300,252L4300,278L4300,286L4300,267L4300,275L4300,269L4300,276L4300,283L4300,293L4300,299L4300,305L4300,314L4300,303L4300,310L4300,319L4300,326L4300,333L4300,339L4300,347L4300,354L4300,362L4300,374L4300,380L4300,388L4300,382L4300,374L4300,366L4300,356L4300,376L4300,369L4300,362L4300,370L4300,362L4300,349L4300,355L4300,362L4300,369L4300,378L4300,372L4300,380L4300,388L4300,395L4300,404L4300,413L4300,420L4300,429L4300,437L4300,443L4300,453L4300,462L4300,470L4300,460L4300,478L4300,485L4300,493L4300,487L4300,479L4300,489L4300,496L4300,505L4300,516L4300,523L4300,534L4300,548L4300,542L4300,551L4300,560L4300,570L4300,579L4300,590L4300,602L4300,611L4300,605L4300,613L4300,602L4300,595L4300,602L4300,619L4300,642L4300,652L4300,658L4300,673L4300,681L4300,688L4300,695L4300,711L4300,717L4300,723L4300,729L4300,739L4300,747L4300,760L4300,768L4300,779L4300,787L4300,799L4300,806L4300,818L4300,842L4300,848L4300,855L4300,871L4300,880L4300,886L4300,894L4300,903L4300,911L4300,919L4300,925L4300,931L4300,944L4300,954L4300,961L4300,968L4300,976L4300,984L4300,1002L4300,1009L4300,1017L4300,1024L4300,1030L4300,1042L4300,1082L4300,1088L4300,1110L4300,1120L4300,1127L4300,1147L4300,1161L4300,1152L4300,1142L4300,1135L4300,1126L4300,1117L4300,1137L4300,1146L4300,1154L4300,1162L4300,1171L4300,1185L4300,1192L4300,1199L4300,1206L4300,1198L4300,1191L4300,1181L4300,1173L4300,1165L4300,1157L4300,1146L4300,1132L4300,1124L4300,1115L4300,1106L4300,1098L4300,1089L4300,1075L4300,1068L4300,1060L4300,1054L4300,1046L4300,1055L4300,1064L4300,1058L4300,1050L4300,1057L4300,1071L4300,1087L4300,1095L4300,1102L4300,1109L4300,1101L4300,1088L4300,1081L4300,1072L4300,1062L4300,1056L4300,1063L4300,1072L4300,1080L4300,1087L4300,1064L4300,1072L4300,1082L4300,1089L4300,1101L4300,1108L4300,1102L4300,1112L4300,1141L4300,1165L4300,1179L4300,1191L4300,1181L4300,1173L4300,1165L4300,1129L4300,1122L4300,1113L4300,1101L4300,1090L4300,1082L4300,1074L4300,1082L4300,1091L4300,1097L4300,1107L4300,1117L4300,1123L4300,1130L4300,1136L4300,1145L4300,1168L4300,1176L4300,1182L4300,1190L4300,1181L4300,1171L4300,1156L4300,1140L4300,1124L4300,1117L4300,1109L4300,1100L4300,1094L4300,1088L4300,1078L4300,1070L4300,1060L4300,1054L4300,1043L4300,1035L4300,1027L4300,1019L4300,1010L4300,1002L4300,995L4300,987L4300,980L4300,974L4300,966L4300,959L4300,966L4300,959L4300,966L4300,959L4300,941L4300,921L4300,914L4300,905L4300,897L4300,904L4300,912L4300,919L4300,928L4300,938L4300,945L4300,953L4300,962L4300,971L4300,965L4300,955L4300,962L4300,968L4300,962L4300,955L4300,947L4300,939L4300,929L4300,917L4300,911L4300,904L4300,910L4300,930L4300,937L4300,944L4300,937L4300,928L4300,939L4300,948L4300,962L4300,970L4300,978L4300,984L4300,991L4300,1000L4300,1007L4300,1016L4300,1025L4300,1044L4300,1054L4300,1064L4300,1072L4300,1082L4300,1089L4300,1101L4300,1108L4300,1116L4300,1127L4300,1138L4300,1156L4300,1177L4300,1164L4300,1172L4300,1181L4300,1188L4300,1205L4300,1240L4300,1256L4300,1270L4300,1278L4300,1287L4300,1293L4300,1300L4300,1313L4300,1322L4300,1336L4300,1345L4300,1357L4300,1364L4300,1353L4300,1344L4300,1333L4300,1324L4300,1315L4300,1308L4300,1301L4300,1295L4300,1289L4300,1282L4300,1276L4300,1261L4300,1252L4300,1243L4300,1237L4300,1227L4300,1214L4300,1221L4300,1228L4300,1240L4300,1247L4300,1254L4300,1263L4300,1272L4300,1282L4300,1294L4300,1302L4300,1309L4300,1322L4300,1333L4300,1348L4300,1363L4300,1422L4300,1480L4300,1501L4300,1511L4300,1524L4300,1537L4300,1549L4300,1559L4300,1571L4300,1581L4300,1639L4300,1701L4300,1716L4300,1730L4300,1736L4300,1746L4300,1753L4300,1763L4300,1771L4300,1779L4300,1787L4300,1794L4300,1801L4300,1820L4300,1830L4300,1836L4300,1843L4300,1850L4300,1876L4300,1860L4300,1845L4300,1856L4300,1869L4300,1922L4300,1933L4300,1939L4300,1946L4300,2016L4300,2095L4300,2107L4300,2116L4300,2105L4300,2098L4300,2104L4300,2116L4300,2123L4300,2130L4300,2136L4300,2144L4300,2152L4300,2165L4300,2173L4300,2183L4300,2201L4300,2210L4300,2217L4300,2210L4300,2201L4300,2209L4300,2216L4300,2222L4300,2242L4300,2234L4300,2244L4300,2253L4300,2260L4300,2253L4300,2245L4300,2251L4300,2244L4300,2256L4300,2262L4300,2254L4300,2264L4300,2257L4300,2249L4300,2256L4300,2262L4300,2272L4300,2281L4300,2287L4300,2294L4300,2300L4300,2307L4300,2314L4300,2320L4300,2311L4300,2303L4300,2297L4300,2290L4300,2296L4300,2309L4300,2315L4300,2321L4300,2328L4300,2335L4300,2342L4300,2350L4300,2343L4300,2349L4300,2357L4300,2364L4300,2371L4300,2363L4300,2356L4300,2350L4300,2344L4300,2338L4300,2348L4300,2355L4300,2362L4300,2369L4300,2378L4300,2386L4300,2374L4300,2360L4300,2353L4300,2345L4300,2353L4300,2362L4300,2369L4300,2376L4300,2382L4300,2389L4300,2383L4300,2394L4300,2405L4300,2415L4300,2421L4300,2428L4300,2443L4300,2450L4292,2450L4285,2450L4272,2450L4264,2450L4254,2450L4241,2450L4234,2450L4225,2450L4216,2450L4208,2450L4200,2450L4191,2450L4164,2450L4148,2450L4138,2450L4129,2450L4120,2450L4110,2450L4096,2450L4080,2450L4070,2450L4064,2450L4052,2450L4045,2450L4030,2450L4020,2450L4011,2450L3995,2450L3971,2450L3951,2450L3943,2450L3932,2450L3923,2450L3912,2450L3876,2450L3866,2450L3856,2450L3840,2450L3832,2450L3824,2450L3806,2450L3799,2450L3787,2450L3778,2450L3761,2450L3751,2450L3742,2450L3711,2450L3703,2450L3695,2450L3688,2450L3678,2450L3660,2450L3649,2450L3634,2450L3592,2450L3578,2450L3568,2450L3562,2450L3555,2450L3547,2450L3538,2450L3527,2450L3516,2450L3507,2450L3495,2450L3487,2450L3477,2450L3469,2450L3462,2450L3455,2450L3445,2450L3426,2450L3418,2450L3408,2450L3390,2450L3375,2450L3368,2450L3360,2450L3345,2450L3338,2450L3355,2450L3363,2450L3373,2450L3380,2450L3388,2450L3393,2445L3367,2450L3363,2443L3362,2435L3368,2442L3371,2435L3366,2427L3358,2431L3352,2440L3351,2432L3354,2426L3374,2414L3380,2416L3408,2435L3414,2438L3416,2444L3412,2450L3423,2450L3430,2450L3445,2450L3438,2449L3430,2448L3424,2448L3421,2442L3450,2442L3454,2446L3462,2443L3466,2438L3472,2433L3472,2440L3478,2437L3484,2438L3488,2445L3482,2448L3490,2445L3497,2446L3504,2448L3504,2441L3504,2435L3508,2428L3505,2420L3502,2410L3508,2414L3502,2405L3502,2390L3501,2384L3495,2381L3493,2375L3492,2383L3492,2389L3494,2396L3493,2411L3491,2417L3485,2416L3486,2405L3486,2398L3485,2384L3485,2376L3486,2367L3488,2361L3493,2367L3497,2374L3502,2368L3496,2361L3511,2346L3517,2342L3522,2334L3525,2326L3527,2318L3532,2292L3534,2282L3537,2275L3542,2270L3551,2266L3559,2266L3553,2271L3556,2277L3553,2282L3552,2290L3558,2293L3556,2302L3548,2314L3546,2320L3552,2324L3553,2315L3557,2308L3560,2294L3564,2287L3567,2273L3570,2266L3570,2256L3574,2249L3579,2247L3586,2247L3593,2258L3606,2269L3617,2272L3624,2270L3630,2264L3630,2255L3590,2228L3587,2219L3583,2211L3578,2206L3564,2189L3559,2185L3544,2183L3547,2191L3542,2193L3532,2181L3526,2171L3520,2166L3518,2159L3517,2150L3513,2139L3511,2132L3510,2125L3506,2119L3512,2121L3518,2127L3524,2131L3535,2132L3543,2132L3551,2129L3556,2125L3561,2118L3567,2114L3575,2114L3580,2111L3585,2105L3589,2110L3591,2116L3614,2125L3631,2123L3634,2117L3629,2110L3622,2104L3616,2102L3609,2101L3603,2104L3600,2099L3604,2094L3605,2085L3610,2077L3616,2073L3628,2076L3636,2074L3648,2073L3659,2067L3667,2063L3671,2056L3676,2053L3684,2052L3692,2045L3699,2037L3705,2032L3711,2037L3716,2034L3732,2038L3736,2033L3737,2023L3742,2016L3748,2014L3746,2009L3739,2013L3735,2019L3734,2008L3731,1996L3735,1991L3735,1984L3733,1978L3721,1976L3714,1974L3706,1971L3701,1976L3695,1979L3685,1980L3683,1987L3684,1994L3677,1996L3671,2001L3660,2001L3652,2004L3641,2007L3628,2008L3622,2012L3617,2006L3621,1999L3627,1990L3634,1985L3660,1981L3665,1977L3667,1971L3662,1977L3634,1982L3628,1985L3622,1989L3620,1996L3614,2001L3609,2008L3585,2012L3579,2014L3576,2009L3575,2001L3576,1994L3579,1988L3585,1984L3590,1979L3589,1971L3578,1971L3574,1964L3580,1953L3584,1946L3585,1939L3584,1922L3586,1914L3589,1905L3593,1898L3598,1894L3629,1890L3635,1885L3641,1878L3651,1878L3656,1874L3657,1864L3660,1853L3663,1843L3669,1836L3676,1833L3699,1834L3708,1840L3719,1839L3741,1837L3748,1841L3755,1842L3761,1840L3769,1842L3778,1840L3797,1845L3806,1840L3808,1834L3809,1827L3809,1821L3811,1813L3811,1807L3808,1799L3809,1793L3817,1792L3816,1782L3818,1771L3826,1756L3836,1747L3840,1739L3838,1730L3827,1733L3814,1726L3824,1717L3830,1710L3826,1698L3821,1687L3818,1680L3821,1674L3820,1667L3813,1660L3795,1657L3787,1659L3798,1621L3802,1617L3806,1610L3812,1604L3832,1611L3838,1610L3844,1605L3849,1596L3846,1588L3840,1590L3834,1595L3829,1590L3821,1590L3809,1587L3804,1583L3801,1575L3795,1570L3794,1555L3804,1554L3817,1549L3825,1550L3830,1546L3830,1539L3834,1530L3847,1520L3855,1508L3861,1503L3862,1492L3864,1484L3863,1476L3856,1468L3851,1458L3848,1451L3846,1443L3850,1435L3858,1429L3861,1421L3844,1414L3837,1415L3829,1425L3820,1429L3812,1430L3801,1421L3795,1417L3786,1413L3782,1404L3779,1394L3776,1386L3767,1385L3759,1380L3748,1384L3742,1386L3736,1384L3729,1376L3720,1354L3711,1353L3704,1363L3698,1366L3684,1367L3677,1357L3672,1352L3656,1347L3648,1341L3645,1334L3640,1330L3630,1330L3619,1332L3611,1328L3601,1326L3592,1308L3583,1306L3574,1305L3570,1313L3571,1324L3570,1334L3563,1339L3558,1337L3549,1342L3543,1334L3538,1325L3534,1319L3528,1314L3522,1310L3511,1305L3505,1301L3492,1278L3486,1273L3485,1266L3487,1250L3482,1245L3469,1238L3467,1232L3464,1224L3462,1218L3445,1218L3432,1229L3406,1240L3395,1238L3385,1239L3376,1242L3351,1257L3345,1267L3338,1271L3332,1269L3329,1263L3330,1256L3321,1252L3314,1249L3308,1246L3301,1252L3294,1254L3275,1228L3270,1221L3240,1217L3226,1218L3219,1225L3213,1228L3208,1235L3202,1238L3196,1237L3190,1233L3186,1226L3185,1216L3180,1210L3174,1208L3166,1200L3159,1171L3172,1160L3168,1155L3169,1144L3167,1137L3161,1131L3159,1123L3157,1117L3153,1110L3153,1103L3151,1097L3145,1093L3144,1084L3152,1080L3155,1074L3148,1068L3133,1070L3124,1066L3121,1058L3117,1036L3114,1030L3105,1031L3100,1030L3088,1033L3076,1038L3066,1040L3054,1040L3048,1033L3047,1026L3040,1023L3030,1025L3015,1019L3004,1020L2999,1024L2993,1025L2982,1020L2991,1014L2997,1008L3001,1000L2999,992L2992,993L2984,987L2986,981L2987,975L2987,968L2988,962L2987,952L2978,942L2976,933L2968,928L2968,920L2974,916L2999,910L3008,911L3016,903L3016,893L3012,884L3006,878L2998,870L2991,870L2988,864L2979,854L2969,852L2970,842L2966,837L2964,828L2964,820L2966,809L2964,802L2961,795L2948,786L2943,775L2934,767L2929,760L2926,755L2916,753L2909,754L2896,760L2886,771L2880,767L2881,758L2876,755L2869,759L2863,755L2851,754L2836,752L2828,758L2822,762L2818,767L2811,767L2796,781L2786,778L2780,777L2771,780L2737,764L2730,766L2718,762L2712,763L2710,771L2713,779L2711,785L2706,792L2705,806L2700,815L2694,820L2673,830L2662,828L2648,833L2643,828L2642,819L2634,815L2624,816L2624,809L2622,801L2615,795L2612,788L2613,782L2608,778L2602,774L2595,765L2600,758L2601,751L2597,744L2598,737L2598,730L2598,724L2593,720L2597,714L2604,711L2597,701L2590,689L2584,680L2593,670L2596,656L2593,650L2588,641L2582,636L2573,631L2569,627L2562,610L2548,596L2558,582L2565,578L2565,571L2568,556L2573,552L2580,552L2587,553L2596,550L2611,553L2621,554L2625,560L2627,569L2631,574L2638,574L2646,578L2653,578L2661,576L2671,580L2678,580L2687,576L2690,571L2699,570L2706,561L2711,557L2719,554L2727,543L2730,534L2727,528L2734,529L2743,528L2745,522L2755,520L2762,522L2763,512L2766,497L2763,489L2756,491L2755,483L2748,482L2741,477L2730,472L2723,465L2719,454L2718,448L2730,441L2730,434L2724,429L2714,429L2708,421L2702,417L2684,412L2675,406L2640,414L2628,410L2621,409L2629,394L2631,388L2634,374L2636,367L2633,349L2626,348L2623,342L2619,337L2610,335L2597,329L2590,327L2582,322L2560,305L2556,294L2555,281L2552,275L2548,270L2545,257L2538,251L2526,245L2524,231L2532,220L2536,211L2530,206L2527,200L2514,198L2508,191L2486,175L2480,173L2477,168L2477,161L2484,153L2486,143L2484,137L2497,133L2502,126L2499,121L2498,114L2508,115L2512,110L2508,99L2508,92L2506,86L2504,79L2497,74L2492,62L2485,57L2481,51L2484,42L2489,36L2497,30L2500,22L2495,16L2495,8L2500,2L2500,-8L2498,-17L2495,-24L2489,-26L2482,-24L2473,-22L2469,-31L2466,-37L2458,-37L2452,-40L2450,-47L2450,-54L2435,-61L2434,-67L2404,-79L2396,-85L2384,-78L2362,-83L2350,-82L2344,-79L2335,-65L2321,-66L2303,-57L2291,-44L2284,-45L2277,-54L2270,-61L2266,-69L2271,-81L2272,-89L2276,-95L2281,-98L2277,-105L2272,-109L2249,-115L2237,-123L2229,-125L2221,-126L2213,-123L2204,-118L2195,-114L2191,-105L2177,-107L2171,-115L2169,-127L2162,-136L2158,-141L2148,-144L2126,-141L2118,-132L2111,-131L2103,-140L2093,-150L2100,-150L2093,-150L2084,-150L2072,-150L2065,-150L2051,-150L2043,-150L2037,-150L2030,-150L2018,-150L2026,-150L2038,-150L2045,-150L2025,-150L2015,-150L1999,-150L1972,-150L1981,-150L1993,-150L2002,-150L2024,-150L2033,-150L2020,-150L2013,-150L2006,-150L1997,-150L1987,-150L2010,-150L2023,-150L2034,-150L2045,-150L2052,-150L2062,-150L2079,-150L2068,-150L2085,-150L2091,-150L2084,-150L2074,-150L2067,-150L2076,-150L2087,-150L2096,-150L2118,-150L2128,-150L2134,-150L2142,-150L2150,-150L2160,-150L2167,-150L2174,-150L2181,-150L2188,-150L2199,-150L2206,-150L2212,-150L2221,-150L2213,-150L2222,-150L2229,-150L2240,-150L2255,-150L2290,-150L2335,-150L2344,-150L2381,-150L2388,-150L2396,-150L2364,-150L2356,-150L2348,-150L2342,-150L2320,-150L2294,-150L2284,-150L2254,-150L2230,-150L2223,-150L2214,-150L2204,-150L2195,-150L2189,-150L2179,-150L2171,-150L2161,-150L2145,-150L2135,-150L2143,-150L2160,-150L2169,-150L2177,-150L2170,-150L2162,-150L2155,-150L2145,-150L2138,-150L2131,-150L2122,-150L2115,-150L2106,-150L2100,-150L2093,-150L2087,-150L2080,-150L2073,-150L2054,-150L2045,-150L2038,-150L2052,-150L2065,-150L2090,-150L2104,-150L2118,-150L2139,-150L2146,-150L2159,-150L2167,-150L2179,-150L2186,-150L2195,-150L2205,-150L2213,-150L2235,-150L2246,-150L2255,-150L2263,-150L2284,-150L2292,-150L2305,-150L2331,-150L2337,-150L2361,-150L2385,-150L2414,-150L2435,-150L2453,-150L2460,-150L2468,-150L2481,-150L2498,-150L2506,-150L2530,-150L2536,-150L2544,-150L2553,-150L2563,-150L2572,-150L2582,-150L2596,-150L2588,-150L2581,-150L2568,-150L2554,-150L2547,-150L2538,-150L2508,-150L2485,-150L2436,-150L2429,-150L2420,-150L2400,-150L2364,-150L2371,-150L2394,-150L2403,-150L2412,-150L2439,-150L2445,-150L2438,-150L2430,-150L2423,-150L2411,-150L2388,-150L2378,-150L2371,-150L2362,-150L2384,-150L2390,-150L2383,-150L2373,-150L2346,-150L2331,-150L2319,-150L2310,-150L2303,-150L2314,-150L2337,-150L2329,-150L2308,-150L2302,-150L2322,-150L2338,-150L2324,-150L2364,-150L2373,-150L2380,-150L2370,-150L2363,-150L2356,-150L2349,-150L2333,-150L2312,-150L2304,-150L2297,-150L2277,-150L2270,-150L2263,-150L2229,-150L2279,-150L2287,-150L2351,-150L2358,-150L2365,-150L2321,-150L2312,-150L2287,-150L2269,-150L2260,-150L2218,-150L2176,-150L2166,-150L2139,-150L2174,-150L2187,-150L2176,-150L2164,-150L2134,-150L2173,-150L2192,-150L2209,-150L2217,-150L2226,-150L2234,-150L2242,-150L2248,-150L2256,-150L2263,-150L2272,-150L2280,-150L2305,-150L2314,-150L2323,-150L2349,-150L2356,-150L2364,-150L2382,-150L2392,-150L2386,-150L2398,-150L2407,-150L2435,-150L2476,-150L2490,-150L2496,-150L2488,-150L2516,-150L2531,-150L2541,-150L2548,-150L2557,-150L2563,-150L2570,-150L2563,-150L2555,-150L2564,-150L2578,-150L2588,-150L2631,-150L2618,-150L2637,-150L2645,-150L2654,-150L2663,-150L2671,-150L2658,-150L2647,-150L2654,-150L2667,-150L2695,-150L2712,-150L2731,-150L2752,-150L2766,-150L2795,-150L2808,-150L2814,-150L2822,-150L2812,-150L2788,-150L2734,-150L2724,-150L2714,-150L2692,-150L2684,-150L2676,-150L2668,-150L2654,-150L2663,-150L2670,-150L2679,-150L2688,-150L2697,-150L2716,-150L2723,-150L2717,-150L2734,-150L2724,-150L2715,-150L2707,-150L2695,-150L2688,-150L2694,-150L2702,-150L2716,-150L2723,-150L2732,-150L2742,-150L2748,-150L2758,-150L2776,-150L2785,-150L2792,-150L2781,-150L2773,-150L2791,-150L2805,-150L2820,-150L2787,-150L2780,-150L2787,-150L2793,-150L2800,-150L2851,-150L2858,-150L2869,-150L2880,-150L2872,-150L2880,-150L2866,-150L2858,-150L2846,-150L2852,-150L2866,-150L2873,-150L2864,-150L2857,-150L2851,-150L2862,-150L2872,-150L2882,-150L2865,-150L2854,-150L2842,-150L2830,-150L2823,-150L2816,-150L2810,-150L2816,-150L2823,-150L2840,-150L2854,-150L2863,-150L2870,-150L2877,-150L2890,-150L2898,-150L2914,-150L2922,-150L2930,-150L2975,-150L3017,-150L3035,-150L3041,-150L3051,-150L3100,-150L3107,-150L3116,-150L3124,-150L3131,-150L3138,-150L3129,-150L3143,-150L3151,-150L3222,-150L3232,-150L3239,-150L3245,-150L3253,-150L3260,-150L3287,-150L3296,-150L3327,-150L3352,-150L3360,-150L3367,-150L3375,-150L3400,-150L3412,-150L3426,-150L3432,-150L3444,-150L3451,-150L3459,-150L3465,-150L3472,-150L3482,-150L3498,-150L3506,-150L3518,-150L3538,-150L3544,-150L3552,-150L3559,-150L3568,-150L3576,-150L3593,-150L3604,-150L3610,-150L3619,-150L3652,-150L3659,-150L3650,-150L3635,-150L3625,-150L3633,-150L3640,-150L3658,-150L3679,-150L3686,-150L3698,-150L3731,-150L3746,-150L3770,-150L3784,-150L3795,-150L3803,-150L3812,-150L3819,-150L3811,-150L3800,-150L3808,-150L3822,-150L3828,-150L3840,-150L3847,-150L3859,-150L3885,-150L3892,-150L3902,-150L3889,-150L3898,-150L3910,-150L3921,-150L3928,-150L3938,-150L3945,-150L3960,-150L3978,-150L3984,-150L3992,-150L3998,-150L4006,-150L4025,-150L4032,-150L4040,-150L4047,-150L4040,-150L4030,-150L4016,-150L3995,-150L3977,-150L3969,-150L3962,-150L3954,-150L3948,-150L3941,-150L3930,-150L3916,-150L3907,-150L3901,-150L3887,-150L3864,-150L3854,-150L3819,-150L3808,-150L3798,-150L3762,-150L3751,-150L3744,-150L3703,-150L3690,-150L3628,-150L3582,-150L3535,-150L3519,-150L3495,-150L3479,-150L3463,-150L3451,-150L3438,-150L3382,-150L3373,-150L3361,-150L3344,-150L3328,-150L3310,-150L3291,-150L3254,-150L3217,-150L3202,-150L3185,-150L3159,-150L3149,-150L3136,-150L3129,-150L3086,-150L3074,-150L3062,-150L3050,-150L3038,-150L3026,-150L3019,-150L3009,-150L3017,-150L3025,-150L3032,-150L3024,-150L2997,-150L2986,-150L2980,-150L2972,-150L2979,-150L2971,-150L2961,-150L2947,-150L2939,-150L2930,-150L2923,-150L2912,-150L2902,-150L2895,-150L2887,-150L2900,-150L2888,-150L2879,-150L2887,-150L2878,-150L2822,-150L2784,-150L2777,-150L2785,-150L2797,-150L2779,-150L2768,-150L2753,-150L2727,-150L2718,-150L2708,-150L2699,-150L2687,-150L2670,-150L2651,-150L2641,-150L2648,-150L2673,-150L2689,-150L2698,-150L2704,-150L2712,-150L2702,-150L2711,-150L2721,-150L2734,-150L2740,-150L2734,-150L2722,-150L2729,-150L2721,-150L2737,-150L2747,-150L2756,-150L2763,-150L2791,-150L2797,-150L2779,-150L2773,-150L2803,-150L2834,-150L2853,-150L2840,-150L2830,-150L2822,-150L2812,-150L2803,-150L2787,-150L2822,-150L2836,-150L2845,-150L2870,-150L2876,-150L2885,-150L2836,-150L2824,-150L2818,-150L2811,-150L2802,-150L2814,-150L2822,-150L2834,-150L2841,-150L2850,-150L2860,-150L2882,-150L2893,-150L2899,-150L2911,-150L2890,-150L2883,-150L2902,-150L2877,-150L2864,-150L2858,-150L2878,-150L2895,-150L2902,-150L2936,-150L2942,-150L2951,-150L2968,-150L2977,-150L2989,-150L2996,-150L3003,-150L3028,-150L3036,-150L3045,-150L3052,-150L3060,-150L3052,-150L3061,-150L3070,-150L3079,-150L3087,-150L3098,-150L3092,-150L3069,-150L3059,-150L3066,-150L3058,-150L3064,-150L3053,-150L3036,-150L3028,-150L3021,-150L3014,-150L3002,-150L3020,-150L3028,-150L3036,-150L3046,-150L3055,-150L3047,-150L3054,-150L3068,-150L3076,-150L3069,-150L3061,-150L3070,-150L3078,-150L3085,-150L3092,-150L3084,-150L3071,-150L3085,-150L3092,-150L3099,-150L3092,-150L3085,-150L3078,-150L3089,-150L3098,-150L3092,-150L3086,-150L3074,-150L3066,-150L3073,-150L3080,-150L3089,-150L3098,-150L3105,-150L3120,-150L3144,-150L3150,-150L3163,-150L3171,-150L3182,-150L3189,-150L3197,-150L3210,-150L3222,-150L3230,-150L3240,-150L3247,-150L3254,-150L3263,-150L3274,-150L3284,-150L3292,-150L3304,-150L3312,-150L3321,-150L3332,-150L3342,-150L3351,-150L3364,-150L3374,-150L3386,-150L3397,-150L3423,-150L3429,-150L3436,-150L3463,-150L3477,-150L3488,-150L3495,-150L3504,-150L3520,-150L3537,-150L3544,-150L3556,-150L3550,-150L3538,-150L3532,-150L3546,-150L3538,-150L3521,-150L3513,-150L3500,-150L3491,-150L3480,-150L3474,-150L3455,-150L3448,-150L3440,-150L3416,-150L3406,-150L3374,-150L3366,-150L3353,-150L3345,-150L3333,-150L3327,-150L3335,-150L3324,-150L3316,-150L3330,-150L3344,-150L3353,-150L3363,-150L3370,-150L3378,-150L3371,-150L3383,-150L3390,-150L3399,-150L3407,-150L3417,-150L3430,-150L3446,-150L3457,-150L3472,-150L3482,-150L3490,-150L3497,-150L3504,-150L3516,-150L3553,-150L3567,-150L3584,-150L3598,-150L3605,-150L3594,-150L3585,-150L3570,-150L3559,-150L3551,-150L3563,-150L3552,-150L3560,-150L3568,-150L3576,-150L3586,-150L3596,-150L3611,-150L3619,-150L3609,-150L3621,-150L3638,-150L3655,-150L3667,-150L3675,-150L3682,-150L3700,-150L3714,-150L3730,-150L3738,-150L3750,-150L3759,-150L3777,-150L3802,-150L3815,-150L3827,-150L3814,-150L3825,-150L3851,-150L3858,-150L3864,-150L3873,-150L3894,-150L3901,-150L3912,-150L3920,-150L3914,-150L3906,-150L3916,-150L3909,-150L3898,-150L3887,-150L3877,-150L3861,-150L3822,-150L3809,-150L3800,-150L3816,-150L3838,-150L3851,-150L3883,-150L3911,-150L3935,-150L3946,-150L3959,-150L3992,-150L4005,-150L4040,-150L4049,-150L4058,-150L4071,-150L4081,-150L4116,-150L4140,-150L4154,-150L4167,-150L4191,-150L4232,-150L4222,-150L4248,-150L4276,-150L4300,-150ZM1295,275L1285,278L1257,276L1223,275L1181,273L1140,270L1076,267L1023,264L981,262L938,260L881,257L850,256L839,255L831,253L847,234L861,217L869,202L871,196L876,188L880,178L880,169L875,152L876,140L880,132L886,128L891,132L897,131L907,132L916,130L940,133L957,126L980,108L1006,78L1023,52L1032,54L1026,59L1021,64L1017,69L1013,76L1009,83L1000,93L988,108L968,124L965,130L968,134L999,133L1005,134L1013,141L1029,144L1040,143L1046,144L1062,138L1068,135L1068,125L1066,117L1063,87L1061,80L1060,74L1065,69L1071,72L1074,64L1086,51L1094,54L1103,69L1108,73L1123,74L1129,76L1140,84L1144,89L1155,91L1160,96L1168,98L1173,101L1182,98L1184,105L1189,112L1196,113L1201,109L1218,103L1246,106L1262,102L1267,106L1272,122L1275,130L1286,131L1291,136L1301,145L1304,151L1306,160L1306,169L1302,175L1296,182L1290,186L1286,195L1286,205L1286,212L1282,223L1281,242L1282,251L1286,260L1295,275Z","c-ukraine":"M2624,816L2634,815L2642,819L2643,828L2646,833L2656,829L2671,831L2694,820L2700,815L2705,806L2706,792L2709,786L2713,781L2710,774L2712,763L2718,762L2730,766L2737,764L2766,780L2780,777L2786,778L2791,782L2811,767L2818,767L2822,762L2828,758L2831,754L2851,754L2860,754L2866,757L2874,757L2881,758L2880,767L2886,771L2896,760L2909,754L2916,753L2922,754L2928,757L2931,765L2940,771L2946,784L2958,792L2963,799L2966,807L2963,815L2964,828L2966,837L2970,842L2969,850L2976,852L2985,861L2989,866L2996,869L3003,876L3010,882L3016,893L3016,903L3010,910L2999,910L2974,916L2968,920L2968,928L2976,931L2977,938L2985,949L2988,957L2988,964L2986,971L2987,977L2982,982L2987,990L2994,993L3001,1000L2997,1008L2991,1014L2982,1020L2993,1025L2999,1024L3004,1020L3015,1019L3026,1023L3040,1023L3047,1026L3048,1033L3052,1039L3066,1040L3076,1038L3088,1033L3095,1028L3102,1032L3108,1030L3116,1032L3121,1058L3124,1066L3133,1070L3143,1068L3151,1070L3154,1078L3144,1082L3144,1089L3150,1096L3153,1103L3153,1110L3157,1117L3159,1123L3161,1131L3166,1135L3169,1144L3168,1155L3172,1160L3160,1165L3166,1200L3169,1206L3177,1209L3182,1212L3186,1222L3187,1230L3193,1236L3199,1238L3208,1235L3212,1229L3219,1225L3224,1219L3240,1217L3266,1219L3271,1226L3290,1252L3297,1254L3304,1250L3310,1246L3317,1250L3326,1254L3329,1263L3332,1269L3338,1271L3344,1269L3348,1261L3376,1242L3385,1239L3395,1238L3406,1240L3427,1233L3440,1220L3460,1216L3464,1224L3467,1232L3469,1238L3482,1245L3487,1250L3487,1260L3485,1269L3492,1278L3505,1301L3511,1305L3522,1310L3528,1314L3534,1319L3538,1325L3543,1334L3545,1342L3555,1338L3562,1339L3570,1334L3571,1324L3570,1313L3571,1306L3583,1306L3590,1306L3597,1322L3608,1327L3614,1330L3630,1330L3637,1332L3644,1329L3646,1338L3656,1347L3672,1352L3677,1357L3680,1363L3698,1366L3704,1363L3708,1355L3717,1350L3729,1376L3736,1384L3742,1386L3748,1384L3754,1381L3764,1384L3776,1386L3779,1394L3782,1404L3786,1413L3795,1417L3801,1421L3809,1428L3816,1430L3825,1427L3837,1415L3844,1414L3859,1418L3860,1426L3852,1433L3846,1443L3848,1451L3851,1458L3856,1468L3863,1476L3864,1484L3862,1492L3862,1501L3858,1505L3850,1516L3838,1526L3831,1536L3830,1546L3825,1550L3817,1549L3804,1554L3797,1553L3793,1567L3798,1572L3803,1580L3806,1585L3821,1590L3828,1589L3832,1594L3840,1590L3846,1588L3849,1596L3844,1605L3838,1610L3832,1611L3816,1604L3809,1606L3804,1612L3798,1619L3788,1653L3793,1659L3813,1660L3820,1667L3821,1673L3821,1680L3820,1686L3826,1698L3828,1704L3827,1713L3814,1726L3825,1733L3835,1730L3841,1734L3838,1744L3828,1753L3818,1771L3816,1782L3818,1789L3809,1793L3808,1799L3811,1807L3811,1813L3809,1819L3809,1826L3808,1834L3806,1840L3797,1845L3783,1841L3769,1842L3761,1840L3755,1842L3748,1841L3744,1838L3719,1839L3713,1841L3700,1834L3676,1833L3669,1836L3663,1843L3660,1853L3657,1864L3656,1874L3651,1878L3644,1876L3635,1885L3629,1890L3598,1894L3593,1898L3589,1905L3586,1914L3584,1922L3585,1939L3584,1946L3580,1953L3576,1960L3574,1968L3584,1970L3590,1974L3588,1982L3582,1986L3576,1994L3575,2001L3576,2009L3578,2015L3567,2031L3565,2022L3556,2016L3551,2020L3544,2018L3525,2016L3509,2022L3503,2022L3484,2018L3469,2031L3454,2056L3450,2064L3444,2070L3445,2064L3437,2056L3429,2056L3422,2062L3405,2070L3396,2076L3389,2078L3382,2087L3378,2093L3376,2099L3371,2110L3370,2116L3368,2123L3360,2126L3367,2119L3369,2110L3362,2098L3355,2095L3348,2094L3342,2094L3328,2098L3321,2102L3314,2104L3305,2110L3295,2122L3292,2127L3292,2134L3286,2131L3283,2123L3278,2119L3270,2121L3260,2119L3239,2123L3224,2130L3217,2136L3200,2155L3195,2160L3178,2170L3173,2175L3168,2183L3161,2189L3145,2218L3134,2239L3130,2245L3120,2251L3112,2256L3103,2262L3105,2253L3110,2249L3124,2240L3132,2236L3136,2227L3141,2218L3146,2210L3151,2203L3154,2194L3148,2199L3142,2196L3142,2184L3145,2175L3138,2173L3132,2166L3130,2157L3128,2166L3132,2174L3134,2181L3132,2187L3127,2194L3119,2208L3113,2215L3107,2219L3093,2224L3088,2219L3086,2224L3079,2230L3076,2235L3075,2242L3077,2261L3079,2268L3084,2298L3087,2304L3096,2330L3103,2345L3095,2347L3090,2341L3084,2334L3074,2332L3071,2321L3071,2311L3071,2304L3068,2296L3063,2291L3056,2286L3050,2285L3039,2286L3031,2288L3024,2291L3019,2287L3013,2278L3008,2266L3000,2263L2989,2257L2979,2258L2970,2257L2959,2252L2953,2249L2946,2243L2939,2238L2932,2233L2926,2231L2919,2234L2906,2228L2906,2238L2905,2245L2900,2250L2895,2242L2888,2247L2886,2254L2889,2259L2882,2261L2883,2269L2870,2267L2864,2259L2856,2254L2851,2258L2854,2251L2839,2249L2840,2243L2842,2226L2836,2237L2833,2243L2827,2246L2819,2244L2811,2239L2812,2246L2794,2252L2785,2251L2776,2248L2765,2251L2746,2255L2740,2260L2734,2262L2704,2252L2698,2249L2696,2242L2698,2235L2691,2234L2680,2230L2671,2220L2662,2218L2655,2214L2643,2203L2643,2209L2632,2212L2626,2207L2627,2200L2632,2196L2643,2198L2654,2196L2664,2187L2660,2172L2653,2172L2646,2170L2626,2161L2619,2160L2613,2165L2613,2177L2610,2167L2589,2144L2587,2139L2592,2143L2595,2148L2623,2147L2637,2155L2652,2155L2664,2159L2673,2157L2692,2161L2700,2167L2706,2168L2713,2168L2718,2165L2722,2160L2723,2150L2734,2140L2744,2137L2748,2132L2755,2124L2747,2129L2739,2131L2720,2144L2709,2145L2699,2139L2694,2135L2689,2139L2681,2146L2677,2134L2665,2130L2658,2122L2655,2113L2654,2106L2650,2098L2650,2088L2653,2080L2656,2074L2660,2065L2660,2056L2651,2053L2655,2040L2651,2035L2645,2037L2639,2034L2644,2024L2644,2018L2642,2012L2636,2008L2635,2000L2632,1993L2623,1988L2623,1980L2618,1984L2621,1990L2630,1994L2632,2011L2637,2014L2639,2022L2636,2027L2635,2038L2646,2039L2647,2046L2644,2054L2648,2058L2654,2055L2654,2068L2651,2074L2644,2078L2639,2086L2639,2093L2645,2101L2644,2113L2646,2119L2643,2125L2638,2129L2632,2130L2626,2130L2611,2123L2602,2124L2598,2129L2593,2132L2586,2130L2584,2121L2592,2106L2594,2098L2603,2085L2598,2089L2593,2093L2589,2099L2582,2098L2580,2092L2579,2099L2586,2105L2582,2115L2575,2127L2563,2134L2555,2134L2550,2132L2539,2129L2528,2132L2520,2133L2513,2135L2505,2140L2492,2146L2484,2146L2476,2154L2478,2166L2481,2172L2478,2184L2472,2194L2461,2196L2465,2203L2460,2218L2450,2234L2447,2241L2442,2246L2438,2258L2419,2281L2402,2305L2394,2315L2384,2323L2384,2307L2379,2313L2379,2319L2377,2325L2366,2318L2359,2319L2357,2329L2354,2324L2352,2332L2355,2340L2354,2346L2348,2340L2342,2340L2335,2343L2335,2351L2340,2354L2340,2361L2336,2364L2330,2369L2324,2373L2324,2366L2323,2360L2317,2353L2316,2340L2319,2332L2312,2325L2312,2332L2308,2340L2309,2347L2305,2354L2304,2363L2304,2375L2303,2386L2309,2389L2316,2387L2314,2394L2309,2399L2305,2405L2308,2411L2313,2406L2316,2412L2321,2415L2323,2408L2328,2413L2327,2420L2327,2427L2328,2443L2326,2450L2318,2450L2314,2445L2312,2437L2307,2432L2300,2425L2280,2417L2268,2416L2262,2414L2257,2419L2249,2418L2244,2422L2238,2427L2232,2431L2226,2433L2219,2441L2212,2442L2210,2450L2203,2450L2195,2446L2189,2442L2184,2446L2179,2450L2153,2450L2141,2450L2128,2449L2123,2446L2117,2442L2114,2437L2110,2424L2107,2414L2100,2412L2099,2405L2108,2395L2119,2396L2130,2399L2139,2399L2142,2387L2147,2381L2145,2374L2144,2368L2138,2362L2142,2354L2151,2348L2151,2342L2163,2336L2168,2331L2167,2325L2176,2321L2179,2311L2176,2299L2178,2291L2206,2282L2210,2275L2207,2264L2208,2255L2213,2248L2216,2242L2218,2231L2208,2222L2206,2215L2208,2207L2205,2192L2204,2183L2205,2176L2208,2171L2219,2163L2227,2159L2240,2151L2246,2154L2247,2180L2244,2187L2246,2194L2254,2185L2259,2182L2258,2174L2261,2167L2267,2176L2271,2180L2278,2169L2284,2164L2288,2169L2286,2176L2294,2180L2300,2188L2304,2193L2311,2190L2312,2180L2320,2177L2321,2167L2331,2179L2334,2185L2335,2193L2338,2198L2347,2193L2369,2192L2376,2190L2380,2186L2383,2178L2377,2177L2366,2169L2365,2163L2359,2162L2351,2155L2349,2147L2355,2146L2356,2139L2354,2132L2355,2124L2357,2106L2356,2100L2353,2093L2353,2086L2347,2085L2345,2079L2336,2074L2327,2074L2321,2065L2316,2062L2309,2061L2304,2056L2298,2053L2299,2046L2300,2037L2305,2029L2304,2022L2297,2018L2294,2024L2287,2015L2294,2010L2297,2001L2296,1989L2300,1982L2302,1972L2298,1962L2293,1959L2286,1962L2284,1969L2279,1973L2272,1970L2270,1962L2269,1955L2262,1951L2258,1944L2253,1938L2248,1932L2243,1937L2239,1932L2237,1925L2234,1912L2235,1906L2239,1900L2243,1893L2244,1884L2244,1875L2245,1868L2249,1862L2249,1854L2242,1851L2244,1844L2248,1838L2251,1831L2244,1828L2240,1823L2239,1815L2236,1808L2230,1805L2219,1817L2208,1816L2203,1811L2198,1806L2196,1800L2191,1794L2190,1786L2188,1780L2186,1773L2177,1769L2166,1769L2153,1763L2145,1764L2142,1773L2141,1782L2134,1780L2130,1771L2133,1764L2129,1759L2124,1762L2120,1769L2115,1764L2118,1758L2123,1749L2121,1743L2112,1743L2107,1747L2100,1750L2096,1742L2088,1742L2080,1741L2083,1732L2079,1725L2069,1722L2057,1718L2054,1713L2048,1704L2037,1694L2031,1691L2013,1692L2010,1684L2003,1686L1995,1686L1991,1692L1982,1700L1974,1696L1965,1698L1957,1709L1951,1713L1931,1707L1924,1705L1924,1711L1918,1714L1907,1712L1902,1708L1896,1706L1890,1710L1888,1717L1889,1726L1884,1732L1878,1725L1873,1721L1866,1729L1864,1736L1841,1745L1831,1746L1824,1749L1818,1749L1816,1757L1815,1770L1813,1778L1808,1785L1803,1791L1799,1799L1791,1805L1777,1805L1768,1808L1761,1808L1754,1810L1746,1811L1736,1816L1664,1824L1657,1829L1643,1855L1637,1862L1628,1866L1616,1868L1610,1870L1603,1862L1598,1852L1595,1847L1582,1842L1575,1835L1574,1829L1571,1822L1561,1815L1549,1814L1540,1811L1534,1813L1529,1819L1521,1819L1511,1825L1499,1821L1491,1815L1481,1811L1474,1809L1459,1816L1447,1804L1434,1804L1425,1801L1415,1800L1407,1800L1402,1805L1388,1802L1379,1798L1372,1791L1366,1783L1353,1777L1347,1778L1341,1794L1332,1804L1325,1802L1318,1799L1318,1806L1314,1812L1306,1808L1307,1802L1308,1796L1308,1789L1304,1783L1300,1778L1295,1775L1287,1774L1273,1776L1268,1770L1266,1762L1252,1742L1246,1743L1239,1741L1227,1730L1225,1721L1224,1714L1220,1710L1222,1703L1212,1700L1205,1704L1202,1686L1204,1678L1202,1668L1204,1659L1214,1651L1217,1644L1223,1641L1228,1636L1230,1627L1230,1618L1234,1614L1236,1601L1236,1594L1241,1589L1242,1582L1248,1567L1256,1564L1258,1558L1260,1547L1264,1539L1273,1547L1280,1550L1288,1550L1295,1551L1299,1556L1305,1560L1307,1552L1308,1542L1299,1533L1292,1525L1288,1522L1286,1513L1288,1505L1290,1497L1289,1472L1284,1463L1281,1456L1280,1445L1276,1433L1280,1424L1291,1408L1294,1400L1299,1396L1313,1375L1318,1372L1321,1364L1328,1355L1345,1330L1350,1323L1356,1319L1360,1312L1394,1274L1400,1268L1408,1262L1424,1245L1429,1235L1432,1229L1440,1226L1466,1226L1474,1223L1478,1215L1478,1205L1488,1197L1493,1191L1490,1175L1493,1169L1489,1159L1489,1149L1481,1145L1481,1137L1473,1134L1471,1126L1476,1119L1484,1121L1492,1120L1498,1114L1484,1105L1474,1095L1471,1088L1469,1082L1465,1077L1463,1065L1458,1056L1456,1049L1450,1037L1442,1032L1431,1010L1423,1007L1423,998L1428,992L1430,985L1425,971L1427,965L1420,961L1422,953L1418,939L1419,932L1437,925L1450,929L1460,931L1464,936L1474,939L1496,919L1513,908L1517,902L1521,886L1529,873L1535,869L1572,866L1581,868L1625,861L1639,854L1645,852L1652,852L1677,859L1706,859L1726,860L1738,857L1770,863L1780,863L1794,872L1833,876L1834,883L1871,888L1899,900L1908,902L1923,897L1937,897L1942,898L1948,904L1947,916L1950,923L1957,923L1961,928L1958,937L1969,937L1978,938L1984,936L1988,932L1996,930L2012,937L2020,937L2024,944L2023,950L2019,962L2024,968L2037,958L2038,950L2039,940L2043,933L2050,934L2058,944L2064,946L2079,946L2085,942L2090,933L2096,925L2102,924L2105,931L2108,937L2114,942L2116,951L2125,949L2132,944L2140,943L2154,946L2158,951L2161,969L2164,974L2170,974L2174,981L2179,977L2179,968L2182,958L2186,952L2191,948L2200,945L2209,945L2216,940L2220,933L2226,929L2234,930L2240,935L2242,944L2248,951L2250,962L2248,968L2255,976L2258,986L2263,992L2272,986L2282,987L2287,984L2289,978L2296,974L2302,969L2307,964L2314,962L2322,968L2325,974L2338,977L2345,970L2353,970L2362,965L2386,964L2394,968L2400,976L2409,982L2412,989L2411,998L2416,1007L2425,1009L2432,1017L2439,1018L2444,1024L2446,1016L2449,1010L2454,1004L2458,999L2457,993L2456,981L2450,977L2452,970L2450,962L2447,955L2447,948L2441,945L2440,937L2444,931L2447,925L2449,915L2454,911L2457,905L2459,899L2460,893L2463,886L2466,877L2472,870L2474,864L2481,862L2482,855L2489,852L2494,846L2496,840L2503,842L2503,835L2500,826L2505,822L2526,821L2535,824L2542,829L2549,829L2553,820L2568,812L2581,812L2608,817L2624,816ZM2352,2354L2375,2330L2382,2325L2350,2360L2335,2373L2324,2378L2331,2373L2336,2369L2340,2365L2349,2357ZM2805,2270L2814,2271L2813,2277L2751,2266L2775,2269L2785,2266L2794,2270L2801,2268ZM2650,2231L2670,2236L2682,2242L2674,2240L2620,2227L2597,2217L2593,2212L2589,2205L2586,2195L2591,2202L2594,2209L2603,2218L2650,2231ZM2900,2250L2905,2245L2906,2238L2905,2230L2913,2233L2926,2231L2932,2233L2939,2238L2946,2243L2953,2249L2959,2252L2965,2255L2979,2258L2985,2256L2995,2260L3004,2263L3011,2273L3016,2283L3024,2291L3031,2288L3039,2286L3050,2285L3056,2286L3063,2291L3068,2296L3071,2304L3071,2311L3071,2321L3071,2327L3084,2334L3090,2341L3095,2347L3103,2345L3109,2359L3152,2431L3174,2448L3205,2441L3212,2433L3214,2427L3219,2422L3221,2412L3226,2407L3228,2414L3229,2420L3243,2431L3248,2433L3258,2425L3260,2418L3268,2410L3288,2409L3295,2406L3294,2414L3301,2410L3308,2414L3320,2413L3327,2419L3334,2418L3341,2422L3344,2430L3344,2438L3337,2440L3331,2437L3325,2437L3322,2444L3323,2450L3315,2450L3305,2450L3292,2450L3284,2450L3270,2450L3262,2450L3254,2450L3238,2450L3228,2450L3218,2450L3207,2450L3196,2450L3190,2450L3184,2450L3177,2450L3164,2450L3156,2450L3150,2450L3143,2450L3137,2450L3128,2450L3119,2450L3108,2450L3101,2450L3094,2450L3086,2450L3079,2450L3066,2450L3051,2450L3034,2450L3025,2450L3018,2450L3011,2450L3004,2450L2997,2450L2990,2450L2982,2450L2975,2450L2968,2450L2948,2450L2942,2450L2933,2450L2926,2450L2916,2450L2902,2450L2894,2450L2887,2450L2879,2450L2863,2450L2871,2450L2878,2450L2888,2450L2895,2450L2886,2450L2876,2450L2868,2450L2860,2450L2849,2450L2843,2450L2832,2450L2825,2450L2819,2450L2804,2442L2798,2438L2792,2435L2770,2433L2764,2435L2759,2442L2747,2443L2738,2439L2731,2425L2732,2416L2737,2410L2754,2395L2761,2394L2768,2389L2771,2384L2778,2386L2781,2379L2787,2369L2798,2361L2831,2343L2831,2337L2841,2340L2857,2331L2863,2327L2868,2322L2876,2316L2882,2318L2889,2317L2893,2312L2898,2308L2904,2313L2910,2311L2910,2300L2919,2298L2916,2292L2908,2290L2902,2293L2903,2285L2901,2279L2900,2266L2903,2258L2900,2250Z","c-crimea":"M2900,2250L2905,2245L2906,2238L2905,2230L2913,2233L2926,2231L2932,2233L2939,2238L2946,2243L2953,2249L2959,2252L2965,2255L2979,2258L2985,2256L2995,2260L3004,2263L3011,2273L3016,2283L3024,2291L3031,2288L3039,2286L3050,2285L3056,2286L3063,2291L3068,2296L3071,2304L3071,2311L3071,2321L3071,2327L3084,2334L3090,2341L3095,2347L3103,2345L3109,2359L3152,2431L3174,2448L3205,2441L3212,2433L3214,2427L3219,2422L3221,2412L3226,2407L3228,2414L3229,2420L3243,2431L3248,2433L3258,2425L3260,2418L3268,2410L3288,2409L3295,2406L3294,2414L3301,2410L3308,2414L3320,2413L3327,2419L3334,2418L3341,2422L3344,2430L3344,2438L3337,2440L3331,2437L3325,2437L3322,2444L3323,2450L3315,2450L3305,2450L3292,2450L3284,2450L3270,2450L3262,2450L3254,2450L3238,2450L3228,2450L3218,2450L3207,2450L3196,2450L3190,2450L3184,2450L3177,2450L3164,2450L3156,2450L3150,2450L3143,2450L3137,2450L3128,2450L3119,2450L3108,2450L3101,2450L3094,2450L3086,2450L3079,2450L3066,2450L3051,2450L3034,2450L3025,2450L3018,2450L3011,2450L3004,2450L2997,2450L2990,2450L2982,2450L2975,2450L2968,2450L2948,2450L2942,2450L2933,2450L2926,2450L2916,2450L2902,2450L2894,2450L2887,2450L2879,2450L2863,2450L2871,2450L2878,2450L2888,2450L2895,2450L2886,2450L2876,2450L2868,2450L2860,2450L2849,2450L2843,2450L2832,2450L2825,2450L2819,2450L2804,2442L2798,2438L2792,2435L2770,2433L2764,2435L2759,2442L2747,2443L2738,2439L2731,2425L2732,2416L2737,2410L2754,2395L2761,2394L2768,2389L2771,2384L2778,2386L2781,2379L2787,2369L2798,2361L2831,2343L2831,2337L2841,2340L2857,2331L2863,2327L2868,2322L2876,2316L2882,2318L2889,2317L2893,2312L2898,2308L2904,2313L2910,2311L2910,2300L2919,2298L2916,2292L2908,2290L2902,2293L2903,2285L2901,2279L2900,2266L2903,2258L2900,2250Z","c-poland":"M714,1438L714,1429L712,1418L709,1412L708,1401L700,1399L693,1395L684,1392L680,1382L677,1374L674,1367L674,1360L678,1355L674,1350L673,1342L665,1345L651,1338L645,1336L636,1342L630,1338L626,1332L617,1326L605,1323L604,1316L596,1310L596,1318L590,1321L582,1322L572,1328L557,1316L554,1308L549,1302L545,1295L539,1295L529,1285L539,1280L549,1274L553,1268L549,1262L551,1252L548,1246L538,1255L532,1258L519,1256L512,1256L508,1262L504,1257L497,1255L492,1249L483,1244L474,1239L470,1233L464,1230L457,1225L440,1220L430,1216L423,1218L427,1229L431,1239L434,1246L441,1252L443,1262L445,1268L439,1264L435,1269L426,1273L419,1275L412,1278L408,1286L403,1291L399,1297L392,1298L386,1294L381,1289L377,1283L376,1275L370,1266L366,1259L362,1252L356,1246L350,1244L347,1238L346,1231L338,1231L331,1229L329,1223L323,1218L326,1212L332,1208L336,1205L344,1202L351,1197L353,1190L358,1184L344,1165L334,1161L327,1162L325,1167L318,1169L308,1165L299,1174L292,1175L295,1167L293,1161L289,1155L277,1158L265,1145L248,1144L244,1140L212,1128L206,1128L202,1135L199,1127L198,1120L190,1115L186,1108L184,1100L187,1094L185,1088L172,1085L170,1078L165,1082L158,1079L151,1078L144,1080L144,1086L147,1097L144,1102L145,1112L127,1113L119,1114L121,1106L126,1100L134,1082L141,1064L141,1057L144,1051L144,1041L146,1034L148,1028L149,1022L150,1015L144,1006L141,1000L140,985L139,978L139,972L134,968L124,964L117,960L108,956L104,950L104,944L109,934L109,928L108,922L99,912L94,902L93,895L89,891L85,882L96,869L101,861L103,842L107,834L108,827L112,822L102,814L102,805L104,797L104,788L102,779L94,776L86,770L83,759L80,748L79,739L87,732L90,726L93,721L91,710L94,702L89,697L81,687L72,684L68,678L58,666L40,652L31,644L25,642L19,639L22,632L24,625L22,613L28,604L37,600L46,593L50,588L52,582L57,568L56,562L56,555L60,548L65,540L60,535L58,526L57,520L54,506L52,493L49,488L44,478L43,468L43,459L40,447L39,439L39,432L44,429L43,423L50,429L56,432L61,436L67,438L75,440L80,445L85,454L90,448L86,442L80,431L84,415L92,415L91,409L92,400L86,404L84,395L65,391L64,384L58,384L53,389L60,391L59,397L52,400L47,404L40,401L33,391L28,386L31,375L39,379L54,380L65,376L76,368L115,352L149,343L190,327L216,320L246,312L274,300L298,297L314,292L305,297L322,297L327,294L323,288L315,290L326,284L335,274L331,281L338,278L344,274L339,272L343,264L360,243L366,241L369,232L379,226L410,222L422,218L428,217L448,200L492,180L548,170L574,162L613,159L637,159L646,164L701,194L711,206L714,212L706,210L702,203L695,192L689,190L682,186L673,180L664,176L658,171L652,179L656,187L660,195L662,202L663,208L668,205L668,212L674,226L674,233L674,243L675,252L680,257L686,261L693,263L697,268L722,276L732,274L739,277L794,269L806,264L812,262L826,252L839,255L850,256L881,257L938,260L981,262L1023,264L1076,267L1140,270L1181,273L1223,275L1257,276L1285,278L1295,275L1302,266L1308,264L1317,268L1324,268L1327,274L1334,277L1334,283L1337,289L1344,288L1358,296L1364,299L1376,303L1382,308L1386,315L1392,319L1398,328L1400,338L1402,349L1400,358L1397,365L1402,371L1402,382L1402,388L1406,399L1408,412L1413,422L1413,437L1416,453L1429,491L1436,505L1439,512L1445,535L1448,542L1452,548L1455,556L1460,561L1461,569L1458,576L1456,584L1462,594L1464,602L1465,610L1463,617L1464,624L1465,655L1466,662L1464,672L1458,679L1438,692L1413,699L1400,707L1387,718L1369,745L1363,752L1354,771L1358,778L1360,784L1371,787L1384,792L1391,796L1398,798L1405,810L1415,811L1420,816L1424,822L1428,838L1425,846L1422,853L1421,865L1419,876L1420,882L1421,891L1415,896L1411,903L1410,910L1410,916L1408,922L1410,928L1409,934L1411,941L1414,947L1418,953L1420,961L1427,965L1425,971L1431,980L1430,988L1425,995L1422,1002L1425,1008L1439,1028L1450,1037L1457,1045L1456,1051L1462,1062L1465,1075L1469,1082L1471,1088L1474,1095L1484,1105L1496,1112L1496,1119L1487,1120L1480,1119L1473,1122L1471,1130L1477,1135L1479,1141L1485,1148L1488,1154L1493,1169L1490,1175L1491,1186L1491,1193L1479,1202L1479,1209L1474,1223L1466,1226L1440,1226L1432,1229L1429,1235L1426,1242L1413,1258L1400,1268L1394,1274L1360,1312L1356,1319L1350,1323L1345,1330L1328,1355L1322,1362L1320,1368L1315,1372L1304,1393L1296,1397L1291,1408L1280,1424L1276,1433L1279,1442L1281,1456L1284,1463L1288,1468L1290,1494L1288,1505L1286,1513L1282,1521L1292,1525L1297,1531L1306,1537L1306,1546L1309,1556L1302,1557L1295,1551L1288,1550L1280,1550L1273,1547L1267,1541L1261,1543L1244,1539L1232,1530L1221,1528L1214,1526L1211,1519L1205,1519L1198,1515L1188,1513L1182,1502L1181,1493L1176,1486L1171,1481L1163,1477L1158,1471L1149,1472L1144,1474L1139,1466L1132,1464L1127,1460L1112,1459L1105,1460L1099,1462L1083,1457L1074,1453L1065,1461L1059,1464L1052,1458L1044,1460L1039,1464L1044,1468L1042,1475L1033,1479L1029,1486L1022,1490L1014,1485L1007,1483L1001,1481L988,1464L980,1464L974,1465L970,1470L963,1470L951,1463L941,1468L935,1466L931,1471L929,1478L917,1480L911,1485L905,1487L902,1494L900,1499L898,1510L893,1518L881,1508L872,1507L866,1512L861,1516L855,1515L849,1511L855,1498L854,1490L854,1474L852,1466L846,1467L839,1466L831,1464L831,1457L823,1453L817,1442L815,1430L809,1422L806,1417L790,1432L780,1434L773,1438L768,1449L765,1458L759,1465L752,1465L745,1463L739,1467L733,1466L732,1456L731,1449L732,1442L714,1438Z","c-belarus":"M1419,956L1414,951L1411,941L1409,934L1410,928L1408,922L1410,916L1410,910L1411,903L1415,896L1421,891L1420,882L1419,876L1421,870L1421,857L1425,846L1429,842L1425,828L1423,820L1418,814L1408,811L1401,802L1397,797L1389,795L1375,788L1360,784L1358,778L1355,771L1360,756L1369,745L1387,718L1400,707L1413,699L1438,692L1458,679L1464,672L1466,662L1465,655L1464,626L1463,618L1465,612L1464,603L1464,597L1457,588L1456,579L1460,573L1462,564L1457,559L1453,552L1450,545L1445,535L1439,512L1436,505L1429,491L1416,453L1413,437L1413,422L1409,417L1406,399L1405,393L1402,382L1401,375L1420,384L1432,381L1441,380L1447,378L1463,373L1472,376L1484,377L1497,371L1507,372L1511,376L1514,383L1523,386L1533,387L1538,384L1555,370L1563,366L1572,364L1579,367L1594,367L1598,362L1598,355L1595,347L1592,338L1598,334L1598,328L1604,325L1610,324L1618,325L1629,329L1636,328L1642,324L1648,318L1654,301L1668,301L1680,300L1689,290L1695,289L1707,305L1699,307L1703,313L1698,316L1701,325L1718,329L1725,325L1732,325L1738,322L1739,308L1741,302L1737,295L1731,292L1729,285L1715,287L1708,287L1703,283L1703,277L1713,264L1716,254L1716,243L1720,235L1729,230L1734,224L1734,214L1731,206L1730,198L1732,191L1731,176L1733,170L1739,167L1739,158L1740,151L1747,146L1751,140L1759,132L1767,134L1788,130L1795,125L1800,118L1806,107L1807,96L1812,87L1818,85L1834,89L1840,85L1858,91L1864,87L1865,80L1866,74L1870,68L1876,63L1886,61L1891,54L1886,48L1862,44L1853,46L1841,43L1840,35L1844,29L1846,17L1853,10L1850,2L1854,-8L1861,-16L1862,-28L1862,-34L1864,-45L1871,-46L1879,-44L1894,-50L1906,-67L1914,-76L1937,-81L1942,-80L1955,-71L1962,-70L1969,-76L1976,-76L1985,-72L2004,-70L2010,-74L2012,-91L2016,-102L2030,-110L2035,-118L2040,-128L2050,-136L2054,-142L2059,-147L2065,-148L2072,-150L2078,-150L2084,-150L2093,-150L2103,-140L2108,-134L2114,-130L2122,-139L2148,-144L2156,-142L2162,-136L2168,-129L2170,-121L2172,-110L2188,-104L2192,-111L2204,-118L2213,-123L2221,-126L2229,-125L2237,-123L2245,-118L2272,-109L2277,-105L2281,-100L2276,-95L2272,-89L2271,-81L2268,-73L2268,-64L2277,-54L2284,-45L2291,-44L2303,-57L2317,-65L2331,-63L2341,-75L2350,-82L2362,-83L2379,-77L2390,-84L2401,-81L2433,-70L2433,-63L2448,-55L2451,-49L2450,-43L2455,-38L2464,-38L2469,-31L2473,-22L2482,-24L2489,-26L2495,-24L2498,-19L2500,-8L2497,0L2495,8L2495,16L2500,22L2497,30L2489,36L2484,42L2481,51L2485,57L2492,62L2495,71L2504,79L2505,85L2508,92L2508,99L2512,110L2508,115L2502,114L2499,121L2502,126L2497,133L2488,135L2486,143L2486,149L2480,157L2477,168L2480,173L2486,175L2508,191L2511,199L2527,200L2530,206L2536,211L2532,220L2524,231L2521,242L2536,248L2543,252L2548,270L2552,275L2555,281L2556,294L2558,301L2582,322L2590,327L2597,329L2610,335L2619,337L2623,342L2626,348L2632,346L2637,362L2635,369L2631,388L2629,394L2623,404L2628,410L2640,414L2672,406L2684,412L2702,417L2708,421L2712,427L2721,428L2728,430L2731,436L2719,446L2719,454L2720,460L2726,469L2738,475L2744,482L2751,481L2754,487L2761,489L2766,495L2763,512L2766,520L2758,521L2745,522L2743,528L2734,529L2727,528L2730,534L2727,543L2722,551L2716,555L2706,561L2703,566L2691,570L2689,576L2682,577L2677,581L2661,576L2653,578L2646,578L2638,574L2631,574L2627,569L2625,560L2621,554L2614,554L2602,550L2590,553L2580,552L2573,552L2568,556L2565,568L2565,576L2560,581L2551,593L2559,606L2565,622L2573,631L2582,636L2588,641L2591,648L2596,656L2596,666L2582,676L2590,689L2595,698L2602,706L2596,710L2593,717L2598,724L2598,730L2598,737L2597,744L2601,751L2600,758L2597,764L2600,772L2605,776L2612,778L2612,785L2612,792L2622,801L2624,809L2624,816L2608,817L2581,812L2568,812L2556,816L2551,825L2545,831L2535,824L2526,821L2505,822L2500,826L2499,832L2504,838L2499,842L2494,846L2489,852L2482,854L2481,862L2474,864L2472,870L2468,875L2463,881L2463,890L2457,895L2459,901L2457,908L2450,911L2447,920L2446,927L2440,935L2444,940L2442,947L2450,950L2448,956L2450,964L2455,970L2450,974L2455,979L2457,988L2458,999L2454,1004L2449,1010L2446,1022L2439,1018L2432,1017L2427,1010L2420,1009L2412,1001L2412,993L2412,987L2402,978L2394,968L2386,964L2365,964L2353,970L2347,968L2342,974L2325,974L2322,968L2317,962L2310,962L2304,966L2300,972L2292,974L2287,984L2282,987L2276,985L2268,990L2260,990L2257,981L2252,972L2250,962L2249,955L2242,944L2240,935L2234,930L2226,929L2220,933L2216,940L2209,945L2200,945L2191,948L2186,952L2182,958L2179,964L2179,977L2176,984L2173,977L2166,976L2161,969L2159,955L2157,947L2140,943L2132,944L2125,949L2120,954L2115,944L2108,937L2105,931L2102,924L2096,925L2090,933L2085,942L2079,946L2064,946L2058,944L2050,934L2043,933L2039,940L2038,947L2038,956L2030,967L2021,966L2023,950L2024,944L2020,937L2012,937L1996,930L1988,932L1984,936L1978,938L1969,937L1963,939L1959,933L1962,924L1954,923L1947,916L1947,910L1947,901L1937,897L1923,897L1908,902L1899,900L1871,888L1838,886L1834,880L1798,874L1784,864L1770,863L1738,857L1726,860L1706,859L1677,859L1652,852L1645,852L1639,854L1625,861L1584,868L1572,866L1535,869L1529,873L1523,881L1517,902L1513,908L1496,919L1474,939L1468,940L1460,931L1454,929L1440,925L1422,929L1417,935L1422,950L1422,956Z","c-moldova":"M1864,1738L1865,1732L1872,1726L1878,1725L1881,1730L1887,1731L1889,1722L1888,1714L1894,1711L1897,1706L1907,1712L1912,1716L1919,1713L1926,1714L1924,1706L1931,1707L1946,1713L1957,1710L1965,1698L1971,1695L1978,1700L1991,1692L1995,1686L2001,1686L2006,1683L2010,1690L2031,1691L2037,1694L2046,1702L2051,1709L2057,1718L2063,1721L2076,1723L2082,1727L2080,1741L2088,1742L2095,1738L2096,1746L2104,1749L2109,1745L2119,1742L2123,1749L2120,1756L2116,1761L2115,1768L2122,1766L2126,1760L2133,1764L2130,1771L2134,1780L2139,1785L2141,1778L2145,1764L2153,1763L2166,1769L2177,1769L2186,1773L2188,1780L2190,1786L2191,1793L2195,1798L2198,1806L2203,1811L2208,1816L2219,1817L2225,1807L2232,1805L2238,1810L2240,1823L2244,1828L2249,1830L2248,1838L2244,1844L2242,1851L2249,1854L2249,1862L2245,1868L2244,1875L2244,1884L2243,1893L2239,1900L2235,1906L2234,1912L2235,1922L2239,1932L2243,1937L2248,1932L2253,1938L2258,1944L2262,1951L2269,1955L2270,1962L2272,1970L2279,1973L2284,1969L2286,1962L2293,1959L2298,1962L2302,1972L2300,1982L2296,1989L2297,2001L2296,2008L2291,2012L2292,2024L2297,2018L2304,2022L2305,2029L2302,2035L2299,2046L2298,2053L2304,2056L2309,2061L2316,2062L2321,2065L2324,2072L2332,2075L2340,2075L2346,2080L2349,2086L2353,2093L2356,2100L2357,2106L2355,2121L2354,2128L2356,2139L2355,2146L2349,2147L2351,2155L2358,2159L2364,2162L2367,2167L2372,2175L2379,2176L2380,2186L2376,2190L2369,2192L2352,2190L2341,2198L2335,2195L2335,2189L2331,2179L2323,2171L2320,2177L2313,2178L2312,2186L2310,2192L2302,2192L2298,2183L2289,2179L2286,2172L2288,2166L2280,2166L2271,2180L2267,2176L2263,2168L2258,2172L2259,2179L2257,2185L2249,2192L2243,2189L2246,2183L2246,2160L2243,2151L2227,2159L2219,2163L2208,2171L2205,2176L2204,2183L2205,2192L2208,2203L2207,2211L2206,2218L2214,2227L2218,2236L2213,2248L2208,2255L2207,2264L2210,2275L2206,2282L2180,2289L2176,2295L2178,2307L2178,2316L2172,2323L2167,2326L2167,2333L2153,2337L2152,2343L2147,2350L2139,2359L2142,2365L2145,2371L2146,2378L2144,2383L2143,2395L2130,2399L2119,2396L2108,2395L2100,2402L2098,2408L2092,2401L2092,2393L2089,2386L2077,2378L2082,2372L2091,2369L2092,2361L2091,2337L2087,2329L2085,2322L2084,2315L2086,2307L2087,2300L2084,2292L2081,2280L2082,2266L2084,2257L2087,2247L2089,2236L2084,2226L2088,2221L2089,2215L2095,2211L2097,2205L2096,2198L2099,2187L2102,2180L2105,2168L2101,2161L2101,2150L2102,2143L2104,2137L2104,2129L2103,2121L2095,2102L2088,2086L2086,2080L2087,2073L2085,2065L2084,2056L2080,2047L2074,2036L2066,2032L2059,2029L2053,2020L2048,2015L2046,2009L2039,2006L2039,1999L2037,1991L2033,1986L2032,1980L2029,1974L2022,1970L2016,1967L2009,1954L2006,1943L2005,1935L2004,1928L1995,1925L1989,1918L1988,1912L1984,1906L1979,1898L1975,1894L1965,1880L1962,1874L1964,1868L1963,1860L1958,1854L1955,1846L1957,1839L1952,1836L1952,1828L1946,1821L1947,1815L1942,1810L1945,1804L1940,1800L1934,1799L1937,1792L1929,1786L1926,1776L1926,1770L1920,1768L1915,1764L1920,1760L1914,1755L1907,1756L1905,1750L1899,1743L1894,1739L1886,1739L1881,1735L1874,1734L1864,1738Z","c-lithuania":"M1861,-40L1862,-28L1862,-22L1858,-12L1851,-4L1853,7L1848,14L1845,26L1840,35L1839,42L1850,46L1862,44L1886,48L1891,54L1886,61L1876,63L1870,68L1866,74L1865,80L1864,87L1858,91L1842,85L1837,89L1818,85L1812,87L1807,93L1807,102L1800,118L1795,125L1788,130L1770,134L1762,132L1754,135L1750,142L1744,149L1739,156L1740,163L1737,168L1732,173L1732,188L1730,196L1731,206L1734,214L1734,224L1729,230L1720,235L1716,243L1716,249L1715,259L1706,272L1703,283L1708,287L1715,287L1723,282L1729,287L1733,292L1738,298L1741,303L1739,319L1734,325L1727,324L1721,329L1705,327L1698,322L1702,315L1699,309L1705,305L1696,291L1689,290L1683,298L1668,301L1658,298L1650,313L1642,324L1636,328L1629,329L1618,325L1610,324L1604,325L1598,328L1598,334L1592,338L1595,347L1598,355L1598,362L1594,367L1584,369L1577,362L1563,366L1555,370L1538,384L1533,387L1523,386L1515,386L1511,376L1507,372L1497,371L1488,376L1474,377L1467,374L1452,379L1446,377L1432,381L1424,384L1406,376L1402,371L1397,365L1400,358L1402,349L1400,338L1398,328L1393,319L1387,317L1383,310L1376,303L1364,299L1358,296L1349,288L1340,289L1334,286L1336,278L1330,276L1325,270L1319,269L1308,264L1302,265L1298,272L1286,260L1282,251L1281,242L1282,223L1286,212L1286,205L1285,197L1289,191L1292,184L1298,178L1305,173L1307,165L1304,151L1301,145L1292,142L1289,134L1278,131L1272,122L1269,111L1266,105L1246,106L1222,103L1202,107L1196,113L1189,112L1184,105L1184,99L1174,101L1168,98L1160,96L1155,91L1144,89L1140,84L1129,76L1123,74L1108,73L1103,69L1094,54L1086,51L1073,60L1073,54L1077,49L1074,42L1072,31L1062,39L1067,24L1071,14L1068,4L1067,-3L1063,-9L1063,-16L1057,-34L1056,-43L1048,-55L1044,-65L1040,-90L1040,-100L1042,-106L1042,-129L1042,-138L1056,-139L1062,-140L1065,-150L1072,-150L1082,-150L1094,-150L1116,-150L1135,-150L1176,-150L1196,-150L1202,-150L1210,-150L1257,-150L1266,-150L1278,-150L1303,-150L1313,-150L1323,-150L1332,-150L1339,-150L1346,-150L1354,-150L1372,-150L1385,-150L1400,-150L1415,-150L1430,-150L1436,-150L1451,-150L1458,-150L1474,-150L1488,-150L1498,-150L1520,-150L1529,-150L1538,-150L1548,-150L1557,-150L1572,-150L1583,-150L1596,-150L1603,-150L1612,-150L1619,-150L1627,-150L1636,-150L1676,-150L1692,-150L1702,-150L1710,-150L1721,-150L1726,-144L1738,-134L1742,-129L1754,-118L1767,-110L1776,-105L1784,-95L1799,-84L1803,-78L1806,-71L1814,-58L1823,-52L1844,-43L1852,-41L1861,-40ZM1032,54L1023,52L1034,34L1040,20L1046,1L1048,-20L1048,-27L1048,-47L1046,-54L1051,-48L1053,-38L1054,-16L1052,-10L1051,3L1048,10L1049,17L1044,26L1041,36L1032,50Z","c-romania":"M1311,1813L1317,1810L1317,1802L1323,1800L1330,1804L1339,1798L1344,1783L1350,1776L1364,1781L1372,1791L1379,1798L1383,1802L1397,1807L1403,1803L1413,1799L1425,1801L1431,1803L1445,1803L1455,1812L1474,1809L1481,1811L1488,1813L1497,1821L1508,1825L1521,1819L1529,1819L1534,1813L1540,1811L1549,1814L1557,1813L1567,1819L1573,1825L1574,1832L1578,1838L1595,1847L1598,1852L1603,1862L1607,1868L1614,1868L1628,1866L1637,1862L1643,1855L1657,1829L1664,1824L1736,1816L1746,1811L1754,1810L1761,1808L1768,1808L1777,1805L1788,1805L1798,1802L1803,1791L1808,1785L1813,1778L1815,1770L1816,1762L1818,1749L1824,1749L1831,1746L1838,1745L1860,1740L1871,1734L1878,1737L1886,1739L1894,1739L1899,1743L1905,1750L1907,1756L1911,1751L1915,1758L1920,1762L1920,1768L1926,1770L1926,1776L1929,1786L1937,1792L1934,1798L1940,1800L1945,1804L1942,1810L1947,1815L1946,1821L1952,1826L1952,1835L1957,1839L1953,1845L1956,1850L1959,1856L1963,1862L1961,1868L1965,1880L1975,1894L1979,1898L1984,1902L1986,1910L1989,1918L1993,1924L1999,1926L2005,1930L2004,1937L2005,1950L2013,1963L2020,1968L2027,1972L2032,1980L2033,1986L2037,1991L2039,1997L2039,2006L2046,2009L2048,2015L2053,2020L2059,2025L2066,2032L2072,2032L2078,2043L2084,2056L2082,2063L2085,2071L2086,2078L2088,2086L2095,2098L2103,2121L2104,2127L2105,2134L2102,2140L2103,2147L2100,2159L2103,2165L2105,2175L2103,2184L2099,2194L2097,2202L2095,2211L2089,2215L2088,2221L2084,2226L2088,2232L2088,2242L2084,2256L2082,2261L2081,2274L2084,2292L2087,2300L2086,2307L2085,2314L2085,2322L2087,2329L2090,2335L2092,2361L2093,2368L2086,2369L2079,2375L2086,2383L2091,2391L2092,2401L2098,2409L2107,2414L2110,2424L2114,2437L2117,2442L2123,2446L2128,2449L2141,2450L2153,2450L2173,2450L2183,2450L2185,2443L2195,2446L2203,2450L2209,2450L2211,2443L2219,2441L2226,2433L2232,2431L2238,2427L2244,2422L2249,2418L2257,2419L2262,2414L2268,2416L2280,2417L2300,2425L2307,2432L2312,2437L2314,2445L2308,2450L2314,2450L2308,2450L2300,2450L2293,2450L2263,2450L2244,2450L2224,2450L2216,2450L2224,2450L2234,2450L2227,2450L2218,2450L2212,2450L2205,2450L2198,2450L2209,2450L2198,2450L2188,2450L2197,2450L2203,2450L2211,2450L2205,2450L2194,2450L2184,2450L2177,2450L2183,2450L2192,2450L2200,2450L2193,2450L2186,2450L2172,2450L2164,2450L2158,2450L2132,2450L2101,2450L2070,2450L2058,2450L2047,2450L2037,2450L2027,2450L2020,2450L2014,2450L2005,2450L1977,2450L1971,2450L1963,2450L1954,2450L1935,2450L1924,2450L1903,2450L1889,2450L1878,2450L1871,2450L1863,2450L1834,2450L1822,2450L1807,2450L1795,2450L1784,2450L1763,2450L1753,2450L1744,2450L1734,2450L1724,2450L1716,2450L1707,2450L1697,2450L1688,2450L1678,2450L1668,2450L1656,2450L1637,2450L1620,2450L1588,2450L1581,2450L1575,2450L1551,2450L1541,2450L1532,2450L1500,2450L1448,2450L1439,2450L1423,2450L1417,2450L1401,2450L1378,2450L1364,2450L1353,2450L1337,2450L1317,2450L1309,2450L1315,2450L1324,2450L1333,2450L1321,2450L1284,2450L1273,2450L1263,2450L1256,2450L1263,2450L1270,2450L1276,2450L1285,2450L1291,2450L1285,2450L1273,2450L1263,2450L1253,2450L1244,2450L1238,2450L1229,2450L1209,2450L1200,2450L1193,2450L1187,2450L1176,2450L1163,2450L1152,2450L1146,2450L1138,2450L1131,2450L1124,2450L1116,2450L1107,2450L1094,2450L1087,2450L1101,2450L1111,2450L1101,2450L1094,2450L1086,2450L1093,2450L1099,2450L1107,2450L1098,2450L1078,2450L1072,2450L1064,2450L1057,2449L1050,2450L1044,2448L1036,2443L1029,2438L1023,2429L1014,2420L1009,2412L1004,2408L998,2402L1004,2396L1002,2387L998,2379L999,2369L1001,2362L1001,2346L1002,2339L995,2341L989,2343L983,2333L981,2324L976,2318L971,2307L965,2303L957,2301L949,2293L941,2288L936,2282L933,2271L922,2254L928,2245L951,2245L955,2238L961,2240L967,2242L972,2247L984,2247L989,2242L990,2236L996,2234L994,2227L1001,2217L1007,2215L1014,2218L1020,2217L1028,2220L1035,2220L1041,2224L1048,2214L1055,2212L1058,2204L1059,2193L1063,2185L1072,2183L1074,2175L1070,2166L1072,2157L1077,2149L1078,2140L1081,2132L1089,2132L1096,2125L1098,2118L1105,2116L1108,2106L1103,2102L1108,2087L1113,2080L1120,2076L1121,2068L1121,2062L1129,2055L1132,2042L1128,2037L1133,2027L1144,2018L1148,2013L1149,2006L1154,2001L1156,1993L1156,1986L1158,1980L1160,1971L1167,1959L1172,1954L1179,1952L1182,1946L1182,1937L1180,1929L1180,1922L1183,1916L1187,1911L1196,1903L1204,1901L1207,1896L1210,1887L1212,1880L1216,1875L1220,1868L1227,1864L1236,1864L1242,1862L1244,1852L1259,1858L1271,1858L1280,1851L1284,1845L1292,1842L1293,1835L1297,1828L1302,1826L1309,1816Z","c-slovakia":"M1261,1543L1259,1552L1258,1562L1250,1564L1244,1577L1242,1586L1238,1592L1235,1599L1236,1610L1233,1616L1230,1622L1229,1632L1225,1640L1217,1644L1215,1649L1204,1659L1202,1668L1204,1678L1202,1686L1201,1703L1196,1709L1184,1709L1171,1710L1164,1714L1158,1715L1150,1719L1141,1718L1134,1711L1125,1697L1123,1684L1113,1681L1108,1674L1104,1669L1097,1665L1089,1668L1081,1669L1076,1675L1071,1678L1062,1677L1050,1682L1044,1678L1035,1676L1026,1676L1018,1670L1011,1669L1007,1665L971,1671L962,1672L957,1678L957,1684L950,1694L947,1701L941,1720L938,1727L934,1733L930,1738L923,1737L914,1740L907,1740L902,1749L898,1753L892,1757L886,1760L875,1769L869,1769L863,1764L854,1764L852,1758L850,1752L840,1753L835,1748L817,1749L813,1755L811,1764L810,1771L801,1779L782,1779L773,1785L753,1783L744,1785L738,1784L728,1787L714,1790L708,1802L700,1807L700,1822L701,1831L706,1836L711,1840L704,1842L697,1851L689,1854L678,1850L672,1850L642,1854L631,1858L607,1857L573,1860L565,1860L552,1856L543,1851L537,1843L532,1840L525,1839L520,1831L514,1828L497,1804L483,1799L475,1796L465,1799L456,1794L454,1787L452,1781L452,1774L450,1768L444,1766L439,1757L438,1748L436,1739L434,1733L430,1729L428,1723L427,1717L421,1714L420,1708L422,1693L424,1687L428,1681L432,1673L436,1666L434,1655L437,1647L447,1621L450,1614L455,1610L458,1602L467,1594L474,1592L481,1594L498,1603L506,1599L516,1604L550,1593L558,1581L564,1578L570,1579L574,1573L575,1565L578,1558L584,1555L592,1555L601,1549L605,1543L606,1527L606,1519L608,1511L610,1504L614,1498L618,1494L639,1485L644,1481L648,1466L655,1465L662,1457L668,1453L669,1446L679,1443L685,1441L694,1445L705,1439L714,1438L728,1439L731,1446L732,1452L732,1464L739,1467L745,1463L752,1465L759,1465L765,1462L766,1454L771,1442L775,1436L785,1434L802,1417L808,1421L813,1425L817,1442L820,1449L826,1454L832,1454L831,1461L839,1466L846,1467L852,1466L854,1474L855,1486L856,1492L849,1507L851,1514L861,1516L866,1512L872,1507L881,1508L889,1516L896,1516L899,1502L902,1494L905,1487L911,1485L917,1480L928,1479L931,1471L935,1466L941,1468L948,1468L963,1470L970,1470L974,1465L980,1464L988,1464L1001,1481L1007,1483L1014,1485L1019,1490L1025,1489L1033,1479L1039,1475L1046,1472L1040,1466L1042,1460L1050,1458L1057,1463L1065,1461L1070,1454L1083,1457L1097,1462L1105,1460L1112,1459L1123,1458L1130,1462L1136,1464L1144,1474L1149,1472L1155,1469L1163,1477L1171,1481L1176,1486L1181,1493L1182,1502L1183,1509L1198,1515L1205,1519L1211,1519L1212,1525L1221,1528L1229,1528L1239,1538L1256,1540Z","c-hungary":"M1311,1813L1305,1824L1297,1828L1293,1833L1292,1841L1286,1844L1280,1851L1271,1858L1259,1858L1249,1851L1242,1862L1236,1864L1229,1863L1222,1866L1217,1874L1212,1878L1211,1885L1207,1892L1206,1899L1196,1903L1187,1911L1183,1916L1180,1922L1180,1929L1182,1937L1182,1946L1179,1952L1172,1954L1167,1959L1161,1969L1158,1980L1156,1986L1156,1993L1154,2001L1149,2006L1148,2013L1144,2018L1137,2023L1128,2035L1133,2042L1130,2054L1122,2062L1121,2068L1120,2076L1113,2080L1108,2087L1105,2096L1104,2102L1108,2106L1105,2116L1098,2118L1096,2125L1089,2132L1081,2132L1078,2140L1077,2149L1072,2157L1070,2166L1074,2175L1072,2183L1063,2185L1059,2193L1058,2204L1055,2212L1049,2213L1041,2224L1035,2220L1028,2220L1020,2217L1014,2218L1007,2215L1001,2217L995,2223L996,2232L990,2236L989,2242L984,2247L976,2249L967,2242L961,2240L955,2238L951,2245L928,2245L922,2254L914,2246L907,2247L900,2243L891,2246L885,2242L875,2241L870,2242L855,2249L843,2242L837,2238L825,2240L816,2242L810,2248L812,2254L807,2258L803,2264L797,2268L792,2273L783,2274L780,2279L773,2286L760,2284L755,2277L748,2277L746,2289L739,2289L735,2294L724,2296L718,2300L712,2302L707,2307L698,2304L690,2302L684,2306L680,2314L677,2322L669,2330L662,2330L654,2339L648,2342L642,2338L635,2339L629,2336L624,2332L609,2332L604,2335L587,2330L576,2330L571,2334L567,2328L544,2318L539,2314L538,2308L530,2295L518,2291L506,2290L497,2290L493,2284L485,2284L483,2277L482,2270L480,2263L474,2252L460,2251L450,2243L447,2237L439,2230L434,2220L428,2212L425,2205L424,2198L420,2191L415,2187L409,2185L400,2181L395,2172L389,2166L383,2164L372,2160L369,2149L364,2144L358,2135L350,2129L354,2122L355,2115L349,2113L344,2107L341,2102L339,2095L341,2088L343,2082L339,2077L322,2074L315,2075L309,2073L318,2061L324,2056L329,2052L332,2046L335,2039L343,2040L349,2039L356,2042L364,2041L362,2035L366,2029L363,2024L363,2017L370,2010L366,2004L359,2005L360,1997L356,1991L357,1982L364,1977L364,1970L360,1959L359,1945L366,1946L382,1938L388,1933L389,1922L395,1918L397,1911L393,1906L392,1899L388,1891L380,1890L370,1886L358,1883L359,1875L365,1874L370,1870L373,1864L379,1859L397,1865L400,1871L405,1877L412,1878L418,1871L423,1875L440,1873L451,1871L450,1864L450,1857L449,1848L449,1839L443,1835L450,1830L455,1823L454,1816L457,1810L465,1799L470,1795L482,1798L493,1800L513,1827L519,1830L525,1839L532,1840L537,1843L541,1849L549,1854L565,1860L573,1860L607,1857L625,1859L642,1854L672,1850L678,1850L684,1853L693,1854L701,1845L707,1842L706,1836L701,1831L700,1822L702,1812L702,1804L712,1793L728,1787L736,1785L744,1785L753,1783L771,1785L782,1779L801,1779L809,1773L811,1764L813,1755L817,1749L830,1746L838,1752L847,1751L852,1755L851,1762L859,1762L869,1769L875,1769L882,1762L891,1758L898,1753L902,1749L904,1743L911,1742L918,1736L924,1738L934,1733L938,1727L941,1720L947,1701L950,1694L955,1688L957,1682L957,1676L971,1671L1002,1663L1011,1669L1018,1670L1026,1676L1035,1676L1044,1678L1050,1682L1062,1677L1069,1677L1076,1675L1081,1669L1089,1668L1097,1665L1104,1669L1108,1674L1111,1680L1118,1681L1124,1694L1134,1711L1141,1718L1150,1719L1158,1715L1164,1714L1171,1710L1179,1710L1193,1710L1198,1707L1205,1704L1212,1700L1222,1703L1220,1710L1226,1716L1225,1725L1234,1742L1244,1743L1251,1741L1264,1757L1268,1770L1270,1776L1284,1776L1289,1773L1300,1778L1304,1783L1308,1789L1308,1796L1307,1802L1306,1808L1311,1813Z"};
+
+    function scene(id, a, b) {
+      tl.fromTo($(id), { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.001, immediateRender: false }, S(a));
+      if (b < SEG_END) tl.set($(id), { autoAlpha: 0 }, S(b));
+    }
+    function ground(kind, t) {
+      const v = kind === "paper" ? [0.32, 0.16, 0.26] : kind === "face" ? [0, 0, 0] : [1, 0.42, 0.36];
+      tl.set([$("vig"), $("dust"), $("grain")], { opacity: (i) => v[i] }, t);
+    }
+    const rise = (el, t, o) => { o = o || {}; const d = o.dur || 0.8;
+      tl.fromTo(el, { opacity: 0, y: o.y == null ? 18 : o.y }, { opacity: 1, y: 0, duration: d, ease: C(E.out, d), immediateRender: true }, t); };
+    const pop = (el, t, o) => { o = o || {}; const d = o.dur || 0.8;
+      tl.fromTo(el, { opacity: 0, scale: o.from == null ? 0.6 : o.from }, { opacity: 1, scale: 1, duration: d, ease: C(E.out, d), immediateRender: true }, t); };
+    const out = (el, t, d) => tl.to(el, { opacity: 0, duration: d || 0.2, ease: "power1.in" }, t);
+    const W = (id) => Array.from($(id).querySelectorAll(".v6-w"));
+    function el(parent, tag, attrs) { const n = document.createElementNS(NS, tag); for (const k in attrs) n.setAttribute(k, attrs[k]); parent.appendChild(n); return n; }
+    const whipN = { n: 0 };
+    function whip(a, b, t, o) {
+      o = Object.assign({ dir: 1, vertical: false, flash: false, dur: 0.32 }, o);
+      const k = ++whipN.n, ba = FX.whipDefs(defs, SEG + "-wa" + k), bb = FX.whipDefs(defs, SEG + "-wb" + k), h = o.dur / 2;
+      tl.set(a, { filter: "url(#" + SEG + "-wa" + k + ")" }, t - h - 0.01); tl.set(a, { filter: "none" }, t + 0.06);
+      tl.set(b, { filter: "url(#" + SEG + "-wb" + k + ")" }, t - 0.001); tl.set(b, { filter: "none" }, t + h + 0.02);
+      FX.whip(tl, a, b, t, { dir: o.dir, vertical: o.vertical, dur: o.dur, blurA: ba, blurB: bb });
+      if (o.flash) tl.fromTo($("flash"), { opacity: 0 }, { opacity: 0.85, duration: 0.08, yoyo: true, repeat: 1, ease: "power2.in", immediateRender: false }, t - 0.08);
+    }
+    function slide(a, b, t, o) {
+      o = Object.assign({ axis: "x", from: 1, d: 0.45 }, o);
+      const dist = (o.axis === "x" ? 1980 : 1140) * o.from;
+      tl.fromTo(b, { [o.axis]: dist, boxShadow: "0 0 80px rgba(0,0,0,0.5)" }, { [o.axis]: 0, duration: o.d, ease: C(E.inOut, o.d), immediateRender: false }, t - o.d);
+      tl.set(b, { boxShadow: "none" }, t);
+      tl.fromTo(a, { [o.axis]: 0 }, { [o.axis]: -dist * 0.12, duration: o.d, ease: E.in, immediateRender: false }, t - o.d);
+    }
+    function ink(parent, d, t, dur, o) {
+      o = o || {};
+      const p = el(parent, "path", { d: d, fill: "none", stroke: o.color || INK, "stroke-width": o.width || 6, "stroke-linecap": "round", "stroke-linejoin": "round" });
+      if (o.dash) p.setAttribute("data-dash", o.dash);
+      if (o.opacity != null) p.setAttribute("opacity", o.opacity);
+      const len = p.getTotalLength() || o.len || 1;
+      p.setAttribute("stroke-dasharray", len + " " + len); p.setAttribute("stroke-dashoffset", len);
+      tl.fromTo(p, { attr: { "stroke-dashoffset": len } }, { attr: { "stroke-dashoffset": 0 }, duration: dur, ease: o.ease || C(E.out, dur), immediateRender: true }, t);
+      return p;
+    }
+    // face-cam framing: source point (fx, fy) at screen (X, Y), scale s
+    const FACE = [1020, 330];
+    const frame = (X, Y, s) => ({ x: X - FACE[0] * s, y: Y - FACE[1] * s, scale: s });
+    function face(id, a, b, f0, f1) {
+      gsap.set($(id + "-w"), f0);
+      tl.fromTo($(id + "-w"), f0, Object.assign({}, f1, { duration: b - a, ease: "none", immediateRender: false }), S(a));
+    }
+    // face-cam label box: each line's box wipes on with its first word; words rise on their cues
+    function fcLabel(id, cues) {
+      const lines = Array.from($(id).querySelectorAll(".v6-ln"));
+      let k = 0;
+      lines.forEach((ln) => {
+        const ws = Array.from(ln.querySelectorAll(".v6-w")), bx = ln.querySelector(".bx"), ru = ln.querySelector(".rule");
+        const c0 = cues[k];
+        gsap.set(bx, { scaleX: 0 }); if (ru) gsap.set(ru, { opacity: 0 });
+        tl.fromTo(bx, { scaleX: 0 }, { scaleX: 1, duration: 0.42, ease: C(E.out, 0.42), immediateRender: true }, c0 - 0.04);
+        if (ru) tl.fromTo(ru, { opacity: 0 }, { opacity: 1, duration: 0.01, immediateRender: true }, c0);
+        ws.forEach((w) => { rise(w, cues[k], { dur: 0.45, y: 10 }); k++; });
+      });
+    }
+    function words(id, cues, o) { W(id).forEach((w, i) => rise(w, cues[i], Object.assign({ dur: 0.5, y: 14 }, o || {}))); }
+
+    FX.tintDefs(defs, SEG + "-tint-ash", "#101113", "#e8e4dc");
+    defs.setAttribute("viewBox", "0 0 1 1");
+    FX.grain($("grain"), 601);
+    FX.dust($("dust"), 602, 2);
+
+    /* ============ sc001 · 675.59–679.19 · face medium (segment opens on a fresh shot) ============ */
+    gsap.set($("sc001"), { autoAlpha: 1 });
+    scene("sc001", 675.59, 679.25);
+    ground("face", S(675.59));
+    gsap.set([$("vig"), $("dust"), $("grain")], { opacity: 0 });
+    face("sc001", 675.59, 679.25, frame(1180, 400, 1.25), frame(1175, 398, 1.28));
+    fcLabel("sc001-l", [T(677.11) - L, T(677.43) - L, T(677.83) - L]);
+
+    /* ============ sc002 · 679.19–683.27 · case file: "opposition politics" ============ */
+    scene("sc002", 678.74, 683.45);
+    slide($("sc001-shot"), $("sc002-shot"), S(679.19), { axis: "x", from: 1, d: 0.45 });
+    ground("paper", S(679.0));
+    tl.fromTo($("sc002-cam"), { scale: 1, rotation: 0 }, { scale: 1.05, rotation: 0.4, duration: 4.6, ease: "none", immediateRender: true }, S(678.74));
+    (function () {
+      // typed field: characters on 12 fps steps, "opposition" @680.95, "politics" @681.67
+      const ty = $("sc002-ty"), txt = ty.textContent; ty.textContent = "";
+      const chars = txt.split("").map((c) => { const s = document.createElement("span"); s.textContent = c; s.style.opacity = 0; ty.appendChild(s); return s; });
+      const t1 = T(680.95) - L, t2 = T(681.67) - L;
+      chars.forEach((s, i) => {
+        const t = i < 11 ? t1 + Math.floor(i * 0.045 * 12) / 12 : t2 + Math.floor((i - 11) * 0.045 * 12) / 12;
+        tl.fromTo(s, { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, t);
+      });
+      gsap.set($("sc002-hl"), { scaleX: 0 });
+      tl.fromTo($("sc002-hl"), { scaleX: 0 }, { scaleX: 1, duration: 0.6, ease: C("sine.inOut", 0.6), immediateRender: true }, S(681.95));
+    })();
+
+    /* ============ sc003 · 683.27–687.43 · face close: "Russia's security services" ============ */
+    scene("sc003", 683.27, 687.43);
+    whip($("sc002-shot"), $("sc003-shot"), S(683.27), { dir: -1 });
+    ground("face", S(683.27));
+    face("sc003", 683.27, 687.43, frame(1230, 430, 1.5), frame(1222, 432, 1.53));
+    fcLabel("sc003-l", [T(684.23) - L, T(684.79) - L, T(685.27) - L]);
+
+    /* ============ sc004 · 687.43–691.11 · Ivan's video: "helping Ukraine prepare attacks" ============ */
+    scene("sc004", 687.43, 691.11);
+    ground("night", S(687.43));
+    tl.fromTo($("sc004-cam"), { scale: 1.0 }, { scale: 1.05, duration: 3.9, ease: "none", immediateRender: true }, S(687.43));
+    words("sc004-cap", [T(688.95) - L, T(689.35) - L, T(689.75) - L, T(690.23) - L], { dur: 0.45 });
+
+    /* ============ sc005 · 691.11–697.75 · passport: out and back ============ */
+    scene("sc005", 691.11, 697.95);
+    whip($("sc004-shot"), $("sc005-shot"), S(691.11), { dir: 1, flash: true });
+    ground("paper", S(691.11));
+    tl.fromTo($("sc005-cam"), { scale: 1.0, x: 0 }, { scale: 1.06, x: -20, duration: 6.8, ease: "none", immediateRender: true }, S(691.11));
+    (function () {
+      const st = $("sc005-st");
+      const rough = FX.roughDefs ? null : null;
+      // stamp builder (our graphics — no real border-control marks, no words)
+      function stamp(x, y, rot, color, kind) {
+        const g0 = el(st, "g", { transform: "translate(" + x + " " + y + ") rotate(" + rot + ")" });
+        const g = el(g0, "g", { opacity: 0 });
+        const sw = { stroke: color, "stroke-width": 6, fill: "none" };
+        if (kind === "circle") {
+          el(g, "circle", Object.assign({ cx: 0, cy: 0, r: 118 }, sw));
+          el(g, "circle", Object.assign({ cx: 0, cy: 0, r: 96 }, sw, { "stroke-width": 3 }));
+          el(g, "path", { d: "M0 -58 L9 -18 L58 8 L58 20 L9 6 L6 38 L22 50 L22 58 L0 51 L-22 58 L-22 50 L-6 38 L-9 6 L-58 20 L-58 8 L-9 -18 Z", fill: color, transform: "rotate(45) scale(0.95)" });     // plane (top view)
+          el(g, "rect", { x: -54, y: 66, width: 108, height: 9, fill: color, opacity: 0.85 });
+        } else {
+          el(g, "rect", Object.assign({ x: -150, y: -90, width: 300, height: 180, rx: 14 }, sw));
+          el(g, "rect", Object.assign({ x: -136, y: -76, width: 272, height: 152, rx: 8 }, sw, { "stroke-width": 3 }));
+          // door + arrow: out (exit) or in (entry)
+          el(g, "rect", Object.assign({ x: -96, y: -48, width: 64, height: 96 }, sw, { "stroke-width": 5 }));
+          const ar = kind === "exit" ? "M-50 0 L70 0 M44 -24 L70 0 L44 24" : "M70 0 L-50 0 M-24 -24 L-50 0 L-24 24";
+          el(g, "path", { d: ar, stroke: color, "stroke-width": 9, fill: "none", "stroke-linecap": "round", "stroke-linejoin": "round" });
+          el(g, "rect", { x: 10, y: 44, width: 110, height: 10, fill: color });
+        }
+        g.style.mixBlendMode = "multiply";
+        return g;
+      }
+      const s1 = stamp(330, 260, -8, OX, "exit");
+      const s2 = stamp(960, 250, 10, INK, "circle");
+      const s3 = stamp(920, 520, 5, OX, "entry");
+      const thud = (g, t) => tl.fromTo(g, { opacity: 0, scale: 1.7, transformOrigin: "50% 50%" }, { opacity: 0.88, scale: 1, duration: 0.25, ease: C(E.out, 0.25), immediateRender: true }, t);
+      thud(s1, S(692.31)); thud(s2, S(693.83)); thud(s3, S(695.27));
+    })();
+    words("sc005-c1", [T(692.31) - L, T(692.63) - L], { dur: 0.4 });
+    out($("sc005-c1"), S(693.10));
+    words("sc005-c2", [T(693.35) - L, T(693.59) - L, T(693.83) - L, T(694.47) - L], { dur: 0.4 });
+    out($("sc005-c2"), S(696.15));
+    words("sc005-c3", [T(696.47) - L, T(696.87) - L, T(697.11) - L], { dur: 0.35 });
+
+    /* ============ sc006 · 697.75–699.99 · "very careful" ============ */
+    scene("sc006", 697.75, 699.99);
+    whip($("sc005-shot"), $("sc006-shot"), S(697.75), { dir: 1 });
+    ground("night", S(697.75));
+    tl.fromTo($("sc006-cam"), { scale: 1.04 }, { scale: 1.09, duration: 2.3, ease: "none", immediateRender: true }, S(697.75));
+    words("sc006-cap", [T(699.03) - L, T(699.27) - L], { dur: 0.4 });
+
+    /* ============ sc007 · 699.99–702.47 · face medium: "another explanation" ============ */
+    scene("sc007", 699.99, 702.47);
+    ground("face", S(699.99));
+    face("sc007", 699.99, 702.47, frame(1250, 400, 1.3), frame(1246, 401, 1.33));
+    fcLabel("sc007-l", [T(701.27) - L, T(701.59) - L]);
+
+    /* ============ sc008 · 702.47–706.63 · face wide + the double-agent card behind him ============ */
+    scene("sc008", 702.47, 706.63);
+    ground("face", S(702.47));
+    (function () {
+      tl.fromTo($("sc008-card"), { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.9, ease: C(E.out, 0.9), immediateRender: true }, S(702.80));
+      // "working" (703.83… for Ukraine already): left half washes azure; "Russian intelligence": mirror half turns oxblood
+      tl.fromTo($("sc008-az"), { opacity: 0 }, { opacity: 1, duration: 0.5, ease: C(E.out, 0.5), immediateRender: true }, S(703.83));
+      tl.fromTo($("sc008-split"), { opacity: 0 }, { opacity: 1, duration: 0.3, immediateRender: true }, S(704.40));
+      tl.fromTo($("sc008-crr"), { attr: { y: 500 } }, { attr: { y: 0 }, duration: 0.8, ease: C(E.inOut, 0.8), immediateRender: true }, S(704.95));
+      tl.set($("sc008-ox"), { opacity: 1 }, S(704.95));
+    })();
+    fcLabel("sc008-l", [T(704.95) - L, T(705.43) - L, T(705.99) - L]);
+
+    /* ============ sc009 · 706.63–709.99 · face close (aside) ============ */
+    scene("sc009", 706.63, 709.99);
+    ground("face", S(706.63));
+    face("sc009", 706.63, 709.99, frame(960, 440, 1.55), frame(958, 444, 1.6));
+
+    /* ============ sc010 · 709.99–714.79 · Warsaw ============ */
+    scene("sc010", 709.99, 714.85);
+    whip($("sc009-shot"), $("sc010-shot"), S(709.99), { dir: -1 });
+    ground("night", S(709.99));
+    tl.fromTo($("sc010-cam"), { scale: 1.0 }, { scale: 1.04, duration: 4.4, ease: "none", immediateRender: true }, S(709.99));
+    rise(W("sc010-cap")[0], T(712.71) - L, { dur: 0.9, y: 20 });
+    // push through the print into the map (cut on action)
+    tl.to($("sc010-cam"), { scale: 2.6, duration: 0.42, ease: E.in }, S(714.40));
+
+    /* ============ sc011 · 714.79–720.55 · map: Warsaw → Ukraine; Putin's army ============ */
+    scene("sc011", 714.79, 720.60);
+    ground("night", S(714.79));
+    (function () {
+      const cam = $("sc011-cam"), svg = $("sc011-svg");
+      const P = (lon, lat) => [(lon - 20) * 147.768 + 886, (62 - lat) * 240 - 1560];
+      const at = (px, py, s) => ({ x: 960 - px * s, y: 540 - py * s, scale: s });
+      const WA = P(21.0122, 52.2297), KY = P(30.5234, 50.4501);
+      // fills under the borders
+      const fill = (id, color, op) => el(svg, "path", { d: BORDERS[id] || "", fill: color, "fill-opacity": op, stroke: "none", opacity: 0 });
+      const ua = fill("c-ukraine", SKY, 0.42), cr = fill("c-crimea", SKY, 0.42), ru = fill("c-russia", OX, 0.5);
+      ["c-poland", "c-belarus", "c-lithuania", "c-moldova", "c-romania", "c-slovakia", "c-hungary"].forEach((k) =>
+        el(svg, "path", { d: BORDERS[k] || "", fill: "none", stroke: BONE, "stroke-width": 3, "stroke-opacity": 0.42 }));
+      el(svg, "path", { d: BORDERS["c-ukraine"] || "", fill: "none", stroke: SKY, "stroke-width": 5, "stroke-opacity": 0.95 });
+      const ruS = el(svg, "path", { d: BORDERS["c-russia"] || "", fill: "none", stroke: OXL, "stroke-width": 5, "stroke-opacity": 0.95, opacity: 0.35 });
+      // camera: Warsaw close → pull back to see Warsaw, Ukraine and Russia
+      gsap.set(cam, at(WA[0] + 200, WA[1] + 80, 1.0));
+      tl.fromTo(cam, at(WA[0] + 200, WA[1] + 80, 1.0), Object.assign(at(2160, 1050, 0.6), { duration: 2.6, ease: E.cam, immediateRender: false }), S(715.30));
+      tl.to(cam, Object.assign(at(2200, 1060, 0.62), { duration: 2.7, ease: "none" }), S(717.90));
+      // Warsaw pin + label
+      const pin = el(svg, "circle", { cx: WA[0], cy: WA[1], r: 22, fill: BONE, stroke: INK, "stroke-width": 4, opacity: 0 });
+      pop(pin, S(714.95), { dur: 0.6, from: 0.3 });
+      Object.assign($("sc011-wl").style, { left: WA[0] + 40 + "px", top: WA[1] - 22 + "px" });
+      rise($("sc011-wl"), S(715.0), { dur: 0.6, y: 8 });
+      tl.to($("sc011-wl"), { scale: 1.6, transformOrigin: "0% 50%", duration: 2.6, ease: E.cam }, S(715.30));
+      // route Warsaw → Kyiv (dashed, drawn on), volunteers travel along it
+      const c1 = [WA[0] + 520, WA[1] - 180], c2 = [KY[0] - 420, KY[1] - 260];
+      const d = "M" + WA[0] + " " + WA[1] + " C" + c1[0] + " " + c1[1] + " " + c2[0] + " " + c2[1] + " " + KY[0] + " " + KY[1];
+      const route = el(svg, "path", { d: d, fill: "none", stroke: BONE, "stroke-width": 9, "stroke-linecap": "round", "stroke-dasharray": "2 22", opacity: 0.95 });
+      const mask = el(svg, "mask", { id: SEG + "-rm" });
+      const mp = el(mask, "path", { d: d, fill: "none", stroke: "#fff", "stroke-width": 26 });
+      route.setAttribute("mask", "url(#" + SEG + "-rm)");
+      const bez = (t) => { const u = 1 - t; return [u*u*u*WA[0] + 3*u*u*t*c1[0] + 3*u*t*t*c2[0] + t*t*t*KY[0], u*u*u*WA[1] + 3*u*u*t*c1[1] + 3*u*t*t*c2[1] + t*t*t*KY[1]]; };
+      let len = 0; { let p0 = bez(0); for (let i = 1; i <= 60; i++) { const p = bez(i / 60); len += Math.hypot(p[0] - p0[0], p[1] - p0[1]); p0 = p; } }
+      mp.setAttribute("stroke-dasharray", len + " " + len);
+      tl.fromTo(mp, { attr: { "stroke-dashoffset": len } }, { attr: { "stroke-dashoffset": 0 }, duration: 1.2, ease: C(E.inOut, 1.2), immediateRender: true }, S(717.60));
+      const dots = [0, 1, 2].map(() => el(svg, "circle", { cx: WA[0], cy: WA[1], r: 15, fill: ASHL, stroke: INK, "stroke-width": 3, opacity: 0 }));
+      dots.forEach((dt, i) => {
+        const st = { p: 0 };
+        tl.set(dt, { opacity: 1 }, S(717.60) + i * 0.12);
+        tl.fromTo(st, { p: 0 }, { p: 1, duration: 1.3, ease: C(E.inOut, 1.3), immediateRender: false,
+          onUpdate: () => { const q = bez(Math.max(0, st.p - i * 0.05)); dt.setAttribute("cx", q[0].toFixed(1)); dt.setAttribute("cy", q[1].toFixed(1)); } }, S(717.60) + i * 0.12);
+      });
+      tl.fromTo([ua, cr], { opacity: 0 }, { opacity: 1, duration: 0.7, ease: C(E.out, 0.7), immediateRender: true }, S(718.23));
+      tl.fromTo(ru, { opacity: 0 }, { opacity: 1, duration: 0.7, ease: C(E.out, 0.7), immediateRender: true }, S(719.19));
+      tl.to(ruS, { opacity: 1, duration: 0.4 }, S(719.19));
+    })();
+    words("sc011-c1", [T(716.71) - L, T(717.11) - L], { dur: 0.5 });
+    out($("sc011-c1"), S(718.45));
+    words("sc011-c2", [T(718.71) - L, T(718.95) - L, T(719.19) - L, T(719.91) - L], { dur: 0.45 });
+
+    /* ============ sc012 · 720.55–722.31 · face wide ============ */
+    scene("sc012", 720.55, 722.31);
+    whip($("sc011-shot"), $("sc012-shot"), S(720.55), { dir: 1, vertical: true });
+    ground("face", S(720.55));
+    face("sc012", 720.55, 722.31, frame(1010, 362, 1.06), frame(1010, 360, 1.08));
+
+    /* ============ sc013 · 722.31–727.19 · the volunteers' road; one is a Russian double agent ============ */
+    scene("sc013", 722.31, 727.19);
+    ground("night", S(722.31));
+    (function () {
+      const row = $("sc013-row"), gms = [];
+      for (let i = 0; i < 7; i++) {
+        const d = document.createElement("div"); d.className = "v6-gm"; d.style.left = 335 + i * 190 + "px";
+        d.innerHTML = '<svg viewBox="0 0 400 480"><path fill="' + ASHL + '" d="' + GM_D + '"/></svg>';
+        row.appendChild(d); gms.push(d);
+        tl.fromTo(d, { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.5, ease: C(E.out, 0.5), immediateRender: true }, S(722.40) + i * 0.17);
+      }
+      tl.fromTo(row, { x: 30 }, { x: -30, duration: 4.9, ease: "none", immediateRender: true }, S(722.31));
+      // the 5th man: focus brackets ("Russian"), then he turns oxblood ("double agent")
+      const svg = $("sc013-svg"), gx = 335 + 4 * 190, x0 = gx - 22 - 30 + 30, y0 = 590, w = 154, h = 172;
+      const br = el(svg, "g", { opacity: 0 });
+      const k = 26;
+      [[0, 0, 1, 1], [w, 0, -1, 1], [0, h, 1, -1], [w, h, -1, -1]].forEach(([x, y, sx, sy]) =>
+        el(br, "path", { d: "M" + (x + sx * k) + " " + y + " L" + x + " " + y + " L" + x + " " + (y + sy * k), stroke: OXL, "stroke-width": 5, fill: "none" }));
+      gsap.set(br, { x: x0 - 30, y: y0 });
+      tl.fromTo(br, { opacity: 0, scale: 1.4, transformOrigin: "77px 86px" }, { opacity: 1, scale: 1, duration: 0.4, ease: C(E.out, 0.4), immediateRender: true }, S(725.40));
+      tl.fromTo(br, { x: x0 - 30 }, { x: x0 - 30 - 46, duration: 1.8, ease: "none", immediateRender: false }, S(725.40));
+      const p = gms[4].querySelector("path");
+      tl.to(p, { attr: { fill: OX }, duration: 0.25, ease: "steps(3)" }, S(725.99));
+      tl.to(gms.filter((g, i) => i !== 4), { opacity: 0.45, duration: 0.4 }, S(725.99));
+    })();
+    words("sc013-cap", [T(725.35) - L, T(725.43) - L, T(725.99) - L, T(726.47) - L], { dur: 0.4 });
+
+    /* ============ sc014 · 727.19–730.95 · "Ivan's Ukrainian handlers" ============ */
+    scene("sc014", 727.19, 730.95);
+    whip($("sc013-shot"), $("sc014-shot"), S(727.19), { dir: -1, flash: true });
+    ground("night", S(727.19));
+    tl.fromTo($("sc014-cam"), { scale: 1.02 }, { scale: 1.08, duration: 3.8, ease: "none", immediateRender: true }, S(727.19));
+    words("sc014-cap", [T(729.11) - L, T(729.75) - L, T(730.31) - L], { dur: 0.4 });
+
+    /* ============ sc015 · 730.95–736.34 · face medium: "could not rule it out" ============ */
+    scene("sc015", 730.95, 736.34);
+    ground("face", S(730.95));
+    face("sc015", 730.95, 736.34, frame(1220, 410, 1.35), frame(1210, 414, 1.41));
+    fcLabel("sc015-l", [T(735.11) - L, T(735.27) - L, T(735.43) - L, T(735.67) - L, T(735.83) - L]);
+
+    /* ============ sc016 · 736.34–739.86 · Marcin Mamoń ============ */
+    scene("sc016", 736.34, 739.86);
+    whip($("sc015-shot"), $("sc016-shot"), S(736.34), { dir: 1 });
+    ground("night", S(736.34));
+    tl.fromTo($("sc016-cam"), { scale: 1.0 }, { scale: 1.07, duration: 3.6, ease: "none", immediateRender: true }, S(736.34));
+    gsap.set($("sc016-rule"), { scaleX: 0 });
+    tl.fromTo($("sc016-rule"), { scaleX: 0 }, { scaleX: 1, duration: 0.6, ease: C(E.out, 0.6), immediateRender: true }, T(737.22) - L - 0.05);
+    words("sc016-nm", [T(737.22) - L, T(737.22) - L + 0.12], { dur: 0.5 });
+
+    /* ============ phone builder (sc017 / sc019) ============ */
+    const TICK = '<svg viewBox="0 0 26 18"><path d="M3 9 L10 15 L23 3" stroke="#1b1d20" stroke-width="3" fill="none" stroke-linecap="round"/></svg>';
+    function bubble(col, cls, top, w) {
+      const b = document.createElement("div"); b.className = "v6-bub " + cls; b.style.top = top + "px";
+      if (w) b.style.width = w + "px";
+      b.innerHTML = '<div class="l1"></div><div class="l2"></div>' + (cls === "out" ? TICK : "");
+      col.appendChild(b); return b;
+    }
+    function divider(col, top) { const d = document.createElement("div"); d.className = "v6-div"; d.style.top = top + "px"; d.innerHTML = '<div class="l1"></div>'; col.appendChild(d); return d; }
+    // layout of the unanswered thread (top px inside the column; column scrolls up as items arrive)
+    const THREAD = [["bub", 0], ["bub", 1], ["bub", 2], ["div", 3], ["bub", 4], ["bub", 5], ["div", 6], ["bub", 7], ["bub", 8]];
+    function thread(col, n) {
+      // the earlier conversation (Ivan in ash-light on the left, Mamoń's in grey on the right) sits above the silence
+      bubble(col, "in", 258, 250); bubble(col, "out", 372, 220); bubble(col, "in", 486, 280);
+      const items = []; let y = 600;
+      THREAD.slice(0, n).forEach(([k], i) => {
+        const it = k === "bub" ? bubble(col, "out", y, [270, 210, 250, 0, 230, 270, 0, 200, 250][i]) : divider(col, y + 20);
+        items.push(it); y += k === "bub" ? 114 : 80;
+      });
+      return items;
+    }
+
+    /* ============ sc017 · 739.86–746.34 · messages unanswered: weeks… months… still nothing ============ */
+    scene("sc017", 739.86, 746.34);
+    ground("night", S(739.86));
+    (function () {
+      const col = $("sc017-col"), items = thread(col, 9);
+      tl.fromTo($("sc017-ph"), { y: 120, rotation: -2 }, { y: 0, rotation: 0, duration: 0.9, ease: C(E.out, 0.9), immediateRender: true }, S(739.86));
+      const times = [739.86, 739.86, 740.50, 742.95, 743.20, 743.80, 744.55, 744.80, 745.50];
+      let scroll = 0;
+      items.forEach((it, i) => {
+        if (i < 2) { gsap.set(it, { opacity: 1 }); return; }
+        tl.fromTo(it, { opacity: 0, scale: 0.7, transformOrigin: "100% 100%" }, { opacity: 1, scale: 1, duration: 0.3, ease: C(E.out, 0.3), immediateRender: true }, S(times[i]));
+      });
+      // scroll: keep the newest item above the bottom edge
+      [[740.50, -114], [742.95, -194], [743.20, -308], [743.80, -422], [744.55, -502], [744.80, -616], [745.50, -730]].forEach(([t, y]) =>
+        tl.to(col, { y: y, duration: 0.3, ease: C(E.inOut, 0.3) }, S(t)));
+    })();
+    words("sc017-c1", [T(740.98) - L, T(741.30) - L, T(741.78) - L, T(741.94) - L], { dur: 0.45 });
+    out($("sc017-c1"), S(742.62));
+    words("sc017-c2", [T(742.82) - L, T(742.98) - L, T(743.22) - L], { dur: 0.4 });
+    out($("sc017-c2"), S(743.90));
+    words("sc017-c3", [T(744.10) - L, T(744.26) - L, T(744.50) - L], { dur: 0.4 });
+    out($("sc017-c3"), S(745.00));
+    words("sc017-c4", [T(745.22) - L, T(745.62) - L], { dur: 0.45 });
+
+    /* ============ sc018 · 746.34–750.18 · face medium: "finally caught him" ============ */
+    scene("sc018", 746.34, 750.18);
+    ground("face", S(746.34));
+    face("sc018", 746.34, 750.18, frame(1120, 395, 1.25), frame(1124, 393, 1.28));
+    fcLabel("sc018-l", [T(748.90) - L, T(749.30) - L, T(749.70) - L]);
+
+    /* ============ sc019 · 750.18–754.10 · Ivan got back in touch ============ */
+    scene("sc019", 750.18, 754.10);
+    ground("night", S(750.18));
+    (function () {
+      const col = $("sc019-col"); thread(col, 9).forEach((it) => gsap.set(it, { opacity: 1 }));
+      gsap.set(col, { y: -730 });
+      tl.fromTo($("sc019-ph"), { y: 40 }, { y: 0, duration: 0.8, ease: C(E.out, 0.8), immediateRender: true }, S(750.18));
+      // typing dots → Ivan's reply (ash, from the left)
+      const ty = document.createElement("div"); ty.className = "v6-typing"; ty.style.top = 600 + 114 * 7 + 80 * 2 + 10 + "px";
+      ty.innerHTML = "<i style='left:26px'></i><i style='left:54px'></i><i style='left:82px'></i>"; col.appendChild(ty);
+      const rp = bubble(col, "in", 600 + 114 * 7 + 80 * 2 + 10, 290); gsap.set(rp, { opacity: 0 });
+      tl.to(col, { y: -730 - 120, duration: 0.3, ease: C(E.inOut, 0.3) }, S(750.80));
+      tl.fromTo(ty, { opacity: 0 }, { opacity: 1, duration: 0.15, immediateRender: true }, S(750.80));
+      Array.from(ty.querySelectorAll("i")).forEach((d, i) => tl.fromTo(d, { y: 0 }, { y: -8, duration: 0.17, yoyo: true, repeat: 1, ease: "sine.inOut", immediateRender: false }, S(750.85) + i * 0.12));
+      tl.set(ty, { opacity: 0 }, S(751.54));
+      tl.fromTo(rp, { opacity: 0, scale: 0.6, transformOrigin: "0% 100%" }, { opacity: 1, scale: 1, duration: 0.4, ease: C(E.out, 0.4), immediateRender: true }, S(751.54));
+      tl.fromTo(rp, { boxShadow: "0 0 0px rgba(240,237,230,0)" }, { boxShadow: "0 0 34px rgba(240,237,230,0.55)", duration: 0.6, ease: "sine.out", immediateRender: false }, S(751.60));
+    })();
+    words("sc019-c1", [T(750.90) - L, T(751.54) - L, T(751.78) - L, T(752.02) - L, T(752.18) - L], { dur: 0.45 });
+
+    /* ============ sc020 · 754.10–758.58 · driving: "the Russian authorities" ============ */
+    scene("sc020", 754.10, 758.58);
+    whip($("sc019-shot"), $("sc020-shot"), S(754.10), { dir: -1 });
+    ground("night", S(754.10));
+    tl.fromTo($("sc020-cam"), { scale: 1.03 }, { scale: 1.1, duration: 4.5, ease: "none", immediateRender: true }, S(754.10));
+    words("sc020-cap", [T(756.74) - L, T(756.82) - L, T(757.22) - L], { dur: 0.45 });
+
+    /* ============ sc021 · 758.58–762.34 · stopped → the officers → inspect his car ============ */
+    scene("sc021", 758.58, 762.34);
+    ground("night", S(758.58));
+    (function () {
+      tl.set($("sc021-a"), { autoAlpha: 0 }, S(760.26));
+      tl.set($("sc021-b"), { autoAlpha: 1 }, S(760.26));
+      tl.fromTo($("sc021-cam"), { scale: 1.06 }, { scale: 1.13, duration: 2.1, ease: "none", immediateRender: true }, S(760.26));
+      const svg = $("sc021-svg"), k = 30;
+      function brackets(x, y, w, h) {
+        const g = el(svg, "g", { opacity: 0 });
+        [[0, 0, 1, 1], [w, 0, -1, 1], [0, h, 1, -1], [w, h, -1, -1]].forEach(([a, b, sx, sy]) =>
+          el(g, "path", { d: "M" + (x + a + sx * k) + " " + (y + b) + " L" + (x + a) + " " + (y + b) + " L" + (x + a) + " " + (y + b + sy * k), stroke: OXL, "stroke-width": 6, fill: "none" }));
+        return g;
+      }
+      // photo coordinates: image top −330 → officer ≈ x 490–610, y 270–640 ; car ≈ x 690–1650, y 350–760
+      const b1 = brackets(470, 270, 160, 380), b2 = brackets(680, 370, 990, 400);
+      tl.fromTo(b1, { opacity: 0, scale: 1.3, transformOrigin: "550px 460px" }, { opacity: 1, scale: 1, duration: 0.4, ease: C(E.out, 0.4), immediateRender: true }, S(760.42));
+      tl.to(b1, { opacity: 0, duration: 0.15 }, S(761.05));
+      tl.fromTo(b2, { opacity: 0, scale: 1.12, transformOrigin: "1175px 570px" }, { opacity: 1, scale: 1, duration: 0.45, ease: C(E.out, 0.45), immediateRender: true }, S(761.20));
+    })();
+    words("sc021-cap", [T(761.46) - L, T(761.78) - L, T(761.94) - L], { dur: 0.4 });
+
+    /* ============ sc022 · 762.34–766.18 · face close: "one problem" ============ */
+    scene("sc022", 762.34, 766.18);
+    whip($("sc021-shot"), $("sc022-shot"), S(762.34), { dir: 1 });
+    ground("face", S(762.34));
+    face("sc022", 762.34, 766.18, frame(1230, 440, 1.55), frame(1236, 444, 1.6));
+    fcLabel("sc022-l", [T(765.30) - L, T(765.54) - L]);
+
+    /* ============ sc023 · 766.18–773.96 · X-ray: explosives in the boot; the search misses; the car drives on ============ */
+    scene("sc023", 766.18, 773.96);
+    ground("night", S(766.18));
+    (function () {
+      const car = $("sc023-car"), xr = $("sc023-xr"), bar = $("sc023-bar"), pk = $("sc023-pk"), veil = $("sc023-veil");
+      // car rolls in from the left (cut on action from the face cam)
+      tl.fromTo(car, { x: -900 }, { x: 0, duration: 0.85, ease: C(E.out, 0.85), immediateRender: true }, S(766.18));
+      tl.fromTo(car, { scale: 1 }, { scale: 1.03, transformOrigin: "50% 60%", duration: 6.6, ease: "none", immediateRender: false }, S(767.0));
+      // scanner sweep right → left (front to boot): X-ray revealed behind the bar
+      const sc = { p: 1500 };
+      const apply = () => { xr.style.clipPath = "inset(0 0 0 " + sc.p.toFixed(0) + "px)"; bar.style.left = (sc.p - 5).toFixed(0) + "px"; };
+      apply();
+      tl.set(bar, { opacity: 1 }, S(766.70));
+      tl.fromTo(sc, { p: 1500 }, { p: 0, duration: 0.9, ease: C("sine.inOut", 0.9), immediateRender: false, onUpdate: apply }, S(766.70));
+      tl.set(bar, { opacity: 0 }, S(767.62));
+      // the package in the boot (our drawing): taped blocks + wire; hero glow
+      const g = el(pk, "g", { opacity: 0 });
+      const X = 60, Y = 205;
+      [[0, 0], [70, 0], [140, 0], [0, 52], [70, 52], [140, 52]].forEach(([dx, dy]) => el(g, "rect", { x: X + dx, y: Y + dy, width: 66, height: 48, rx: 6, fill: "rgba(240,237,230,0.16)", stroke: BONE, "stroke-width": 3 }));
+      el(g, "rect", { x: X + 96, y: Y - 6, width: 18, height: 112, fill: "rgba(240,237,230,0.55)" });
+      el(g, "path", { d: "M" + (X + 105) + " " + (Y - 6) + " C" + (X + 120) + " " + (Y - 50) + " " + (X + 190) + " " + (Y - 40) + " " + (X + 220) + " " + (Y - 10), stroke: BONE, "stroke-width": 3, fill: "none" });
+      el(g, "rect", { x: X + 206, y: Y - 22, width: 40, height: 26, rx: 4, fill: "none", stroke: BONE, "stroke-width": 3 });
+      g.style.filter = "drop-shadow(0 0 10px rgba(240,237,230,0.85)) drop-shadow(0 0 26px rgba(242,194,50,0.35))";
+      tl.fromTo(g, { opacity: 0 }, { opacity: 1, duration: 0.25, ease: "steps(3)", immediateRender: true }, S(767.40));
+      tl.fromTo(g, { scale: 1, transformOrigin: "180px 255px" }, { scale: 1.08, duration: 0.18, yoyo: true, repeat: 1, ease: "sine.inOut", immediateRender: false }, S(768.02));
+      // "but somehow": X-ray closes (package hidden again)
+      tl.to(xr, { opacity: 0, duration: 0.4, ease: "power1.in" }, S(769.30));
+      tl.to(g, { opacity: 0, duration: 0.4, ease: "power1.in" }, S(769.30));
+      // torch search: dark veil with a moving light circle (focal call-out) that never reaches the boot
+      const fl = { x: 1720, y: 520, r: 150 };
+      const fapply = () => { const m = "radial-gradient(circle at " + fl.x.toFixed(0) + "px " + fl.y.toFixed(0) + "px, transparent " + fl.r.toFixed(0) + "px, #000 " + (fl.r * 1.7).toFixed(0) + "px)"; veil.style.maskImage = m; veil.style.webkitMaskImage = m; };
+      fapply();
+      tl.fromTo(veil, { opacity: 0 }, { opacity: 1, duration: 0.4, ease: "power1.out", immediateRender: true }, S(769.70));
+      tl.fromTo(fl, { x: 1720, y: 520 }, { x: 1250, y: 470, duration: 1.0, ease: E.cam, immediateRender: false, onUpdate: fapply }, S(769.90));
+      tl.to(fl, { x: 900, y: 600, duration: 1.0, ease: E.cam, onUpdate: fapply }, S(770.95));
+      tl.to(fl, { x: 760, y: 470, duration: 0.7, ease: E.cam, onUpdate: fapply }, S(771.95));
+      tl.to(veil, { opacity: 0, duration: 0.35, ease: "power1.in" }, S(772.80));
+      // the car drives off to the right (exit on action into the face cam)
+      tl.to(car, { x: 2100, duration: 0.6, ease: E.in }, S(773.38));
+    })();
+    words("sc023-c1", [T(767.38) - L, T(768.02) - L, T(768.18) - L, T(768.42) - L], { dur: 0.4 });
+    out($("sc023-c1"), S(769.30), 0.3);
+    words("sc023-c2", [T(771.54) - L, T(771.94) - L, T(772.10) - L, T(772.66) - L, T(773.14) - L], { dur: 0.35 });
+
+    /* ============ sc024 · 773.96–777.38 · face wide: "No journalists could actually verify" ============ */
+    scene("sc024", 773.96, 777.38);
+    ground("face", S(773.96));
+    face("sc024", 773.96, 777.38, frame(1020, 330, 1.0), frame(1000, 330, 1.04));
+    fcLabel("sc024-l", [T(774.02) - L, T(774.50) - L, T(775.22) - L, T(775.46) - L, T(775.78) - L]);
+
+    /* ============ sc025 · 777.38–781.38 · Ivan's silhouette: "the fear of getting caught" ============ */
+    scene("sc025", 777.38, SEG_END);
+    whip($("sc024-shot"), $("sc025-shot"), S(777.38), { dir: -1, flash: true });
+    ground("night", S(777.38));
+    tl.fromTo($("sc025-cam"), { scale: 1.0 }, { scale: 1.1, duration: 4.0, ease: "none", immediateRender: true }, S(777.38));
+    words("sc025-cap", [T(778.58) - L, T(778.66) - L, T(778.90) - L, T(779.06) - L, T(779.38) - L], { dur: 0.5 });
+
+    FX.mount(tl, DURATION);
+    window.__timelines = window.__timelines || {}; window.__timelines[SEG] = tl;
+  })();
+  </script>
+</template>
+</body>
+</html>

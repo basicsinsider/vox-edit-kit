@@ -1,0 +1,868 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8" /></head>
+<body>
+<template>
+  <style>
+    #root { position: absolute; inset: 0; overflow: hidden; background: var(--night); }
+    .v3-scene { position: absolute; inset: 0; overflow: hidden; visibility: hidden; opacity: 0; }
+    .v3-shot { position: absolute; inset: 0; overflow: hidden; transform-origin: 50% 50%; background: var(--night); }
+    .v3-paper { background: var(--paper); }
+    .v3-abs { position: absolute; }
+    .v3-full { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; object-fit: cover; }
+    .v3-bbc { filter: saturate(0.35) contrast(1.05); }
+    .v3-fcw { position: absolute; inset: 0; transform-origin: 1070px 330px; }
+    .v3-vw { position: absolute; inset: 0; transform-origin: 50% 50%; }
+    .v3-p1, .v3-p2 { position: absolute; inset: 0; background-size: cover; background-position: center; pointer-events: none; }
+    .v3-p2 { opacity: 0.9; mix-blend-mode: multiply; }
+    .v3-mk { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; pointer-events: none; }
+    .v3-w { display: inline-block; white-space: pre; opacity: 0; }
+    .v3-ink { color: var(--ink); }
+    .v3-credit { position: absolute; right: 30px; bottom: 20px; font-size: 13px; letter-spacing: 0.08em; color: rgba(240,237,230,0.66); z-index: 5; }
+    .v3-credit.ink { color: rgba(27,29,32,0.66); }
+    /* lower-third phrase (face cam + footage): anchored to the left margin, bottom safe area */
+    .v3-lt { position: absolute; left: 96px; bottom: 104px; width: 780px; font-size: 64px; line-height: 1.0; }
+    .v3-lt.wide { width: 980px; }
+    .v3-kick { position: absolute; left: 96px; font-size: 28px; color: var(--ash-light); }
+    .v3-scrim-bl { position: absolute; inset: 0; pointer-events: none;
+      background: radial-gradient(ellipse 58% 52% at 0% 100%, rgba(12,13,15,0.86) 0%, rgba(12,13,15,0.55) 45%, rgba(12,13,15,0) 100%); }
+    .v3-scrim-b { position: absolute; left: 0; right: 0; bottom: 0; height: 480px; pointer-events: none;
+      background: linear-gradient(180deg, rgba(12,13,15,0), rgba(12,13,15,0.85)); }
+    .v3-vig { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(ellipse 78% 74% at 50% 50%, rgba(0,0,0,0) 60%, rgba(6,6,7,0.5) 100%); }
+    #ivs03-flash { position: absolute; inset: 0; background: #f6f2ea; opacity: 0; pointer-events: none; z-index: 7; }
+    #ivs03-grain, #ivs03-dust, #ivs03-vig { z-index: 8; }
+
+    /* sc005 split */
+    .v3-name { font-size: 104px; text-align: center; }
+    .v3-cap { font-size: 54px; text-align: center; }
+    /* cork boards */
+    .v3-cork { position: absolute; left: -100px; top: -60px; width: 2120px; height: 1200px; background: url('assets/textures/cork_01.jpg') center / cover; filter: brightness(0.82) saturate(0.55); }
+    .v3-lamp { position: absolute; left: -100px; top: -60px; width: 2120px; height: 1200px; pointer-events: none;
+      background: radial-gradient(ellipse 62% 66% at 50% 44%, rgba(255,240,215,0.10) 0%, rgba(16,17,19,0) 45%, rgba(16,17,19,0.72) 100%); }
+    .v3-cam { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 960px 540px; }
+    .v3-icard { position: absolute; width: 120px; height: 84px; background: #ebe6db; box-shadow: 0 6px 12px rgba(0,0,0,0.38); overflow: hidden; }
+    .v3-icard svg { position: absolute; left: 10px; top: 12px; width: 50px; height: 60px; }
+    .v3-icard i { position: absolute; left: 68px; height: 6px; background: rgba(27,29,32,0.35); }
+    .v3-pin { position: absolute; width: 18px; height: 18px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #e3a199, #b32a22 55%, #6e1914); box-shadow: 0 3px 4px rgba(0,0,0,0.45); }
+    .v3-card { position: absolute; background: #ebe6db; box-shadow: 0 16px 30px rgba(0,0,0,0.45); overflow: hidden; }
+    .v3-tag { position: absolute; background: #ebe6db; color: var(--ink); padding: 10px 18px 6px; font-size: 30px; box-shadow: 0 8px 16px rgba(0,0,0,0.4); }
+    #ivs03-sc008-box { position: absolute; left: 0; width: 1920px; top: 590px; text-align: center; font-size: 62px; }
+    #ivs03-sc008-box .label-box { opacity: 0; }
+    /* sc009 dossier */
+    #ivs03-sc009-cam { position: absolute; inset: 0; transform-origin: 900px 420px; }
+    #ivs03-sc009-folder { position: absolute; left: 380px; top: 150px; width: 1160px; height: 800px; background: #d8ccb0; transform: rotate(-1.2deg); box-shadow: 0 30px 60px rgba(27,29,32,0.35); }
+    #ivs03-sc009-folder .tab { position: absolute; left: 60px; top: -46px; width: 300px; height: 50px; background: #d8ccb0; border-radius: 10px 10px 0 0; }
+    #ivs03-sc009-sheet { position: absolute; left: 40px; top: 40px; right: 40px; bottom: 40px; background: #efebe2; box-shadow: 0 4px 10px rgba(27,29,32,0.2); }
+    .v3-row { position: absolute; left: 90px; height: 50px; }
+    .v3-bar { position: absolute; top: 2px; height: 46px; background: var(--ink); transform-origin: 100% 50%; }
+    .v3-rw { position: relative; display: inline-block; white-space: pre; font-size: 46px; line-height: 50px; color: var(--ink); }
+    .v3-rw .v3-bar { left: -4px; right: -4px; }
+    /* sc012 diagram */
+    .v3-node { position: absolute; width: 260px; height: 260px; border-radius: 50%; background: #e2ddd1; border: 9px solid var(--ash-dark); box-shadow: 0 14px 30px rgba(27,29,32,0.22); overflow: hidden; }
+    .v3-node svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+    .v3-nl { position: absolute; width: 420px; text-align: center; font-size: 30px; line-height: 1.25; color: var(--ink); }
+    /* sc014 / sc034 HUD */
+    .v3-hud { position: absolute; inset: 0; pointer-events: none; }
+    .v3-hudt { position: absolute; font-size: 26px; color: var(--bone); text-shadow: 0 1px 3px rgba(0,0,0,0.6); }
+    .v3-rec { display: inline-block; width: 18px; height: 18px; border-radius: 50%; background: var(--oxblood-light); margin-right: 12px; vertical-align: 1px; }
+    .v3-fbox { position: absolute; border: 3px solid var(--bone); box-shadow: 0 0 0 1px rgba(0,0,0,0.35); }
+    .v3-blabel { position: absolute; font-size: 28px; white-space: nowrap; }
+    /* sc016 */
+    #ivs03-sc016-wall { position: absolute; inset: 0; background: radial-gradient(ellipse 55% 60% at 62% 42%, #4a4c50 0%, #26272a 45%, #101113 100%); }
+    #ivs03-sc016-bars { position: absolute; left: -400px; top: -100px; width: 2800px; height: 1300px; transform: skewX(-14deg);
+      background: repeating-linear-gradient(90deg, rgba(8,8,9,0) 0 150px, rgba(8,8,9,0.78) 150px 196px); }
+    /* sc021 / sc023 / sc026 paper cards */
+    #ivs03-sc021-ph { position: absolute; left: 1180px; top: 190px; width: 472px; height: 675px; background: #ece6da; padding: 16px; box-shadow: 0 26px 50px rgba(27,29,32,0.35); transform: rotate(1.6deg); }
+    #ivs03-sc021-ph img { width: 440px; height: 643px; object-fit: cover; filter: grayscale(1) contrast(1.08) brightness(1.02); }
+    #ivs03-sc021-rule { position: absolute; left: 240px; top: 650px; width: 560px; height: 12px; background: var(--oxblood); transform-origin: 0 50%; }
+    #ivs03-sc023-ring { position: absolute; left: 380px; top: 250px; width: 360px; height: 360px; border-radius: 50%; border: 12px solid var(--azure); background: #e2ddd1; overflow: hidden; }
+    #ivs03-sc023-ring svg { position: absolute; left: 60px; top: 70px; width: 240px; height: 288px; }
+    #ivs03-sc023-stamp { position: absolute; left: 1010px; top: 330px; width: 700px; text-align: center; font-size: 120px; color: var(--azure-dark); border: 10px solid var(--azure-dark); padding: 24px 0 8px; transform: rotate(-6deg); opacity: 0; mix-blend-mode: multiply; }
+    #ivs03-sc026-cal { position: absolute; left: 660px; top: 170px; width: 600px; height: 720px; background: #ece7dc; box-shadow: 0 30px 60px rgba(27,29,32,0.35); }
+    #ivs03-sc026-cal .band { position: absolute; left: 0; top: 0; width: 600px; height: 170px; background: var(--ash-dark); }
+    #ivs03-sc026-cal .ring { position: absolute; top: -26px; width: 26px; height: 60px; border-radius: 13px; background: linear-gradient(90deg, #6d6f74, #c4c4c2, #6d6f74); }
+    #ivs03-sc026-mon { position: absolute; left: 0; top: 60px; width: 600px; text-align: center; font-size: 56px; color: var(--bone); }
+    .v3-year { position: absolute; left: 0; top: 330px; width: 600px; text-align: center; font-size: 230px; color: var(--ink); }
+    #ivs03-sc026-hl { position: absolute; left: 70px; top: 420px; width: 460px; height: 120px; background: var(--brass); mix-blend-mode: multiply; transform-origin: 0 50%; opacity: 0.85; }
+    .reel { display: inline-block; overflow: hidden; vertical-align: top; }
+    .reel-strip { display: flex; flex-direction: column; }
+    /* sc027 */
+    #ivs03-sc027-vw { position: absolute; inset: 0; }
+    /* sc029 */
+    #ivs03-sc029-sv { position: absolute; left: 820px; top: 160px; width: 340px; height: 430px; background: #ebe6db; padding: 14px; transform: rotate(-1.5deg); }
+    #ivs03-sc029-sv .ph { width: 340px; height: 402px; background: url('assets/ivan/ivs03/photos/sarvarov_bbc_still.jpg') -306px -10px / 933px 525px no-repeat; filter: grayscale(1) contrast(1.06); }
+    #ivs03-sc029-gur { position: absolute; left: 1430px; top: 560px; width: 320px; height: 220px; background: #ebe6db; border: 8px solid var(--azure); }
+    #ivs03-sc029-gur svg { position: absolute; left: 100px; top: 40px; width: 120px; height: 120px; }
+  </style>
+
+  <div id="root" data-composition-id="ivs03" data-vo-start="296.18" data-duration="178.39" data-width="1920" data-height="1080">
+    <svg id="ivs03-defs" width="0" height="0" style="position:absolute"></svg>
+
+    <!-- sc001 · 296.18–301.78 · FACE W · Interestingly, though, Ivan wasn't the only Russian -->
+    <div class="v3-scene" id="ivs03-sc001"><div class="v3-shot" id="ivs03-sc001-shot">
+      <div class="v3-fcw" id="ivs03-sc001-fw"><video id="ivs03-sc001-v" class="v3-full" src="assets/facecam/ivan_facecam_master.mp4" muted playsinline data-start="0" data-duration="5.65" data-media-start="296.18"></video></div>
+      <div class="v3-scrim-bl"></div>
+      <div class="v3-lt t-display clean" id="ivs03-sc001-lt"><span class="v3-w">wasn't </span><span class="v3-w">the </span><span class="v3-w">only </span><span class="v3-w">Russian</span></div>
+    </div></div>
+
+    <!-- sc002 · 301.78–303.94 · He had also met a man in Warsaw · BBC Warsaw at night -->
+    <div class="v3-scene" id="ivs03-sc002"><div class="v3-shot" id="ivs03-sc002-shot">
+      <div class="v3-vw" id="ivs03-sc002-vw"><video id="ivs03-sc002-v" class="v3-full v3-bbc" src="assets/ivan/ivs03/footage/warsaw_night.mp4" muted playsinline data-start="5.60" data-duration="2.21" data-media-start="0.2"></video></div>
+      <div class="v3-scrim-b"></div>
+      <div class="v3-lt t-display clean" id="ivs03-sc002-lt" style="font-size:92px"><span class="v3-w">Warsaw</span></div>
+      <div class="v3-credit t-label">Video: BBC World Service</div>
+    </div></div>
+
+    <!-- sc003 · 303.94–305.80 · named FOMA · BBC Foma silhouette -->
+    <div class="v3-scene" id="ivs03-sc003"><div class="v3-shot" id="ivs03-sc003-shot">
+      <div class="v3-vw" id="ivs03-sc003-vw"><video id="ivs03-sc003-v" class="v3-full v3-bbc" src="assets/ivan/ivs03/footage/foma_silhouette.mp4" muted playsinline data-start="7.76" data-duration="1.91" data-media-start="0.5"></video></div>
+      <div class="v3-scrim-bl"></div>
+      <div class="v3-kick t-label" id="ivs03-sc003-k" style="bottom:300px; opacity:0">named</div>
+      <div class="v3-lt t-display halate" id="ivs03-sc003-lt" style="font-size:190px; width:900px"><span class="v3-w">FOMA</span></div>
+      <div class="v3-credit t-label">Video: BBC World Service</div>
+    </div></div>
+
+    <!-- sc004 · 305.80–307.91 · FACE C · And his story was a little different. -->
+    <div class="v3-scene" id="ivs03-sc004"><div class="v3-shot" id="ivs03-sc004-shot">
+      <div class="v3-fcw" id="ivs03-sc004-fw"><video id="ivs03-sc004-v" class="v3-full" src="assets/facecam/ivan_facecam_master.mp4" muted playsinline data-start="9.62" data-duration="2.16" data-media-start="305.80"></video></div>
+    </div></div>
+
+    <!-- sc005 · 307.91–317.83 · Ivan inside Russia vs Foma's whole network · paper split -->
+    <div class="v3-scene" id="ivs03-sc005"><div class="v3-shot v3-paper" id="ivs03-sc005-shot">
+      <div class="v3-p1" style="background-image:url('assets/textures/paper_cream_01.jpg')"></div>
+      <div class="v3-p2" style="background-image:url('assets/textures/paper_fiber_01.jpg'); opacity:0.5"></div>
+      <svg id="ivs03-sc005-svg" class="v3-mk" viewBox="0 0 1920 1080"></svg>
+      <div class="v3-abs t-display v3-ink v3-name" id="ivs03-sc005-ivan" style="left:120px; width:720px; top:640px; opacity:0">IVAN</div>
+      <div class="v3-abs t-display v3-ink v3-name" id="ivs03-sc005-foma" style="left:1080px; width:720px; top:640px; opacity:0">FOMA</div>
+      <div class="v3-abs t-serif-i v3-ink v3-cap" id="ivs03-sc005-car" style="left:120px; width:720px; top:780px"><span class="v3-w">carrying </span><span class="v3-w">out </span><span class="v3-w">assignments</span></div>
+      <div class="v3-abs t-serif-i v3-ink v3-cap" id="ivs03-sc005-net" style="left:1080px; width:720px; top:780px"><span class="v3-w">a </span><span class="v3-w">whole </span><span class="v3-w">network</span></div>
+      <div class="v3-abs t-serif-i v3-cap" id="ivs03-sc005-ukr" style="left:1080px; width:720px; top:780px; color:var(--azure)"><span class="v3-w">for </span><span class="v3-w">Ukraine</span></div>
+    </div></div>
+
+    <!-- sc006 · 317.83–322.10 · rubbed shoulders with some pretty powerful people in Russia · Kremlin hall -->
+    <div class="v3-scene" id="ivs03-sc006"><div class="v3-shot" id="ivs03-sc006-shot">
+      <div class="v3-vw" id="ivs03-sc006-vw"><video id="ivs03-sc006-v" class="v3-full v3-bbc" src="assets/ivan/ivs03/footage/kremlin_hall.mp4" muted playsinline data-start="21.65" data-duration="4.30" data-media-start="0"></video></div>
+      <div class="v3-scrim-b"></div>
+      <div class="v3-lt wide t-display clean" id="ivs03-sc006-lt"><span class="v3-w">powerful </span><span class="v3-w">people </span><span class="v3-w">in </span><span class="v3-w" style="color:var(--oxblood-light)">Russia</span></div>
+      <div class="v3-credit t-label">Video: BBC World Service / Channel One Russia</div>
+    </div></div>
+
+    <!-- sc007 · 322.10–327.50 · FACE M · old contacts were now helping him help Ukraine -->
+    <div class="v3-scene" id="ivs03-sc007"><div class="v3-shot" id="ivs03-sc007-shot">
+      <div class="v3-fcw" id="ivs03-sc007-fw"><video id="ivs03-sc007-v" class="v3-full" src="assets/facecam/ivan_facecam_master.mp4" muted playsinline data-start="25.92" data-duration="5.57" data-media-start="322.10"></video></div>
+      <div class="v3-scrim-bl"></div>
+      <div class="v3-lt t-display clean" id="ivs03-sc007-lt"><span class="v3-w">helping </span><span class="v3-w">him </span><span class="v3-w">help </span><span class="v3-w" style="color:var(--sky)">Ukraine</span></div>
+    </div></div>
+
+    <!-- sc008 · 327.50–336.71 · three dozen people, inside Russia / abroad · investigator's wall -->
+    <div class="v3-scene" id="ivs03-sc008"><div class="v3-shot" id="ivs03-sc008-shot">
+      <div class="v3-cam" id="ivs03-sc008-cam">
+        <div class="v3-cork"></div>
+        <svg id="ivs03-sc008-str" class="v3-mk" viewBox="0 0 1920 1080"></svg>
+        <div id="ivs03-sc008-cards"></div>
+        <div class="v3-card" id="ivs03-sc008-foma" style="left:765px; top:315px; width:390px; height:230px; transform:rotate(-1deg)">
+          <svg viewBox="0 0 400 480" style="position:absolute; left:26px; top:34px; width:136px; height:163px"><path id="ivs03-sc008-gm" fill="#8f9196" d=""/></svg>
+          <div class="v3-abs t-display v3-ink" style="left:178px; top:88px; font-size:62px">FOMA</div>
+        </div>
+        <div class="v3-pin" style="left:951px; top:318px"></div>
+        <div class="v3-lamp"></div>
+      </div>
+      <div id="ivs03-sc008-box" class="t-display"><span class="label-box" id="ivs03-sc008-lb"><span class="v3-w" style="color:var(--brass)">three </span><span class="v3-w" style="color:var(--brass)">dozen </span><span class="v3-w">people</span></span></div>
+      <div class="v3-tag t-label" id="ivs03-sc008-in" style="left:110px; top:944px; opacity:0"><span class="v3-w">inside </span><span class="v3-w">Russia</span></div>
+      <div class="v3-tag t-label" id="ivs03-sc008-ab" style="right:110px; top:944px; opacity:0"><span class="v3-w">from </span><span class="v3-w">abroad</span></div>
+      <div class="v3-credit t-label">Cork texture: Trougnouf (Benoit Brummer), CC BY 4.0</div>
+    </div></div>
+
+    <!-- sc009 · 336.71–342.07 · information about Russian military facilities and senior officers · redacted case file -->
+    <div class="v3-scene" id="ivs03-sc009"><div class="v3-shot v3-paper" id="ivs03-sc009-shot">
+      <div class="v3-p1" style="background-image:url('assets/textures/paper_cream_02.jpg'); filter:brightness(0.8)"></div>
+      <div class="v3-p2" style="background-image:url('assets/textures/paper_stained_01_hires.jpg'); opacity:0.6"></div>
+      <div id="ivs03-sc009-cam">
+        <div id="ivs03-sc009-folder"><div class="tab"></div><div id="ivs03-sc009-sheet">
+          <div class="v3-row" style="top:60px"><div class="v3-bar" style="width:380px"></div></div>
+          <div class="v3-row t-label" style="top:170px" id="ivs03-sc009-r1"><span class="v3-rw">RUSSIAN <span class="v3-bar"></span></span><span class="v3-rw">MILITARY <span class="v3-bar"></span></span><span class="v3-rw">FACILITIES<span class="v3-bar"></span></span></div>
+          <div class="v3-row" style="top:270px"><div class="v3-bar" style="width:820px"></div></div>
+          <div class="v3-row t-label" style="top:370px" id="ivs03-sc009-r2"><span class="v3-rw">SENIOR <span class="v3-bar"></span></span><span class="v3-rw">OFFICERS<span class="v3-bar"></span></span></div>
+          <div class="v3-row" style="top:470px"><div class="v3-bar" style="width:640px"></div></div>
+          <div class="v3-row" style="top:570px"><div class="v3-bar" style="width:900px"></div></div>
+        </div></div>
+      </div>
+    </div></div>
+
+    <!-- sc010 · 342.07–345.15 · including where some of them actually lived · laptop street view -->
+    <div class="v3-scene" id="ivs03-sc010"><div class="v3-shot" id="ivs03-sc010-shot">
+      <div class="v3-vw" id="ivs03-sc010-vw"><video id="ivs03-sc010-v" class="v3-full v3-bbc" src="assets/ivan/ivs03/footage/laptop_streetview.mp4" muted playsinline data-start="45.89" data-duration="3.13" data-media-start="0.5"></video>
+        <svg id="ivs03-sc010-mk" class="v3-mk" viewBox="0 0 1920 1080"></svg></div>
+      <div class="v3-scrim-bl"></div>
+      <div class="v3-lt wide t-serif-i clean" id="ivs03-sc010-lt" style="font-size:78px"><span class="v3-w">where </span><span class="v3-w">some </span><span class="v3-w">of </span><span class="v3-w">them </span><span class="v3-w">actually </span><span class="v3-w">lived</span></div>
+      <div class="v3-credit t-label">Video: BBC World Service</div>
+    </div></div>
+
+    <!-- sc011 · 345.15–350.70 · FACE W · a particular Russian officer -->
+    <div class="v3-scene" id="ivs03-sc011"><div class="v3-shot" id="ivs03-sc011-shot">
+      <div class="v3-fcw" id="ivs03-sc011-fw"><video id="ivs03-sc011-v" class="v3-full" src="assets/facecam/ivan_facecam_master.mp4" muted playsinline data-start="48.97" data-duration="5.72" data-media-start="345.15"></video></div>
+      <div class="v3-scrim-bl"></div>
+      <div class="v3-lt t-display clean" id="ivs03-sc011-lt"><span class="v3-w">a </span><span class="v3-w">particular </span><span class="v3-w" style="color:var(--oxblood-light)">Russian </span><span class="v3-w" style="color:var(--oxblood-light)">officer</span></div>
+    </div></div>
+
+    <!-- sc012 · 350.70–356.55 · turn to Foma, his people find out about that person · D06 node chain -->
+    <div class="v3-scene" id="ivs03-sc012"><div class="v3-shot v3-paper" id="ivs03-sc012-shot">
+      <div class="v3-p1" style="background-image:url('assets/textures/paper_cream_01.jpg')"></div>
+      <div class="v3-p2" style="background-image:url('assets/textures/paper_graph_01_hires.jpg'); filter:saturate(0.3); opacity:0.55"></div>
+      <svg id="ivs03-sc012-svg" class="v3-mk" viewBox="0 0 1920 1080"></svg>
+      <div class="v3-node" id="ivs03-sc012-n1" style="left:170px; top:310px; border-color:var(--azure)"></div>
+      <div class="v3-node" id="ivs03-sc012-n2" style="left:630px; top:310px"></div>
+      <div class="v3-node" id="ivs03-sc012-n3" style="left:1030px; top:310px"></div>
+      <div class="v3-node" id="ivs03-sc012-n4" style="left:1490px; top:310px; border-color:var(--oxblood)"></div>
+      <div class="v3-nl t-label" id="ivs03-sc012-l1" style="left:90px; top:612px; color:var(--azure-dark); opacity:0">Ukrainian intelligence</div>
+      <div class="v3-nl t-label" id="ivs03-sc012-l2" style="left:550px; top:612px"><span class="v3-w">Foma</span></div>
+      <div class="v3-nl t-label" id="ivs03-sc012-l3" style="left:950px; top:612px"><span class="v3-w">his </span><span class="v3-w">people</span></div>
+      <div class="v3-nl t-label" id="ivs03-sc012-l4" style="left:1410px; top:612px; color:var(--oxblood-dark)"><span class="v3-w">that </span><span class="v3-w">person</span></div>
+    </div></div>
+
+    <!-- sc013 · 356.55–360.36 · Mamoń even got to watch Foma train one of those volunteers · BBC training -->
+    <div class="v3-scene" id="ivs03-sc013"><div class="v3-shot" id="ivs03-sc013-shot">
+      <div class="v3-vw" id="ivs03-sc013-vw"><video id="ivs03-sc013-v" class="v3-full v3-bbc" src="assets/ivan/ivs03/footage/foma_training.mp4" muted playsinline data-start="60.37" data-duration="3.86" data-media-start="0.8"></video></div>
+      <div class="v3-scrim-bl"></div>
+      <div class="v3-lt wide t-display clean" id="ivs03-sc013-lt" style="font-size:60px"><span class="v3-w">train </span><span class="v3-w">one </span><span class="v3-w">of </span><span class="v3-w">those </span><span class="v3-w">volunteers</span></div>
+      <div class="v3-credit t-label">Video: BBC World Service</div>
+    </div></div>
+
+    <!-- sc014 · 360.36–365.85 · getting ready to follow a Russian military officer · surveillance HUD -->
+    <div class="v3-scene" id="ivs03-sc014"><div class="v3-shot" id="ivs03-sc014-shot">
+      <div class="v3-vw" id="ivs03-sc014-vw"><video id="ivs03-sc014-v" class="v3-full v3-bbc" src="assets/ivan/ivs03/footage/tram_stop_night.mp4" muted playsinline data-start="64.18" data-duration="5.54" data-media-start="0.3" style="filter:saturate(0.15) contrast(1.1)"></video>
+        <div class="v3-fbox" id="ivs03-sc014-box" style="left:0; top:0; width:170px; height:290px; opacity:0"></div>
+        <div class="v3-blabel t-label clean" id="ivs03-sc014-bl" style="left:0; top:0"><span class="v3-w">a </span><span class="v3-w">Russian </span><span class="v3-w">military </span><span class="v3-w">officer</span></div>
+      </div>
+      <div class="v3-hud">
+        <svg id="ivs03-sc014-hud" class="v3-mk" viewBox="0 0 1920 1080"></svg>
+        <div class="v3-hudt t-label" style="left:96px; top:72px"><span class="v3-rec" id="ivs03-sc014-rec"></span>REC</div>
+        <div class="v3-hudt t-label" id="ivs03-sc014-tc" style="right:96px; top:72px">00:00:00:00</div>
+      </div>
+      <div class="v3-credit t-label">Video: BBC World Service</div>
+    </div></div>
+
+    <!-- sc015 · 365.85–370.28 · FACE C · Foma made sure that he understood -->
+    <div class="v3-scene" id="ivs03-sc015"><div class="v3-shot" id="ivs03-sc015-shot">
+      <div class="v3-fcw" id="ivs03-sc015-fw"><video id="ivs03-sc015-v" class="v3-full" src="assets/facecam/ivan_facecam_master.mp4" muted playsinline data-start="69.67" data-duration="4.48" data-media-start="365.85"></video></div>
+    </div></div>
+
+    <!-- sc016 · 370.28–374.40 · at least 25 years in prison · prison-bar shadows -->
+    <div class="v3-scene" id="ivs03-sc016"><div class="v3-shot" id="ivs03-sc016-shot">
+      <div id="ivs03-sc016-wall"></div>
+      <div id="ivs03-sc016-bars"></div>
+      <div class="v3-abs t-label clean" id="ivs03-sc016-al" style="left:240px; top:300px; font-size:36px"><span class="v3-w">at </span><span class="v3-w">least</span></div>
+      <div class="v3-abs t-display halate yellow" id="ivs03-sc016-25" style="left:220px; top:350px; font-size:400px; opacity:0">25</div>
+      <div class="v3-abs t-serif-i clean" id="ivs03-sc016-yr" style="left:240px; top:740px; font-size:88px"><span class="v3-w">years </span><span class="v3-w">in </span><span class="v3-w">prison</span></div>
+    </div></div>
+
+    <!-- sc017 · 374.40–379.24 · FACE M · very little anyone back in Warsaw could do -->
+    <div class="v3-scene" id="ivs03-sc017"><div class="v3-shot" id="ivs03-sc017-shot">
+      <div class="v3-fcw" id="ivs03-sc017-fw"><video id="ivs03-sc017-v" class="v3-full" src="assets/facecam/ivan_facecam_master.mp4" muted playsinline data-start="78.22" data-duration="4.89" data-media-start="374.40"></video></div>
+    </div></div>
+
+    <!-- sc018 · 379.24–383.64 · FACE W · why was Foma willing … that kind of danger? -->
+    <div class="v3-scene" id="ivs03-sc018"><div class="v3-shot" id="ivs03-sc018-shot">
+      <div class="v3-fcw" id="ivs03-sc018-fw"><video id="ivs03-sc018-v" class="v3-full" src="assets/facecam/ivan_facecam_master.mp4" muted playsinline data-start="83.06" data-duration="4.61" data-media-start="379.24"></video></div>
+      <div class="v3-scrim-bl"></div>
+      <div class="v3-lt t-display clean" id="ivs03-sc018-lt"><span class="v3-w">that </span><span class="v3-w">kind </span><span class="v3-w">of </span><span class="v3-w" style="color:var(--oxblood-light)">danger</span></div>
+    </div></div>
+
+    <!-- sc019 · 383.64–390.44 · looking over their shoulders · streetlight man -->
+    <div class="v3-scene" id="ivs03-sc019"><div class="v3-shot" id="ivs03-sc019-shot">
+      <div class="v3-vw" id="ivs03-sc019-vw"><video id="ivs03-sc019-v" class="v3-full v3-bbc" src="assets/ivan/ivs03/footage/streetlight_man.mp4" muted playsinline data-start="87.62" data-duration="6.69" data-media-start="0.5"></video></div>
+      <div class="v3-scrim-bl"></div>
+      <div class="v3-lt wide t-serif-i clean" id="ivs03-sc019-lt" style="font-size:72px"><span class="v3-w">looking </span><span class="v3-w">over </span><span class="v3-w">their </span><span class="v3-w">shoulders</span></div>
+      <div class="v3-credit t-label">Video: BBC World Service</div>
+    </div></div>
+
+    <!-- sc020 · 390.44–394.92 · FACE M · by late 2024 … a good reason to be worried -->
+    <div class="v3-scene" id="ivs03-sc020"><div class="v3-shot" id="ivs03-sc020-shot">
+      <div class="v3-fcw" id="ivs03-sc020-fw"><video id="ivs03-sc020-v" class="v3-full" src="assets/facecam/ivan_facecam_master.mp4" muted playsinline data-start="94.26" data-duration="4.53" data-media-start="390.44"></video></div>
+      <div class="v3-scrim-bl"></div>
+      <div class="v3-lt t-display clean" id="ivs03-sc020-lt" style="font-size:84px"><span class="v3-w">late </span><span class="v3-w" style="color:var(--brass)">2024</span></div>
+    </div></div>
+
+    <!-- sc021 · 394.92–399.00 · that December, a Russian named Igor Kirillov · case card -->
+    <div class="v3-scene" id="ivs03-sc021"><div class="v3-shot v3-paper" id="ivs03-sc021-shot">
+      <div class="v3-p1" style="background-image:url('assets/textures/paper_cream_02.jpg')"></div>
+      <div class="v3-p2" style="background-image:url('assets/textures/paper_fiber_01.jpg'); opacity:0.45"></div>
+      <div id="ivs03-sc021-ph"><img src="assets/ivan/ivs03/photos/kirillov_igor_mil_ru.jpg" alt="" /></div>
+      <div class="v3-abs t-serif-i v3-ink" id="ivs03-sc021-dec" style="left:240px; top:400px; font-size:60px"><span class="v3-w">that </span><span class="v3-w">December</span></div>
+      <div class="v3-abs t-display v3-ink" id="ivs03-sc021-nm" style="left:236px; top:478px; font-size:132px; width:880px"><span class="v3-w">Igor </span><span class="v3-w">Kirillov</span></div>
+      <div id="ivs03-sc021-rule"></div>
+      <div class="v3-credit t-label ink">Photo: mil.ru (Russian MoD), CC BY 4.0</div>
+    </div></div>
+
+    <!-- sc022 · 399.00–402.45 · killed by a bomb outside an apartment building in Moscow · BBC blast site -->
+    <div class="v3-scene" id="ivs03-sc022"><div class="v3-shot" id="ivs03-sc022-shot">
+      <div class="v3-vw" id="ivs03-sc022-vw"><video id="ivs03-sc022-v" class="v3-full v3-bbc" src="assets/ivan/ivs03/footage/kirillov_site.mp4" muted playsinline data-start="102.82" data-duration="3.50" data-media-start="0"></video></div>
+      <div class="v3-scrim-bl"></div>
+      <div class="v3-lt wide t-display clean" id="ivs03-sc022-lt"><span class="v3-w">killed </span><span class="v3-w">by </span><span class="v3-w">a </span><span class="v3-w" style="color:var(--oxblood-light)">bomb</span></div>
+      <div class="v3-credit t-label">Video: BBC World Service</div>
+    </div></div>
+
+    <!-- sc023 · 402.45–407.90 · a Ukrainian intelligence officer confirmed … behind the attack -->
+    <div class="v3-scene" id="ivs03-sc023"><div class="v3-shot v3-paper" id="ivs03-sc023-shot">
+      <div class="v3-p1" style="background-image:url('assets/textures/paper_cream_01.jpg')"></div>
+      <div class="v3-p2" style="background-image:url('assets/textures/paper_lined_01_hires.jpg'); filter:saturate(0.3); opacity:0.5"></div>
+      <div id="ivs03-sc023-ring"><svg viewBox="0 0 400 480"><path id="ivs03-sc023-gm" fill="#8f9196" d=""/></svg></div>
+      <div class="v3-abs t-label" id="ivs03-sc023-lab" style="left:260px; top:660px; width:600px; text-align:center; font-size:32px; line-height:1.3; color:var(--azure-dark)"><span class="v3-w">Ukrainian </span><span class="v3-w">intelligence </span><span class="v3-w">officer</span></div>
+      <div id="ivs03-sc023-stamp" class="t-display">CONFIRMED</div>
+      <div class="v3-abs t-serif-i v3-ink" id="ivs03-sc023-bh" style="left:1010px; top:400px; width:700px; text-align:center; font-size:96px"><span class="v3-w">behind </span><span class="v3-w">the </span><span class="v3-w">attack</span></div>
+    </div></div>
+
+    <!-- sc024 · 407.90–425.90 · INSERT 2 (Guardian, Kirillov blast site) -->
+    <div class="v3-scene" id="ivs03-sc024"><div class="v3-shot" id="ivs03-sc024-shot">
+      <video id="ivs03-sc024-v" class="v3-full" src="assets/ivan/inserts/insert2.mp4" muted playsinline data-start="111.72" data-duration="18.0" data-media-start="0"></video>
+      <div class="v3-vig"></div>
+      <div class="v3-credit t-label">Video: The Guardian</div>
+    </div></div>
+
+    <!-- sc025 · 425.90–428.04 · FACE W · Then, almost exactly a year later, -->
+    <div class="v3-scene" id="ivs03-sc025"><div class="v3-shot" id="ivs03-sc025-shot">
+      <div class="v3-fcw" id="ivs03-sc025-fw"><video id="ivs03-sc025-v" class="v3-full" src="assets/facecam/ivan_facecam_master.mp4" muted playsinline data-start="129.72" data-duration="2.19" data-media-start="425.90"></video></div>
+    </div></div>
+
+    <!-- sc026 · 428.04–432.28 · in December 2025 · desk calendar odometer -->
+    <div class="v3-scene" id="ivs03-sc026"><div class="v3-shot v3-paper" id="ivs03-sc026-shot">
+      <div class="v3-p1" style="background-image:url('assets/textures/paper_cream_01.jpg'); filter:brightness(0.86)"></div>
+      <div class="v3-p2" style="background-image:url('assets/textures/paper_stained_01_hires.jpg'); opacity:0.5"></div>
+      <div id="ivs03-sc026-cal"><div class="band"></div><div class="ring" style="left:150px"></div><div class="ring" style="left:424px"></div>
+        <div id="ivs03-sc026-mon" class="t-label"><span class="v3-w">December</span></div>
+        <div id="ivs03-sc026-hl"></div>
+        <div class="v3-year t-display" id="ivs03-sc026-y24">2024</div>
+        <div class="v3-year t-display" id="ivs03-sc026-y25" style="opacity:0">2025</div>
+      </div>
+    </div></div>
+
+    <!-- sc027 · 432.28–434.73 · This time it was Fanil Sarvarov · BBC portrait -->
+    <div class="v3-scene" id="ivs03-sc027"><div class="v3-shot" id="ivs03-sc027-shot">
+      <div id="ivs03-sc027-sat" style="position:absolute; inset:0; background:#9faaa5; filter:saturate(0.4)"><div id="ivs03-sc027-vw"><div class="v3-vw" id="ivs03-sc027-mv"><video id="ivs03-sc027-v" class="v3-full" src="assets/ivan/ivs03/footage/sarvarov_portrait.mp4" muted playsinline data-start="136.10" data-duration="2.50" data-media-start="0.9"></video></div></div></div>
+      <div class="v3-abs t-display v3-ink" id="ivs03-sc027-nm" style="left:96px; top:640px; font-size:104px; width:700px; line-height:0.95"><span class="v3-w">Fanil </span><br><span class="v3-w">Sarvarov</span></div>
+      <div class="v3-credit t-label ink">Video: BBC World Service</div>
+    </div></div>
+
+    <!-- sc028 · 434.73–437.75 · a bomb exploded beneath his car · BBC drone -->
+    <div class="v3-scene" id="ivs03-sc028"><div class="v3-shot" id="ivs03-sc028-shot">
+      <div class="v3-vw" id="ivs03-sc028-vw"><video id="ivs03-sc028-v" class="v3-full v3-bbc" src="assets/ivan/ivs03/footage/sarvarov_car.mp4" muted playsinline data-start="138.55" data-duration="3.22" data-media-start="0.1"></video></div>
+      <div class="v3-scrim-bl"></div>
+      <div class="v3-lt wide t-display clean" id="ivs03-sc028-lt"><span class="v3-w">beneath </span><span class="v3-w">his </span><span class="v3-w">car</span></div>
+      <div class="v3-credit t-label">Video: BBC World Service</div>
+    </div></div>
+
+    <!-- sc029 · 437.75–447.93 · his volunteers had been tracking that specific general → Ukrainian intelligence · wall callback -->
+    <div class="v3-scene" id="ivs03-sc029"><div class="v3-shot" id="ivs03-sc029-shot">
+      <div class="v3-cam" id="ivs03-sc029-cam">
+        <div class="v3-cork" style="filter:brightness(0.7) saturate(0.5)"></div>
+        <svg id="ivs03-sc029-str" class="v3-mk" viewBox="0 0 1920 1080"></svg>
+        <div id="ivs03-sc029-cards"></div>
+        <div class="v3-card" id="ivs03-sc029-sv"><div class="ph"></div></div>
+        <div class="v3-pin" style="left:981px; top:166px"></div>
+        <div class="v3-card" id="ivs03-sc029-gur"><svg viewBox="0 0 100 100" id="ivs03-sc029-gsvg"></svg></div>
+        <div class="v3-pin" style="left:1581px; top:566px"></div>
+        <svg id="ivs03-sc029-top" class="v3-mk" viewBox="0 0 1920 1080"></svg>
+        <div class="v3-lamp" style="background: radial-gradient(ellipse 60% 64% at 52% 42%, rgba(255,240,215,0.08) 0%, rgba(16,17,19,0) 40%, rgba(16,17,19,0.8) 100%)"></div>
+      </div>
+      <div class="v3-tag t-label" id="ivs03-sc029-hv" style="left:120px; top:900px; opacity:0"><span class="v3-w">his </span><span class="v3-w">volunteers</span></div>
+      <div class="v3-tag t-label" id="ivs03-sc029-tr" style="left:120px; top:900px; opacity:0"><span class="v3-w">tracking </span><span class="v3-w">that </span><span class="v3-w">specific </span><span class="v3-w">general</span></div>
+      <div class="v3-tag t-label" id="ivs03-sc029-ui" style="left:1400px; top:830px; width:380px; line-height:1.25; opacity:0; color:var(--azure-dark)"><span class="v3-w">Ukrainian </span><span class="v3-w">intelligence </span><span class="v3-w">services</span></div>
+      <div class="v3-credit t-label">Cork texture: Trougnouf (Benoit Brummer), CC BY 4.0 · Photo: BBC World Service</div>
+    </div></div>
+
+    <!-- sc030 · 447.93–453.21 · FACE M · they only gathered information -->
+    <div class="v3-scene" id="ivs03-sc030"><div class="v3-shot" id="ivs03-sc030-shot">
+      <div class="v3-fcw" id="ivs03-sc030-fw"><video id="ivs03-sc030-v" class="v3-full" src="assets/facecam/ivan_facecam_master.mp4" muted playsinline data-start="151.75" data-duration="5.33" data-media-start="447.93"></video></div>
+      <div class="v3-scrim-bl"></div>
+      <div class="v3-lt t-display clean" id="ivs03-sc030-lt"><span class="v3-w">only </span><span class="v3-w">gathered </span><span class="v3-w">information</span></div>
+    </div></div>
+
+    <!-- sc031 · 453.21–459.45 · FACE W · put two and two together -->
+    <div class="v3-scene" id="ivs03-sc031"><div class="v3-shot" id="ivs03-sc031-shot">
+      <div class="v3-fcw" id="ivs03-sc031-fw"><video id="ivs03-sc031-v" class="v3-full" src="assets/facecam/ivan_facecam_master.mp4" muted playsinline data-start="157.03" data-duration="6.29" data-media-start="453.21"></video></div>
+      <div class="v3-scrim-bl"></div>
+      <div class="v3-lt t-display clean" id="ivs03-sc031-lt"><span class="v3-w">two </span><span class="v3-w">and </span><span class="v3-w">two </span><span class="v3-w">together</span></div>
+    </div></div>
+
+    <!-- sc032 · 459.45–463.37 · FACE C · you can easily imagine how unsettling -->
+    <div class="v3-scene" id="ivs03-sc032"><div class="v3-shot" id="ivs03-sc032-shot">
+      <div class="v3-fcw" id="ivs03-sc032-fw"><video id="ivs03-sc032-v" class="v3-full" src="assets/facecam/ivan_facecam_master.mp4" muted playsinline data-start="163.27" data-duration="3.97" data-media-start="459.45"></video></div>
+    </div></div>
+
+    <!-- sc033 · 463.37–468.25 · Russian senior military officers … direct the war · Kremlin hall generals -->
+    <div class="v3-scene" id="ivs03-sc033"><div class="v3-shot" id="ivs03-sc033-shot">
+      <div class="v3-vw" id="ivs03-sc033-vw"><video id="ivs03-sc033-v" class="v3-full v3-bbc" src="assets/ivan/ivs03/footage/officers_hall.mp4" muted playsinline data-start="167.19" data-duration="4.93" data-media-start="0.3"></video></div>
+      <div class="v3-scrim-b"></div>
+      <div class="v3-lt wide t-display clean" id="ivs03-sc033-a"><span class="v3-w">senior </span><span class="v3-w">military </span><span class="v3-w">officers</span></div>
+      <div class="v3-lt wide t-display clean" id="ivs03-sc033-b"><span class="v3-w">direct </span><span class="v3-w">the </span><span class="v3-w" style="color:var(--oxblood-light)">war</span></div>
+      <div class="v3-credit t-label">Video: BBC World Service / Channel One Russia</div>
+    </div></div>
+
+    <!-- sc034 · 468.25–474.57 · back home in Moscow … someone watching them · long-lens surveillance -->
+    <div class="v3-scene" id="ivs03-sc034"><div class="v3-shot" id="ivs03-sc034-shot">
+      <div class="v3-vw" id="ivs03-sc034-vw"><video id="ivs03-sc034-v" class="v3-full v3-bbc" src="assets/ivan/ivs03/footage/apartment_windows.mp4" muted playsinline data-start="172.07" data-duration="6.32" data-media-start="0.2"></video>
+        <div class="v3-fbox" id="ivs03-sc034-box" style="left:0; top:0; width:120px; height:110px; opacity:0"></div></div>
+      <div class="v3-hud"><svg id="ivs03-sc034-hud" class="v3-mk" viewBox="0 0 1920 1080"></svg></div>
+      <div class="v3-scrim-bl"></div>
+      <div class="v3-lt wide t-display clean" id="ivs03-sc034-a"><span class="v3-w">back </span><span class="v3-w">home </span><span class="v3-w">in </span><span class="v3-w">Moscow</span></div>
+      <div class="v3-lt wide t-display clean" id="ivs03-sc034-b"><span class="v3-w">watching </span><span class="v3-w">them</span></div>
+      <div class="v3-credit t-label">Video: BBC World Service</div>
+    </div></div>
+
+    <div id="ivs03-flash"></div>
+    <div id="ivs03-grain" class="tx tx-grain" style="background-image:url('assets/textures/grain_01_norm.jpg')"></div>
+    <div id="ivs03-dust" class="tx tx-dust" style="background-image:url('assets/textures/dust_02.jpg')"></div>
+    <div id="ivs03-vig" class="vignette"></div>
+    <audio id="ivs03-vo" class="temp-vo" src="vo_iv.mp3" data-start="0" data-duration="178.39" data-media-start="296.18" data-volume="1"></audio>
+  </div>
+  <script>
+  (function () {
+    const SEG = "ivs03", SEG_START = 296.18, SEG_END = 474.57, DURATION = 178.39;
+    const T = (s) => +(s - SEG_START).toFixed(3);   // TEXT cues (audited): literal master word start, minus L
+    const S = (s) => +(s - SEG_START).toFixed(3);   // STRUCTURAL cues (cuts, camera, objects)
+    const L = 0.06;
+    const tl = gsap.timeline({ paused: true });
+    const $ = (id) => document.getElementById(SEG + "-" + id);
+    const NS = "http://www.w3.org/2000/svg";
+    const defs = $("defs");
+    const E = FX.ease;
+    const C = (e, d) => FX.choppy(e, d, 12);
+    const INK = "#1b1d20", BONE = "#f0ede6", OX = "#b32a22", OXL = "#e3a199", AZ = "#2563b0", SKY = "#93bde8", ASH = "#8f9196", ASHD = "#3a3c40";
+    const GM = "M200 40c-52 0-86 40-86 96 0 40 18 74 44 92-4 14-10 24-22 30-58 22-96 52-108 104-6 26-8 58-8 118h360c0-60-2-92-8-118-12-52-50-82-108-104-12-6-18-16-22-30 26-18 44-52 44-92 0-56-34-96-86-96z";
+    const BLDG = '<path d="M14 88 L14 34 L50 14 L86 34 L86 88 Z" fill="none" stroke-width="6"/><path d="M28 46 v30 M44 46 v30 M56 46 v30 M72 46 v30" stroke-width="6"/><path d="M8 90 H92" stroke-width="6"/>';
+
+    // ---------- scenes ----------
+    const SC = [
+      ["sc001", 296.18, 301.78, "face"], ["sc002", 301.78, 303.94, "night"], ["sc003", 303.94, 305.80, "night"], ["sc004", 305.80, 307.91, "face"],
+      ["sc005", 307.91, 317.83, "paper"], ["sc006", 317.83, 322.10, "night"], ["sc007", 322.10, 327.62, "face"], ["sc008", 327.62, 337.05, "cork"],
+      ["sc009", 337.05, 342.07, "paper"], ["sc010", 342.07, 345.15, "night"], ["sc011", 345.15, 350.82, "face"], ["sc012", 350.82, 356.55, "paper"],
+      ["sc013", 356.55, 360.36, "night"], ["sc014", 360.36, 365.85, "night"], ["sc015", 365.85, 370.28, "face"], ["sc016", 370.28, 374.40, "night"],
+      ["sc017", 374.40, 379.24, "face"], ["sc018", 379.24, 383.80, "face"], ["sc019", 383.80, 390.44, "night"], ["sc020", 390.44, 394.92, "face"],
+      ["sc021", 394.92, 399.00, "paper"], ["sc022", 399.00, 402.45, "night"], ["sc023", 402.45, 407.90, "paper"], ["sc024", 407.90, 425.90, "insert"],
+      ["sc025", 425.90, 428.04, "face"], ["sc026", 428.04, 432.28, "paper"], ["sc027", 432.28, 434.73, "light"], ["sc028", 434.73, 437.90, "night"],
+      ["sc029", 437.90, 447.93, "cork"], ["sc030", 447.93, 453.21, "face"], ["sc031", 453.21, 459.45, "face"], ["sc032", 459.45, 463.37, "face"],
+      ["sc033", 463.37, 468.25, "night"], ["sc034", 468.25, 474.57, "night"],
+    ];
+    const GROUND = { paper: [0.32, 0.16, 0.26], night: [1, 0.42, 0.36], cork: [0.9, 0.3, 0.3], face: [0, 0, 0], insert: [0.55, 0, 0.18], light: [0.4, 0.15, 0.24] };
+    const EARLY = { sc009: 0.45, sc023: 0.45 };   // paper slides: the incoming scene is visible during the slide
+    function ground(kind, t) { const v = GROUND[kind]; tl.set([$("vig"), $("dust"), $("grain")], { opacity: (i) => v[i] }, t); }
+    SC.forEach((s, i) => {
+      const el = $(s[0]), a = s[1] - (EARLY[s[0]] || 0);
+      if (i === 0) gsap.set(el, { autoAlpha: 1 });
+      else tl.fromTo(el, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.001, immediateRender: false }, S(a));
+      if (s[2] < SEG_END) tl.set(el, { autoAlpha: 0 }, S(s[2]) + 0.05);
+    });
+    gsap.set([$("vig"), $("dust"), $("grain")], { opacity: 0 });
+    SC.forEach((s) => ground(s[3], S(s[1])));
+
+    // ---------- helpers ----------
+    const show = (el, t) => tl.fromTo(el, { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, t);
+    const rise = (el, t, o) => { o = o || {}; const d = o.dur || 0.6;
+      tl.fromTo(el, { opacity: 0, y: o.y == null ? 16 : o.y }, { opacity: 1, y: 0, duration: d, ease: C(E.out, d), immediateRender: true }, t); };
+    const pop = (el, t, o) => { o = o || {}; const d = o.dur || 0.8;
+      tl.fromTo(el, { opacity: 0, scale: o.from == null ? 0.6 : o.from }, { opacity: 1, scale: 1, duration: d, ease: C(E.out, d), immediateRender: true }, t); };
+    const out = (el, t, d) => tl.to(el, { opacity: 0, duration: d || 0.25, ease: "power1.in" }, t);
+    const W = (id) => Array.from($(id).querySelectorAll(".v3-w"));
+    function words(id, cues, o) { const ws = W(id); cues.forEach((c, i) => rise(ws[i], c, o)); }
+    function el(parent, tag, attrs) { const n = document.createElementNS(NS, tag); for (const k in attrs) n.setAttribute(k, attrs[k]); parent.appendChild(n); return n; }
+    function ink(parent, d, t, dur, o) {
+      o = o || {};
+      const p = el(parent, "path", { d: d, fill: "none", stroke: o.color || INK, "stroke-width": o.width || 5, "stroke-linecap": "round", "stroke-linejoin": "round" });
+      if (o.filter) p.setAttribute("filter", o.filter);
+      if (o.opacity != null) p.setAttribute("opacity", o.opacity);
+      if (o.dash) p.setAttribute("data-dash", o.dash);
+      const len = p.getTotalLength() || 1;
+      p.setAttribute("stroke-dasharray", len + " " + len); p.setAttribute("stroke-dashoffset", len);
+      tl.fromTo(p, { attr: { "stroke-dashoffset": len } }, { attr: { "stroke-dashoffset": 0 }, duration: dur, ease: o.ease || C(E.out, dur), immediateRender: true }, t);
+      return p;
+    }
+    const whipN = { n: 0 };
+    function whip(a, b, t, o) {
+      o = Object.assign({ dir: 1, vertical: false, flash: false, dur: 0.32 }, o);
+      const k = ++whipN.n, ba = FX.whipDefs(defs, SEG + "-wa" + k), bb = FX.whipDefs(defs, SEG + "-wb" + k), h = o.dur / 2;
+      const A = $(a + "-shot"), B = $(b + "-shot");
+      tl.set(A, { filter: "url(#" + SEG + "-wa" + k + ")" }, t - h - 0.01); tl.set(A, { filter: "none" }, t + 0.06);
+      tl.set(B, { filter: "url(#" + SEG + "-wb" + k + ")" }, t - 0.001); tl.set(B, { filter: "none" }, t + h + 0.02);
+      FX.whip(tl, A, B, t, { dir: o.dir, vertical: o.vertical, dur: o.dur, blurA: ba, blurB: bb });
+      if (o.flash) tl.fromTo($("flash"), { opacity: 0 }, { opacity: 0.85, duration: 0.08, yoyo: true, repeat: 1, ease: "power2.in", immediateRender: false }, t - 0.08);
+    }
+    function slide(a, b, t, o) {
+      o = Object.assign({ from: 1, d: 0.45 }, o);
+      const A = $(a + "-shot"), B = $(b + "-shot"), dist = 1980 * o.from;
+      tl.fromTo(B, { x: dist, boxShadow: "0 0 80px rgba(0,0,0,0.5)" }, { x: 0, duration: o.d, ease: C(E.inOut, o.d), immediateRender: false }, t - o.d);
+      tl.set(B, { boxShadow: "none" }, t);
+      tl.fromTo(A, { x: 0 }, { x: -dist * 0.12, duration: o.d, ease: E.in, immediateRender: false }, t - o.d);
+    }
+    // face cam framing: W 1.0 / M 1.25 / C 1.55 around his face, slow 2–3 % push
+    const FR = { W: [1.0, 1.03], M: [1.25, 1.285], C: [1.55, 1.59] };
+    function face(id, a, b, k) {
+      const fw = $(id + "-fw");
+      gsap.set(fw, { scale: FR[k][0] });
+      tl.fromTo(fw, { scale: FR[k][0] }, { scale: FR[k][1], duration: b - a, ease: "none", immediateRender: false }, S(a));
+    }
+    // slow push on a footage wrapper
+    function push(id, a, b, s0, s1, o) {
+      o = o || {};
+      const vw = $(id + "-vw");
+      if (o.origin) gsap.set(vw, { transformOrigin: o.origin });
+      gsap.set(vw, { scale: s0 });
+      tl.fromTo(vw, { scale: s0 }, { scale: s1, duration: b - a, ease: o.ease || "none", immediateRender: false }, S(a));
+    }
+    const gmSvg = (fill) => '<path fill="' + fill + '" d="' + GM + '"/>';
+    $("sc008-gm").setAttribute("d", GM); $("sc023-gm").setAttribute("d", GM);
+
+    FX.grain($("grain"), 301);
+    FX.dust($("dust"), 302, 2);
+    const PEN = FX.markupDefs(defs, SEG + "-pen", { boil: 4 });
+    defs.setAttribute("viewBox", "0 0 1 1");
+
+    /* ===== sc001 · FACE W ===== */
+    face("sc001", 296.18, 301.78, "W");
+    words("sc001-lt", [T(298.18) - L, T(298.66) - L, T(298.90) - L, T(299.14) - L], { dur: 0.6 });
+    out($("sc001-lt"), S(301.2));
+
+    /* ===== sc002 · Warsaw ===== */
+    whip("sc001", "sc002", S(301.78), { dir: 1 });
+    push("sc002", 301.78, 303.94, 1.0, 1.06);
+    words("sc002-lt", [T(303.14) - L], { dur: 0.3 });
+
+    /* ===== sc003 · FOMA (hard cut) ===== */
+    push("sc003", 303.94, 305.80, 1.04, 1.0);
+    rise($("sc003-k"), T(303.94) - L, { dur: 0.4, y: 8 });
+    words("sc003-lt", [T(304.71) - L], { dur: 0.5, y: 24 });
+
+    /* ===== sc004 · FACE C (hard cut) ===== */
+    face("sc004", 305.80, 307.91, "C");
+
+    /* ===== sc005 · IVAN | FOMA network (whip up) ===== */
+    whip("sc004", "sc005", S(307.91), { dir: 1, vertical: true });
+    (function () {
+      const svg = $("sc005-svg");
+      ink(svg, "M961 150 C962 400 959 700 960 930", S(308.0), 0.9, { color: INK, width: 3, opacity: 0.6, ease: C(E.inOut, 0.9) });
+      // Ivan: one grey man
+      const g1 = el(svg, "g", {}); const ASHM = "#7a7c81"; const g1i = el(g1, "g", { transform: "translate(340 222) scale(0.7)" }); g1i.innerHTML = gmSvg(ASHM);
+      gsap.set(g1, { opacity: 0 });
+      tl.fromTo(g1, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.9, ease: C(E.out, 0.9), immediateRender: true }, S(308.5));
+      // Foma: grey man + network
+      const cx = 1440, cy = 358, rnd = FX.rng(500);
+      const lines = el(svg, "g", {}), nodes = el(svg, "g", {});
+      const pts = [];
+      for (let k = 0; k < 12; k++) {
+        const a = -Math.PI / 2 + (k / 12) * Math.PI * 2 + (rnd() - 0.5) * 0.3, r = 0.82 + rnd() * 0.18;
+        pts.push([cx + Math.cos(a) * 345 * r, cy + 20 + Math.sin(a) * 225 * r]);
+      }
+      const segs = [];
+      pts.forEach((p, k) => {
+        segs.push(ink(lines, "M" + cx + " " + (cy + 30) + " L" + p[0].toFixed(1) + " " + p[1].toFixed(1), S(314.63) - L + k * 0.06, 0.6, { color: ASHD, width: 3, opacity: 0.7 }));
+        const q = pts[(k + 1) % 12];
+        segs.push(ink(lines, "M" + p[0].toFixed(1) + " " + p[1].toFixed(1) + " L" + q[0].toFixed(1) + " " + q[1].toFixed(1), S(315.2) + k * 0.06, 0.5, { color: ASHD, width: 2, opacity: 0.45 }));
+        const n = el(nodes, "g", {}); const ni = el(n, "g", { transform: "translate(" + (p[0] - 20).toFixed(1) + " " + (p[1] - 24).toFixed(1) + ") scale(0.1)" }); ni.innerHTML = gmSvg(ASHD);
+        gsap.set(n, { opacity: 0 });
+        tl.set(n, { opacity: 1 }, S(314.7) + Math.floor(k / 2) / 12);
+      });
+      const g2 = el(svg, "g", {}); const g2i = el(g2, "g", { transform: "translate(1300 222) scale(0.7)" }); g2i.innerHTML = gmSvg(ASHM);
+      gsap.set(g2, { opacity: 0 });
+      tl.fromTo(g2, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.9, ease: C(E.out, 0.9), immediateRender: true }, S(311.8));
+      // for Ukraine: the network turns azure
+      tl.to(segs, { attr: { stroke: AZ }, duration: 0.15, ease: "none" }, S(317.13));
+      tl.to(nodes.querySelectorAll("path"), { attr: { fill: AZ }, duration: 0.15, ease: "none" }, S(317.13));
+    })();
+    rise($("sc005-ivan"), T(308.71) - L, { dur: 0.7 });
+    words("sc005-car", [T(309.99) - L, T(310.39) - L, T(310.55) - L], { dur: 0.6 });
+    out($("sc005-car"), S(312.0));
+    rise($("sc005-foma"), T(312.07) - L, { dur: 0.7 });
+    words("sc005-net", [T(314.55) - L, T(314.63) - L, T(314.87) - L], { dur: 0.6 });
+    out($("sc005-net"), S(316.7), 0.2);
+    words("sc005-ukr", [T(316.95) - L, T(317.19) - L], { dur: 0.15, y: 8 });
+    // cut on action: the page starts to push as the cut lands
+    tl.fromTo($("sc005-shot"), { scale: 1 }, { scale: 1.06, duration: 0.5, ease: E.in, immediateRender: false }, S(317.33));
+
+    /* ===== sc006 · Kremlin hall (hard cut on action) ===== */
+    push("sc006", 317.83, 322.10, 1.08, 1.0, { ease: E.cam });
+    words("sc006-lt", [T(320.23) - L, T(320.79) - L, T(320.95) - L, T(321.11) - L], { dur: 0.45 });
+
+    /* ===== sc007 · FACE M ===== */
+    face("sc007", 322.10, 327.62, "M");
+    words("sc007-lt", [T(325.59) - L, T(325.99) - L, T(326.31) - L, T(326.71) - L], { dur: 0.3, y: 10 });
+
+    /* ===== sc008 · investigator's wall (whip left) ===== */
+    whip("sc007", "sc008", S(327.62), { dir: -1 });
+    (function () {
+      const box = $("sc008-cards"), str = $("sc008-str"), rnd = FX.rng(800);
+      const cards = [];
+      for (let row = 0; row < 5; row++) for (let col = 0; col < 9; col++) {
+        if (col >= 3 && col <= 5 && row >= 1 && row <= 3) continue;
+        const cx = 170 + col * 197.5 + (rnd() - 0.5) * 30, cy = 150 + row * 180 + (rnd() - 0.5) * 26;
+        const c = document.createElement("div"); c.className = "v3-icard";
+        c.style.left = (cx - 60).toFixed(0) + "px"; c.style.top = (cy - 42).toFixed(0) + "px";
+        c.innerHTML = '<svg viewBox="0 0 400 480">' + gmSvg(ASH) + '</svg><i style="top:24px;width:38px"></i><i style="top:40px;width:30px"></i><i style="top:56px;width:34px"></i>';
+        gsap.set(c, { rotation: (rnd() - 0.5) * 8 });
+        const p = document.createElement("div"); p.className = "v3-pin"; p.style.left = (cx - 9).toFixed(0) + "px"; p.style.top = (cy - 48).toFixed(0) + "px";
+        box.appendChild(c); box.appendChild(p);
+        cards.push({ c, p, cx, cy, left: cx < 960 });
+      }
+      // order: outward from the centre, stop-motion pinning
+      cards.sort((a, b) => Math.hypot(a.cx - 960, a.cy - 430) - Math.hypot(b.cx - 960, b.cy - 430));
+      cards.forEach((k, i) => {
+        const t = S(327.75) + Math.floor(i * 1.05) / 12;
+        gsap.set([k.c, k.p], { opacity: 0 });
+        tl.fromTo(k.c, { opacity: 0, scale: 1.25 }, { opacity: 1, scale: 1, duration: 2 / 12, ease: "steps(2)", immediateRender: true }, t);
+        tl.set(k.p, { opacity: 1 }, t + 2 / 12);
+        const x2 = k.cx, y2 = k.cy - 39, mx = (960 + x2) / 2, my = (430 + y2) / 2 + 40;
+        k.s = ink(str, "M960 432 Q" + mx.toFixed(1) + " " + my.toFixed(1) + " " + x2.toFixed(1) + " " + y2.toFixed(1), t + 0.15, 0.5, { color: OX, width: 3, opacity: 0.9 });
+      });
+      tl.fromTo($("sc008-cam"), { scale: 1.06, x: 20 }, { scale: 1.0, x: -10, duration: 9.4, ease: E.cam, immediateRender: false }, S(327.62));
+      FX.focusHunt(tl, $("sc008-cam"), S(327.72), { dur: 0.8 });
+      // three dozen people
+      const lbw = W("sc008-box");
+      tl.fromTo($("sc008-lb"), { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, T(331.35) - L);
+      [T(331.35) - L, T(331.67) - L, T(332.07) - L].forEach((c, i) => rise(lbw[i], c, { dur: 0.5, y: 10 }));
+      out($("sc008-box"), S(333.80));
+      // inside Russia / from abroad
+      const lc = cards.filter((k) => k.left), rc = cards.filter((k) => !k.left);
+      const fx = (arr) => arr.reduce((a, k) => a.concat([k.c, k.p]), []);
+      ink(str, "M958 78 C960 160 961 220 959 296", S(333.9), 0.5, { color: BONE, width: 4, opacity: 0.8 });
+      ink(str, "M960 566 C959 700 961 860 958 1000", S(333.9), 0.6, { color: BONE, width: 4, opacity: 0.8 });
+      tl.to(fx(rc), { opacity: 0.3, duration: 0.3, ease: "power1.inOut" }, S(333.95));
+      tl.to(rc.map((k) => k.s), { opacity: 0.25, duration: 0.3 }, S(333.95));
+      show($("sc008-in"), T(334.07) - L); words("sc008-in", [T(334.07) - L, T(334.47) - L], { dur: 0.4, y: 8 });
+      tl.to(fx(rc), { opacity: 1, duration: 0.3, ease: "power1.inOut" }, S(335.65));
+      tl.to(rc.map((k) => k.s), { opacity: 0.9, duration: 0.3 }, S(335.65));
+      tl.to(fx(lc), { opacity: 0.3, duration: 0.3, ease: "power1.inOut" }, S(335.65));
+      tl.to(lc.map((k) => k.s), { opacity: 0.25, duration: 0.3 }, S(335.65));
+      show($("sc008-ab"), T(335.75) - L); words("sc008-ab", [T(335.75) - L, T(335.91) - L], { dur: 0.25, y: 8 });
+    })();
+
+    /* ===== sc009 · redacted case file (paper slides over the wall) ===== */
+    slide("sc008", "sc009", S(337.05));
+    tl.fromTo($("sc009-cam"), { scale: 1.0 }, { scale: 1.06, duration: 5.4, ease: "none", immediateRender: false }, S(336.60));
+    (function () {
+      const r1 = Array.from($("sc009-r1").querySelectorAll(".v3-bar")), r2 = Array.from($("sc009-r2").querySelectorAll(".v3-bar"));
+      [T(339.19) - L, T(339.75) - L, T(340.15) - L].forEach((c, i) => tl.fromTo(r1[i], { scaleX: 1 }, { scaleX: 0, duration: 0.25, ease: C(E.inOut, 0.25), immediateRender: true }, c));
+      [T(340.87) - L, T(341.35) - L].forEach((c, i) => tl.fromTo(r2[i], { scaleX: 1 }, { scaleX: 0, duration: 0.25, ease: C(E.inOut, 0.25), immediateRender: true }, c));
+      // the rows' redaction bars' left origin: the bar retracts to the right (reveals the word left→right)
+    })();
+    tl.to($("sc009-cam"), { scale: 1.14, duration: 0.45, ease: E.in }, S(341.62));
+
+    /* ===== sc010 · laptop street view (cut on action) ===== */
+    push("sc010", 342.07, 345.15, 1.12, 1.0, { ease: E.cam, origin: "45% 40%" });
+    words("sc010-lt", [T(342.71) - L, T(343.03) - L, T(343.35) - L, T(343.51) - L, T(343.75) - L, T(344.23) - L], { dur: 0.35, y: 10 });
+
+    /* ===== sc011 · FACE W ===== */
+    face("sc011", 345.15, 350.82, "W");
+    words("sc011-lt", [T(348.79) - L, T(348.95) - L, T(349.43) - L, T(349.91) - L], { dur: 0.3, y: 10 });
+
+    /* ===== sc012 · node chain GUR → Foma → his people → that person (whip right) ===== */
+    whip("sc011", "sc012", S(350.82), { dir: 1 });
+    (function () {
+      const ico = (id, html) => { $(id).innerHTML = '<svg viewBox="0 0 260 260">' + html + "</svg>"; };
+      ico("sc012-n1", '<g transform="translate(55 50) scale(1.5)" stroke="' + AZ + '" fill="none">' + BLDG + "</g>");
+      ico("sc012-n2", '<g transform="translate(50 52) scale(0.4)">' + gmSvg(ASH) + "</g>");
+      let ppl = ""; [[40, 70], [110, 50], [180, 70], [75, 140], [145, 140]].forEach((p) => { ppl += '<g transform="translate(' + p[0] + " " + p[1] + ') scale(0.11)">' + gmSvg(ASHD) + "</g>"; });
+      ico("sc012-n3", ppl);
+      ico("sc012-n4", '<g transform="translate(50 52) scale(0.4)">' + gmSvg(OX) + "</g>");
+      pop($("sc012-n1"), S(350.84), { dur: 0.8, from: 0.7 });
+      rise($("sc012-l1"), S(350.95), { dur: 0.6 });
+      const svg = $("sc012-svg");
+      const arr = (t, x1, x2, d) => FX.markup.arrow(tl, svg, t, { x1: x1, y1: 432, x2: x2, y2: 436, bend: -26, head: 26, dur: d, color: INK, width: 6, filter: PEN });
+      const a1 = arr(S(351.03), 455, 615, 0.4);
+      pop($("sc012-n2"), T(351.43) - L, { dur: 0.7, from: 0.7 });
+      words("sc012-l2", [T(351.43) - L], { dur: 0.5 });
+      const a2 = arr(S(352.10), 915, 1015, 0.35);
+      pop($("sc012-n3"), T(352.39) - L, { dur: 0.7, from: 0.7 });
+      words("sc012-l3", [T(352.39) - L, T(352.63) - L], { dur: 0.5 });
+      const a3 = arr(S(353.35), 1315, 1475, 0.8);
+      pop($("sc012-n4"), S(354.4), { dur: 0.8, from: 0.7 });
+      words("sc012-l4", [T(355.67) - L, T(355.91) - L], { dur: 0.15, y: 8 });
+      [a1, a2, a3].forEach((pp) => { gsap.set(pp, { opacity: 0 }); });
+      tl.set(a1, { opacity: 1 }, S(351.03)); tl.set(a2, { opacity: 1 }, S(352.10)); tl.set(a3, { opacity: 1 }, S(353.35));
+      gsap.set([$("sc012-n2"), $("sc012-n3"), $("sc012-n4")], { opacity: 0 });
+      tl.fromTo($("sc012-shot"), { scale: 1 }, { scale: 1.04, duration: 5.73, ease: "none", immediateRender: false }, S(350.82));
+    })();
+
+    /* ===== sc013 · Foma trains a volunteer (cut on action) ===== */
+    push("sc013", 356.55, 360.36, 1.0, 1.05);
+    words("sc013-lt", [T(358.63) - L, T(358.87) - L, T(359.03) - L, T(359.11) - L, T(359.35) - L], { dur: 0.35, y: 10 });
+
+    /* ===== sc014 · surveillance (light-flash whip) ===== */
+    whip("sc013", "sc014", S(360.36), { dir: -1, flash: true });
+    push("sc014", 360.36, 365.85, 1.0, 1.08, { origin: "30% 75%" });
+    (function () {
+      const hud = $("sc014-hud");
+      [[96, 150, 96, 96, 150, 96], [1824, 150, 1824, 96, 1770, 96], [96, 930, 96, 984, 150, 984], [1824, 930, 1824, 984, 1770, 984]].forEach((q) =>
+        el(hud, "path", { d: "M" + q[0] + " " + q[1] + " L" + q[2] + " " + q[3] + " L" + q[4] + " " + q[5], fill: "none", stroke: BONE, "stroke-width": 3, opacity: 0.8 }));
+      // REC blink (seek-safe: driven by a tween's onUpdate)
+      const rec = $("sc014-rec"), tc = $("sc014-tc"), st = { v: 0 };
+      tl.fromTo(st, { v: 0 }, { v: 5.5, duration: 5.5, ease: "none", immediateRender: false, onUpdate: () => {
+        rec.style.opacity = Math.floor(st.v * 1.5) % 2 ? 0.2 : 1;
+        const f = Math.floor(st.v * 24) + 2213 * 24, p = (n) => String(n).padStart(2, "0");
+        tc.textContent = "00:" + p(Math.floor(f / 1440) % 60) + ":" + p(Math.floor(f / 24) % 60) + ":" + p(f % 24);
+      } }, S(360.36));
+      // focus box tracks a figure (positions in frame px; measured on snapshots)
+      const box = $("sc014-box"), bl = $("sc014-bl");
+      const K = [[360.70, 385, 570], [362.56, 365, 570], [364.06, 310, 590], [365.85, 270, 590]];
+      gsap.set(box, { x: K[0][1], y: K[0][2] });
+      tl.fromTo(box, { opacity: 0, scale: 1.5 }, { opacity: 1, scale: 1, duration: 0.5, ease: C(E.out, 0.5), immediateRender: true }, S(360.70));
+      for (let i = 1; i < K.length; i++) tl.fromTo(box, { x: K[i - 1][1], y: K[i - 1][2] }, { x: K[i][1], y: K[i][2], duration: K[i][0] - K[i - 1][0], ease: "none", immediateRender: false }, S(K[i - 1][0]));
+      gsap.set(bl, { x: K[2][1] + 196, y: K[2][2] + 4 });
+      tl.fromTo(bl, { x: K[2][1] + 196, y: K[2][2] + 4 }, { x: K[3][1] + 196, y: K[3][2] + 4, duration: 1.79, ease: "none", immediateRender: false }, S(364.06));
+      words("sc014-bl", [T(364.04) - L, T(364.20) - L, T(364.60) - L, T(365.00) - L], { dur: 0.3, y: 8 });
+    })();
+
+    /* ===== sc015 · FACE C ===== */
+    face("sc015", 365.85, 370.28, "C");
+
+    /* ===== sc016 · 25 years (whip down) ===== */
+    whip("sc015", "sc016", S(370.28), { dir: 1, vertical: true });
+    tl.fromTo($("sc016-bars"), { x: 260 }, { x: 0, duration: 2.0, ease: C(E.out, 2.0), immediateRender: true }, S(370.28));
+    words("sc016-al", [T(372.12) - L, T(372.28) - L], { dur: 0.45, y: 8 });
+    pop($("sc016-25"), T(372.52) - L, { dur: 0.6, from: 0.8 });
+    words("sc016-yr", [T(373.08) - L, T(373.32) - L, T(373.48) - L], { dur: 0.3, y: 10 });
+
+    /* ===== sc017 · FACE M · sc018 · FACE W ===== */
+    face("sc017", 374.40, 379.24, "M");
+    face("sc018", 379.24, 383.80, "W");
+    words("sc018-lt", [T(382.36) - L, T(382.60) - L, T(382.76) - L, T(382.84) - L], { dur: 0.35, y: 10 });
+
+    /* ===== sc019 · looking over their shoulders (whip right) ===== */
+    whip("sc018", "sc019", S(383.80), { dir: 1 });
+    push("sc019", 383.80, 390.44, 1.0, 1.08, { origin: "40% 45%" });
+    words("sc019-lt", [T(386.84) - L, T(387.16) - L, T(387.40) - L, T(387.56) - L], { dur: 0.5, y: 12 });
+
+    /* ===== sc020 · FACE M · late 2024 ===== */
+    face("sc020", 390.44, 394.92, "M");
+    words("sc020-lt", [T(390.84) - L, T(391.16) - L], { dur: 0.5, y: 12 });
+    out($("sc020-lt"), S(394.3));
+
+    /* ===== sc021 · Kirillov case card (whip up) ===== */
+    whip("sc020", "sc021", S(394.92), { dir: -1, vertical: true });
+    tl.fromTo($("sc021-ph"), { x: 700, rotation: 8 }, { x: 0, rotation: 1.6, duration: 1.1, ease: C(E.out, 1.1), immediateRender: true }, S(394.98));
+    FX.focusHunt(tl, $("sc021-ph"), S(396.1), { dur: 0.8 });
+    words("sc021-dec", [T(395.40) - L, T(395.64) - L], { dur: 0.5 });
+    words("sc021-nm", [T(397.40) - L, T(398.04) - L], { dur: 0.4, y: 18 });
+    tl.fromTo($("sc021-rule"), { scaleX: 0 }, { scaleX: 1, duration: 0.4, ease: C(E.out, 0.4), immediateRender: true }, S(397.9));
+    tl.fromTo($("sc021-shot"), { scale: 1 }, { scale: 1.03, duration: 3.6, ease: "none", immediateRender: false }, S(394.92));
+    tl.to($("sc021-shot"), { scale: 1.12, duration: 0.42, ease: E.in }, S(398.60));
+
+    /* ===== sc022 · blast site (cut on action) ===== */
+    push("sc022", 399.00, 402.45, 1.12, 1.02, { ease: E.cam });
+    words("sc022-lt", [T(399.16) - L, T(399.48) - L, T(399.64) - L, T(399.72) - L], { dur: 0.4, y: 12 });
+
+    /* ===== sc023 · confirmed (paper slides in) ===== */
+    slide("sc022", "sc023", S(402.45));
+    words("sc023-lab", [T(402.52) - L, T(403.16) - L, T(403.72) - L], { dur: 0.45 });
+    tl.fromTo($("sc023-stamp"), { opacity: 0, scale: 1.6 }, { opacity: 0.92, scale: 1, duration: 0.25, ease: "power2.in", immediateRender: true }, T(404.36) - L);
+    tl.fromTo($("sc023-shot"), { x: 0 }, { x: 6, duration: 0.06, yoyo: true, repeat: 1, ease: "none", immediateRender: false }, T(404.36) + 0.19);
+    out($("sc023-stamp"), S(406.45), 0.3);
+    W("sc023-bh").forEach((w, i) => show(w, [T(406.84) - L, T(407.16) - L, T(407.32) - L][i]));
+    tl.fromTo($("sc023-ring"), { scale: 0.85, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.8, ease: C(E.out, 0.8), immediateRender: true }, S(402.30));
+
+    /* ===== sc024 · INSERT 2 (light-flash whip in, whip out) ===== */
+    whip("sc023", "sc024", S(407.90), { dir: 1, flash: true, dur: 0.24 });
+    tl.fromTo($("sc024-shot"), { scale: 1.04 }, { scale: 1.0, duration: 18, ease: "none", immediateRender: false }, S(407.90) + 0.17);
+
+    /* ===== sc025 · FACE W ===== */
+    whip("sc024", "sc025", S(425.90), { dir: -1 });
+    face("sc025", 425.90, 428.04, "W");
+
+    /* ===== sc026 · December 2024 → 2025 (cut on action: the calendar rises in) ===== */
+    tl.fromTo($("sc026-cal"), { y: 420, rotation: -3 }, { y: 0, rotation: 0, duration: 0.9, ease: C(E.out, 0.9), immediateRender: true }, S(428.04));
+    words("sc026-mon", [T(428.20) - L], { dur: 0.5, y: 10 });
+    tl.set($("sc026-y24"), { opacity: 0 }, T(428.76) - L);
+    FX.text.odometer(tl, $("sc026-y25"), T(428.76) - L, { glyphs: "0123456789", spins: 6, dur: 0.8, stagger: 0.05, seed: 26 });
+    tl.fromTo($("sc026-hl"), { scaleX: 0 }, { scaleX: 1, duration: 0.5, ease: C("sine.inOut", 0.5), immediateRender: true }, S(429.75));
+    tl.fromTo($("sc026-shot"), { scale: 1 }, { scale: 1.05, duration: 4.24, ease: "none", immediateRender: false }, S(428.04));
+
+    /* ===== sc027 · Fanil Sarvarov (whip right) ===== */
+    whip("sc026", "sc027", S(432.28), { dir: 1 });
+    gsap.set($("sc027-vw"), { x: 380 });
+    gsap.set($("sc027-mv"), { transformOrigin: "40% 100%" });
+    tl.fromTo($("sc027-mv"), { scale: 1.0 }, { scale: 1.05, duration: 2.45, ease: "none", immediateRender: false }, S(432.28));
+    words("sc027-nm", [T(433.00) - L, T(433.72) - L], { dur: 0.35, y: 14 });
+
+    /* ===== sc028 · beneath his car (hard cut) ===== */
+    push("sc028", 434.73, 437.90, 1.0, 1.06);
+    words("sc028-lt", [T(436.41) - L, T(436.81) - L, T(436.97) - L], { dur: 0.3, y: 10 });
+
+    /* ===== sc029 · the wall again: tracking that specific general → Ukrainian intelligence (whip left) ===== */
+    whip("sc028", "sc029", S(437.90), { dir: -1 });
+    (function () {
+      const box = $("sc029-cards"), str = $("sc029-str"), top = $("sc029-top");
+      $("sc029-gsvg").innerHTML = '<g stroke="' + AZ + '" fill="none">' + BLDG + "</g>";
+      const vol = [];
+      [[230, 300], [440, 280], [210, 480], [450, 470], [240, 660], [430, 650]].forEach((p, i) => {
+        const c = document.createElement("div"); c.className = "v3-icard";
+        c.style.cssText = "left:" + (p[0] - 75) + "px; top:" + (p[1] - 52) + "px; width:150px; height:104px";
+        c.innerHTML = '<svg viewBox="0 0 400 480" style="width:62px;height:74px;left:12px;top:15px">' + gmSvg(ASH) + '</svg><i style="top:28px;left:86px;width:46px"></i><i style="top:48px;left:86px;width:36px"></i><i style="top:68px;left:86px;width:42px"></i>';
+        gsap.set(c, { rotation: (i % 2 ? 3 : -2.5) });
+        const pn = document.createElement("div"); pn.className = "v3-pin"; pn.style.left = (p[0] - 9) + "px"; pn.style.top = (p[1] - 60) + "px";
+        box.appendChild(c); box.appendChild(pn); vol.push({ c, pn, x: p[0], y: p[1] });
+      });
+      // red strings: volunteers → Sarvarov (tracking)
+      vol.forEach((v, i) => {
+        const x2 = 990, y2 = 175, mx = (v.x + x2) / 2, my = (v.y - 55 + y2) / 2 + 60;
+        ink(str, "M" + v.x + " " + (v.y - 51) + " Q" + mx + " " + my + " " + x2 + " " + y2, S(441.55) + i * 0.08, 0.7, { color: OX, width: 3.5 });
+      });
+      // azure string: volunteers → Ukrainian intelligence (passed information)
+      ink(top, "M440 700 C700 900 1200 900 1590 572", S(444.25), 1.1, { color: AZ, width: 5, ease: C(E.inOut, 1.1) });
+      tl.fromTo($("sc029-cam"), { scale: 1.1, x: 60, y: 20 }, { scale: 1.02, x: 0, y: 0, duration: 3.5, ease: E.cam, immediateRender: false }, S(437.90));
+      tl.to($("sc029-cam"), { scale: 1.05, x: -50, y: -30, duration: 3.0, ease: E.cam }, S(444.0));
+      FX.focusHunt(tl, $("sc029-cam"), S(438.05), { dur: 0.8 });
+      tl.fromTo($("sc029-sv"), { opacity: 0, scale: 1.2 }, { opacity: 1, scale: 1, duration: 2 / 12, ease: "steps(2)", immediateRender: true }, S(438.0));
+      tl.fromTo($("sc029-gur"), { opacity: 0, scale: 1.2 }, { opacity: 1, scale: 1, duration: 2 / 12, ease: "steps(2)", immediateRender: true }, S(444.10));
+    })();
+    show($("sc029-hv"), T(440.01) - L); words("sc029-hv", [T(440.01) - L, T(440.17) - L], { dur: 0.4, y: 8 });
+    out($("sc029-hv"), S(441.30));
+    show($("sc029-tr"), T(441.61) - L); words("sc029-tr", [T(441.61) - L, T(442.09) - L, T(442.33) - L, T(442.81) - L], { dur: 0.4, y: 8 });
+    out($("sc029-tr"), S(445.70));
+    show($("sc029-ui"), T(446.01) - L); words("sc029-ui", [T(446.01) - L, T(446.65) - L, T(447.21) - L], { dur: 0.25, y: 8 });
+
+    /* ===== sc030–sc032 · FACE M / W / C ===== */
+    face("sc030", 447.93, 453.21, "M");
+    words("sc030-lt", [T(449.45) - L, T(449.61) - L, T(450.17) - L], { dur: 0.45, y: 10 });
+    out($("sc030-lt"), S(452.7));
+    face("sc031", 453.21, 459.45, "W");
+    words("sc031-lt", [T(454.65) - L, T(454.89) - L, T(455.05) - L, T(455.29) - L], { dur: 0.45, y: 10 });
+    out($("sc031-lt"), S(458.9));
+    face("sc032", 459.45, 463.37, "C");
+
+    /* ===== sc033 · generals in the Kremlin (whip right) ===== */
+    whip("sc032", "sc033", S(463.37), { dir: 1 });
+    push("sc033", 463.37, 468.25, 1.0, 1.06);
+    words("sc033-a", [T(463.85) - L, T(464.25) - L, T(464.65) - L], { dur: 0.45, y: 10 });
+    out($("sc033-a"), S(466.25));
+    words("sc033-b", [T(466.57) - L, T(466.97) - L, T(467.05) - L], { dur: 0.35, y: 10 });
+    tl.to($("sc033-vw"), { scale: 1.12, duration: 0.4, ease: E.in }, S(467.85));
+
+    /* ===== sc034 · someone watching (cut on action), push continues into the cut ===== */
+    (function () {
+      const vw = $("sc034-vw"), hud = $("sc034-hud"), box = $("sc034-box");
+      // long-lens crosshair corners
+      [[600, 300, 600, 260, 640, 260], [1320, 300, 1320, 260, 1280, 260], [600, 780, 600, 820, 640, 820], [1320, 780, 1320, 820, 1280, 820]].forEach((q) =>
+        el(hud, "path", { d: "M" + q[0] + " " + q[1] + " L" + q[2] + " " + q[3] + " L" + q[4] + " " + q[5], fill: "none", stroke: BONE, "stroke-width": 3, opacity: 0.75 }));
+      el(hud, "path", { d: "M940 540 L980 541 M960 520 L961 560", stroke: BONE, "stroke-width": 2, opacity: 0.6 });
+      // the box hunts across the windows, then locks on one lit window (target in video px, measured on snapshots)
+      const TX = 580, TY = 637;
+      const K = [[468.6, 620, 300], [469.8, 1240, 560], [470.9, 860, 700], [471.9, TX, TY]];
+      gsap.set(box, { x: K[0][1], y: K[0][2] });
+      tl.fromTo(box, { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, S(468.6));
+      for (let i = 1; i < K.length; i++) tl.fromTo(box, { x: K[i - 1][1], y: K[i - 1][2] }, { x: K[i][1], y: K[i][2], duration: K[i][0] - K[i - 1][0], ease: C(E.inOut, K[i][0] - K[i - 1][0]), immediateRender: false }, S(K[i - 1][0]));
+      tl.to(box, { borderColor: OXL, duration: 0.001 }, S(471.95));
+      tl.fromTo(box, { scale: 1.3 }, { scale: 1, duration: 0.3, ease: C(E.out, 0.3), immediateRender: false }, S(471.95));
+      // push toward the locked window, still accelerating at the cut (hand-off motion)
+      gsap.set(vw, { transformOrigin: (TX + 60) + "px " + (TY + 55) + "px" });
+      tl.fromTo(vw, { scale: 1.0 }, { scale: 1.12, duration: 3.6, ease: "none", immediateRender: false }, S(468.25));
+      tl.to(vw, { scale: 1.6, duration: 2.72, ease: "power2.in" }, S(471.85));
+    })();
+    words("sc034-a", [T(468.73) - L, T(468.97) - L, T(469.29) - L, T(469.45) - L], { dur: 0.45, y: 10 });
+    out($("sc034-a"), S(471.3));
+    W("sc034-b").forEach((w, i) => (i === 0 ? rise(w, T(473.61) - L, { dur: 0.3, y: 10 }) : show(w, T(474.01) - L)));
+
+    FX.mount(tl, DURATION);
+    window.__timelines = window.__timelines || {};
+    window.__timelines[SEG] = tl;
+  })();
+  </script>
+</template>
+</body>
+</html>
