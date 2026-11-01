@@ -38,6 +38,8 @@ for sid, src, dur in items:
     t += dur + GAP
 total = round(t - GAP, 3)
 
+import os as _os
+PALETTE = _os.environ.get('PALETTE') or ('lib/palette_ivan.css' if any(a.startswith('iv') for a in sys.argv[1:]) else 'lib/palette.css')  # per-video palette (Ivan = iv*)
 html = f'''<!doctype html>
 <html lang="en">
   <head>
@@ -45,7 +47,7 @@ html = f'''<!doctype html>
     <meta name="viewport" content="width=1920, height=1080" />
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
     <link rel="stylesheet" href="lib/fx.css" />
-    <link rel="stylesheet" href="lib/palette.css" />
+    <link rel="stylesheet" href="{PALETTE}" />
     <script src="lib/fx.js"></script>
   </head>
   <body>
