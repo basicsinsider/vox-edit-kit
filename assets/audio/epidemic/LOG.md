@@ -69,6 +69,28 @@ commands below. Never use the public low-quality preview MP3s in an edit. Measur
 | `captivating/` | Captivating — Joseph Alesci (drama, elegant, main title, peaceful) | f0983d53-2b0c-3eb3-bd2b-e54166733057 | — | full, bass, drums, instruments (derived melody −1.9 dB re full: unreliable, deleted) | 91 | A minor | the turning point ('statement' → 'Keep on fighting'), the engineers' cabinet, the breakfast build into c7 |
 | `reflection_of_the_sun/` | Reflection of the Sun — Anna Landström (contemporary classical, dreamy) | 91275fd8-6226-4873-a678-2b1686def992 | — | full, bass, instruments, melody_derived (no DRUMS stem exists) | 88 | F major | airy wonder from 'technological breakthrough'; its 93–118 s peak = the swell on 'moon' |
 
+### "Ivan" (Searching Lessons, 2026-11-01) — cue sheet `project/ivan/music_cuesheet.json`, plan `project/ivan/SOUND_PLAN.md`
+Key family **D minor / D (modal) / F major**. Geopolitical espionage: dark pulses, drones, contemporary-classical tension, one
+reflective ending. Re-downloaded `woodwind_reviere` and `estimations` (IDs above). Stems don't sum to the full mix for Code of Violence,
+Close Call, Letters Never Sent (derived melody ≈ 0 dB or above re full → deleted): their delivered stems are used as layers. Tracker and
+Make Way for Hearses: stems are 10–20 LU quieter than the full mix (the melody isn't a stem) → the `full` file is the layer.
+Fulls of code_of_violence / estimations / close_call / letters_never_sent / woodwind_reviere and tracker_instruments deleted after analysis (disk).
+
+| folder | title — artist | kosmosId | stems downloaded | bpm | key (est.) | role in Ivan / why |
+|---|---|---|---|---|---|---|
+| `code_of_violence/` | Code of Violence — Dian Shuai (dark, dark ambient, mysterious) | 8b36c332-a349-4289-b02f-b96a294c4b6b | full, bass, drums, instruments | 102 | D major (alt D minor; dark modal) | M1 cold open → invasion (its 100–118 peak on "full-scale invasion…February 2022"); M7 Ivan's own mystery (Spiderweb foreknowledge, Yelabuga) |
+| `tracker/` | Tracker — Christoffer Moe Ditlevsen (electronic, sneaking, suspense) | 3d59ec8e-9ad0-3446-87b4-b2f57773c457 | full, bass, drums (instruments −32 LUFS, deleted) | 90 | D minor | M3 the investigation (Ivan decides → Mamoń → videos → verification → Kazakhstan/Tatarstan); M9 railway saboteurs |
+| `estimations/` | Estimations — Christoffer Moe Ditlevsen | a720e76d-783d-4d9d-a858-b9ed527d3ad3 | bass, drums, instruments | 117 | D minor | M4/M5 the five-hour assignment → Foma's network → Kirillov (its 143 s peak on "killed by a bomb") → Sarvarov |
+| `close_call/` | Close Call — Helmut Schenker (epic, orchestral, restless) | 4669ca1d-a25d-4489-bdea-e572e99220e0 | full, bass, drums, instruments | 84 | D minor | M6 Operation Spiderweb (41–65 peak on "June 1st…drones", quiet under the trucks + insert 3, 104–134 peak on the losses) |
+| `make_way_for_hearses/` | Make Way for Hearses — Christian Andersen (dark, suspense) | 883bf493-6079-3e38-a6ee-a027e39b493e | full, bass, drums, instruments | 90 | D major (alt D minor) | M8 "how was he never caught?" → double agent → months of silence → the car inspection; cut dead on "explosives" |
+| `letters_never_sent/` | Letters Never Sent — Anna Dager, Anna Landström, Hanna Ekström (contemporary classical, dark, sad) | 39323798-4969-4700-b943-457da8d5619d | full, bass, instruments | 80 | F major (alt D minor) | M10 reflective ending (peak on "Russians themselves", dip under "Putin won't live forever", swell on the last line) |
+| `woodwind_reviere/` | Woodwind Reviere — Daniella Ljungsberg (dark drone) | 6882422a-a047-4e82-9c00-4e84b5a5538e | full, bass, instruments | – | D minor | DRONE glue under every join, the floor under the three inserts, the months of silence |
+
+Auditioned for Ivan (previews; key measured): The Connection (Lennon Hutton, D, dark suspense — spare), Out There (Out To The World, D minor,
+sub-heavy drone pulse — spare), Returning Home (D minor), Quotidian (Arr. Gabel) (CMD, D minor, sad — spare ending), Disturbing Evidence
+(A/D minor), We Are on Our Own (F, drone/sneaking); off-key or too trailer-like: Ignition Protocol, Launch Sequence, Epic Triumph,
+Rattlesnake Canyon Chase, Pulse Runner, Formula, The Mole, Covert Affairs, Ghosting, Collusion, Escalation.
+
 ### Candidates auditioned (by metadata + measured key from previews; not downloaded)
 Formations (Van Sandano, 100, Ab minor — wrong key for the set), Chrysotile (Farrell Wooten drone, C# minor — clashes with D),
 Imber (140, F# minor), Ostinato (Vieveri, 180, A minor — strong alternative for a build), City Phases (John Abbot, 150, A minor —
@@ -112,3 +134,28 @@ Allegro Sotto Le Stelle (Ab major) — off-key; c6 audition: Longing (B minor), 
 | swell_reverse_timpani_cymbal.wav | 04845f9f-e404-4209-b190-54d21070eec5 | Musical, Stinger, Trailer Swell, Reverse, Timpani and Cymbal | 8.3 s | "here's the story" launch swell |
 | rubber_stamp_document_01.wav | d530c5b9-3047-42fe-a06a-7c479d637b60 | Office Supplies, Rubber Stamp, Document 01 | 0.2 s | stamps (D07 collage, "YES" hovering) |
 - 2026-10-31 — Disk: stems (bass/drums/instruments/melody WAVs) deleted locally after all c1–c6 beds were built; re-fetch with tools/epidemic_fetch.py (IDs above) to rebuild a bed.
+
+### SFX added for "Ivan" (2026-11-01) — `sfx/` (the intro set above was re-downloaded too: whooshes, booms, riser, swell, paper slides,
+focus, jets, telegraph, phone ring/dial, office/factory ambiences, rubber stamp)
+
+| file | Epidemic id | Epidemic title | use (place_sound type) |
+|---|---|---|---|
+| radio_static_lost_signal_01.wav | 357c719f-fbeb-42b4-80d5-356a35d82aec | Communications, Static, Radio, Lost Signal 01 | `radio_static` |
+| radio_am_tuning_glitchy_01.wav | 3c3a05b7-bbc9-46f2-9d87-7aa0b1ec32f0 | Communications, Radio, Am Tuning, Long, Noise, Glitchy 01 | `radio_static` (alt take) |
+| phone_vibrate_hand_01/_02.wav | 29ee2675-96c4-4139-a679-f11fb9a3a9d0 / 797ad432-ff97-473c-be53-8313acb8379c | Cellphone, Vibrate, Held In Hand 01/02 | `phone_vibrate` |
+| phone_vibrate_call_loop.wav | aa31ac72-0232-44ee-963b-7673b387daaa | Cellphone, Call, Vibrate, Loopable | `phone_vibrate` with dur > 1 s |
+| message_text_ping_01/_02.wav | a6dae59d-6111-42cb-887d-9bad152480e1 / 96e6bbfb-71dc-42ff-b506-1ff2ab96da2d | UI, Alert, Notification, Message, Text (02) | `message_ping` |
+| drone_rc_motor_medium.wav / drone_rc_fly_around.wav | 3c23824f-ee7c-4583-92e1-e12e10cbd9d1 / abb25339-aaa4-47fb-af4a-5417be3f62ea | RC drone motor whir (medium / fly around) | `drone_buzz` (dur) |
+| explosion_distant_01/_03.wav, boom_distant_explosion_03.wav | 36a2288d-4f49-49f4-aa10-7d26a1222104 / 5ff5dfec-b285-4126-96d3-fcf2be4926fe / 4e3da17e-0ca6-471f-a05f-a0fcef395e66 | Explosions, Real, Distant | `explosion_distant` |
+| train_locomotive_pass_night/_dawn.wav | 4e703ce2-121f-4ae7-875b-f8af6e32ed40 / 01d1cb24-2fe1-463e-a2ee-6cf97813616c | Trains, Electric, Locomotive, Pass By | `train_pass` (dur) |
+| car_start_idle_rover.wav / car_w108_start_idle_stop.wav | 734791ef-ef29-44e7-9e8a-c8f08366754f / c922c4dd-bd24-4623-bfa5-b8003e32f277 | Car start + idle | `car_engine` (dur) |
+| car_door_close_hard.wav / car_trunk_close.wav | 05b1bd38-299d-451d-a394-909e672cf764 / b9d78f6f-a41e-4db1-962f-9839002b08f8 | Car door close / boot close | `car_door` ("trunk/inspect" → boot) |
+| keyboard_typing_apple.wav / keyboard_typing_17s.wav | c7ac1cb5-8e80-4fdc-bcab-23626f61340a / 5dd650b3-0f30-4872-9b85-ca51efc7bd4d | Keyboard typing | `keyboard` (dur) |
+| heartbeat_cinematic_54bpm.wav / heartbeat_evil_fat_bass.wav | c805d6d8-b28b-4982-b407-c6233190e4de / 44f4869f-f2d2-4666-b2f5-4c639c60ae91 | Human, Heartbeat, Cinematic 54 BPM / Evil Heartbeat Fat Bass | `heartbeat` (dur); cue-sheet layer under "explosives in his car" |
+| shutter_zenit_01/_02.wav, shutter_canon_5d.wav | 075b129e-49ec-4155-b840-1f167fefa6c8 / 723aa2bf-f067-4951-b62b-a95200b2d666 / cad01d18-bc44-4deb-b361-689f382d2e6c | KMZ Zenit 12XP shutter / Canon 5D shutter | `shutter` with note "film/soviet/surveil/spy/cctv" |
+| city_night_distant_traffic_01.wav | 40d588ac-a758-4626-896a-5fefcabd8ed5 | Ambience, City, Distant Traffic Tone, Night 01 | `city_night` (ambience, dur) |
+| wind_winter_08.wav | 5d44ec97-d14d-4e70-9579-86d9ce47ad5d | Wind, Designed, Storm, Winter 08 | `wind` with note "winter/snow/moscow/cold" |
+| glitch_data_06/_12.wav | ce8c2f91-5e6c-483e-a5de-58b3d3ae18b3 / 5424863f-2378-4f80-8344-52566f83b335 | UI, Glitch, Data Processing | `glitch` |
+| fire_burning_crackles.wav | 7c4ae63a-5be3-4b2b-b2fc-08bfd5e3da98 | Fire, Burning, Crackles | `fire_crackle`, `burn_crackle` ≥ 2 s |
+| police_siren_distant.wav | 3ee522b6-0203-4fcb-9596-72f34b22b21a | Vehicles, Siren, Police Siren, Distant | `siren_distant` (dur) |
+| door_knock_apartment.wav | 3b5d39a2-3bc2-4076-b78b-a9cb10aa46bf | Doors, Knock, Apartment Door | `door_knock` |

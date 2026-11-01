@@ -676,6 +676,15 @@ on action. Use it whenever the narrator quotes someone or introduces a historic 
 - Quiet track openings (Melting Glass 0–32 s) measure far below the stem's file-wide LUFS: a layer there needs +4…5 dB `rel_lu`,
   and an `auto` dip where it runs on into a louder section (c6 Act II was −21 LU re VO on the first pass).
 - vo_c5.mp3 / vo_c6.mp3 noise floors sit above the −45 dBFS gate (only 5 pauses detected each): pause lifts barely apply there; harmless.
+- **Ivan (2026-11-01, `project/ivan/SOUND_PLAN.md`)**: a quiet VO (−36.8 LUFS) breaks fixed thresholds — the −45 dBFS activity gate
+  caught only half the speech frames (now `min(−45, VO_LUFS − 13.5)`) and the room-tone/library loops sat 20 LU under the voice (now
+  scaled by `db(min(0, VO_LUFS + 25))`). Measure every insert clip's own audio: Ivan's were 11–22 LU louder than the VO → recommend
+  per-clip gains (`G1/G2/G3` in `tools/final_mix_ivan.sh`). Cue sheets take `ducks` (insert windows: music −16 dB, no pause lifts,
+  SFX/ambience muted, markers inside dropped), layers may name a `"file"` (e.g. a heartbeat under a beat), and editor `boom_low`/`riser`
+  markers within 0.6 s of a cue-sheet stinger are dropped. New SFX types: radio_static, phone_vibrate, message_ping, drone_buzz,
+  explosion_distant, train_pass, car_engine, car_door, keyboard, heartbeat, glitch, fire_crackle, siren_distant, door_knock, city_night
+  (+ winter wind, film shutter, passport stamp by note). Several Epidemic tracks' stems don't sum to the full mix (derived melody ≈ 0 dB)
+  or are 10–20 LU under it (melody not a stem) → use `full` as the layer for those (Tracker, Make Way for Hearses).
 
 ### 10.9 Long-form rules (Krish, 2026-10-31 evening)
 - **Copyrighted material is allowed** for this channel (used the way YouTube's fair-use guidelines allow: commentary/
@@ -798,6 +807,7 @@ on action. Use it whenever the narrator quotes someone or introduces a historic 
 - 2026-10-31 — Long-form pipeline (lead): 10-min chunk renders take hours on 4 shared cores — run them **detached** (`setsid nohup … &`), never as a capped background tool call (a 2 h cap killed a c4 render). `tools/build_master.py` writes `index.html` + `compositions/_master/` at the **repo root** (ROOT is resolved through the sandbox symlink) — build, `mv index.html work/qaN/`, `git checkout index.html`. QA = snapshot every 6 s in batches of 8 + contact sheets; sparse frames get a +1 s re-snap before being called a bug (most are builds on their word). Never `pkill -f <pattern>` from a tool shell whose own command line contains the pattern (it kills the shell).
 - 2026-10-31 — c6s01 QA: §4.3 snapshot gotchas (map camera must cover the frame at every keyframe; black last frame after a browser-shutdown failure is a capture glitch).
 - 2026-10-31 — c6s02 finished (35 scenes): fixed raw-seconds `slide()` calls and the pre-burn ring blobs (§4.2), motif CSS aligned with c6s01's masters; sfx.json + NOTES with CCK card/circle, young cards, Moscow plan and isotype exports for c6s03.
+- 2026-11-01 — Ivan sound design: Epidemic D-minor family (Code of Violence, Tracker, Estimations, Close Call, Make Way for Hearses, Letters Never Sent, Woodwind Reviere drone); place_sound.py: relative VO gate, insert `ducks`, ambience scaling, stinger de-dup, 15 new SFX types (§10.8).
 
 ## 11. Render process (owner rule, 2026-10-31) — use for EVERY render
 Goal: a 10-min chunk in ≤ 1 hour, and no render ever lost. Owner's rules: **a render is never killed for any reason**; while

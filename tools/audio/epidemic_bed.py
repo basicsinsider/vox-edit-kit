@@ -81,13 +81,18 @@ def build_layers(sheet, length, vo_lufs, log=print):
         s, e = float(L["start"]), min(float(L["end"]), length)
         if e <= s:
             continue
-        p = stem_path(L["track"], L["stem"])
+        p = os.path.join(EPI, L["file"]) if L.get("file") else stem_path(L["track"], L["stem"])   # "file": e.g. sfx/heartbeat_….wav
         if not os.path.exists(p):
             log(f"  !! missing {p} — layer skipped")
             continue
         y = read_window(p, float(L.get("offset", 0.0)), e - s)
         target = vo_lufs + float(L["rel_lu"])
-        g_db = L.get("gain_db", target - stem_lufs(L["track"], L["stem"]))
+        if L.get("file"):
+            from loudness import integrated_lufs
+            lu = integrated_lufs(read_window(p, float(L.get("offset", 0.0)), max(e - s, 3.0)))
+        else:
+            lu = stem_lufs(L["track"], L["stem"])
+        g_db = L.get("gain_db", target - lu)
         y = y * db(g_db)
         env = _env(len(y), s, L.get("auto"))
         if env is not None:
@@ -96,7 +101,7 @@ def build_layers(sheet, length, vo_lufs, log=print):
         i0 = int(round(s * SR))
         k = min(len(y), N - i0)
         bed[i0:i0 + k] += y[:k]
-        rep.append(dict(cue=L.get("cue"), layer=f"{L['track']}/{L['stem']}", start=s, end=e,
+        rep.append(dict(cue=L.get("cue"), layer=L.get("file") or f"{L['track']}/{L['stem']}", start=s, end=e,
                         offset=L.get("offset", 0.0), gain_db=round(g_db, 1)))
     return bed, rep
 
@@ -122,9 +127,11 @@ def place_stingers(sheet, bed, length, vo_lufs, bed_lufs):
 
 # ---------------------------------------------------------------- §10.8 hierarchy & restraint
 MOVES = {"whip", "whoosh_soft", "whoosh", "whoosh_big", "air_swell", "rewind"}
-AMB = {"projector_loop", "crt_hum", "wind", "factory_hum", "crowd_room", "tube_hum"}
-ALWAYS = {"boom_low", "riser", "plane_pass", "phone_ring", "teletype"}
-RANK = {"boom_low": 10, "riser": 9, "stamp_thud": 8, "phone_ring": 8, "plane_pass": 8, "teletype": 7, "burn_crackle": 7,
+AMB = {"projector_loop", "crt_hum", "wind", "factory_hum", "crowd_room", "tube_hum", "city_night"}
+ALWAYS = {"boom_low", "riser", "plane_pass", "phone_ring", "teletype", "explosion_distant"}
+RANK = {"boom_low": 10, "riser": 9, "explosion_distant": 9, "train_pass": 8, "heartbeat": 7, "drone_buzz": 7,
+        "car_engine": 6, "car_door": 6, "phone_vibrate": 6, "message_ping": 5, "radio_static": 5, "siren_distant": 5,
+        "door_knock": 6, "keyboard": 4, "glitch": 4, "fire_crackle": 6, "stamp_thud": 8, "phone_ring": 8, "plane_pass": 8, "teletype": 7, "burn_crackle": 7,
         "film_burn": 7, "medal_ring": 7, "domino_run": 7, "domino_tick": 5, "radio_pulse": 5, "dial_click": 5, "scanner_sweep": 4, "string_draw": 3, "circuit_clunk": 6, "switch_click": 5, "typewriter": 5, "clock_tick": 5, "card_flip": 4, "solder_hiss": 4, "map_pin": 6, "paper_tear": 6, "highlighter_swipe": 6, "counter_ticks": 5, "odometer_tick": 5,
         "marker_long": 5, "paper_slide": 5, "phone_dial": 5, "pin_pop": 4, "marker_scratch": 4, "crt_click": 4,
         "crt_off": 4, "projector_click": 4, "shutter": 4, "focus_hunt": 4, "cork_pin": 4, "string_pull": 3,

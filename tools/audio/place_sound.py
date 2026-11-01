@@ -48,6 +48,9 @@ EPIDEMIC = False
 PY = sys.executable
 VO_LUFS = -27.2
 MUSIC_TARGET = -41.0          # integrated music bed loudness (~14 LU under the VO)
+GATE_DB = -45.0               # VO activity gate (20 ms RMS); Epidemic mode sets it relative to the measured VO (Ivan VO = −36.8 LUFS)
+AMB_SCALE = 1.0               # Epidemic mode: db(min(0, VO_LUFS + 25)) — keeps room tone / library loops ≈ 30 LU under a quiet VO
+DUCKS = []                    # cue-sheet "ducks": [{"start","end","db","ramp","sfx_db"}] — insert clips (music thinned, SFX/amb muted)
 
 
 # =============================================================== VO analysis (read-only)
@@ -59,7 +62,7 @@ def vo_activity():
     h = int(0.02 * SR)
     n = len(x) // h
     lev = 20 * np.log10(np.sqrt((x[: n * h].reshape(n, h, -1) ** 2).mean(1).max(1)) + 1e-9)
-    act = lev > -45.0
+    act = lev > GATE_DB
     # close micro-gaps < 0.25 s (inside words)
     i = 0
     while i < n:
@@ -266,6 +269,8 @@ def build_music_epidemic(sheet, act, pauses):
         L = b - a
         if a < 0.5 or b > LEN - 0.4:
             continue
+        if any(a < d["end"] + 0.5 and b > d["start"] - 0.5 for d in DUCKS):
+            continue                       # no lift around an insert clip (its own audio is the foreground)
         lift = 2.5 if L >= 1.2 else 1.5
         r = min(0.5, max(0.1, (L - 0.45) / 2))
         up, dn = a + 0.15 + r, b - 0.3
@@ -277,6 +282,8 @@ def build_music_epidemic(sheet, act, pauses):
     x = x * db(np.interp(ts, [p[0] for p in pts], [p[1] for p in pts]))[:, None]
     target = VO_LUFS - float(sheet.get("bed_lu_under_vo", 14.0))
     x *= db(target - integrated_lufs(x))
+    if DUCKS:
+        x = x * db(duck_env(DUCKS, "db"))[:, None]
     x = E.place_stingers(sheet, x, LEN, VO_LUFS, target)
     pk = np.abs(x).max()
     if pk > db(-1.0):
@@ -288,6 +295,19 @@ def build_music_epidemic(sheet, act, pauses):
     print(f"music: {out}  LUFS {integrated_lufs(x):.1f} (target {target:.1f})  peak {20*np.log10(np.abs(x).max()):.1f} dBFS"
           f"  layers {len(rep)}")
     return x, s_smp
+
+
+def duck_env(ducks, key, default=-12.0):
+    """dB envelope over the whole timeline: 0 outside, ducks[key] inside each window, linear ramps of `ramp` s."""
+    ts = np.arange(N) / SR
+    pts = [(0.0, 0.0)]
+    for d in sorted(ducks, key=lambda d: d["start"]):
+        r = float(d.get("ramp", 0.6))
+        v = float(d.get(key, default))
+        pts += [(d["start"] - r, 0.0), (d["start"], v), (d["end"], v), (d["end"] + r, 0.0)]
+    pts.append((LEN, 0.0))
+    pts.sort()
+    return np.interp(ts, [p[0] for p in pts], [p[1] for p in pts])
 
 
 # =============================================================== SFX
@@ -346,10 +366,15 @@ GAIN = {
     # c3 types (photocopier, red string, radio rings, dominoes, rotary dial)
     "scanner_sweep": (0.05, 0.065), "string_draw": (0.05, 0.065), "radio_pulse": (0.035, 0.045),
     "domino_tick": (0.06, 0.08), "domino_run": (0.06, 0.08), "dial_click": (0.05, 0.065),
+    # Ivan types (project/ivan/SOUND_PLAN.md §4) — Epidemic recordings, cut per event
+    "radio_static": (0.045, 0.06), "phone_vibrate": (0.06, 0.08), "message_ping": (0.035, 0.045),
+    "drone_buzz": (0.05, 0.07), "explosion_distant": (0.12, 0.16), "train_pass": (0.07, 0.09),
+    "car_engine": (0.06, 0.08), "car_door": (0.07, 0.09), "keyboard": (0.045, 0.06), "heartbeat": (0.10, 0.13),
+    "glitch": (0.035, 0.045), "fire_crackle": (0.06, 0.08), "siren_distant": (0.04, 0.05), "door_knock": (0.06, 0.08),
 }
-LOWTYPES = {"boom_low", "stamp_thud"}
+LOWTYPES = {"boom_low", "stamp_thud", "explosion_distant", "heartbeat"}
 SFX_TRIM_DB = -3.0   # this VO is quiet (speech peaks ~ -16 dBFS): trims the table so SFX sit ~20 dB under local VO peaks
-AMBTYPES = {"projector_loop", "crt_hum", "wind", "factory_hum", "crowd_room", "tube_hum"}
+AMBTYPES = {"projector_loop", "crt_hum", "wind", "factory_hum", "crowd_room", "tube_hum", "city_night"}
 
 
 def epi(name, start=0.0, dur=None):
@@ -416,6 +441,93 @@ def render_epidemic(m, i, rng):
         nm = ["paper_slide_wood_table", "paper_slide_wood_table_04"][i % 2]
         y = epi(nm)
         return y, onset(y), f"epi:{nm}"
+    # ---------------- Ivan types (project/ivan/SOUND_PLAN.md §4)
+    if ty == "stamp_thud" and any(k in note for k in ("passport", "rubber", "visa", "document")):
+        y = epi("rubber_stamp_document_01")
+        return y, onset(y), "epi:rubber_stamp_document_01"
+    if ty == "shutter" and any(k in note for k in ("zenit", "film", "soviet", "old", "surveil", "cctv", "spy")):
+        nm = ["shutter_zenit_01", "shutter_zenit_02", "shutter_canon_5d"][i % 3]
+        y = epi(nm)
+        return y, onset(y), f"epi:{nm}"
+    if ty == "radio_static":
+        nm = ["radio_static_lost_signal_01", "radio_am_tuning_glitchy_01"][i % 2]
+        dur = max(0.4, d or 1.2)
+        y = fade(epi(nm, float(rng.uniform(1.0, 12.0)), dur), 0.03, min(0.3, dur / 3))
+        return y, 0.0, f"epi:{nm} {dur:.1f}s"
+    if ty == "phone_vibrate":
+        if d and d > 1.0:
+            y = fade(epi("phone_vibrate_call_loop", 0.0, min(d, 3.2)), 0.01, 0.15)
+            return y, 0.0, "epi:phone_vibrate_call_loop"
+        nm = ["phone_vibrate_hand_01", "phone_vibrate_hand_02"][i % 2]
+        y = epi(nm)
+        return y, onset(y), f"epi:{nm}"
+    if ty == "message_ping":
+        nm = ["message_text_ping_01", "message_text_ping_02"][i % 2]
+        y = epi(nm)
+        return y, onset(y), f"epi:{nm}"
+    if ty == "drone_buzz":
+        nm = ["drone_rc_motor_medium", "drone_rc_fly_around"][i % 2]
+        dur = max(1.0, d or 2.5)
+        full = epi(nm)
+        a = float(rng.uniform(0.5, max(0.6, len(full) / SR - dur - 0.5)))
+        y = fade(full[int(a * SR):int((a + dur) * SR)], min(0.6, dur / 3), min(0.8, dur / 3))
+        return y, 0.0, f"epi:{nm} {dur:.1f}s"
+    if ty == "explosion_distant":
+        nm = ["explosion_distant_01", "boom_distant_explosion_03", "explosion_distant_03"][i % 3]
+        y = epi(nm)
+        o = onset(y)
+        y = fade(y[max(0, int((o - 0.05) * SR)):int((o + 5.0) * SR)], 0.02, 1.5)
+        return y, 0.05, f"epi:{nm}"
+    if ty == "train_pass":
+        nm = ["train_locomotive_pass_night", "train_locomotive_pass_dawn"][i % 2]
+        full = epi(nm)
+        lk = loudest(full)
+        span = max(d or 3.0, 2.0) + 3.0
+        a = max(0.0, lk - span / 2)
+        y = fade(full[int(a * SR):int((a + span) * SR)], 1.2, 1.5)
+        return y, (lk - a) - (d or 3.0) / 2, f"epi:{nm} (peak mid-move)"
+    if ty == "car_engine":
+        nm = "car_w108_start_idle_stop" if (i % 2 or "idle" in note) else "car_start_idle_rover"
+        dur = max(1.0, d or 3.0)
+        y = epi(nm)
+        o = onset(y)
+        y = fade(y[int(max(0, o - 0.05) * SR):int((o + dur) * SR)], 0.01, min(0.8, dur / 3))
+        return y, 0.05, f"epi:{nm} {dur:.1f}s"
+    if ty == "car_door":
+        nm = "car_trunk_close" if any(k in note for k in ("trunk", "boot", "inspect")) else "car_door_close_hard"
+        y = epi(nm)
+        return y, onset(y), f"epi:{nm}"
+    if ty == "keyboard":
+        nm = ["keyboard_typing_apple", "keyboard_typing_17s"][i % 2]
+        dur = max(0.4, d or 1.0)
+        full = epi(nm)
+        a = float(rng.uniform(0.2, max(0.3, len(full) / SR - dur - 0.2)))
+        y = fade(full[int(a * SR):int((a + dur) * SR)], 0.02, 0.1)
+        return y, 0.0, f"epi:{nm} {dur:.1f}s"
+    if ty == "heartbeat":
+        nm = "heartbeat_evil_fat_bass" if "evil" in note or "fat" in note else "heartbeat_cinematic_54bpm"
+        dur = max(1.2, d or 3.0)
+        y = fade(epi(nm, 2.0, dur), 0.3, min(1.0, dur / 3))
+        return y, 0.0, f"epi:{nm} {dur:.1f}s"
+    if ty == "glitch":
+        nm = ["glitch_data_06", "glitch_data_12"][i % 2]
+        y = epi(nm, 0.0, d) if d else epi(nm)
+        return fade(y, 0.005, 0.08), onset(y), f"epi:{nm}"
+    if ty == "fire_crackle":
+        dur = max(1.0, d or 2.0)
+        y = fade(epi("fire_burning_crackles", float(rng.uniform(1, 25)), dur), 0.4, min(0.8, dur / 3))
+        return y, 0.0, f"epi:fire_burning_crackles {dur:.1f}s"
+    if ty == "siren_distant":
+        dur = max(2.0, d or 4.0)
+        y = fade(epi("police_siren_distant", float(rng.uniform(2, 40)), dur), 1.0, min(1.5, dur / 3))
+        return y, 0.0, f"epi:police_siren_distant {dur:.1f}s"
+    if ty == "door_knock":
+        y = epi("door_knock_apartment")
+        y = y[:int(min(len(y) / SR, d or 1.6) * SR)]
+        return fade(y, 0.0, 0.1), onset(y), "epi:door_knock_apartment"
+    if ty == "burn_crackle" and (d or 0) >= 2.0:
+        y = fade(epi("fire_burning_crackles", float(rng.uniform(1, 25)), d), 0.4, min(0.8, d / 3))
+        return y, 0.0, f"epi:fire_burning_crackles {d:.1f}s"
     return None
 
 
@@ -710,6 +822,7 @@ def build_sfx_and_amb(markers, scenes, act, vo):
 
     # ---------------- ambience
     def loop_seg(name, t0, t1, gain, fin=0.4, fout=0.6, off=None):
+        gain *= AMB_SCALE                       # library loops were tuned for a ≈ −25 LUFS VO
         y = lib(name)
         n = int((t1 - t0) * SR)
         if n <= 0:
@@ -754,6 +867,17 @@ def build_sfx_and_amb(markers, scenes, act, vo):
             g = round(float(g), 4)
             amb_log.append(dict(t=m["t"], type=m["type"], dur=d, gain=g, file=nm))
             continue
+        elif m["type"] == "city_night" or (m["type"] == "wind" and EPIDEMIC and
+                                             any(k in m.get("note", "").lower() for k in ("winter", "snow", "moscow", "cold"))):
+            nm = "city_night_distant_traffic_01" if m["type"] == "city_night" else "wind_winter_08"
+            y = epi(nm, float(rng.uniform(3, 40)), d + 0.6)
+            g = db(VO_LUFS - 24.0 - integrated_lufs(y)) * (db(-4) if quiet else 1.0)   # felt, not heard
+            y = fade(y, min(0.8, d / 3), min(1.2, d / 3))
+            i0 = int(m["t"] * SR)
+            k_ = min(len(y), N - i0)
+            amb[i0:i0 + k_] += g * y[:k_]
+            amb_log.append(dict(t=m["t"], type=m["type"], dur=d, gain=round(float(g), 4), file=nm))
+            continue
         else:
             g = 0.05 if d < 3 else 0.035
             loop_seg("wind_air_loop_30s", m["t"], m["t"] + d, g, min(0.6, d / 3), min(0.8, d / 3))
@@ -769,6 +893,10 @@ def build_sfx_and_amb(markers, scenes, act, vo):
             loop_seg("wind_air_loop_30s", a, b, 0.03, 1.0, 1.0)
             amb_log.append(dict(t=a, type="wind_bed", dur=round(b - a, 2), gain=0.03))
     amb = fade(amb, 0.5, 1.2)
+    if DUCKS:                                   # insert clips: their own audio is the foreground — SFX/ambience out
+        inner = [dict(d, start=d["start"] + 0.3, end=d["end"] - 0.3, ramp=0.3) for d in DUCKS]   # whips on the boundary survive
+        env = db(duck_env(inner, "sfx_db", -60.0))[:, None]
+        sfx, amb = sfx * env, amb * env
     for nm, x in ((f"sfx{SUFFIX}.wav", sfx), (f"ambience{SUFFIX}.wav", amb)):
         sf.write(os.path.join(BED, nm), x, SR, subtype="PCM_24")
         print(f"{nm}: peak {20*np.log10(np.abs(x).max()+1e-12):.1f} dBFS  LUFS {integrated_lufs(x):.1f}")
@@ -814,14 +942,23 @@ if __name__ == "__main__":
     markers = []
     for f in sorted(glob.glob(os.path.join(ROOT, a.markers))):
         markers += json.load(open(f))
-    ALIAS = {"clunk": "circuit_clunk", "crowd": "crowd_room"}     # c6 editor names
+    ALIAS = {"clunk": "circuit_clunk", "crowd": "crowd_room",     # c6 editor names
+             # Ivan: likely editor spellings -> SOUND_PLAN §4 types
+             "static": "radio_static", "radio": "radio_static", "phone_buzz": "phone_vibrate", "vibrate": "phone_vibrate",
+             "phone_vibration": "phone_vibrate", "ping": "message_ping", "notification": "message_ping",
+             "message": "message_ping", "msg_ping": "message_ping", "message_tick": "message_ping", "drone": "drone_buzz",
+             "explosion": "explosion_distant", "blast": "explosion_distant", "train": "train_pass",
+             "car": "car_engine", "engine": "car_engine", "typing": "keyboard", "keyboard_typing": "keyboard",
+             "keys": "keyboard", "heartbeat_low": "heartbeat", "pulse_low": "heartbeat", "camera_shutter": "shutter",
+             "glitch_digital": "glitch", "digital_glitch": "glitch", "siren": "siren_distant", "knock": "door_knock",
+             "fire": "fire_crackle", "city": "city_night", "city_ambience": "city_night"}
     for m in markers:
         m["type"] = ALIAS.get(m["type"], m["type"])
     markers.sort(key=lambda m: m["t"])
     unknown = {m["type"] for m in markers} - set(GAIN) - AMBTYPES
     assert not unknown, unknown
-    act, pauses, vo = vo_activity()
     if not EPIDEMIC:                                   # legacy 600 s edit
+        act, pauses, vo = vo_activity()
         dens = density_windows(words())
         build_music(act, pauses, dens)
         build_sfx_and_amb(markers, scenes_from_notes(), act, vo)
@@ -833,6 +970,21 @@ if __name__ == "__main__":
         sys.exit()
     SUFFIX = ""
     VO_LUFS = measure_lufs(os.path.join(ROOT, VO_FILE))
+    AMB_SCALE = float(db(min(0.0, VO_LUFS + 25.0)))
+    GATE_DB = min(-45.0, VO_LUFS - 13.5)          # quiet VO (Ivan −36.8 LUFS): −45 dBFS misses half the speech frames
+    act, pauses, vo = vo_activity()
+    sheet = json.load(open(os.path.join(ROOT, a.cues)))
+    DUCKS = sheet.get("ducks", [])
+    if DUCKS:                                     # no SFX inside an insert clip (editor rule) — drop and report them
+        ins = [m for m in markers if any(d["start"] + 0.1 < m["t"] < d["end"] - 0.1 for d in DUCKS)]
+        markers = [m for m in markers if m not in ins]
+        if ins:
+            print(f"dropped {len(ins)} markers inside insert windows: " + ", ".join(f"{m['type']}@{m['t']}" for m in ins))
+    st_t = [float(x["t"]) for x in sheet.get("stingers", [])]
+    dup = [m for m in markers if m["type"] in ("boom_low", "riser") and any(abs(m["t"] - t) <= 0.6 for t in st_t)]
+    if dup:                                       # the cue sheet's stinger already hits that word: no double hits
+        markers = [m for m in markers if m not in dup]
+        print(f"dropped {len(dup)} boom/riser markers duplicating a stinger: " + ", ".join(f"{m['type']}@{m['t']}" for m in dup))
     SFX_TRIM_DB = -3.0 + (VO_LUFS + 27.2)          # the table was tuned for a −27.2 LUFS VO
     print(f"VO {VO_FILE}: {VO_LUFS:.1f} LUFS (measured, untouched); {len(markers)} markers; {len(pauses)} pauses")
     import epidemic_bed as E
@@ -842,7 +994,6 @@ if __name__ == "__main__":
                   open(os.path.join(BED, "sfx_hierarchy.json"), "w"), indent=1)
         print(f"hierarchy (§10.8): kept {len(kept)} / {len(markers)} markers, dropped {len(dropped)}")
         markers = kept
-    sheet = json.load(open(os.path.join(ROOT, a.cues)))
     build_music_epidemic(sheet, act, pauses)
     build_sfx_and_amb(markers, [(0.0, LEN, "PAPER", set())], act, vo)
     rel = os.path.relpath(BED, ROOT)
