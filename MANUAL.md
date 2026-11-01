@@ -703,6 +703,15 @@ on action. Use it whenever the narrator quotes someone or introduces a historic 
   each its own project folder `project/cN/`, compositions `cNsMM.html` (composition id `cNsMM`), its own render + QA, delivered
   as `renders/cN/cN_final.mp4` + `review/cN_720p.mp4`. Render chunks separately so a fix never needs a 1-hour re-render.
 
+### 10.10 Krish's design notes after the Taiwan render (2026-11-01) — BINDING for every edit
+1. **Placement like a graphic designer.** Every frame sits on a grid: 96 px side margins, 72 px top/bottom safe area, one clear focal
+   point, deliberate alignment (text aligns to a grid line, a photo edge or the object it labels), consistent label↔object spacing,
+   nothing touching the frame edge or another element, nothing over a face/subject, balanced negative space.
+2. **Clean, meaningful on-screen text.** Short complete phrases (2–5 words) that make sense on their own — no stray single words,
+   no half-sentences; one text idea on screen at a time (clear the previous one first). Still the narrator's own words, spelled right.
+3. **Contrast.** Everything must be clearly visible: light text only on dark areas (soft scrim under it on busy photos), ink only on
+   paper; thin accent lines/text on night use the light shade of the accent. Check every text frame at 100 % in a snapshot.
+
 ## 9. QA checklist
 - [ ] VO identical to source (same level; no processing). [ ] Every text cue within 0–120 ms before its word.
 - [ ] Only the three fonts. [ ] Palette only; West=vermilion/East=navy. [ ] ≤ 2 accents per frame.
@@ -712,6 +721,7 @@ on action. Use it whenever the narrator quotes someone or introduces a historic 
 - [ ] Smooth long eases, 12 fps. [ ] Cuts on action; whips, no iris. [ ] No photo/clip used > 2× in a chunk.
 
 ## Changelog
+- 2026-11-01 — §10.10 Krish's design notes (placement on a grid, clean meaningful text, contrast) — binding; Ivan project started (`project/ivan/`).
 - 2026-10-31 — c6s03 editor: segment C6S077–C6S107 finished (lint 0 errors, audit clean); derived assets logged in `assets/c6/derived/c6s03/SOURCES.md`. Lessons: map pins on a pulled-back camera (scale ≈ 0.23) need r ≥ 66 + a dark centre or they read as specks; when a whip/slide follows the last spoken words, shorten the tail word rises (0.2–0.4 s) so the text finishes before the transition; Commons originals under 960 px can't be fetched as thumbs, and the original URL also 429s from this IP, so use the fetch relay (`requests/fetch.json`).
 - 2026-10-31 — sound designer: c6 bed (cue sheet, Captivating + Reflection of the Sun, `clunk`/`crowd` aliases, per-act balance in two passes).
 - 2026-10-31 — sound designer: c1 rebalanced + rebuilt, c3 and c5 beds built (cue sheets, 6 new Epidemic tracks in LOG.md); new `tools/audio/act_levels.py` per-act check; six c3 marker types; §10.8 notes on balance, derived-melody check and chunk colours.
