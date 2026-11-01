@@ -23,7 +23,7 @@ T=$(git write-tree); rm -f "$GIT_INDEX_FILE"; unset GIT_INDEX_FILE
 C=$(git commit-tree $T -m "deliveries: $N master (1080p, $K parts)
 
 Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
-Claude-Session: https://claude.ai/code/session_017jFZyLRaZgvs1oTMXrXxKe")
+Claude-Session: https://claude.ai/code/session_017jFZyMH85zsrnvzsLqBFHX")
 rebuild(){ : > "$F"; for (( k=0; k<K; k++ )); do git cat-file blob ${BL[$k]} >> "$F"; done; }
 # verify the stored parts before touching the network
 got=$( (for (( k=0; k<K; k++ )); do git cat-file blob ${BL[$k]}; done) | sha256sum | cut -d' ' -f1)
