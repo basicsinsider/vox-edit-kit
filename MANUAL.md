@@ -805,3 +805,19 @@ a render runs, nothing else heavy runs (no snapshots, agents' builds, sound jobs
 - Never: `pkill -f` with a pattern your own shell contains; killing a queue's parent (hyperframes cancels the render);
   rendering while agents run snapshots (it halved the speed).
 - 2026-10-31 — §11 Render process: per-segment, restart-proof, never-kill renders at -w 3 -q draft --crf 18 (7.5 fps vs ~2); tools/render_chunk.sh, render_launch.sh, deliver.sh.
+
+### 11.1 What actually worked (2026-10-31, measured) — use this
+- **Helper cloud sessions render; the lead only assembles.** One helper per segment (`create_session`, sparse checkout of
+  assets/{archival,c1..c6,fonts,icons,intro,logos,maps,textures}, lib, tools, compositions, project; depth 1), prompt = render
+  one segment with `tools/render_piece.sh <chunk> <len> <seg>` and push the parts to branch `render/<seg>`. Measured: setup
+  ~5 min (setup.sh is needed — make_sandbox needs zsh), render **11.5 fps** (a 3-min segment in ~7 min), transcode ~4 min,
+  push <1 min. 18 segments in parallel = the whole hour rendered in ~25 min.
+- Lead: `ONLY=cN tools/collect_pieces.sh` (fetch, SHA-256 check, needs 1.2 GB free per piece) → `tools/assemble_chunk.sh cN
+  <len>` (concat → `final_mix.sh` → review copies → `deliver.sh`), ~15–20 min per chunk, one chunk at a time.
+- `deliver.sh` stores the master as 95 MB parts straight into git from the END of the file (no extra disk), pushes branch
+  `deliveries/cN` by hash, deletes the local tracking ref + prunes. The owner pulls with `git clone --depth 1 --branch
+  deliveries/cN …` and `cat cN/cN_final.mp4.part* > cN_final.mp4` (SHA in the README).
+- **The lead's container is shut down when the session is idle** — never leave a long job running between turns; stay in
+  a blocking wait, and keep heavy work on helpers. The disk "Avail" figure overstates the real allowance: check before
+  every big write, delete intermediates immediately, never pull many pieces at once.
+- 2026-11-01 — §11.1: helper-session rendering (11.5 fps/segment, hour in ~25 min), collect/assemble/deliver scripts, idle-shutdown + disk lessons.
