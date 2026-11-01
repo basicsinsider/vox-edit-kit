@@ -30,6 +30,42 @@ night/cinematic scenes, with red/blue/celadon overlays.
 | `scans/cia_formosa_1949.jpg` | CIA 1949 Taiwan Province map with graticule (linear fit ±40 px) | 4858×6416 | Cold War document, Taiwan Strait, offshore islands | CIA 1949 / Library of Congress |
 | `scans/cia_nationalist_china_1958.jpg` | CIA 1958 "Nationalist China, Hong Kong and Macao" ("Communist China" label, FOUO) | 5854×5406 | archival prop; not georeferenced | CIA 1958 / Library of Congress |
 
+## Eastern Europe / Russia (Ivan project, 2026-11-01)
+Built with the same tools/styles as above (`map_kit.py eastern_europe|russia`, `map_kit.py aerial <name>`). Palette for fills:
+Russia = oxblood, Ukraine = azure (`--sky` on night), nothing else coloured (SEGMENTS §2).
+**Crimea:** Natural Earth (de-facto) puts Crimea inside Russia; our overlays move it into `#c-ukraine` (recognised border) and also
+give it its own `#c-crimea` path, so a scene can hatch/label it as occupied. `#c-russia` therefore does NOT include Crimea.
+
+| file | what | size | formula (lon/lat → px) | credit line |
+|---|---|---|---|---|
+| `eastern_europe_{atlas,night,sat,satdesat}.jpg` + `eastern_europe.json` + `_overlay.svg` + `_landmask.png` | 20–62°E × 42–62°N: Poland/Warsaw, Baltics, Belarus, Ukraine + Crimea, western Russia (Moscow, Ryazan, Ivanovo, Nizhny, Kazan, Yelabuga, Samara, Saratov/Engels, Volgograd), Urals edge, NW Kazakhstan, Black Sea, Caspian N half | 6206×4800 | `x = (lon - 20) * 147.768 ; y = (62 - lat) * 240` (k = cos 52°) | atlas/night: Natural Earth / AWS Terrain Tiles (PD) · sat: Esri, Maxar, Earthstar Geographics |
+
+`eastern_europe.json → places` has pixels for moscow, kyiv, warsaw, minsk, st_petersburg, kazan, yelabuga, alabuga_drone_factory,
+ryazan, ivanovo, engels, saratov, kharkiv, odesa, lviv, belgorod, kursk, voronezh, rostov_on_don, volgograd, nizhny_novgorod, samara,
+sevastopol, vilnius, riga, tallinn, helsinki, uralsk_oral, aktobe, ufa, perm, yekaterinburg, dyagilevo_airbase, ivanovo_severny_airbase,
+engels_airbase, kirillov_blast_site, sarvarov_blast_site, kazan_aircraft_plant (same ids as `#p-…` circles in the overlay).
+Overlay country ids: `#c-russia #c-ukraine #c-crimea #c-poland #c-belarus #c-kazakhstan #c-lithuania #c-latvia #c-estonia #c-finland
+#c-moldova #c-romania #c-georgia …`; rivers `#river-volga #river-dnipro #river-don #river-kama #river-vistula …` (river ids can repeat —
+select with `querySelectorAll`).
+
+| file | what | size | formula / note | credit line |
+|---|---|---|---|---|
+| `russia_{atlas,night}.jpg` + `russia.json` + `_overlay.svg` + `_landmask.png` | whole Russia 20°E → 170°W (Chukotka; lon < 20 → lon + 360), 40–78°N: Europe edge, Murmansk/Olenya, Urals, Siberia, Irkutsk/Belaya, Far East, Kazakhstan, Mongolia, N China | 6566×2850 | `x = (lon - 20) * 38.625 ; y = (78 - lat) * 75` (k = cos 59°; shapes true around 59°N, far north stretched) | Natural Earth / AWS Terrain Tiles (PD) |
+| `aerial_moscow_kirillov_blast_z17.jpg` | Ryazansky Prospekt, SE Moscow (Kirillov bomb, Dec 2024); pin `kirillov_blast_site` at 1706,1574 (on the avenue's south side — from the lead's coordinates) | 3328×3072, 0.67 m/px | Web Mercator, formula in json | Esri, Maxar, Earthstar Geographics |
+| `aerial_moscow_sarvarov_blast_z17.jpg` | Yasenevaya Street, S Moscow (Sarvarov car bomb, Dec 2025); pin `sarvarov_blast_site` 1589,1558 (lead's coordinates) | 3328×3072, 0.68 m/px | same | same |
+| `aerial_olenya_airbase_z16.jpg` | Olenya air base, Murmansk oblast — runway, bomber stands on the N loop; pin 2287,2831 (runway centre). Esri has two clouds over the NE apron/S end | 4352×5376, 0.89 m/px | same | same |
+| `aerial_belaya_airbase_z16.jpg` | Belaya air base, Irkutsk oblast — runway + two star-shaped dispersal fields (bomber stands); pin 2113,2089 | 4096×4096, 1.44 m/px | same | same |
+| `aerial_dyagilevo_airbase_z16.jpg` | Dyagilevo air base, Ryazan — E–W runway, aircraft on the N apron; light clouds on the W edge; pin 1664,1541 | 3072×2304, 1.38 m/px | same | same |
+| `aerial_ivanovo_severny_airbase_z16.jpg` | Ivanovo Severny air base — runway + parked heavy aircraft along the S apron; pin 1629,909 | 3072×2304, 1.30 m/px | same | same |
+| `aerial_alabuga_sez_z16.jpg` | Alabuga special economic zone N of Yelabuga, Tatarstan (the Shahed/Geran drone plant is inside it). Pins: `alabuga_drone_factory` 2804,2067 = SEZ centre (generic); `alabuga_nw_new_halls` 693,789 = the new twin-hall complex with fresh earthworks in the NW corner. **The exact drone-plant building is not verified** — frame the SEZ, don't claim a specific building. Esri imagery here is older (pre-"defensive towers") | 5376×4096, 1.34 m/px | same | same |
+| `aerial_kazan_aircraft_plant_z16.jpg` | Kazan Aviation Plant (Gorbunov) + its runway, Kazan N; aircraft on the apron; pin 1752,1784 | 3584×2816, 1.34 m/px | same | same |
+
+Palette note: `*_sat.jpg` and the aerials are real colour (green fields). Per SEGMENTS §2 prefer `*_satdesat.jpg` / `*_night.jpg`
+/ `*_atlas.jpg`, or grade the aerials toward ash (saturate 0.2–0.4) and put oxblood/azure only in the overlay.
+Known limits: `eastern_europe_sat` is Esri z8 (≈ 1.4 px per source px) — soft beyond a 2× push, fine for region shots; overlay
+`#c-russia` has a vertical seam at 180° in `russia_overlay.svg` (Chukotka split by Natural Earth) — fill only, or hide the stroke there.
+The Caspian is drawn as flat water in both reliefs (its bathymetry tiles had seams).
+
 ## Sharpness (checked by 640 px crops at full res)
 - Regional crops are ≥ 5970 px wide (Taiwan ≥ 4399 tall), so a 1920 frame showing ⅓ of the map is a 1:1 crop — a 2–3× camera
   push stays sharp. The aerials are native tile pixels (no resampling).

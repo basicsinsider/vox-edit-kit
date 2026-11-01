@@ -15,3 +15,14 @@ the naturalearthdata.com link redirects to a 404). The relief here is built from
 hypsometric tint + multi-directional hillshade, so it does not need them. To add NE2 anyway, fetch it on a Mac via the relay (MANUAL §8.2).
 Wikimedia Commons API was rate-limiting (no airline route maps fetched); David Rumsey's API did not connect.
 Build tools: `tools/map_tiles.py` (fetch), `tools/map_kit.py` (build; `map_kit.py <region>` / `map_kit.py aerial`).
+
+## Ivan project additions (fetched 2026-11-01, no login, no payment)
+| asset(s) | source | licence / credit |
+|---|---|---|
+| `eastern_europe_{atlas,night,landmask}`, `russia_{atlas,night,landmask}` | AWS Terrain Tiles terrarium (z8 Eastern Europe, z6 Russia) — SRTM / GMTED2010 / ETOPO1 | public domain |
+| `eastern_europe_{sat,satdesat}.jpg` | Esri World Imagery tiles z8 | © Esri and its data providers, fair use per MANUAL §10.9; on-screen credit "Esri, Maxar, Earthstar Geographics" |
+| `eastern_europe_overlay.svg`, `russia_overlay.svg` | Natural Earth 10m via jsDelivr (world-atlas@2 countries/land, NE lakes + rivers geojson). Crimea moved from Russia to Ukraine (+ separate `#c-crimea`) by `crimea_fix()` in `tools/map_kit.py` | public domain |
+| `aerial_moscow_kirillov_blast_z17`, `aerial_moscow_sarvarov_blast_z17`, `aerial_olenya_airbase_z16`, `aerial_belaya_airbase_z16`, `aerial_dyagilevo_airbase_z16`, `aerial_ivanovo_severny_airbase_z16`, `aerial_alabuga_sez_z16`, `aerial_kazan_aircraft_plant_z16` (.jpg + .json) | Esri World Imagery tiles z16/z17, stitched unmodified (https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}) | © Esri and its data providers, fair use per MANUAL §10.9; **on-screen credit "Esri, Maxar, Earthstar Geographics"** |
+Place coordinates: blast sites and airfields from the lead's brief (checked against the imagery: airfields/runways and the avenue/street
+are where expected); Alabuga SEZ located by eye on Esri z12/z14 (the brief's 55.79N 52.05E is the M7 highway S of the SEZ).
+

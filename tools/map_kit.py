@@ -1,6 +1,6 @@
 """Build the map kit (assets/maps/kit): graded relief + satellite bases, regional crops, vector overlays.
 Usage:  .venv/bin/python tools/map_kit.py <region> [steps]      steps: relief,sat,overlay (default all)
-        regions: world, east_asia, pacific, us, bay_area, northeast, taiwan   (see REGIONS)
+        regions: world, east_asia, pacific, us, bay_area, northeast, taiwan, eastern_europe, russia   (see REGIONS)
 Data:   AWS Terrain Tiles (terrarium; SRTM/GMTED/ETOPO1, public domain) for relief,
         Esri World Imagery tiles for satellite (credit "Esri, Maxar, Earthstar Geographics"),
         NASA Blue Marble NG topo-bathy (public domain) for the world satellite base,
@@ -27,6 +27,9 @@ REGIONS = {
   "bay_area":  dict(lon0=-123.0, lon1=-121.55, lat0=36.95, lat1=38.25, ppd=5200, k=0.792, zt=13, ze=13, zf=1.6),
   "northeast": dict(lon0=-75.2, lon1=-69.8, lat0=40.4, lat1=43.0, ppd=1588, k=0.746, zt=11, ze=11, zf=3.0),
   "taiwan":    dict(lon0=119.3, lon1=122.2, lat0=21.8, lat1=25.4, ppd=1222, k=0.916, zt=11, ze=11, zf=1.6),
+  # Ivan project (2026-11-01): Poland -> Ukraine/Belarus -> western Russia -> Tatarstan/Kazakhstan NW edge; whole Russia
+  "eastern_europe": dict(lon0=20, lon1=62, lat0=42, lat1=62, ppd=240, k=0.6157, zt=8, ze=8, zf=7, flat_water=[(46, 36, 55.5, 47.5)]),
+  "russia":    dict(lon0=20, lon1=190, lat0=40, lat1=78, ppd=75, k=0.515, zt=6, ze=None, zf=15, flat_water=[(46, 36, 55.5, 47.5)]),
 }
 
 PLACES = {  # lon, lat
@@ -55,6 +58,19 @@ PLACES = {  # lon, lat
   "princeton": (-74.6672, 40.3573), "philadelphia": (-75.1652, 39.9526), "providence": (-71.4128, 41.8240),
   "new_haven_yale": (-72.9223, 41.3163), "ibm_armonk": (-73.7149, 41.1265), "albany": (-73.7562, 42.6526),
   "hartford": (-72.6851, 41.7658),
+  # Ivan project (eastern_europe / russia)
+  "kyiv": (30.5234, 50.4501), "warsaw": (21.0122, 52.2297), "minsk": (27.5615, 53.9045), "st_petersburg": (30.3351, 59.9343),
+  "kazan": (49.1221, 55.7887), "yelabuga": (52.0547, 55.7564), "alabuga_drone_factory": (52.0200, 55.8350), "alabuga_nw_new_halls": (51.9747, 55.8504),
+  "ryazan": (39.7413, 54.6269), "ivanovo": (40.9737, 57.0004), "engels": (46.1236, 51.4986), "saratov": (46.0086, 51.5331),
+  "kharkiv": (36.2304, 49.9935), "odesa": (30.7233, 46.4825), "lviv": (24.0297, 49.8397), "belgorod": (36.5983, 50.5997),
+  "kursk": (36.1873, 51.7304), "rostov_on_don": (39.7015, 47.2357), "volgograd": (44.5133, 48.7080), "nizhny_novgorod": (44.0020, 56.3269),
+  "samara": (50.1008, 53.1959), "voronezh": (39.2003, 51.6720), "sevastopol": (33.5254, 44.6166), "vilnius": (25.2797, 54.6872),
+  "riga": (24.1052, 56.9496), "tallinn": (24.7536, 59.4370), "helsinki": (24.9384, 60.1699), "uralsk_oral": (51.3667, 51.2333),
+  "aktobe": (57.2070, 50.2839), "ufa": (55.9721, 54.7388), "perm": (56.2502, 58.0105), "yekaterinburg": (60.6122, 56.8389),
+  "dyagilevo_airbase": (39.5700, 54.6420), "ivanovo_severny_airbase": (40.9810, 57.0600), "engels_airbase": (46.2100, 51.4800),
+  "olenya_airbase": (33.4640, 68.1510), "belaya_airbase": (103.5750, 52.9150), "murmansk": (33.0827, 68.9585),
+  "irkutsk": (104.2964, 52.2870), "novosibirsk": (82.9346, 55.0084), "astana": (71.4491, 51.1694), "almaty": (76.8512, 43.2220),
+  "kirillov_blast_site": (37.7893, 55.7176), "sarvarov_blast_site": (37.7386, 55.6077), "kazan_aircraft_plant": (49.1300, 55.8600),
 }
 CREDIT_RELIEF = "Relief: AWS Terrain Tiles (SRTM/GMTED/ETOPO1, public domain); vectors: Natural Earth (public domain)"
 CREDIT_ESRI = "Imagery: Esri, Maxar, Earthstar Geographics"
@@ -245,6 +261,9 @@ def do_relief(name, R):
     halo = np.clip(halo * 2.2, 0, 1)
     if R["ppd"] > 400:  # close-ups: flat sea (ETOPO bathymetry shows tile seams at this scale)
         E = np.where(land > 0.5, E, -150).astype(np.float32)  # flat water + coastal halo
+    for lo_a, la_a, lo_b, la_b in R.get("flat_water", []):  # inland seas whose bathymetry shows tile seams (Caspian)
+        cs = (lon_cols(R, W) >= lo_a) & (lon_cols(R, W) <= lo_b); rs = (lats >= la_a) & (lats <= la_b)
+        box = np.ix_(rs, cs); E[box] = np.where(land[box] > 0.5, E[box], -60)
     E = np.where(land > 0.5, np.maximum(E, 1), np.minimum(E, -1)).astype(np.float32)
     outs = {k: np.zeros((H, W, 3), np.uint8) for k in ("atlas", "night")}
     for a in range(0, H, 1024):
@@ -292,6 +311,20 @@ def pathd(pts, closed=True):
         if last and abs(x - last[0]) < 0.8 and abs(y - last[1]) < 0.8: continue
         out.append(f"{x:.1f},{y:.1f}"); last = (x, y)
     return ("M" + "L".join(out) + ("Z" if closed else "")) if len(out) > 1 else ""
+def crimea_fix(items):
+    """world-atlas (Natural Earth de-facto) puts Crimea inside Russia. For the Ivan project Crimea is drawn as part of
+    #c-ukraine (internationally recognised border) and ALSO as its own #c-crimea path so a scene can hatch/label it as occupied."""
+    out = []; crimea = []
+    def in_crimea(poly):
+        r = poly[0]; lo = sum(p[0] for p in r) / len(r); la = sum(p[1] for p in r) / len(r)
+        return 32.3 < lo < 36.8 and 44.2 < la < 46.3
+    for nm, polys in items:
+        if nm == "Russia":
+            crimea += [p for p in polys if in_crimea(p)]; polys = [p for p in polys if not in_crimea(p)]
+        out.append((nm, polys))
+    if crimea:
+        out = [(nm, polys + crimea) if nm == "Ukraine" else (nm, polys) for nm, polys in out] + [("Crimea", crimea)]
+    return out
 def do_overlay(name, R):
     W, H = geom(R); g = {}
     def polys_svg(items, prefix):
@@ -304,7 +337,7 @@ def do_overlay(name, R):
                         if len(pts) > 2 and in_view(pts, W, H): ds.append(pathd(pts))
             if ds: parts.append(f'<path id="{prefix}-{slug(nm)}" data-name="{nm}" d="{"".join(ds)}"/>')
         return parts
-    g["countries"] = polys_svg(topo_decode(f"{VEC}/world-atlas_2_countries-10m.json", "countries"), "c")
+    g["countries"] = polys_svg(crimea_fix(topo_decode(f"{VEC}/world-atlas_2_countries-10m.json", "countries")), "c")
     g["land"] = polys_svg(topo_decode(f"{VEC}/world-atlas_2_land-10m.json", "land"), "land")
     if name in ("us", "bay_area", "northeast", "pacific", "world"):
         g["us_states"] = polys_svg(topo_decode(f"{VEC}/us-atlas_3_states-10m.json", "states"), "st")
@@ -339,7 +372,7 @@ def do_overlay(name, R):
             "formula": f"x = (lon - ({R['lon0']})) * {R['ppd'] * R['k']:.4f} ; y = ({R['lat1']} - lat) * {R['ppd']:.4f}{lon_note}",
             "svg_hint": f'<svg viewBox="0 0 {W} {H}"> - {name}_overlay.svg shares this pixel space (groups: land, countries, us_states, lakes, rivers, cities; paths id c-<country>, st-<state>, p-<place>)',
             "images": sorted(f for f in os.listdir(OUT) if f.startswith(name + "_") and f.endswith((".jpg", ".png"))),
-            "credit": {"relief": CREDIT_RELIEF, "sat": CREDIT_ESRI if R["ze"] else CREDIT_BM},
+            "credit": {"relief": CREDIT_RELIEF, "sat": CREDIT_ESRI if R["ze"] else (CREDIT_BM if name == "world" else "none (no sat base for this region)")},
             "places": places}
     if name == "world":
         meta["note_satdesat_21600"] = "world_satdesat_21600.jpg is 21600x10800: multiply x,y above by 21600/16384 = 1.318359"
@@ -360,6 +393,15 @@ AERIALS = {  # name: (z, lon0, lat0, lon1, lat1, places)
   "stanford_z17": (17, -122.1880, 37.4135, -122.1440, 37.4440, ["stanford_university", "hp_garage", "palo_alto"]),
   "palo_alto_hp_garage_z18": (18, -122.1640, 37.4370, -122.1460, 37.4490, ["hp_garage", "palo_alto"]),
   "mit_z17": (17, -71.1150, 42.3460, -71.0730, 42.3740, ["mit_cambridge"]),
+  # Ivan project (2026-11-01)
+  "moscow_kirillov_blast_z17": (17, 37.7733, 55.7096, 37.8053, 55.7256, ["kirillov_blast_site"]),
+  "moscow_sarvarov_blast_z17": (17, 37.7226, 55.5997, 37.7546, 55.6157, ["sarvarov_blast_site"]),
+  "olenya_airbase_z16": (16, 33.4160, 68.1323, 33.5039, 68.1716, ["olenya_airbase"]),
+  "belaya_airbase_z16": (16, 103.5341, 52.8894, 103.6148, 52.9412, ["belaya_airbase"]),
+  "dyagilevo_airbase_z16": (16, 39.5367, 54.6337, 39.6002, 54.6595, ["dyagilevo_airbase"]),
+  "ivanovo_severny_airbase_z16": (16, 40.9515, 57.0443, 41.0099, 57.0695, ["ivanovo_severny_airbase"]),
+  "alabuga_sez_z16": (16, 51.9622, 55.8119, 52.0714, 55.8577, ["alabuga_drone_factory", "alabuga_nw_new_halls"]),
+  "kazan_aircraft_plant_z16": (16, 49.0979, 55.8495, 49.1683, 55.8803, ["kazan_aircraft_plant"]),
 }
 EXTRA = {"stanford_main_quad": (-122.1697, 37.4275), "hoover_tower": (-122.1665, 37.4275), "stanford_research_park": (-122.1480, 37.4110)}
 def do_aerial(name):
