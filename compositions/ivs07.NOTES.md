@@ -17,7 +17,7 @@ Russia/Ukraine/Belarus paths + rail-city pixels from the Eastern-Europe map kit 
   first caption missing CSS + map left-edge gap + lighter fills, sc08 number size, sc20 focus box onto a face, sc23 caption off the
   silhouette, sc28 opening framed on the face, sc30 captions moved off Ivan's silhouette.
 
-## Face cam — 12 shots, 55.7 s = 33.2 % of 167.62 s (33.6 % of the spoken 165.54 s)
+## Face cam — 12 shots, 54.4 s = 32.5 % of 167.62 s after fix round 1 (was 55.7 s)
 sc01 wide (781.38–785.06) · sc07 medium 1.24 · sc10 close 1.5 · sc12 wide · sc15 medium-close 1.32 · sc17 wide · sc19 close 1.55 ·
 sc21 medium 1.25 · sc24 wide · sc25 close 1.55 · sc27 medium 1.25 · sc29 1.4 — framing changes at every shot, 2–4 % push inside each.
 Clean: grain/dust/vignette are set to 0 on every face scene (`ground("face")`). Text on him = per-word ink `.label-box` strips (one box per
@@ -66,3 +66,25 @@ multiply); trust meter + forwarded-bubbles line; isotype pull-back with a CSS ra
 `assets/ivan/ivs07/{photos,footage,derived}/SOURCES.md` (6 Commons photos, 5 BBC clips, 2 derived). Kit: `eastern_europe_night.jpg`,
 `eastern_europe_overlay.svg` (paths), `aerial_ivanovo_severny_airbase_z16.jpg`. Motif: grey man (inlined path). 14 MB total.
 SFX markers: `compositions/ivs07.sfx.json` (54 markers, master seconds; one hero per scene + moves; no face-cam SFX).
+
+## Fix round 1 (2026-11-02, `project/ivan/FIXES_ROUND1.md`)
+- **Rail map (sc06, Krish 13:27:15 ≈ 810.9):** railways are now track symbols — dark casing, ash cross-ties every 44 map px, two
+  oxblood-light rails — drawn on at constant speed, stations as outlined dots, wagons (outlined bone) riding between the rails. The
+  Moscow–Rostov line now follows the real route Voronezh–Rossosh–Millerovo–Kamensk–Rostov (the old straight segment cut across
+  Ukraine's Luhansk bulge). **Labels:** RUSSIA, UKRAINE (Haskoy 800 caps, 64 px, bone + dark shadow), MOSCOW, BELGOROD, ROSTOV-ON-DON
+  (t-label 26 px beside dots); all counter-scaled with the camera so they keep their size; they fade in with the map / when each line
+  reaches its end city. Belgorod's label sits on the Russian side of its dot.
+- **Crimea:** `c-ukraine` already contains Crimea, so the extra `c-crimea` concat (double fill) was dropped; Russia's fill excludes it.
+  sc06 is the only map; the other geographic image is the airbase aerial.
+- **Aerial label (sc18):** pin + "IVANOVO-SEVERNY AIRBASE" (t-label in a dark tag, readable on the aerial).
+- **Markups re-checked at full res:** sc08 pen "?" collided with "500" → number 150 px, mark moved into clear space; sc20 box now
+  frames the woman's whole head; sc09 ring, sc11 focus box, sc14 circle (on the wreck), sc28 underlines verified OK.
+- **Face-cam edges (frame-exact):** measured take cuts in the face-cam master by frame difference (single-frame spikes at
+  818.017, 835.637, 847.543, 893.04, 918.96, and take starts at 909.26 / 915.66; the other spikes are hand gestures). Shots now end
+  before / start after them: sc07 →817.97, sc10 →835.59, sc12 →847.50, sc21 →893.00, sc24 909.30–915.70, sc25 915.70–918.92 (neighbouring
+  scenes/whips/slides moved with them). Every `<video>` `data-duration` now ends exactly at its cut (B-roll clips no longer overlap
+  the next face shot). No mouse/screen glances inside the shots (he talks to the end of each). Face cam now 54.4 s = 32.5 %.
+- Hold: two face labels' last words are spoken just before an earlier take cut (sc10 "Putin" 835.03 → whip 835.59; sc21 "problem"
+  892.46 → cut 893.00); they rise in 0.2–0.25 s so they are complete before the cut.
+- sfx.json: moved markers (817.52, 835.43, 847.50, 893.00, 918.76) + airbase map_pin 873.55 + map labels 803.70.
+- Checks: lint 0 errors (ivs07), sync_audit 0 flagged, timeline 167.62 with no runtime errors, changed scenes snapshotted and looked at.

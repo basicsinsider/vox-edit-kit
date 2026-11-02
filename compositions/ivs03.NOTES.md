@@ -68,3 +68,27 @@ Kirillov portrait (Commons, CC BY 4.0, mil.ru) and a Sarvarov still (BBC). Exist
   and apply the colour filter to the wrapper (not the video), so the seam is invisible (sc027).
 - Hold-rule audit harness (puppeteer + HF's chrome-headless-shell, dumps `getChildren`): `/tmp`-only script, same method as MANUAL §4.2 (c2s02).
 - Nothing for the lead to render-fix that I know of; please check lip sync on the 12 face-cam shots after the first render.
+
+## Fix round 1 (2026-11-02, `project/ivan/FIXES_ROUND1.md`)
+Timeline still 178.39 s; lint 0 errors (ivs03), sync_audit 0 flagged, timeline dump: no runtime errors, holds OK (only text exit fades
+< 0.5 s). Changed scenes were re-snapshotted and checked (markups were checked on full-res crops).
+- **§4 face-cam edges.** I checked every face-cam shot's first ~0.4 s and last ~0.75 s at 24 fps and ran a per-frame scene-score scan
+  of the face cam over 296–464. That found EDL jump cuts *inside* shots at 327.40, 379.07, 383.50, 448.53, 449.20, 453.73 and 459.33,
+  plus black face-cam frames before 425.90. Changes:
+  - sc017 (Krish's 378.9 mouse reach): the face cam now ends at **376.76**. A new BBC Warsaw street shot (`sc017w`, `footage/warsaw_street.mp4`,
+    Shadowmen 59:50.15) covers 376.76–379.24 with "back in Warsaw". sc018 starts at 379.24, after the 379.07 jump.
+  - sc007 ends at 327.38, with a hard cut to the wall (it was a whip). sc018 ends at 383.48, with a hard cut to the streetlight shot (it was a whip).
+    The last-word rises were shortened so the holds still pass.
+  - sc029 (wall) runs on to 449.22. sc030 = 449.22–453.73 (M), sc031 = 453.73–459.33 (W), sc032 = 459.33–463.37 (C). Every jump now
+    lands on a framing change.
+  - Insert → sc025 is now a hard cut at 425.90. The whip had shown face-cam frames from before 425.90, which are black in the source.
+  - New face shot `sc019f` 388.40–390.44 (W, "even after they had returned home") gives back some of the lost time.
+  - Face cam is now **52.5 s = 32.7 %** (it was 34.2 %). sc001/004/011/015/020 edges were clean (he is speaking right up to each cut).
+  - **Lead:** if you add a lip-sync offset to `data-media-start`, the jump cuts listed above move with it. Keep each shot boundary ≤ 1 frame
+    before its jump (e.g. 327.38 vs the 327.40 jump: the margins are only 0.02–0.04 s).
+- **§1/§2 labels / Crimea.** ivs03 has no map shots, so there was nothing to label and no Crimea to fix. The one aerial (sc028, drone
+  view of Sarvarov's car) now carries a MOSCOW location tag (dot + `t-label` 26, bone, top-left on the grid).
+- **§3 markups.** sc014's surveillance box clipped the figure's head at full res, so it was raised 30 px and made taller (now 170×320).
+  sc034's lock box sits on the lit window (checked at full res). sc012's arrows connect their nodes. The sc029 drift was reduced so the
+  left cards stay inside the 96 px margin.
+- sfx.json: the three whips that became cuts were re-timed, and two markers were added (sc017w cut, sc028 tag). New asset logged in footage/SOURCES.md.

@@ -34,6 +34,13 @@
     .v1-fc { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; object-fit: cover; }
     .v1-fcw { position: absolute; inset: 0; }
     .v1-box { display: inline-block; background: var(--ink); padding: 14px 22px 10px; }
+    .v1-lab { position: absolute; pointer-events: none; white-space: nowrap; }
+    .v1-lab-c { width: 800px; text-align: center; text-transform: uppercase; letter-spacing: 0.04em; line-height: 1; transform-origin: 50% 50%; }
+    .v1-lab-c.night { color: var(--bone); text-shadow: 0 2px 6px rgba(0,0,0,0.75), 0 0 22px rgba(0,0,0,0.55); }
+    .v1-lab-c.ink { color: var(--ink); }
+    .v1-lab-p { width: 0; height: 0; transform-origin: 0 0; }
+    .v1-lab-p .dot { position: absolute; left: -7px; top: -7px; width: 14px; height: 14px; border-radius: 50%; background: var(--bone); box-shadow: 0 0 0 3px rgba(16,17,19,0.65); }
+    .v1-lab-p .tx { position: absolute; left: 18px; top: -12px; font-size: 24px; color: var(--bone); text-shadow: 0 1px 4px rgba(0,0,0,0.85), 0 0 14px rgba(0,0,0,0.6); }
     #ivs01-flash { position: absolute; inset: 0; background: #f6f2ea; opacity: 0; pointer-events: none; z-index: 7; }
     #ivs01-grain, #ivs01-dust, #ivs01-vig { z-index: 8; }
 
@@ -294,7 +301,7 @@
 
     <!-- sc016 · 64.89–66.65 · FACE CAM pop 2 (medium) -->
     <div class="v1-scene" id="ivs01-sc016"><div class="v1-fcw" id="ivs01-sc016-w">
-      <video id="ivs01-sc016-v" class="v1-fc" src="assets/facecam/ivan_facecam_master.mp4" muted playsinline data-start="64.89" data-duration="1.76" data-media-start="64.89"></video>
+      <video id="ivs01-sc016-v" class="v1-fc" src="assets/facecam/ivan_facecam_master.mp4" muted playsinline data-start="64.89" data-duration="1.56" data-media-start="64.89"></video>
     </div></div>
 
     <!-- sc017 · 66.65–70.09 · serious headache for Russia's security services · Lubyanka -->
@@ -329,9 +336,14 @@
       <div class="v1-credit">Photo: Moscow street, 2003 · CC BY 4.0</div>
     </div></div>
 
+    <!-- sc020b · 78.00–81.29 · expendable window (dead air, dropped at assembly): a different, plain shot -->
+    <div class="v1-scene v1-night" id="ivs01-sc020b"><div class="v1-shot" id="ivs01-sc020b-shot">
+      <img class="v1-full" src="assets/ivan/ivs01/photos/moscow_street_2003.jpg" alt="" style="filter:saturate(0.15) brightness(0.45) blur(3px); transform:scale(1.35); transform-origin:30% 60%" />
+    </div></div>
+
     <!-- sc021 · 81.29–83.13 · FACE CAM pop 4 (medium) -->
     <div class="v1-scene" id="ivs01-sc021"><div class="v1-fcw" id="ivs01-sc021-w">
-      <video id="ivs01-sc021-v" class="v1-fc" src="assets/facecam/ivan_facecam_master.mp4" muted playsinline data-start="81.29" data-duration="1.84" data-media-start="81.29"></video>
+      <video id="ivs01-sc021-v" class="v1-fc" src="assets/facecam/ivan_facecam_master.mp4" muted playsinline data-start="81.292" data-duration="1.838" data-media-start="81.292"></video>
     </div></div>
 
     <!-- sc022 · 83.13–92.09 · start with Ivan … Russia's political opposition · dossier -->
@@ -427,7 +439,7 @@
 
     <!-- sc031 · 131.78–133.62 · FACE CAM pop 5 (wide push) -->
     <div class="v1-scene" id="ivs01-sc031"><div class="v1-fcw" id="ivs01-sc031-w">
-      <video id="ivs01-sc031-v" class="v1-fc" src="assets/facecam/ivan_facecam_master.mp4" muted playsinline data-start="131.78" data-duration="1.84" data-media-start="131.78"></video>
+      <video id="ivs01-sc031-v" class="v1-fc" src="assets/facecam/ivan_facecam_master.mp4" muted playsinline data-start="131.917" data-duration="1.703" data-media-start="131.917"></video>
     </div></div>
 
     <!-- sc032 · 133.62–139.94 · losing the war would weaken his grip on power · Kremlin at dusk -->
@@ -536,6 +548,29 @@
       const g = el(svg, "g", {}); const gi = el(g, "g", { transform: "translate(" + x + " " + y + ") scale(" + s + ") translate(-200 -480)" });
       el(gi, "path", { d: GREYMAN, fill: fill || ASH }); return g;
     }
+    // map labels (Fix round 1): country names Haskoy 800 caps; places = dot + t-label
+    function country(parent, x, y, text, size, style, t) {
+      const d = document.createElement("div");
+      d.className = "v1-lab v1-lab-c t-display " + (style || "night");
+      Object.assign(d.style, { left: x - 400 + "px", top: y - size * 0.5 + "px", fontSize: size + "px" });
+      d.textContent = text; parent.appendChild(d);
+      tl.fromTo(d, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.7, ease: C(E.out, 0.7), immediateRender: true }, t);
+      return d;
+    }
+    function place(parent, x, y, text, t, o) {
+      o = o || {};
+      const d = document.createElement("div");
+      d.className = "v1-lab v1-lab-p";
+      Object.assign(d.style, { left: x + "px", top: y + "px" });
+      d.innerHTML = (o.dot === false ? "" : '<div class="dot"></div>') + '<div class="tx t-label">' + text + "</div>";
+      if (o.dy) d.lastChild.style.top = (-12 + o.dy) + "px";
+      if (o.left) { d.lastChild.style.left = "auto"; d.lastChild.style.right = "18px"; }
+      parent.appendChild(d);
+      tl.fromTo(d, { opacity: 0 }, { opacity: 1, duration: 0.5, ease: C(E.out, 0.5), immediateRender: true }, t);
+      return d;
+    }
+    // keep label size constant while the camera scales from s0 to s1
+    const counter = (els, s0, s1, t, dur, ease) => tl.fromTo(els, { scale: 1 / s0 }, { scale: 1 / s1, duration: dur, ease: ease, immediateRender: true }, t);
     function penCircle(svg, t, o) { return FX.markup.circle(tl, svg, t, Object.assign({ color: OX, width: 6, filter: PEN, dur: 0.7 }, o)); }
 
     FX.tintDefs(defs, SEG + "-tint-ox", "#1e0a08", "#ead2cc");
@@ -565,6 +600,9 @@
       tl.to(gi.firstChild, { attr: { stroke: OXL }, duration: 0.001 }, S(1.50));
       tl.fromTo(g, { scale: 0.85 }, { scale: 0.72, duration: 0.25, ease: C(E.out, 0.25), immediateRender: false }, S(1.50));
       FX.focusHunt(tl, cam, S(1.50), { dur: 0.5, a: 2, b: 3 });
+      el(svg, "path", { d: MAP.ru.ua, fill: "none", stroke: SKY, "stroke-width": 2.4, opacity: 0.9 });
+      const lr = country(cam, 1150, 480, "Russia", 80, "night", S(0.30)), lu = country(cam, 170, 870, "Ukraine", 40, "night", S(1.00));
+      counter([lr, lu], 0.95, 1.28, 0, 2.7, E.cam);
     })();
     words("sc001-txt", [T(0.24) - L, T(0.72) - L, T(1.12) - L], { dur: 0.6, y: 10 });
 
@@ -623,7 +661,8 @@
 
     /* ============ sc008 · 30.56–32.40 · FACE CAM pop 1 (wide, 2 % push) ============ */
     scene("sc008", 30.56, 32.40); ground("cam", S(30.56));
-    tl.fromTo($("sc008-w"), { scale: 1.0, transformOrigin: "1080px 330px" }, { scale: 1.025, duration: 1.84, ease: "none", immediateRender: false }, S(30.56));
+    tl.fromTo($("sc008-w"), { scale: 1.0, transformOrigin: "1080px 330px" }, { scale: 1.015, duration: 0.97, ease: "none", immediateRender: false }, S(30.56));
+    tl.fromTo($("sc008-w"), { scale: 1.2 }, { scale: 1.22, duration: 0.87, ease: "none", immediateRender: false }, S(31.53));   // jump cut in the take at 31.53 hidden by a punch-in
 
     /* ============ sc009 · 32.40–36.80 · loves his country … help Ukraine … sabotage the Russian military ============ */
     scene("sc009", 32.40, 37.16); ground("paper", S(32.40));
@@ -634,6 +673,7 @@
       tl.fromTo($("sc009-ru"), { opacity: 0 }, { opacity: 0.55, duration: 0.8, ease: C(E.out, 0.8), immediateRender: true }, S(33.14));
       tl.fromTo($("sc009-ua"), { opacity: 0 }, { opacity: 0.6, duration: 0.8, ease: C(E.out, 0.8), immediateRender: true }, S(34.18));
       const P = MAP.ee.places;
+      country(cam, 1500, 560, "Russia", 72, "ink", S(32.60)); country(cam, 620, 980, "Ukraine", 52, "ink", S(32.60));
       const tgts = [[P.moscow, [760, 640]], [P.ryazan, [880, 760]], [P.voronezh, [980, 900]]];
       tgts.forEach((q, i) => {
         const a = q[1], b = q[0];
@@ -695,6 +735,7 @@
       const kn = el(svg, "circle", { cx: K[0], cy: K[1], r: 20, fill: AZ, stroke: SKY, "stroke-width": 5, opacity: 0 });
       pop(kn, S(50.64), { dur: 0.7, from: 0.2 });
       const l1 = $("sc013-l1"); Object.assign(l1.style, { left: K[0] - 280 + "px", top: K[1] + 40 + "px" });
+      country(cam, 1550, 520, "Russia", 64, "night", S(50.90)); country(cam, 270, 880, "Ukraine", 46, "night", S(50.90));
       words("sc013-l1", [T(50.64) - L, T(51.28) - L], { dur: 0.5, y: 8 });
       fadeOut(l1, S(53.95), 0.25);
       const ns = ["moscow", "voronezh", "ryazan", "kursk", "belgorod", "nizhny_novgorod", "saratov", "ivanovo", "rostov_on_don", "volgograd"];
@@ -716,7 +757,7 @@
       const svg = $("sc014-svg");
       // paper clip on the print's top edge
       const clip = el(svg, "path", { d: "M330 236 L330 150 Q330 128 352 128 Q374 128 374 150 L374 250 Q374 270 352 270 Q340 270 340 250 L340 168", fill: "none", stroke: "#7d7f84", "stroke-width": 6, "stroke-linecap": "round" });
-      penCircle(svg, S(59.13), { cx: 400, cy: 470, rx: 96, ry: 70, rot: -10, seed: 5 });
+      penCircle(svg, S(59.13), { cx: 738, cy: 392, rx: 250, ry: 118, rot: -5, seed: 5 });   // both generals' faces (Fix round 1)
     })();
     words("sc014-txt", [T(58.65) - L, T(59.13) - L, T(59.61) - L], { dur: 0.5, y: 12 });
 
@@ -725,35 +766,39 @@
     (function () {
       const cam = $("sc015-cam"), svg = $("sc015-svg"), P = MAP.ee.places;
       gsap.set(cam, at(1150, 830, 1.32));
-      tl.fromTo(cam, at(1150, 830, 1.32), Object.assign(at(1140, 560, 1.0), { duration: 2.3, ease: E.cam, immediateRender: false }), S(60.60));
-      tl.to(cam, Object.assign(at(1140, 555, 0.995), { duration: 1.8, ease: "none" }), S(62.90));
+      tl.fromTo(cam, at(1150, 830, 1.32), Object.assign(at(960.5, 560, 1.0), { duration: 2.3, ease: E.cam, immediateRender: false }), S(60.60));
+      tl.to(cam, Object.assign(at(960.5, 555, 1.0), { duration: 1.8, ease: "none" }), S(62.90));
       tl.set($("sc015-ru"), { opacity: 0.34 }, S(60.57));
       el(svg, "path", { d: MAP.ee.ru, fill: "none", stroke: OXL, "stroke-width": 2.4, opacity: 0.85 });
       el(svg, "path", { d: MAP.ee.ua, fill: "none", stroke: SKY, "stroke-width": 2.6 });
       const B = P.belgorod, tg = [P.moscow, P.engels_airbase, P.dyagilevo_airbase, P.ivanovo_severny_airbase];
+      const names = ["Moscow", "Engels air base", "Dyagilevo air base", "Ivanovo air base"], labs = [];
+      labs.push(country(cam, 1600, 500, "Russia", 64, "night", S(60.80)), country(cam, 640, 960, "Ukraine", 44, "night", S(60.80)));
       tg.forEach((q, i) => {
         const t0 = S(61.53) + i * 0.3;
+        labs.push(place(cam, q[0], q[1], names[i], t0 + 0.8, { dot: false, dy: i === 3 ? 22 : 0, left: i === 1 }));
         arrow(svg, B[0] - 10, B[1] + 6, q[0], q[1], t0, { color: SKY, width: 5, bend: 40 * (i % 2 ? 1 : -1), dur: 0.8, head: 22 });
         const d = el(svg, "circle", { cx: q[0], cy: q[1], r: 9, fill: BONE, opacity: 0 });
         tl.set(d, { opacity: 1 }, t0 + 0.8);
         gated(60.57, 64.89, () => FX.radioWaves(svg, q[0], q[1], { rings: 3, max: 120, period: 1.4, width: 5, color: SKY, from: t0 + 0.8, to: S(64.95) }));
       });
+      counter(labs, 1.32, 1.0, S(60.60), 2.3, E.cam);
     })();
     words("sc015-txt", [T(63.21) - L, T(63.45) - L, T(63.85) - L], { dur: 0.5, y: 12 });
 
     /* ============ sc016 · 64.89–66.65 · FACE CAM pop 2 (medium 1.28) ============ */
-    scene("sc016", 64.89, 66.65); ground("cam", S(64.89));
-    tl.fromTo($("sc016-w"), { scale: 1.28, transformOrigin: "1060px 340px" }, { scale: 1.31, duration: 1.76, ease: "none", immediateRender: false }, S(64.89));
+    scene("sc016", 64.89, 66.45); ground("cam", S(64.89));
+    tl.fromTo($("sc016-w"), { scale: 1.28, transformOrigin: "1060px 340px" }, { scale: 1.31, duration: 1.56, ease: "none", immediateRender: false }, S(64.89));
 
     /* ============ sc017 · 66.65–70.09 · Russia's security services ============ */
-    scene("sc017", 66.65, 70.09); ground("night", S(66.65));
-    push($("sc017-w"), 66.65, 70.09, 1.0, 1.06);
+    scene("sc017", 66.45, 70.09); ground("night", S(66.45));
+    push($("sc017-w"), 66.45, 70.09, 1.0, 1.06);
     (function () {
-      const svg = $("sc017-svg"), x = 560, y = 230, w = 820, h = 360, c = 46;
+      const svg = $("sc017-svg"), x = 290, y = 150, w = 1350, h = 560, c = 60;
       const d = "M" + x + " " + (y + c) + " L" + x + " " + y + " L" + (x + c) + " " + y + " M" + (x + w - c) + " " + y + " L" + (x + w) + " " + y + " L" + (x + w) + " " + (y + c) +
         " M" + (x + w) + " " + (y + h - c) + " L" + (x + w) + " " + (y + h) + " L" + (x + w - c) + " " + (y + h) + " M" + (x + c) + " " + (y + h) + " L" + x + " " + (y + h) + " L" + x + " " + (y + h - c);
       const b = el(svg, "path", { d: d, fill: "none", stroke: OXL, "stroke-width": 4, opacity: 0 });
-      tl.fromTo(b, { opacity: 0, scale: 1.25, transformOrigin: "970px 410px" }, { opacity: 1, scale: 1, duration: 0.5, ease: C(E.out, 0.5), immediateRender: true }, S(67.40));
+      tl.fromTo(b, { opacity: 0, scale: 1.12, transformOrigin: "965px 430px" }, { opacity: 1, scale: 1, duration: 0.5, ease: C(E.out, 0.5), immediateRender: true }, S(67.40));
       const dot = el(svg, "circle", { cx: x + w - 26, cy: y + 26, r: 9, fill: OX, opacity: 0 });
       [67.9, 68.9, 69.9].forEach((t) => { tl.set(dot, { opacity: 1 }, S(t)); tl.set(dot, { opacity: 0 }, S(t + 0.5)); });
     })();
@@ -761,7 +806,8 @@
 
     /* ============ sc018 · 70.09–71.69 · FACE CAM pop 3 (close 1.55) ============ */
     scene("sc018", 70.09, 71.69); ground("cam", S(70.09));
-    tl.fromTo($("sc018-w"), { scale: 1.55, transformOrigin: "1080px 330px" }, { scale: 1.58, duration: 1.6, ease: "none", immediateRender: false }, S(70.09));
+    tl.fromTo($("sc018-w"), { scale: 1.55, transformOrigin: "1080px 330px" }, { scale: 1.56, duration: 0.32, ease: "none", immediateRender: false }, S(70.09));
+    tl.fromTo($("sc018-w"), { scale: 1.3 }, { scale: 1.33, duration: 1.28, ease: "none", immediateRender: false }, S(70.41));   // jump cut at 70.41 hidden by a reframe
 
     /* ============ sc019 · 71.69–74.49 · attacks inside your country ============ */
     scene("sc019", 71.69, 74.76); ground("night", S(71.69));
@@ -770,20 +816,23 @@
     words("sc019-txt", [T(72.97) - L, T(73.45) - L, T(73.77) - L, T(74.01) - L], { dur: 0.2, y: 0 });
 
     /* ============ sc020 · 74.49–81.29 · some of your own people (focal blur + circles) ============ */
-    scene("sc020", 74.70, 81.29);
+    scene("sc020", 74.70, 78.00);
     whip($("sc019-shot"), $("sc020-shot"), S(74.70), { vertical: true, dir: -1 });
-    push($("sc020-w"), 74.70, 81.29, 1.0, 1.08);
+    push($("sc020-w"), 74.70, 78.00, 1.0, 1.05);
     (function () {
       const svg = $("sc020-svg");
       const keys = [[620, 740], [880, 760], [1560, 800]];
-      FX.focalBlur(tl, $("sc020-blur"), [{ t: S(74.70), x: 300, y: 600, r: 150 }, { t: S(75.30), x: keys[0][0], y: keys[0][1] - 40, r: 170, dur: 0.8 }, { t: S(76.20), x: keys[1][0], y: keys[1][1] - 40, r: 170, dur: 0.8 }, { t: S(77.10), x: keys[2][0], y: keys[2][1] - 40, r: 170, dur: 0.8 }, { t: S(78.40), x: 1000, y: 700, r: 900, dur: 2.2 }]);
-      keys.forEach((k, i) => penCircle(svg, S(75.70) + i * 0.9, { cx: k[0], cy: k[1] - 40, rx: 70, ry: 150, rot: -3, seed: 7 + i, color: BONE, width: 5 }));
+      FX.focalBlur(tl, $("sc020-blur"), [{ t: S(74.70), x: 300, y: 600, r: 150 }, { t: S(75.20), x: keys[0][0], y: keys[0][1] - 40, r: 170, dur: 0.7 }, { t: S(76.05), x: keys[1][0], y: keys[1][1] - 40, r: 170, dur: 0.7 }, { t: S(76.90), x: keys[2][0], y: keys[2][1] - 40, r: 170, dur: 0.5 }, { t: S(77.10), x: 1000, y: 700, r: 1150, dur: 0.45 }]);
+      keys.forEach((k, i) => penCircle(svg, S(75.50) + i * 0.75, { cx: k[0], cy: k[1] - 40, rx: 70, ry: 150, rot: -3, seed: 7 + i, color: BONE, width: 5, dur: 0.55 }));
     })();
     words("sc020-txt", [T(74.81) - L, T(74.97) - L, T(75.13) - L, T(75.37) - L, T(75.77) - L], { dur: 0.5, y: 12 });
 
+    /* ============ sc020b · 78.00–81.29 · expendable window (dropped at assembly) ============ */
+    scene("sc020b", 78.00, 81.292);
+
     /* ============ sc021 · 81.29–83.13 · FACE CAM pop 4 (medium 1.32) ============ */
-    scene("sc021", 81.29, 83.13); ground("cam", S(81.29));
-    tl.fromTo($("sc021-w"), { scale: 1.32, transformOrigin: "1100px 340px" }, { scale: 1.29, duration: 1.84, ease: "none", immediateRender: false }, S(81.29));
+    scene("sc021", 81.292, 83.13); ground("cam", S(81.292));
+    tl.fromTo($("sc021-w"), { scale: 1.32, transformOrigin: "1100px 340px" }, { scale: 1.29, duration: 1.838, ease: "none", immediateRender: false }, S(81.292));
 
     /* ============ sc022 · 83.13–92.09 · start with Ivan … Russia's political opposition (dossier) ============ */
     scene("sc022", 83.13, 92.09); ground("paper", S(83.13));
@@ -804,14 +853,14 @@
     words("sc022-txt", [T(89.93) - L, T(90.57) - L, T(91.05) - L], { dur: 0.45, y: 12 });
 
     /* ============ sc023 · 92.09–97.85 · change in the country ============ */
-    scene("sc023", 92.09, 97.85); ground("night", S(92.09));
+    scene("sc023", 92.09, 97.875); ground("night", S(92.09));
     whip($("sc022-shot"), $("sc023-shot"), S(92.09), { vertical: true, dir: 1 });
-    push($("sc023-w"), 92.09, 97.85, 1.0, 1.1);
+    push($("sc023-w"), 92.09, 97.875, 1.0, 1.1);
     words("sc023-txt", [T(93.37) - L, T(93.69) - L, T(93.77) - L, T(93.93) - L], { dur: 0.6, y: 12 });
 
     /* ============ sc024 · 97.85–102.17 · harder and harder (walls close in) ============ */
-    scene("sc024", 97.85, 102.41);
-    push($("sc024-w"), 97.85, 102.41, 1.1, 1.16);
+    scene("sc024", 97.875, 102.41);
+    push($("sc024-w"), 97.875, 102.41, 1.1, 1.16);
     [[S(98.49), 160, 0.7], [T(100.73) - L, 440, 0.25], [T(101.53) - L, 640, 0.25]].forEach((k, i) => {
       tl.to($("sc024-wl"), { x: k[1], duration: k[2], ease: C(E.out, k[2]) }, k[0]);
       tl.to($("sc024-wr"), { x: -k[1], duration: k[2], ease: C(E.out, k[2]) }, k[0]);
@@ -828,12 +877,13 @@
       tl.set($("sc025-ua"), { opacity: 0.3 }, S(102.41));
       el(svg, "path", { d: MAP.ee.ua, fill: "none", stroke: SKY, "stroke-width": 2.8 });
       const K = P.kyiv, KH = P.kharkiv;
+      country(cam, 1450, 700, "Russia", 72, "night", S(102.60)); country(cam, 420, 1032, "Ukraine", 56, "night", S(102.60));
       const arr = [[[590, 700], [K[0] + 8, K[1] - 26]], [[1150, 820], [KH[0] - 20, KH[1] + 6]], [[1320, 1180], [1090, 1150]], [[850, 1560], [870, 1330]]];
       arr.forEach((a, i) => arrow(svg, a[0][0], a[0][1], a[1][0], a[1][1], S(102.95) + i * 0.25, { color: OXL, width: 10, bend: 30 * (i % 2 ? 1 : -1), dur: 0.75, head: 32 }));
       // things got even worse: fires spread across Ukraine at 12 fps
       const r = FX.rng(2500);
       for (let k = 0; k < 26; k++) {
-        const x = 520 + r() * 640, y = 860 + r() * 460;
+        const x = 590 + r() * 570, y = 860 + r() * 460;
         const c = el(svg, "circle", { cx: x.toFixed(1), cy: y.toFixed(1), r: (5 + r() * 7).toFixed(1), fill: OXL, opacity: 0 });
         tl.set(c, { opacity: 0.9 }, S(107.15) + Math.floor(k / 26 * 0.75 * 12) / 12);
       }
@@ -868,14 +918,15 @@
     words("sc029-txt", [T(125.54) - L, T(125.94) - L, T(126.10) - L], { dur: 0.35, y: 10 });
 
     /* ============ sc030 · 126.66–131.78 · leaving the country altogether ============ */
-    scene("sc030", 126.90, 131.78);
+    scene("sc030", 126.90, 131.917);
     tl.fromTo($("sc030-card"), { y: 160, opacity: 0 }, { y: 0, opacity: 1, duration: 1.1, ease: C(E.out, 1.1), immediateRender: true }, S(126.90));
-    push($("sc030-w"), 128.00, 131.78, 1.0, 1.04, { y0: 0, y1: -20 });
+    push($("sc030-w"), 128.00, 131.917, 1.0, 1.04, { y0: 0, y1: -20 });
     words("sc030-txt", [T(130.02) - L, T(130.34) - L, T(130.50) - L, T(130.90) - L], { dur: 0.45, y: 12 });
 
     /* ============ sc031 · 131.78–133.62 · FACE CAM pop 5 (wide push) ============ */
-    scene("sc031", 131.78, 133.62); ground("cam", S(131.78));
-    tl.fromTo($("sc031-w"), { scale: 1.0, transformOrigin: "1080px 330px" }, { scale: 1.07, duration: 1.84, ease: E.cam, immediateRender: false }, S(131.78));
+    scene("sc031", 131.917, 133.62); ground("cam", S(131.917));
+    tl.fromTo($("sc031-w"), { scale: 1.0, transformOrigin: "1080px 330px" }, { scale: 1.02, duration: 0.523, ease: "none", immediateRender: false }, S(131.917));
+    tl.fromTo($("sc031-w"), { scale: 1.18 }, { scale: 1.22, duration: 1.18, ease: "none", immediateRender: false }, S(132.44));   // small jump at 132.44 hidden by a punch-in
 
     /* ============ sc032 · 133.62–139.94 · weaken his grip on power ============ */
     scene("sc032", 133.62, 140.00); ground("night", S(133.62));

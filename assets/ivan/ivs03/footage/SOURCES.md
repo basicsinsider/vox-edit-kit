@@ -14,3 +14,4 @@ Every clip: crop 1600×900 (past the BBC logo top-left and the burned subtitles)
 | sarvarov_car.mp4 | 58:59.0 | 4.0 | 240,70 | drone view of the wrecked car in the Moscow courtyard (cut at 2.42 s to a closer view) | sc028 |
 | officers_hall.mp4 | 11:51.3 | 5.4 | 240,40 | Russian generals/officers applauding in a Kremlin hall (Channel One Russia); cut at 3.21 s to a close group | sc033 |
 | apartment_windows.mp4 | 11:29.85 | 7.9 | 240,70 | Moscow apartment block at night, lit windows (long lens) | sc034 |
+| warsaw_street.mp4 | 59:50.15 | 2.95 | 240,60 | Warsaw street with trams seen through a window (fix round 1) | sc017w |

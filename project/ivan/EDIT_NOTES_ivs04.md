@@ -31,7 +31,7 @@ FC text: ink label boxes (`.label-box`, paper text on ink) at x ≥ 1180 on the 
 | sc22 | 582.75–590.11 | "Now, Russia still has enough to keep launching missiles at Ukraine, but Spiderweb has shown its commanders something worrying." | FC wide → punch close at 586.83 | face | clean FC | "enough to keep launching missiles" 584.35/584.75/584.91/585.15/585.63; cleared 586.7; "something worrying" 588.99/589.31 | facecam | hard cut | whoosh_soft (punch) |
 | sc23 | 590.11–594.35 | "Even an airfield that far from Ukraine wasn't actually safe anymore." | Night map callback of sc02: one ring grows from Ukraine all the way to Belaya (far Siberia), the airfield pulses → "that far … wasn't safe anymore"; ends on an accelerating pull-out (hand-off with motion) | night | distance ring, radio pulse, camera pull | "wasn't actually safe anymore" 592.51/592.91/593.23/593.63 | russia_night | ends moving | air_swell, radio_pulse |
 
-Face cam: 474.57–482.49 (7.92) + 493.04–496.96 (3.92) + 510.32–513.60 (3.28) + 519.60–522.08 (2.48) + 543.917–548.28 (4.36)
+Face cam (fix round 1: 33.8 %, see NOTES): 474.57–482.49 (7.92) + 493.04–496.96 (3.92) + 510.32–513.60 (3.28) + 519.60–522.08 (2.48) + 543.917–548.28 (4.36)
 + 559.39–563.63 (4.24) + 571.39–574.99 (3.60) + 582.75–590.11 (7.36) = 37.16 s of 108.78 s non-insert = **34.2 %**.
 Framings: wide 1.0 / medium 1.25 / close 1.55, never the same twice in a row.
 First scene: face cam wide (fresh shot). Last scene: night map pulling out with acceleration (motion hand-off to ivs05).

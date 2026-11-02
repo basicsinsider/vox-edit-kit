@@ -41,7 +41,7 @@ def simplify(cid, tol=5.0):
 
 paths = {
     "ru": simplify("c-russia"),
-    "ua": simplify("c-ukraine") + simplify("c-crimea"),
+    "ua": simplify("c-ukraine"),   # c-ukraine already includes Crimea (FIXES_ROUND1 §2)
     "by": simplify("c-belarus"),
 }
 P = meta["places"]
@@ -49,6 +49,9 @@ city = {k: px(P[k]["lon"], P[k]["lat"]) for k in ["moscow", "kyiv", "ryazan", "v
 city["tula"] = px(37.62, 54.19)
 city["oryol"] = px(36.08, 52.97)
 city["bryansk"] = px(34.37, 53.25)
+city["rossosh"] = px(39.57, 50.20)
+city["millerovo"] = px(40.40, 48.92)
+city["kamensk"] = px(40.27, 48.32)
 paths["city"] = city
 src = (ROOT / "project/ivan/gen/ivs07_src.html").read_text()
 out = src.replace("/*@PATHS@*/", "const MAP = " + json.dumps(paths, separators=(",", ":")) + ";")

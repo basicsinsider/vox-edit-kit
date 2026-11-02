@@ -15,7 +15,7 @@ logo, the "AI Anonymisation" / "Actor's Voice" tags and the burned subtitles are
 | bbc_marcin_phone.mp4 | 04:46.0–04:52.0 | 6.0 s | Mamoń, silhouette, reading his phone | sc004 |
 | bbc_phone_bomb.mp4 | 04:06.0–04:11.0 | 5.0 s | phone in Ivan's hand showing his video of a home-made explosive device | sc005 |
 | bbc_airfield_night.mp4 | 00:50.0–00:57.0 | 7.0 s | Ivan's own night video: silhouette, airfield lights on the horizon | sc006, sc025 |
-| bbc_marcin_profile.mp4 | 05:01.0–05:05.9 | 4.9 s | Mamoń in profile against a window | sc008 |
+| bbc_marcin_profile.mp4 | 05:01.0–05:05.96 | 4.96 s | Mamoń in profile against a window | sc008 |
 | bbc_field_meet.mp4 | 03:25.0–03:29.0 | 4.0 s | Mamoń and Ivan sitting in a field "somewhere outside Russia" (backs/anonymised) | sc010 |
 | bbc_astana.mp4 | 16:59.6–17:03.4 | 3.8 s | Astana skyline (Bayterek), Kazakhstan, car passing | sc020 |
 | bbc_phone_footage.mp4 | 15:45.5–15:48.9 | 3.4 s | Ivan's hands holding a phone showing his footage | sc021 |
@@ -50,3 +50,4 @@ out of frame). Credit "Video: The Guardian".
 | file | made from | how |
 |---|---|---|
 | fc_239.9_fg.webm | `assets/facecam/ivan_facecam_master.mp4` master 239.9–243.9 s | ffmpeg pre-cut (deleted after use) → `npx --yes hyperframes@0.8.217 remove-background … -o fc_239.9_fg.webm --device cpu` (120 frames, 417 s on CPU). Narrator cut-out (transparent WebM, 30 fps) for sc023. |
+| fc_295.86_hold.jpg | `assets/facecam/ivan_facecam_master.mp4` frame at master 295.86 | ffmpeg single frame 1920×1080 — last frame of the take, held under the push for 295.895–296.18 (fix round 1). |

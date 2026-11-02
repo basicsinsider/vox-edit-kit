@@ -73,3 +73,33 @@ First scene: face cam wide (fresh shot). Last scene: night map pushing toward Be
 `face(id,a,b,framing)` + `FR` framings (face ≈ 860,300 in the master face cam), `fcBox(id,cues,{out})` lower-third with rule,
 `dashed(svg,d,t,dur,o)` (dash-pattern route revealed through a mask stroke), `circD()` circle-as-path for drawn rings,
 `planeGrid()` isotype of bomber pictograms (PLANE path), `TRUCK` pictogram.
+
+## Fix round 1 (Krish, 2026-11-02 — project/ivan/FIXES_ROUND1.md)
+1. **Map labels on every map** (`mapLabels()` helper, style per label_ref_china: Haskoy 800 uppercase, 0.04 em, bone + soft shadow on
+   night/satellite, ink on atlas; airfields `t-label` 24 px with pin/leader). Labels sit inside the map camera and are counter-scaled
+   every frame from the scene's camera keyframes, so they keep their screen size during pulls/pushes.
+   - sc02 rings map: RUSSIA, UKRAINE, OLENYA, IVANOVO, DYAGILEVO, BELAYA (labels appear with the airfield dots).
+   - sc05 satellite map: RUSSIA, UKRAINE + the four airfields; Belaya aerial: "BELAYA AIR BASE" pin label top-left.
+   - sc10 route map: RUSSIA, UKRAINE, IVANOVO (the line text moved to the top-left so nothing collides at the bottom).
+   - sc12 trucks map: RUSSIA, UKRAINE, OLENYA, IVANOVO, DYAGILEVO, BELAYA. sc16 missile map: RUSSIA, UKRAINE, KYIV.
+   - sc23 final ring map: RUSSIA, UKRAINE (fades before the pull takes it to the frame edge), BELAYA. The three unlabelled extra
+     airfield dots in sc23 were removed (only the base the ring reaches is shown).
+   Camera tweaks for label room: sc02 ends centred 2200 (was 2140), sc05 2150→2190 @0.50→0.52, sc10 s 0.40→0.43 (Ivanovo + Ukraine both
+   in frame), sc12 ends centred 2200.
+2. **Crimea = Ukraine**: `ivs04_assets.py` now takes `#c-crimea` from `eastern_europe_overlay.svg`, re-projects it into the Russia-crop
+   pixel space, adds it to `russia_fill_ua.png` / `russia_edge_ua.png` and cuts it out of `russia_fill_ru.png`; same for the
+   eastern-Europe fills. Checked at full res (night crop + atlas): no red on the peninsula.
+3. **Markups**: the four bomber circles on the Belaya aerial re-checked at 100 % and nudged (−6, +5 px) onto the airframes.
+4. **Face-cam edges** (frame-difference scan of the master face cam + 24 fps strips of every shot's first 0.5 s / last 0.75 s):
+   - sc04 ended in a new take (hand on desk from 496.833) → cut at **496.82**; sc05 map starts there.
+   - sc09 began with 2 frames of the previous take (join at 519.667) → starts **519.695**.
+   - sc14 began on a black face-cam frame after the insert (picture returns at 543.933) → starts **543.945**; insert scene extended.
+   - sc17's last frames show his hand moving away after "earlier" → ends **563.487**; sc18 (monitor) starts there, its clip 0.14 s earlier.
+   - sc22's punch-in moved to **586.737**, before the take join at 586.767.
+   Other shot edges checked: mid-speech, no leftovers.
+   Face cam now 36.75 s of 108.75 s non-insert = **33.8 %**.
+5. Timeline unchanged (119.78 s). Lint 0 errors in ivs04 (the run's 2 errors are intro02/intro03), sync_audit 0 flagged.
+   sfx.json: 496.96→496.82 (cut to sat map), 565.10→564.96 (explosion), 586.83→586.737 (punch).
+New gotcha (MANUAL §4.2): don't read a camera's scale with `gsap.getProperty` inside `FX.onFrame` — FX.mount's frame proxy starts at 0,
+so it renders before tweens that start later and sees the previous seek's value (labels were half size in snapshots). Compute the scale
+from the camera keyframes instead (see `mapLabels(…, keys)`).

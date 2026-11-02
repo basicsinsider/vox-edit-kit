@@ -63,3 +63,29 @@ second (no lip-sync offset added — lead measures after render).
 - Gotcha: face-cam framing at 1.25–1.55 with the scale origin on the face centre crops the top of Krish's head — put the origin
   ~120 px ABOVE the face (y ≈ 150–210 in the 1080 frame) to keep headroom.
 - SFX markers: `compositions/ivs05.sfx.json` (43, master seconds; one hero per scene marked in the notes).
+
+## Fix round 1 (Krish, 2026-11-02 — `project/ivan/FIXES_ROUND1.md`)
+- **Map labels** (style of `label_ref_china.png`: Haskoy 800 uppercase, +0.04 em, bone with soft dark shadow; places `t-label` 24 px
+  next to a dot). New helper `camDrive(cam, init, keys, labels)` drives each map camera with a proxy tween and moves screen-space labels
+  with it, so labels keep a constant size through the 1.45 → 0.65 pull-back. Labels fade in with the map (0.6 s, 12 fps).
+  - sc11 Russia-wide: RUSSIA (72 px), UKRAINE (40 px), the four Spiderweb airfields by name (Olenya, Ivanovo, Dyagilevo, Belaya) next to
+    their dots; final framing moved to centre (1650, 860) × 0.65 so Ukraine and Belaya both stay inside the safe area.
+  - sc12 Eastern Europe: RUSSIA, UKRAINE, Moscow and Kazan (dot + label), Yelabuga (52 px, on its word) + TATARSTAN (32 px, on its word),
+    now screen-space under the pin; route bent further north (control −200) so it clears the Kazan/Russia labels; pin rings smaller.
+  - sc14 satellite: ALABUGA (56 px) inside the outline of the zone.
+- **Crimea = Ukraine** in sc11: `#c-crimea` from `eastern_europe_overlay.svg` re-projected into the world-kit crop (`ivs05_assets.py` →
+  `wide.crimea`), added to Ukraine's fill/outline and masked out of Russia's (mask on each blended path — a masked `<g>` isolates the group
+  and kills `mix-blend-mode: overlay`, Russia went flat bright red; gotcha for MANUAL §4.2). sc12 already used the EE overlay (Crimea in Ukraine).
+- **Markers re-checked** at full res: airfield dots (coordinates verified: Olenya 68.15N 33.46E, Ivanovo-Severny 57.06N 40.98E, Dyagilevo
+  54.64N 39.57E, Belaya 52.92N 103.57E), Yelabuga/Moscow/Kazan dots from the kit json, satellite outline/towers round the zone, cork pins
+  = string ends (470,229)/(1360,257). Airfield rings reduced (max 64) so they don't run through the labels.
+- **Face-cam edges, frame-exact.** Source jump cuts found from `project/ivan/edl_frames.json` (edit_in + 37 s) and verified by
+  frame-difference on the 30 fps master: 597.60, 617.40, 622.80, 656.73, 668.73, 675.33. New edges: A 594.35–597.625 · B 617.4167–622.7917
+  (sc06 SBU clip runs to 617.4167; slide into sc08 lands 622.7917) · C′ 630.96–633.92 (no jump) · C 654.88–656.75 close 1.5 → 656.75–659.52
+  medium 1.2 (reframe hides the 656.73 jump) · D 664.56–668.75 · E 668.75–675.3333 → 675.3333–675.59 punch-in 1.58→1.64 (the 675.33 jump
+  is the start of ivs06's take; the reframe keeps it reading as a push). Before 617.40 the source is a frozen leftover — no longer shown.
+  Face cam now 27.28 s = **33.6 %**.
+- **Expendable window 625.625–626.2917** (repeated "which"): sc08 is now tight on SBU (scale 1.3) until a hard punch-out to the wide
+  diagram exactly at 625.625. SBU pop shortened to 0.45 s (done 625.53). Inside the window only a static wide frame with a slow drift: no text,
+  no animation start, no SFX. Next event ≠ at 626.52, "completely different" at 626.64.
+- Timeline still 81.24 s; lint 0 errors (ivs05); sync_audit 0 flagged; sfx.json updated (597.625, 622.34, +2 soft whooshes).

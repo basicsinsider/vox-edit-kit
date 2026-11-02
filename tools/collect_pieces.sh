@@ -3,8 +3,8 @@
 # (where tools/render_chunk.sh skips them). Prints one line per newly collected piece. Safe to run repeatedly.
 R="$(cd "$(dirname "$0")/.." && pwd)"; cd "$R"
 ONLY=${ONLY:-}
-for b in $(git ls-remote --heads origin "render/${ONLY}*" 2>/dev/null | awk '{print $2}' | sed 's#refs/heads/##'); do
-  s=${b#render/}; ch=${s%s0*}; out="renders/$ch/pieces/$s.mp4"
+for b in $(git ls-remote --heads origin "${BRANCH_PREFIX:-render}/${ONLY}*" 2>/dev/null | awk '{print $2}' | sed 's#refs/heads/##'); do
+  s=${b#${BRANCH_PREFIX:-render}/}; ch=${s%s0*}; out="renders/$ch/pieces/$s.mp4"
   [ -s "$out" ] && continue
   avail=$(df --output=avail -B1 . | tail -1); [ $avail -gt 1200000000 ] || { echo "$s: skipped — only $avail bytes free"; continue; }
   T=$(mktemp -d "$R/work/_pc_XXXX")

@@ -59,3 +59,21 @@ face-cam remove-background pair for sc008.
   not an empty room plate — fine for the "plate → graphic → fg" stack as long as the graphic sits beside, not behind, the body.
 - remove-background ran at 0.3 fps here (129 frames in 469 s) on the shared box — budget ~8 min per 4 s.
 - SFX markers: `compositions/ivs06.sfx.json` (56 markers, one hero per scene). New marker type used: `scanner_sweep` (exists for c3).
+
+## Fix round 1 (Krish, 2026-11-02 — `project/ivan/FIXES_ROUND1.md`)
+- **Map labels (sc011, Warsaw → Ukraine):** POLAND, UKRAINE, RUSSIA in Haskoy 800 caps (+0.04 em), bone with a soft dark
+  shadow, at the visual centre of each country in the final 0.6 framing (inside the map camera, so they stay on the land while the
+  camera drifts), fade/rise 0.7 s at 12 fps from 716.85 and held to the cut; WARSAW city label (t-label beside the pin) kept.
+  Belarus/Kyiv not labelled (not narrated). RUSSIA label is on Russian land before and after the oxblood fill (checked).
+- **Crimea:** the Ukraine fill/outline uses the kit's `#c-ukraine` (includes Crimea) + `#c-crimea`; `#c-russia` excludes it.
+  In this framing Crimea lies below the frame (frame bottom ≈ 47.4°N), so it is never seen; nothing in frame puts it in Russia.
+- **Markers at full res:** sc013 focus brackets drifted ~38 px left of the double agent (bracket moved faster than the row) →
+  now locked to the row's drift (centred, checked at 50.0 / 51.4 s local). sc021 officer and car brackets checked at full res: on target.
+- **Face-cam edges:** every shot's first 0.35 s and last 0.75 s checked frame by frame at master time — no mouse reach, screen
+  glance or post-line settling inside any shot. But two take joins of the trimmed VO fell inside shots (found by frame diff):
+  master **706.450** (inside sc008) and **709.734** (inside sc009). Fixed: sc008 → sc009 hard cut moved to 706.465 (first 24 fps
+  frame of the new take; sc009 media-start 706.465, lip sync unchanged) and the sc009 → sc010 whip moved to 709.70 (outgoing
+  hidden at 709.742, before the join). sc010 starts 0.29 s earlier (Warsaw cue unchanged). The other joins (720.334, 773.733)
+  are just before sc012 / sc024 start. Every face-cam `<video>` `data-duration` now ends at its scene's cut (timed media can
+  outlive a hidden scene), so no frame of the next take can leak.
+- SFX: the whip marker moved 709.99 → 709.70. Timeline still 105.790 s (headless check); lint 0 errors; sync_audit 0 flagged.

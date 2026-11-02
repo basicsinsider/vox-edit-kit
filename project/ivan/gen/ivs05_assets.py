@@ -43,7 +43,12 @@ fa = lambda x, y: ((x / K - 180 - L0) * P, (y / K - (90 - B1)) * P)
 wa = {"w": W, "h": H, "ppd": P, "lon0": L0, "lat1": B1,
       "russia": to_d(subpaths(path_of(svg, "c-russia")), fa, W, H, 5.0),
       "ukraine": to_d(subpaths(path_of(svg, "c-ukraine")), fa, W, H, 3.0)}
-print("A", W, H, len(wa["russia"]), len(wa["ukraine"]))
+# Crimea belongs to Ukraine (Krish fix round 1): take #c-crimea from the Eastern Europe overlay (x=(lon-20)*147.768,
+# y=(62-lat)*240) and re-project into this crop; the composition adds it to Ukraine and masks it out of Russia.
+ees = open("assets/maps/kit/eastern_europe_overlay.svg").read()
+fc = lambda x, y: ((x / 147.768 + 20 - L0) * P, (B1 - (62 - y / 240)) * P)
+wa["crimea"] = to_d(subpaths(path_of(ees, "c-crimea")), fc, W, H, 1.5)
+print("A", W, H, len(wa["russia"]), len(wa["ukraine"]), len(wa["crimea"]))
 
 # ---- B: Eastern Europe night crop lon 28..56, lat 46..60, half resolution
 ee = json.load(open("assets/maps/kit/eastern_europe.json"))

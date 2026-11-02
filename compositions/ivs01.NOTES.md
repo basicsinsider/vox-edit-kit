@@ -69,3 +69,24 @@ slow push-in still moving at 144.02 (hand-off = cut on action into ivs02's fresh
    the only large text there.
 5. Grey-man icons in SVG: GSAP x/y/scale on an SVG `<g>` (even with `svgOrigin`) misplaced the figure; animating the inner
    `transform` attribute through a proxy object (`onUpdate`) works — gotcha for MANUAL §4.2.
+
+## Fix round 1 (Krish, 2026-11-02) — applied
+1. **Map labels** (helpers `country()` / `place()` / `counter()` in the template): Haskoy 800 caps, 0.04 em tracking; bone + soft
+   shadow on night/sat maps, ink on the atlas. RUSSIA + UKRAINE on every map: sc001 (80 / 40 px, counter-scaled through the push),
+   sc009 (72 / 52, ink), sc013 (64 / 46), sc015 (64 / 44, counter-scaled 1.32→1.0), sc025 (72 / 56). Places shown: sc015 MOSCOW,
+   ENGELS AIR BASE, DYAGILEVO AIR BASE, IVANOVO AIR BASE (t-label 24 px beside the strike dots). No other place is named on a map
+   in this segment. sc001 now also draws Ukraine's outline (sky).
+2. **Crimea**: all fills/outlines come from the eastern_europe / russia kit overlays (`#c-ukraine` includes Crimea, `#c-russia`
+   excludes it) — checked in snapshots of sc001, sc009, sc025.
+3. **Markups**: sc014 circle moved from Gerasimov's sleeve to one ellipse around both faces (checked on a full-res gridded frame);
+   sc020 crowd circles verified on the three passers-by, and the focal blur now opens wide at 77.10 so every circled person is
+   sharp; sc003 circle verified on the face; sc017 CCTV brackets now frame the whole Lubyanka facade. sc015 camera no longer shows
+   past the map's right edge (end centre x 960.5).
+4. **Face-cam edges** (checked frame by frame at 24 fps): pop 1 30.56–32.40 — punch-in 1.0→1.2 at 31.53 hides a jump cut in the
+   take; pop 2 now ends 66.45 (jump at 66.45 was inside), sc017 starts 66.45; pop 3 — reframe 1.55→1.3 at 70.41 (jump);
+   pop 4 starts on the exact frame 81.292 (= window end); pop 5 now starts 131.917 (a jump cut sat 3 frames after the old start)
+   with a punch-in at 132.44. Face cam now 8.54 s = **5.9 %**.
+5. **Expendable windows**: hard scene cut at **78.00** (sc020 ends; new plain filler shot sc020b 78.00–81.292, nothing in it) and at
+   **97.875** (sc023 → sc024; sc024's first animation is at 98.49). No text cue, key animation, face-cam or SFX marker inside either
+   window. sc020's circles/focal moves finish by 77.55.
+Checks: lint 0 errors in ivs01, sync_audit 0 flagged, duration 144.02, sfx.json updated (66.45 whoosh, 75.50 circles, 61.53 pins).

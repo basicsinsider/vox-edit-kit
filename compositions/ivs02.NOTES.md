@@ -88,3 +88,29 @@ Lip sync: face-cam `data-media-start` = master second (file aligned to master ti
 `frame(id,a,b,s0,s1,ox,oy)` face-cam framing + push · `fcText(sc,cues,outAt,dur)` face-cam key phrase with kicker bar ·
 `landIn(b,t)` incoming overscale+blur land (push-through) · `pushOut(a,t,{to,origin})` · `slideIn(b,t,{axis})` · surveillance
 brackets (sc006/029/031) · redaction bars (sc011) · message bubbles (sc004) · travelling card along a sampled path (sc022).
+
+## Fix round 1 (2026-11-02, project/ivan/FIXES_ROUND1.md)
+Timeline still 152.16 s; lint 0 errors (ivs02); sync_audit 0 flagged; every changed scene snapshotted and looked at.
+1. **Map labels** — new helpers `mlab()` (label anchored at map px, Haskoy 800 uppercase 0.04 em for countries, `t-label` for
+   places, bone + soft shadow on night/satellite, ink on the atlas) and `camPath()` (the camera of a map scene is driven by one
+   proxy tween, so every label is counter-scaled to a constant screen size during pushes/pull-backs). Label anchors for
+   countries were checked inside the country polygon (point-in-polygon on ee_paths.json).
+   - sc015: UKRAINE, Kyiv (+ existing Mamoń, GUR).
+   - sc019 atlas: RUSSIA, UKRAINE, Moscow (dot), and every facility pin is now labelled: Dyagilevo airbase, Engels airbase,
+     Kazan aircraft plant, Voronezh airbase (unlabelled generic pins removed; camera reframed so Ukraine is in frame).
+   - sc022 (Krish's 3:55 example): Kazan aircraft plant, TATARSTAN (now stays), Moscow, "hundreds of miles east", RUSSIA,
+     UKRAINE, KAZAKHSTAN, Kyiv, "his Ukrainian handlers"; the Moscow–Kazan distance line fades with its label before the final
+     pull-back so it doesn't cross the Kazan label; the footage card fades on arrival so Kyiv stays readable.
+   - sc023 print, sc025 panel: "Kazan aircraft plant" caption strip; sc026 Esri close-up: "Kazan aircraft plant", "airfield".
+2. **Crimea** — all Ukraine fills/outlines use `#c-ukraine` (includes Crimea) + `#c-crimea`; Russia uses `#c-russia` (excludes
+   it). Crimea is outside every framing in this segment anyway.
+3. **Markups at full res** — sc029 CCTV brackets were static while the camera pans: they now track the camera cluster
+   (keyframes every 0.6 s measured in snapshots). sc031 focus brackets moved onto the canisters; sc006 ring + leader moved onto
+   the airfield lights. sc005 circle, sc019 crosshairs, sc026 box/tick checked — on target.
+4. **Face-cam edges** (checked frame by frame in the source; take cuts from the EDL at 176.585, 185.035, 243.84, 293.895,
+   295.895): sc007 now ends 176.56 (was showing 6 frames of the next take settling) → sc008 B-roll starts 176.56 (clip recut
+   05:01.0–05:05.96); sc009 ends 185.02 (whip moved) → sc010 starts 185.02; sc023/sc024 cut moved to 243.895 so the punch-in
+   lands exactly on the first frame of the new take; sc035 gets a punch-in at 293.937 (take cut inside the shot) and the last
+   0.285 s (295.895–296.18, start of the next take) is a held last frame under the continuing push. All other face-cam edges are
+   mid-take while he talks (no leftovers). Face cam now 47.4 s = 31.2 %.
+5. sfx.json: whip 185.15 → 185.02, + cut whoosh 176.56, + label pop 233.45.

@@ -51,3 +51,4 @@ First scene: face cam W, static push (fresh shot). Last scene: push-in on the wi
 **As built (after the hold-rule audit):** cuts moved to sc003/004 305.80, sc006/007 322.10, sc007/008 327.62, sc008/009 337.05 (slide),
 sc010/011 345.15, sc011/012 350.82, sc014/015 365.85, sc016/017 374.40, sc018/019 383.80, sc022/023 402.45, sc028/029 437.90; sc022's
 MOSCOW kicker dropped; framings sc020 → M, sc031 → W, sc032 → C (no text on close-ups). Face cam = 54.79 s = 34.2 %. See compositions/ivs03.NOTES.md.
+- Fix round 1: see compositions/ivs03.NOTES.md (face-cam edges/jump cuts, sc017w Warsaw street, sc019f, MOSCOW tag on sc028, sc014 box).
