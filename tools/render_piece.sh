@@ -35,7 +35,7 @@ mkdir -p renders/pieces; t0=$(date +%s)
 (cd "work/r_$s" && npx --yes hyperframes@0.8.217 render -w ${WORKERS:-3} -q draft --crf 18 ${RES:+--resolution $RES} -o "../../renders/pieces/$s.draft.mp4" > render.log 2>&1)
 [ -s "renders/pieces/$s.draft.mp4" ] || { log "RENDER FAILED: $(tail -c 300 work/r_$s/render.log)"; exit 1; }
 t1=$(date +%s); log "$s: rendered in $((t1-t0))s"
-VF=""; if [ -n "$DROP" ]; then VF="-vf select=not($(echo "$DROP" | sed -E "s/([0-9]+)-([0-9]+)/between(n\\,\1\\,\2-1)/g; s/,b/+b/g")),setpts=N/24/TB"; log "$s: dropping frames $DROP"; fi
+VF=""; if [ -n "$DROP" ]; then EX=$(echo "$DROP" | tr ',' '\n' | awk -F- '{printf "%sbetween(n\\,%s\\,%s)", (NR>1?"+":""), $1, $2-1}'); VF="-vf select=not($EX),setpts=N/24/TB"; log "$s: dropping frames $DROP"; fi
 ffmpeg -v error -y -i "renders/pieces/$s.draft.mp4" $VF -c:v libx264 -preset ${PRESET:-medium} -crf ${CRF:-18} -pix_fmt yuv420p -an -movflags +faststart "renders/pieces/$s.mp4"
 rm -f "renders/pieces/$s.draft.mp4"; log "$s: transcoded in $(( $(date +%s)-t1 ))s ($(du -h renders/pieces/$s.mp4 | cut -f1))"
 mkdir -p "pieces/$s"; (cd renders/pieces && sha256sum "$s.mp4") > "pieces/$s/$s.mp4.sha256"

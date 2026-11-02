@@ -31,7 +31,7 @@ seg = x[prev:].copy(); seg[:n] *= np.linspace(0, 1, n)[:, None]; parts.append(se
 y = np.concatenate(parts); sf.write(f, y, sr, subtype='PCM_24'); print('audio cuts', cuts, '->', len(y) / sr, 's')
 PY
 fi
-ffmpeg -v error -y -i "$P" -i $O/${N}_mix.wav -map 0:v -map 1:a -c:v copy -c:a aac -b:a 384k -shortest -movflags +faststart "$O/${N}_final.mp4"
+ffmpeg -v error -y ${PCONCAT:+-f concat -safe 0} -i "$P" -i $O/${N}_mix.wav -map 0:v -map 1:a -c:v copy -c:a aac -b:a 384k -shortest -movflags +faststart "$O/${N}_final.mp4"
 rm -f $O/${N}_mix.wav
 ffmpeg -v error -y -i "$O/${N}_final.mp4" -vf scale=1280:720 -c:v libx264 -preset medium -crf 26 -maxrate 640k -bufsize 1280k \
   -c:a aac -b:a 96k -movflags +faststart "review/ivan_720p.mp4"
