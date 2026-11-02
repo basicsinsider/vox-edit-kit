@@ -736,6 +736,14 @@ on action. Use it whenever the narrator quotes someone or introduces a historic 
 - [ ] Smooth long eases, 12 fps. [ ] Cuts on action; whips, no iris. [ ] No photo/clip used > 2× in a chunk.
 
 ## Changelog
+- 2026-11-02 — Ivan v3 (4K, Krish's fix round 1, `project/ivan/FIXES_ROUND1.md`): map labels (Haskoy caps, constant screen size during
+  camera moves), Crimea always inside Ukraine (kit overlays; world-kit polygons need `#c-crimea` moved), markups re-aimed, frame-exact
+  face-cam edges (scan the face cam for EDL take joins — they sit inside shots), repeated words found with a Whisper pass (Parakeet hides
+  "But, but"), removed picture+audio together (`DROP` local frames in `render_piece.sh`, `CUT` master seconds in `final_mix_ivan.sh`).
+  **4K**: `RES=4k PRESET=fast tools/render_piece.sh …` → `--resolution 4k` (DPR 2) falls back to screenshot capture (no BeginFrame):
+  28–125 min per 2–3-min segment on helpers (the intro with blurs/maps was slowest); pieces ≈ 0.25 MB/frame (5.6 GB for 15:45) — clear disk
+  first (`git prune --expire=now` after deliveries frees GBs). A single git push > ~1.5 GB is cut off by the proxy ("remote end hung up"):
+  deliver big masters with `tools/deliver_chunked.sh <file> <name> 14` (chained commits of 14 × 95 MB parts, one push each).
 - 2026-11-01 — Ivan (15:46, `project/ivan/`): raw face-cam take cut to the script by an EDL (`project/ivan/gen/build_edl.py` +
   `render_vo.py`: cut points at the quietest 10 ms, 60 fps frame grid so picture and VO never drift, silence-only second pass caps
   pauses at 0.5 s — Parakeet word times drift several seconds inside 30 s phrases, so never trust them for cut points alone; check the
