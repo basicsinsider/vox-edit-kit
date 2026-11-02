@@ -2,6 +2,8 @@
 # Render ONE segment of a chunk on a helper cloud session and publish it as git-friendly parts (MANUAL §11, option C).
 #   tools/render_piece.sh <chunk> <len_s> <segment>      e.g. tools/render_piece.sh c4 601.44 c4s01
 #   DRY=1 tools/render_piece.sh …   → prepare everything, skip the render (setup test)
+#   DROP="1872-1951,2349-2356" → remove those LOCAL frames [a,b) in the transcode (word/dead-air cuts; audio is cut to match by final_mix_ivan.sh CUT)
+#   RES=4k PRESET=fast tools/render_piece.sh …  → 3840×2160 (Chrome DPR 2; compositions unchanged), faster transcode for 4K
 # Output: pieces/<segment>/<segment>.mp4.partNN + .sha256 (x264 medium CRF 18, no audio) — commit + push them; the lead
 # fetches, joins (cat parts), concats the segments, mixes and delivers. Never kill the render.
 set -e
@@ -30,10 +32,11 @@ log "$s: sandbox ready (${d}s, $(nproc) cores, $(free -g | awk '/Mem/{print $2}'
 (cd "work/r_$s" && npx --yes hyperframes@0.8.217 lint 2>&1 | grep -E "error\(s\)") || true
 [ "${DRY:-0}" = 1 ] && { log "DRY run: stopping before render"; exit 0; }
 mkdir -p renders/pieces; t0=$(date +%s)
-(cd "work/r_$s" && npx --yes hyperframes@0.8.217 render -w 3 -q draft --crf 18 -o "../../renders/pieces/$s.draft.mp4" > render.log 2>&1)
+(cd "work/r_$s" && npx --yes hyperframes@0.8.217 render -w ${WORKERS:-3} -q draft --crf 18 ${RES:+--resolution $RES} -o "../../renders/pieces/$s.draft.mp4" > render.log 2>&1)
 [ -s "renders/pieces/$s.draft.mp4" ] || { log "RENDER FAILED: $(tail -c 300 work/r_$s/render.log)"; exit 1; }
 t1=$(date +%s); log "$s: rendered in $((t1-t0))s"
-ffmpeg -v error -y -i "renders/pieces/$s.draft.mp4" -c:v libx264 -preset medium -crf 18 -pix_fmt yuv420p -an -movflags +faststart "renders/pieces/$s.mp4"
+VF=""; if [ -n "$DROP" ]; then VF="-vf select=not($(echo "$DROP" | sed -E "s/([0-9]+)-([0-9]+)/between(n\\,\1\\,\2-1)/g; s/,b/+b/g")),setpts=N/24/TB"; log "$s: dropping frames $DROP"; fi
+ffmpeg -v error -y -i "renders/pieces/$s.draft.mp4" $VF -c:v libx264 -preset ${PRESET:-medium} -crf ${CRF:-18} -pix_fmt yuv420p -an -movflags +faststart "renders/pieces/$s.mp4"
 rm -f "renders/pieces/$s.draft.mp4"; log "$s: transcoded in $(( $(date +%s)-t1 ))s ($(du -h renders/pieces/$s.mp4 | cut -f1))"
 mkdir -p "pieces/$s"; (cd renders/pieces && sha256sum "$s.mp4") > "pieces/$s/$s.mp4.sha256"
 split -b 95m -d -a 2 "renders/pieces/$s.mp4" "pieces/$s/$s.mp4.part"

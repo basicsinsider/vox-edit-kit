@@ -3,7 +3,7 @@
 # + the sound designer's three beds (amix normalize=0). Video stream-copied.
 # Usage: tools/final_mix_ivan.sh <picture.mp4> <out_dir>
 #   env G1 G2 G3 = insert gains in dB (default 0; sound designer measured: G1=-22.5 G2=-12 G3=-24.5)
-#   env CUT="a:b"  = remove master seconds [a,b) from the AUDIO (the picture must already have the same frames removed);
+#   env CUT="a:b,c:d" = remove master seconds [a,b), [c,d) from the AUDIO (the picture must already have the same frames removed);
 #                    joins use 15 ms fades on both sides (no overlap, so A/V stay locked). Used for the 1:18 dead-air removal.
 set -e
 cd "$(dirname "$0")/.."
@@ -20,13 +20,18 @@ ffmpeg -v error -y -i vo_ivan_master.wav -i $B/music_bed.wav -i $B/sfx.wav -i $B
 if [ -n "$CUT" ]; then
   .venv/bin/python - "$O/${N}_mix.wav" "$CUT" <<'PY'
 import sys, numpy as np, soundfile as sf
-f, cut = sys.argv[1], sys.argv[2]; a, b = map(float, cut.split(':'))
-x, sr = sf.read(f, dtype='float64'); i, j = round(a * sr), round(b * sr); n = int(0.015 * sr)
-A, Bq = x[:i].copy(), x[j:].copy(); A[-n:] *= np.linspace(1, 0, n)[:, None]; Bq[:n] *= np.linspace(0, 1, n)[:, None]
-sf.write(f, np.concatenate([A, Bq]), sr, subtype='PCM_24'); print('audio cut', a, b, '->', (len(A) + len(Bq)) / sr, 's')
+f, spec = sys.argv[1], sys.argv[2]
+cuts = sorted(tuple(map(float, c.split(':'))) for c in spec.split(','))
+x, sr = sf.read(f, dtype='float64'); n = int(0.015 * sr); parts = []; prev = 0
+for a, b in cuts:
+    i, j = round(a * sr), round(b * sr); seg = x[prev:i].copy()
+    if prev: seg[:n] *= np.linspace(0, 1, n)[:, None]
+    seg[-n:] *= np.linspace(1, 0, n)[:, None]; parts.append(seg); prev = j
+seg = x[prev:].copy(); seg[:n] *= np.linspace(0, 1, n)[:, None]; parts.append(seg)
+y = np.concatenate(parts); sf.write(f, y, sr, subtype='PCM_24'); print('audio cuts', cuts, '->', len(y) / sr, 's')
 PY
 fi
-ffmpeg -v error -y -i "$P" -i $O/${N}_mix.wav -map 0:v -map 1:a -c:v copy -c:a aac -b:a 320k -shortest -movflags +faststart "$O/${N}_final.mp4"
+ffmpeg -v error -y -i "$P" -i $O/${N}_mix.wav -map 0:v -map 1:a -c:v copy -c:a aac -b:a 384k -shortest -movflags +faststart "$O/${N}_final.mp4"
 rm -f $O/${N}_mix.wav
 ffmpeg -v error -y -i "$O/${N}_final.mp4" -vf scale=1280:720 -c:v libx264 -preset medium -crf 26 -maxrate 640k -bufsize 1280k \
   -c:a aac -b:a 96k -movflags +faststart "review/ivan_720p.mp4"
