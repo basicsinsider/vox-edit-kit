@@ -56,6 +56,9 @@ npx hyperframes doctor # should report ffmpeg, ffprobe, Chrome OK
   `hyperframes transcribe` the reel's narration (tutorial reels explain their technique out loud).
 - **zsh gotchas:** never name a shell variable `path` (it overwrites `$PATH`); `$i:a` inside strings is a
   path modifier — write `${i}`; `for p in "a b"` does not word-split — use `${=p}`.
+- **Restricted cloud network** (only npm/GitHub/AWS reachable): jsDelivr is blocked, so GSAP won't load. `npm pack gsap@3.14.2`
+  and copy `package/dist/gsap.min.js` to `lib/vendor/` (gitignored); `tools/build_index.py` uses it when present. Natural
+  Earth geojson comes from raw.githubusercontent.com (nvkelso/natural-earth-vector), terrain from AWS — both reachable.
 - Wikimedia returns HTTP 429 for full-size originals under load: download standard thumbnail widths
   (`/thumb/x/xy/Name.jpg/1920px-Name.jpg`) with `tools/commons_thumb.sh "File name.jpg" out.jpg 1920`.
   Library of Congress / Chronicling America APIs were blocked (403/503); archive.org and Commons work.
@@ -210,6 +213,20 @@ with a blur first, then apply the matte to the original; it fails on buildings).
 with `tools/halftone.py --sky-key`, or hand-draw a polygon mask (see garage layers in s10 / notes in §8).
 `tools/halftone.py` renders any image as a 45° print dot screen (ref #1 look).
 
+**Country → city zoom + strike/swarm scene** (sample x01, `tools/x01_template.html` → `tools/gen_x01.py`): a single
+camera can't go 100× on one image, so nest 3 relief maps of the same projection (country ppd 60, region ppd 300, city
+ppd 2000) inside one world-space camera div, each `left/top/scale`d into the widest map's pixel space, and cross-fade them
+by zoom level (`s`), hiding covered layers (`visibility:hidden`) so huge scales stay cheap. Zoom = log-space ease of `s`
+with the centre moving in proportion to `1/s` (feels like a smooth push into one point). The camera is a **pure function
+of t** (`cam(t)` in the composition) because canvases drawn in `FX.onFrame` must use the same camera as the DOM in the
+same frame (GSAP tweens that start after 0 render *after* the mount proxy, so reading tweened values there lags a frame).
+High latitudes: `gen_relief.py --xscale cos(φ0)` (0.5 for Russia/Scandinavia). City zooms: `--smooth 2.5` hides DEM seams,
+`--landpoly ne_10m_admin_0_countries.geojson` replaces the boxy DEM coastline. Swarms (drones, missiles, planes) are drawn
+on canvases in the tilted map plane from a seeded plan (spawn arc, target inside the Natural Earth urban polygon via
+`isPointInPath`, quadratic path, ~70 % intercepted with a streak from the nearest AD site + air burst, the rest strike →
+flash + shock ring + shake); damage = noisy blobs clipped to the urban polygon on a `multiply` canvas (vermilion +
+halftone + charred cores), embers (`lighter`), smoke = the puffy cloud PNG darkened via `ctx.filter`.
+
 ## 6. Reference layouts: turning the user's images into animated scenes
 
 The user regularly sends reference images (Pinterest charts, maps, boards) and expects them to be **rebuilt as
@@ -231,7 +248,7 @@ and never used as static pictures. The first batch is in `references/style-image
 | 9 | cork board, pinned photos/notes, red string | `assets/textures/cork_01.jpg` (CC BY — credit), cards pinned stop-motion, string paths drawn on, lamp-pool lighting | SC066/SC074 · seg05 · `R9_SC074.jpg` |
 | 10 | old street/topo map, yellow marker route, circle, numbered pin | `assets/maps/old/*` (with `.json` lon/lat→pixel), tilted plane, rough yellow marker draw-on (`FX.markup`), pin | SC053 · seg04, SC085 · seg06 · `R10*.jpg` |
 | 11 | muted beige map, coloured regions, leader-line labels, big numbers | `assets/maps/us_beige.svg` (states as `#st-XX`), watercolour fills, leader labels, dotted route | SC017 · seg01 · `R11_SC017.jpg` |
-| 12 | grey relief map, one region filled red with halftone + glowing edge | `assets/maps/*_relief_grey.jpg` + masks, region fill + halftone + glow; `tools/gen_relief.py` / `fetch_terrain.py` make relief maps for ANY country | SC075 · seg05, SC008 · seg01 · `R12*.jpg` |
+| 12 | grey relief map, one region filled red with halftone + glowing edge | `assets/maps/*_relief_grey.jpg` + masks, region fill + halftone + glow; `tools/gen_relief.py` / `fetch_terrain.py` make relief maps for ANY country | SC075 · seg05, SC008 · seg01 · `R12*.jpg`; **country → city zoom** (Russia → St Petersburg, 3 nested relief maps, 100× zoom) · `compositions/x01-spb-drones.html` |
 
 ### 6.1 Method for any NEW reference image (do this every time)
 1. **Read the reference for structure, not style**: what kind of comparison it makes (ranking, share of a whole,
@@ -367,4 +384,9 @@ built per project by `tools/audio/place_sound.py`.
 - 2026-10-29 — FX.choppy now ceil-steps (no 1/12 s delay at the start); FX.gate added (from seg01/seg06 editors).
 - 2026-10-29 — user: no fact-checking; on-screen text follows the voiceover as spoken.
 - 2026-10-29 — sound pass: `tools/audio/place_sound.py` pre-mixes music / SFX / ambience into three 600 s beds (assets/audio/bed/, timeline.json); §7.1 added; this VO is −27.2 LUFS so the bed sits ~14 LU under it (−41 LUFS).
+- 2026-11-07 — Sample x01 (Russia → St Petersburg drone strike → "90 % lost their home" bars, from a user R12 reference):
+  nested relief-map zoom, canvas swarm/intercept/strike/burn recipe (§5 after the table); `gen_relief.py` gains `--xscale`,
+  `--smooth`, `--landpoly`; `tools/gen_russia_spb_geo.py`; `build_index.py` accepts any `compositions/<id>-*.html` with a
+  root `data-duration` and uses `lib/vendor/gsap.min.js` when jsDelivr is blocked. Fonts have no Cyrillic glyphs — so no
+  native-script country label (the reference's 中国 line) for Russia; use Latin only.
 - 2026-10-31 — Added 5 Texturelabs papers (graph, lined, stained, torn/folded, blueprint) to assets/textures (SOURCES.md). How the download works in a browser tool: click the size button (lg), the page POSTs to admin-ajax.php and gets back a `downloadlink` (signed S3 URL, valid 20 min) — fetch that URL. prep_texture.py now accepts a file that is already in `_raw/`.

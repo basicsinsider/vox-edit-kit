@@ -1,17 +1,21 @@
 """Grey shaded-relief basemap (ref R12 look) in an equirectangular pixel space.
-Usage: gen_relief.py z lon0 lat0 lon1 lat1 px_per_deg tile_cache out.jpg [--exag E] [--land-mask out_mask.png]
-x = (lon - lon0) * ppd ; y = (lat1 - lat) * ppd   (lat1 = north edge)
+Usage: gen_relief.py z lon0 lat0 lon1 lat1 px_per_deg tile_cache out.jpg [--exag E] [--land-mask out_mask.png] [--xscale K]
+Extra options: --smooth SIGMA (blur elevation, hides SRTM/GMTED seams at city zooms);
+  --landpoly countries.geojson (land = inside any country polygon, instead of elev>0 — cleaner coasts where the DEM is boxy)
+x = (lon - lon0) * ppd * K ; y = (lat1 - lat) * ppd   (lat1 = north edge; K defaults to 1)
+--xscale K = cos(standard parallel): use it for high latitudes (e.g. 0.5 for Russia/Scandinavia) so land isn't stretched sideways.
 Elevation: AWS Terrain Tiles (terrarium). Water (elev <= 0 and flat) -> navy-grey."""
 import sys, math, numpy as np
 from PIL import Image, ImageFilter
 a=sys.argv; z=int(a[1]); lon0,lat0,lon1,lat1,ppd=map(float,a[2:7]); cache=a[7]; out=a[8]
 exag=float(a[a.index('--exag')+1]) if '--exag' in a else 1.0
-W=int(round((lon1-lon0)*ppd)); H=int(round((lat1-lat0)*ppd))
+K=float(a[a.index('--xscale')+1]) if '--xscale' in a else 1.0
+W=int(round((lon1-lon0)*ppd*K)); H=int(round((lat1-lat0)*ppd))
 N=2**z*256
 def mx(lon): return (lon+180)/360*N
 def my(lat):
     r=np.radians(lat); return (1-np.log(np.tan(r)+1/np.cos(r))/np.pi)/2*N
-lons=lon0+(np.arange(W)+0.5)/ppd; lats=lat1-(np.arange(H)+0.5)/ppd
+lons=lon0+(np.arange(W)+0.5)/(ppd*K); lats=lat1-(np.arange(H)+0.5)/ppd
 X=mx(lons); Y=my(lats)
 tx0,tx1=int(X.min()//256),int(X.max()//256); ty0,ty1=int(Y.min()//256),int(Y.max()//256)
 mos=np.zeros(((ty1-ty0+1)*256,(tx1-tx0+1)*256),np.float32)
@@ -26,9 +30,12 @@ x0=np.clip(np.floor(xi).astype(int),0,mos.shape[1]-2); y0=np.clip(np.floor(yi).a
 fx=(xi-x0)[None,:]; fy=(yi-y0)[:,None]
 Y0=y0[:,None]; X0=x0[None,:]
 E=(mos[Y0,X0]*(1-fx)*(1-fy)+mos[Y0,X0+1]*fx*(1-fy)+mos[Y0+1,X0]*(1-fx)*fy+mos[Y0+1,X0+1]*fx*fy)
+if '--smooth' in a:
+    from scipy.ndimage import gaussian_filter
+    E=gaussian_filter(E,float(a[a.index('--smooth')+1]))
 # hillshade (metres per pixel)
 latc=np.radians(lats)[:,None]
-dx=111320*np.cos(latc)/ppd; dy=111320/ppd
+dx=111320*np.cos(latc)/(ppd*K); dy=111320/ppd
 gy,gx=np.gradient(E*exag)
 gx=gx/dx; gy=gy/dy
 az=math.radians(315); alt=math.radians(42)
@@ -37,12 +44,26 @@ hs=np.sin(alt)*np.cos(slope)+np.cos(alt)*np.sin(slope)*np.cos(az-aspect+math.pi)
 hs=np.clip(hs,0,1)
 # combine: light grey land, slight hypsometric darkening with altitude
 land=E>0.5
+def _polymask(path):
+    import json
+    from PIL import ImageDraw
+    m=Image.new('L',(W,H),0); d=ImageDraw.Draw(m)
+    def ring(r): return [((x-lon0)*ppd*K,(lat1-y)*ppd) for x,y in r]
+    for f in json.load(open(path))['features']:
+        g_=f['geometry']; polys=g_['coordinates'] if g_['type']=='MultiPolygon' else [g_['coordinates']]
+        for P in polys:
+            bx=[c[0] for c in P[0]]; by=[c[1] for c in P[0]]
+            if max(bx)<lon0 or min(bx)>lon1 or max(by)<lat0 or min(by)>lat1: continue
+            d.polygon(ring(P[0]),fill=255)
+            for hole in P[1:]: d.polygon(ring(hole),fill=0)
+    return np.asarray(m)>=128
+if '--landpoly' in a: land=_polymask(a[a.index('--landpoly')+1])
 if '--lakes' in a:
     import json
     from PIL import ImageDraw
     lm=Image.new('L',(W,H),0); d=ImageDraw.Draw(lm)
     gj=json.load(open(a[a.index('--lakes')+1]))
-    def ring(r): return [((x-lon0)*ppd,(lat1-y)*ppd) for x,y in r]
+    def ring(r): return [((x-lon0)*ppd*K,(lat1-y)*ppd) for x,y in r]
     for f in gj['features']:
         g_=f['geometry']; polys=g_['coordinates'] if g_['type']=='MultiPolygon' else [g_['coordinates']]
         for P in polys:

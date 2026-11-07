@@ -81,3 +81,16 @@ Boundaries: us-atlas states-10m (US Census, PD) + Natural Earth 1:50m admin-0 co
 | rand_mcnally_railroad_map_us_1920.jpg (+ _grey.jpg, .json) | 3840x2827 | A24. "Rand McNally new official railroad map of the United States and southern Canada" (1920), Library of Congress Geography & Map Division 2006627698 via Commons: https://commons.wikimedia.org/wiki/File:Rand_McNally_new_official_railroad_map_of_the_United_States_and_southern_Canada._LOC_2006627698.jpg (original 11841x8718; only the 3840 thumbnail could be fetched — 5120/6000/7680 thumbs failed) | Public domain (published 1920, LOC: no known restrictions) |
 
 Geodata in the old-map JSONs: topo quads have the 4 neat-line corner pixels + lon/lat (15′ quads) and a bilinear lon/lat→px formula (polyconic; ~10–40 px error at 5000 px — check visually before pinning a tiny point); pre-computed places (stanford_main_quad, university_ave, hp_garage_367_addison, mit_great_dome_1916, mit_boston_tech_copley_1903, harvard_yard, harvard_square, state house, kendall_square…). The railroad map has hand-picked control points (SF, Palo Alto≈, Sacramento, Reno, LA, Chicago, Indianapolis, NYC, Boston) and a Palo Alto→Boston route guide polyline. `_grey` variants = paper/ink duotone (R10 look). Raw GeoTIFFs not kept (re-download from the URLs).
+
+## russia/ — Russia → Saint Petersburg relief maps (sample x01, ref R12)
+
+All three use `x = (lon − lon0) · ppd · 0.5`, `y = (lat1 − lat) · ppd` (equirectangular with a 60°N standard parallel,
+`gen_relief.py --xscale 0.5`). Geodata (Russia outline, St Petersburg urban area, Neva, placements of the finer maps inside
+the wide one) is in `russia/russia_spb.json` (`tools/gen_russia_spb_geo.py`).
+
+| file | size | source | licence |
+|---|---|---|---|
+| russia/russia_relief_grey.jpg | 5250x3360 | lon 10..185, lat 28..84, ppd 60. AWS Terrain Tiles z6 (terrarium, https://registry.opendata.aws/terrain-tiles/), `tools/gen_relief.py 6 10 28 185 84 60 … --xscale 0.5 --lakes ne_10m_lakes --exag 4` | Terrain data: public-domain sources (SRTM, GMTED2010, ETOPO1). Credit "AWS Terrain Tiles" |
+| russia/gulf_finland_relief_grey.jpg | 3300x2400 | lon 20..42, lat 56..64, ppd 300, z8, `--exag 1.6` | same |
+| russia/spb_relief_grey.jpg | 3600x1800 | lon 28.6..32.2, lat 59.45..60.35, ppd 2000, z11, `--exag 2.5 --smooth 2.5 --landpoly ne_10m_admin_0_countries` (DEM coast is boxy at city zoom) | same + Natural Earth (public domain) |
+| russia/russia_spb.json | — | Natural Earth 1:50m admin-0 countries (Russia), 1:10m urban areas, 1:10m rivers (Neva), from https://github.com/nvkelso/natural-earth-vector/tree/master/geojson | Public domain (Natural Earth) |
