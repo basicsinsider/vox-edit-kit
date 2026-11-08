@@ -76,3 +76,22 @@ government/IPS, yellow = 60 % / 10 % / 97 % / 30 % only. US banks neutral. Groun
   filtered): put the filter on the whole shot (stage + map) instead (sc018).
 - Texturelabs `paper_lined_01` has a binder punch hole that reads as a stray grey dot at the left edge — avoid it full-frame.
 - Source footage can contain a mouse cursor (Telefuturo drone, top centre): check the first frames of every trim at full size.
+
+## Fix round 1 (Krish, 720p review — MANUAL §0 "No narration captions")
+Removed every caption that repeated the narration: sc002 "spreading all across the country", sc003 "the president himself" / "forced to
+resign", sc004 "his resignation", sc005 "under house arrest", sc007 "it all started with" / "one bank", sc009 "a massive bank", sc013
+"the biggest bank", sc014 the six narration lines, sc016 "collapsed in a single day", sc020 "getting arrested", sc021 "the whole
+country" / "falling apart", sc023 "the true scale of the problem", sc024 "much like" (FDIC logo kept), sc025 "made whole", sc027 "the
+National Pension Fund", sc029 both lines, sc031 "where the hell did all the money go?", sc033 "how we got here".
+Kept: the cold-open lines over the X clip (0–6.45, unchanged), the X post card, map labels, chart text (60 %, 10 %, "of adults in the
+country", "of US adults", PARAGUAY / UNITED STATES, the 60 % line, 97 % + "of people", 30 % + "of all the money", donut labels,
+"individual accounts" / "national insurance" graphic labels), name tags ("Santiago Peña", "IPS · Instituto de Previsión Social", both
+moved down to the lower-left corner at y 940–950), REJECTED stamp, ueno logo, credits.
+Added (explanatory chart labels, not narration): small `t-label` group labels above the logo-wall rows in sc014 — BIG FOUR / MAJOR
+BANKS / SMALLER BANKS / REGIONAL BANKS (rows re-spaced to 430/590/710/830; labels live inside the scaled chart div).
+No empty scenes: every changed scene still has its photo/footage/graphic. sc016's collapse now falls for 1.75 s (tiles still tumbling
+until ~57.9) so the aftermath isn't a near-empty frame; sc031's ring and sc033's ruler were re-centred (no text above them now).
+Timings, transitions, face cam (14.76 s, 12.7 %) and duration (116.00) unchanged. SFX: removed the two text-pop markers (SC005
+boom_low "house arrest", SC025 chime_soft "made whole") → 47 markers. Lint 0 errors in pys01, sync_audit 0 flagged (45 cues left),
+changed scenes snapshotted and checked (`work/pys01/.snap/m`, `n`, `o`). Pre-fix template kept at
+/tmp/claude-0/-home-user-vox-edit-kit/b485e6cf-08e1-5351-b0be-b785b7fe8da1/scratchpad/pys01_template.pre_fix1.html.
