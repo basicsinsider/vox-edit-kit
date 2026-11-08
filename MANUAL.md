@@ -14,6 +14,14 @@ feedback, update the relevant section and add a line to the Changelog at the bot
 
 - **Never assume — test.** Every assumption (a tool flag, a file's contents, a time estimate, "it's done", "it looks right") is checked with at least a small test before acting on it or reporting it (owner rule, 2026-10-31).
 - **A running render is never killed**, for any reason (owner rule). Render process: §11.
+- **No narration captions** (Krish, Paraguay review, 2026-11-08): do NOT put the narrator's spoken words on screen as captions/kickers/lower
+  thirds (e.g. "spreading all across the country" while he says it). Allowed text: labels on maps and locations, place/name tags, chart and
+  graph text (titles, values, axis/legend and explanatory labels), document/newspaper text, credits — and only where the edit plan marks it,
+  a cold-open caption line or a quoted line the narrator reads out as a quote (Paraguay kept the first 7 s and the "owe a million / a billion"
+  quote). When in doubt, no text.
+- **Music never drowns the voice** (Krish, Paraguay review, 2026-11-08): the bed must stay clearly under the narrator everywhere — check the
+  music against the VO in short windows (not just the average), duck it automatically wherever it gets close (e.g. a 0.4 s-window
+  short-term-loudness check: music ≥ 12 LU under the voice while he speaks), and listen to the loudest music moments before delivery.
 
 1. Documentary/explainer edit over a narrated voiceover. 1920×1080, 24 fps.
 2. **Never touch the voiceover.** No EQ, compression, gain, noise reduction or re-timing. Unity gain.

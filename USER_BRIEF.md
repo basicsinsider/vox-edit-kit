@@ -51,3 +51,9 @@ tracking parameters). Everything in MANUAL.md derives from them. When in doubt, 
 - Reference images he sends are rebuilt as animated scenes in our style, with variations (MANUAL §6.1).
 - Same sources as the approved edit (example-docs/sources/, SOURCES_INDEX.md) plus whatever new stories need.
 - Keep the instruction manual updated with everything learned.
+
+## Paraguay review (2026-11-08)
+> 1. the biggest issue is the ridiculous amount of captions that pop up on the screen. an example of this is at 0:08 where narrator says "spreading all across the country" and that's on the screen as well. don't need captions like that. other text like labels on the maps, locations, and charts/graphs are all fine (any text involved with charts or graphs that explanatory stays as well). keep the captions till 0:07 (that's a congressman in paraguay being dragged by the protestors). also keep the captions for the quote that the narrator is saying "over a million dollars, that's your problem. over a billion dollars, that's the bank's problem." can you also add this as a rule for all future edits please?
+> 2. at around 2:05, we do wanna show the tweet that the paraguay senator posted. it's attached as an image so make sure it does show when the narrator is talking about it.
+> 3. there are times where the music bed or background music becomes too loud and drowns out the narrator. can we find these areas and make sure that doesn't happen. one area i can point out is around 7:20 ish. lets also make this a rule for future edits please.
+> (then: don't wait for approval, render 4K right after these tweaks; cloud rendering as for Ivan.)

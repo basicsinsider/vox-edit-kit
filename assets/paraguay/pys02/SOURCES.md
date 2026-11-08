@@ -11,3 +11,4 @@
 Shared assets used (logged by the gatherers in `assets/paraguay/shared/` — NOTE: no SOURCES.md existed there yet when pys02 was built):
 `photos/asuncion_skyline.jpg`, `photos/wc_fra_par_mbappe_{gomez_146,cubas_123,201,107}.jpg`, `photos/wall_street_nyse.jpg`,
 `photos/ueno_tower_aerial_reuters.jpg`, `logos/moodys.png`; textures from `assets/textures/` (Texturelabs), map `assets/maps/kit/south_america_night.jpg`.
+| celeste_amarilla_tweet_krish.png | Senator Celeste Amarilla's X post (translated view) quoting Diario Olé's Gill/Mbappé post, 4 Jul 2026 | screenshot supplied by Krish (owner), 2026-11-08 | © X / @CelesteSenadora / Diario Olé — fair use (commentary) | — | 2026-07-04 | (see file) |
