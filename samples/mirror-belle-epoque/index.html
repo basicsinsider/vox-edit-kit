@@ -1,0 +1,594 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1920, height=1080" />
+<title>Mirror sample</title>
+<script src="gsap.min.js"></script>
+<style>
+  html, body { margin: 0; background: #1c120c; }
+  #root { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: hidden; background: #2a1a12; }
+  #scene { position: absolute; inset: 0; width: 1920px; height: 1080px; display: block; }
+  /* line art: constant on-screen weight whatever the camera zoom (reel: ~2px wide, ~3px close) */
+  .ink { stroke: #3a2216; stroke-width: var(--lw, 2px); vector-effect: non-scaling-stroke;
+         stroke-linejoin: round; stroke-linecap: round; }
+  .sk  { stroke: #9a5236; }               /* skin outlines are warm brown, not dark ink */
+  .gl  { stroke: #7a4e1c; }               /* gilt outlines */
+  .fine { stroke-width: calc(var(--lw, 2px) * 0.55); }
+  .thin { stroke-width: calc(var(--lw, 2px) * 0.8); }
+  .nofill { fill: none; }
+  .strand { fill: none; stroke: #7a4630; stroke-width: calc(var(--lw, 2px) * 0.5); vector-effect: non-scaling-stroke;
+            stroke-linecap: round; opacity: .8; }
+  .strand.dk { stroke: #24110a; opacity: .7; }
+  /* finishing layers (reel: warm, soft, lifted blacks, gentle vignette, no visible grain) */
+  #warm { position: absolute; inset: 0; pointer-events: none; mix-blend-mode: soft-light;
+          background: radial-gradient(ellipse 70% 60% at 45% 38%, rgba(255,196,120,.35), rgba(255,170,90,0) 70%); }
+  #lift { position: absolute; inset: 0; pointer-events: none; background: rgba(70,40,22,.07); mix-blend-mode: lighten; }
+  #vig  { position: absolute; inset: 0; pointer-events: none;
+          background: radial-gradient(ellipse 75% 72% at 50% 48%, rgba(30,14,8,0) 58%, rgba(30,14,8,.42) 100%); }
+</style>
+</head>
+<body>
+<div id="root" data-composition-id="main" data-start="0" data-duration="5" data-width="1920" data-height="1080" data-fps="30">
+<svg id="scene" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice">
+<defs>
+  <linearGradient id="gWall" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#46503a"/><stop offset=".55" stop-color="#5d6748"/><stop offset="1" stop-color="#4b553c"/>
+  </linearGradient>
+  <pattern id="pDamask" width="64" height="96" patternUnits="userSpaceOnUse">
+    <path d="M32 10 C40 26 48 34 32 48 C16 34 24 26 32 10 Z M32 58 C36 66 40 72 32 82 C24 72 28 66 32 58 Z" fill="#6f7a56" opacity=".55"/>
+    <path d="M0 0 V96 M64 0 V96" stroke="#3f4833" stroke-width="2" opacity=".35"/>
+  </pattern>
+  <linearGradient id="gGold" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0" stop-color="#f3d488"/><stop offset=".45" stop-color="#cf9d45"/><stop offset="1" stop-color="#8a5c22"/>
+  </linearGradient>
+  <linearGradient id="gGoldV" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#f0cf80"/><stop offset="1" stop-color="#a87430"/>
+  </linearGradient>
+  <linearGradient id="gWood" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#7c4526"/><stop offset="1" stop-color="#4e2a15"/>
+  </linearGradient>
+  <linearGradient id="gWoodTop" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#8a5130"/><stop offset=".4" stop-color="#b0703f"/><stop offset="1" stop-color="#7a4426"/>
+  </linearGradient>
+  <linearGradient id="gSkin" x1="0" y1="0" x2="1" y2=".3">
+    <stop offset="0" stop-color="#f7b78f"/><stop offset=".6" stop-color="#f0a47c"/><stop offset="1" stop-color="#df8d66"/>
+  </linearGradient>
+  <linearGradient id="gNape" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#b8694a"/><stop offset="1" stop-color="#d98d66"/>
+  </linearGradient>
+  <linearGradient id="gBlouse" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0" stop-color="#f6eddb"/><stop offset=".55" stop-color="#e9dcc2"/><stop offset="1" stop-color="#cdb999"/>
+  </linearGradient>
+  <linearGradient id="gBlouseBack" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#f3e8d2"/><stop offset=".5" stop-color="#e3d4b6"/><stop offset="1" stop-color="#bba684"/>
+  </linearGradient>
+  <radialGradient id="gHair" cx=".38" cy=".3" r=".8">
+    <stop offset="0" stop-color="#6e3b23"/><stop offset=".6" stop-color="#4a2516"/><stop offset="1" stop-color="#2e150c"/>
+  </radialGradient>
+  <radialGradient id="gHairBack" cx=".3" cy=".35" r=".85">
+    <stop offset="0" stop-color="#76402a"/><stop offset=".55" stop-color="#4c2617"/><stop offset="1" stop-color="#2a130b"/>
+  </radialGradient>
+  <radialGradient id="gShade" cx=".5" cy=".75" r=".75">
+    <stop offset="0" stop-color="#fffbe8"/><stop offset=".6" stop-color="#ffe2a8"/><stop offset="1" stop-color="#f0b868"/>
+  </radialGradient>
+  <radialGradient id="gGlow">
+    <stop offset="0" stop-color="#ffd59a" stop-opacity=".62"/><stop offset=".35" stop-color="#ffc47e" stop-opacity=".22"/>
+    <stop offset="1" stop-color="#ffb060" stop-opacity="0"/>
+  </radialGradient>
+  <radialGradient id="gGlowHot">
+    <stop offset="0" stop-color="#fff6dc" stop-opacity=".95"/><stop offset=".5" stop-color="#ffd690" stop-opacity=".35"/>
+    <stop offset="1" stop-color="#ffc070" stop-opacity="0"/>
+  </radialGradient>
+  <radialGradient id="gReflWall" cx=".25" cy=".38" r=".9">
+    <stop offset="0" stop-color="#8f5a38"/><stop offset=".45" stop-color="#5e3622"/><stop offset="1" stop-color="#341c12"/>
+  </radialGradient>
+  <radialGradient id="gGlassVig" cx=".5" cy=".46" r=".55">
+    <stop offset=".7" stop-color="#1e0e08" stop-opacity="0"/><stop offset="1" stop-color="#1e0e08" stop-opacity=".5"/>
+  </radialGradient>
+  <linearGradient id="gSheen" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".5" stop-color="#fff6e6" stop-opacity=".16"/>
+    <stop offset="1" stop-color="#fff" stop-opacity="0"/>
+  </linearGradient>
+  <linearGradient id="gVelvet" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#6e1a14"/><stop offset=".3" stop-color="#b3352a"/><stop offset=".55" stop-color="#8a221a"/>
+    <stop offset=".8" stop-color="#c0402f"/><stop offset="1" stop-color="#7a1d16"/>
+  </linearGradient>
+  <linearGradient id="gGlassPink" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#f6c3bd" stop-opacity=".9"/><stop offset=".5" stop-color="#e59a98" stop-opacity=".8"/>
+    <stop offset="1" stop-color="#c9707a" stop-opacity=".9"/>
+  </linearGradient>
+  <linearGradient id="gAmber" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#f2b86a"/><stop offset=".5" stop-color="#d08a3a"/><stop offset="1" stop-color="#9c5a20"/>
+  </linearGradient>
+  <filter id="fSoft" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="6"/></filter>
+  <filter id="fMote" x="-200%" y="-200%" width="500%" height="500%"><feGaussianBlur stdDeviation="1.1"/></filter>
+  <clipPath id="cGlass"><ellipse cx="1030" cy="410" rx="264" ry="346"/></clipPath>
+  <clipPath id="cEyeL"><path id="eyeClipL"/></clipPath>
+  <clipPath id="cEyeR"><path id="eyeClipR"/></clipPath>
+</defs>
+
+<!-- ========== ROOM: back wall ========== -->
+<g id="room">
+  <rect x="0" y="0" width="1920" height="800" fill="url(#gWall)"/>
+  <rect x="0" y="0" width="1920" height="800" fill="url(#pDamask)"/>
+  <!-- crown moulding -->
+  <rect x="0" y="0" width="1920" height="34" fill="#4a2a17"/>
+  <rect x="0" y="34" width="1920" height="7" fill="url(#gGoldV)"/>
+  <path class="ink thin" d="M0 34 H1920 M0 41 H1920" fill="none"/>
+  <!-- gilt wall panels -->
+  <rect class="gl thin" x="96" y="120" width="300" height="600" rx="10" fill="none" stroke="#c6984a" stroke-width="3" opacity=".8"/>
+  <rect class="gl thin" x="1590" y="120" width="230" height="600" rx="10" fill="none" stroke="#c6984a" stroke-width="3" opacity=".8"/>
+
+  <!-- left: little landscape painting -->
+  <g id="painting">
+    <rect class="ink" x="140" y="210" width="212" height="164" fill="url(#gGold)"/>
+    <rect class="ink fine" x="156" y="226" width="180" height="132" fill="#c9d6c8"/>
+    <path d="M156 300 C200 280 240 292 280 276 C305 268 322 272 336 278 V358 H156 Z" fill="#7d8f55"/>
+    <path d="M156 328 C210 312 260 330 336 316 V358 H156 Z" fill="#5d7140"/>
+    <path d="M190 300 l6 -34 l6 34 Z M212 296 l5 -28 l5 28 Z" fill="#3e5230"/>
+    <circle cx="300" cy="250" r="12" fill="#f7e2b0" opacity=".9"/>
+    <rect class="ink fine" x="156" y="226" width="180" height="132" fill="none"/>
+  </g>
+  <!-- right: oval cameo portrait -->
+  <g id="portrait">
+    <ellipse class="ink" cx="1705" cy="300" rx="78" ry="104" fill="url(#gGold)"/>
+    <ellipse class="ink fine" cx="1705" cy="300" rx="62" ry="88" fill="#2f3a4a"/>
+    <path d="M1690 250 C1716 240 1736 262 1728 286 C1724 300 1730 306 1738 312 C1728 318 1726 330 1712 334 L1716 360 C1740 366 1756 378 1762 388 L1648 388 C1656 372 1676 362 1698 358 L1694 332 C1676 326 1670 300 1676 276 C1680 262 1684 254 1690 250 Z" fill="#e9dcc4" opacity=".9"/>
+  </g>
+
+  <!-- sconces: wall wash + fixture -->
+  <g id="sconceL" transform="translate(520 300)">
+    <circle class="glow" r="330" fill="url(#gGlow)"/>
+    <ellipse class="ink" cx="0" cy="40" rx="16" ry="34" fill="url(#gGold)"/>
+    <path class="ink" d="M0 52 C34 56 44 30 40 6" fill="none" stroke-width="7"/>
+    <path d="M0 52 C34 56 44 30 40 6" fill="none" stroke="#d9aa58" stroke-width="5"/>
+    <path class="ink thin" d="M28 8 h24 l-4 10 h-16 Z" fill="url(#gGold)"/>
+    <path class="ink" d="M14 6 C10 -26 22 -52 40 -58 C58 -52 70 -26 66 6 C56 12 24 12 14 6 Z" fill="url(#gShade)"/>
+    <path class="fine ink" d="M28 -40 C34 -30 36 -14 34 4 M52 -40 C46 -30 44 -14 46 4" fill="none" opacity=".35"/>
+    <circle class="hot" cx="40" cy="-22" r="70" fill="url(#gGlowHot)"/>
+  </g>
+  <g id="sconceR" transform="translate(1540 300) scale(-1 1)">
+    <circle class="glow" r="330" fill="url(#gGlow)"/>
+    <ellipse class="ink" cx="0" cy="40" rx="16" ry="34" fill="url(#gGold)"/>
+    <path class="ink" d="M0 52 C34 56 44 30 40 6" fill="none" stroke-width="7"/>
+    <path d="M0 52 C34 56 44 30 40 6" fill="none" stroke="#d9aa58" stroke-width="5"/>
+    <path class="ink thin" d="M28 8 h24 l-4 10 h-16 Z" fill="url(#gGold)"/>
+    <path class="ink" d="M14 6 C10 -26 22 -52 40 -58 C58 -52 70 -26 66 6 C56 12 24 12 14 6 Z" fill="url(#gShade)"/>
+    <path class="fine ink" d="M28 -40 C34 -30 36 -14 34 4 M52 -40 C46 -30 44 -14 46 4" fill="none" opacity=".35"/>
+    <circle class="hot" cx="40" cy="-22" r="70" fill="url(#gGlowHot)"/>
+  </g>
+
+  <!-- velvet curtains framing the room -->
+  <g id="curtainL">
+    <path class="ink" d="M0 0 H96 C88 160 112 330 92 470 C80 560 104 680 90 800 H0 Z" fill="url(#gVelvet)"/>
+    <path class="strand dk" d="M30 0 C26 200 40 420 30 800 M62 0 C70 240 56 500 66 800"/>
+    <path class="ink" d="M70 470 C90 460 112 470 118 486 C112 500 92 506 72 498 Z" fill="url(#gGold)"/>
+    <path class="ink thin" d="M104 494 l-8 60 h20 Z" fill="#c99a48"/>
+  </g>
+  <g id="curtainR" transform="translate(1920 0) scale(-1 1)">
+    <path class="ink" d="M0 0 H96 C88 160 112 330 92 470 C80 560 104 680 90 800 H0 Z" fill="url(#gVelvet)"/>
+    <path class="strand dk" d="M30 0 C26 200 40 420 30 800 M62 0 C70 240 56 500 66 800"/>
+    <path class="ink" d="M70 470 C90 460 112 470 118 486 C112 500 92 506 72 498 Z" fill="url(#gGold)"/>
+    <path class="ink thin" d="M104 494 l-8 60 h20 Z" fill="#c99a48"/>
+  </g>
+</g>
+
+<!-- ========== MIRROR ========== -->
+<g id="mirror">
+  <!-- crest -->
+  <g transform="translate(1030 34)">
+    <path class="ink" d="M-70 18 C-60 -14 -30 -30 0 -32 C30 -30 60 -14 70 18 Z" fill="url(#gGold)"/>
+    <path class="ink fine" d="M0 14 L0 -26 M0 14 L-22 -20 M0 14 L22 -20 M0 14 L-42 -6 M0 14 L42 -6" fill="none"/>
+    <path class="ink" d="M-70 18 C-96 10 -112 26 -100 40 M70 18 C96 10 112 26 100 40" fill="none" stroke-width="5"/>
+  </g>
+  <ellipse class="ink" cx="1030" cy="410" rx="300" ry="382" fill="url(#gGold)"/>
+  <ellipse class="ink fine" cx="1030" cy="410" rx="286" ry="368" fill="none"/>
+  <g id="beads"></g>
+  <ellipse class="ink" cx="1030" cy="410" rx="271" ry="353" fill="#6e4618"/>
+
+  <!-- glass: what the mirror sees -->
+  <g clip-path="url(#cGlass)">
+    <g id="reflRoom">
+      <rect x="760" y="60" width="540" height="700" fill="url(#gReflWall)"/>
+      <!-- wood panelling behind the camera -->
+      <path class="ink fine" d="M760 520 H1300 M760 530 H1300" fill="none" opacity=".5"/>
+      <rect class="ink fine" x="1180" y="560" width="110" height="200" fill="none" opacity=".4"/>
+      <rect class="ink fine" x="1010" y="120" width="230" height="300" rx="6" fill="none" opacity=".35"/>
+      <!-- reflected lamp -->
+      <circle cx="856" cy="300" r="170" fill="url(#gGlow)" class="glow"/>
+      <path class="ink thin" d="M826 318 C826 290 840 268 856 262 C872 268 886 290 886 318 Z" fill="url(#gShade)"/>
+      <path class="ink thin" d="M852 318 v80 M836 400 h32" fill="none"/>
+      <circle cx="856" cy="296" r="46" fill="url(#gGlowHot)" class="hot"/>
+      <!-- reflected door frame + velvet portière -->
+      <path class="ink" d="M1196 60 C1206 200 1192 380 1210 760 H1300 V60 Z" fill="url(#gVelvet)" opacity=".85"/>
+    </g>
+
+    <!-- ===== the reflection: young woman, front view ===== -->
+    <g id="reflWoman" transform="translate(1110 440) scale(.75)">
+      <g id="reflBody">
+        <!-- blouse with gigot sleeves -->
+        <path class="ink" d="M-48 150 C-110 162 -170 176 -214 214 C-262 230 -292 300 -284 380 C-280 430 -270 470 -262 520 L262 520 C270 470 280 430 284 380 C292 300 262 230 214 214 C170 176 110 162 48 150 Z" fill="url(#gBlouse)"/>
+        <path class="ink fine" d="M-214 214 C-200 260 -196 330 -206 400 M214 214 C200 260 196 330 206 400" fill="none" opacity=".7"/>
+        <path class="strand" d="M-250 260 C-240 300 -246 340 -236 380 M-232 240 C-226 280 -230 330 -222 360 M250 260 C240 300 246 340 236 380 M232 240 C226 280 230 330 222 360" style="stroke:#b8a281"/>
+        <!-- lace jabot -->
+        <path class="ink thin" d="M-34 156 C-46 200 -40 250 -50 300 C-30 312 30 312 50 300 C40 250 46 200 34 156 Z" fill="#fbf5e8"/>
+        <path class="ink fine" d="M-42 200 q10 8 20 0 q10 8 20 0 q10 8 20 0 q10 8 20 0 M-46 240 q11 8 23 0 q11 8 23 0 q11 8 23 0 q11 8 23 0 M-48 280 q12 8 24 0 q12 8 24 0 q12 8 24 0 q12 8 24 0" fill="none" opacity=".6"/>
+      </g>
+      <!-- neck -->
+      <path class="ink sk" d="M-30 60 C-28 100 -32 130 -40 162 L40 162 C32 130 28 100 30 60 Z" fill="url(#gSkin)"/>
+      <path d="M-30 74 C-10 98 10 98 30 74 L30 104 C10 116 -10 116 -30 104 Z" fill="#c9714e" opacity=".55"/>
+      <!-- high lace collar + velvet ribbon + cameo -->
+      <path class="ink thin" d="M-42 104 C-20 112 20 112 42 104 L46 162 C20 170 -20 170 -46 162 Z" fill="#f6eedd"/>
+      <path class="ink fine" d="M-42 104 q7 -7 14 0 q7 -7 14 0 q7 -7 14 0 q7 -7 14 0 q7 -7 14 0 q7 -7 14 0" fill="none"/>
+      <path class="ink fine" d="M-30 112 V164 M-15 114 V166 M0 114 V167 M15 114 V166 M30 112 V164" fill="none" opacity=".35"/>
+      <path class="ink thin" d="M-44 126 C-20 134 20 134 44 126 L45 140 C20 148 -20 148 -45 140 Z" fill="#a8261f"/>
+      <ellipse class="ink thin" cx="0" cy="158" rx="15" ry="19" fill="url(#gGold)"/>
+      <ellipse cx="0" cy="158" rx="10" ry="13.5" fill="#d98c76"/>
+      <path d="M-2 148 c6 0 7 6 5 10 c4 2 3 8 -2 10 c-6 -2 -6 -8 -3 -10 c-3 -4 -2 -10 0 -10 Z" fill="#f6e6d8"/>
+
+      <!-- head (tilts around the neck) -->
+      <g id="reflHead">
+        <!-- back hair mass behind the face -->
+        <ellipse class="ink" cx="0" cy="-48" rx="100" ry="106" fill="url(#gHair)"/>
+        <ellipse class="ink" cx="0" cy="-160" rx="48" ry="30" fill="url(#gHair)"/>
+        <path class="strand" d="M-30 -176 C-10 -186 14 -186 32 -172 M-36 -162 C-12 -174 16 -172 40 -158"/>
+        <!-- ears + pearl drops -->
+        <path class="ink sk" d="M-74 -16 C-90 -22 -94 4 -84 16 C-80 24 -74 24 -70 18 Z" fill="#e7966f"/>
+        <path class="ink sk" d="M74 -16 C90 -22 94 4 84 16 C80 24 74 24 70 18 Z" fill="#dc8a63"/>
+        <path class="ink fine" d="M-79 22 v10 M79 22 v10" fill="none"/>
+        <circle class="ink fine" cx="-79" cy="38" r="6" fill="#f8f2e6"/>
+        <circle class="ink fine" cx="79" cy="38" r="6" fill="#f8f2e6"/>
+        <!-- face -->
+        <path class="ink sk" d="M0 -96 C57 -96 81 -58 80 -14 C79 30 62 68 32 86 C18 93 -18 93 -32 86 C-62 68 -79 30 -80 -14 C-81 -58 -57 -96 0 -96 Z" fill="url(#gSkin)"/>
+        <!-- shadow of hair on forehead, jaw shade -->
+        <path d="M-74 -30 C-60 -56 -30 -62 0 -60 C30 -62 60 -56 74 -30 C60 -46 30 -50 0 -48 C-30 -50 -60 -46 -74 -30 Z" fill="#c4704c" opacity=".35" filter="url(#fSoft)"/>
+        <path d="M66 20 C62 52 46 74 20 86 C44 66 56 46 60 18 Z" fill="#c9714e" opacity=".3" filter="url(#fSoft)"/>
+        <!-- blush -->
+        <ellipse id="blushL" cx="-44" cy="22" rx="20" ry="11" fill="#ef7f6a" opacity=".38" filter="url(#fSoft)"/>
+        <ellipse id="blushR" cx="44" cy="22" rx="20" ry="11" fill="#ef7f6a" opacity=".38" filter="url(#fSoft)"/>
+        <!-- brows -->
+        <path id="browL" d="M-54 -34 C-44 -47 -26 -50 -12 -41 C-26 -45 -42 -42 -53 -30 Z" fill="#3b1e12"/>
+        <path id="browR" d="M54 -34 C44 -47 26 -50 12 -41 C26 -45 42 -42 53 -30 Z" fill="#3b1e12"/>
+        <!-- eyes (built per frame) -->
+        <g id="eyeL"></g>
+        <g id="eyeR"></g>
+        <!-- nose -->
+        <path class="ink sk thin" d="M7 6 C10 14 12 20 10 25" fill="none"/>
+        <path class="ink sk thin" d="M-8 27 C-3 30.5 3 30.5 8 27" fill="none"/>
+        <path d="M4 -6 C10 8 15 18 12 26 C8 20 6 10 4 -6 Z" fill="#c9714e" opacity=".22" filter="url(#fSoft)"/>
+        <!-- mouth (built per frame) -->
+        <g id="mouth"></g>
+        <!-- front hair: Gibson-girl pompadour -->
+        <path class="ink" d="M-84 -2 C-100 -20 -112 -70 -100 -108 C-86 -150 -40 -168 0 -166 C40 -168 86 -150 100 -108 C112 -70 100 -20 84 -2 C82 -26 74 -42 60 -50 C50 -62 34 -66 18 -60 C10 -58 4 -60 0 -64 C-4 -60 -10 -58 -18 -60 C-34 -66 -50 -62 -60 -50 C-74 -42 -82 -26 -84 -2 Z" fill="url(#gHair)"/>
+        <path d="M-70 -128 C-40 -156 40 -156 72 -126 C40 -142 -40 -144 -70 -128 Z" fill="#a0603c" opacity=".75"/><path d="M-96 -70 C-98 -100 -84 -124 -66 -134 C-82 -116 -88 -96 -88 -70 Z M96 -70 C98 -100 84 -124 66 -134 C82 -116 88 -96 88 -70 Z" fill="#8a4e30" opacity=".6"/>
+        <path class="strand" d="M-50 -58 C-78 -76 -86 -110 -64 -140 M-24 -62 C-46 -92 -42 -130 -18 -156 M-4 -64 C-10 -100 -6 -134 6 -160 M22 -62 C44 -92 42 -128 22 -156 M52 -58 C80 -76 86 -110 64 -140"/>
+        <path class="strand dk" d="M-74 -30 C-92 -60 -96 -96 -82 -124 M74 -30 C92 -60 96 -96 82 -124 M-38 -64 C-60 -94 -58 -126 -40 -148 M38 -64 C60 -94 58 -126 40 -148"/>
+        <!-- loose curl at the temple (sways) -->
+        <path id="curl" class="ink fine" d="M68 -34 C86 -14 76 6 82 22 C86 34 78 44 70 38 C76 36 78 30 74 22 C68 8 76 -12 64 -30 Z" fill="#4a2516"/>
+        <!-- tortoiseshell comb with pearls -->
+        <path class="ink thin" d="M-58 -150 C-40 -166 -18 -172 2 -172" fill="none" style="stroke:#3a1b10"/>
+        <g id="combPearls"></g>
+      </g>
+    </g>
+
+    <!-- glass finish -->
+    <rect x="760" y="60" width="540" height="700" fill="#2a1810" opacity=".1"/>
+    <path d="M760 330 L760 420 L1000 60 L930 60 Z" fill="url(#gSheen)" opacity=".7"/>
+    <path d="M760 470 L760 500 L1060 60 L1035 60 Z" fill="url(#gSheen)" opacity=".5"/>
+    <ellipse cx="1030" cy="410" rx="264" ry="346" fill="url(#gGlassVig)"/>
+  </g>
+  <ellipse class="ink thin" cx="1030" cy="410" rx="264" ry="346" fill="none"/>
+</g>
+
+<!-- floor: parquet + a red patterned carpet -->
+<g id="floor">
+  <rect x="0" y="800" width="1920" height="280" fill="#4a2814"/>
+  <path d="M0 840 H1920 M0 890 H1920 M0 950 H1920 M0 1020 H1920" stroke="#3a1e0e" stroke-width="3"/>
+  <path class="ink" d="M120 1080 L250 860 H1670 L1800 1080 Z" fill="#8a2a1e"/>
+  <path d="M150 1080 L268 878 H1652 L1770 1080" fill="none" stroke="#2f3b5a" stroke-width="14"/>
+  <path d="M176 1080 L284 894 H1636 L1744 1080" fill="none" stroke="#d6a34e" stroke-width="3" stroke-dasharray="10 8"/>
+  <path d="M212 1080 L300 920 H1620 L1708 1080" fill="none" stroke="#c99a48" stroke-width="2"/>
+</g>
+<!-- ========== VANITY TABLE ========== -->
+<g id="table">
+  <path class="ink" d="M352 768 H1708 L1748 800 H312 Z" fill="url(#gWoodTop)"/>
+  <path d="M420 776 H1640 L1660 790 H400 Z" fill="#c98a52" opacity=".35"/>
+  <rect class="ink" x="312" y="800" width="1436" height="26" fill="#6a381c"/>
+  <path d="M312 803 H1748" stroke="#a8693c" stroke-width="2"/>
+  <rect class="ink" x="330" y="826" width="1400" height="260" fill="url(#gWood)"/>
+  <rect class="ink thin" x="410" y="852" width="450" height="120" rx="4" fill="#673719"/>
+  <rect class="ink thin" x="1200" y="852" width="450" height="120" rx="4" fill="#673719"/>
+  <rect class="ink fine" x="424" y="864" width="422" height="96" rx="3" fill="none" opacity=".6"/>
+  <rect class="ink fine" x="1214" y="864" width="422" height="96" rx="3" fill="none" opacity=".6"/>
+  <g fill="url(#gGold)" class="ink thin">
+    <path d="M610 908 a25 10 0 0 0 50 0 Z"/><circle cx="635" cy="904" r="7"/>
+    <path d="M1400 908 a25 10 0 0 0 50 0 Z"/><circle cx="1425" cy="904" r="7"/>
+  </g>
+
+  <!-- objects on the table, right of the mirror -->
+  <g id="vase">
+    <path class="ink" d="M1352 650 C1340 640 1350 610 1370 606 C1392 602 1402 628 1390 646 C1382 656 1362 658 1352 650 Z" fill="#b5302a"/>
+    <path class="ink fine" d="M1360 640 C1356 624 1374 614 1384 626 C1390 636 1378 646 1370 638 C1366 632 1372 626 1376 630" fill="none" style="stroke:#5a1410"/>
+    <path class="ink fine" d="M1371 655 C1368 690 1372 720 1370 740" fill="none" style="stroke:#3d5a2a"/>
+    <path class="ink fine" d="M1370 690 C1390 676 1404 682 1408 692 C1394 700 1382 698 1370 690 Z" fill="#567a3a"/>
+    <path class="ink fine" d="M1370 708 C1352 696 1338 700 1334 710 C1348 718 1360 716 1370 708 Z" fill="#4a6c32"/>
+    <path class="ink thin" d="M1360 700 C1356 730 1346 750 1350 780 H1392 C1396 750 1386 730 1382 700 Z" fill="#cfe1e0" opacity=".55"/>
+    <path d="M1362 712 C1360 736 1354 754 1356 776" stroke="#fff" stroke-width="3" opacity=".6" fill="none"/>
+  </g>
+  <g id="atomizer">
+    <path class="ink" d="M1430 724 C1418 736 1416 770 1426 784 H1478 C1488 770 1486 736 1474 724 Z" fill="url(#gGlassPink)"/>
+    <path class="ink fine" d="M1438 734 L1436 778 M1452 730 V782 M1466 734 L1468 778" fill="none" opacity=".45"/>
+    <rect class="ink thin" x="1442" y="706" width="20" height="18" fill="url(#gGold)"/>
+    <path class="ink thin" d="M1462 712 C1484 708 1494 716 1500 728" fill="none"/>
+    <ellipse class="ink" cx="1506" cy="742" rx="13" ry="17" fill="#cf6670"/>
+    <path class="ink fine" d="M1506 759 C1508 770 1504 778 1508 788" fill="none" style="stroke:#9a3a40"/>
+    <path d="M1434 740 C1432 756 1434 770 1438 778" stroke="#fff" stroke-width="3" opacity=".55" fill="none"/>
+  </g>
+  <g id="amber">
+    <rect class="ink" x="1534" y="712" width="48" height="72" rx="6" fill="url(#gAmber)" opacity=".92"/>
+    <rect class="ink thin" x="1550" y="700" width="16" height="12" fill="#e8c48a"/>
+    <circle class="ink thin" cx="1558" cy="690" r="13" fill="#f3d9a8" opacity=".9"/>
+    <path d="M1542 722 V774" stroke="#fff" stroke-width="3" opacity=".45"/>
+  </g>
+  <g id="powder">
+    <path class="ink" d="M1600 756 C1600 740 1680 740 1680 756 L1676 784 H1604 Z" fill="#f2e7d4"/>
+    <path class="ink thin" d="M1598 756 C1598 744 1682 744 1682 756 C1682 764 1598 764 1598 756 Z" fill="url(#gGold)"/>
+    <circle class="ink thin" cx="1640" cy="744" r="7" fill="#e08a96"/>
+  </g>
+  <!-- left of the mirror: jewellery box spilling pearls, silver brush -->
+  <g id="jewel">
+    <path class="ink" d="M440 724 H560 V784 H440 Z" fill="#8f2219"/>
+    <path class="ink" d="M432 712 H568 L560 728 H440 Z" fill="url(#gGold)"/>
+    <rect class="ink fine" x="452" y="738" width="96" height="36" fill="none" style="stroke:#e1b260" opacity=".8"/>
+  </g>
+  <g id="pearls"></g>
+  <g id="brush">
+    <ellipse class="ink" cx="640" cy="790" rx="54" ry="11" fill="#c9c5bc"/>
+    <path class="ink thin" d="M690 790 L770 796 L770 802 L688 796 Z" fill="#b8b2a6"/>
+    <ellipse cx="628" cy="787" rx="26" ry="4" fill="#fff" opacity=".5"/>
+  </g>
+</g>
+
+<!-- ========== FOREGROUND: the young woman, seen from behind ========== -->
+<g id="backWoman" transform="translate(790 600) scale(1.25)">
+  <g transform="scale(.86 1)">
+  <!-- blouse back with gigot sleeves, pearl buttons -->
+  <path class="ink" d="M-46 148 C-110 158 -176 174 -226 214 C-286 226 -322 300 -314 380 L-312 420 L312 420 L314 380 C322 300 286 226 226 214 C176 174 110 158 46 148 Z" fill="url(#gBlouseBack)"/>
+  <path class="ink fine" d="M-226 214 C-210 270 -210 340 -222 420 M226 214 C210 270 210 340 222 420" fill="none" opacity=".7"/>
+  <path class="strand" d="M-290 260 C-280 300 -286 350 -276 400 M-262 236 C-254 280 -260 340 -250 410 M290 260 C280 300 286 350 276 400 M262 236 C254 280 260 340 250 410 M-120 200 C-110 260 -116 330 -110 420 M120 200 C110 260 116 330 110 420" style="stroke:#b09a78"/>
+  <path class="ink fine" d="M0 160 V420" fill="none" opacity=".5"/>
+  </g>
+  <g id="buttons"></g>
+  <!-- nape -->
+  <path class="ink sk" d="M-34 44 C-32 90 -36 124 -44 152 L44 152 C36 124 32 90 34 44 Z" fill="url(#gNape)"/>
+  <!-- collar back + ribbon + bow -->
+  <path class="ink thin" d="M-46 100 C-20 92 20 92 46 100 L48 156 C20 148 -20 148 -48 156 Z" fill="#efe4cd"/>
+  <path class="ink fine" d="M-46 100 q7 -7 14 0 q7 -7 14 0 q7 -7 14 0 q7 -7 14 0 q7 -7 14 0 q7 -7 14 0 q7 -7 14 0" fill="none"/>
+  <path class="ink thin" d="M-47 120 C-20 112 20 112 47 120 L47 134 C20 126 -20 126 -47 134 Z" fill="#a8261f"/>
+  <path class="ink thin" d="M0 126 C-16 112 -34 116 -30 130 C-26 140 -12 134 0 126 C12 134 26 140 30 130 C34 116 16 112 0 126 Z" fill="#b9302a"/>
+  <path class="ink thin" d="M-2 128 C-8 146 -14 160 -18 176 M2 128 C8 146 14 160 18 176" fill="none" style="stroke:#7a1812" stroke-width="5"/>
+  <!-- ears peeking -->
+  <path class="ink sk" d="M-88 -46 C-106 -44 -108 -12 -90 -4 Z" fill="#d98a63"/>
+  <path class="ink sk" d="M88 -46 C106 -44 108 -12 90 -4 Z" fill="#cf7e58"/>
+  <!-- head of hair swept up into a bun -->
+  <g id="backHead">
+    <path class="ink" d="M-94 -36 C-98 -100 -54 -136 0 -136 C54 -136 98 -100 94 -36 C92 8 74 40 46 54 C30 48 16 46 0 50 C-16 46 -30 48 -46 54 C-74 40 -92 8 -94 -36 Z" fill="url(#gHairBack)"/>
+    <path class="strand" d="M-44 52 C-60 30 -80 -20 -60 -70 C-48 -96 -30 -110 -10 -116 M-14 48 C-26 10 -30 -50 -6 -112 M18 48 C30 10 40 -40 22 -110 M46 52 C66 24 84 -24 62 -74 C50 -98 34 -110 14 -116"/>
+    <path class="strand dk" d="M-30 50 C-48 10 -52 -50 -30 -104 M32 50 C50 10 56 -50 34 -104 M-70 30 C-90 -10 -90 -60 -70 -94 M72 30 C92 -10 92 -60 72 -94"/>
+    <!-- warm rim light from the left sconce -->
+    <path d="M-94 -36 C-98 -100 -54 -136 0 -136 C-46 -126 -82 -94 -86 -36 C-86 4 -78 28 -62 44 C-82 28 -94 0 -94 -36 Z" fill="#c07a4c" opacity=".55"/>
+    <!-- nape wisps -->
+    <path class="strand dk" d="M-26 56 c-4 8 0 14 -6 20 M-6 54 c2 8 -4 14 0 22 M14 54 c-2 8 4 14 -2 20 M32 56 c4 8 0 12 6 18" style="opacity:.9"/>
+    <!-- bun -->
+    <ellipse class="ink" cx="0" cy="-128" rx="56" ry="42" fill="url(#gHairBack)"/>
+    <path class="strand" d="M-44 -134 C-28 -164 30 -164 42 -130 C38 -102 -30 -100 -34 -126 C-32 -148 22 -152 26 -130 C24 -114 -14 -114 -14 -128 C-12 -138 8 -138 8 -130"/>
+    <path class="strand dk" d="M-48 -120 C-30 -92 34 -92 48 -124"/>
+    <!-- pearl hairpin -->
+        <g id="backPearls"></g>
+  </g>
+</g>
+
+<!-- dust motes drifting in the lamplight -->
+<g id="motes" filter="url(#fMote)"></g>
+</svg>
+<div id="warm"></div>
+<div id="lift"></div>
+<div id="vig"></div>
+</div>
+
+<script>
+(function () {
+  const NS = "http://www.w3.org/2000/svg";
+  const $ = (id) => document.getElementById(id);
+  const el = (tag, attrs, parent) => {
+    const e = document.createElementNS(NS, tag);
+    for (const k in attrs) e.setAttribute(k, attrs[k]);
+    if (parent) parent.appendChild(e);
+    return e;
+  };
+  // deterministic RNG (no Math.random: every frame must render the same on every seek)
+  let seed = 20261108;
+  const rnd = () => { seed |= 0; seed = (seed + 0x6d2b79f5) | 0; let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+  const lerp = (a, b, k) => a + (b - a) * k;
+  const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+  const ease = (x) => { x = clamp(x); return x < .5 ? 2 * x * x : 1 - Math.pow(-2 * x + 2, 2) / 2; };
+  const smooth = (a, b, x) => ease((x - a) / (b - a));
+
+  // ---- static ornament built once ----
+  const beads = $("beads");
+  for (let i = 0; i < 72; i++) {
+    const a = (i / 72) * Math.PI * 2;
+    el("circle", { cx: 1030 + 279 * Math.cos(a), cy: 410 + 361 * Math.sin(a), r: 4.2, fill: "#f7dc96",
+      stroke: "#7a4e1c", "stroke-width": 1 }, beads);
+  }
+  const pearl = (g, x, y, r) => {
+    el("circle", { cx: x, cy: y, r, fill: "#f6efe2", stroke: "#8a7a62", "stroke-width": .8 }, g);
+    el("circle", { cx: x - r * .35, cy: y - r * .35, r: r * .35, fill: "#fff" }, g);
+  };
+  // necklace spilling from the jewellery box over the table edge
+  for (let i = 0; i <= 26; i++) {
+    const k = i / 26;
+    const x = lerp(548, 700, k), y = 760 + Math.sin(k * Math.PI) * 30 + k * 36;
+    pearl($("pearls"), x, y, 5.2);
+  }
+  for (let i = 0; i < 6; i++) pearl($("buttons"), 0, 180 + i * 40, 5.5);
+  for (let i = 0; i < 6; i++) pearl($("backPearls"), -46 + i * 12.5, -164 - Math.sin(i / 5 * Math.PI) * 8, 4.4);
+  for (let i = 0; i < 6; i++) pearl($("combPearls"), -56 + i * 11.5, -152 - Math.sin(i / 5 * Math.PI) * 14 - i * 2.2, 4);
+
+  // dust motes: world positions near the sconces / mirror light
+  const motes = [];
+  for (let i = 0; i < 46; i++) {
+    const m = { x: 380 + rnd() * 1300, y: 120 + rnd() * 620, r: .8 + rnd() * 2.2, sp: .3 + rnd() * .7,
+      ph: rnd() * 6.28, a: .25 + rnd() * .45 };
+    m.node = el("circle", { r: m.r, fill: "#fff1d0" }, $("motes"));
+    motes.push(m);
+  }
+
+  // ---- per-frame face parts ----
+  const eyeParts = {};
+  ["L", "R"].forEach((s) => {
+    const g = $("eye" + s), clip = "url(#cEye" + s + ")";
+    eyeParts[s] = {
+      white: el("path", { fill: "#f7efe5" }, g),
+      inner: el("g", { "clip-path": clip }, g),
+      lash: null, lower: null, crease: null, clipPath: $("eyeClip" + s)
+    };
+    const p = eyeParts[s];
+    p.shade = el("path", { fill: "#c98a70", opacity: .35 }, p.inner);          // lid shadow on the eyeball
+    p.iris = el("circle", { r: 9, fill: "#6b7f45", stroke: "#2f3a1c", "stroke-width": 1.4 }, p.inner);
+    p.irisIn = el("circle", { r: 5.6, fill: "#8fa25a", opacity: .7 }, p.inner);
+    p.pupil = el("circle", { r: 3.8, fill: "#1c120c" }, p.inner);
+    p.hi = el("circle", { r: 2.2, fill: "#fffaf0" }, p.inner);
+    p.lid = el("path", { fill: "#e3916c" }, p.inner);
+    p.lower = el("path", { fill: "none", stroke: "#8a4a32", "stroke-width": 1.4, opacity: .7, "stroke-linecap": "round" }, g);
+    p.crease = el("path", { fill: "none", stroke: "#9a5236", "stroke-width": 1.2, opacity: .32, "stroke-linecap": "round" }, g);
+    p.lash = el("path", { fill: "#24130b" }, g);
+  });
+
+  function drawEye(s, b, gx, gy, q) {
+    const p = eyeParts[s];
+    const o = s === "L" ? -1 : 1;                 // outer-corner side
+    const cx = 31 * o, cy = -12;
+    const ox = cx + o * 18, oy = cy - 2;          // outer corner (lifted)
+    const ix = cx - o * 16, iy = cy + 1;          // inner corner
+    const upY = cy - 22, loY = cy + 13 - q * 9;   // bezier controls: upper / lower lid
+    const lidY = lerp(upY, loY + 1, b);
+    const outline = `M${ox} ${oy} Q${cx + o * 2} ${upY} ${ix} ${iy} Q${cx} ${loY} ${ox} ${oy} Z`;
+    p.white.setAttribute("d", outline);
+    p.clipPath.setAttribute("d", outline);
+    p.lid.setAttribute("d", `M${ox - o * 2} ${oy - 14} L${ix + o * 2} ${iy - 14} L${ix} ${iy} Q${cx + o * 2} ${lidY} ${ox} ${oy} Z`);
+    p.shade.setAttribute("d", `M${ox} ${oy} Q${cx + o * 2} ${lidY + 7} ${ix} ${iy} L${ix} ${iy - 12} L${ox} ${oy - 12} Z`);
+    const ix0 = cx + gx, iy0 = cy - 1 + gy;
+    p.iris.setAttribute("cx", ix0); p.iris.setAttribute("cy", iy0);
+    p.irisIn.setAttribute("cx", ix0); p.irisIn.setAttribute("cy", iy0 + 1.5);
+    p.pupil.setAttribute("cx", ix0); p.pupil.setAttribute("cy", iy0);
+    p.hi.setAttribute("cx", ix0 - 3); p.hi.setAttribute("cy", iy0 - 3.4);
+    // lash = filled crescent riding the lid edge, with an outer flick
+    const t = 3.6;
+    p.lash.setAttribute("d",
+      `M${ox + o * 5} ${oy - 7} Q${ox} ${oy - 3} ${ox} ${oy} Q${cx + o * 2} ${lidY} ${ix} ${iy}` +
+      ` Q${ix - o * 1} ${iy - 3} ${ix + o * 2} ${iy - 3} Q${cx + o * 2} ${lidY - t * 2} ${ox - o * 1} ${oy - 4} Z`);
+    p.lower.setAttribute("d", `M${ox - o * 3} ${oy + 2} Q${cx} ${loY + 1} ${ix + o * 2} ${iy + 1}`);
+    p.crease.setAttribute("d", `M${ox - o * 1} ${oy - 7} Q${cx + o * 2} ${cy - 31 + b * 6} ${ix + o * 1} ${iy - 9}`);
+  }
+
+  const mouthG = $("mouth");
+  const lipU = el("path", { fill: "#bf4237", stroke: "#8a2a22", "stroke-width": 1.2 }, mouthG);
+  const lipL = el("path", { fill: "#cf5a4b", stroke: "#8a2a22", "stroke-width": 1.2 }, mouthG);
+  const lipLine = el("path", { fill: "none", stroke: "#5e1a14", "stroke-width": 2, "stroke-linecap": "round" }, mouthG);
+  const lipHi = el("path", { fill: "#f08a78", opacity: .55 }, mouthG);
+  const dimL = el("path", { fill: "none", stroke: "#a85a3c", "stroke-width": 1.4, "stroke-linecap": "round" }, mouthG);
+  const dimR = el("path", { fill: "none", stroke: "#a85a3c", "stroke-width": 1.4, "stroke-linecap": "round" }, mouthG);
+  function drawMouth(s) {
+    const cx = 20 + 4 * s, cy = 51 - 5 * s, mid = 52 + 4 * s;
+    lipU.setAttribute("d", `M${-cx} ${cy} C-13 ${44 - s} -7 ${40 - s * .5} 0 ${43.5 - s * .5} C7 ${40 - s * .5} 13 ${44 - s} ${cx} ${cy} Q0 ${mid} ${-cx} ${cy} Z`);
+    lipL.setAttribute("d", `M${-cx} ${cy} Q0 ${mid} ${cx} ${cy} C${cx * .55} ${63 + s * 1.5} ${-cx * .55} ${63 + s * 1.5} ${-cx} ${cy} Z`);
+    lipLine.setAttribute("d", `M${-cx - 1} ${cy} Q0 ${mid} ${cx + 1} ${cy}`);
+    lipHi.setAttribute("d", `M-7 ${56 + s * 2} Q0 ${59 + s * 2.5} 7 ${56 + s * 2} Q0 ${57 + s * 2} -7 ${56 + s * 2} Z`);
+    dimL.setAttribute("d", `M${-cx - 2} ${cy - 4} q-4 4 -1 9`); dimL.setAttribute("opacity", clamp((s - .3) * 1.4) * .8);
+    dimR.setAttribute("d", `M${cx + 2} ${cy - 4} q4 4 1 9`); dimR.setAttribute("opacity", clamp((s - .3) * 1.4) * .8);
+  }
+
+  // blink curve: close 70 ms, open 100 ms
+  const blinkAt = (t, t0) => (t < t0 || t > t0 + .17) ? 0 : (t < t0 + .07 ? (t - t0) / .07 : 1 - (t - t0 - .07) / .1);
+
+  // ---- shot list (hard cuts, ~1.6–1.9 s each like the reference) ----
+  const svg = $("scene");
+  const SHOTS = [
+    { t0: 0.0, t1: 1.9, lw: 2.0, from: [0, 0, 1920, 1080], to: [56, 30, 1808, 1017] },          // wide, symmetric room
+    { t0: 1.9, t1: 3.5, lw: 2.6, from: [650, 250, 760, 427.5], to: [674, 262, 716, 402.75] },   // over-the-shoulder into the mirror
+    { t0: 3.5, t1: 5.0, lw: 3.0, from: [884, 286, 448, 252], to: [900, 296, 418, 235.1] }   // close on the reflection
+  ];
+  const glows = svg.querySelectorAll(".glow"), hots = svg.querySelectorAll(".hot");
+
+  function draw(t) {
+    const shot = t < 1.9 ? 0 : t < 3.5 ? 1 : 2;
+    const S = SHOTS[shot], k = (t - S.t0) / (S.t1 - S.t0);
+    const kk = lerp(k, ease(k), .5);
+    const vb = S.from.map((v, i) => lerp(v, S.to[i], kk));
+    svg.setAttribute("viewBox", vb.join(" "));
+    svg.style.setProperty("--lw", S.lw + "px");
+
+    // lamplight breathing (gentle, not a flicker strobe)
+    const f = .9 + .05 * Math.sin(t * 7.3) + .03 * Math.sin(t * 17.1 + 1.3);
+    glows.forEach((g) => g.setAttribute("opacity", f));
+    hots.forEach((g) => g.setAttribute("opacity", .8 + .2 * f));
+
+    // acting --------------------------------------------------------
+    let lean = 0, gazeY = 0, gazeX = -1.5, lidB = 0, smile = 0, tilt = -1.5, squint = 0;
+    if (shot === 0) {                       // she leans in toward the glass
+      lean = smooth(.2, 1.7, t);
+      gazeY = 4; lidB = .42;                // eyes lowered, looking at the table
+      lidB = Math.max(lidB, blinkAt(t, 1.25));
+    } else if (shot === 1) {                // eyes lift and find her own gaze
+      lean = 1;
+      const up = smooth(2.15, 2.7, t);
+      gazeY = lerp(4, 0, up); lidB = lerp(.42, 0, up);
+      gazeX = lerp(-1.5, -.6, up);
+      lidB = Math.max(lidB, blinkAt(t, 3.05));
+      tilt = lerp(-1.5, -3, smooth(2.4, 3.4, t));
+    } else {                                // a quiet smile
+      lean = 1; gazeX = -.4;
+      smile = smooth(3.75, 4.6, t);
+      squint = smile * .55;
+      tilt = lerp(-3, -5, smooth(3.5, 5, t));
+      lidB = Math.max(smile * .14, blinkAt(t, 4.72));
+    }
+    $("backWoman").setAttribute("transform",
+      `translate(${790 + lean * 10} ${600 - lean * 8}) scale(${1.25 - lean * .025})`);
+    $("reflWoman").setAttribute("transform",
+      `translate(${1110 - lean * 4} ${440 - lean * 6}) scale(${.75 + lean * .035})`);
+    $("reflHead").setAttribute("transform", `rotate(${tilt} 0 90)`);
+    $("backHead").setAttribute("transform", `rotate(${-tilt * .6} 0 60)`);
+    $("curl").setAttribute("transform", `rotate(${Math.sin(t * 2.1) * 3} 70 -30)`);
+    drawEye("L", lidB, gazeX, gazeY, squint);
+    drawEye("R", lidB, gazeX, gazeY, squint);
+    drawMouth(smile);
+    const bl = .38 + smile * .14;
+    $("blushL").setAttribute("opacity", bl); $("blushR").setAttribute("opacity", bl);
+    const by = -smile * 2.5;
+    $("browL").setAttribute("transform", `translate(0 ${by})`);
+    $("browR").setAttribute("transform", `translate(0 ${by})`);
+
+    // dust motes drift upward through the light
+    motes.forEach((m) => {
+      const y = m.y - ((t * 14 * m.sp) % 640);
+      m.node.setAttribute("cx", m.x + Math.sin(t * m.sp + m.ph) * 12);
+      m.node.setAttribute("cy", y < 100 ? y + 640 : y);
+      m.node.setAttribute("opacity", m.a * (.6 + .4 * Math.sin(t * 1.7 + m.ph)));
+    });
+  }
+
+  // one proxy tween drives every frame from absolute time -> fully seekable
+  const proxy = { t: 0 };
+  const tl = gsap.timeline({ paused: true });
+  tl.to(proxy, { t: 5, duration: 5, ease: "none", onUpdate: () => draw(proxy.t) }, 0);
+  draw(0);
+  window.__timelines = window.__timelines || {};
+  window.__timelines["main"] = tl;
+})();
+</script>
+</body>
+</html>

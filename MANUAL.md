@@ -353,6 +353,7 @@ built per project by `tools/audio/place_sound.py`.
 - [ ] Textures subtle. [ ] SFX on objects, quiet. [ ] Credits for CC-BY assets.
 
 ## Changelog
+- 2026-11-08 — new style sample outside the documentary look: samples/mirror-belle-epoque (illustrated Belle Époque reel style, analysed from reel DclYUnjR3iq; hand-drawn SVG + one seekable GSAP proxy tween; non-scaling-stroke line art keeps line weight constant across camera zooms done with viewBox). Instagram was blocked by the session network policy; the user uploaded the reel instead. GSAP loaded from a local copy because cdn.jsdelivr.net was blocked too.
 - 2026-10-29 — v1: samples s01–s10; palette locked; markups (s11) added from the Vox markup reel; paper-
   aesthetic chart (s03) from the user's Pinterest refs; sound brief from the Vox marimba reel; sync audit tool;
   halftone tool; verified 12 trillion-dollar companies for the map.
