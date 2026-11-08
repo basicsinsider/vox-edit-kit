@@ -8,7 +8,7 @@ Same format as project/ivan/music_cuesheet.json; adds "bleeps" (place_sound.py p
 import json, os
 
 # per-act balance trims (dB on every layer of the act), from the act-level check (SOUND_PLAN §5): aim −12…−17 LU re the VO
-TRIM = {"P1": +2.0, "P3": -0.5, "P4": -1.7, "P7": -2.0, "P8": +1.5, "P9": +1.0, "P12": -1.2, "P13": -1.5}
+TRIM = {"P1": +2.0, "P3": -0.5, "P4": -1.7, "P7": -2.0, "P8": +2.5, "P9": +1.0, "P12": -1.2, "P13": -1.5}
 
 
 def L(cue, track, stem, start, end, offset, rel, fi=1.5, fo=1.5, auto=None, note="", file=None):
@@ -187,7 +187,7 @@ marker_edits = [
     dict(t=575.03, type="boom_low", action="retype", to="stamp_thud", note="blocks drop: thuds, the boom kept for the hero 577.27"),
     dict(t=575.83, type="boom_low", action="retype", to="stamp_thud", note="blocks drop: thud"),
     dict(t=590.0, type="boom_low", action="retype", to="stamp_thud", note="big block lands: thud; boom kept for the slam 593.05"),
-    dict(t=652.55, type="paper_tear", action="retype", to="crack", note="the 10% cap line cracks"),
+    dict(t=652.55, type="paper_tear", action="retype", to="crack", note="the 10% cap line cracks (hero: the scene's point)"),
     dict(t=653.56, type="boom_low", action="drop", note="third hit in 3.3 s after the 'law gets changed' stinger + crack"),
     dict(t=690.0, type="crowd_room", action="retype", to="crowd_chant", note="editor 'crowd' = protest ambience (alias was office walla)"),
     dict(t=724.85, type="dot_ticks", action="retype", to="coins", note="money chips pour into the bank: handful of coins (editor's wish)"),

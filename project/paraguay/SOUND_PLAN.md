@@ -51,10 +51,10 @@ narrator's irony: the tweet ↔ "that law gets changed").
 
 | # | story (SEGMENTS §3) | in → out | layers | moves on words |
 |---|---|---|---|---|
-| P1 | pys01 cold open: X clip → protests → president → **one bank** → **60 %** → Chase 10 % → market share → "imagine…one day" → FDIC/97 % → 30 % → pensions → "how we got here" | 0.00 → 116.4 | X-clip crowd 0–6.6 (@3.0); chants 3.5–13; STARFALL instr + melody @14.2 to 27.2, drums 4.6–26.8; DRONE glue 14–40; DOX full @113 26.0–116.4; DRONE 48–76 + 100–128 | Starfall's melody return on "it all started with one bank" 18.80 (stinger); DOX in on "how big it was" 26.4; DOX's own drop/silence on "Now imagine…one day" 52.0 → 68 (drone floor), build on FDIC/97 % 80.7–84.9; −2 dB on the dense 39–50, 78–92; +1.5 from "So now the big question" 105.03; swell into "how we got here" 115.34 |
+| P1 | pys01 cold open: X clip → protests → president → **one bank** → **60 %** → Chase 10 % → market share → "imagine…one day" → FDIC/97 % → 30 % → pensions → "how we got here" | 0.00 → 116.4 | X-clip crowd 0–6.6 (@3.0); chants 3.5–13; STARFALL instr + melody @14.2 to 27.2, drums 4.6–26.8; DRONE glue 14–40; DOX full @113 26.0–116.4; DRONE 48–76 + 100–128 | Starfall's melody return on "it all started with one bank" 18.80 (editor boom on the UENO logo 20.8); DOX in on "how big it was" 26.4; DOX's own drop/silence on "Now imagine…one day" 52.0 → 68 (drone floor), build on FDIC/97 % 80.7–84.9; −2 dB on the dense 39–50, 78–92; +1.5 from "So now the big question" 105.03; swell into "how we got here" 115.34 |
 | P2 | pys02 World Cup → the tweet → "skin color" → **a boring success story** → investment grade → $350 M on Wall Street → strongest growth → "one bad news" | 116.6 → 206.0 | IN DISGUISE instr + bass @5 116.6–156, melody 127–150 (the tweet); DRONE 150–170; ANDEAN VALLEY instr @18 157.5–206, drums 162.5+, bass on "Wall Street" 184.5; DRONE 200–226 | wry under the tweet, out on "But that's not the case" 154.9; Latin colour from "Paraguay is actually a success story" 159.3; cut + sub hit on "one bad news" 205.59 |
 | P3 | pys03 background: "born in 1950 — I'm just kidding" → the money lender ("a bit of loan sharking") → Credit Central → **2015** heir → conglomerate → "where the problem starts" | 213.8 → 333.0 | WE PICKED IRISES instr + melody + bass @37.8; drums @88.2 from 264.0; DRONE 324–346 | its 40–45 swell on the 1950 joke 217.9–220; dip on "Credit Central…not a bank" ~250; drums on "in 2015, the leadership changes" 263.7; peak = the conglomerate 286–311; −1.5 dB under the dense 229–244, 284–305; fades on "where the problem starts" 331.5 |
-| P4 | pys04 COVID → 2021 merger → Ueno = fintech → boom → 50 % promos (limits joke) → groceries → low income → first accounts → **four times bigger** | 333.4 → 448.9 | I CAN SEE THE WORLD instr + melody @30, drums @40 from 343.4, bass @95 from 398.4; DRONE 440–470 | drums on "in 2021, he merges" 344.7; its breath at 393.4 (after "50% discount"), peak from "but nonetheless…huge hit" 398.1; ends dead + riser on "four times bigger" 448.75; near-silence (drone) for "how the hell do you buy something four times bigger than you?" 454.4 |
+| P4 | pys04 COVID → 2021 merger → Ueno = fintech → boom → 50 % promos (limits joke) → groceries → low income → first accounts → **four times bigger** | 333.4 → 448.9 | I CAN SEE THE WORLD instr + melody @30, drums @40 from 343.4, bass @95 from 398.4; DRONE 440–470 | drums on "in 2021, he merges" 344.7; its breath at 393.4 (after "50% discount"), peak from "but nonetheless…huge hit" 398.1; ends dead on "four times bigger" 448.75 (editor boom 448.69); drone only for "how the hell do you buy something four times bigger than you?" 454.4 |
 | P5 | pys05 the secret weapon: political capital → finance minister → president 2023 → "never directly involved" → CEO → central bank **the next day** → the acquisition goes wrong | 457.6 → 595.8 | NEON NOIR instr + drums @14.6, melody to 540, bass @30 from 473; DRONE 585–612 | its 35–50 peak on "then finance minister…become the president" 478.7–482.6; accent + stinger on "the next day he becomes part of the central bank" 524.28; −1.5 dB under the dense 490–509 |
 | P6 | pys06 "Luckily for Ueno" → government deposits → IPS → the 10 % law → **"That law gets changed"** → 30 % → 2nd condition set aside → eyebrows, protests, "looks sketchy" | 596.0 → 706.4 | IN DISGUISE instr + bass @0 (sly reprise); DRONE 690–722 | enters on "Luckily for Ueno, though" 595.84; −2 dB under the law explanation 633–649; +0.5 and stinger on "That law gets changed" 650.32; −1.5 from "raising eyebrows" 686; the file's own drop ends the act |
 | P7 | pys07 hindsight → March 2025 → conflict of interest → capital ratio 12 % → 15 % → 0.58 % → "suspiciously good" → 2–4 % → **"too good to be true. And guess what? It was."** | 706.2 → 797.35 | DESERT WHISPERS instr + melody @23.9, bass @35 from 717.3, drums @45 from 727.3; DRONE from 798.2 | bass/drums enter around "March 2025…sells his stake" 714–727 → "conflict of interest" 730.2; −1.5 dB under the ratio numbers 754–772; +1.5 crest from 786; **music cut dead on "It was." 797.27** + low hit |
@@ -68,11 +68,11 @@ narrator's irony: the tweet ↔ "that law gets changed").
 
 | s | word | sound | rel LU re VO |
 |---|---|---|---|
-| 18.80 | "it all started with **one bank**" | `boom_cinematic_deep` | −25 |
+| ~~18.80~~ | "it all started with one bank" | removed in phase 2: the editor's boom on the UENO logo 20.8 carries it | — |
 | 27.68 | "Around **60%** of adults" | `boom_sub_bass_clean_01` | −28 |
 | 115.34 | → "Let's look at exactly **how we got here**" | `swell_reverse_timpani_cymbal` (peaks on the word) | −27 |
 | 205.59 | "there was **one bad news**" | `boom_sub_bass_clean_01` | −26 |
-| 448.75 | → "a bank that's **four times bigger**" (music cut) | `riser_reverse_cymbal_short` | −28 |
+| ~~448.75~~ | "four times bigger" (music cut) | removed in phase 2: the editor's boom on "4×" 448.69 carries it (a stinger would drop it) | — |
 | 524.28 | "**the next day** he becomes part of the central bank" | `boom_cinematic_deep` | −25 |
 | 650.32 | "That **law gets changed**" | `boom_dark_cinematic_low_hit` | −27 |
 | 797.27 | "too good to be true. And guess what? **It was.**" (music cut) | `boom_dark_cinematic_low_hit` | −22 |
@@ -135,7 +135,7 @@ make_cuesheet.py): P1 +2, P3 −0.5, P4 −1.7, P7 −2, P8 +1.5, P9 +1, P12 −
 
 | act | music re VO (LU) | act | music re VO (LU) |
 |---|---|---|---|
-| P1 cold open | −14.7 | P8 shell companies | −15.6 |
+| P1 cold open | −14.7 | P8 shell companies | −15.6 (phase 2: −16.1) |
 | P2 tweet → success story | −14.7 | P9 merry-go-round | −14.8 |
 | P3 background | −14.6 | P10–11 buyer → report → ABC Color | −13.1 |
 | P4 fintech boom | −13.6 | P11 glue (1268–1294.5, drone tail only) | −16.7 |
@@ -174,11 +174,34 @@ Quick test of the first minutes: same place_sound line with `--len 216 --markers
   caps and the restraint pass; listed in `sfx_placements.json` → `bleeps`.
 - Cue-sheet `"file"` layers can point outside the Epidemic folder with a relative path (`../../paraguay/shared/footage/x_congress_audio.wav`).
 
-## 7. Phase 2 (later) and open questions for the lead
+## 7. Phase 2 build — done 2026-11-08 (all 13 `compositions/pys*.sfx.json`, 617 markers)
+
+`assets/audio/paraguay/{music_bed.wav, sfx.wav, ambience.wav, timeline.json}` + music_report / sfx_placements (incl. `bleeps`) /
+sfx_hierarchy. Build 2 min 37 s on the free box. Two passes (2nd: P8 trim +1 dB, the 652.55 crack made the scene hero).
+- **Marker edits** (cue sheet `marker_edits`, applied by place_sound by t + type; editors' files untouched): drop boom 207.76 (2 s after
+  the "bad news" stinger), the 'flash' 232.42 (a white flash frame, not a camera), boom 331.8 (1.4 s before the 2020 boom), boom 653.56
+  (third hit in 3 s), riser 1041.17 (fights DOX's drop + the music box — lead's note); retype booms 575.03/575.83/590.0 → thuds (five
+  booms in 18 s → booms kept on the heroes 577.27/593.05), paper_tear 652.55/797.25/892.95 → **`crack`** (new type: Epidemic ice cracks; the
+  hero 797.25 gets the long crack), dot_ticks 724.85 → **coins** (handful), 'crowd' 690.0 → crowd_chant (the alias meant office walla).
+  Stingers 18.80 and 448.75 removed in favour of the editors' picture-synced booms (20.8 UENO logo, 448.69 "4×"); editor boom 797.4 dropped
+  automatically (stinger 797.27). Gavels alternate takes in order of use (1437.55 single 01, 1455.30 single 02, 1560.76 single 01).
+  `level: "loud"` (pys01) is read as normal; `marker_short` (pys13) → marker_scratch (alias added: it did not parse before).
+- **Restraint pass**: kept 425 / 608 markers, dropped 183 (`sfx_hierarchy.json`).
+- **Bleeps**: 3 placed, no doubles (the editors' three `bleep` markers merged into the cue sheet's): 1104.58+0.32, 1159.43+0.16,
+  1600.60+0.24, 1 kHz, −29 dBFS peak.
+- **measure_mix** (VO unmuted): mix **−25.9 LUFS-I vs VO alone −26.0 (Δ 0.1 LU ✓)**, true peak −1.6 dBTP (= the VO's); music −40.0 LUFS
+  (−14.6 LU re VO while he speaks); SFX −42.9 LUFS, median −20.4 dB re the local VO peak, max −22.0 dBFS; ambience −57.5 LUFS.
+- **act_levels** (music re VO while he speaks): P1 −14.9 · P2 −15.1 · P3 −15.8 · P4 −14.9 · P5 −14.7 · P6 −15.9 · P7 −13.5 · P8 −16.1 ·
+  P9 −14.5 · P10–11 −13.5 · P11 glue −16.6 · P12 −13.6 · P13 −13.8 · whole −14.6.
+- Checked cuts in the bed (RMS): "It was." 797.27 −42 → −48.5 dB; "the bank is done" 1486.66 −40 → −74 dB from +2 s (true silence until
+  1490.5 for the dead apps); end fades to −76 dB by 1621.3.
+- `tools/final_mix_paraguay.sh` fits the beds as built (three beds at unity, amix normalize=0, the bleep tones live in sfx.wav, its VO
+  mute windows = §3.1 with 5 ms fades just outside the bleep's span). No conflict.
+
+## 8. Open questions for the lead
 1. **X clip media start**: the crowd layer reads the clip's audio from **3.0 s** over 0–6.6 (`XCLIP_MEDIA_START` in make_cuesheet.py) =
-   EDIT_NOTES_pys01 sc001 (clip media 3.0–9.45 over master 0–6.45). Re-check against the built `compositions/pys01.html`. The pys01 editor
-   plans a `crowd_room` marker there (= office walla): replace it with nothing or `crowd_chant` — the cue sheet already carries the X-clip
-   crowd + distant chants (3.5–13), a third crowd would double it.
+   EDIT_NOTES_pys01 sc001 (clip media 3.0–9.45 over master 0–6.45). **Confirmed in the built pys01.html**: `x_congress_trim.mp4` (= source 2.6–10.2) with data-media-start 0.4 over 0–6.6 → source 3.0 ✓. (The final
+   pys01.sfx.json has no crowd marker at the open — no double.)
 2. **Muting the bleeped words** is the lead's final-mix step (three spans in §3.1). Confirm with Krish that a hard mute of the word (no
    other processing) is fine under the "never alter the VO" rule — DECISIONS §3 says yes.
 3. **Loudness**: VO −26.0 LUFS → the finished mix will read ≈ −25.8 LUFS integrated (bed 14 LU under). Louder delivery (YouTube ≈ −14) would be
@@ -187,4 +210,3 @@ Quick test of the first minutes: same place_sound line with `--len 216 --markers
    tweet). If Krish finds it too comic for "the law gets changed" (pension money), swap P6 to Fake Photisms (full) or Desert Whispers' intro.
 5. No Paraguayan harp: none tasteful in the catalogue (searched harp / paraguayan harp / folk harp / harp south america). The Latin hint is
    carried by Andean Valley (P2), I Can See the World (P4) and Desert Whispers (P7).
-6. Phase 2: place the editors' `compositions/pys*.sfx.json`, build the three beds, act levels, measure_mix (mix vs VO alone < 1 LU), listen.

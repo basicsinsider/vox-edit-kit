@@ -221,3 +221,5 @@ Many Epidemic SFX arrive as 96 kHz / 24-bit WAV (ambiences 50–130 MB each); `e
 | typewriter_hermes_03.wav / typewriter_hermes_01.wav | 0a427b93-1857-4cef-a41f-b4e91a255c2e / 696833a1-6679-4c18-9c6c-96429c06fbf4 | Communications, Typewriter, Old, Hermes, Typing 03 / 01 | `typewriter` (Epidemic mode: real Hermes excerpt of dur) |
 | handcuffs_click_slow.wav | b672bfea-dfea-44e1-bf94-04eb0e6252c1 | Equipment, Tactical, Handcuffs, Slow Adjustment, Click, Police Officer | `handcuffs` |
 | stadium_cheer_goal_01.wav | c76a6846-f54f-4229-bde1-85a1bd55d2f4 | Crowds, Sport, Stadium, Cheering, Whistles, Clapping, Excited, Reaction, Goal 01 | `stadium_crowd` (World Cup; swells on t) |
+| ice_crack_medium_long_01.wav / ice_crack_medium.wav | c9092b1a-10a5-43af-9de9-a3f5fe9de4c5 / f222b3dc-7399-4322-8e49-98cd59570350 | Ice, Break, Ice Crack Medium Long 01 / Ice Crack Medium | `crack` (level normal → the long one) — phase 2 |
+| gavel_single_02.wav | 59936633-8ea8-47dd-926b-d782a026fdf7 | Wood, Impact, Gavel Hit, Courtroom, Single 02 | `gavel` (single takes alternate in order of use) — phase 2 |

@@ -575,7 +575,7 @@ def render_epidemic(m, i, rng):
         y = fade(y[:int(min(len(y) / SR, d or 4.5) * SR)], 0.05, 0.6)
         return y, 0.0, "epi:music_box_wind_up"
     if ty == "crack":
-        nm = ["ice_crack_medium_long_01", "ice_crack_medium"][i % 2]
+        nm = "ice_crack_medium_long_01" if m.get("level") == "normal" else "ice_crack_medium"   # hero = the long crack
         y = epi(nm)
         return fade(y, 0.0, 0.3), onset(y), f"epi:{nm}"
     if ty == "gavel":

@@ -704,6 +704,10 @@ on action. Use it whenever the narrator quotes someone or introduces a historic 
   `app_error`, `cash_register`, `coins`, `card_swipe`, `atm`, `rubber_stamp`, `music_box`, `gavel`, `camera_flash`, `handcuffs`,
   `stadium_crowd`, Hermes `typewriter`, ambiences `crowd_chant`, `crowd_murmur`, `newsroom`, `city_night` + "asuncion" (warm night + insects).
   Cue-sheet `"file"` layers may point outside the Epidemic folder (the X clip's own crowd under the cold open).
+  Phase 2: cue-sheet **`marker_edits`** (`{t, type, action: drop|retype, to, note}`) let the sound designer fix editors' markers without
+  touching their files (place_sound applies them by t + type and prints each); new type `crack` (ice cracks); gavel takes alternate;
+  `level: "loud"` reads as normal. Prefer an editor's picture-synced boom over your own stinger when they are < 2.5 s apart (a stinger
+  within 0.6 s drops the editor's boom). The full 1622 s build ran in 2 min 37 s on a free box.
 
 ### 10.9 Long-form rules (Krish, 2026-10-31 evening)
 - **Copyrighted material is allowed** for this channel (used the way YouTube's fair-use guidelines allow: commentary/
