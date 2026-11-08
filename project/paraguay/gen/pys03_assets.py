@@ -68,15 +68,15 @@ def clean_plate():
     m = cut.point(lambda v: 255 if v > 20 else 0).filter(ImageFilter.MaxFilter(31))
     w = 1 - np.asarray(m, dtype=np.float32) / 255
     a = np.asarray(src, dtype=np.float32)
+    from scipy.ndimage import gaussian_filter as gf
     out = a.copy()
     for it in range(40):   # grow the known region inward, ring by ring
         if w.min() > 0.5: break
-        num = np.stack([np.asarray(Image.fromarray(out[..., c] * w).filter(ImageFilter.GaussianBlur(18)), dtype=np.float32) for c in range(3)], -1)
-        den = np.asarray(Image.fromarray(w.astype(np.float32)).filter(ImageFilter.GaussianBlur(18)), dtype=np.float32)
+        num = np.stack([gf(out[..., c] * w, 14) for c in range(3)], -1)
+        den = gf(w, 14)
         new = (den > 0.08) & (w < 0.5)
         fill = num / np.maximum(den, 1e-4)[..., None]
         out[new] = fill[new]; w = np.where(new, 1.0, w).astype(np.float32)
-    out = np.asarray(Image.fromarray(np.clip(out, 0, 255).astype(np.uint8)).filter(ImageFilter.GaussianBlur(4)), dtype=np.float32) * (1 - (np.asarray(m, dtype=np.float32)[..., None] / 255) * 0) 
     Image.fromarray(np.clip(out, 0, 255).astype(np.uint8)).save(OUT / "miguel_plate.jpg", quality=92)
 if (OUT / "miguel_cut.png").exists():
     clean_plate()
