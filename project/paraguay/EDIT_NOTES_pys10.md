@@ -55,3 +55,5 @@ First scene: BCP seal photo, fresh shot. Last scene: news-monitor push accelerat
 **As built:** sc018 + sc019 are one scene (`pys10-sc018`) with the punch-in as a hard camera cut at 1145.83; sc011 adds a dashed buyer slot on
 "find a company" (1097.10); sc022's pen circle sits on the return arrow (the loop), not the whole diagram; sc024's folder lifts to centre after
 the report drops in. Face cam 55.57 s = 33.6 %. Details: compositions/pys10.NOTES.md.
+
+**Lead fix (boundary ground):** sc001 dropped; sc002 (paper trace) runs 1042.60–1052.39 and carries the kicker BANCO CENTRAL DEL PARAGUAY 1043.53, "did catch on" 1044.17/1044.41/1044.73, "stepped in" 1046.25/1046.57 before "able to trace".

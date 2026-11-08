@@ -1,6 +1,6 @@
 # pys10 — NOTES (master 1042.60–1207.80, 165.20 s) — the central bank catches on → two options → [bleep] → the buyer → $79 M round trip → the report → Aug 14/15 → buried → "allegedly"
 
-Plan: `project/paraguay/EDIT_NOTES_pys10.md` (scene table, words → picture reasons). Built as planned, 31 scenes (sc018 + the planned sc019
+Plan: `project/paraguay/EDIT_NOTES_pys10.md` (scene table, words → picture reasons). Built as planned, 30 scenes (sc001 dropped at the lead's request — see below) (sc018 + the planned sc019
 are one scene with a hard punch-in cut at 1145.83). Lint: 0 errors in pys10 (warnings only: file size, `z-index:-1` on the highlighter span —
 same as pys07). `sync_audit`: 0 flagged; every text cue is a literal `T(word − 0.06)` (18 cues print +0.02 against a neighbouring short word —
 each is 0.06 before its intended word, checked by hand). Timeline = 165.20 (last tween ends exactly at 1207.80). Every scene snapshotted
@@ -9,8 +9,7 @@ each is 0.06 before its intended word, checked by hand). Timeline = 165.20 (last
 ## Scenes · effects · layouts
 | sc | master | picture | effect / layout |
 |---|---|---|---|
-| 001 | 1042.60–1046.87 | BCP seal on the glass door (EFE) | photo push into the seal, kicker + lower third |
-| 002 | –1052.39 | ueno → 3 shell cards → Grupo Vázquez; plum pen traces the route, circles the destination | paper, dotted route revealed through an SVG mask, `FX.markup.pen` trace + circle |
+| 002 | 1042.60–1052.39 | (lead fix: opens the segment on paper; the BCP seal photo sc001 is dropped) kicker BANCO CENTRAL DEL PARAGUAY (plum) + "did catch on" → "stepped in" while the nodes pop in; then | ueno → 3 shell cards → Grupo Vázquez; plum pen traces the route, circles the destination | paper, dotted route revealed through an SVG mask, `FX.markup.pen` trace + circle |
 | 003 | –1056.95 | two sheets on a desk: the loans (long teal rows) vs the report (short tidy rows) | night desk, 12 fps rows, dim/raise swap |
 | 004 | –1060.63 | FACE M "this bank is actually lying" | face |
 | 005 | –1066.71 | Vox layered: BCP (plum duotone) → plum pen arrow → ueno sign (teal duotone) | layered panels drifting, pen arrow (blend normal on night) |
@@ -40,7 +39,7 @@ each is 0.06 before its intended word, checked by hand). Timeline = 165.20 (last
 | 031 | –1204.82 | FACE W (framing change exactly at the EDL join 1200.85) | face |
 | 032 | –1207.80 | Carvallo arriving at the Fiscalía (Última Hora) on a news monitor; push accelerates into the cut | screen, push → hand-off |
 
-Transitions (never the same twice in a row): whip →, hard cut on action, cut, whip ↑, light-flash whip, cut on push, jump cut, whip ←, cut,
+Transitions (never the same twice in a row): fresh paper shot (hard cut on pys09's carousel), hard cut on action, cut, whip ↑, light-flash whip, cut on push, jump cut, whip ←, cut,
 whip →, cut on action, cut, whip ↓, paper slide, cut, whip →, cut on push, punch-in, cut at join, jump cut, whip ↑, cut, whip →, cut, whip ←,
 paper slide, cut on push, whip ↓, cut, jump cut at join, light-flash whip.
 
@@ -66,8 +65,9 @@ August 14 / 15 (RESEARCH: no source gives those exact days — his words on scre
 No new downloads.
 
 ## For the lead
-- Boundary: pys09 ends on three night scenes (carousel) and my sc001 is a night photo → 4 night-ground shots in a row across the cut. If it
-  matters, swap pys09's last ground or I can open on paper (e.g. start sc002's trace at 1042.60 and drop the seal photo).
+- Boundary fix (lead, after the first report): pys10 now opens on the paper trace at 1042.60 (sc001 BCP seal photo removed), so the
+  pys09 → pys10 cut goes night → paper. The kicker "Banco Central del Paraguay" + "did catch on" / "stepped in" sit top-left on the trace;
+  the diagram pops in from 1042.70; sfx.json: the sc001 push + whip markers replaced by one pop_soft at 1042.70. Snapshots 0.05–9.5 s checked.
 - Hand-off: sc032's push accelerates into 1207.80 (pys11 "So now…").
 - Cue-sheet stinger 1125.14 lands on sc015's redaction wipe (1124.95) and the "buries" sub (1193.27) on sc029's sinking report — markers
   written so the restraint pass keeps them distinct.
