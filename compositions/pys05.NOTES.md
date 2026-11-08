@@ -78,3 +78,22 @@ pena_sash_crop, pena_portrait_reuters, carvallo, ueno_logo (white via `filter: b
 - 3D card flip in an org chart: give the card its own full-frame `perspective` wrapper, two faces with `backface-visibility:hidden`
   (back pre-rotated 180°), and drive x/y/rotationY from one proxy tween's `onUpdate` (arc path) — clean, seek-safe.
 - `.hl` highlighter on display words works with `style="--hl:0"` inline and a GSAP tween of `"--hl"` 0→1.
+
+## Fix round 1 (Krish, 720p review — MANUAL §0 "No narration captions")
+- Removed every caption that repeated the narration: sc001 "the secret weapon" + POLITICAL CAPITAL title; all face-cam lower thirds
+  (sc002, 006, 008, 009, 012, 013, 016) and their scrims (face shots are now clean); sc003 "the original bank"/"outside investors";
+  sc004 "then finance minister"/"president"; sc005 the whole quote card text (“, THE PRESIDENT SAYS, both quote lines); sc007 "not just
+  the bank"/"any company"/"one of your investors"; sc010 "the next day"; sc014 "four times bigger" title; sc015 "struggling a bit";
+  sc017 "did not go according to plan"; sc018 "online focused bank"/"a normal bank"; sc019 "expenses"; sc021 both lines; sc022 both lines.
+- Kept (diagram/chart labels, name tags, credits): CREDICENTRO certificate; sc004 "2023" year label on the timeline; sc007 seal label
+  THE PRESIDENT; the whole org chart (ueno bank / BCP / Banco Central del Paraguay, CEO / HEAD · BCP tags, head slot, RESIGNS stamp,
+  calendar); the regulating arrow now carries a short diagram label REGULATES (t-label) instead of the spoken phrase; sc014 ueno /
+  Visión Banco square labels + new chart label "4×" (yellow highlighter) above the big square; sc017 new legend labels PLAN / ACTUAL;
+  sc019 block labels (more people / branches / real estate); sc022 block labels; ID tags (Carlos Carvallo, Visión Banco).
+- Re-balanced scenes that lost their text side: sc005 Peña photo moved to centre-right (face ≈ x 1080), plum fade narrowed; sc015
+  Visión Banco card centred with its ID tag under it. sc001 lost its right-side shade (only there for the text).
+- SFX: removed the title boom (463.49), quote-mark rustle (484.75) and highlighter swipe (545.60); added pop_soft 545.85 (4× label). 50 markers.
+- Timings, transitions, face cam (43.53 s = 31.5 %) and duration (138.20) unchanged. Lint 0 errors (pys05), sync_audit 0 flagged,
+  snapshots of every changed scene looked at (`work/pys05/.snap/f1`, `f2`).
+- Gotcha: another editor's build can overwrite a sandbox's `index.html` (snapshot failed on a missing `pys99.html`) — re-run
+  `build_index.py pys05 --root .` before every snapshot batch.
