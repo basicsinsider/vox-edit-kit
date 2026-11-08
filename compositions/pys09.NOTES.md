@@ -65,3 +65,21 @@ sc017 2.20). A little under 35 % — the rest of the lines are mechanics (60 day
 - Chalk text: a static (non-boiling) feTurbulence displacement + alpha-noise `feComposite in` filter reads as chalk grain; reveal words with
   `clip-path: inset(0 100% 0 0) → inset(0 0 0 0)` at 12 fps (handwriting wipe) — no boil, so it obeys the "rough must settle" rule.
 - Commons search hit "Carousel at Coney Island.jpg" is only the sign lettering — look before using; "Coney Carousel 006.JPG" is the ride.
+
+## Fix round 1 (Krish, 720p review — MANUAL §0 "No narration captions")
+Removed every caption that repeated the narration: sc001 "should not have continued", sc002 "fake money" kicker (+ its pen arrow),
+sc003 "don't make loan payments", sc004 "write down that loan", sc006/sc007 "bad mistake on our part" + "where you can get creative",
+sc010 "they go to jail.", sc012 "end up in jail", sc013 "the new creative way" + "over and over again", sc014 "did not have any money",
+sc015 "new loans" / "same company" / "pay back the bank" / "old loan, it's good", sc017 "kept delaying the problem", sc018 "too big to fail",
+sc019 "more than" + "companies that they own themselves", sc020 "lending money to a company" / "pay the bank back" / "borrow more money".
+Scrims that only served those captions were removed (face cam is now clean); the footage keeps a bottom scrim for its credit.
+Kept: ledger document text, calendar (loan payment due / 60 / DAYS), LOSS stamp, "bad debt" (now a red-ink note written ON the ledger,
+inside the camera, below the struck row), recipient cards, flow-diagram labels (fake companies / the company that needs it), the $300 MILLION
+counter, MERRY-GO-ROUND on the canopy, credits. Chalkboard: the teacher's quote "what happens to / creative accountants?" kept (a quoted
+line on a prop); the narration header "my accounting teacher" is replaced by chalk class notes (Assets = Liabilities + Equity and a
+Debit | Credit T-account, cued structurally) that the eraser wipes before the quote.
+Re-framed so no frame is lopsided/empty: sc002/sc004/sc015 ledger re-centred (cam x −200 / −60), sc003 calendar centred from the start,
+sc018 tower centred, sc020 carousel centred (cam x −280→−250). Timings, transitions, face cam (30.7 %) and duration (102.00) unchanged.
+Checks: lint 0 errors in pys09; sync_audit 0 flagged (remaining T() cues: ledger words, 60/DAYS, card labels, chalk quote, diagram labels,
+$300/MILLION, MERRY-GO-ROUND); every changed scene re-snapshotted and looked at. sfx.json: no marker belonged to a removed text pop; the chalk
+marker note updated. Pre-fix copy: /tmp/claude-0/-home-user-vox-edit-kit/b485e6cf-08e1-5351-b0be-b785b7fe8da1/scratchpad/p9/pys09_pre_fix1.html.

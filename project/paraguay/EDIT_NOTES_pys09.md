@@ -43,3 +43,5 @@ Ground rhythm: face · paper · night · paper · paper · face · face · face 
 **As built** (see compositions/pys09.NOTES.md): as planned; sc003 calendar re-centres when the text clears; sc015 "old loan, it's good"
 sits under the rows (framing 3); sc018 pull-back to 0.63 with 72 cards; sc019 shows "$0" from the whip so the frame is never empty;
 "more than" cues 1030.09/1030.25. Face cam 30.7 %.
+**Fix round 1:** all narration captions removed (MANUAL §0) — the "text (cue)" column above is superseded except for prop/graphic text
+(ledger, 60 DAYS, LOSS, "bad debt" on the ledger, recipient cards, diagram labels, chalk quote, $300 MILLION, MERRY-GO-ROUND). See compositions/pys09.NOTES.md.
