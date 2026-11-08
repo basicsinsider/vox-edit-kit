@@ -21,7 +21,11 @@ def clean(d):
         if not pts: continue
         if any(abs(a[0] - b[0]) > 400 for a, b in zip(pts, pts[1:])): continue
         if max(p[0] for p in pts) < x0 - 50 or min(p[0] for p in pts) > x1 + 50: continue
-        out.append(sp)
+        keep = [pts[0]]
+        for q in pts[1:]:
+            if abs(q[0] - keep[-1][0]) + abs(q[1] - keep[-1][1]) >= 6: keep.append(q)
+        if len(keep) < 4: continue
+        out.append("M" + "L".join(f"{a:.0f},{b:.0f}" for a, b in keep) + "Z")
     return "".join(out)
 G = {
   "asia": ["south_korea", "japan", "india", "indonesia", "thailand", "philippines", "malaysia"],

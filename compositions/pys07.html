@@ -25,7 +25,7 @@
       background: radial-gradient(ellipse 58% 52% at 0% 100%, rgba(10,13,12,0.84) 0%, rgba(10,13,12,0.52) 45%, rgba(10,13,12,0) 100%); }
     .p7-scrim-b { position: absolute; left: 0; right: 0; bottom: 0; height: 460px; pointer-events: none;
       background: linear-gradient(180deg, rgba(10,13,12,0), rgba(10,13,12,0.86)); }
-    .p7-mark { position: relative; display: inline-block; }
+    .p7-mark { position: relative; display: inline-block; isolation: isolate; }
     .p7-mark .p7-hlb { position: absolute; left: -10px; right: -10px; top: 18%; bottom: 8%; background: var(--yellow); mix-blend-mode: multiply; transform-origin: 0 50%; transform: scaleX(0); z-index: -1; }
     .p7-logo { position: absolute; background: var(--ueno-dark); -webkit-mask: url('assets/paraguay/shared/logos/ueno_logo.png') left center / contain no-repeat; mask: url('assets/paraguay/shared/logos/ueno_logo.png') left center / contain no-repeat; }
     #pys07-flash { position: absolute; inset: 0; background: #f6f2ea; opacity: 0; pointer-events: none; z-index: 7; }
@@ -74,9 +74,9 @@
     .p7-sheet .sq { position: absolute; left: 70px; top: 1060px; width: 120px; height: 120px; border: 5px solid var(--ink); }
     .p7-sheet .sqf { position: absolute; left: 0; top: 0; width: 55px; height: 110px; background: var(--ueno); transform-origin: 0 50%; }
     .p7-sheet .half { position: absolute; left: 230px; top: 1078px; font-size: 64px; color: var(--ink); }
-    #pys07-sc013-lens { position: absolute; left: 0; top: 0; width: 520px; height: 520px; border-radius: 50%; overflow: hidden; }
+    #pys07-sc013-lens { position: absolute; left: 0; top: 0; width: 660px; height: 660px; border-radius: 50%; overflow: hidden; }
     #pys07-sc013-lin { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; }
-    #pys07-sc013-ring { position: absolute; left: 0; top: 0; width: 520px; height: 520px; border-radius: 50%; border: 16px solid #2b302d;
+    #pys07-sc013-ring { position: absolute; left: 0; top: 0; width: 660px; height: 660px; border-radius: 50%; border: 16px solid #2b302d;
       box-shadow: inset 0 0 0 3px rgba(242,238,227,0.35), inset 0 0 40px rgba(0,0,0,0.35), 0 26px 50px rgba(0,0,0,0.55); box-sizing: border-box; }
     #pys07-sc013-handle { position: absolute; width: 60px; height: 300px; border-radius: 26px; background: linear-gradient(90deg, #1d211f, #464c48, #1d211f); transform-origin: 50% 0; }
     #pys07-sc013-glare { position: absolute; left: 70px; top: 50px; width: 220px; height: 120px; border-radius: 50%; background: radial-gradient(ellipse, rgba(255,255,255,0.22), rgba(255,255,255,0)); transform: rotate(-30deg); }
@@ -187,6 +187,7 @@
         <div class="p7-side t-serif-i p7-ink" id="pys07-sc008-lc" style="left:90px; top:892px"><span class="p7-w">cash</span></div>
         <div class="p7-side t-serif-i p7-ink" id="pys07-sc008-ls" style="left:90px; top:820px"><span class="p7-w">short </span><span class="p7-w">term </span><span class="p7-w">assets</span></div>
         <div id="pys07-sc008-tower"></div>
+        <div class="p7-abs" id="pys07-sc008-dash" style="left:520px; top:849px; width:920px; height:0; border-top:4px dashed var(--ink); transform-origin:0 50%"></div>
         <svg id="pys07-sc008-svg" class="p7-mk" viewBox="0 0 1920 1080"></svg>
         <div class="p7-abs t-display" id="pys07-sc008-lb" style="left:430px; width:460px; top:700px; text-align:center; font-size:58px"><span class="label-box" id="pys07-sc008-box" style="opacity:0"><span class="p7-w">at </span><span class="p7-w">least </span><span class="p7-w" style="color:var(--yellow)">12%</span></span></div>
         <div class="p7-abs t-display p7-ink" id="pys07-sc008-loans" style="left:1100px; width:320px; top:140px; text-align:center; font-size:80px"><span class="p7-w">loans</span></div>
@@ -388,7 +389,7 @@
       tl.fromTo($("sc002-cam"), { scale: 1.0 }, { scale: 1.04, duration: 10.7, ease: "none", immediateRender: false }, S(710.30));
       FX.focusHunt(tl, $("sc002-cam"), S(710.40), { dur: 0.7 });
       tl.fromTo($("sc002-aug"), { opacity: 0 }, { opacity: 1, duration: 0.4, ease: "power1.out", immediateRender: true }, S(710.6));
-      words("sc002-pres", [T(711.43), T(711.43)], { dur: 0.5, y: 10 });
+      words("sc002-pres", [T(711.27), T(711.43)], { dur: 0.5, y: 10 });
       out($("sc002-pres"), S(713.9));
       // the stake rides the plum bar from inauguration to March 2025
       const a = S(711.95), d = S(714.79) - S(711.95);
@@ -486,9 +487,7 @@
     tl.fromTo($("sc008-sta"), { scaleY: 0 }, { scaleY: 1, duration: 0.6, ease: C(E.out, 0.6), immediateRender: true }, S(749.66));
     words("sc008-ls", [T(749.64), T(749.96), T(750.36)], { dur: 0.45, y: 8 });
     (function () {
-      ink($("sc008-svg"), "M520 850 L1420 850", S(752.40), 0.6, { color: INK, width: 4, dash: "14 10" });
-      const dl = $("sc008-svg").lastChild; gsap.set(dl, { opacity: 0 });
-      tl.fromTo(dl, { attr: { x2: 0 }, opacity: 0 }, { opacity: 0.9, duration: 0.3, ease: "power1.out", immediateRender: true }, S(752.40));
+      tl.fromTo($("sc008-dash"), { scaleX: 0 }, { scaleX: 1, duration: 0.6, ease: C(E.out, 0.6), immediateRender: true }, S(752.40));
       tl.set($("sc008-box"), { opacity: 1 }, T(752.52));
       words("sc008-lb", [T(752.52), T(752.68), T(752.92)], { dur: 0.4, y: 8 });
       tl.fromTo($("sc008-tower"), { scaleY: 0 }, { scaleY: 1, duration: 1.6, ease: C(E.out, 1.6), immediateRender: true }, S(754.15));
@@ -537,10 +536,10 @@
     sheet($("sc013-sheet"), SEG + "-sc013a");
     sheet($("sc013-sheet2"), SEG + "-sc013b");
     (function () {
-      const CAM = { x: -160, y: -430, s: 1.0 };
-      gsap.set([$("sc013-cam"), $("sc013-cam2")], { x: CAM.x, y: CAM.y });
-      // number centre on screen: sheet (820,110) + row (70+~300, 780+~110) + cam offset
-      const NX = 820 + 360 + CAM.x, NY = 110 + 890 + CAM.y, R = 260, MAG = 1.75;
+      const CAM = { x: -100, y: -230, s: 0.72 };
+      gsap.set([$("sc013-cam"), $("sc013-cam2")], { x: CAM.x, y: CAM.y, scale: CAM.s });
+      // number centre on screen: cam coords (1180,1000) through the cam transform (origin 960,540)
+      const NX = 960 + (1180 - 960) * CAM.s + CAM.x, NY = 540 + (1000 - 540) * CAM.s + CAM.y, R = 330, MAG = 1.45;
       const lens = $("sc013-lens"), lin = $("sc013-lin"), ring = $("sc013-ring"), hdl = $("sc013-handle");
       gsap.set(lin, { scale: MAG });
       const p = { x: NX + 900, y: NY + 260 };
@@ -562,9 +561,9 @@
       fb();
       tl.fromTo(bs, { b: 0 }, { b: 7, duration: 0.8, ease: "power1.out", immediateRender: false, onUpdate: fb }, S(777.70));
       // suspiciously: pen circle inside the lens around the number
-      const cc = FX.markup.circle(tl, $("sc013-svg"), S(781.85), { cx: NX, cy: NY + 6, rx: 330, ry: 125, rot: -4, dur: 0.6, color: PLUM, width: 7, filter: PEN, seed: 5 });
+      const cc = FX.markup.circle(tl, $("sc013-svg"), S(781.85), { cx: NX, cy: NY + 6, rx: 205, ry: 82, rot: -4, dur: 0.6, color: PLUM, width: 7, filter: PEN, seed: 5 });
       gsap.set(cc, { opacity: 0 }); tl.set(cc, { opacity: 1 }, S(781.85));
-      tl.to(base, { scale: 1.04, duration: 6.0, ease: "none" }, S(777.6));
+      tl.fromTo(base, { scale: CAM.s }, { scale: CAM.s * 1.04, duration: 6.0, ease: "none", immediateRender: false }, S(777.6));
     })();
     words("sc013-lt", [T(781.85), T(783.05)], { dur: 0.4, y: 10 });
 

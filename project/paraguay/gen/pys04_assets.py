@@ -34,3 +34,15 @@ bg.save(f"{OUT}/tower_bg.jpg", quality=90)
 json.dump({"src": SRC, "size": [W, H], "layers": {"tower_bg.jpg": [0, 0], "tower_fg.png": [0, 0]}, "poly": poly},
           open(f"{OUT}/tower_layout.json", "w"), indent=1)
 print("ok")
+
+# ---- map crop around Paraguay from the kit's south_america_night (native px, 1:1) ----
+import re
+X0, Y0, MW, MH = 1860, 2700, 2160, 1215   # crop box in south_america px (camera can push ~12 %)
+sa = Image.open("assets/maps/kit/south_america_night.jpg").convert("RGB")
+sa.crop((X0, Y0, X0 + MW, Y0 + MH)).save(f"{OUT}/py_night_crop.jpg", quality=92)
+s = open("assets/maps/kit/south_america_overlay.svg").read()
+paths = {}
+for cid in ["c-paraguay", "river-paraguay", "river-parana"]:
+    paths[cid] = re.search(r'<path id="%s"[^>]* d="([^"]*)"' % cid, s).group(1)
+json.dump({"crop": [X0, Y0, MW, MH], "paths": paths}, open(f"{OUT}/py_map_paths.json", "w"))
+print("map ok")

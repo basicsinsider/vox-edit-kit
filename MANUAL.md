@@ -479,6 +479,7 @@ Prefer these over Commons thumbnails when you need more resolution. If you need 
 search loc.gov in his browser and send the item links. Chronicling America newspapers now live on loc.gov — reach
 them the same way, or use archive.org newspaper scans.
 Other known blocks: Wikimedia 429 under load (throttle, use thumbnails).
+**Mixkit** (Paraguay, 2026-11-08): only clips whose page says "Stock Video Free License" are usable; "Restricted License" clips are personal/non-commercial only (no YouTube). Infobae/abc.com.py article images download at any width via `/resizer/v2/<ID>.jpg?auth=<hash>&width=1920` (hash from the article HTML). Agents must keep scratch scripts in their own scratchpad subfolder (one agent ran another's `dl.sh`).
 
 ### 8.2 When a site is blocked from a cloud session: the fetch relay
 First make sure the cloud environment has **Full** network access (`CLOUD_SETUP.md`). If a source still refuses the
