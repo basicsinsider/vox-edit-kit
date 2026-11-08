@@ -1,7 +1,6 @@
 # pys13 — NOTES (editor pys13, 2026-11-08) — THE FINALE, master 1456.50–1621.87 (DUR 165.37)
 
-Plan: `project/paraguay/EDIT_NOTES_pys13.md` (40 scenes, every second covered, words → picture reason). Built from a small template +
-macro builder (scratchpad), output `compositions/pys13.html`. Lint: 0 errors for pys13 (only the repo-wide `nested_media_start_basis_ambiguous`
+Plan: `project/paraguay/EDIT_NOTES_pys13.md` (40 scenes, every second covered, words → picture reason). Output `compositions/pys13.html` (plain expanded HTML — edit it directly). Lint: 0 errors for pys13 (only the repo-wide `nested_media_start_basis_ambiguous`
 warnings every segment has). `tools/sync_audit.py --transcript transcript_py.json`: 0 flagged — every text cue = word start − 0.06.
 Timeline: DUR 165.37 (FX.mount). Snapshots of every scene looked at (11 batches ≤ 8 frames).
 
