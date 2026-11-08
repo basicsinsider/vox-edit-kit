@@ -893,7 +893,7 @@ def build_sfx_and_amb(markers, scenes, act, vo):
         rel, floor = (-14.0, -24.0) if ty in LOWTYPES else (-20.0, -30.0)
         if EPIDEMIC:   # §10.8: SFX −10…−20 dB under the VO by importance (hero/normal vs the rest)
             hero = m.get("level") == "normal" or ty in ("boom_low", "riser", "plane_pass")
-            rel = (-10.0 if hero else -14.0) if ty in LOWTYPES else (-12.0 if hero else -18.0)
+            rel = (-12.0 if hero else -15.0) if ty in LOWTYPES else (-12.0 if hero else -18.0)   # booms −2 dB (Krish 2026-11-08)
         allowed = max(vloc * db(rel), db(floor)) if vloc > db(-30) else db(floor)
         pk = np.abs(y).max() * g
         if pk > allowed:

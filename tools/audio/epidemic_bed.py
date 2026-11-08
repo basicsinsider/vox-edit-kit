@@ -291,10 +291,8 @@ def vo_duck(music, vo, vo_lufs, gap=12.0, margin=0.5, attack=0.05, release=0.4, 
         need = np.zeros(n)
         need = np.where(speak4[:n], np.minimum(need, hold[:n] - gap - margin - lm4), need)
         need = np.where(speak3[:n], np.minimum(need, lv3[:n] - gap - margin - lm3), need)
-        if total is not None:
-            need = np.maximum(need, max_cut - total)
-        need = np.clip(need, max_cut, 0.0)
-        need = minimum_filter1d(need, int(0.1 / hop))          # centred → 50 ms look-ahead
+        need = minimum_filter1d(np.minimum(need, 0.0), int(0.1 / hop))   # centred → 50 ms look-ahead
+        need = np.maximum(need, max_cut - (total if total is not None else 0.0))   # total cut never beyond max_cut
         g = np.zeros(n)
         cur = 0.0
         for k in range(n):                                     # one-pole in dB: fast down, slow up
