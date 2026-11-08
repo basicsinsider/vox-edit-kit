@@ -5,5 +5,8 @@
 set -e
 cd "${0:A:h}/.."
 W=work/$1; mkdir -p $W
-for d in assets lib tools compositions references project vo10.mp3 vo_intro.mp3 vo_c1.mp3 vo_c2.mp3 vo_c3.mp3 vo_c4.mp3 vo_c5.mp3 vo_c6.mp3 transcript.json transcript_intro.json transcript_c1.json transcript_c2.json transcript_c3.json transcript_c4.json transcript_c5.json transcript_c6.json vo_iv.mp3 transcript_iv.json vo_ivan_master.wav vo_py.mp3 transcript_py.json hyperframes.json package.json input; do ln -sfn ../../$d $W/$d; done
+for d in assets tools references project vo10.mp3 vo_intro.mp3 vo_c1.mp3 vo_c2.mp3 vo_c3.mp3 vo_c4.mp3 vo_c5.mp3 vo_c6.mp3 transcript.json transcript_intro.json transcript_c1.json transcript_c2.json transcript_c3.json transcript_c4.json transcript_c5.json transcript_c6.json vo_iv.mp3 transcript_iv.json vo_ivan_master.wav vo_py.mp3 transcript_py.json vo_pod5.m4a vo_pod5.wav transcript_pod5.json hyperframes.json package.json input; do ln -sfn ../../$d $W/$d; done
+rm -rf $W/compositions $W/lib
+cp -cR compositions $W/compositions 2>/dev/null || cp -R compositions $W/compositions
+cp -cR lib $W/lib 2>/dev/null || cp -R lib $W/lib
 echo "sandbox: $W"
