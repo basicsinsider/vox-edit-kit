@@ -53,7 +53,7 @@ if tl.exists():
 
 total = max([VO_LEN] + [s[2] + s[3] for s in segs])
 import os as _os
-PALETTE = _os.environ.get('PALETTE') or ('lib/palette_ivan.css' if any(a.startswith('iv') for a in sys.argv[1:]) else 'lib/palette.css')  # per-video palette (Ivan = iv*)
+PALETTE = _os.environ.get('PALETTE') or ('lib/palette_ivan.css' if any(a.startswith('iv') for a in sys.argv[1:]) else 'lib/palette_paraguay.css' if any(a.startswith('py') for a in sys.argv[1:]) else 'lib/palette.css')  # per-video palette (Ivan = iv*)
 html = f'''<!doctype html>
 <html lang="en">
   <head>
