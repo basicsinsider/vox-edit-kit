@@ -674,7 +674,7 @@
     words("sc017-lt", [T(900.89), T(901.13), T(901.45)], { dur: 0.4, y: 12 });
 
     /* ===== BOARD · the shell-company case file ===== */
-    const BC = { S1: [1000, 990], S2: [1500, 1010], S3: [2000, 990], BANK: [380, 840], CO: [2620, 840], OWN: [1500, 580] };
+    const BC = { S1: [1000, 990], S2: [1500, 1010], S3: [2000, 990], BANK: [480, 840], CO: [2520, 840], OWN: [1500, 580] };
     (function () {
       const items = $("board-items"), str = $("board-str"), top = $("board-top"), cam = $("board-cam");
       const card = (cx, cy, w, h, cls, html, rot) => { const c = div(items, "p8-bcard " + (cls || ""), "left:" + (cx - w / 2) + "px; top:" + (cy - h / 2) + "px; width:" + w + "px; height:" + h + "px", html); gsap.set(c, { rotation: rot || 0 }); return c; };
@@ -709,7 +709,7 @@
       FX.focusHunt(tl, cam, S(902.4), { dur: 0.8 });
 
       /* sc021 · 923.59–932.23 — the money route bank → shells → group company */
-      const bank = card(BC.BANK[0], BC.BANK[1], 360, 240, "", '<div style="position:absolute; left:0; top:0; width:360px; height:18px; background:var(--ueno)"></div>' + logoDiv("ueno", 50, 70, 260, 80, "var(--ueno-dark)") + '<div class="p8-abs t-label p8-ink" style="left:0; top:178px; width:360px; text-align:center; font-size:22px">bank</div>', 1.5);
+      const bank = card(BC.BANK[0], BC.BANK[1], 360, 240, "", '<div style="position:absolute; left:0; top:0; width:360px; height:18px; background:var(--ueno)"></div>' + logoDiv("ueno", 40, 80, 280, 86, "var(--ueno-dark)"), 1.5);
       const bankP = pinAt(BC.BANK[0], BC.BANK[1] - 112);
       const co = card(BC.CO[0], BC.CO[1], 360, 240, "", '<div style="position:absolute; left:0; top:0; width:360px; height:18px; background:var(--ueno-dark)"></div>' + logoDiv("trib", 40, 56, 280, 50) + logoDiv("itti", 120, 126, 120, 60), -1.5);
       const coP = pinAt(BC.CO[0], BC.CO[1] - 112);
@@ -732,7 +732,7 @@
         gsap.set(s, { opacity: 0 });
         tl.fromTo(s, { opacity: 0, x: 0, y: 0, rotation: 0 }, { opacity: 1, x: -230 + k * 115, y: 230 + (k % 2) * 30, rotation: -12 + k * 6, duration: 0.7, ease: C(E.out, 0.7), immediateRender: false }, S(929.9) + k * (1 / 12));
       }
-      tl.fromTo(cam, camTo(1500, 900, 0.72), Object.assign(camTo(1500, 880, 0.70), { duration: 6.0, ease: "none", immediateRender: false }), S(923.59));
+      tl.fromTo(cam, camTo(1500, 820, 0.72), Object.assign(camTo(1500, 800, 0.70), { duration: 6.0, ease: "none", immediateRender: false }), S(923.59));
       tl.to(cam, Object.assign(camTo(2300, 960, 0.86), { duration: 2.0, ease: E.inOut }), S(929.2));
       tl.to(cam, Object.assign(camTo(2420, 980, 0.95), { duration: 0.6, ease: E.in }), S(931.63));
 
@@ -745,9 +745,10 @@
         const q = [BC.S1, BC.S2, BC.S3][i % 3];
         strg([p[0], p[1]], [q[0], q[1]], S(935.85) + i * (1 / 12), { color: TEAL, width: 4, sag: 40, opacity: 0.8, dur: 0.6 });
       });
-      const direct = el(top, "path", { d: "M" + (BC.BANK[0] + 170) + " " + (BC.BANK[1] - 70) + " Q1500 560 " + (BC.CO[0] - 170) + " " + (BC.CO[1] - 70), fill: "none", stroke: BONE, "stroke-width": 7, "stroke-dasharray": "22 16", opacity: 0 });
+      // the loan it may not give: bank → group company, routed BELOW the shells (never across the owner's face)
+      const direct = el(top, "path", { d: "M" + BC.BANK[0] + " " + (BC.BANK[1] + 122) + " Q1500 1500 " + BC.CO[0] + " " + (BC.CO[1] + 122), fill: "none", stroke: BONE, "stroke-width": 7, "stroke-dasharray": "22 16", opacity: 0 });
       tl.to(direct, { opacity: 0.95, duration: 0.35, ease: "power1.out" }, S(937.0));
-      FX.markup.cross(tl, top, T(938.89), { x: 1500, y: 640, s: 80, color: PLUML, width: 14, dur: 0.18 });
+      FX.markup.cross(tl, top, T(938.89), { x: 1400, y: 1226, s: 80, color: PLUML, width: 14, dur: 0.18 });
       tl.fromTo(cam, camTo(700, 840, 1.15), Object.assign(camTo(1500, 860, 0.70), { duration: 3.2, ease: E.cam, immediateRender: false }), S(935.67));
       tl.to(cam, Object.assign(camTo(1500, 850, 0.66), { duration: 2.0, ease: "none" }), S(938.6));
     })();
@@ -786,7 +787,7 @@
       tl.fromTo($("sc020-slip"), { x: 900, rotation: 6 }, { x: 0, rotation: 1.5, duration: 0.9, ease: C(E.out, 0.9), immediateRender: true }, S(920.4));
       tl.to($("sc020-hl"), { scaleX: 1, duration: 0.45, ease: C("power1.inOut", 0.45) }, S(922.1));
       tl.fromTo($("sc020-cam"), { scale: 1.0 }, { scale: 1.04, duration: 7.5, ease: "none", immediateRender: false }, S(912.79));
-      tl.to($("sc020-cam"), { scale: 1.1, x: -120, y: -40, duration: 3.0, ease: E.inOut }, S(920.3));
+      tl.to($("sc020-cam"), { scale: 1.08, x: -50, y: -30, duration: 3.0, ease: E.inOut }, S(920.3));
     })();
     words("sc020-tens", [T(921.37), T(921.77), T(921.93), T(922.33), T(922.41)], { dur: 0.4, y: 10 });
     words("sc020-loans", [T(922.73), T(922.89)], { dur: 0.35, y: 10 });
