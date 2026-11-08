@@ -38,3 +38,5 @@ the end), yellow = 2026 / 2024 / $350 million / "strongest growth" highlighter (
 
 Face cam: sc005 5.90 + sc008 3.97 + sc009 2.81 + sc011 1.96 + sc014 5.86 + sc016 3.84 + sc019 4.44 + sc021 2.84 = 31.6 s of 97.6 = **32 %**.
 First scene: Asunción skyline push (fresh shot). Last scene: push into the shadowed tower, still accelerating at 213.60 (cut on action).
+
+**As built:** cuts moved sc004/sc005 → 132.62 and sc010/sc011 → 154.85 (hold rule); face cam = 31.15 s = 31.9 %. See compositions/pys02.NOTES.md.

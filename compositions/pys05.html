@@ -1,0 +1,782 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8" /></head>
+<body>
+<template>
+  <style>
+    #root { position: absolute; inset: 0; overflow: hidden; background: var(--night); }
+    .p5-scene { position: absolute; inset: 0; overflow: hidden; visibility: hidden; opacity: 0; }
+    .p5-shot { position: absolute; inset: 0; overflow: hidden; transform-origin: 50% 50%; background: var(--night); }
+    .p5-paper { background: var(--paper); }
+    .p5-abs { position: absolute; }
+    .p5-full { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; object-fit: cover; }
+    .p5-fcw { position: absolute; inset: 0; transform-origin: 1050px 190px; }
+    .p5-vw { position: absolute; inset: 0; transform-origin: 50% 50%; }
+    .p5-cam { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 960px 540px; }
+    .p5-p1, .p5-p2 { position: absolute; inset: 0; background-size: cover; background-position: center; pointer-events: none; }
+    .p5-p2 { opacity: 0.9; mix-blend-mode: multiply; }
+    .p5-mk { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; pointer-events: none; }
+    .p5-w { display: inline-block; white-space: pre; opacity: 0; }
+    .p5-ink { color: var(--ink); }
+    .p5-credit { position: absolute; right: 30px; bottom: 20px; font-size: 13px; letter-spacing: 0.08em; color: rgba(242,238,227,0.66); z-index: 5; }
+    .p5-credit.ink { color: rgba(22,32,28,0.66); }
+    .p5-lt { position: absolute; left: 96px; bottom: 104px; width: 820px; font-size: 64px; line-height: 1.02; }
+    .p5-lt.wide { width: 1100px; }
+    .p5-scrim-bl { position: absolute; inset: 0; pointer-events: none;
+      background: radial-gradient(ellipse 60% 55% at 0% 100%, rgba(10,14,12,0.86) 0%, rgba(10,14,12,0.55) 45%, rgba(10,14,12,0) 100%); }
+    .p5-scrim-b { position: absolute; left: 0; right: 0; bottom: 0; height: 420px; pointer-events: none;
+      background: linear-gradient(180deg, rgba(10,14,12,0), rgba(10,14,12,0.8)); }
+    #pys05-flash { position: absolute; inset: 0; background: #f6f2ea; opacity: 0; pointer-events: none; z-index: 7; }
+    #pys05-grain, #pys05-dust, #pys05-vig { z-index: 8; }
+    .p5-halp { color: var(--bone); filter: blur(0.4px);
+      text-shadow: 0 0 1px rgba(250,240,255,0.9), 0 0 7px rgba(190,120,220,0.55), 0 0 20px rgba(150,80,190,0.35), 0 0 46px rgba(122,63,142,0.25); }
+    .p5-card { position: absolute; background: #ece6d8; box-shadow: 0 22px 46px rgba(0,0,0,0.42); }
+    .p5-bw { filter: grayscale(1) contrast(1.06); }
+    .p5-ico { position: absolute; overflow: visible; }
+
+    /* sc001 */
+    #pys05-sc001-img { filter: grayscale(1) contrast(1.12) brightness(0.62); }
+    #pys05-sc001-tint { position: absolute; inset: 0; background: var(--ueno-dark); mix-blend-mode: color; opacity: 0.75; }
+    #pys05-sc001-shade { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(10,14,12,0) 34%, rgba(10,14,12,0.86) 74%); }
+    /* sc003 certificate */
+    #pys05-sc003-cert { position: absolute; left: 180px; top: 230px; width: 1000px; height: 640px; background: #f4efe2;
+      box-shadow: 0 26px 50px rgba(22,32,28,0.28); transform: rotate(-1.2deg); }
+    #pys05-sc003-cert .b1 { position: absolute; inset: 22px; border: 10px solid var(--ueno-dark); }
+    #pys05-sc003-cert .b2 { position: absolute; inset: 42px; border: 3px solid var(--ueno);
+      background: repeating-radial-gradient(circle at 50% 50%, rgba(31,165,149,0.10) 0 2px, rgba(31,165,149,0) 2px 9px); }
+    #pys05-sc003-cert .seal { position: absolute; left: 780px; top: 440px; width: 130px; height: 130px; border-radius: 50%;
+      border: 6px double var(--ueno-dark); background: radial-gradient(circle, rgba(31,165,149,0.25), rgba(31,165,149,0.05)); }
+    #pys05-sc003-cert .bar { position: absolute; height: 10px; background: rgba(22,32,28,0.22); }
+    #pys05-sc003-name { position: absolute; left: 0; width: 1000px; top: 200px; text-align: center; font-size: 104px; color: var(--ueno-dark); }
+    #pys05-sc003-sub { position: absolute; left: 0; width: 1000px; top: 320px; text-align: center; font-size: 24px; color: var(--ueno-dark); opacity: 0; }
+    /* sc004 career line */
+    #pys05-sc004-bg { position: absolute; inset: 0; background: radial-gradient(ellipse 70% 70% at 50% 45%, #2a1733 0%, #160f19 55%, #0b0c0b 100%); }
+    .p5-pcard { position: absolute; background: #ece6d8; padding: 14px; box-shadow: 0 30px 60px rgba(0,0,0,0.55); }
+    .p5-pcard img { display: block; object-fit: cover; }
+    /* sc005 quote */
+    #pys05-sc005-bg { position: absolute; inset: 0; background: var(--plum-dark); }
+    #pys05-sc005-ph { position: absolute; left: 680px; top: -180px; width: 1920px; height: 1280px; object-fit: cover; filter: grayscale(1) contrast(1.1) brightness(0.9); }
+    #pys05-sc005-tint { position: absolute; inset: 0; background: var(--plum); mix-blend-mode: color; opacity: 0.8; }
+    #pys05-sc005-fade { position: absolute; inset: 0; background: linear-gradient(90deg, #3e1f4c 0%, #3e1f4c 36%, rgba(62,31,76,0) 64%); }
+    #pys05-sc005-q { position: absolute; left: 80px; top: 120px; font-size: 300px; line-height: 1; color: var(--plum-light); opacity: 0; }
+    #pys05-sc005-k { position: absolute; left: 100px; top: 360px; font-size: 28px; color: var(--plum-light); }
+    .p5-quote { position: absolute; left: 96px; top: 420px; width: 900px; font-size: 80px; line-height: 1.05; }
+    /* sc007 */
+    .p5-tile { position: absolute; width: 260px; height: 260px; top: 470px; }
+    #pys05-sc007-seal { position: absolute; left: 870px; top: 150px; width: 180px; height: 180px; border-radius: 50%; background: var(--plum);
+      box-shadow: 0 0 0 8px #ece6d6, 0 0 0 12px var(--plum), 0 18px 30px rgba(22,32,28,0.3); opacity: 0; }
+    .p5-cap { position: absolute; left: 0; width: 1920px; text-align: center; font-size: 68px; }
+    /* sc010 org chart */
+    .p5-colh { position: absolute; top: 96px; width: 660px; height: 104px; }
+    .p5-colb { position: absolute; top: 200px; width: 660px; height: 600px; background: rgba(221,213,193,0.75); }
+    .p5-slot { position: absolute; top: 250px; width: 440px; height: 176px; }
+    .p5-ccard { position: absolute; inset: 0; backface-visibility: hidden; background: #f4efe2; box-shadow: 0 14px 28px rgba(22,32,28,0.25); }
+    .p5-ccard img { position: absolute; left: 14px; top: 14px; width: 148px; height: 148px; object-fit: cover; object-position: 50% 18%; }
+    .p5-ccard .nm { position: absolute; left: 182px; top: 30px; font-size: 38px; line-height: 1.0; color: var(--ink); width: 250px; }
+    .p5-ccard .tg { position: absolute; left: 182px; top: 116px; font-size: 24px; color: var(--bone); padding: 6px 14px 3px; }
+    .p5-row { position: absolute; height: 64px; }
+    .p5-row i { position: absolute; top: 18px; height: 10px; background: rgba(22,32,28,0.22); }
+    #pys05-sc010-stamp { position: absolute; left: 150px; top: 48px; font-size: 50px; color: var(--ink); border: 6px solid var(--ink); padding: 10px 22px 2px;
+      transform: rotate(-9deg); mix-blend-mode: multiply; opacity: 0; }
+    #pys05-sc010-cal { position: absolute; left: 885px; top: 470px; width: 150px; height: 170px; perspective: 600px; }
+    .p5-calp { position: absolute; left: 0; top: 0; width: 150px; height: 170px; background: #f6f2e8; box-shadow: 0 8px 16px rgba(22,32,28,0.25); transform-origin: 50% 0%; }
+    .p5-calp .band { position: absolute; left: 0; top: 0; width: 150px; height: 40px; background: var(--plum-dark); }
+    .p5-calp i { position: absolute; left: 20px; right: 20px; height: 6px; background: rgba(22,32,28,0.18); }
+    #pys05-sc010-swing { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; perspective: 1400px; pointer-events: none; }
+    #pys05-sc010-card { position: absolute; left: 270px; top: 250px; width: 440px; height: 176px; transform-style: preserve-3d; }
+    /* sc014 squares */
+    #pys05-sc014-small { position: absolute; left: 470px; top: 600px; width: 180px; height: 180px; background: var(--ueno); opacity: 0; }
+    #pys05-sc014-big { position: absolute; left: 960px; top: 420px; width: 360px; height: 360px; }
+    .p5-cell { position: absolute; width: 180px; height: 180px; background: #9aa19c; opacity: 0; }
+    /* sc015 */
+    #pys05-sc015-fill { position: absolute; left: -60px; top: -60px; width: 2040px; height: 1200px; object-fit: cover; filter: grayscale(1) blur(26px) brightness(0.35); }
+    /* sc018 phone */
+    #pys05-sc018-phone { position: absolute; left: 600px; top: 120px; width: 340px; height: 680px; border-radius: 52px; background: #0b0f0e;
+      box-shadow: 0 0 0 4px #2b3330, 0 40px 80px rgba(0,0,0,0.6); opacity: 0; }
+    #pys05-sc018-screen { position: absolute; left: 16px; top: 16px; width: 308px; height: 648px; border-radius: 40px; overflow: hidden;
+      background: linear-gradient(180deg, #0c5c54 0%, #0b3f39 100%); }
+    #pys05-sc018-screen i { position: absolute; left: 30px; height: 18px; border-radius: 9px; background: rgba(242,238,227,0.22); }
+    .p5-logo-w { filter: brightness(0) invert(1); }
+    /* sc019 stack */
+    .p5-blk { position: absolute; left: 640px; width: 640px; background: #e2dac6; box-shadow: 0 10px 18px rgba(22,32,28,0.25); }
+    .p5-blab { position: absolute; left: 1330px; font-size: 34px; color: var(--ink); }
+    /* sc021 vault */
+    #pys05-sc021-vault { position: absolute; left: 520px; top: 110px; width: 880px; height: 700px; border-radius: 10px;
+      background: linear-gradient(180deg, #232a27, #161b19); box-shadow: inset 0 0 0 14px #39423e, inset 0 0 60px rgba(0,0,0,0.7), 0 30px 70px rgba(0,0,0,0.6); }
+    .p5-shelf { position: absolute; left: 34px; width: 812px; height: 10px; background: #4a5450; }
+    .p5-cash { position: absolute; width: 130px; height: 64px; border-radius: 4px; background: linear-gradient(180deg, #d9dccb, #b8bea9);
+      box-shadow: 0 3px 0 #8e9585, 0 6px 0 #c4c9b6, 0 9px 0 #8e9585; }
+    .p5-cash::after { content: ""; position: absolute; left: 52px; top: 0; width: 26px; height: 64px; background: rgba(53,60,56,0.55); }
+    #pys05-sc021-tag { position: absolute; left: 1250px; top: 470px; width: 220px; height: 110px; background: var(--ueno); border-radius: 10px 30px 30px 10px;
+      box-shadow: 0 14px 26px rgba(0,0,0,0.5); transform-origin: 0% 50%; opacity: 0; }
+    /* sc022 seesaw */
+    #pys05-sc022-beam { position: absolute; left: 260px; top: 728px; width: 1400px; height: 24px; background: var(--ink); transform-origin: 700px 12px; border-radius: 4px; }
+    #pys05-sc022-small { position: absolute; left: 30px; bottom: 24px; width: 110px; height: 110px; background: var(--ueno); }
+    #pys05-sc022-big { position: absolute; left: 1010px; bottom: 24px; width: 370px; height: 370px; background: #8f9692; transform-origin: 50% 100%; opacity: 0; }
+  </style>
+
+  <div id="root" data-composition-id="pys05" data-vo-start="457.40" data-duration="138.20" data-width="1920" data-height="1080">
+    <svg id="pys05-defs" width="0" height="0" style="position:absolute"></svg>
+
+    <!-- sc001 · 457.40–465.40 · the secret weapon … political capital · Ueno tower, teal night, title -->
+    <div class="p5-scene" id="pys05-sc001"><div class="p5-shot" id="pys05-sc001-shot">
+      <div class="p5-vw" id="pys05-sc001-vw"><img id="pys05-sc001-img" class="p5-full" src="assets/paraguay/shared/photos/ueno_tower_aerial_reuters.jpg" alt=""><div id="pys05-sc001-tint"></div></div>
+      <div id="pys05-sc001-shade"></div>
+      <div class="p5-abs t-serif-i clean" id="pys05-sc001-a" style="right:96px; top:640px; width:820px; text-align:right; font-size:96px"><span class="p5-w">the </span><span class="p5-w">secret </span><span class="p5-w">weapon</span></div>
+      <div class="p5-abs t-display" id="pys05-sc001-b" style="right:96px; top:600px; width:900px; text-align:right; font-size:150px"><span class="p5-w p5-halp" style="color:var(--plum-light)">POLITICAL</span><br><span class="p5-w p5-halp">CAPITAL</span></div>
+      <div class="p5-credit t-label">Photo: Reuters</div>
+    </div></div>
+
+    <!-- sc002 · 465.40–469.22 · FACE M · back up a few years to 2019, 2020 -->
+    <div class="p5-scene" id="pys05-sc002"><div class="p5-shot" id="pys05-sc002-shot">
+      <div class="p5-fcw" id="pys05-sc002-fw"><video id="pys05-sc002-v" class="p5-full" src="assets/facecam/paraguay_facecam_master.mp4" muted playsinline data-start="8.00" data-duration="3.82" data-media-start="465.40"></video></div>
+      <div class="p5-scrim-bl"></div>
+      <div class="p5-lt t-display clean" id="pys05-sc002-lt" style="font-size:96px"><span class="p5-w">2019, </span><span class="p5-w">2020</span></div>
+    </div></div>
+
+    <!-- sc003 · 469.22–477.85 · Credit Central (Credicentro) took outside investors · share certificate -->
+    <div class="p5-scene" id="pys05-sc003"><div class="p5-shot p5-paper" id="pys05-sc003-shot">
+      <div class="p5-p1" style="background-image:url('assets/textures/paper_cream_01.jpg')"></div>
+      <div class="p5-p2" style="background-image:url('assets/textures/paper_fiber_01.jpg'); opacity:0.5"></div>
+      <div class="p5-cam" id="pys05-sc003-cam">
+        <div id="pys05-sc003-cert"><div class="b1"></div><div class="b2"></div>
+          <div class="bar" style="left:330px; top:130px; width:340px"></div>
+          <div class="bar" style="left:120px; top:440px; width:560px"></div><div class="bar" style="left:120px; top:480px; width:480px"></div><div class="bar" style="left:120px; top:520px; width:520px"></div>
+          <div class="seal"></div>
+          <div id="pys05-sc003-name" class="t-display"><span class="p5-w">CREDICENTRO</span></div>
+          <div id="pys05-sc003-sub" class="t-label">S.A.E.C.A.</div>
+        </div>
+        <svg id="pys05-sc003-svg" class="p5-mk" viewBox="0 0 1920 1080"></svg>
+      </div>
+      <div class="p5-abs t-serif-i p5-ink" id="pys05-sc003-k" style="left:180px; top:96px; font-size:64px"><span class="p5-w">the </span><span class="p5-w">original </span><span class="p5-w">bank</span></div>
+      <div class="p5-abs t-serif-i p5-ink" id="pys05-sc003-oi" style="left:1290px; width:560px; top:880px; text-align:center; font-size:60px"><span class="p5-w">outside </span><span class="p5-w">investors</span></div>
+    </div></div>
+
+    <!-- sc004 · 477.85–484.55 · then finance minister → president in 2023 · career line -->
+    <div class="p5-scene" id="pys05-sc004"><div class="p5-shot" id="pys05-sc004-shot">
+      <div id="pys05-sc004-bg"></div>
+      <div class="p5-cam" id="pys05-sc004-cam">
+        <svg id="pys05-sc004-svg" class="p5-mk" viewBox="0 0 1920 1080"></svg>
+        <div class="p5-pcard" id="pys05-sc004-c1" style="left:420px; top:130px; transform:rotate(-1.5deg)"><img class="p5-bw" src="assets/paraguay/pys05/photos/pena_minister_2015.jpg" style="width:340px; height:558px; object-position:50% 0%" alt=""></div>
+        <div class="p5-abs t-display clean" id="pys05-sc004-l1" style="left:290px; width:620px; top:760px; text-align:center; font-size:60px"><span class="p5-w">then </span><span class="p5-w">finance </span><span class="p5-w">minister</span></div>
+        <div class="p5-pcard" id="pys05-sc004-c2" style="left:1820px; top:110px; transform:rotate(1.2deg)"><img src="assets/paraguay/shared/photos/pena_sash_crop.jpg" style="width:420px; height:560px; object-position:50% 20%; filter:saturate(0.55) contrast(1.05)" alt=""></div>
+        <div class="p5-abs t-display clean" id="pys05-sc004-l2" style="left:1724px; width:640px; top:752px; text-align:center; font-size:72px"><span class="p5-w">president</span></div>
+        <div class="p5-abs t-display halate yellow" id="pys05-sc004-y" style="left:2340px; top:340px; font-size:190px"><span class="p5-w">2023</span></div>
+      </div>
+      <div class="p5-credit t-label">Photos: Richdec, CC BY-SA 4.0 · Office of the President (ROC), CC BY 2.0</div>
+    </div></div>
+
+    <!-- sc005 · 484.55–492.30 · the president says he never had a direct investment · plum quote card -->
+    <div class="p5-scene" id="pys05-sc005"><div class="p5-shot" id="pys05-sc005-shot">
+      <div id="pys05-sc005-bg"></div>
+      <div class="p5-vw" id="pys05-sc005-vw" style="transform-origin:1380px 380px"><img id="pys05-sc005-ph" src="assets/paraguay/shared/photos/pena_portrait_reuters.jpg" alt=""><div id="pys05-sc005-tint"></div></div>
+      <div id="pys05-sc005-fade"></div>
+      <div id="pys05-sc005-q" class="t-serif">“</div>
+      <div id="pys05-sc005-k" class="t-label"><span class="p5-w">the </span><span class="p5-w">president </span><span class="p5-w">says</span></div>
+      <div class="p5-quote t-serif-i clean" id="pys05-sc005-a"><span class="p5-w">never </span><span class="p5-w">had </span><span class="p5-w">a </span><span class="p5-w">direct </span><span class="p5-w">investment </span><span class="p5-w">in </span><span class="p5-w">this </span><span class="p5-w" style="color:var(--ueno-light)">Ueno </span><span class="p5-w" style="color:var(--ueno-light)">bank</span></div>
+      <div class="p5-quote t-serif-i clean" id="pys05-sc005-b"><span class="p5-w">never </span><span class="p5-w">directly </span><span class="p5-w">involved</span></div>
+      <div class="p5-credit t-label">Photo: Reuters / Cesar Olmedo</div>
+    </div></div>
+
+    <!-- sc006 · 492.30–497.55 · FACE W · between you and I -->
+    <div class="p5-scene" id="pys05-sc006"><div class="p5-shot" id="pys05-sc006-shot">
+      <div class="p5-fcw" id="pys05-sc006-fw"><video id="pys05-sc006-v" class="p5-full" src="assets/facecam/paraguay_facecam_master.mp4" muted playsinline data-start="34.90" data-duration="5.30" data-media-start="492.30"></video></div>
+      <div class="p5-scrim-bl"></div>
+      <div class="p5-lt t-serif-i clean" id="pys05-sc006-lt" style="font-size:80px"><span class="p5-w">between </span><span class="p5-w">you </span><span class="p5-w">and </span><span class="p5-w">I</span></div>
+    </div></div>
+
+    <!-- sc007 · 497.55–505.25 · not just the bank: any company when the president is one of your investors -->
+    <div class="p5-scene" id="pys05-sc007"><div class="p5-shot p5-paper" id="pys05-sc007-shot">
+      <div class="p5-p1" style="background-image:url('assets/textures/paper_cream_02.jpg')"></div>
+      <div class="p5-p2" style="background-image:url('assets/textures/paper_stained_01_hires.jpg'); opacity:0.45"></div>
+      <div class="p5-cam" id="pys05-sc007-cam">
+        <svg id="pys05-sc007-svg" class="p5-mk" viewBox="0 0 1920 1080"></svg>
+        <svg class="p5-tile" id="pys05-sc007-t0" style="left:250px" viewBox="0 0 100 100"></svg>
+        <svg class="p5-tile" id="pys05-sc007-t1" style="left:620px" viewBox="0 0 100 100"></svg>
+        <svg class="p5-tile" id="pys05-sc007-t2" style="left:1040px" viewBox="0 0 100 100"></svg>
+        <svg class="p5-tile" id="pys05-sc007-t3" style="left:1410px" viewBox="0 0 100 100"></svg>
+        <div id="pys05-sc007-seal"><svg viewBox="0 0 100 100" style="position:absolute; inset:0; width:100%; height:100%"><path d="M50 18 L58 40 L82 41 L63 55 L70 78 L50 64 L30 78 L37 55 L18 41 L42 40 Z" fill="#ece6d6"/></svg></div>
+        <div class="p5-abs t-label" id="pys05-sc007-pl" style="left:1080px; top:212px; font-size:34px; color:var(--plum)"><span class="p5-w">the </span><span class="p5-w">president</span></div>
+      </div>
+      <div class="p5-cap t-serif-i p5-ink" id="pys05-sc007-a" style="top:150px"><span class="p5-w">not </span><span class="p5-w">just </span><span class="p5-w">the </span><span class="p5-w" style="color:var(--ueno-dark)">bank</span></div>
+      <div class="p5-cap t-serif-i p5-ink" id="pys05-sc007-b" style="top:150px"><span class="p5-w">any </span><span class="p5-w">company</span></div>
+      <div class="p5-cap t-serif-i p5-ink" id="pys05-sc007-c" style="top:850px"><span class="p5-w">one </span><span class="p5-w">of </span><span class="p5-w">your </span><span class="p5-w" style="color:var(--plum)">investors</span></div>
+    </div></div>
+
+    <!-- sc008 · 505.25–511.75 · FACE M · very valuable political capital -->
+    <div class="p5-scene" id="pys05-sc008"><div class="p5-shot" id="pys05-sc008-shot">
+      <div class="p5-fcw" id="pys05-sc008-fw"><video id="pys05-sc008-v" class="p5-full" src="assets/facecam/paraguay_facecam_master.mp4" muted playsinline data-start="47.85" data-duration="6.50" data-media-start="505.25"></video></div>
+      <div class="p5-scrim-bl"></div>
+      <div class="p5-lt t-display clean" id="pys05-sc008-lt"><span class="p5-w">very </span><span class="p5-w">valuable </span><br><span class="p5-w" style="color:var(--plum-light)">political </span><span class="p5-w" style="color:var(--plum-light)">capital</span></div>
+    </div></div>
+
+    <!-- sc009 · 511.75–516.55 · FACE W · in 2023, when President Peña won his election -->
+    <div class="p5-scene" id="pys05-sc009"><div class="p5-shot" id="pys05-sc009-shot">
+      <div class="p5-fcw" id="pys05-sc009-fw"><video id="pys05-sc009-v" class="p5-full" src="assets/facecam/paraguay_facecam_master.mp4" muted playsinline data-start="54.35" data-duration="4.85" data-media-start="511.75"></video></div>
+      <div class="p5-scrim-bl"></div>
+      <div class="p5-lt t-display clean" id="pys05-sc009-a"><span class="p5-w">in </span><span class="p5-w">2023</span></div>
+      <div class="p5-lt t-display clean" id="pys05-sc009-b"><span class="p5-w">President </span><span class="p5-w" style="color:var(--plum-light)">Peña</span></div>
+    </div></div>
+
+    <!-- sc010 · 516.55–529.30 · the CEO → head of the central bank, the next day · THE REVOLVING DOOR -->
+    <div class="p5-scene" id="pys05-sc010"><div class="p5-shot p5-paper" id="pys05-sc010-shot">
+      <div class="p5-p1" style="background-image:url('assets/textures/paper_cream_01.jpg')"></div>
+      <div class="p5-p2" style="background-image:url('assets/textures/paper_lined_01_hires.jpg'); opacity:0.35"></div>
+      <div class="p5-cam" id="pys05-sc010-cam">
+        <div class="p5-colh" style="left:150px; background:var(--ueno)"><img src="assets/paraguay/shared/logos/ueno_logo.png" class="p5-logo-w" style="position:absolute; left:150px; top:30px; width:360px" alt=""></div>
+        <div class="p5-colb" style="left:150px"></div>
+        <div class="p5-colh" id="pys05-sc010-bh0" style="left:1110px; border:5px dashed var(--plum); box-sizing:border-box"></div>
+        <div class="p5-colh" id="pys05-sc010-bh" style="left:1110px; background:var(--plum); opacity:0">
+          <div class="t-display" style="position:absolute; left:40px; top:24px; font-size:66px; color:var(--bone)"><span class="p5-w">BCP</span></div>
+          <div class="t-label" style="position:absolute; left:220px; top:28px; width:420px; font-size:20px; line-height:1.3; color:var(--plum-light)"><span class="p5-w">Banco Central </span><br><span class="p5-w">del Paraguay</span></div>
+        </div>
+        <div class="p5-colb" style="left:1110px"></div>
+        <div id="pys05-sc010-rows"></div>
+        <div class="p5-slot" id="pys05-sc010-slot" style="left:1220px; border:5px dashed var(--plum); box-sizing:border-box">
+          <div class="t-label" style="position:absolute; left:0; width:430px; top:58px; text-align:center; font-size:40px; color:var(--plum)"><span class="p5-w">head</span></div>
+        </div>
+        <svg id="pys05-sc010-svg" class="p5-mk" viewBox="0 0 1920 1080"></svg>
+        <div id="pys05-sc010-cal">
+          <div class="p5-calp"><div class="band"></div><i style="top:70px"></i><i style="top:95px"></i><i style="top:120px"></i></div>
+          <div class="p5-calp" id="pys05-sc010-pg"><div class="band"></div><i style="top:70px"></i><i style="top:95px"></i><i style="top:120px"></i></div>
+        </div>
+        <div class="p5-abs t-serif-i p5-ink" id="pys05-sc010-nd" style="left:810px; width:300px; top:652px; text-align:center; font-size:40px"><span class="p5-w">the </span><span class="p5-w">next </span><span class="p5-w">day</span></div>
+        <div id="pys05-sc010-swing"><div id="pys05-sc010-card">
+          <div class="p5-ccard" style="border-left:12px solid var(--ueno)"><img class="p5-bw" src="assets/paraguay/shared/photos/carvallo.jpg" alt="">
+            <div class="nm t-serif">Carlos Carvallo</div><div class="tg t-label" style="background:var(--ueno-dark)">CEO</div>
+            <div id="pys05-sc010-stamp" class="t-label">resigns</div></div>
+          <div class="p5-ccard" style="border-left:12px solid var(--plum); transform:rotateY(180deg)"><img class="p5-bw" src="assets/paraguay/shared/photos/carvallo.jpg" alt="">
+            <div class="nm t-serif">Carlos Carvallo</div><div class="tg t-label" style="background:var(--plum)">HEAD · BCP</div></div>
+        </div></div>
+        <div class="p5-abs t-serif-i" id="pys05-sc010-rg" style="left:560px; width:800px; top:884px; text-align:center; font-size:46px; color:var(--plum)"><span class="p5-w">regulating </span><span class="p5-w">this </span><span class="p5-w">bank</span></div>
+      </div>
+      <div class="p5-credit t-label ink">Photo: Carlos Carvallo Spalding (Commons, CC0)</div>
+    </div></div>
+
+    <!-- sc011 · 529.30–532.80 · FACE C · very, very valuable political capital -->
+    <div class="p5-scene" id="pys05-sc011"><div class="p5-shot" id="pys05-sc011-shot">
+      <div class="p5-fcw" id="pys05-sc011-fw"><video id="pys05-sc011-v" class="p5-full" src="assets/facecam/paraguay_facecam_master.mp4" muted playsinline data-start="71.90" data-duration="3.50" data-media-start="529.30"></video></div>
+    </div></div>
+
+    <!-- sc012 · 532.80–537.47 · FACE M · if the regulator … used to run your business -->
+    <div class="p5-scene" id="pys05-sc012"><div class="p5-shot" id="pys05-sc012-shot">
+      <div class="p5-fcw" id="pys05-sc012-fw"><video id="pys05-sc012-v" class="p5-full" src="assets/facecam/paraguay_facecam_master.mp4" muted playsinline data-start="75.40" data-duration="4.67" data-media-start="532.80"></video></div>
+      <div class="p5-scrim-bl"></div>
+      <div class="p5-lt t-display clean" id="pys05-sc012-a"><span class="p5-w">the </span><span class="p5-w" style="color:var(--plum-light)">regulator</span></div>
+      <div class="p5-lt t-display clean" id="pys05-sc012-b"><span class="p5-w">used </span><span class="p5-w">to </span><span class="p5-w">run </span><br><span class="p5-w">your </span><span class="p5-w">business</span></div>
+    </div></div>
+
+    <!-- sc013 · 537.47–543.75 · FACE W · that's a valuable thing -->
+    <div class="p5-scene" id="pys05-sc013"><div class="p5-shot" id="pys05-sc013-shot">
+      <div class="p5-fcw" id="pys05-sc013-fw"><video id="pys05-sc013-v" class="p5-full" src="assets/facecam/paraguay_facecam_master.mp4" muted playsinline data-start="80.07" data-duration="6.33" data-media-start="537.47"></video></div>
+      <div class="p5-scrim-bl"></div>
+      <div class="p5-lt t-display clean" id="pys05-sc013-lt"><span class="p5-w">a </span><span class="p5-w">valuable </span><span class="p5-w">thing</span></div>
+    </div></div>
+
+    <!-- sc014 · 543.75–547.10 · buy a company four times bigger · squares -->
+    <div class="p5-scene" id="pys05-sc014"><div class="p5-shot p5-paper" id="pys05-sc014-shot">
+      <div class="p5-p1" style="background-image:url('assets/textures/paper_graph_01_hires.jpg'); opacity:0.75"></div>
+      <div class="p5-p2" style="background-image:url('assets/textures/paper_cream_01.jpg'); opacity:0.55"></div>
+      <div class="p5-cam" id="pys05-sc014-cam">
+        <div id="pys05-sc014-small"></div>
+        <div id="pys05-sc014-big"><div class="p5-cell" style="left:0; top:0"></div><div class="p5-cell" style="left:180px; top:0"></div><div class="p5-cell" style="left:0; top:180px"></div><div class="p5-cell" style="left:180px; top:180px"></div></div>
+        <svg id="pys05-sc014-svg" class="p5-mk" viewBox="0 0 1920 1080"></svg>
+        <div class="p5-abs t-label" id="pys05-sc014-ls" style="left:410px; width:300px; top:806px; text-align:center; font-size:28px; color:var(--ueno-dark); opacity:0">ueno</div>
+        <div class="p5-abs t-label p5-ink" id="pys05-sc014-lb" style="left:890px; width:500px; top:806px; text-align:center; font-size:28px; opacity:0">Visión Banco</div>
+      </div>
+      <div class="p5-cap t-display p5-ink" id="pys05-sc014-t" style="top:150px; font-size:84px"><span class="p5-w hl" style="--hl:0">four </span><span class="p5-w hl" style="--hl:0">times </span><span class="p5-w">bigger</span></div>
+    </div></div>
+
+    <!-- sc015 · 547.10–551.45 · the company they do buy is struggling a bit · Visión Banco branch -->
+    <div class="p5-scene" id="pys05-sc015"><div class="p5-shot" id="pys05-sc015-shot">
+      <img id="pys05-sc015-fill" src="assets/paraguay/pys05/photos/vision_banco_branch.jpg" alt="">
+      <div class="p5-vw" id="pys05-sc015-vw" style="transform-origin:640px 520px">
+        <div class="p5-pcard" style="left:330px; top:96px; transform:rotate(-1.6deg)"><img src="assets/paraguay/pys05/photos/vision_banco_branch.jpg" style="width:600px; height:800px; object-position:50% 70%; filter:saturate(0.35) contrast(1.05) brightness(0.95)" alt=""></div>
+      </div>
+      <div class="p5-abs t-label clean" id="pys05-sc015-id" style="left:1060px; top:380px; font-size:30px; color:var(--ash-light)">Visión Banco</div>
+      <div class="p5-abs t-display clean" id="pys05-sc015-t" style="left:1060px; top:440px; width:780px; font-size:96px"><span class="p5-w">struggling </span><br><span class="p5-w">a </span><span class="p5-w">bit</span></div>
+      <svg id="pys05-sc015-svg" class="p5-mk" viewBox="0 0 1920 1080"></svg>
+      <div class="p5-credit t-label">Photo: Gabrielitopy, CC BY-SA 3.0</div>
+    </div></div>
+
+    <!-- sc016 · 551.45–556.91 · FACE M · four times smaller buying four times bigger -->
+    <div class="p5-scene" id="pys05-sc016"><div class="p5-shot" id="pys05-sc016-shot">
+      <div class="p5-fcw" id="pys05-sc016-fw"><video id="pys05-sc016-v" class="p5-full" src="assets/facecam/paraguay_facecam_master.mp4" muted playsinline data-start="94.05" data-duration="5.46" data-media-start="551.45"></video></div>
+      <div class="p5-scrim-bl"></div>
+      <div class="p5-lt t-display clean" id="pys05-sc016-lt"><span class="p5-w">four </span><span class="p5-w">times </span><span class="p5-w" style="color:var(--ueno-light)">smaller</span><br><span class="p5-w">four </span><span class="p5-w">times </span><span class="p5-w">bigger</span></div>
+    </div></div>
+
+    <!-- sc017 · 556.91–563.55 · did not go according to plan · line chart -->
+    <div class="p5-scene" id="pys05-sc017"><div class="p5-shot p5-paper" id="pys05-sc017-shot">
+      <div class="p5-p1" style="background-image:url('assets/textures/paper_graph_01_hires.jpg')"></div>
+      <div class="p5-p2" style="background-image:url('assets/textures/paper_fiber_01.jpg'); opacity:0.4"></div>
+      <div class="p5-cam" id="pys05-sc017-cam"><svg id="pys05-sc017-svg" class="p5-mk" viewBox="0 0 1920 1080"></svg></div>
+      <div class="p5-cap t-serif p5-ink" id="pys05-sc017-t" style="top:96px; font-size:76px"><span class="p5-w">did </span><span class="p5-w">not </span><span class="p5-w">go </span><span class="p5-w">according </span><span class="p5-w">to </span><span class="p5-w">plan</span></div>
+    </div></div>
+
+    <!-- sc018 · 563.55–571.00 · an online focused bank vs a normal bank · phone + ghost bank -->
+    <div class="p5-scene" id="pys05-sc018"><div class="p5-shot" id="pys05-sc018-shot">
+      <div class="p5-abs" style="inset:0; background:radial-gradient(ellipse 70% 70% at 45% 45%, #13302b 0%, #0d1513 60%, #0a0d0c 100%)"></div>
+      <div id="pys05-sc018-phone"><div id="pys05-sc018-screen">
+        <img src="assets/paraguay/shared/logos/ueno_logo.png" class="p5-logo-w" style="position:absolute; left:44px; top:70px; width:220px" alt="">
+        <i style="top:180px; width:160px"></i><i style="top:220px; width:220px"></i>
+        <div style="position:absolute; left:30px; top:290px; width:248px; height:140px; border-radius:18px; background:rgba(147,224,211,0.18)"></div>
+        <i style="top:470px; width:200px"></i><i style="top:510px; width:150px"></i><i style="top:550px; width:230px"></i>
+      </div></div>
+      <svg id="pys05-sc018-svg" class="p5-mk" viewBox="0 0 1920 1080"></svg>
+      <div class="p5-abs t-display clean" id="pys05-sc018-b" style="left:1110px; width:600px; top:806px; text-align:center; font-size:58px"><span class="p5-w">a </span><span class="p5-w">normal </span><span class="p5-w">bank</span></div>
+      <div class="p5-scrim-bl" style="opacity:0.6"></div>
+      <div class="p5-lt wide t-display clean" id="pys05-sc018-a" style="bottom:120px"><span class="p5-w">online </span><span class="p5-w">focused </span><span class="p5-w" style="color:var(--ueno-light)">bank</span></div>
+    </div></div>
+
+    <!-- sc019 · 571.00–578.22 · expenses: more people, branches, real estate · the stack -->
+    <div class="p5-scene" id="pys05-sc019"><div class="p5-shot p5-paper" id="pys05-sc019-shot">
+      <div class="p5-p1" style="background-image:url('assets/textures/paper_cream_02.jpg')"></div>
+      <div class="p5-p2" style="background-image:url('assets/textures/paper_stained_01_hires.jpg'); opacity:0.5"></div>
+      <div class="p5-cam" id="pys05-sc019-cam" style="transform-origin:960px 900px">
+        <div class="p5-abs" id="pys05-sc019-base" style="left:640px; top:860px; width:640px; height:70px; background:var(--ueno); transform-origin:50% 100%"><img src="assets/paraguay/shared/logos/ueno_logo.png" class="p5-logo-w" style="position:absolute; left:222px; top:18px; width:196px" alt=""></div>
+        <div class="p5-blk" id="pys05-sc019-b1" style="top:710px; height:150px"><svg id="pys05-sc019-i1" viewBox="0 0 640 150" style="position:absolute; inset:0; width:640px; height:150px"></svg></div>
+        <div class="p5-blk" id="pys05-sc019-b2" style="top:550px; height:160px"><svg id="pys05-sc019-i2" viewBox="0 0 640 160" style="position:absolute; inset:0; width:640px; height:160px"></svg></div>
+        <div class="p5-blk" id="pys05-sc019-b3" style="top:330px; height:220px; background:#cfc6b0"><svg id="pys05-sc019-i3" viewBox="0 0 640 220" style="position:absolute; inset:0; width:640px; height:220px"></svg></div>
+        <div class="p5-blab t-label" id="pys05-sc019-l1" style="top:765px"><span class="p5-w">more </span><span class="p5-w">people</span></div>
+        <div class="p5-blab t-label" id="pys05-sc019-l2" style="top:610px"><span class="p5-w">branches</span></div>
+        <div class="p5-blab t-label" id="pys05-sc019-l3" style="top:420px"><span class="p5-w">real </span><span class="p5-w">estate</span></div>
+      </div>
+      <div class="p5-abs t-display p5-ink" id="pys05-sc019-h" style="left:120px; top:96px; font-size:96px"><span class="p5-w">expenses</span></div>
+    </div></div>
+
+    <!-- sc020 · 578.22–581.47 · FACE C · the bank they buy was struggling -->
+    <div class="p5-scene" id="pys05-sc020"><div class="p5-shot" id="pys05-sc020-shot">
+      <div class="p5-fcw" id="pys05-sc020-fw"><video id="pys05-sc020-v" class="p5-full" src="assets/facecam/paraguay_facecam_master.mp4" muted playsinline data-start="120.82" data-duration="3.25" data-media-start="578.22"></video></div>
+    </div></div>
+
+    <!-- sc021 · 581.47–587.80 · used a lot of their cash to survive before it sold to Ueno · vault -->
+    <div class="p5-scene" id="pys05-sc021"><div class="p5-shot" id="pys05-sc021-shot">
+      <div class="p5-abs" style="inset:0; background:radial-gradient(ellipse 70% 70% at 50% 40%, #222826 0%, #111513 60%, #090b0a 100%)"></div>
+      <div class="p5-cam" id="pys05-sc021-cam">
+        <div id="pys05-sc021-vault"><div id="pys05-sc021-cash"></div></div>
+        <div id="pys05-sc021-tag"><div style="position:absolute; left:16px; top:43px; width:24px; height:24px; border-radius:50%; background:#0e1311"></div>
+          <img src="assets/paraguay/shared/logos/ueno_logo.png" class="p5-logo-w" style="position:absolute; left:56px; top:40px; width:150px" alt=""></div>
+      </div>
+      <div class="p5-scrim-bl"></div>
+      <div class="p5-lt wide t-display clean" id="pys05-sc021-a" style="font-size:60px"><span class="p5-w">a </span><span class="p5-w">lot </span><span class="p5-w">of </span><span class="p5-w">their </span><span class="p5-w">cash </span><br><span class="p5-w">to </span><span class="p5-w">survive</span></div>
+      <div class="p5-lt wide t-display clean" id="pys05-sc021-b" style="font-size:60px"><span class="p5-w">sold </span><span class="p5-w">to </span><span class="p5-w" style="color:var(--ueno-light)">Ueno</span></div>
+    </div></div>
+
+    <!-- sc022 · 587.80–595.60 · much bigger than them … a much worse position · the seesaw -->
+    <div class="p5-scene" id="pys05-sc022"><div class="p5-shot p5-paper" id="pys05-sc022-shot">
+      <div class="p5-p1" style="background-image:url('assets/textures/paper_cream_01.jpg')"></div>
+      <div class="p5-p2" style="background-image:url('assets/textures/paper_fiber_01.jpg'); opacity:0.5"></div>
+      <div class="p5-cam" id="pys05-sc022-cam" style="transform-origin:1200px 700px">
+        <div class="p5-abs" style="left:96px; top:902px; width:1728px; height:6px; background:rgba(22,32,28,0.55)"></div>
+        <svg class="p5-mk" viewBox="0 0 1920 1080"><path d="M960 742 L1046 904 L874 904 Z" fill="#16201c"/></svg>
+        <div id="pys05-sc022-beam">
+          <div id="pys05-sc022-small"><img src="assets/paraguay/shared/logos/ueno_logo.png" class="p5-logo-w" style="position:absolute; left:10px; top:44px; width:90px" alt=""></div>
+          <div id="pys05-sc022-big"><div class="t-label" style="position:absolute; left:0; width:370px; top:300px; text-align:center; font-size:24px; color:var(--bone)">Visión Banco</div>
+            <svg id="pys05-sc022-crk" viewBox="0 0 370 370" style="position:absolute; inset:0; width:370px; height:370px; overflow:visible"></svg></div>
+        </div>
+      </div>
+      <div class="p5-cap t-display p5-ink" id="pys05-sc022-a" style="top:110px; font-size:88px"><span class="p5-w">much </span><span class="p5-w">bigger </span><span class="p5-w">than </span><span class="p5-w">them</span></div>
+      <div class="p5-cap t-display p5-ink" id="pys05-sc022-b" style="top:110px; font-size:88px"><span class="p5-w">a </span><span class="p5-w">much </span><span class="p5-w" style="color:var(--tierra-dark)">worse </span><span class="p5-w">position</span></div>
+    </div></div>
+
+    <div id="pys05-flash"></div>
+    <div id="pys05-grain" class="tx tx-grain" style="background-image:url('assets/textures/grain_01_norm.jpg')"></div>
+    <div id="pys05-dust" class="tx tx-dust" style="background-image:url('assets/textures/dust_02.jpg')"></div>
+    <div id="pys05-vig" class="vignette"></div>
+    <audio id="pys05-vo" class="temp-vo" src="vo_py.mp3" data-start="0" data-duration="138.20" data-media-start="457.40" data-volume="1"></audio>
+  </div>
+
+  <script>
+  (function () {
+    const SEG = "pys05", SEG_START = 457.40, SEG_END = 595.60, DURATION = 138.20;
+    const T = (s) => +(s - SEG_START).toFixed(3);   // TEXT cues (audited): literal master word start − 0.06
+    const S = T;                                     // STRUCTURAL cues (cuts, camera, objects)
+    const tl = gsap.timeline({ paused: true });
+    const $ = (id) => document.getElementById(SEG + "-" + id);
+    const NS = "http://www.w3.org/2000/svg";
+    const defs = $("defs");
+    const E = FX.ease;
+    const C = (e, d) => FX.choppy(e, d, 12);
+    const INK = "#16201c", BONE = "#f2eee3", TEAL = "#1fa595", TEALD = "#0c5c54", TEALL = "#93e0d3", PLUM = "#7a3f8e", PLUML = "#cfa8dc", ASH = "#8b928d", ASHD = "#353c38";
+    const GM = "M200 40c-52 0-86 40-86 96 0 40 18 74 44 92-4 14-10 24-22 30-58 22-96 52-108 104-6 26-8 58-8 118h360c0-60-2-92-8-118-12-52-50-82-108-104-12-6-18-16-22-30 26-18 44-52 44-92 0-56-34-96-86-96z";
+    // icons in a 100×100 box (stroke-only)
+    const IC = {
+      bank: '<path d="M10 34 L50 12 L90 34 Z"/><path d="M14 40 H86 M22 44 V78 M40 44 V78 M60 44 V78 M78 44 V78 M10 84 H90 M8 92 H92"/>',
+      shop: '<path d="M12 40 L20 16 H80 L88 40 Z"/><path d="M12 40 C18 50 28 50 31 40 C36 50 46 50 50 40 C54 50 64 50 69 40 C72 50 82 50 88 40"/><path d="M18 48 V90 H82 V48 M40 90 V64 H60 V90"/>',
+      factory: '<path d="M10 90 V50 L32 36 V50 L54 36 V50 L76 36 V90 Z"/><path d="M76 90 V14 H88 V90"/><path d="M22 66 H34 M44 66 H56 M8 92 H92"/>',
+      office: '<path d="M26 92 V10 H74 V92"/><path d="M38 24 H44 M56 24 H62 M38 40 H44 M56 40 H62 M38 56 H44 M56 56 H62 M44 92 V74 H56 V92 M10 92 H90"/>',
+      tower: '<path d="M30 92 V20 L50 8 L70 20 V92"/><path d="M40 30 H60 M40 44 H60 M40 58 H60 M40 72 H60 M14 92 H86"/>',
+    };
+    const icon = (k, color, w) => '<g fill="none" stroke="' + color + '" stroke-width="' + (w || 5) + '" stroke-linecap="round" stroke-linejoin="round">' + IC[k] + "</g>";
+
+    // ---------- scenes ----------
+    const SC = [
+      ["sc001", 457.40, 465.40, "night"], ["sc002", 465.40, 469.22, "face"], ["sc003", 469.22, 477.85, "paper"], ["sc004", 477.85, 484.55, "night"],
+      ["sc005", 484.55, 492.30, "night"], ["sc006", 492.30, 497.55, "face"], ["sc007", 497.55, 505.25, "paper"], ["sc008", 505.25, 511.75, "face"],
+      ["sc009", 511.75, 516.55, "face"], ["sc010", 516.55, 529.30, "paper"], ["sc011", 529.30, 532.80, "face"], ["sc012", 532.80, 537.47, "face"],
+      ["sc013", 537.47, 543.75, "face"], ["sc014", 543.75, 547.10, "paper"], ["sc015", 547.10, 551.45, "night"], ["sc016", 551.45, 556.91, "face"],
+      ["sc017", 556.91, 563.55, "paper"], ["sc018", 563.55, 571.00, "night"], ["sc019", 571.00, 578.22, "paper"], ["sc020", 578.22, 581.47, "face"],
+      ["sc021", 581.47, 587.80, "night"], ["sc022", 587.80, 595.60, "paper"],
+    ];
+    const GROUND = { paper: [0.32, 0.16, 0.26], night: [1, 0.42, 0.36], face: [0, 0, 0] };
+    const EARLY = { sc003: 0.45, sc022: 0.45 };   // slides: the incoming scene is visible during the slide
+    function ground(kind, t) { const v = GROUND[kind]; tl.set([$("vig"), $("dust"), $("grain")], { opacity: (i) => v[i] }, t); }
+    SC.forEach((s, i) => {
+      const el = $(s[0]), a = s[1] - (EARLY[s[0]] || 0);
+      if (i === 0) gsap.set(el, { autoAlpha: 1 });
+      else tl.fromTo(el, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.001, immediateRender: false }, S(a));
+      if (s[2] < SEG_END) tl.set(el, { autoAlpha: 0 }, S(s[2]) + 0.05);
+    });
+    gsap.set([$("vig"), $("dust"), $("grain")], { opacity: 0 });
+    SC.forEach((s) => ground(s[3], S(s[1])));
+    gsap.set([$("vig"), $("dust"), $("grain")], { opacity: (i) => GROUND.night[i] });
+
+    // ---------- helpers ----------
+    const show = (el, t) => tl.fromTo(el, { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, t);
+    const rise = (el, t, o) => { o = o || {}; const d = o.dur || 0.6;
+      tl.fromTo(el, { opacity: 0, y: o.y == null ? 16 : o.y }, { opacity: 1, y: 0, duration: d, ease: C(E.out, d), immediateRender: true }, t); };
+    const pop = (el, t, o) => { o = o || {}; const d = o.dur || 0.8;
+      tl.fromTo(el, { opacity: 0, scale: o.from == null ? 0.6 : o.from }, { opacity: 1, scale: 1, duration: d, ease: C(E.out, d), immediateRender: true }, t); };
+    const out = (el, t, d) => tl.to(el, { opacity: 0, duration: d || 0.25, ease: "power1.in" }, t);
+    const W = (id) => Array.from($(id).querySelectorAll(".p5-w"));
+    function words(id, cues, o) { const ws = W(id); cues.forEach((c, i) => rise(ws[i], c, o)); }
+    function el(parent, tag, attrs) { const n = document.createElementNS(NS, tag); for (const k in attrs) n.setAttribute(k, attrs[k]); parent.appendChild(n); return n; }
+    function ink(parent, d, t, dur, o) {
+      o = o || {};
+      const p = el(parent, "path", { d: d, fill: "none", stroke: o.color || INK, "stroke-width": o.width || 5, "stroke-linecap": "round", "stroke-linejoin": "round" });
+      if (o.filter) p.setAttribute("filter", o.filter);
+      if (o.opacity != null) p.setAttribute("opacity", o.opacity);
+      const len = p.getTotalLength() || 1;
+      p.setAttribute("stroke-dasharray", len + " " + len); p.setAttribute("stroke-dashoffset", len);
+      tl.fromTo(p, { attr: { "stroke-dashoffset": len } }, { attr: { "stroke-dashoffset": 0 }, duration: dur, ease: o.ease || C(E.out, dur), immediateRender: true }, t);
+      return p;
+    }
+    const whipN = { n: 0 };
+    function whip(a, b, t, o) {
+      o = Object.assign({ dir: 1, vertical: false, flash: false, dur: 0.32 }, o);
+      const k = ++whipN.n, ba = FX.whipDefs(defs, SEG + "-wa" + k), bb = FX.whipDefs(defs, SEG + "-wb" + k), h = o.dur / 2;
+      const A = $(a + "-shot"), B = $(b + "-shot");
+      tl.set(A, { filter: "url(#" + SEG + "-wa" + k + ")" }, t - h - 0.01); tl.set(A, { filter: "none" }, t + 0.06);
+      tl.set(B, { filter: "url(#" + SEG + "-wb" + k + ")" }, t - 0.001); tl.set(B, { filter: "none" }, t + h + 0.02);
+      FX.whip(tl, A, B, t, { dir: o.dir, vertical: o.vertical, dur: o.dur, blurA: ba, blurB: bb });
+      if (o.flash) tl.fromTo($("flash"), { opacity: 0 }, { opacity: 0.85, duration: 0.08, yoyo: true, repeat: 1, ease: "power2.in", immediateRender: false }, t - 0.08);
+    }
+    function slide(a, b, t, o) {
+      o = Object.assign({ from: 1, d: 0.45, vertical: false }, o);
+      const A = $(a + "-shot"), B = $(b + "-shot"), ax = o.vertical ? "y" : "x", dist = (o.vertical ? 1140 : 1980) * o.from;
+      tl.fromTo(B, { [ax]: dist, boxShadow: "0 0 80px rgba(0,0,0,0.5)" }, { [ax]: 0, duration: o.d, ease: C(E.inOut, o.d), immediateRender: false }, t - o.d);
+      tl.set(B, { boxShadow: "none" }, t);
+      tl.fromTo(A, { [ax]: 0 }, { [ax]: -dist * 0.12, duration: o.d, ease: E.in, immediateRender: false }, t - o.d);
+    }
+    // face cam framing: W 1.0 / M 1.25 / C 1.55 around his face (≈1050,300; origin 120 px above), slow 2–3 % push
+    const FR = { W: [1.0, 1.03], M: [1.25, 1.285], C: [1.55, 1.59] };
+    function face(id, a, b, k) {
+      const fw = $(id + "-fw");
+      gsap.set(fw, { scale: FR[k][0] });
+      tl.fromTo(fw, { scale: FR[k][0] }, { scale: FR[k][1], duration: b - a, ease: "none", immediateRender: false }, S(a));
+    }
+    function push(id, a, b, s0, s1, o) {
+      o = o || {};
+      const vw = $(id + "-vw");
+      if (o.origin) gsap.set(vw, { transformOrigin: o.origin });
+      gsap.set(vw, { scale: s0 });
+      tl.fromTo(vw, { scale: s0 }, { scale: s1, duration: b - a, ease: o.ease || "none", immediateRender: false }, S(a));
+    }
+    // per-scene layout work must happen while the scene has layout (display stays default; scenes are hidden by visibility only)
+
+    FX.grain($("grain"), 501);
+    FX.dust($("dust"), 502, 2);
+    const PEN = FX.markupDefs(defs, SEG + "-pen", { boil: 4 });
+    defs.setAttribute("viewBox", "0 0 1 1");
+
+    /* ===== sc001 · Ueno tower → the secret weapon → POLITICAL CAPITAL ===== */
+    push("sc001", 457.40, 465.40, 1.0, 1.08, { origin: "26% 34%", ease: E.cam });
+    words("sc001-a", [T(459.41), T(459.57), T(460.05)], { dur: 0.6 });
+    out($("sc001-a"), S(462.40), 0.35);
+    words("sc001-b", [T(463.49), T(464.13)], { dur: 0.5, y: 22 });
+
+    /* ===== sc002 · FACE M · 2019, 2020 (whip right) ===== */
+    whip("sc001", "sc002", S(465.40), { dir: 1 });
+    face("sc002", 465.40, 469.22, "M");
+    words("sc002-lt", [T(467.49), T(468.37)], { dur: 0.35, y: 12 });
+
+    /* ===== sc003 · Credicentro certificate + outside investors (paper slides over the face) ===== */
+    slide("sc002", "sc003", S(469.22));
+    (function () {
+      const svg = $("sc003-svg"), cam = $("sc003-cam");
+      // investors: four grey figures stop-motion in from the right
+      const F = [[1440, 300], [1700, 340], [1440, 620], [1700, 660]];
+      const figs = F.map((p, i) => {
+        const g = el(svg, "g", {}); const gi = el(g, "g", { transform: "translate(" + (p[0] - 70) + " " + (p[1] - 84) + ") scale(0.35)" });
+        gi.innerHTML = '<path fill="' + (i === 1 ? "#6f7672" : ASH) + '" d="' + GM + '"/>';
+        gsap.set(g, { opacity: 0 });
+        tl.fromTo(g, { opacity: 0, x: 60 }, { opacity: 1, x: 0, duration: 0.5, ease: C(E.out, 0.5), immediateRender: true }, S(473.0) + i * 2 / 12);
+        return g;
+      });
+      // money arrows into the certificate
+      F.forEach((p, i) => { const pp = FX.markup.arrow(tl, svg, S(473.75) + i * 0.12, { x1: p[0] - 90, y1: p[1] + 10, x2: 1210, y2: 420 + i * 40, bend: (i % 2 ? -30 : 30), head: 22, dur: 0.5, color: TEALD, width: 5, filter: PEN });
+        gsap.set(pp, { opacity: 0 }); tl.set(pp, { opacity: 1 }, S(473.75) + i * 0.12); });
+      // "one of those investors": the others dim, a plum pen circle on one
+      tl.to([figs[0], figs[2], figs[3]], { opacity: 0.3, duration: 0.3, ease: "power1.inOut" }, S(476.45));
+      const c = FX.markup.circle(tl, svg, S(476.53), { cx: 1700, cy: 330, rx: 108, ry: 134, rot: -8, dur: 0.6, color: PLUM, width: 8, filter: PEN, seed: 5 });
+      gsap.set(c, { opacity: 0 }); tl.set(c, { opacity: 1 }, S(476.53));
+      // cut on action: push toward him
+      tl.fromTo(cam, { scale: 1, transformOrigin: "1700px 340px" }, { scale: 1.7, duration: 0.75, ease: E.in, immediateRender: false }, S(477.12));
+    })();
+    words("sc003-k", [T(469.41), T(469.65), T(470.13)], { dur: 0.6 });
+    words("sc003-name", [T(471.25)], { dur: 0.8, y: 20 });
+    rise($("sc003-sub"), S(471.6), { dur: 0.6 });
+    words("sc003-oi", [T(474.85), T(475.41)], { dur: 0.5 });
+
+    /* ===== sc004 · then finance minister → president 2023 (cut on action) ===== */
+    (function () {
+      const cam = $("sc004-cam"), svg = $("sc004-svg");
+      pop($("sc004-c1"), S(477.85), { dur: 0.9, from: 1.25 });
+      FX.focusHunt(tl, $("sc004-c1"), S(477.95), { dur: 0.7 });
+      words("sc004-l1", [T(478.13), T(478.61), T(479.09)], { dur: 0.5 });
+      // plum career line + pan right
+      ink(svg, "M800 420 C1100 380 1450 460 1810 400", S(480.75), 1.2, { color: PLUML, width: 5, ease: C(E.inOut, 1.2) });
+      tl.fromTo(cam, { x: 0 }, { x: -1070, duration: 1.5, ease: E.cam, immediateRender: false }, S(480.7));
+      pop($("sc004-c2"), S(481.35), { dur: 0.9, from: 0.85 });
+      words("sc004-l2", [T(482.14)], { dur: 0.5 });
+      words("sc004-y", [T(483.34)], { dur: 0.6, y: 24 });
+      tl.to(cam, { scale: 1.06, duration: 2.0, ease: "none" }, S(482.55));
+    })();
+
+    /* ===== sc005 · plum quote card (light-flash whip) ===== */
+    whip("sc004", "sc005", S(484.55), { dir: 1, flash: true });
+    push("sc005", 484.55, 492.30, 1.0, 1.06);
+    rise($("sc005-q"), S(484.75), { dur: 0.8, y: 20 });
+    words("sc005-k", [T(485.74), T(485.98), T(486.46)], { dur: 0.4, y: 8 });
+    words("sc005-a", [T(487.34), T(487.58), T(487.74), T(487.90), T(488.30), T(488.70), T(488.86), T(489.18), T(489.82)], { dur: 0.35, y: 10 });
+    out($("sc005-a"), S(490.40), 0.3);
+    words("sc005-b", [T(490.78), T(491.02), T(491.58)], { dur: 0.35, y: 10 });
+
+    /* ===== sc006 · FACE W · between you and I (hard cut) ===== */
+    face("sc006", 492.30, 497.55, "W");
+    words("sc006-lt", [T(492.54), T(492.94), T(493.10), T(493.26)], { dur: 0.35, y: 10 });
+    out($("sc006-lt"), S(495.6), 0.3);
+
+    /* ===== sc007 · not just the bank → any company → the president, one of your investors (whip up) ===== */
+    whip("sc006", "sc007", S(497.55), { dir: 1, vertical: true });
+    (function () {
+      const t = [$("sc007-t0"), $("sc007-t1"), $("sc007-t2"), $("sc007-t3")];
+      t[0].innerHTML = icon("bank", TEALD, 4.5); t[1].innerHTML = icon("shop", INK, 4.5); t[2].innerHTML = icon("factory", INK, 4.5); t[3].innerHTML = icon("office", INK, 4.5);
+      pop(t[0], S(497.75), { dur: 0.8, from: 0.7 });
+      [T(499.98), T(500.22)].forEach((c, i) => pop(t[1 + i], c, { dur: 0.7, from: 0.7 }));
+      pop(t[3], S(500.40), { dur: 0.7, from: 0.7 });
+      // the president: plum seal drops in, lines to every company
+      tl.fromTo($("sc007-seal"), { opacity: 0, y: -60, scale: 1.2 }, { opacity: 1, y: 0, scale: 1, duration: 0.5, ease: C(E.out, 0.5), immediateRender: true }, S(502.70));
+      const svg = $("sc007-svg");
+      [380, 750, 1170, 1540].forEach((x, i) => { const p = FX.markup.pen(tl, svg, S(503.30) + i * 0.1, { points: [[960, 340], [(960 + x) / 2 + (i < 2 ? -20 : 20), 400], [x, 455]], jitter: 3, seed: 20 + i, dur: 0.5, width: 5, color: PLUM, filter: PEN }); });
+    })();
+    words("sc007-a", [T(497.58), T(497.82), T(497.98), T(498.14)], { dur: 0.4, y: 10 });
+    out($("sc007-a"), S(499.55), 0.3);
+    words("sc007-b", [T(499.98), T(500.22)], { dur: 0.4, y: 10 });
+    out($("sc007-b"), S(502.3), 0.3);
+    words("sc007-pl", [T(502.78), T(502.94)], { dur: 0.4, y: 8 });
+    words("sc007-c", [T(503.98), T(504.14), T(504.22), T(504.38)], { dur: 0.3, y: 10 });
+    tl.fromTo($("sc007-shot"), { scale: 1 }, { scale: 1.07, duration: 0.45, ease: E.in, immediateRender: false }, S(504.80));
+
+    /* ===== sc008 · FACE M · very valuable political capital (cut on action) ===== */
+    face("sc008", 505.25, 511.75, "M");
+    words("sc008-lt", [T(506.86), T(507.10), T(507.74), T(508.22)], { dur: 0.4, y: 10 });
+    out($("sc008-lt"), S(510.4), 0.3);
+
+    /* ===== sc009 · FACE W · in 2023 → President Peña ===== */
+    face("sc009", 511.75, 516.55, "W");
+    words("sc009-a", [T(512.30), T(512.46)], { dur: 0.35, y: 10 });
+    out($("sc009-a"), S(513.25), 0.25);
+    words("sc009-b", [T(513.58), T(513.90)], { dur: 0.35, y: 10 });
+
+    /* ===== sc010 · THE REVOLVING DOOR (whip right) ===== */
+    whip("sc009", "sc010", S(516.55), { dir: 1 });
+    (function () {
+      const cam = $("sc010-cam"), svg = $("sc010-svg"), rows = $("sc010-rows");
+      // staff rows in both columns (org-chart texture)
+      [[200, 0], [1160, 1]].forEach((c) => { [480, 580, 680].forEach((y, r) => {
+        const d = document.createElement("div"); d.className = "p5-row"; d.style.left = c[0] + 40 + "px"; d.style.top = y + "px"; d.style.width = "520px";
+        d.innerHTML = '<svg viewBox="0 0 400 480" style="position:absolute; left:0; top:0; width:44px; height:52px"><path fill="' + ASH + '" d="' + GM + '"/></svg><i style="left:66px; width:' + (200 + r * 40) + 'px"></i><i style="left:66px; top:38px; width:' + (130 + r * 30) + 'px; opacity:0.6"></i>';
+        rows.appendChild(d); }); });
+      tl.fromTo(cam, { scale: 1.0 }, { scale: 1.04, duration: 12.75, ease: "none", immediateRender: false }, S(516.55));
+      FX.focusHunt(tl, cam, S(516.62), { dur: 0.7 });
+      const card = $("sc010-card");
+      pop(card, T(516.78), { dur: 0.7, from: 1.15 });
+      // picked → the head slot
+      const a1 = FX.markup.arrow(tl, svg, S(518.46), { x1: 730, y1: 300, x2: 1200, y2: 318, bend: -60, head: 26, dur: 0.9, color: PLUM, width: 6, filter: PEN });
+      gsap.set(a1, { opacity: 0 }); tl.set(a1, { opacity: 1 }, S(518.46));
+      words("sc010-slot", [T(519.74)], { dur: 0.4, y: 8 });
+      tl.fromTo($("sc010-bh"), { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "power1.out", immediateRender: true }, T(520.46));
+      words("sc010-bh", [T(520.46), T(520.46), T(520.78)], { dur: 0.4, y: 8 });
+      // resigns: stamp thuds on the card
+      tl.fromTo($("sc010-stamp"), { opacity: 0, scale: 1.6 }, { opacity: 0.88, scale: 1, duration: 0.18, ease: "power2.in", immediateRender: true }, T(522.38));
+      // the next day: one calendar page flips away
+      words("sc010-nd", [T(524.14), T(524.22), T(524.46)], { dur: 0.35, y: 8 });
+      tl.fromTo($("sc010-pg"), { rotationX: 0, opacity: 1 }, { rotationX: -165, opacity: 0, duration: 0.55, ease: C(E.inOut, 0.55), immediateRender: false }, S(524.30));
+      // the revolving door: the card swings across (rotateY 0→180, teal face → plum face) on an arc into the BCP slot
+      tl.to(a1, { opacity: 0, duration: 0.2 }, S(524.70));
+      const pr = { k: 0 };
+      tl.fromTo(pr, { k: 0 }, { k: 1, duration: 1.4, ease: E.inOut, immediateRender: false, onUpdate: () => {
+        const k = pr.k, x = 960 * k, y = -150 * Math.sin(Math.PI * k);
+        gsap.set(card, { x: x, y: y, rotationY: 180 * k, scale: 1 + 0.12 * Math.sin(Math.PI * k) });
+      } }, S(524.86));
+      tl.to($("sc010-slot"), { opacity: 0, duration: 0.2 }, S(526.05));
+      // regulating this bank: BCP → Ueno
+      const a2 = FX.markup.arrow(tl, svg, S(526.85), { x1: 1440, y1: 812, x2: 520, y2: 816, bend: -70, head: 28, dur: 0.9, color: PLUM, width: 6, filter: PEN });
+      gsap.set(a2, { opacity: 0 }); tl.set(a2, { opacity: 1 }, S(526.85));
+      words("sc010-rg", [T(527.58), T(528.22), T(528.46)], { dur: 0.35, y: 8 });
+      tl.to(cam, { scale: 1.1, duration: 0.5, ease: E.in }, S(528.80));
+    })();
+
+    /* ===== sc011–sc013 · FACE C / M / W ===== */
+    face("sc011", 529.30, 532.80, "C");
+    face("sc012", 532.80, 537.47, "M");
+    words("sc012-a", [T(534.14), T(534.30)], { dur: 0.35, y: 10 });
+    out($("sc012-a"), S(535.75), 0.25);
+    words("sc012-b", [T(536.14), T(536.38), T(536.46), T(536.62), T(536.86)], { dur: 0.25, y: 10 });
+    face("sc013", 537.47, 543.75, "W");
+    words("sc013-lt", [T(538.87), T(538.95), T(539.35)], { dur: 0.35, y: 10 });
+    out($("sc013-lt"), S(541.2), 0.3);
+
+    /* ===== sc014 · four times bigger (whip right) ===== */
+    whip("sc013", "sc014", S(543.75), { dir: 1 });
+    (function () {
+      const svg = $("sc014-svg");
+      tl.fromTo($("sc014-small"), { opacity: 0, scale: 0.4 }, { opacity: 1, scale: 1, duration: 0.6, ease: C(E.out, 0.6), immediateRender: true }, S(543.85));
+      show($("sc014-ls"), S(544.0));
+      const sq = FX.markup.pen(tl, svg, T(545.43), { points: [[962, 422], [1320, 420], [1318, 780], [960, 778], [962, 418]], jitter: 2, seed: 9, dur: 0.6, width: 5, color: INK, filter: PEN });
+      Array.from($("sc014-big").querySelectorAll(".p5-cell")).forEach((c, i) => tl.fromTo(c, { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, S(545.85) + i * 2 / 12));
+      FX.markup.pen(tl, svg, S(546.30), { points: [[1140, 424], [1141, 776]], jitter: 3, seed: 11, dur: 0.25, width: 4, color: BONE, filter: PEN, blend: "normal" });
+      FX.markup.pen(tl, svg, S(546.30), { points: [[964, 600], [1316, 601]], jitter: 3, seed: 12, dur: 0.25, width: 4, color: BONE, filter: PEN, blend: "normal" });
+      show($("sc014-lb"), S(546.2));
+      const ws = W("sc014-t");
+      [T(545.43), T(545.83), T(546.15)].forEach((c, i) => rise(ws[i], c, { dur: 0.35, y: 10 }));
+      [0, 1].forEach((i) => tl.fromTo(ws[i], { "--hl": 0 }, { "--hl": 1, duration: 0.3, ease: C("sine.inOut", 0.3), immediateRender: true }, S(545.6) + i * 0.4));
+      // cut on action: push into the big square
+      tl.fromTo($("sc014-cam"), { scale: 1, transformOrigin: "1140px 600px" }, { scale: 1.5, duration: 0.5, ease: E.in, immediateRender: false }, S(546.62));
+    })();
+
+    /* ===== sc015 · Visión Banco, struggling a bit (cut on action) ===== */
+    push("sc015", 547.10, 551.45, 1.1, 1.0, { ease: E.cam });
+    rise($("sc015-id"), S(547.40), { dur: 0.5, y: 8 });
+    words("sc015-t", [T(549.19), T(549.75), T(549.91)], { dur: 0.4, y: 10 });
+
+    /* ===== sc016 · FACE M · four times smaller / four times bigger (hard cut) ===== */
+    face("sc016", 551.45, 556.91, "M");
+    words("sc016-lt", [T(553.35), T(553.67), T(553.99), T(555.83), T(556.15), T(556.39)], { dur: 0.15, y: 8 });
+
+    /* ===== sc017 · did not go according to plan (paper slides over the face) ===== */
+    // hard cut at 556.91 (the slide covered "four times bigger" as it was spoken)
+    (function () {
+      const svg = $("sc017-svg");
+      ink(svg, "M240 330 L242 900 L1700 898", S(556.60), 0.6, { color: INK, width: 4 });
+      // the plan: dashed rising line
+      const plan = el(svg, "path", { d: "M260 820 C640 760 1100 560 1660 300", fill: "none", stroke: INK, "stroke-width": 5, "stroke-dasharray": "18 14", opacity: 0.75 });
+      const mask = el(svg, "clipPath", { id: SEG + "-sc017-clip" }); const mr = el(mask, "rect", { x: 200, y: 200, width: 0, height: 800 });
+      plan.setAttribute("clip-path", "url(#" + SEG + "-sc017-clip)");
+      tl.fromTo(mr, { attr: { width: 0 } }, { attr: { width: 1520 }, duration: 1.2, ease: C(E.inOut, 1.2), immediateRender: true }, S(557.05));
+      // reality: follows, then bends away and down
+      ink(svg, "M260 820 C520 780 720 700 900 650 C1080 610 1180 660 1330 760 C1450 840 1560 870 1660 880", T(558.47), 2.0, { color: TEAL, width: 9, ease: C(E.inOut, 2.0) });
+      const dot = el(svg, "circle", { cx: 1660, cy: 880, r: 16, fill: TEALD }); gsap.set(dot, { opacity: 0 });
+      tl.fromTo(dot, { opacity: 0, scale: 0.3, transformOrigin: "1660px 880px" }, { opacity: 1, scale: 1, duration: 0.4, ease: C(E.out, 0.4), immediateRender: true }, S(560.45));
+      tl.fromTo($("sc017-cam"), { scale: 1.0 }, { scale: 1.04, duration: 6.6, ease: "none", immediateRender: false }, S(556.95));
+    })();
+    words("sc017-t", [T(558.47), T(558.71), T(558.87), T(559.11), T(559.59), T(559.83)], { dur: 0.35, y: 10 });
+
+    /* ===== sc018 · online focused bank vs a normal bank (whip up) ===== */
+    whip("sc017", "sc018", S(563.55), { dir: 1, vertical: true });
+    tl.fromTo($("sc018-phone"), { opacity: 0, y: 60, scale: 0.92 }, { opacity: 1, y: 0, scale: 1, duration: 1.0, ease: C(E.out, 1.0), immediateRender: true }, S(563.75));
+    words("sc018-a", [T(566.15), T(566.71), T(567.19)], { dur: 0.4, y: 10 });
+    out($("sc018-a"), S(568.9), 0.3);
+    (function () {
+      const svg = $("sc018-svg");
+      const B = [[1190, 360, 1410, 250, 1630, 360], [1200, 380, 1620, 381], [1240, 400, 1241, 720], [1330, 400, 1331, 720], [1500, 400, 1501, 720], [1590, 400, 1591, 720], [1180, 740, 1640, 741], [1160, 770, 1660, 771]];
+      B.forEach((q, i) => { const d = q.length === 6 ? "M" + q[0] + " " + q[1] + " L" + q[2] + " " + q[3] + " L" + q[4] + " " + q[5] + " Z" : "M" + q[0] + " " + q[1] + " L" + q[2] + " " + q[3];
+        ink(svg, d, T(569.83) + i * 0.05, 0.45, { color: "#aab1ac", width: 6, opacity: 0.9 }); });
+    })();
+    words("sc018-b", [T(569.83), T(569.91), T(570.15)], { dur: 0.35, y: 10 });
+
+    /* ===== sc019 · the expenses stack (light-flash whip) ===== */
+    whip("sc018", "sc019", S(571.00), { dir: 1, flash: true });
+    (function () {
+      let s1 = ""; for (let i = 0; i < 9; i++) s1 += '<g transform="translate(' + (34 + i * 66) + ' 30) scale(0.2)"><path fill="' + ASHD + '" d="' + GM + '"/></g>';
+      $("sc019-i1").innerHTML = s1;
+      let s2 = ""; for (let i = 0; i < 4; i++) s2 += '<g transform="translate(' + (50 + i * 150) + ' 22) scale(1.2)">' + icon("shop", INK, 5) + "</g>";
+      $("sc019-i2").innerHTML = s2;
+      let s3 = ""; for (let i = 0; i < 3; i++) s3 += '<g transform="translate(' + (60 + i * 190) + ' 18) scale(1.85)">' + icon(i === 1 ? "office" : "tower", INK, 4) + "</g>";
+      $("sc019-i3").innerHTML = s3;
+      const drop = (b, t) => tl.fromTo(b, { opacity: 0, y: -420 }, { opacity: 1, y: 0, duration: 0.35, ease: C("power2.in", 0.35), immediateRender: true }, t);
+      drop($("sc019-b1"), T(575.03)); drop($("sc019-b2"), T(575.83)); drop($("sc019-b3"), T(577.27));
+      // the base takes the weight
+      [[575.38, 0.94], [576.18, 0.88], [577.62, 0.78]].forEach((q) => tl.fromTo($("sc019-base"), { scaleY: 1 }, { scaleY: q[1], duration: 0.12, ease: "power2.out", immediateRender: false }, S(q[0])));
+      tl.fromTo($("sc019-cam"), { y: 0 }, { y: 10, duration: 0.06, yoyo: true, repeat: 3, ease: "none", immediateRender: false }, S(577.62));
+      tl.fromTo($("sc019-cam"), { scale: 1.0 }, { scale: 1.05, duration: 7.2, ease: "none", immediateRender: false }, S(571.0));
+      tl.fromTo($("sc019-base"), { opacity: 0 }, { opacity: 1, duration: 0.5, ease: "power1.out", immediateRender: true }, S(571.2));
+    })();
+    words("sc019-h", [T(572.07)], { dur: 0.6 });
+    words("sc019-l1", [T(575.03), T(575.27)], { dur: 0.35, y: 8 });
+    words("sc019-l2", [T(575.83)], { dur: 0.35, y: 8 });
+    words("sc019-l3", [T(577.27), T(577.51)], { dur: 0.35, y: 8 });
+
+    /* ===== sc020 · FACE C (cut on action) ===== */
+    face("sc020", 578.22, 581.47, "C");
+
+    /* ===== sc021 · the vault drains (whip right) ===== */
+    whip("sc020", "sc021", S(581.47), { dir: 1 });
+    (function () {
+      const box = $("sc021-cash"), vault = $("sc021-vault"), rnd = FX.rng(77), all = [];
+      [130, 330, 530].forEach((y, r) => {
+        const sh = document.createElement("div"); sh.className = "p5-shelf"; sh.style.top = (y + 94) + "px"; vault.appendChild(sh);
+        for (let c = 0; c < 5; c++) for (let k = 0; k < 2; k++) {
+          const b = document.createElement("div"); b.className = "p5-cash"; b.style.left = (60 + c * 158) + "px"; b.style.top = (y - k * 76 + 10) + "px"; box.appendChild(b); all.push(b);
+        }
+      });
+      gsap.set(all, { opacity: 0 });
+      tl.set(all, { opacity: 1 }, S(581.47));
+      // drain: random order, 12 fps, until 3 bundles are left
+      const order = all.map((b, i) => [rnd(), b]).sort((a, b) => a[0] - b[0]).map((q) => q[1]).slice(0, all.length - 3);
+      order.forEach((b, i) => tl.to(b, { opacity: 0, y: 30, duration: 1 / 12, ease: "none" }, S(583.55) + Math.floor(i * 0.62) / 12));
+      tl.fromTo($("sc021-cam"), { scale: 1.06 }, { scale: 1.0, duration: 6.33, ease: E.cam, immediateRender: false }, S(581.47));
+      // sold to Ueno: a teal tag swings on
+      tl.fromTo($("sc021-tag"), { opacity: 0, rotation: -40 }, { opacity: 1, rotation: 6, duration: 0.6, ease: C(E.out, 0.6), immediateRender: true }, T(586.47));
+      tl.to($("sc021-tag"), { rotation: 0, duration: 0.5, ease: C(E.out, 0.5) }, S(587.07));
+    })();
+    words("sc021-a", [T(583.51), T(583.59), T(583.75), T(583.91), T(584.23), T(584.63), T(584.87)], { dur: 0.3, y: 10 });
+    out($("sc021-a"), S(586.0), 0.3);
+    words("sc021-b", [T(586.47), T(586.79), T(586.95)], { dur: 0.3, y: 10 });
+
+    /* ===== sc022 · the seesaw (paper slides up) — ends in motion ===== */
+    slide("sc021", "sc022", S(587.80), { vertical: true });
+    (function () {
+      const beam = $("sc022-beam"), big = $("sc022-big"), small = $("sc022-small");
+      gsap.set(beam, { rotation: -6 });
+      // the big block drops onto the right end
+      tl.fromTo(big, { opacity: 0, y: -620 }, { opacity: 1, y: 0, duration: 0.45, ease: C("power2.in", 0.45), immediateRender: true }, S(589.55));
+      tl.fromTo(beam, { rotation: -6 }, { rotation: 10, duration: 0.7, ease: C(E.out, 0.7), immediateRender: false }, S(590.0));
+      tl.fromTo(small, { y: 0 }, { y: -40, duration: 0.3, yoyo: true, repeat: 1, ease: "power2.out", immediateRender: false }, S(590.05));
+      // a much worse position: cracks, darkens, the beam slams to the floor, the small block is flung
+      const crk = $("sc022-crk");
+      ink(crk, "M190 0 L170 70 L205 120 L160 190 L190 250", T(592.63), 0.35, { color: INK, width: 5 });
+      ink(crk, "M370 120 L300 150 L320 200 L250 230", S(592.75), 0.3, { color: INK, width: 4 });
+      tl.to(big, { backgroundColor: "#4d5551", duration: 0.4, ease: "power1.in" }, T(592.63));
+      tl.fromTo(beam, { rotation: 10 }, { rotation: 13.2, duration: 0.25, ease: "power3.in", immediateRender: false }, S(593.05));
+      tl.fromTo(small, { y: 0, rotation: 0 }, { y: -170, rotation: -24, duration: 0.55, ease: "power2.out", immediateRender: false }, S(593.25));
+      tl.to(small, { y: -10, rotation: -30, duration: 0.5, ease: "power2.in" }, S(593.80));
+      tl.fromTo($("sc022-cam"), { y: 0 }, { y: 9, duration: 0.05, yoyo: true, repeat: 3, ease: "none", immediateRender: false }, S(593.30));
+      // hand-off: camera keeps pushing into the cut
+      tl.fromTo($("sc022-cam"), { scale: 1.0 }, { scale: 1.03, duration: 6.4, ease: "none", immediateRender: false }, S(587.80));
+      tl.to($("sc022-cam"), { scale: 1.18, duration: 0.85, ease: E.in }, S(594.75));
+    })();
+    words("sc022-a", [T(589.83), T(590.07), T(590.47), T(590.63)], { dur: 0.35, y: 10 });
+    out($("sc022-a"), S(591.95), 0.3);
+    words("sc022-b", [T(592.31), T(592.39), T(592.63), T(593.03)], { dur: 0.35, y: 10 });
+
+    FX.mount(tl, DURATION);
+    window.__timelines = window.__timelines || {};
+    window.__timelines[SEG] = tl;
+  })();
+  </script>
+</template>
+</body>
+</html>

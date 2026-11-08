@@ -1,0 +1,789 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8" /></head>
+<body>
+<template>
+  <style>
+    #root { position: absolute; inset: 0; overflow: hidden; background: var(--night); }
+    .p9-scene { position: absolute; inset: 0; overflow: hidden; visibility: hidden; opacity: 0; }
+    .p9-shot { position: absolute; inset: 0; overflow: hidden; transform-origin: 50% 50%; background: var(--night); }
+    .p9-paper { background: var(--paper); }
+    .p9-abs { position: absolute; }
+    .p9-full { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; object-fit: cover; }
+    .p9-fcw { position: absolute; inset: 0; transform-origin: 1000px 220px; }
+    .p9-vw { position: absolute; inset: 0; transform-origin: 50% 50%; }
+    .p9-cam { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 960px 540px; }
+    .p9-p1, .p9-p2 { position: absolute; inset: 0; background-size: cover; background-position: center; pointer-events: none; }
+    .p9-p2 { opacity: 0.9; mix-blend-mode: multiply; }
+    .p9-mk { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; pointer-events: none; }
+    .p9-w { display: inline-block; white-space: pre; opacity: 0; }
+    .p9-ink { color: var(--ink); }
+    .p9-credit { position: absolute; right: 30px; bottom: 20px; font-size: 13px; letter-spacing: 0.08em; color: rgba(242,238,227,0.66); z-index: 5; }
+    .p9-credit.ink { color: rgba(22,32,28,0.62); }
+    .p9-lt { position: absolute; left: 96px; bottom: 104px; width: 900px; font-size: 64px; line-height: 1.0; }
+    .p9-scrim-bl { position: absolute; inset: 0; pointer-events: none;
+      background: radial-gradient(ellipse 58% 52% at 0% 100%, rgba(10,13,12,0.84) 0%, rgba(10,13,12,0.52) 45%, rgba(10,13,12,0) 100%); }
+    .p9-scrim-b { position: absolute; left: 0; right: 0; bottom: 0; height: 460px; pointer-events: none;
+      background: linear-gradient(180deg, rgba(10,13,12,0), rgba(10,13,12,0.86)); }
+    .p9-logo { position: absolute; background: var(--ueno-dark); -webkit-mask: url('assets/paraguay/shared/logos/ueno_logo.png') left center / contain no-repeat; mask: url('assets/paraguay/shared/logos/ueno_logo.png') left center / contain no-repeat; }
+    .p9-mark { position: relative; display: inline-block; }
+    .p9-mark .p9-hlb { position: absolute; left: -12px; right: -12px; top: 22%; bottom: 10%; background: var(--yellow); mix-blend-mode: multiply; transform-origin: 0 50%; transform: scaleX(0); z-index: -1; }
+    .p9-desk { position: absolute; inset: -40px; background: radial-gradient(ellipse 60% 70% at 58% 45%, #2a312d 0%, #161b19 55%, #0b0e0d 100%); }
+    .p9-side { position: absolute; left: 96px; width: 440px; font-size: 76px; line-height: 1.02; }
+    #pys09-flash { position: absolute; inset: 0; background: #f6f2ea; opacity: 0; pointer-events: none; z-index: 7; }
+    #pys09-grain, #pys09-dust, #pys09-vig { z-index: 8; }
+
+    /* the ledger (sc002 / sc004 / sc015) */
+    .p9-led { position: absolute; left: 560px; top: 80px; width: 1200px; height: 1180px; background: #f1ece0; box-shadow: 0 40px 80px rgba(22,32,28,0.32);
+      background-image: repeating-linear-gradient(180deg, rgba(12,92,84,0) 0 108px, rgba(12,92,84,0.22) 108px 110px); background-position: 0 100px; }
+    .p9-led .p9-logo { left: 50px; top: 40px; width: 240px; height: 40px; }
+    .p9-led .ttl { position: absolute; right: 50px; top: 50px; font-size: 24px; color: var(--ink-soft); }
+    .p9-led .hdr { position: absolute; left: 50px; right: 50px; top: 100px; height: 4px; background: var(--ueno-dark); }
+    .p9-led .vr { position: absolute; top: 104px; bottom: 0; width: 4px; border-left: 2px solid rgba(12,92,84,0.35); border-right: 2px solid rgba(12,92,84,0.35); }
+    .p9-led .ch { position: absolute; top: 132px; font-size: 22px; color: var(--ueno-dark); }
+    .p9-led .sc { position: absolute; height: 8px; background: rgba(22,32,28,0.28); border-radius: 4px; }
+    .p9-led .bx { position: absolute; width: 60px; height: 60px; border: 4px solid rgba(22,32,28,0.55); box-sizing: border-box; }
+    .p9-led .bx i { position: absolute; inset: 4px; background: var(--ueno); opacity: 0.85; transform-origin: 0 100%; }
+    .p9-led .bx svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+    .p9-led .bw { position: absolute; font-size: 54px; color: var(--ink); white-space: nowrap; }
+    .p9-stack { position: absolute; width: 150px; height: 70px; }
+    .p9-stack b { position: absolute; left: 0; width: 140px; height: 26px; border-radius: 3px; background: var(--ueno); border: 2px solid var(--ueno-dark); box-sizing: border-box; }
+    .p9-stack b::after { content: ""; position: absolute; left: 54px; top: 3px; width: 16px; height: 16px; border-radius: 50%; border: 2px solid rgba(242,238,227,0.7); }
+    .p9-tag { position: absolute; padding: 6px 14px 2px; font-size: 22px; color: var(--bone); background: var(--ueno-dark); }
+    .p9-stamp { position: absolute; padding: 14px 26px 4px; border: 9px solid var(--tierra-dark); color: var(--tierra-dark); font-size: 104px; line-height: 1; transform: rotate(-8deg); opacity: 0; mix-blend-mode: multiply; }
+
+    /* sc003 calendar */
+    #pys09-sc003-cal { position: absolute; left: 1080px; top: 170px; width: 560px; height: 700px; background: #ece7dc; box-shadow: 0 40px 70px rgba(0,0,0,0.6); }
+    #pys09-sc003-cal .band { position: absolute; left: 0; top: 0; width: 560px; height: 150px; background: var(--ash-dark); }
+    #pys09-sc003-cal .ring { position: absolute; top: -24px; width: 24px; height: 58px; border-radius: 12px; background: linear-gradient(90deg, #5c625e, #c3c7c1, #5c625e); }
+    #pys09-sc003-cal .lab { position: absolute; left: 0; top: 46px; width: 560px; text-align: center; font-size: 46px; color: var(--bone); }
+    .p9-pg { position: absolute; z-index: 0; left: 0; top: 150px; width: 560px; height: 550px; background: #ece7dc; transform-origin: 50% 0; border-top: 2px dashed rgba(22,32,28,0.25); box-sizing: border-box; }
+    .p9-pg .n { position: absolute; left: 0; top: 70px; width: 560px; text-align: center; font-size: 300px; line-height: 1; color: var(--ink); }
+    #pys09-sc003-days { position: absolute; left: 0; top: 560px; width: 560px; text-align: center; font-size: 76px; color: var(--ink); }
+
+    /* sc005 recipients */
+    #pys09-sc005-memo { position: absolute; left: 790px; top: 96px; width: 340px; height: 210px; background: #f1ece0; box-shadow: 0 16px 30px rgba(22,32,28,0.28); transform: rotate(-1.5deg); }
+    #pys09-sc005-memo .p9-logo { left: 26px; top: 22px; width: 130px; height: 22px; }
+    #pys09-sc005-memo .sc { position: absolute; left: 26px; height: 7px; background: rgba(22,32,28,0.25); border-radius: 3px; }
+    #pys09-sc005-memo .p9-stamp { left: 120px; top: 92px; font-size: 54px; padding: 8px 14px 2px; border-width: 6px; opacity: 0.9; }
+    .p9-rc { position: absolute; top: 470px; width: 400px; height: 300px; background: #f1ece0; box-shadow: 0 22px 40px rgba(22,32,28,0.28); border-top: 14px solid var(--ash-dark); box-sizing: border-box; }
+    .p9-rc svg { position: absolute; left: 100px; top: 40px; width: 200px; height: 200px; }
+    .p9-rl { position: absolute; top: 800px; width: 480px; text-align: center; font-size: 46px; color: var(--ink); }
+    #pys09-sc005-bcp { position: absolute; left: 115px; top: 50px; width: 170px; height: 170px; background: var(--plum);
+      -webkit-mask: url('assets/paraguay/shared/logos/bcp_logo_171.png') center / contain no-repeat; mask: url('assets/paraguay/shared/logos/bcp_logo_171.png') center / contain no-repeat; }
+
+    /* sc009 chalkboard */
+    #pys09-sc009-board { position: absolute; inset: 0; background: radial-gradient(ellipse 70% 70% at 45% 40%, #2a3a33 0%, #1d2a24 55%, #121a16 100%); }
+    #pys09-sc009-smear { position: absolute; inset: 0; background: url('assets/textures/scratches_01.jpg') center / cover; mix-blend-mode: screen; opacity: 0.16; }
+    #pys09-sc009-smear2 { position: absolute; inset: 0; background: url('assets/textures/dust_03.jpg') center / cover; mix-blend-mode: screen; opacity: 0.22; }
+    #pys09-sc009-frame { position: absolute; inset: 0; border: 34px solid #3b302a; box-shadow: inset 0 0 0 4px rgba(0,0,0,0.4), inset 0 30px 60px rgba(0,0,0,0.35); pointer-events: none; }
+    #pys09-sc009-tray { position: absolute; left: 0; right: 0; top: 1010px; height: 70px; background: linear-gradient(180deg, #4a3d35, #2c241f); box-shadow: 0 -6px 14px rgba(0,0,0,0.5); }
+    .p9-chalk { color: #ebe8de; filter: url(#pys09-chalkf); opacity: 0.92; }
+    .p9-cw { display: inline-block; white-space: pre; clip-path: inset(0 100% 0 0); }
+    #pys09-sc009-eraser { position: absolute; left: 1500px; top: 990px; width: 190px; height: 64px; border-radius: 8px; background: linear-gradient(180deg, #5c4a3c 0 55%, #d9d4c6 55% 100%); box-shadow: 0 8px 14px rgba(0,0,0,0.5); }
+    #pys09-sc009-stick { position: absolute; left: 380px; top: 1000px; width: 120px; height: 18px; border-radius: 9px; background: #e6e2d6; box-shadow: 0 4px 6px rgba(0,0,0,0.4); }
+
+    /* sc013 flow */
+    .p9-node { position: absolute; width: 320px; height: 220px; box-shadow: 0 20px 36px rgba(22,32,28,0.3); }
+    .p9-fake { position: absolute; left: 800px; width: 320px; height: 120px; background: rgba(147,224,211,0.38); border: 4px dashed var(--ueno-dark); box-sizing: border-box; }
+    .p9-fake i { position: absolute; left: 24px; height: 8px; background: rgba(12,92,84,0.45); border-radius: 4px; }
+    .p9-chip { position: absolute; left: -32px; top: -20px; width: 64px; height: 40px; border-radius: 5px; background: var(--ueno-light); border: 3px solid var(--ueno-dark); box-shadow: 0 6px 10px rgba(22,32,28,0.35); box-sizing: border-box; }
+    .p9-chip::after { content: ""; position: absolute; left: 21px; top: 8px; width: 16px; height: 16px; border-radius: 50%; border: 3px solid var(--ueno-dark); }
+
+    /* sc018 tower */
+    .p9-lc { position: absolute; width: 300px; height: 64px; background: #ece7dc; border-left: 30px solid var(--ueno); box-sizing: border-box; box-shadow: 0 6px 10px rgba(0,0,0,0.5); }
+    .p9-lc i { position: absolute; left: 22px; height: 7px; background: rgba(12,92,84,0.45); border-radius: 3px; }
+
+    /* sc019 */
+    #pys09-sc019-num { position: absolute; left: 0; top: 300px; width: 1920px; text-align: center; font-size: 300px; line-height: 1; }
+    #pys09-sc019-mil { position: absolute; left: 0; top: 620px; width: 1920px; text-align: center; font-size: 110px; }
+    #pys09-sc019-k { position: absolute; left: 0; top: 200px; width: 1920px; text-align: center; font-size: 64px; }
+    #pys09-sc019-own { position: absolute; left: 0; top: 860px; width: 1920px; text-align: center; font-size: 60px; }
+
+    /* sc020 carousel */
+    #pys09-sc020-bg { position: absolute; left: -100px; top: -60px; width: 2120px; height: 1200px; background: url('assets/paraguay/pys09/derived/carousel_duo.jpg') center / cover; filter: blur(6px) brightness(0.5); }
+    #pys09-sc020-dim { position: absolute; inset: 0; background: radial-gradient(ellipse 60% 70% at 62% 55%, rgba(10,13,12,0.25) 0%, rgba(10,13,12,0.75) 100%); }
+    .p9-rider { position: absolute; left: 0; top: 0; width: 0; height: 0; }
+    .p9-pole { position: absolute; left: -5px; width: 10px; background: linear-gradient(90deg, #8a7a52, #e8d9a8, #8a7a52); }
+    .p9-fig { position: absolute; left: -85px; width: 170px; height: 124px; }
+    .p9-fcard { position: absolute; inset: 0; background: #ece7dc; border: 5px solid var(--ueno); box-sizing: border-box; box-shadow: 0 10px 18px rgba(0,0,0,0.5); }
+    #pys09-sc020-col { position: absolute; left: 1166px; top: 330px; width: 68px; height: 560px; background: linear-gradient(90deg, #0a2c28, #1f6f65 40%, #93e0d3 55%, #1f6f65 70%, #0a2c28); }
+    #pys09-sc020-title { position: absolute; left: 700px; width: 1000px; top: 412px; text-align: center; font-size: 66px; line-height: 1; z-index: 60; }
+  </style>
+
+  <div id="root" data-composition-id="pys09" data-vo-start="940.60" data-duration="102.00" data-width="1920" data-height="1080">
+    <svg id="pys09-defs" width="0" height="0" style="position:absolute">
+      <filter id="pys09-chalkf" x="-5%" y="-10%" width="110%" height="120%" color-interpolation-filters="sRGB">
+        <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="7" result="n"/>
+        <feDisplacementMap in="SourceGraphic" in2="n" scale="3.2" xChannelSelector="R" yChannelSelector="G" result="d"/>
+        <feColorMatrix in="n" type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 -1.6 1.55" result="a"/>
+        <feComposite in="d" in2="a" operator="in"/>
+      </filter>
+    </svg>
+
+    <!-- sc001 · 940.60–946.20 · FACE W · In reality, this problem should not have continued for very long -->
+    <div class="p9-scene" id="pys09-sc001"><div class="p9-shot" id="pys09-sc001-shot">
+      <div class="p9-fcw" id="pys09-sc001-fw"><video id="pys09-sc001-v" class="p9-full" src="assets/facecam/paraguay_facecam_master.mp4" muted playsinline data-start="0" data-duration="5.65" data-media-start="940.60"></video></div>
+      <div class="p9-scrim-bl"></div>
+      <div class="p9-lt t-display clean" id="pys09-sc001-lt" style="width:760px"><span class="p9-w">should </span><span class="p9-w">not </span><span class="p9-w">have </span><span class="p9-w">continued</span></div>
+    </div></div>
+
+    <!-- sc002 · 946.20–951.00 · fake money … this fake business · the ledger -->
+    <div class="p9-scene" id="pys09-sc002"><div class="p9-shot p9-paper" id="pys09-sc002-shot">
+      <div class="p9-p1" style="background-image:url('assets/textures/paper_cream_01.jpg')"></div>
+      <div class="p9-p2" style="background-image:url('assets/textures/paper_fiber_01.jpg'); opacity:0.5"></div>
+      <div class="p9-cam" id="pys09-sc002-cam"><div id="pys09-sc002-led"></div><svg id="pys09-sc002-svg" class="p9-mk" viewBox="0 0 1920 1080"></svg></div>
+      <div class="p9-side t-serif-i p9-ink" id="pys09-sc002-k" style="top:430px; font-size:84px"><span class="p9-w">fake </span><span class="p9-w">money</span></div>
+    </div></div>
+
+    <!-- sc003 · 951.00–956.15 · don't make loan payments in less, say 60 days · tear-off calendar -->
+    <div class="p9-scene" id="pys09-sc003"><div class="p9-shot" id="pys09-sc003-shot">
+      <div class="p9-desk"></div>
+      <div class="p9-cam" id="pys09-sc003-cam">
+        <div id="pys09-sc003-cal">
+          <div id="pys09-sc003-pages"></div>
+          <div id="pys09-sc003-days" class="t-display"><span class="p9-w">DAYS</span></div>
+          <div class="band"><div class="lab t-label">loan payment due</div></div>
+          <div class="ring" style="left:120px"></div><div class="ring" style="left:416px"></div>
+        </div>
+      </div>
+      <div class="p9-abs t-display clean" id="pys09-sc003-t" style="left:96px; top:380px; width:860px; font-size:96px; line-height:1.02"><span class="p9-w">don't </span><span class="p9-w">make </span><span class="p9-w">loan </span><span class="p9-w">payments</span></div>
+    </div></div>
+
+    <!-- sc004 · 956.15–961.56 · write down that loan … a loss … bad debt · red-ink write-down -->
+    <div class="p9-scene" id="pys09-sc004"><div class="p9-shot p9-paper" id="pys09-sc004-shot">
+      <div class="p9-p1" style="background-image:url('assets/textures/paper_cream_01.jpg')"></div>
+      <div class="p9-p2" style="background-image:url('assets/textures/paper_fiber_01.jpg'); opacity:0.5"></div>
+      <div class="p9-cam" id="pys09-sc004-cam"><div id="pys09-sc004-led"></div><svg id="pys09-sc004-svg" class="p9-mk" viewBox="0 0 1920 1080"></svg>
+        <div class="p9-stamp t-display" id="pys09-sc004-stamp" style="left:1240px; top:430px">LOSS</div></div>
+      <div class="p9-side t-serif-i p9-ink" id="pys09-sc004-k" style="top:300px; font-size:78px"><span class="p9-w">write </span><span class="p9-w">down </span><span class="p9-w">that </span><span class="p9-w">loan</span></div>
+      <div class="p9-side t-display" id="pys09-sc004-bd" style="top:640px; font-size:96px; color:var(--tierra-dark)"><span class="p9-w">bad </span><span class="p9-w">debt</span></div>
+    </div></div>
+
+    <!-- sc005 · 961.56–966.30 · tell the accountant, the regulators, your investors · three recipients -->
+    <div class="p9-scene" id="pys09-sc005"><div class="p9-shot p9-paper" id="pys09-sc005-shot">
+      <div class="p9-p1" style="background-image:url('assets/textures/paper_cream_02.jpg')"></div>
+      <div class="p9-p2" style="background-image:url('assets/textures/paper_stained_01_hires.jpg'); opacity:0.55"></div>
+      <div class="p9-cam" id="pys09-sc005-cam">
+        <svg id="pys09-sc005-svg" class="p9-mk" viewBox="0 0 1920 1080"></svg>
+        <div id="pys09-sc005-memo"><div class="p9-logo"></div><div class="sc" style="top:64px; width:240px"></div><div class="sc" style="top:84px; width:180px"></div><div class="sc" style="top:150px; width:80px"></div><div class="p9-stamp t-display">LOSS</div></div>
+        <div class="p9-rc" id="pys09-sc005-c1" style="left:200px"><svg viewBox="0 0 200 200" id="pys09-sc005-calc"></svg></div>
+        <div class="p9-rc" id="pys09-sc005-c2" style="left:760px; border-top-color:var(--plum)"><div id="pys09-sc005-bcp"></div></div>
+        <div class="p9-rc" id="pys09-sc005-c3" style="left:1320px"><svg viewBox="0 0 200 200" id="pys09-sc005-ppl"></svg></div>
+        <div class="p9-rl t-display" id="pys09-sc005-l1" style="left:160px"><span class="p9-w">the </span><span class="p9-w">accountant</span></div>
+        <div class="p9-rl t-display" id="pys09-sc005-l2" style="left:720px; color:var(--plum-dark)"><span class="p9-w">the </span><span class="p9-w">regulators</span></div>
+        <div class="p9-rl t-display" id="pys09-sc005-l3" style="left:1280px"><span class="p9-w">your </span><span class="p9-w">investors</span></div>
+      </div>
+      <div class="p9-credit ink t-label">Seal: Banco Central del Paraguay</div>
+    </div></div>
+
+    <!-- sc006 · 966.30–968.27 · FACE M · Hey, bad mistake on our part -->
+    <div class="p9-scene" id="pys09-sc006"><div class="p9-shot" id="pys09-sc006-shot">
+      <div class="p9-fcw" id="pys09-sc006-fw"><video id="pys09-sc006-v" class="p9-full" src="assets/facecam/paraguay_facecam_master.mp4" muted playsinline data-start="25.70" data-duration="2.02" data-media-start="966.30"></video></div>
+      <div class="p9-scrim-bl"></div>
+      <div class="p9-lt t-serif-i clean" id="pys09-sc006-lt" style="font-size:76px; width:820px"><span class="p9-w">“bad </span><span class="p9-w">mistake </span><span class="p9-w">on </span><span class="p9-w">our </span><span class="p9-w">part”</span></div>
+    </div></div>
+
+    <!-- sc007 · 968.27–973.48 · FACE W (EDL join) · this is where you can get creative -->
+    <div class="p9-scene" id="pys09-sc007"><div class="p9-shot" id="pys09-sc007-shot">
+      <div class="p9-fcw" id="pys09-sc007-fw"><video id="pys09-sc007-v" class="p9-full" src="assets/facecam/paraguay_facecam_master.mp4" muted playsinline data-start="27.67" data-duration="5.26" data-media-start="968.27"></video></div>
+      <div class="p9-scrim-bl"></div>
+      <div class="p9-lt t-serif-i clean" id="pys09-sc007-q" style="font-size:76px; width:820px">“bad mistake on our part”</div>
+      <div class="p9-lt t-display clean" id="pys09-sc007-lt" style="width:760px"><span class="p9-w">where </span><span class="p9-w">you </span><span class="p9-w">can </span><span class="p9-w">get </span><span class="p9-w t-serif-i" style="color:var(--ueno-light)">creative</span></div>
+    </div></div>
+
+    <!-- sc008 · 973.48–975.66 · FACE C · share the quote I've shared before -->
+    <div class="p9-scene" id="pys09-sc008"><div class="p9-shot" id="pys09-sc008-shot">
+      <div class="p9-fcw" id="pys09-sc008-fw"><video id="pys09-sc008-v" class="p9-full" src="assets/facecam/paraguay_facecam_master.mp4" muted playsinline data-start="32.88" data-duration="2.23" data-media-start="973.48"></video></div>
+    </div></div>
+
+    <!-- sc009 · 975.66–981.66 · My accounting teacher … what happens to creative accountants? · chalkboard -->
+    <div class="p9-scene" id="pys09-sc009"><div class="p9-shot" id="pys09-sc009-shot">
+      <div class="p9-cam" id="pys09-sc009-cam">
+        <div id="pys09-sc009-board"></div><div id="pys09-sc009-smear"></div><div id="pys09-sc009-smear2"></div>
+        <div class="p9-abs t-serif-i p9-chalk" id="pys09-sc009-h" style="left:150px; top:120px; font-size:70px"><span class="p9-cw">my </span><span class="p9-cw">accounting </span><span class="p9-cw">teacher</span></div>
+        <svg id="pys09-sc009-svg" class="p9-mk" viewBox="0 0 1920 1080"></svg>
+        <div class="p9-abs t-serif-i p9-chalk" id="pys09-sc009-q1" style="left:150px; top:360px; font-size:140px; line-height:1"><span class="p9-cw">what </span><span class="p9-cw">happens </span><span class="p9-cw">to</span></div>
+        <div class="p9-abs t-serif-i p9-chalk" id="pys09-sc009-q2" style="left:150px; top:560px; font-size:140px; line-height:1"><span class="p9-cw">creative </span><span class="p9-cw">accountants?</span></div>
+        <div id="pys09-sc009-tray"></div><div id="pys09-sc009-stick"></div><div id="pys09-sc009-eraser"></div>
+        <div id="pys09-sc009-frame"></div>
+      </div>
+    </div></div>
+
+    <!-- sc010 · 981.66–983.00 · FACE W · they go to jail -->
+    <div class="p9-scene" id="pys09-sc010"><div class="p9-shot" id="pys09-sc010-shot">
+      <div class="p9-fcw" id="pys09-sc010-fw"><video id="pys09-sc010-v" class="p9-full" src="assets/facecam/paraguay_facecam_master.mp4" muted playsinline data-start="41.06" data-duration="1.39" data-media-start="981.66"></video></div>
+      <div class="p9-scrim-bl"></div>
+      <div class="p9-lt t-display clean" id="pys09-sc010-lt" style="font-size:96px"><span class="p9-w">they </span><span class="p9-w">go </span><span class="p9-w">to </span><span class="p9-w">jail.</span></div>
+    </div></div>
+
+    <!-- sc011 · 983.00–986.76 · FACE C · I don't know if that happens in the United States … Paraguay -->
+    <div class="p9-scene" id="pys09-sc011"><div class="p9-shot" id="pys09-sc011-shot">
+      <div class="p9-fcw" id="pys09-sc011-fw"><video id="pys09-sc011-v" class="p9-full" src="assets/facecam/paraguay_facecam_master.mp4" muted playsinline data-start="42.40" data-duration="3.81" data-media-start="983.00"></video></div>
+    </div></div>
+
+    <!-- sc012 · 986.76–990.60 · they're gonna end up in jail · Última Hora: executives led into ex-Tacumbú -->
+    <div class="p9-scene" id="pys09-sc012"><div class="p9-shot" id="pys09-sc012-shot">
+      <div class="p9-vw" id="pys09-sc012-vw"><video id="pys09-sc012-v" class="p9-full" src="assets/paraguay/shared/footage/uh_directivos_tacumbu.mp4" muted playsinline data-start="46.16" data-duration="3.89" data-media-start="3.45" style="filter:saturate(0.35) contrast(1.06) brightness(0.92)" data-color-grading='{"intensity":1,"effects":{"chromaticAberration":0.12}}'></video></div>
+      <div class="p9-scrim-bl"></div>
+      <div class="p9-lt t-display clean" id="pys09-sc012-lt" style="font-size:88px"><span class="p9-w">end </span><span class="p9-w">up </span><span class="p9-w">in </span><span class="p9-w">jail</span></div>
+      <div class="p9-credit t-label">Video: Última Hora</div>
+    </div></div>
+
+    <!-- sc013 · 990.60–1000.30 · fake companies … the company that needs it … over and over again · flow diagram -->
+    <div class="p9-scene" id="pys09-sc013"><div class="p9-shot p9-paper" id="pys09-sc013-shot">
+      <div class="p9-p1" style="background-image:url('assets/textures/paper_cream_01.jpg')"></div>
+      <div class="p9-p2" style="background-image:url('assets/textures/paper_graph_01_hires.jpg'); filter:saturate(0.3); opacity:0.5"></div>
+      <div class="p9-cam" id="pys09-sc013-cam">
+        <svg id="pys09-sc013-svg" class="p9-mk" viewBox="0 0 1920 1080"></svg>
+        <div class="p9-node" id="pys09-sc013-bank" style="left:140px; top:350px; background:var(--ueno)"><div class="p9-logo" style="left:40px; top:84px; width:240px; height:52px; background:var(--bone)"></div></div>
+        <div class="p9-fake" id="pys09-sc013-f1" style="top:230px"><i style="top:30px; width:160px"></i><i style="top:52px; width:120px"></i><i style="top:74px; width:200px"></i></div>
+        <div class="p9-fake" id="pys09-sc013-f2" style="top:400px"><i style="top:30px; width:190px"></i><i style="top:52px; width:110px"></i><i style="top:74px; width:150px"></i></div>
+        <div class="p9-fake" id="pys09-sc013-f3" style="top:570px"><i style="top:30px; width:140px"></i><i style="top:52px; width:180px"></i><i style="top:74px; width:130px"></i></div>
+        <div class="p9-node" id="pys09-sc013-grp" style="left:1460px; top:350px; background:var(--ueno-dark)"><svg viewBox="0 0 100 100" style="position:absolute; left:100px; top:50px; width:120px; height:120px" id="pys09-sc013-gico"></svg></div>
+        <div class="p9-abs t-label p9-ink" id="pys09-sc013-fl" style="left:760px; width:400px; top:716px; text-align:center; font-size:30px"><span class="p9-w">fake </span><span class="p9-w">companies</span></div>
+        <div class="p9-abs t-serif-i p9-ink" id="pys09-sc013-gl" style="left:1420px; width:400px; top:590px; text-align:center; font-size:44px; line-height:1.1"><span class="p9-w">the </span><span class="p9-w">company </span><span class="p9-w">that </span><span class="p9-w">needs </span><span class="p9-w">it</span></div>
+        <div id="pys09-sc013-chips"></div>
+      </div>
+      <div class="p9-abs t-display p9-ink" id="pys09-sc013-k" style="left:96px; top:96px; font-size:64px"><span class="p9-w">the </span><span class="p9-w">new </span><span class="p9-w">creative </span><span class="p9-w">way</span></div>
+      <div class="p9-abs t-display p9-ink" id="pys09-sc013-ov" style="left:0; width:1920px; top:880px; text-align:center; font-size:84px"><span class="p9-w">over </span><span class="p9-w">and </span><span class="p9-w">over </span><span class="p9-w">again</span></div>
+    </div></div>
+
+    <!-- sc014 · 1000.30–1006.12 · FACE M · the company did not have any money -->
+    <div class="p9-scene" id="pys09-sc014"><div class="p9-shot" id="pys09-sc014-shot">
+      <div class="p9-fcw" id="pys09-sc014-fw"><video id="pys09-sc014-v" class="p9-full" src="assets/facecam/paraguay_facecam_master.mp4" muted playsinline data-start="59.70" data-duration="5.87" data-media-start="1000.30"></video></div>
+      <div class="p9-scrim-bl"></div>
+      <div class="p9-lt t-display clean" id="pys09-sc014-lt" style="width:760px"><span class="p9-w">did </span><span class="p9-w">not </span><span class="p9-w">have </span><span class="p9-w">any </span><span class="p9-w">money</span></div>
+    </div></div>
+
+    <!-- sc015 · 1006.12–1019.72 · issued new loans to that same company … pay back the bank … old loan, it's good · ledger rollover -->
+    <div class="p9-scene" id="pys09-sc015"><div class="p9-shot p9-paper" id="pys09-sc015-shot">
+      <div class="p9-p1" style="background-image:url('assets/textures/paper_cream_02.jpg')"></div>
+      <div class="p9-p2" style="background-image:url('assets/textures/paper_fiber_01.jpg'); opacity:0.5"></div>
+      <div class="p9-cam" id="pys09-sc015-cam"><div id="pys09-sc015-led"></div><svg id="pys09-sc015-svg" class="p9-mk" viewBox="0 0 1920 1080"></svg></div>
+      <div class="p9-side t-display p9-ink" id="pys09-sc015-a" style="top:400px"><span class="p9-w">new </span><span class="p9-w" style="color:var(--ueno-dark)">loans</span></div>
+      <div class="p9-side t-display p9-ink" id="pys09-sc015-b" style="top:400px"><span class="p9-w">same </span><span class="p9-w">company</span></div>
+      <div class="p9-side t-display p9-ink" id="pys09-sc015-c" style="top:360px"><span class="p9-w">pay </span><span class="p9-w">back </span><span class="p9-w">the </span><span class="p9-w">bank</span></div>
+      <div class="p9-side t-serif-i p9-ink" id="pys09-sc015-d" style="left:700px; width:1100px; top:760px; font-size:84px"><span class="p9-w">“old </span><span class="p9-w">loan, </span><span class="p9-w">it's </span><span class="p9-w" style="color:var(--ueno-dark)">good”</span></div>
+    </div></div>
+
+    <!-- sc016 · 1019.72–1023.00 · FACE C · we'll see if it's good or not -->
+    <div class="p9-scene" id="pys09-sc016"><div class="p9-shot" id="pys09-sc016-shot">
+      <div class="p9-fcw" id="pys09-sc016-fw"><video id="pys09-sc016-v" class="p9-full" src="assets/facecam/paraguay_facecam_master.mp4" muted playsinline data-start="79.12" data-duration="3.33" data-media-start="1019.72"></video></div>
+    </div></div>
+
+    <!-- sc017 · 1023.00–1025.20 · FACE W · they just kept delaying the problem -->
+    <div class="p9-scene" id="pys09-sc017"><div class="p9-shot" id="pys09-sc017-shot">
+      <div class="p9-fcw" id="pys09-sc017-fw"><video id="pys09-sc017-v" class="p9-full" src="assets/facecam/paraguay_facecam_master.mp4" muted playsinline data-start="82.40" data-duration="2.25" data-media-start="1023.00"></video></div>
+      <div class="p9-scrim-bl"></div>
+      <div class="p9-lt t-display clean" id="pys09-sc017-lt" style="width:760px"><span class="p9-w">kept </span><span class="p9-w">delaying </span><span class="p9-w">the </span><span class="p9-w">problem</span></div>
+    </div></div>
+
+    <!-- sc018 · 1025.20–1028.75 · until everything got too big to fail · loan tower -->
+    <div class="p9-scene" id="pys09-sc018"><div class="p9-shot" id="pys09-sc018-shot">
+      <div class="p9-desk"></div>
+      <div class="p9-cam" id="pys09-sc018-cam" style="transform-origin:1300px 1000px"><div id="pys09-sc018-stack"></div></div>
+      <div class="p9-scrim-bl"></div>
+      <div class="p9-lt t-display clean" id="pys09-sc018-lt" style="font-size:110px; width:700px"><span class="p9-w">too </span><span class="p9-w">big </span><span class="p9-w">to </span><span class="p9-w">fail</span></div>
+    </div></div>
+
+    <!-- sc019 · 1028.75–1034.87 · more than $300 million … to companies that they own themselves -->
+    <div class="p9-scene" id="pys09-sc019"><div class="p9-shot" id="pys09-sc019-shot">
+      <div class="p9-desk"></div>
+      <div class="p9-cam" id="pys09-sc019-cam">
+        <svg id="pys09-sc019-svg" class="p9-mk" viewBox="0 0 1920 1080"></svg>
+        <div class="t-serif-i clean" id="pys09-sc019-k"><span class="p9-w">more </span><span class="p9-w">than</span></div>
+        <div class="t-display halate yellow" id="pys09-sc019-num" style="opacity:0">$0</div>
+        <div class="t-display clean" id="pys09-sc019-mil"><span class="p9-w">MILLION</span></div>
+        <div class="t-serif-i clean" id="pys09-sc019-own"><span class="p9-w">companies </span><span class="p9-w">that </span><span class="p9-w">they </span><span class="p9-w">own </span><span class="p9-w" style="color:var(--ueno-light)">themselves</span></div>
+      </div>
+    </div></div>
+
+    <!-- sc020 · 1034.87–1042.60 · lending money to a company … pay the bank back … borrow more money … Merry go around · the carousel -->
+    <div class="p9-scene" id="pys09-sc020"><div class="p9-shot" id="pys09-sc020-shot">
+      <div id="pys09-sc020-bg"></div><div id="pys09-sc020-dim"></div>
+      <div class="p9-cam" id="pys09-sc020-cam" style="transform-origin:1200px 560px">
+        <svg id="pys09-sc020-base" class="p9-mk" viewBox="0 0 1920 1080"></svg>
+        <div id="pys09-sc020-col" style="z-index:30"></div>
+        <div id="pys09-sc020-riders"></div>
+        <svg id="pys09-sc020-top" class="p9-mk" viewBox="0 0 1920 1080" style="z-index:50"></svg>
+        <div class="t-display halate" id="pys09-sc020-title"><span class="p9-w">MERRY-</span><span class="p9-w">GO-</span><span class="p9-w">ROUND</span></div>
+      </div>
+      <div class="p9-scrim-bl"></div>
+      <div class="p9-lt t-display clean" id="pys09-sc020-a" style="width:560px"><span class="p9-w">lending </span><span class="p9-w">money </span><span class="p9-w">to </span><span class="p9-w">a </span><span class="p9-w">company</span></div>
+      <div class="p9-lt t-display clean" id="pys09-sc020-b" style="width:560px"><span class="p9-w">pay </span><span class="p9-w">the </span><span class="p9-w">bank </span><span class="p9-w">back</span></div>
+      <div class="p9-lt t-display clean" id="pys09-sc020-c" style="width:560px"><span class="p9-w">borrow </span><span class="p9-w">more </span><span class="p9-w">money</span></div>
+      <div class="p9-credit t-label">Photo: Peter Greenberg, CC BY-SA 3.0, via Wikimedia Commons</div>
+    </div></div>
+
+    <div id="pys09-flash"></div>
+    <div id="pys09-grain" class="tx tx-grain" style="background-image:url('assets/textures/grain_01_norm.jpg')"></div>
+    <div id="pys09-dust" class="tx tx-dust" style="background-image:url('assets/textures/dust_02.jpg')"></div>
+    <div id="pys09-vig" class="vignette"></div>
+    <audio id="pys09-vo" class="temp-vo" src="vo_py.mp3" data-start="0" data-duration="102.00" data-media-start="940.60" data-volume="1"></audio>
+  </div>
+
+  <script>
+  (function () {
+    const SEG = "pys09", SEG_START = 940.60, SEG_END = 1042.60, DURATION = 102.00;
+    const T = (s) => +(s - SEG_START).toFixed(3);   // TEXT cues (audited): literal master word start − 0.06
+    const S = (s) => +(s - SEG_START).toFixed(3);   // STRUCTURAL cues (cuts, camera, objects)
+    const tl = gsap.timeline({ paused: true });
+    const $ = (id) => document.getElementById(SEG + "-" + id);
+    const NS = "http://www.w3.org/2000/svg";
+    const defs = $("defs");
+    const E = FX.ease;
+    const C = (e, d) => FX.choppy(e, d, 12);
+    const INK = "#16201c", BONE = "#f2eee3", PLUM = "#7a3f8e", UENO = "#1fa595", UENOD = "#0c5c54", UENOL = "#93e0d3", RED = "#7a2f18", ASH = "#8b928d", ASHD = "#353c38";
+    const GM = "M200 40c-52 0-86 40-86 96 0 40 18 74 44 92-4 14-10 24-22 30-58 22-96 52-108 104-6 26-8 58-8 118h360c0-60-2-92-8-118-12-52-50-82-108-104-12-6-18-16-22-30 26-18 44-52 44-92 0-56-34-96-86-96z";
+    const BLDG = '<path d="M14 88 L14 34 L50 14 L86 34 L86 88 Z" fill="none" stroke-width="6"/><path d="M28 46 v30 M44 46 v30 M56 46 v30 M72 46 v30" stroke-width="6"/><path d="M8 90 H92" stroke-width="6"/>';
+
+    // ---------- scenes ----------
+    const SC = [
+      ["sc001", 940.60, 946.20, "face"], ["sc002", 946.20, 951.00, "paper"], ["sc003", 951.00, 956.15, "desk"], ["sc004", 956.15, 961.56, "paper"],
+      ["sc005", 961.56, 966.30, "paper"], ["sc006", 966.30, 968.27, "face"], ["sc007", 968.27, 973.48, "face"], ["sc008", 973.48, 975.66, "face"],
+      ["sc009", 975.66, 981.66, "chalk"], ["sc010", 981.66, 983.00, "face"], ["sc011", 983.00, 986.76, "face"], ["sc012", 986.76, 990.60, "night"],
+      ["sc013", 990.60, 1000.30, "paper"], ["sc014", 1000.30, 1006.12, "face"], ["sc015", 1006.12, 1019.72, "paper"], ["sc016", 1019.72, 1023.00, "face"],
+      ["sc017", 1023.00, 1025.20, "face"], ["sc018", 1025.20, 1028.75, "desk"], ["sc019", 1028.75, 1034.87, "desk"], ["sc020", 1034.87, 1042.60, "night"],
+    ];
+    const GROUND = { paper: [0.32, 0.16, 0.26], night: [1, 0.42, 0.36], desk: [0.9, 0.3, 0.3], chalk: [0.8, 0.3, 0.3], face: [0, 0, 0] };
+    const EARLY = { sc004: 0.45 };   // paper slide: incoming scene visible during the slide
+    SC.forEach((s, i) => {
+      const el = $(s[0]), a = s[1] - (EARLY[s[0]] || 0);
+      if (i === 0) gsap.set(el, { autoAlpha: 1 });
+      else tl.fromTo(el, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.001, immediateRender: false }, S(a));
+      if (s[2] < SEG_END) tl.set(el, { autoAlpha: 0 }, S(s[2]) + 0.05);
+    });
+    gsap.set([$("vig"), $("dust"), $("grain")], { opacity: 0 });
+    SC.forEach((s) => { const v = GROUND[s[3]]; tl.set([$("vig"), $("dust"), $("grain")], { opacity: (i) => v[i] }, S(s[1])); });
+
+    // ---------- helpers ----------
+    const show = (el, t) => tl.fromTo(el, { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, t);
+    const rise = (el, t, o) => { o = o || {}; const d = o.dur || 0.6;
+      tl.fromTo(el, { opacity: 0, y: o.y == null ? 16 : o.y }, { opacity: 1, y: 0, duration: d, ease: C(E.out, d), immediateRender: true }, t); };
+    const pop = (el, t, o) => { o = o || {}; const d = o.dur || 0.8;
+      tl.fromTo(el, { opacity: 0, scale: o.from == null ? 0.6 : o.from }, { opacity: 1, scale: 1, duration: d, ease: C(E.out, d), immediateRender: true }, t); };
+    const out = (el, t, d) => tl.to(el, { opacity: 0, duration: d || 0.25, ease: "power1.in" }, t);
+    const W = (id) => Array.from($(id).querySelectorAll(".p9-w"));
+    function words(id, cues, o) { const ws = W(id); cues.forEach((c, i) => rise(ws[i], c, o)); }
+    // chalk writing: each word wipes in left→right at 12 fps
+    function chalk(id, cues, d) { Array.from($(id).querySelectorAll(".p9-cw")).forEach((w, i) =>
+      tl.fromTo(w, { clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: d || 0.3, ease: C("none", d || 0.3), immediateRender: true }, cues[i])); }
+    function el(parent, tag, attrs) { const n = document.createElementNS(NS, tag); for (const k in attrs) n.setAttribute(k, attrs[k]); parent.appendChild(n); return n; }
+    function ink(parent, d, t, dur, o) {
+      o = o || {};
+      const p = el(parent, "path", { d: d, fill: "none", stroke: o.color || INK, "stroke-width": o.width || 5, "stroke-linecap": "round", "stroke-linejoin": "round" });
+      if (o.filter) p.setAttribute("filter", o.filter);
+      if (o.dash) p.setAttribute("stroke-dasharray", o.dash);
+      const len = p.getTotalLength() || 1;
+      p._len = len;
+      if (!o.dash) {
+        p.setAttribute("stroke-dasharray", len + " " + len); p.setAttribute("stroke-dashoffset", len);
+        gsap.set(p, { opacity: 0 }); tl.set(p, { opacity: o.opacity == null ? 1 : o.opacity }, t);
+        tl.fromTo(p, { attr: { "stroke-dashoffset": len } }, { attr: { "stroke-dashoffset": 0 }, duration: dur, ease: o.ease || C(E.out, dur), immediateRender: true }, t);
+      }
+      return p;
+    }
+    const whipN = { n: 0 };
+    function whip(a, b, t, o) {
+      o = Object.assign({ dir: 1, vertical: false, flash: false, dur: 0.32 }, o);
+      const k = ++whipN.n, ba = FX.whipDefs(defs, SEG + "-wa" + k), bb = FX.whipDefs(defs, SEG + "-wb" + k), h = o.dur / 2;
+      const A = $(a + "-shot"), B = $(b + "-shot");
+      tl.set(A, { filter: "url(#" + SEG + "-wa" + k + ")" }, t - h - 0.01); tl.set(A, { filter: "none" }, t + 0.06);
+      tl.set(B, { filter: "url(#" + SEG + "-wb" + k + ")" }, t - 0.001); tl.set(B, { filter: "none" }, t + h + 0.02);
+      FX.whip(tl, A, B, t, { dir: o.dir, vertical: o.vertical, dur: o.dur, blurA: ba, blurB: bb });
+      if (o.flash) tl.fromTo($("flash"), { opacity: 0 }, { opacity: 0.85, duration: 0.08, yoyo: true, repeat: 1, ease: "power2.in", immediateRender: false }, t - 0.08);
+    }
+    function slide(a, b, t, o) {
+      o = Object.assign({ from: 1, d: 0.45 }, o);
+      const A = $(a + "-shot"), B = $(b + "-shot"), dist = 1980 * o.from;
+      tl.fromTo(B, { x: dist, boxShadow: "0 0 80px rgba(0,0,0,0.5)" }, { x: 0, duration: o.d, ease: C(E.inOut, o.d), immediateRender: false }, t - o.d);
+      tl.set(B, { boxShadow: "none" }, t);
+      tl.fromTo(A, { x: 0 }, { x: -dist * 0.12, duration: o.d, ease: E.in, immediateRender: false }, t - o.d);
+    }
+    const FR = { W: [1.0, 1.03], M: [1.25, 1.285], C: [1.55, 1.59] };
+    function face(id, a, b, k) {
+      const fw = $(id + "-fw");
+      gsap.set(fw, { scale: FR[k][0] });
+      tl.fromTo(fw, { scale: FR[k][0] }, { scale: FR[k][1], duration: b - a, ease: "none", immediateRender: false }, S(a));
+    }
+    // ---------- the ledger (same page, three times) ----------
+    // sheet at (560, 80) 1200 wide; rows every 110 px from y = 184 (sheet px); columns: borrower 50, amount 520, payments 800
+    const ROWY = (i) => 184 + i * 110;
+    function ledger(host, pfx) {
+      let h = '<div class="p9-led"><div class="p9-logo"></div><div class="ttl t-label">loan ledger</div><div class="hdr"></div>' +
+        '<div class="vr" style="left:490px"></div><div class="vr" style="left:770px"></div>' +
+        '<div class="ch t-label" style="left:50px">borrower</div><div class="ch t-label" style="left:520px">amount</div><div class="ch t-label" style="left:800px">payments</div>';
+      const tick = '<svg viewBox="0 0 60 60"><path d="M14 31 L26 43 L47 17" fill="none" stroke="#f2eee3" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+      for (let r = 0; r < 9; r++) {
+        const y = ROWY(r) + 20;
+        if (r < 2) {   // other borrowers, paid
+          h += '<div class="sc" style="left:50px; top:' + (y + 26) + 'px; width:' + (300 - r * 60) + 'px"></div><div class="sc" style="left:520px; top:' + (y + 26) + 'px; width:150px"></div>';
+          for (let b = 0; b < 3; b++) h += '<div class="bx" style="left:' + (800 + b * 100) + 'px; top:' + (y + 2) + 'px"><i></i>' + tick + '</div>';
+        } else if (r === 2) {   // OUR loan
+          h += '<div class="bw t-serif-i" id="' + pfx + '-bw" style="left:50px; top:' + (y - 4) + 'px"><span class="p9-w">fake </span><span class="p9-w">business</span></div>';
+          h += '<div class="p9-stack" id="' + pfx + '-amt" style="left:540px; top:' + (y - 4) + 'px"><b style="top:44px"></b><b style="top:28px; left:6px"></b><b style="top:12px; left:2px"></b></div>';
+          for (let b = 0; b < 3; b++) h += '<div class="bx" id="' + pfx + '-p' + b + '" style="left:' + (800 + b * 100) + 'px; top:' + (y + 2) + 'px"><i></i>' + tick + '</div>';
+        } else if (r === 3) {   // the NEW loan row (sc015)
+          h += '<div id="' + pfx + '-new" style="position:absolute; left:0; top:0; width:1200px; height:1px">' +
+            '<div class="bw t-serif-i" style="left:50px; top:' + (y - 4) + 'px">fake business</div>' +
+            '<div class="p9-stack" id="' + pfx + '-namt" style="left:540px; top:' + (y - 4) + 'px"><b style="top:44px"></b><b style="top:28px; left:6px"></b><b style="top:12px; left:2px"></b></div>' +
+            '<div class="p9-tag t-label" style="left:800px; top:' + (y + 14) + 'px">new loan</div></div>';
+        }
+      }
+      host.innerHTML = h + "</div>";
+      const r = (k) => document.getElementById(pfx + "-" + k);
+      // our row starts unpaid: boxes empty
+      for (let b = 0; b < 3; b++) { const bx = r("p" + b); gsap.set(bx.querySelector("i"), { scaleY: 0 }); gsap.set(bx.querySelector("svg"), { opacity: 0 }); }
+      gsap.set(r("new"), { opacity: 0 });
+      return r;
+    }
+
+    FX.grain($("grain"), 941);
+    FX.dust($("dust"), 942, 2);
+    const PEN = FX.markupDefs(defs, SEG + "-pen", { boil: 4 });
+    defs.setAttribute("viewBox", "0 0 1 1");
+
+    /* ===== sc001 · FACE W ===== */
+    face("sc001", 940.60, 946.20, "W");
+    words("sc001-lt", [T(942.33), T(942.65), T(942.81), T(943.05)], { dur: 0.5, y: 12 });
+    out($("sc001-lt"), S(945.5));
+
+    /* ===== sc002 · the ledger: fake money → fake business (whip →) ===== */
+    whip("sc001", "sc002", S(946.20), { dir: 1 });
+    (function () {
+      const r = ledger($("sc002-led"), SEG + "-l2"), cam = $("sc002-cam");
+      W("sc002-led").forEach((w) => gsap.set(w, { opacity: 0 }));
+      gsap.set(cam, { transformOrigin: "1160px 300px" });
+      tl.fromTo(cam, { scale: 1.08, y: 30 }, { scale: 1.0, y: 0, duration: 4.8, ease: E.cam, immediateRender: false }, S(946.20));
+      FX.focusHunt(tl, cam, S(946.40), { dur: 0.7 });
+      words("sc002-k", [T(947.13), T(947.61)], { dur: 0.5, y: 12 });
+      // the money stack slides into the AMOUNT cell
+      tl.fromTo(r("amt"), { x: 260, opacity: 0 }, { x: 0, opacity: 1, duration: 0.8, ease: C(E.out, 0.8), immediateRender: true }, S(947.65));
+      const ar = ink($("sc002-svg"), "M420 560 C560 600 760 560 1080 506", S(948.0), 0.6, { color: INK, width: 5, filter: PEN });
+      out($("sc002-k"), S(949.30)); tl.to(ar, { opacity: 0, duration: 0.25 }, S(949.30));
+      // borrower: "fake business" written in the cell
+      W("sc002-led").forEach((w, i) => rise(w, [T(950.09), T(950.41)][i], { dur: 0.4, y: 8 }));
+      tl.to(cam, { scale: 1.1, duration: 0.45, ease: E.in }, S(950.55));
+    })();
+
+    /* ===== sc003 · tear-off calendar → 60 DAYS (hard cut on action) ===== */
+    (function () {
+      const host = $("sc003-pages"), steps = [1, 2, 4, 7, 10, 14, 18, 23, 28, 33, 38, 43, 48, 52, 56, 59, 60];
+      const t0 = S(952.0), tEnd = T(953.45), dt = (tEnd - t0) / (steps.length - 1);
+      // pages stacked: the last one (60) at the bottom; each earlier page tears off at its step
+      const pages = [];
+      for (let i = steps.length - 1; i >= 0; i--) {
+        const p = document.createElement("div"); p.className = "p9-pg";
+        p.innerHTML = '<div class="n t-display">' + steps[i] + "</div>";
+        if (i === steps.length - 1) p.innerHTML = '<div class="n t-display"><span class="p9-mark"><span class="p9-hlb" id="' + SEG + '-sc003-hl"></span>60</span></div>';
+        host.appendChild(p); pages[i] = p;
+      }
+      for (let i = 0; i < steps.length - 1; i++) {
+        const t = i === steps.length - 2 ? tEnd : t0 + dt * (i + 1) - 0.001;
+        const rot = (i % 2 ? 1 : -1) * (14 + (i % 3) * 6);
+        tl.to(pages[i], { y: -340, x: rot * 9, rotation: rot, opacity: 0, duration: 0.25, ease: "steps(3)" }, t);
+      }
+      tl.fromTo($("sc003-cam"), { scale: 1.06, x: 30 }, { scale: 1.0, x: 0, duration: 2.0, ease: E.cam, immediateRender: false }, S(951.00));
+      tl.to($("sc003-cam"), { scale: 1.05, duration: 2.6, ease: "none" }, S(953.55));
+      tl.fromTo($("sc003-hl"), { scaleX: 0 }, { scaleX: 1, duration: 0.4, ease: C(E.out, 0.4), immediateRender: true }, S(953.65));
+      words("sc003-days", [T(953.93)], { dur: 0.45, y: 12 });
+      tl.to($("sc003-cam"), { scale: 1.16, duration: 0.45, ease: E.in }, S(955.70));
+    })();
+    words("sc003-t", [T(951.45), T(951.69), T(951.85), T(952.25)], { dur: 0.45, y: 12 });
+    out($("sc003-t"), S(953.15));
+
+    /* ===== sc004 · red-ink write-down: LOSS, bad debt (paper slide ←) ===== */
+    slide("sc003", "sc004", S(956.15));
+    (function () {
+      const r = ledger($("sc004-led"), SEG + "-l4"), cam = $("sc004-cam");
+      W("sc004-led").forEach((w) => gsap.set(w, { opacity: 1 }));
+      // borrower already written, money in the cell
+      gsap.set(cam, { transformOrigin: "1180px 520px" });
+      tl.fromTo(cam, { scale: 1.2, x: 160 }, { scale: 1.25, x: 150, duration: 5.4, ease: "none", immediateRender: false }, S(955.70));
+      // red ink: the write-down line strikes the loan row
+      ink($("sc004-svg"), "M1060 530 C1200 520 1330 537 1470 520 C1560 512 1640 528 1700 518", S(956.30), 0.7, { color: RED, width: 8, filter: PEN });
+      ink($("sc004-svg"), "M600 548 C760 540 880 556 1030 542", S(956.95), 0.45, { color: RED, width: 6, filter: PEN });
+      words("sc004-k", [T(956.17), T(956.41), T(956.65), T(956.81)], { dur: 0.45, y: 10 });
+      out($("sc004-k"), S(958.05));
+      const st = $("sc004-stamp");
+      tl.fromTo(st, { opacity: 0, scale: 1.5 }, { opacity: 0.95, scale: 1, duration: 0.2, ease: "steps(3)", immediateRender: true }, T(958.41));
+      tl.fromTo($("sc004-shot"), { x: 0 }, { x: 6, duration: 0.05, yoyo: true, repeat: 1, ease: "none", immediateRender: false }, T(958.41) + 0.2);
+      words("sc004-bd", [T(960.49), T(960.73)], { dur: 0.3, y: 10 });
+    })();
+
+    /* ===== sc005 · tell the accountant / regulators / investors (whip ↑) ===== */
+    whip("sc004", "sc005", S(961.56), { dir: 1, vertical: true });
+    (function () {
+      $("sc005-calc").innerHTML = '<rect x="40" y="20" width="120" height="160" rx="12" fill="none" stroke="' + INK + '" stroke-width="8"/><rect x="58" y="38" width="84" height="34" fill="' + ASH + '"/>' +
+        [0, 1, 2].map((rr) => [0, 1, 2].map((cc) => '<rect x="' + (58 + cc * 30) + '" y="' + (90 + rr * 28) + '" width="22" height="18" rx="3" fill="' + INK + '"/>').join("")).join("");
+      $("sc005-ppl").innerHTML = [[20, 60, 0.14], [110, 60, 0.14], [62, 30, 0.16]].map((p) => '<g transform="translate(' + p[0] + ' ' + p[1] + ') scale(' + p[2] + ')"><path fill="' + ASHD + '" d="' + GM + '"/></g>').join("");
+      tl.fromTo($("sc005-memo"), { y: -40, opacity: 0 }, { y: 0, opacity: 1, duration: 0.7, ease: C(E.out, 0.7), immediateRender: true }, S(961.60));
+      tl.fromTo($("sc005-cam"), { scale: 1.0 }, { scale: 1.035, duration: 4.74, ease: "none", immediateRender: false }, S(961.56));
+      const svg = $("sc005-svg");
+      const card = (k, tc, x2) => {
+        pop($("sc005-c" + k), tc, { dur: 0.7, from: 0.85 });
+        const a = FX.markup.arrow(tl, svg, tc - 0.05, { x1: 960 + (x2 - 960) * 0.12, y1: 320, x2: x2, y2: 455, bend: (x2 - 960) * 0.12, head: 24, dur: 0.4, color: INK, width: 5, filter: PEN });
+        gsap.set(a, { opacity: 0 }); tl.set(a, { opacity: 1 }, tc - 0.05);
+      };
+      card(1, T(962.46), 400); words("sc005-l1", [T(962.46), T(962.78)], { dur: 0.4, y: 8 });
+      card(2, T(963.90), 961); words("sc005-l2", [T(963.90), T(963.98)], { dur: 0.4, y: 8 });
+      card(3, T(965.02), 1520); words("sc005-l3", [T(965.02), T(965.18)], { dur: 0.4, y: 8 });
+      tl.to($("sc005-cam"), { scale: 1.1, duration: 0.4, ease: E.in }, S(965.90));
+    })();
+
+    /* ===== sc006 · FACE M (hard cut) / sc007 · FACE W (jump cut at the EDL join) / sc008 · FACE C ===== */
+    face("sc006", 966.30, 968.27, "M");
+    words("sc006-lt", [T(967.02), T(967.42), T(967.58), T(967.74), T(968.14)], { dur: 0.25, y: 8 });
+    face("sc007", 968.27, 973.48, "W");
+    out($("sc007-q"), S(968.95), 0.3);
+    words("sc007-lt", [T(972.30), T(972.54), T(972.70), T(972.86), T(973.02)], { dur: 0.3, y: 10 });
+    face("sc008", 973.48, 975.66, "C");
+
+    /* ===== sc009 · the chalkboard (light-flash whip) ===== */
+    whip("sc008", "sc009", S(975.66), { dir: 1, flash: true });
+    (function () {
+      const cam = $("sc009-cam");
+      tl.fromTo(cam, { scale: 1.0 }, { scale: 1.045, duration: 6.0, ease: "none", immediateRender: false }, S(975.66));
+      chalk("sc009-h", [T(975.66), T(975.82), T(976.22)], 0.3);
+      // the chalk stick lifts as he "writes", the eraser wipes the header away (cut on action)
+      tl.fromTo($("sc009-stick"), { y: 0, rotation: 0 }, { y: -18, rotation: -6, duration: 0.3, ease: C(E.out, 0.3), immediateRender: false }, S(975.70));
+      tl.to($("sc009-stick"), { y: 0, rotation: 0, duration: 0.4, ease: C(E.out, 0.4) }, S(976.70));
+      tl.to($("sc009-eraser"), { x: -1250, y: -868, rotation: -4, duration: 0.5, ease: C(E.inOut, 0.5) }, S(978.20));
+      tl.to($("sc009-eraser"), { x: -500, y: -868, duration: 0.45, ease: C("sine.inOut", 0.45) }, S(978.70));
+      tl.to($("sc009-h"), { clipPath: "inset(0 0 0 100%)", duration: 0.45, ease: C("sine.inOut", 0.45) }, S(978.72));
+      tl.to($("sc009-eraser"), { x: 0, y: 0, rotation: 0, duration: 0.55, ease: C(E.inOut, 0.55) }, S(979.25));
+      chalk("sc009-q1", [T(979.98), T(980.14), T(980.38)], 0.3);
+      chalk("sc009-q2", [T(980.54), T(980.86)], 0.3);
+      // chalk underline under "creative accountants?" (permanent rough = chalk texture, no boil)
+      ink($("sc009-svg"), "M156 730 C520 742 980 722 1420 736", S(981.10), 0.35, { color: "#ebe8de", width: 7, opacity: 0.85, filter: "url(#pys09-chalkf)" });
+    })();
+
+    /* ===== sc010 · FACE W punchline (hard cut) / sc011 · FACE C ===== */
+    face("sc010", 981.66, 983.00, "W");
+    words("sc010-lt", [T(981.66), T(981.90), T(982.14), T(982.30)], { dur: 0.25, y: 10 });
+    face("sc011", 983.00, 986.76, "C");
+
+    /* ===== sc012 · into ex-Tacumbú (hard cut) ===== */
+    gsap.set($("sc012-vw"), { transformOrigin: "55% 45%" });
+    tl.fromTo($("sc012-vw"), { scale: 1.0 }, { scale: 1.07, duration: 3.84, ease: "none", immediateRender: false }, S(986.76));
+    words("sc012-lt", [T(989.18), T(989.34), T(989.50), T(989.58)], { dur: 0.35, y: 10 });
+
+    /* ===== sc013 · the new creative way: bank → fake companies → the company that needs it (whip ↑) ===== */
+    whip("sc012", "sc013", S(990.60), { dir: -1, vertical: true });
+    (function () {
+      const svg = $("sc013-svg"), cam = $("sc013-cam");
+      $("sc013-gico").innerHTML = '<g stroke="' + BONE + '" fill="none">' + BLDG + "</g>";
+      tl.fromTo(cam, { scale: 1.04 }, { scale: 1.0, duration: 9.7, ease: E.cam, immediateRender: false }, S(990.60));
+      pop($("sc013-bank"), S(990.75), { dur: 0.8, from: 0.8 });
+      pop($("sc013-grp"), S(991.40), { dur: 0.8, from: 0.8 });
+      words("sc013-k", [T(990.78), T(991.02), T(991.26), T(991.74)], { dur: 0.45, y: 10 });
+      out($("sc013-k"), S(993.60));
+      // creating fake companies: three dashed shells pop at 12 fps
+      ["f1", "f2", "f3"].forEach((f, i) => tl.fromTo($("sc013-" + f), { opacity: 0, scale: 1.25 }, { opacity: 1, scale: 1, duration: 2 / 12, ease: "steps(2)", immediateRender: true }, S(994.86) + i * 0.17));
+      words("sc013-fl", [T(995.10), T(995.42)], { dur: 0.4, y: 8 });
+      // arrows bank → shells, shells → group
+      const arr = (t, x1, y1, x2, y2, b) => { const a = FX.markup.arrow(tl, svg, t, { x1: x1, y1: y1, x2: x2, y2: y2, bend: b, head: 22, dur: 0.4, color: INK, width: 5, filter: PEN }); gsap.set(a, { opacity: 0 }); tl.set(a, { opacity: 1 }, t); };
+      arr(S(995.80), 470, 420, 786, 290, -20); arr(S(995.88), 470, 462, 786, 462, -12); arr(S(995.96), 470, 504, 786, 630, 20);
+      arr(S(997.00), 1134, 290, 1450, 420, -20); arr(S(997.08), 1134, 462, 1450, 462, -12); arr(S(997.16), 1134, 630, 1450, 504, 20);
+      words("sc013-gl", [T(997.58), T(997.66), T(997.98), T(998.14), T(998.38)], { dur: 0.35, y: 8 });
+      // the loop: group → back to the bank along the bottom (dashed teal), then chips go round and round
+      const loopD = "M300 460 L960 460 L1620 460 C1700 640 1580 800 1300 806 L620 806 C340 800 220 640 300 460";
+      const lp = el(svg, "path", { d: loopD, fill: "none", stroke: "none" });
+      const LEN = lp.getTotalLength(), PTS = [];
+      for (let i = 0; i <= 400; i++) { const q = lp.getPointAtLength((LEN * i) / 400); PTS.push([q.x, q.y]); }
+      const ret = ink(svg, "M1620 590 C1680 700 1560 800 1300 806 L620 806 C380 800 260 720 290 594", S(998.70), 0.8, { color: UENOD, width: 5, ease: C(E.inOut, 0.8) });
+      const uG = 1320 / LEN, uF = 660 / LEN;   // the shells' and the group's position on the loop
+      const host = $("sc013-chips"), chips = [];
+      for (let k = 0; k < 3; k++) { const c = document.createElement("div"); c.className = "p9-chip"; host.appendChild(c); chips.push(c); gsap.set(c, { opacity: 0 }); }
+      const place = (c, u) => { u = ((u % 1) + 1) % 1; const q = PTS[Math.round(u * 400)]; c.style.transform = "translate(" + q[0].toFixed(1) + "px," + q[1].toFixed(1) + "px)"; };
+      const st = { u: 0 };
+      place(chips[0], 0);
+      tl.set(chips[0], { opacity: 1 }, S(995.70));
+      tl.fromTo(st, { u: 0 }, { u: uF, duration: 0.8, ease: C(E.inOut, 0.8), immediateRender: false, onUpdate: () => place(chips[0], st.u) }, S(995.96));
+      tl.to(st, { u: uG, duration: 0.8, ease: C(E.inOut, 0.8), onUpdate: () => place(chips[0], st.u) }, S(997.16));
+      // over and over again: three chips run the whole loop, faster and faster
+      const lu = { u: 0 };
+      tl.set([chips[1], chips[2]], { opacity: 1 }, S(998.80));
+      tl.fromTo(lu, { u: 0 }, { u: 2.4, duration: 1.5, ease: C("power1.in", 1.5), immediateRender: false, onUpdate: () => chips.forEach((c, k) => place(c, uG + lu.u - k / 3)) }, S(998.80));
+      words("sc013-ov", [T(998.78), T(999.10), T(999.26), T(999.50)], { dur: 0.3, y: 10 });
+      tl.to(cam, { scale: 1.08, duration: 0.5, ease: E.in }, S(999.80));
+    })();
+
+    /* ===== sc014 · FACE M (hard cut on action) ===== */
+    face("sc014", 1000.30, 1006.12, "M");
+    words("sc014-lt", [T(1003.58), T(1003.74), T(1003.90), T(1004.14), T(1004.38)], { dur: 0.35, y: 10 });
+    out($("sc014-lt"), S(1005.60));
+
+    /* ===== sc015 · the rollover on the ledger (whip →) ===== */
+    whip("sc014", "sc015", S(1006.12), { dir: 1 });
+    (function () {
+      const r = ledger($("sc015-led"), SEG + "-l15"), cam = $("sc015-cam"), svg = $("sc015-svg");
+      W("sc015-led").forEach((w) => gsap.set(w, { opacity: 1 }));
+      gsap.set(cam, { transformOrigin: "1180px 520px" });
+      // framing 1: the unpaid row
+      tl.fromTo(cam, { scale: 1.36, x: 160, y: 40 }, { scale: 1.3, x: 160, y: 20, duration: 4.6, ease: E.cam, immediateRender: false }, S(1006.12));
+      // the red pen starts the write-down … and pulls back
+      const red = ink(svg, "M1060 530 C1200 520 1330 537 1470 520 C1560 512 1640 528 1700 518", S(1007.70), 2.2, { color: RED, width: 8, filter: PEN, ease: C("sine.inOut", 2.2) });
+      tl.to(red, { attr: { "stroke-dashoffset": red._len }, duration: 0.6, ease: C(E.in, 0.6) }, S(1010.50));
+      tl.to(red, { opacity: 0, duration: 0.1 }, S(1011.10));
+      // framing 2: new loan row slides in under the old one
+      tl.to(cam, { scale: 1.18, y: -60, duration: 1.2, ease: E.cam }, S(1010.80));
+      tl.fromTo(r("new"), { x: 700, opacity: 0 }, { x: 0, opacity: 1, duration: 0.9, ease: C(E.out, 0.9), immediateRender: true }, S(1011.40));
+      words("sc015-a", [T(1011.34), T(1011.58)], { dur: 0.45, y: 10 });
+      out($("sc015-a"), S(1012.15), 0.15);
+      // "same company": a pen bracket joins the two borrower cells
+      ink(svg, "M590 470 C560 480 556 520 562 560 C566 600 560 640 590 650", S(1012.35), 0.5, { color: UENOD, width: 6, filter: PEN });
+      words("sc015-b", [T(1012.30), T(1012.54)], { dur: 0.4, y: 10 });
+      out($("sc015-b"), S(1014.50), 0.2);
+      // the new loan's money pays back the old loan (bank)
+      const chip = document.createElement("div"); chip.className = "p9-chip"; svg.parentNode.appendChild(chip);
+      gsap.set(chip, { x: 1180, y: 630, opacity: 0 });
+      const pa = FX.markup.arrow(tl, svg, S(1014.70), { x1: 1260, y1: 640, x2: 1265, y2: 530, bend: -90, head: 22, dur: 0.6, color: UENOD, width: 5, filter: PEN });
+      gsap.set(pa, { opacity: 0 }); tl.set(pa, { opacity: 1 }, S(1014.70));
+      tl.set(chip, { opacity: 1 }, S(1014.90));
+      tl.to(chip, { x: 1180, y: 520, duration: 0.8, ease: C(E.inOut, 0.8) }, S(1015.00));
+      tl.to(chip, { opacity: 0, scale: 0.6, duration: 0.25, ease: "steps(2)" }, S(1015.85));
+      words("sc015-c", [T(1014.94), T(1015.18), T(1015.42), T(1015.58)], { dur: 0.4, y: 10 });
+      out($("sc015-c"), S(1017.70), 0.2);
+      tl.to(pa, { opacity: 0, duration: 0.3 }, S(1016.6));
+      // framing 3: push to the old row's payments: they tick → "old loan, it's good"
+      tl.to(cam, { scale: 1.42, x: -120, y: 30, duration: 1.4, ease: E.cam }, S(1016.40));
+      [S(1018.30), S(1018.62), S(1019.10)].forEach((t, b) => {
+        const bx = r("p" + b);
+        tl.fromTo(bx.querySelector("i"), { scaleY: 0 }, { scaleY: 1, duration: 0.25, ease: C(E.out, 0.25), immediateRender: true }, t);
+        tl.fromTo(bx.querySelector("svg"), { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, t + 0.17);
+      });
+      words("sc015-d", [T(1018.22), T(1018.54), T(1019.02), T(1019.34)], { dur: 0.3, y: 10 });
+      tl.to(cam, { scale: 1.5, duration: 0.4, ease: E.in }, S(1019.32));
+    })();
+
+    /* ===== sc016 · FACE C (hard cut on action) / sc017 · FACE W (jump cut) ===== */
+    face("sc016", 1019.72, 1023.00, "C");
+    face("sc017", 1023.00, 1025.20, "W");
+    words("sc017-lt", [T(1023.58), T(1023.82), T(1024.38), T(1024.54)], { dur: 0.3, y: 10 });
+
+    /* ===== sc018 · the loan tower: too big to fail (hard cut at the EDL join) ===== */
+    (function () {
+      const host = $("sc018-stack"), rnd = FX.rng(918), N = 44, t0 = S(1025.25), span = 2.4;
+      for (let i = 0; i < N; i++) {
+        const c = document.createElement("div"); c.className = "p9-lc";
+        c.innerHTML = '<i style="top:16px; width:' + (120 + Math.floor(rnd() * 90)) + 'px"></i><i style="top:34px; width:' + (80 + Math.floor(rnd() * 80)) + 'px"></i>';
+        c.style.left = (1150 + (rnd() - 0.5) * 30).toFixed(0) + "px"; c.style.top = (936 - i * 62).toFixed(0) + "px";
+        host.appendChild(c);
+        gsap.set(c, { rotation: (rnd() - 0.5) * 4, opacity: 0 });
+        const t = t0 + Math.floor((i / N) * span * 12) / 12;
+        tl.fromTo(c, { opacity: 0, y: -40 }, { opacity: 1, y: 0, duration: 2 / 12, ease: "steps(2)", immediateRender: true }, t);
+      }
+      const cam = $("sc018-cam");
+      tl.fromTo(cam, { scale: 1.5 }, { scale: 0.42, duration: 3.0, ease: E.cam, immediateRender: false }, S(1025.20));
+      tl.to(cam, { scale: 0.4, y: 10, duration: 0.55, ease: "none" }, S(1028.20));
+      words("sc018-lt", [T(1027.21), T(1027.45), T(1027.77), T(1027.93)], { dur: 0.3, y: 12 });
+    })();
+
+    /* ===== sc019 · more than $300 million (whip ↓) ===== */
+    whip("sc018", "sc019", S(1028.75), { dir: 1, vertical: true });
+    (function () {
+      const cam = $("sc019-cam"), num = $("sc019-num"), cnt = { v: 0 };
+      tl.fromTo(cam, { scale: 1.06 }, { scale: 1.0, duration: 6.1, ease: E.cam, immediateRender: false }, S(1028.75));
+      words("sc019-k", [T(1030.25), T(1030.49)], { dur: 0.4, y: 10 });
+      tl.set(num, { opacity: 1 }, T(1030.49));
+      tl.fromTo(cnt, { v: 0 }, { v: 300, duration: 0.75, ease: C("power2.out", 0.75), immediateRender: false, onUpdate: () => (num.textContent = "$" + Math.round(cnt.v)) }, T(1030.49));
+      words("sc019-mil", [T(1031.21)], { dur: 0.45, y: 12 });
+      out($("sc019-k"), S(1032.10), 0.3);
+      words("sc019-own", [T(1033.13), T(1033.53), T(1033.69), T(1033.85), T(1034.17)], { dur: 0.35, y: 10 });
+      // the money loops back to themselves: a teal loop around the number
+      const lp = FX.markup.circle(tl, $("sc019-svg"), S(1033.80), { cx: 960, cy: 500, rx: 560, ry: 250, rot: -3, dur: 0.6, color: UENOL, width: 6, filter: PEN, seed: 9 });
+      gsap.set(lp, { opacity: 0 }); tl.set(lp, { opacity: 0.9 }, S(1033.80));
+      tl.to(cam, { scale: 1.08, duration: 0.45, ease: E.in }, S(1034.42));
+    })();
+
+    /* ===== sc020 · THE MERRY-GO-ROUND (whip → in the ride's direction) — hero, 2.5D ===== */
+    whip("sc019", "sc020", S(1034.87), { dir: -1 });
+    (function () {
+      const CX = 1200, CY = 870, RX = 520, RY = 120, AX = 420, AY = 96;   // platform + rider orbit
+      const RIM = { y: 330, rx: 560, ry: 74 }, APEX = { x: 1200, y: 120 };
+      const base = $("sc020-base"), top = $("sc020-top"), riders = $("sc020-riders");
+      // platform (back rim, deck, front skirt) + the circulation ring
+      el(base, "ellipse", { cx: CX, cy: CY + 26, rx: RX + 14, ry: RY + 14, fill: "#06110f", opacity: 0.6 });
+      el(base, "ellipse", { cx: CX, cy: CY, rx: RX, ry: RY, fill: UENOD });
+      el(base, "ellipse", { cx: CX, cy: CY - 6, rx: RX - 18, ry: RY - 18, fill: "#0f6d63" });
+      const ring = el(base, "ellipse", { cx: CX, cy: CY + 4, rx: RX + 40, ry: RY + 34, fill: "none", stroke: UENOL, "stroke-width": 4, "stroke-dasharray": "26 22", opacity: 0 });
+      // canopy (cone stripes + sign band) is redrawn per step
+      const cone = el(top, "g", {}), band = el(top, "g", {}), bulbs = el(top, "g", {});
+      // riders
+      const kinds = ["ueno", "bag", "loan", "co", "bag", "loan"], R = [];
+      kinds.forEach((k, i) => {
+        const d = document.createElement("div"); d.className = "p9-rider";
+        let fig = "";
+        if (k === "ueno") fig = '<div class="p9-fcard"><div class="p9-logo" style="left:18px; top:38px; width:124px; height:36px"></div></div>';
+        if (k === "loan") fig = '<div class="p9-fcard" style="border-top-width:26px"><div class="t-label" style="position:absolute; left:16px; top:18px; font-size:22px; color:var(--ueno-dark)">loan</div><i style="position:absolute; left:16px; top:58px; width:96px; height:7px; background:rgba(12,92,84,0.4)"></i></div>';
+        if (k === "co") fig = '<div class="p9-fcard" style="background:var(--ueno-dark); border-color:var(--ueno-light)"><svg viewBox="0 0 100 100" style="position:absolute; left:45px; top:18px; width:70px; height:70px"><g stroke="' + BONE + '" fill="none">' + BLDG + '</g></svg></div>';
+        if (k === "bag") fig = '<svg viewBox="0 0 170 124" style="position:absolute; inset:0; overflow:visible"><path d="M62 18 L108 18 L96 36 C140 50 156 86 150 104 C146 118 128 122 85 122 C42 122 24 118 20 104 C14 86 30 50 74 36 Z" fill="' + UENO + '" stroke="' + UENOD + '" stroke-width="5"/><path d="M70 36 L100 36" stroke="' + UENOD + '" stroke-width="6"/><text x="85" y="104" text-anchor="middle" class="t-display" font-size="58" fill="' + BONE + '">$</text></svg>';
+        d.innerHTML = '<div class="p9-pole"></div><div class="p9-fig">' + fig + "</div>";
+        riders.appendChild(d); R.push({ d: d, pole: d.firstChild, fig: d.lastChild, ph: (i / kinds.length) * Math.PI * 2 });
+      });
+      const N = 16;
+      function draw(a) {
+        // cone stripes + band: only the front-facing segments
+        let cH = "", bH = "", uH = "";
+        for (let k = 0; k < N; k++) {
+          const a1 = a + (k / N) * Math.PI * 2, a2 = a + ((k + 1) / N) * Math.PI * 2;
+          const s1 = Math.sin(a1), s2 = Math.sin(a2);
+          if (s1 < -0.05 && s2 < -0.05) continue;
+          const x1 = APEX.x + RIM.rx * Math.cos(a1), y1 = RIM.y + RIM.ry * s1, x2 = APEX.x + RIM.rx * Math.cos(a2), y2 = RIM.y + RIM.ry * s2;
+          const col = k % 2 ? BONE : UENO, shade = 0.55 + 0.45 * Math.max(0, (s1 + s2) / 2);
+          cH += '<path d="M' + APEX.x + " " + APEX.y + " L" + x1.toFixed(1) + " " + y1.toFixed(1) + " L" + x2.toFixed(1) + " " + y2.toFixed(1) + 'Z" fill="' + col + '" opacity="' + shade.toFixed(2) + '"/>';
+          bH += '<path d="M' + x1.toFixed(1) + " " + y1.toFixed(1) + " L" + x2.toFixed(1) + " " + y2.toFixed(1) + " L" + x2.toFixed(1) + " " + (y2 + 84).toFixed(1) + " L" + x1.toFixed(1) + " " + (y1 + 84).toFixed(1) + 'Z" fill="' + UENOD + '" stroke="' + UENOD + '" stroke-width="1"/>';
+          const xm = (x1 + x2) / 2, ym = (y1 + y2) / 2 + 84;
+          bH += '<path d="M' + x1.toFixed(1) + " " + (y1 + 84).toFixed(1) + " Q" + xm.toFixed(1) + " " + (ym + 26).toFixed(1) + " " + x2.toFixed(1) + " " + (y2 + 84).toFixed(1) + 'Z" fill="' + (k % 2 ? UENO : BONE) + '"/>';
+          uH += '<circle cx="' + x1.toFixed(1) + '" cy="' + (y1 + 8).toFixed(1) + '" r="6" fill="#f8e9b8" opacity="' + (0.5 + 0.5 * Math.max(0, s1)).toFixed(2) + '"/>';
+        }
+        cone.innerHTML = '<ellipse cx="' + APEX.x + '" cy="' + RIM.y + '" rx="' + RIM.rx + '" ry="' + RIM.ry + '" fill="#0a3a35"/>' + cH;
+        band.innerHTML = bH; bulbs.innerHTML = uH;
+        // finial
+        cone.insertAdjacentHTML("beforeend", '<circle cx="' + APEX.x + '" cy="' + (APEX.y - 10) + '" r="14" fill="' + BONE + '"/>');
+        R.forEach((r, i) => {
+          const th = a + r.ph, s = Math.sin(th), x = CX + AX * Math.cos(th), yb = CY + AY * s - 30;
+          const depth = (s + 1) / 2, sc = 0.72 + 0.34 * depth, bob = Math.sin(th * 2 + i) * 26;
+          const fy = yb - 150 * sc + bob;
+          r.d.style.transform = "translate(" + x.toFixed(1) + "px, 0px)";
+          r.d.style.zIndex = String(s > 0 ? 40 + Math.round(depth * 9) : 10 + Math.round(depth * 9));
+          r.pole.style.top = (RIM.y + 84 + RIM.ry * s * 0.9).toFixed(1) + "px"; r.pole.style.height = (yb - RIM.y - 84 - RIM.ry * s * 0.9 + 10).toFixed(1) + "px";
+          r.pole.style.transform = "scaleX(" + sc.toFixed(2) + ")";
+          r.fig.style.transform = "translate(0px," + fy.toFixed(1) + "px) scale(" + sc.toFixed(3) + ")";
+          r.fig.style.filter = "brightness(" + (0.55 + 0.45 * depth).toFixed(2) + ")";
+        });
+      }
+      const rot = { a: 0 };
+      draw(0);
+      // rotation at 12 fps; speeds up into the cut
+      tl.fromTo(rot, { a: 0 }, { a: 6.0, duration: 6.3, ease: C("none", 6.3), immediateRender: false, onUpdate: () => draw(rot.a) }, S(1034.87));
+      tl.to(rot, { a: 10.5, duration: 1.43, ease: C("power2.in", 1.43), onUpdate: () => draw(rot.a) }, S(1041.17));
+      // circulation ring marches round the base on "pay the bank back"
+      tl.to(ring, { opacity: 0.85, duration: 0.4 }, S(1037.55));
+      const dm = { o: 0 };
+      tl.fromTo(dm, { o: 0 }, { o: -480, duration: 5.0, ease: C("none", 5.0), immediateRender: false, onUpdate: () => ring.setAttribute("stroke-dashoffset", dm.o.toFixed(1)) }, S(1037.55));
+      // backdrop parallax + camera: close on the ride, pull back on "has a name", push into the cut
+      tl.fromTo($("sc020-bg"), { x: 40 }, { x: -60, duration: 7.73, ease: "none", immediateRender: false }, S(1034.87));
+      const cam = $("sc020-cam");
+      tl.fromTo(cam, { scale: 1.22, x: -60, y: 60 }, { scale: 1.12, x: -40, y: 40, duration: 5.2, ease: E.cam, immediateRender: false }, S(1034.87));
+      tl.to(cam, { scale: 0.96, x: -70, y: 30, duration: 1.3, ease: E.cam }, S(1040.20));
+      tl.to(cam, { scale: 1.02, duration: 1.1, ease: "power1.in" }, S(1041.50));
+      words("sc020-a", [T(1035.85), T(1036.25), T(1036.49), T(1036.57), T(1036.65)], { dur: 0.35, y: 10 });
+      out($("sc020-a"), S(1037.40), 0.15);
+      words("sc020-b", [T(1037.53), T(1037.77), T(1037.93), T(1038.25)], { dur: 0.35, y: 10 });
+      out($("sc020-b"), S(1039.05), 0.15);
+      words("sc020-c", [T(1039.21), T(1039.61), T(1039.77)], { dur: 0.35, y: 10 });
+      out($("sc020-c"), S(1040.80), 0.3);
+      words("sc020-title", [T(1041.53), T(1042.01), T(1042.25)], { dur: 0.3, y: 14 });
+    })();
+
+    FX.mount(tl, DURATION);
+    window.__timelines = window.__timelines || {};
+    window.__timelines[SEG] = tl;
+  })();
+  </script>
+</template>
+</body>
+</html>

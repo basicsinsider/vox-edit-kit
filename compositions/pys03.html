@@ -1,0 +1,839 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8" /></head>
+<body>
+<template>
+  <style>
+    #root { position: absolute; inset: 0; overflow: hidden; background: var(--night); }
+    .p3-scene { position: absolute; inset: 0; overflow: hidden; visibility: hidden; opacity: 0; }
+    .p3-shot { position: absolute; inset: 0; overflow: hidden; transform-origin: 50% 50%; background: var(--night); }
+    .p3-paper { background: var(--paper); }
+    .p3-abs { position: absolute; }
+    .p3-full { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; object-fit: cover; }
+    .p3-fcw { position: absolute; inset: 0; transform-origin: 1040px 140px; }
+    .p3-vw { position: absolute; inset: 0; transform-origin: 50% 50%; }
+    .p3-p1, .p3-p2 { position: absolute; inset: 0; background-size: cover; background-position: center; pointer-events: none; }
+    .p3-p2 { opacity: 0.9; mix-blend-mode: multiply; }
+    .p3-mk { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; pointer-events: none; }
+    .p3-w { display: inline-block; white-space: pre; opacity: 0; }
+    .p3-ink { color: var(--ink); }
+    .p3-credit { position: absolute; right: 30px; bottom: 20px; font-size: 13px; letter-spacing: 0.08em; color: rgba(242,238,227,0.66); z-index: 5; }
+    .p3-credit.ink { color: rgba(22,32,28,0.62); }
+    .p3-lt { position: absolute; left: 96px; bottom: 104px; width: 780px; font-size: 64px; line-height: 1.0; }
+    .p3-lt.wide { width: 1100px; }
+    .p3-scrim-bl { position: absolute; inset: 0; pointer-events: none;
+      background: radial-gradient(ellipse 52% 48% at 0% 100%, rgba(10,14,12,0.86) 0%, rgba(10,14,12,0.55) 45%, rgba(10,14,12,0) 100%); }
+    .p3-scrim-b { position: absolute; left: 0; right: 0; bottom: 0; height: 480px; pointer-events: none;
+      background: linear-gradient(180deg, rgba(10,14,12,0), rgba(10,14,12,0.85)); }
+    .p3-cap { position: absolute; font-size: 72px; line-height: 1.02; }
+    .p3-shadow { box-shadow: 0 26px 50px rgba(22,32,28,0.32); }
+    #pys03-flash { position: absolute; inset: 0; background: #f6f2ea; opacity: 0; pointer-events: none; z-index: 7; }
+    #pys03-grain, #pys03-dust, #pys03-vig { z-index: 8; }
+
+    /* sc002 history card (also rebuilt inside the tear halves) */
+    .p3-hist { position: absolute; inset: 0; background: #e6dcc6; }
+    .p3-hist .pp1 { position: absolute; inset: 0; background: url('assets/textures/paper_stained_01_hires.jpg') center / cover; opacity: 0.75; mix-blend-mode: multiply; }
+    .p3-hist .mount { position: absolute; left: 150px; top: 170px; width: 940px; height: 690px; background: #f1e8d4; box-shadow: 0 24px 46px rgba(40,28,14,0.35); transform: rotate(-1.2deg); }
+    .p3-hist .mount img { position: absolute; left: 20px; top: 20px; width: 900px; height: 650px; object-fit: cover; filter: grayscale(1) sepia(0.75) contrast(1.05) brightness(0.98); }
+    .p3-hist .rule { position: absolute; left: 1190px; top: 300px; width: 560px; height: 4px; background: #5a4630; opacity: 0.7; }
+    .p3-hist .born { position: absolute; left: 1190px; top: 340px; width: 640px; font-size: 96px; color: #3b2c1c; }
+    .p3-hist .year { position: absolute; left: 1180px; top: 470px; width: 660px; font-size: 250px; color: #2d2116; }
+    .p3-hist .yhl { position: absolute; left: 1182px; top: 600px; width: 610px; height: 96px; background: var(--yellow); mix-blend-mode: multiply; transform-origin: 0 50%; opacity: 0.85; }
+    .p3-half { position: absolute; inset: 0; transform-origin: 50% 100%; }
+
+    /* sc005 ledger */
+    .p3-lrow { position: absolute; height: 10px; background: rgba(22,32,28,0.42); border-radius: 5px; }
+    /* sc006 painting */
+    #pys03-sc006-frame { position: absolute; left: 120px; top: 70px; width: 998px; height: 940px; background: #2a2620; padding: 0; box-shadow: 0 30px 70px rgba(0,0,0,0.6); overflow: hidden; }
+    #pys03-sc006-cam { position: absolute; left: 0; top: 0; width: 998px; height: 940px; transform-origin: 290px 820px; }
+    #pys03-sc006-cam img { position: absolute; left: 0; top: 0; width: 998px; height: 940px; filter: saturate(0.8) contrast(1.04); }
+    #pys03-sc006-cam svg { position: absolute; left: 0; top: 0; width: 998px; height: 940px; overflow: visible; }
+    .p3-col { position: absolute; left: 1210px; width: 620px; top: 420px; font-size: 80px; line-height: 1.02; }
+    /* sc008 */
+    #pys03-sc008-streaks { position: absolute; inset: 0; width: 1920px; height: 1080px; filter: blur(2.5px); opacity: 0.55; mix-blend-mode: screen; }
+    /* sc009 diagram / sc011 tree / sc015 org / sc024 flow cards */
+    .p3-card { position: absolute; background: #f3eee2; box-shadow: 0 16px 30px rgba(22,32,28,0.28); overflow: hidden; }
+    .p3-card .band { position: absolute; left: 0; top: 0; right: 0; height: 14px; background: var(--ueno); }
+    .p3-card .nm { position: absolute; left: 0; right: 0; text-align: center; color: var(--ink); }
+    .p3-card .ct { position: absolute; left: 0; right: 0; text-align: center; font-size: 22px; color: var(--ink-soft); }
+    .p3-node { position: absolute; border-radius: 50%; background: #e4dccb; border: 8px solid var(--ash-dark); overflow: hidden; box-shadow: 0 12px 26px rgba(22,32,28,0.22); }
+    .p3-node svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+    .p3-bottomcap { position: absolute; left: 0; width: 1920px; text-align: center; font-size: 66px; }
+    /* sc012 2.5D */
+    #pys03-sc012-stage { position: absolute; inset: 0; perspective: 1200px; perspective-origin: 50% 45%; }
+    #pys03-sc012-cam { position: absolute; inset: 0; transform-style: preserve-3d; }
+    .p3-layer { position: absolute; inset: 0; transform-origin: 50% 50%; }
+    .p3-layer img { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; }
+    /* sc014 map */
+    #pys03-sc014-cam { position: absolute; left: 0; top: 0; width: 2568px; height: 2520px; transform-origin: 0 0; }
+    #pys03-sc014-cam img { position: absolute; left: 0; top: 0; width: 2568px; height: 2520px; }
+    .p3-pin { position: absolute; width: 30px; height: 30px; margin: -15px 0 0 -15px; border-radius: 6px; background: var(--ueno-light); border: 4px solid var(--ueno-dark); box-shadow: 0 0 14px rgba(147,224,211,0.6); }
+    .p3-dot { position: absolute; width: 16px; height: 16px; margin: -8px 0 0 -8px; border-radius: 50%; background: var(--bone); box-shadow: 0 0 0 4px rgba(14,19,17,0.6); }
+    .p3-mapl { position: absolute; white-space: nowrap; color: var(--bone); text-shadow: 0 2px 6px rgba(0,0,0,0.75); }
+    .p3-mapl.c { letter-spacing: 0.04em; }
+    /* sc017 collage */
+    .p3-print { position: absolute; width: 500px; height: 340px; background: #f4efe4; padding: 14px; box-shadow: 0 18px 34px rgba(22,32,28,0.32); }
+    .p3-print img { width: 472px; height: 312px; object-fit: cover; filter: grayscale(0.88) contrast(1.06) sepia(0.12); }
+    .p3-tape { position: absolute; width: 130px; height: 34px; background: rgba(236,228,206,0.82); box-shadow: 0 1px 3px rgba(0,0,0,0.12); }
+    /* sc019 world */
+    #pys03-sc019-cam { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 1000px 520px; }
+    #pys03-sc019-cam img { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; }
+    /* sc020 isotype */
+    .p3-bld { position: absolute; width: 112px; height: 112px; }
+    /* sc022 chart */
+    /* sc024 flow */
+    #pys03-sc024-cam { position: absolute; inset: 0; transform-origin: 390px 540px; }
+    .p3-src { position: absolute; left: 150px; top: 380px; width: 480px; height: 320px; border: 6px solid var(--ueno-light); background: rgba(12,92,84,0.55); border-radius: 10px;
+      box-shadow: 0 0 40px rgba(31,165,149,0.55), inset 0 0 40px rgba(31,165,149,0.35); }
+    .p3-sink { position: absolute; left: 1220px; width: 420px; height: 112px; border: 3px solid var(--ash); background: rgba(53,60,56,0.55); border-radius: 8px; }
+    .p3-sink .nm { position: absolute; left: 26px; top: 40px; font-size: 26px; color: var(--bone); }
+  </style>
+
+  <div id="root" data-composition-id="pys03" data-vo-start="213.60" data-duration="119.00" data-width="1920" data-height="1080">
+    <svg id="pys03-defs" width="0" height="0" style="position:absolute"></svg>
+
+    <!-- sc001 · 213.60–216.42 · So let me give you some background on this bank · ueno bank sign (Reuters) -->
+    <div class="p3-scene" id="pys03-sc001"><div class="p3-shot" id="pys03-sc001-shot">
+      <div class="p3-vw" id="pys03-sc001-vw"><img class="p3-full" src="assets/paraguay/shared/photos/ueno_sign_hq_reuters.jpg" style="filter:saturate(0.75) contrast(1.04); object-position:50% 85%" alt=""></div>
+      <div class="p3-scrim-b"></div>
+      <div class="p3-lt wide t-display clean" id="pys03-sc001-lt" style="bottom:72px; font-size:58px"><span class="p3-w">background </span><span class="p3-w">on </span><span class="p3-w">this </span><span class="p3-w">bank</span></div>
+      <div class="p3-credit t-label">Photo: Reuters</div>
+    </div></div>
+
+    <!-- sc002 · 216.42–219.27 · The bank was born in 1950 · fake sepia history card -->
+    <div class="p3-scene" id="pys03-sc002"><div class="p3-shot" id="pys03-sc002-shot">
+      <div class="p3-vw" id="pys03-sc002-vw"><div class="p3-hist" id="pys03-sc002-hist"></div></div>
+      <div class="p3-credit ink t-label">Photo: Library of Congress (public domain)</div>
+    </div></div>
+
+    <!-- sc003 · 219.27–223.95 · FACE M · I'm just kidding … (card tears away) -->
+    <div class="p3-scene" id="pys03-sc003"><div class="p3-shot" id="pys03-sc003-shot">
+      <div class="p3-fcw" id="pys03-sc003-fw"><video id="pys03-sc003-v" class="p3-full" src="assets/facecam/paraguay_facecam_master.mp4" muted playsinline data-start="5.67" data-duration="4.70" data-media-start="219.27"></video></div>
+      <div class="p3-half" id="pys03-sc003-hl"><div class="p3-vw" id="pys03-sc003-hlv"><div class="p3-hist" id="pys03-sc003-hlh"></div></div></div>
+      <div class="p3-half" id="pys03-sc003-hr"><div class="p3-vw" id="pys03-sc003-hrv"><div class="p3-hist" id="pys03-sc003-hrh"></div></div></div>
+    </div></div>
+
+    <!-- sc004 · 223.95–226.40 · FACE W · the important parts -->
+    <div class="p3-scene" id="pys03-sc004"><div class="p3-shot" id="pys03-sc004-shot">
+      <div class="p3-fcw" id="pys03-sc004-fw"><video id="pys03-sc004-v" class="p3-full" src="assets/facecam/paraguay_facecam_master.mp4" muted playsinline data-start="10.35" data-duration="2.45" data-media-start="223.95"></video></div>
+      <div class="p3-scrim-bl"></div>
+      <div class="p3-lt t-display clean" id="pys03-sc004-lt"><span class="p3-w">the </span><span class="p3-w">important </span><span class="p3-w">parts</span></div>
+    </div></div>
+
+    <!-- sc005 · 226.40–232.50 · a long time ago, very profitable, wasn't technically a bank · ledger -->
+    <div class="p3-scene" id="pys03-sc005"><div class="p3-shot p3-paper" id="pys03-sc005-shot">
+      <div class="p3-p1" style="background-image:url('assets/textures/paper_lined_01_hires.jpg')"></div>
+      <div class="p3-p2" style="background-image:url('assets/textures/paper_stained_01_hires.jpg'); opacity:0.45"></div>
+      <div id="pys03-sc005-rows"></div>
+      <svg id="pys03-sc005-svg" class="p3-mk" viewBox="0 0 1920 1080"></svg>
+      <div class="p3-cap t-display p3-ink" id="pys03-sc005-a" style="left:120px; top:96px"><span class="p3-w">a </span><span class="p3-w">long </span><span class="p3-w">time </span><span class="p3-w">ago</span></div>
+      <div class="p3-cap t-display p3-ink" id="pys03-sc005-b" style="left:120px; top:96px"><span class="p3-w">very </span><span class="p3-w" style="color:var(--ueno-dark)">profitable</span></div>
+      <div class="p3-cap t-display p3-ink" id="pys03-sc005-c" style="left:120px; top:96px"><span class="p3-w">wasn't </span><span class="p3-w">technically </span><span class="p3-w">a </span><span class="p3-w">bank</span></div>
+    </div></div>
+
+    <!-- sc006 · 232.50–239.40 · giving loans out, high interest rate, loan sharking · Matsys, The Moneylender and His Wife -->
+    <div class="p3-scene" id="pys03-sc006"><div class="p3-shot" id="pys03-sc006-shot">
+      <div class="p3-vw" id="pys03-sc006-vw">
+        <div id="pys03-sc006-frame"><div id="pys03-sc006-cam"><img src="assets/paraguay/pys03/photos/moneylender_matsys_1514.jpg" alt=""><svg id="pys03-sc006-mk" viewBox="0 0 998 940"></svg></div></div>
+      </div>
+      <div class="p3-col t-serif-i clean" id="pys03-sc006-a"><span class="p3-w">giving </span><span class="p3-w">loans </span><span class="p3-w">out</span></div>
+      <div class="p3-col t-serif-i clean" id="pys03-sc006-b"><span class="p3-w">high </span><span class="p3-w">interest </span><span class="p3-w">rate</span></div>
+      <div class="p3-col t-serif-i clean" id="pys03-sc006-c" style="top:380px"><span class="p3-w">a </span><span class="p3-w">bit </span><span class="p3-w">of </span><span class="p3-w">a </span><span class="p3-w">loan </span><span class="p3-w" style="color:var(--ueno-light)">sharking</span></div>
+      <div class="p3-credit t-label">Quentin Matsys, The Moneylender and His Wife, 1514 · Louvre · public domain</div>
+    </div></div>
+
+    <!-- sc007 · 239.40–245.25 · FACE W · decades ago -->
+    <div class="p3-scene" id="pys03-sc007"><div class="p3-shot" id="pys03-sc007-shot">
+      <div class="p3-fcw" id="pys03-sc007-fw"><video id="pys03-sc007-v" class="p3-full" src="assets/facecam/paraguay_facecam_master.mp4" muted playsinline data-start="25.80" data-duration="5.85" data-media-start="239.40"></video></div>
+      <div class="p3-scrim-bl"></div>
+      <div class="p3-lt t-display clean" id="pys03-sc007-lt"><span class="p3-w">decades </span><span class="p3-w">ago</span></div>
+    </div></div>
+
+    <!-- sc008 · 245.25–248.80 · It was called Credit Central → Credicentro -->
+    <div class="p3-scene" id="pys03-sc008"><div class="p3-shot" id="pys03-sc008-shot">
+      <canvas id="pys03-sc008-streaks"></canvas>
+      <div class="p3-abs t-label" id="pys03-sc008-k" style="left:0; width:1920px; top:372px; text-align:center; font-size:30px; color:var(--ueno-light)"><span class="p3-w">it </span><span class="p3-w">was </span><span class="p3-w">called</span></div>
+      <div class="p3-abs t-display halate cool" id="pys03-sc008-t" style="left:0; width:1920px; top:440px; text-align:center; font-size:190px"><span class="p3-w">Credicentro</span></div>
+      <div class="p3-abs" id="pys03-sc008-rule" style="left:660px; top:672px; width:600px; height:6px; background:var(--ueno-light); transform-origin:0 50%"></div>
+    </div></div>
+
+    <!-- sc009 · 248.80–256.55 · loans out, no deposits, you need a license · diagram -->
+    <div class="p3-scene" id="pys03-sc009"><div class="p3-shot p3-paper" id="pys03-sc009-shot">
+      <div class="p3-p1" style="background-image:url('assets/textures/paper_cream_01.jpg')"></div>
+      <div class="p3-p2" style="background-image:url('assets/textures/paper_fiber_01.jpg'); opacity:0.45"></div>
+      <div class="p3-card" id="pys03-sc009-cc" style="left:780px; top:330px; width:380px; height:170px"><div class="band"></div><div class="nm t-display" style="top:62px; font-size:62px">Credicentro</div></div>
+      <svg id="pys03-sc009-svg" class="p3-mk" viewBox="0 0 1920 1080"></svg>
+      <div class="p3-card" id="pys03-sc009-lic" style="left:1400px; top:250px; width:360px; height:470px; transform:rotate(2deg)">
+        <div class="p3-abs" style="left:40px; top:44px; width:280px; height:22px; background:var(--ink); opacity:0.8"></div>
+        <div class="p3-abs" style="left:40px; top:110px; width:240px; height:9px; background:rgba(22,32,28,0.35)"></div>
+        <div class="p3-abs" style="left:40px; top:140px; width:270px; height:9px; background:rgba(22,32,28,0.35)"></div>
+        <div class="p3-abs" style="left:40px; top:170px; width:210px; height:9px; background:rgba(22,32,28,0.35)"></div>
+        <div class="p3-abs" style="left:40px; top:200px; width:250px; height:9px; background:rgba(22,32,28,0.35)"></div>
+        <div class="p3-abs" style="left:110px; top:270px; width:140px; height:140px; border-radius:50%; border:5px dashed var(--ash)"></div>
+      </div>
+      <div class="p3-bottomcap t-display p3-ink" id="pys03-sc009-a" style="top:870px"><span class="p3-w">give </span><span class="p3-w">money </span><span class="p3-w">out </span><span class="p3-w">as </span><span class="p3-w" style="color:var(--ueno-dark)">loans</span></div>
+      <div class="p3-bottomcap t-display p3-ink" id="pys03-sc009-b" style="top:870px"><span class="p3-w">cannot </span><span class="p3-w">take </span><span class="p3-w">in </span><span class="p3-w" style="color:var(--tierra-dark)">deposits</span></div>
+      <div class="p3-bottomcap t-display p3-ink" id="pys03-sc009-c" style="top:870px"><span class="p3-w">you </span><span class="p3-w">need </span><span class="p3-w">a </span><span class="p3-w">license</span></div>
+    </div></div>
+
+    <!-- sc010 · 256.55–258.80 · FACE C · And that's important -->
+    <div class="p3-scene" id="pys03-sc010"><div class="p3-shot" id="pys03-sc010-shot">
+      <div class="p3-fcw" id="pys03-sc010-fw"><video id="pys03-sc010-v" class="p3-full" src="assets/facecam/paraguay_facecam_master.mp4" muted playsinline data-start="42.95" data-duration="2.25" data-media-start="256.55"></video></div>
+    </div></div>
+
+    <!-- sc011 · 258.80–266.70 · old company, part of this family, 2015, leadership changes · family tree -->
+    <div class="p3-scene" id="pys03-sc011"><div class="p3-shot p3-paper" id="pys03-sc011-shot">
+      <div class="p3-p1" style="background-image:url('assets/textures/paper_cream_02.jpg')"></div>
+      <div class="p3-p2" style="background-image:url('assets/textures/paper_stained_01_hires.jpg'); opacity:0.4"></div>
+      <svg id="pys03-sc011-svg" class="p3-mk" viewBox="0 0 1920 1080"></svg>
+      <div class="p3-node" id="pys03-sc011-n1" style="left:380px; top:110px; width:180px; height:180px"></div>
+      <div class="p3-node" id="pys03-sc011-n2" style="left:380px; top:420px; width:180px; height:180px"></div>
+      <div class="p3-node" id="pys03-sc011-n3" style="left:380px; top:730px; width:180px; height:180px"></div>
+      <div class="p3-card" id="pys03-sc011-cc" style="left:1080px; top:250px; width:420px; height:180px"><div class="band"></div><div class="nm t-display" style="top:66px; font-size:66px">Credicentro</div></div>
+      <div class="p3-cap t-display p3-ink" id="pys03-sc011-a" style="left:1080px; top:500px; font-size:64px"><span class="p3-w">an </span><span class="p3-w">old </span><span class="p3-w">company</span></div>
+      <div class="p3-cap t-display p3-ink" id="pys03-sc011-b" style="left:1080px; top:500px; font-size:64px"><span class="p3-w">part </span><span class="p3-w">of </span><span class="p3-w">this </span><span class="p3-w">family</span></div>
+      <div class="p3-cap t-display p3-ink" id="pys03-sc011-c" style="left:1080px; top:500px; font-size:64px"><span class="p3-w">the </span><span class="p3-w">leadership </span><span class="p3-w">changes</span></div>
+      <div class="p3-abs" id="pys03-sc011-hl" style="left:636px; top:790px; width:330px; height:88px; background:var(--yellow); mix-blend-mode:multiply; transform-origin:0 50%; opacity:0.85"></div>
+      <div class="p3-abs t-display p3-ink" id="pys03-sc011-y" style="left:640px; top:752px; font-size:150px"><span class="p3-w">2015</span></div>
+    </div></div>
+
+    <!-- sc012 · 266.70–269.15 · A new member of the family takes over · 2.5D Miguel Vázquez -->
+    <div class="p3-scene" id="pys03-sc012"><div class="p3-shot" id="pys03-sc012-shot">
+      <div id="pys03-sc012-stage"><div id="pys03-sc012-cam">
+        <div class="p3-layer" id="pys03-sc012-l0"><img src="assets/paraguay/shared/photos/miguel_vazquez.jpg" style="filter:blur(7px) saturate(0.55) brightness(0.62)" alt=""></div>
+        <div class="p3-layer" id="pys03-sc012-l1"><div class="p3-abs t-display clean" id="pys03-sc012-t" style="left:96px; top:236px; font-size:132px; width:1100px"><span class="p3-w">a </span><span class="p3-w">new </span><span class="p3-w" style="color:var(--ueno-light)">member</span></div></div>
+        <div class="p3-layer" id="pys03-sc012-l2"><img src="assets/paraguay/pys03/derived/miguel_cut.png" style="filter:saturate(0.8) contrast(1.03)" alt=""></div>
+      </div></div>
+      <div class="p3-scrim-b" style="height:300px"></div>
+      <div class="p3-abs t-label clean" id="pys03-sc012-id" style="left:96px; bottom:96px; font-size:26px; opacity:0">Miguel Vázquez</div>
+      <div class="p3-credit t-label">Photo: press handout</div>
+    </div></div>
+
+    <!-- sc013 · 269.15–275.40 · FACE W → C · his goals are very different -->
+    <div class="p3-scene" id="pys03-sc013"><div class="p3-shot" id="pys03-sc013-shot">
+      <div class="p3-fcw" id="pys03-sc013-fw"><video id="pys03-sc013-v" class="p3-full" src="assets/facecam/paraguay_facecam_master.mp4" muted playsinline data-start="55.55" data-duration="6.25" data-media-start="269.15"></video></div>
+      <div class="p3-scrim-bl" id="pys03-sc013-scrim"></div>
+      <div class="p3-lt t-display clean" id="pys03-sc013-lt"><span class="p3-w">very </span><span class="p3-w">different</span></div>
+    </div></div>
+
+    <!-- sc014 · 275.40–280.00 · a national conglomerate · Paraguay night map + business pins -->
+    <div class="p3-scene" id="pys03-sc014"><div class="p3-shot" id="pys03-sc014-shot">
+      <div id="pys03-sc014-cam">
+        <img src="assets/paraguay/pys03/derived/paraguay_night_half.jpg" alt="">
+        <img src="assets/paraguay/pys03/derived/paraguay_overlay_pys03.svg" alt="">
+        <div id="pys03-sc014-pins"></div>
+        <div class="p3-dot" style="left:1506px; top:1759px"></div>
+        <div class="p3-mapl t-label" style="left:1416px; top:1700px; font-size:34px">Asunción</div>
+        <div class="p3-mapl c t-display" style="left:870px; top:1090px; font-size:96px">PARAGUAY</div>
+        <div class="p3-mapl c t-display" style="left:2090px; top:1080px; font-size:56px; color:var(--ash-light)">BRAZIL</div>
+        <div class="p3-mapl c t-display" style="left:500px; top:1990px; font-size:56px; color:var(--ash-light)">ARGENTINA</div>
+      </div>
+      <div class="p3-scrim-b" style="height:360px"></div>
+      <div class="p3-lt wide t-display clean" id="pys03-sc014-lt"><span class="p3-w">a </span><span class="p3-w">national </span><span class="p3-w" style="color:var(--ueno-light)">conglomerate</span></div>
+      <div class="p3-credit t-label">Map: AWS Terrain Tiles, Natural Earth, © OpenStreetMap contributors</div>
+    </div></div>
+
+    <!-- sc015 · 280.00–288.65 · the Vázquez group, a bunch of businesses · org chart -->
+    <div class="p3-scene" id="pys03-sc015"><div class="p3-shot p3-paper" id="pys03-sc015-shot">
+      <div class="p3-p1" style="background-image:url('assets/textures/paper_cream_01.jpg')"></div>
+      <div class="p3-p2" style="background-image:url('assets/textures/paper_stained_01_hires.jpg'); opacity:0.35"></div>
+      <svg id="pys03-sc015-svg" class="p3-mk" viewBox="0 0 1920 1080"></svg>
+      <div class="p3-abs t-display p3-ink" id="pys03-sc015-h" style="left:0; width:1920px; top:118px; text-align:center; font-size:84px"><span class="p3-w">GRUPO </span><span class="p3-w">VÁZQUEZ</span></div>
+      <div class="p3-card" id="pys03-sc015-cc" style="left:770px; top:300px; width:380px; height:150px"><div class="band"></div><div class="nm t-display" style="top:54px; font-size:58px">Credicentro</div></div>
+      <div id="pys03-sc015-cards"></div>
+    </div></div>
+
+    <!-- sc016 · 288.65–293.35 · FACE M · diversify the business -->
+    <div class="p3-scene" id="pys03-sc016"><div class="p3-shot" id="pys03-sc016-shot">
+      <div class="p3-fcw" id="pys03-sc016-fw"><video id="pys03-sc016-v" class="p3-full" src="assets/facecam/paraguay_facecam_master.mp4" muted playsinline data-start="75.05" data-duration="4.70" data-media-start="288.65"></video></div>
+      <div class="p3-scrim-bl"></div>
+      <div class="p3-lt t-display clean" id="pys03-sc016-lt" style="width:640px"><span class="p3-w">diversify </span><span class="p3-w">the </span><span class="p3-w">business</span></div>
+    </div></div>
+
+    <!-- sc017 · 293.35–297.45 · invest in different industries, a major group · collage -->
+    <div class="p3-scene" id="pys03-sc017"><div class="p3-shot p3-paper" id="pys03-sc017-shot">
+      <div class="p3-p1" style="background-image:url('assets/textures/paper_cream_02.jpg')"></div>
+      <div class="p3-p2" style="background-image:url('assets/textures/paper_fiber_01.jpg'); opacity:0.5"></div>
+      <div class="p3-print" id="pys03-sc017-p1" style="left:770px; top:96px; transform:rotate(-2.5deg)"><img src="assets/paraguay/pys03/photos/soy_silos_paraguay.jpg" alt=""><div class="p3-tape" style="left:190px; top:-16px; transform:rotate(-3deg)"></div></div>
+      <div class="p3-print" id="pys03-sc017-p2" style="left:1310px; top:130px; transform:rotate(2deg)"><img src="assets/paraguay/pys03/photos/rotary_press.jpg" alt=""><div class="p3-tape" style="left:200px; top:-16px; transform:rotate(2deg)"></div></div>
+      <div class="p3-print" id="pys03-sc017-p3" style="left:800px; top:540px; transform:rotate(1.5deg)"><img src="assets/paraguay/pys03/photos/data_center.jpg" alt=""><div class="p3-tape" style="left:180px; top:-16px; transform:rotate(-1deg)"></div></div>
+      <div class="p3-print" id="pys03-sc017-p4" style="left:1330px; top:572px; transform:rotate(-1.8deg)"><img src="assets/paraguay/shared/photos/asuncion_skyline.jpg" style="object-position:60% 55%" alt=""><div class="p3-tape" style="left:190px; top:-16px; transform:rotate(3deg)"></div></div>
+      <div class="p3-cap t-display p3-ink" id="pys03-sc017-a" style="left:110px; top:330px; width:600px; font-size:76px"><span class="p3-w">invest </span><span class="p3-w">in </span><span class="p3-w">different </span><span class="p3-w">industries</span></div>
+      <div class="p3-cap t-display p3-ink" id="pys03-sc017-b" style="left:110px; top:400px; width:600px; font-size:86px"><span class="p3-w">a </span><span class="p3-w">major </span><span class="p3-w" style="color:var(--ueno-dark)">group</span></div>
+      <div class="p3-credit ink t-label">Photos: Wikimedia Commons — Paraguay silos (CC0), Euzkadi rotary press (Euskal Kultura, CC BY-SA 4.0), BalticServers (CC BY-SA 3.0), Asunción (Reuters)</div>
+    </div></div>
+
+    <!-- sc018 · 297.45–301.00 · FACE W · like we have in other countries -->
+    <div class="p3-scene" id="pys03-sc018"><div class="p3-shot" id="pys03-sc018-shot">
+      <div class="p3-fcw" id="pys03-sc018-fw"><video id="pys03-sc018-v" class="p3-full" src="assets/facecam/paraguay_facecam_master.mp4" muted playsinline data-start="83.85" data-duration="3.55" data-media-start="297.45"></video></div>
+    </div></div>
+
+    <!-- sc019 · 301.00–306.25 · Asian / South American / Middle East · world night map -->
+    <div class="p3-scene" id="pys03-sc019"><div class="p3-shot" id="pys03-sc019-shot">
+      <div id="pys03-sc019-cam">
+        <img src="assets/paraguay/pys03/derived/world_night_crop.jpg" alt="">
+        <img src="assets/paraguay/pys03/derived/world_borders.svg" alt="">
+        <img id="pys03-sc019-us" src="assets/paraguay/pys03/derived/world_us.svg" alt="">
+        <img id="pys03-sc019-as" src="assets/paraguay/pys03/derived/world_asia.svg" alt="">
+        <img id="pys03-sc019-sa" src="assets/paraguay/pys03/derived/world_southam.svg" alt="">
+        <img id="pys03-sc019-me" src="assets/paraguay/pys03/derived/world_mideast.svg" alt="">
+        <img src="assets/paraguay/pys03/derived/world_paraguay.svg" alt="">
+        <div id="pys03-sc019-labels"></div>
+      </div>
+      <div class="p3-scrim-b" style="height:300px"></div>
+      <div class="p3-lt wide t-display clean" id="pys03-sc019-lt" style="font-size:58px"><span class="p3-w">a </span><span class="p3-w">very </span><span class="p3-w">common </span><span class="p3-w">phenomenon</span></div>
+      <div class="p3-credit t-label">Map: AWS Terrain Tiles, Natural Earth (public domain)</div>
+    </div></div>
+
+    <!-- sc020 · 306.25–313.95 · one family controls every big business · isotype -->
+    <div class="p3-scene" id="pys03-sc020"><div class="p3-shot p3-paper" id="pys03-sc020-shot">
+      <div class="p3-p1" style="background-image:url('assets/textures/paper_cream_01.jpg')"></div>
+      <div class="p3-p2" style="background-image:url('assets/textures/paper_fiber_01.jpg'); opacity:0.45"></div>
+      <svg id="pys03-sc020-svg" class="p3-mk" viewBox="0 0 1920 1080"></svg>
+      <div class="p3-node" id="pys03-sc020-f2" style="left:120px; top:210px; width:150px; height:150px"></div>
+      <div class="p3-node" id="pys03-sc020-f3" style="left:120px; top:560px; width:150px; height:150px"></div>
+      <div class="p3-node" id="pys03-sc020-f1" style="left:240px; top:330px; width:250px; height:250px"></div>
+      <div id="pys03-sc020-grid"></div>
+      <div class="p3-cap t-display p3-ink" id="pys03-sc020-a" style="left:110px; top:860px; font-size:70px"><span class="p3-w">one </span><span class="p3-w">big </span><span class="p3-w">group</span></div>
+      <div class="p3-cap t-display p3-ink" id="pys03-sc020-b" style="left:110px; top:860px; font-size:70px"><span class="p3-w">one </span><span class="p3-w">family</span></div>
+      <div class="p3-cap t-display p3-ink" id="pys03-sc020-c" style="left:110px; top:860px; font-size:70px"><span class="p3-w">multiple </span><span class="p3-w">families</span></div>
+      <div class="p3-cap t-display p3-ink" id="pys03-sc020-d" style="left:110px; top:860px; font-size:70px"><span class="p3-w">every </span><span class="p3-w">big </span><span class="p3-w" style="color:var(--ueno-dark)">business</span></div>
+    </div></div>
+
+    <!-- sc021 · 313.95–319.45 · FACE C → W (at the EDL join 316.017) · the problem with this idea -->
+    <div class="p3-scene" id="pys03-sc021"><div class="p3-shot" id="pys03-sc021-shot">
+      <div class="p3-fcw" id="pys03-sc021-fw"><video id="pys03-sc021-v" class="p3-full" src="assets/facecam/paraguay_facecam_master.mp4" muted playsinline data-start="100.35" data-duration="5.50" data-media-start="313.95"></video></div>
+      <div class="p3-scrim-bl" id="pys03-sc021-scrim"></div>
+      <div class="p3-lt wide t-display clean" id="pys03-sc021-lt" style="width:760px"><span class="p3-w">the </span><span class="p3-w">problem </span><span class="p3-w">with </span><span class="p3-w">this </span><span class="p3-w">idea</span></div>
+    </div></div>
+
+    <!-- sc022 · 319.45–325.10 · a new business loses money … profitable · J-curve -->
+    <div class="p3-scene" id="pys03-sc022"><div class="p3-shot p3-paper" id="pys03-sc022-shot">
+      <div class="p3-p1" style="background-image:url('assets/textures/paper_graph_01_hires.jpg'); opacity:0.85"></div>
+      <div class="p3-p2" style="background-image:url('assets/textures/paper_cream_01.jpg'); opacity:0.5"></div>
+      <svg id="pys03-sc022-svg" class="p3-mk" viewBox="0 0 1920 1080"></svg>
+      <div class="p3-abs t-display p3-ink" id="pys03-sc022-a" style="left:150px; top:330px; font-size:60px"><span class="p3-w">a </span><span class="p3-w">new </span><span class="p3-w">business</span></div>
+      <div class="p3-abs t-display p3-ink" id="pys03-sc022-b" style="left:250px; top:830px; font-size:56px"><span class="p3-w">loses </span><span class="p3-w">money</span></div>
+      <div class="p3-abs t-serif-i p3-ink" id="pys03-sc022-c" style="left:660px; top:940px; width:640px; text-align:center; font-size:54px"><span class="p3-w">a </span><span class="p3-w">very </span><span class="p3-w">long </span><span class="p3-w">time</span></div>
+      <div class="p3-abs t-display" id="pys03-sc022-d" style="left:1290px; top:190px; font-size:64px; color:var(--ueno-dark)"><span class="p3-w">profitable</span></div>
+    </div></div>
+
+    <!-- sc023 · 325.10–327.15 · FACE M · not a problem -->
+    <div class="p3-scene" id="pys03-sc023"><div class="p3-shot" id="pys03-sc023-shot">
+      <div class="p3-fcw" id="pys03-sc023-fw"><video id="pys03-sc023-v" class="p3-full" src="assets/facecam/paraguay_facecam_master.mp4" muted playsinline data-start="111.50" data-duration="2.05" data-media-start="325.10"></video></div>
+      <div class="p3-scrim-bl"></div>
+      <div class="p3-lt t-display clean" id="pys03-sc023-lt" style="width:640px"><span class="p3-w">not </span><span class="p3-w">a </span><span class="p3-w">problem</span></div>
+    </div></div>
+
+    <!-- sc024 · 327.15–332.60 · making a lot of money … where the problem starts · money flow + crack -->
+    <div class="p3-scene" id="pys03-sc024"><div class="p3-shot" id="pys03-sc024-shot">
+      <div class="p3-abs" style="inset:0; background:radial-gradient(ellipse 70% 70% at 35% 50%, #1a2421 0%, #0e1311 70%)"></div>
+      <div id="pys03-sc024-cam">
+        <svg id="pys03-sc024-svg" class="p3-mk" viewBox="0 0 1920 1080"></svg>
+        <div class="p3-src" id="pys03-sc024-src"><div class="p3-abs t-display halate cool" style="left:0; width:480px; top:120px; text-align:center; font-size:68px">Credicentro</div></div>
+        <div id="pys03-sc024-sinks"></div>
+        <svg id="pys03-sc024-crk" class="p3-mk" viewBox="0 0 1920 1080"></svg>
+      </div>
+      <div class="p3-lt wide t-display clean" id="pys03-sc024-a" style="bottom:90px"><span class="p3-w">making </span><span class="p3-w">a </span><span class="p3-w">lot </span><span class="p3-w">of </span><span class="p3-w" style="color:var(--ueno-light)">money</span></div>
+      <div class="p3-lt wide t-display clean" id="pys03-sc024-b" style="bottom:90px"><span class="p3-w">where </span><span class="p3-w">the </span><span class="p3-w" style="color:var(--tierra-light)">problem </span><span class="p3-w">starts</span></div>
+    </div></div>
+
+    <div id="pys03-flash"></div>
+    <div id="pys03-grain" class="tx tx-grain" style="background-image:url('assets/textures/grain_01_norm.jpg')"></div>
+    <div id="pys03-dust" class="tx tx-dust" style="background-image:url('assets/textures/dust_02.jpg')"></div>
+    <div id="pys03-vig" class="vignette"></div>
+    <audio id="pys03-vo" class="temp-vo" src="vo_py.mp3" data-start="0" data-duration="119.00" data-media-start="213.60" data-volume="1"></audio>
+  </div>
+
+  <script>
+  (function () {
+    const SEG = "pys03", SEG_START = 213.60, SEG_END = 332.60, DURATION = 119.00;
+    const T = (s) => +(s - SEG_START).toFixed(3);   // TEXT cues (audited): literal master word start − 0.06
+    const S = (s) => +(s - SEG_START).toFixed(3);   // STRUCTURAL cues
+    const tl = gsap.timeline({ paused: true });
+    const $ = (id) => document.getElementById(SEG + "-" + id);
+    const NS = "http://www.w3.org/2000/svg";
+    const defs = $("defs");
+    const E = FX.ease;
+    const C = (e, d) => FX.choppy(e, d, 12);
+    const INK = "#16201c", BONE = "#f2eee3", UENO = "#1fa595", UD = "#0c5c54", UL = "#93e0d3", TI = "#cf5a33", TD = "#7a2f18", TL = "#f1b296", ASH = "#8b928d", ASHD = "#353c38", ASHL = "#c3c7c1";
+    const GM = "M200 40c-52 0-86 40-86 96 0 40 18 74 44 92-4 14-10 24-22 30-58 22-96 52-108 104-6 26-8 58-8 118h360c0-60-2-92-8-118-12-52-50-82-108-104-12-6-18-16-22-30 26-18 44-52 44-92 0-56-34-96-86-96z";
+
+    // ---------- scenes ----------
+    const SC = [
+      ["sc001", 213.60, 216.42, "night"], ["sc002", 216.42, 219.27, "paper"], ["sc003", 219.27, 223.95, "face"], ["sc004", 223.95, 226.40, "face"],
+      ["sc005", 226.40, 232.50, "paper"], ["sc006", 232.50, 239.40, "night"], ["sc007", 239.40, 245.25, "face"], ["sc008", 245.25, 248.80, "night"],
+      ["sc009", 248.80, 256.55, "paper"], ["sc010", 256.55, 258.80, "face"], ["sc011", 258.80, 266.70, "paper"], ["sc012", 266.70, 269.15, "night"],
+      ["sc013", 269.15, 275.40, "face"], ["sc014", 275.40, 280.00, "night"], ["sc015", 280.00, 288.65, "paper"], ["sc016", 288.65, 293.35, "face"],
+      ["sc017", 293.35, 297.45, "paper"], ["sc018", 297.45, 301.00, "face"], ["sc019", 301.00, 306.25, "night"], ["sc020", 306.25, 313.95, "paper"],
+      ["sc021", 313.95, 319.45, "face"], ["sc022", 319.45, 325.10, "paper"], ["sc023", 325.10, 327.15, "face"], ["sc024", 327.15, 332.60, "night"],
+    ];
+    const GROUND = { paper: [0.3, 0.14, 0.26], night: [1, 0.4, 0.36], face: [0, 0, 0] };
+    const EARLY = { sc005: 0.45, sc017: 0.45 };   // paper slides: the incoming page is visible during the slide
+    SC.forEach((s, i) => {
+      const el = $(s[0]), a = s[1] - (EARLY[s[0]] || 0);
+      if (i === 0) gsap.set(el, { autoAlpha: 1 });
+      else tl.fromTo(el, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.001, immediateRender: false }, S(a));
+      if (s[2] < SEG_END) tl.set(el, { autoAlpha: 0 }, S(s[2]) + 0.05);
+    });
+    gsap.set([$("vig"), $("dust"), $("grain")], { opacity: (i) => GROUND.night[i] });
+    SC.forEach((s) => { const v = GROUND[s[3]]; if (s[1] > SEG_START) tl.set([$("vig"), $("dust"), $("grain")], { opacity: (i) => v[i] }, S(s[1])); });
+
+    // ---------- helpers ----------
+    const show = (el, t) => tl.fromTo(el, { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, t);
+    const rise = (el, t, o) => { o = o || {}; const d = o.dur || 0.6;
+      tl.fromTo(el, { opacity: 0, y: o.y == null ? 16 : o.y }, { opacity: 1, y: 0, duration: d, ease: C(E.out, d), immediateRender: true }, t); };
+    const pop = (el, t, o) => { o = o || {}; const d = o.dur || 0.8;
+      tl.fromTo(el, { opacity: 0, scale: o.from == null ? 0.6 : o.from }, { opacity: 1, scale: 1, duration: d, ease: C(E.out, d), immediateRender: true }, t); };
+    const out = (el, t, d) => tl.to(el, { opacity: 0, duration: d || 0.25, ease: "power1.in" }, t);
+    const W = (id) => Array.from($(id).querySelectorAll(".p3-w"));
+    function words(id, cues, o) { const ws = W(id); cues.forEach((c, i) => rise(ws[i], c, o)); }
+    function el(parent, tag, attrs) { const n = document.createElementNS(NS, tag); for (const k in attrs) n.setAttribute(k, attrs[k]); parent.appendChild(n); return n; }
+    // length of a polyline / quadratic path without layout (scenes are hidden while building)
+    function ink(parent, d, t, dur, o, len) {
+      o = o || {};
+      const p = el(parent, "path", { d: d, fill: "none", stroke: o.color || INK, "stroke-width": o.width || 5, "stroke-linecap": "round", "stroke-linejoin": "round" });
+      if (o.filter) p.setAttribute("filter", o.filter);
+      if (o.opacity != null) p.setAttribute("opacity", o.opacity);
+      if (o.dasharray) { p.setAttribute("stroke-dasharray", o.dasharray); gsap.set(p, { opacity: 0 }); tl.fromTo(p, { opacity: 0 }, { opacity: o.opacity == null ? 1 : o.opacity, duration: dur, ease: C(E.out, dur), immediateRender: true }, t); return p; }
+      const L = len || p.getTotalLength() || 2000;
+      p.setAttribute("stroke-dasharray", L + " " + L); p.setAttribute("stroke-dashoffset", L);
+      tl.fromTo(p, { attr: { "stroke-dashoffset": L } }, { attr: { "stroke-dashoffset": 0 }, duration: dur, ease: o.ease || C(E.out, dur), immediateRender: true }, t);
+      return p;
+    }
+    const whipN = { n: 0 };
+    function whip(a, b, t, o) {
+      o = Object.assign({ dir: 1, vertical: false, flash: false, dur: 0.32 }, o);
+      const k = ++whipN.n, ba = FX.whipDefs(defs, SEG + "-wa" + k), bb = FX.whipDefs(defs, SEG + "-wb" + k), h = o.dur / 2;
+      const A = $(a + "-shot"), B = $(b + "-shot");
+      tl.set(A, { filter: "url(#" + SEG + "-wa" + k + ")" }, t - h - 0.01); tl.set(A, { filter: "none" }, t + 0.06);
+      tl.set(B, { filter: "url(#" + SEG + "-wb" + k + ")" }, t - 0.001); tl.set(B, { filter: "none" }, t + h + 0.02);
+      FX.whip(tl, A, B, t, { dir: o.dir, vertical: o.vertical, dur: o.dur, blurA: ba, blurB: bb });
+      if (o.flash) tl.fromTo($("flash"), { opacity: 0 }, { opacity: 0.85, duration: 0.08, yoyo: true, repeat: 1, ease: "power2.in", immediateRender: false }, t - 0.08);
+    }
+    function slide(a, b, t, o) {
+      o = Object.assign({ from: 1, d: 0.45 }, o);
+      const A = $(a + "-shot"), B = $(b + "-shot"), dist = 1980 * o.from;
+      tl.fromTo(B, { x: dist, boxShadow: "0 0 80px rgba(0,0,0,0.5)" }, { x: 0, duration: o.d, ease: C(E.inOut, o.d), immediateRender: false }, t - o.d);
+      tl.set(B, { boxShadow: "none" }, t);
+      tl.fromTo(A, { x: 0 }, { x: -dist * 0.12, duration: o.d, ease: E.in, immediateRender: false }, t - o.d);
+    }
+    // face cam framing: W 1.0 / M 1.25 / C 1.55 around (1040, 200), slow 2–3 % push
+    const FR = { W: [1.0, 1.03], M: [1.25, 1.285], C: [1.55, 1.59] };
+    function face(id, a, b, k) {
+      const fw = $(id + "-fw");
+      if (a === SC.find((s) => s[0] === id)[1]) gsap.set(fw, { scale: FR[k][0] });
+      tl.fromTo(fw, { scale: FR[k][0] }, { scale: FR[k][1], duration: b - a, ease: "none", immediateRender: false }, S(a));
+    }
+    function push(id, a, b, s0, s1, o) {
+      o = o || {};
+      const vw = $(id + "-vw");
+      if (o.origin) gsap.set(vw, { transformOrigin: o.origin });
+      gsap.set(vw, { scale: s0 });
+      tl.fromTo(vw, { scale: s0 }, { scale: s1, duration: b - a, ease: o.ease || "none", immediateRender: false }, S(a));
+    }
+    const gmSvg = (fill, x, y, s) => '<g transform="translate(' + x + " " + y + ") scale(" + s + ')"><path fill="' + fill + '" d="' + GM + '"/></g>';
+    const gated = (a, b, fn) => { const on = FX.onFrame; FX.onFrame = (f) => on(FX.gate(S(a), S(b), f)); fn(); FX.onFrame = on; };
+
+    FX.grain($("grain"), 331);
+    FX.dust($("dust"), 332, 2);
+    const PEN = FX.markupDefs(defs, SEG + "-pen", { boil: 4 });
+    defs.setAttribute("viewBox", "0 0 1 1");
+
+    /* ===== sc001 · ueno bank sign (fresh shot) ===== */
+    push("sc001", 213.60, 216.42, 1.0, 1.07, { origin: "45% 70%" });
+    words("sc001-lt", [T(215.05), T(215.53), T(215.61), T(215.93)], { dur: 0.35, y: 10 });
+
+    /* ===== sc002 · fake sepia history card (whip right) ===== */
+    const HIST = '<div class="pp1"></div><div class="mount"><img src="assets/paraguay/pys03/photos/asuncion_govt_bldgs_loc.jpg" alt=""></div>' +
+      '<div class="rule"></div><div class="born t-serif-i">born in</div><div class="yhl"></div><div class="year t-display">1950</div>';
+    ["sc002-hist", "sc003-hlh", "sc003-hrh"].forEach((id) => ($(id).innerHTML = HIST));
+    whip("sc001", "sc002", S(216.42), { dir: 1 });
+    push("sc002", 216.42, 219.27, 1.0, 1.035, { origin: "60% 50%" });
+    (function () {
+      const h = $("sc002-hist");
+      const born = h.querySelector(".born"), yr = h.querySelector(".year"), hl = h.querySelector(".yhl"), rule = h.querySelector(".rule");
+      born.innerHTML = '<span class="p3-w">born </span><span class="p3-w">in</span>';
+      const bw = born.querySelectorAll(".p3-w");
+      gsap.set(rule, { scaleX: 0, transformOrigin: "0 50%" });
+      tl.fromTo(rule, { scaleX: 0 }, { scaleX: 1, duration: 0.6, ease: C(E.out, 0.6), immediateRender: true }, S(216.6));
+      rise(bw[0], T(217.21), { dur: 0.35, y: 10 });
+      rise(bw[1], T(217.61), { dur: 0.25, y: 10 });
+      tl.fromTo(yr, { opacity: 0, scale: 1.3 }, { opacity: 1, scale: 1, duration: 0.5, ease: C(E.out, 0.5), immediateRender: true }, T(217.85));
+      gsap.set(yr, { transformOrigin: "20% 60%" });
+      tl.fromTo(hl, { scaleX: 0 }, { scaleX: 1, duration: 0.45, ease: C(E.inOut, 0.45), immediateRender: true }, S(218.2));
+    })();
+    // the halves inside sc003 carry the card's final state (fully built, pushed to 1.035)
+    ["sc003-hlv", "sc003-hrv"].forEach((id) => gsap.set($(id), { scale: 1.035, transformOrigin: "60% 50%" }));
+    ["sc003-hlh", "sc003-hrh"].forEach((id) => { const r = $(id).querySelector(".rule"); gsap.set(r, { scaleX: 1 }); });
+
+    /* ===== sc003 · FACE M behind the torn card (tear on "kidding") ===== */
+    (function () {
+      const rnd = FX.rng(219), pts = [];
+      for (let y = -20; y <= 1100; y += 60) pts.push([930 + (rnd() - 0.5) * 70 + (y / 1100) * 40, y]);
+      const L = "polygon(0px -20px, " + pts.map((p) => p[0].toFixed(0) + "px " + p[1] + "px").join(", ") + ", 0px 1100px)";
+      const R = "polygon(1940px -20px, " + pts.map((p) => p[0].toFixed(0) + "px " + p[1] + "px").join(", ") + ", 1940px 1100px)";
+      $("sc003-hl").style.clipPath = L; $("sc003-hr").style.clipPath = R;
+      gsap.set($("sc003-hl"), { transformOrigin: "0% 100%" }); gsap.set($("sc003-hr"), { transformOrigin: "100% 100%" });
+      tl.fromTo($("sc003-hl"), { x: 0, y: 0, rotation: 0 }, { x: -1250, y: 260, rotation: -16, duration: 0.6, ease: C(E.in, 0.6), immediateRender: true }, S(219.33));
+      tl.fromTo($("sc003-hr"), { x: 0, y: 0, rotation: 0 }, { x: 1250, y: 300, rotation: 18, duration: 0.6, ease: C(E.in, 0.6), immediateRender: true }, S(219.33));
+      tl.set([$("sc003-hl"), $("sc003-hr")], { autoAlpha: 0 }, S(219.95));
+    })();
+    face("sc003", 219.27, 223.95, "M");
+
+    /* ===== sc004 · FACE W (framing change, same take) ===== */
+    face("sc004", 223.95, 226.40, "W");
+    words("sc004-lt", [T(225.21), T(225.37), T(225.61)], { dur: 0.35, y: 10 });
+
+    /* ===== sc005 · ledger (slide ←, lands before the EDL join 226.533) ===== */
+    slide("sc004", "sc005", S(226.40));
+    (function () {
+      const rows = $("sc005-rows"), rnd = FX.rng(505);
+      for (let r = 0; r < 9; r++) {
+        const y = 330 + r * 62;
+        [[130, 140 + rnd() * 60], [330, 180 + rnd() * 120], [700, 70 + rnd() * 50]].forEach((c, k) => {
+          const d = document.createElement("div"); d.className = "p3-lrow";
+          d.style.left = c[0] + "px"; d.style.top = y + "px"; d.style.width = c[1].toFixed(0) + "px";
+          rows.appendChild(d); gsap.set(d, { opacity: 0 });
+          tl.set(d, { opacity: 1 }, S(226.1) + Math.floor((r * 3 + k) / 3) / 12);
+        });
+      }
+      const svg = $("sc005-svg");
+      // column rule of the ledger (slight slope, see MANUAL: filtered straight lines vanish — this one has no filter)
+      ink(svg, "M640 300 L641 880", S(226.3), 0.5, { color: INK, width: 3, opacity: 0.5 }, 581);
+      // profit line climbing across the ledger
+      ink(svg, "M140 860 C300 830 380 770 480 720 C580 670 640 640 720 560 C800 480 880 430 990 330", S(228.33), 1.2, { color: UD, width: 9 }, 1000);
+      // bank building (pediment, four columns, steps)
+      const B = "M1290 420 L1520 300 L1750 420 Z M1300 440 L1740 440 M1330 460 L1332 690 M1440 460 L1442 690 M1600 460 L1602 690 M1710 460 L1712 690 M1290 710 L1750 712 M1270 740 L1770 742";
+      ink(svg, B, S(229.6), 1.1, { color: INK, width: 7, filter: PEN }, 2600);
+      // crossed out on "wasn't … a bank"
+      FX.markup.pen(tl, svg, S(231.45), { points: [[1250, 300], [1790, 770]], color: TD, width: 12, filter: PEN, dur: 0.3, seed: 51 });
+      FX.markup.pen(tl, svg, S(231.75), { points: [[1790, 290], [1250, 780]], color: TD, width: 12, filter: PEN, dur: 0.3, seed: 52 });
+    })();
+    words("sc005-a", [T(227.29), T(227.37), T(227.53), T(227.69)], { dur: 0.35, y: 10 });
+    out($("sc005-a"), S(228.15), 0.15);
+    words("sc005-b", [T(228.33), T(228.57)], { dur: 0.4, y: 10 });
+    out($("sc005-b"), S(230.9), 0.2);
+    words("sc005-c", [T(231.13), T(231.45), T(231.93), T(232.01)], { dur: 0.3, y: 10 });
+    tl.fromTo($("sc005-shot"), { scale: 1 }, { scale: 1.04, duration: 0.45, ease: E.in, immediateRender: false }, S(232.05));
+
+    /* ===== sc006 · The Moneylender (light-flash whip) ===== */
+    whip("sc005", "sc006", S(232.50), { dir: 1, flash: true });
+    tl.fromTo($("sc006-cam"), { scale: 1.0 }, { scale: 1.32, duration: 6.4, ease: E.cam, immediateRender: false }, S(232.6));
+    FX.focusHunt(tl, $("sc006-cam"), S(233.0), { dur: 0.8 });
+    FX.markup.circle(tl, $("sc006-mk"), S(237.05), { cx: 270, cy: 820, rx: 190, ry: 78, rot: -4, color: UL, width: 6, filter: PEN, dur: 0.6, seed: 61 });
+    words("sc006-a", [T(234.89), T(235.13), T(235.77)], { dur: 0.45, y: 12 });
+    out($("sc006-a"), S(236.75), 0.2);
+    words("sc006-b", [T(237.05), T(237.29), T(237.53)], { dur: 0.3, y: 12 });
+    out($("sc006-b"), S(237.85), 0.12);
+    words("sc006-c", [T(238.01), T(238.09), T(238.25), T(238.33), T(238.41), T(238.73)], { dur: 0.25, y: 10 });
+    tl.to($("sc006-vw"), { scale: 1.06, duration: 0.5, ease: E.in }, S(238.9));
+
+    /* ===== sc007 · FACE W (hard cut on the push) ===== */
+    face("sc007", 239.40, 245.25, "W");
+    words("sc007-lt", [T(240.24), T(240.64)], { dur: 0.4, y: 10 });
+    out($("sc007-lt"), S(242.6), 0.3);
+
+    /* ===== sc008 · Credicentro title (hard cut at the EDL join) ===== */
+    gated(245.2, 248.85, () => FX.streaks($("sc008-streaks"), { seed: 808, speed: 0.5, tint: [147, 224, 211], lo: 0.4, gain: 1.1 }));
+    words("sc008-k", [T(245.52), T(245.68), T(245.92)], { dur: 0.35, y: 8 });
+    (function () {
+      const t = $("sc008-t"), w = t.querySelector(".p3-w");
+      gsap.set(t, { transformOrigin: "50% 50%" });
+      tl.fromTo(w, { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.7, ease: C(E.out, 0.7), immediateRender: true }, T(246.40));
+      tl.fromTo(t, { scale: 1.0 }, { scale: 1.05, duration: 2.4, ease: "none", immediateRender: false }, S(246.4));
+      gsap.set($("sc008-rule"), { scaleX: 0 });
+      tl.fromTo($("sc008-rule"), { scaleX: 0 }, { scaleX: 1, duration: 0.8, ease: C(E.out, 0.8), immediateRender: true }, S(246.8));
+    })();
+
+    /* ===== sc009 · diagram: loans out, no deposits, licence (vertical whip) ===== */
+    whip("sc008", "sc009", S(248.80), { dir: 1, vertical: true });
+    (function () {
+      const svg = $("sc009-svg");
+      const ppl = el(svg, "g", {});
+      [[200, 300], [330, 360], [200, 450]].forEach((p, k) => { const g = el(ppl, "g", {}); g.innerHTML = gmSvg(TI, p[0], p[1], 0.32); gsap.set(g, { opacity: 0 }); tl.set(g, { opacity: 1 }, S(249.2) + k / 12); });
+      pop($("sc009-cc"), S(249.0), { from: 0.85, dur: 0.9 });
+      // loans: teal arrows out of Credicentro to the people
+      FX.markup.arrow(tl, svg, S(251.6), { x1: 770, y1: 380, x2: 470, y2: 330, bend: -70, head: 30, color: UD, width: 7, filter: PEN, dur: 0.6 });
+      FX.markup.arrow(tl, svg, S(252.0), { x1: 770, y1: 440, x2: 480, y2: 430, bend: -30, head: 30, color: UD, width: 7, filter: PEN, dur: 0.6 });
+      // deposits: tierra arrow coming back … stopped
+      FX.markup.arrow(tl, svg, S(253.8), { x1: 360, y1: 620, x2: 700, y2: 560, bend: -60, head: 30, color: TD, width: 7, filter: PEN, dur: 0.6 });
+      FX.markup.pen(tl, svg, S(254.3), { points: [[570, 520], [650, 640]], color: TD, width: 12, filter: PEN, dur: 0.2, seed: 91 });
+      FX.markup.pen(tl, svg, S(254.5), { points: [[652, 522], [568, 642]], color: TD, width: 12, filter: PEN, dur: 0.2, seed: 92 });
+    })();
+    pop($("sc009-lic"), S(255.55), { from: 0.8, dur: 0.8 });
+    words("sc009-a", [T(251.20), T(251.60), T(252.00), T(252.24), T(252.48)], { dur: 0.3, y: 10 });
+    out($("sc009-a"), S(253.15), 0.15);
+    words("sc009-b", [T(253.36), T(253.76), T(254.00), T(254.24)], { dur: 0.3, y: 10 });
+    out($("sc009-b"), S(255.4), 0.15);
+    words("sc009-c", [T(255.60), T(255.76), T(255.92), T(256.08)], { dur: 0.25, y: 10 });
+
+    /* ===== sc010 · FACE C (hard cut) ===== */
+    face("sc010", 256.55, 258.80, "C");
+
+    /* ===== sc011 · family tree (cut on action) ===== */
+    (function () {
+      const svg = $("sc011-svg");
+      ["n1", "n2", "n3"].forEach((n, k) => {
+        $("sc011-" + n).innerHTML = '<svg viewBox="0 0 400 480">' + gmSvg(k === 2 ? "#6f7772" : "#8b928d", 60, 70, 0.7) + "</svg>";
+        pop($("sc011-" + n), S(258.95) + k * 0.25, { from: 0.7, dur: 0.8 });
+      });
+      ink(svg, "M470 300 L471 410", S(259.3), 0.4, { color: INK, width: 5 }, 111);
+      ink(svg, "M470 610 L471 720", S(259.55), 0.4, { color: INK, width: 5 }, 111);
+      pop($("sc011-cc"), S(259.5), { from: 0.8, dur: 0.9 });
+      // part of this family: teal links card ↔ the two older generations
+      ink(svg, "M1080 320 C860 260 700 220 570 210", S(261.55), 0.8, { color: UENO, width: 6 }, 560);
+      const l2 = ink(svg, "M1080 380 C860 430 700 500 570 505", S(261.85), 0.8, { color: UENO, width: 6 }, 560);
+      // 2015 + the leadership changes: link jumps to the youngest
+      tl.fromTo($("sc011-hl"), { scaleX: 0 }, { scaleX: 1, duration: 0.45, ease: C(E.inOut, 0.45), immediateRender: true }, S(263.95));
+      tl.to(l2, { opacity: 0.18, duration: 0.25 }, S(264.9));
+      ink(svg, "M1080 410 C900 560 720 780 572 815", S(264.95), 0.9, { color: UENO, width: 9 }, 720);
+      tl.to($("sc011-n3"), { borderColor: UENO, duration: 0.001 }, S(265.6));
+      tl.fromTo($("sc011-n3"), { scale: 1.12 }, { scale: 1, duration: 0.6, ease: C(E.out, 0.6), immediateRender: false }, S(265.6));
+      tl.fromTo($("sc011-shot"), { scale: 1 }, { scale: 1.035, duration: 7.9, ease: "none", immediateRender: false }, S(258.8));
+    })();
+    words("sc011-a", [T(259.92), T(260.08), T(260.32)], { dur: 0.35, y: 10 });
+    out($("sc011-a"), S(261.3), 0.15);
+    words("sc011-b", [T(261.52), T(261.68), T(261.84), T(262.00)], { dur: 0.3, y: 10 });
+    out($("sc011-b"), S(264.5), 0.15);
+    tl.fromTo(W("sc011-y")[0], { opacity: 0, scale: 1.25 }, { opacity: 1, scale: 1, duration: 0.5, ease: C(E.out, 0.5), immediateRender: true }, T(263.68));
+    words("sc011-c", [T(264.72), T(264.96), T(265.60)], { dur: 0.3, y: 10 });
+
+    /* ===== sc012 · 2.5D Miguel Vázquez (whip right at the EDL join) ===== */
+    whip("sc011", "sc012", S(266.70), { dir: 1 });
+    (function () {
+      const P = 1200, Z = [-260, -120, 0];
+      ["l0", "l1", "l2"].forEach((l, i) => gsap.set($("sc012-" + l), { z: Z[i], scale: (P - Z[i]) / P }));
+      gsap.set($("sc012-l0"), { scale: (P + 260) / P * 1.06 });
+      tl.fromTo($("sc012-cam"), { x: 60, z: -40, rotationY: -2.5 }, { x: -70, z: 110, rotationY: 2, duration: 2.6, ease: E.cam, immediateRender: false }, S(266.7));
+      FX.focusHunt(tl, $("sc012-l2"), S(266.85), { dur: 0.7 });
+    })();
+    words("sc012-t", [T(266.88), T(267.04), T(267.28)], { dur: 0.4, y: 14 });
+    rise($("sc012-id"), S(267.6), { dur: 0.5, y: 8 });
+
+    /* ===== sc013 · FACE W → C at the sentence break 272.40 ===== */
+    face("sc013", 269.15, 272.40, "W");
+    tl.set($("sc013-fw"), { scale: FR.C[0] }, S(272.40));
+    face("sc013", 272.40, 275.40, "C");
+    words("sc013-lt", [T(270.16), T(270.40)], { dur: 0.4, y: 10 });
+    out($("sc013-lt"), S(272.0), 0.3);
+    tl.set($("sc013-scrim"), { opacity: 0 }, S(272.40));
+
+    /* ===== sc014 · Paraguay: a national conglomerate (hard cut at the EDL join) ===== */
+    (function () {
+      const cam = $("sc014-cam");
+      gsap.set(cam, { x: 0, y: -525, scale: 0.75 });
+      tl.fromTo(cam, { x: 0, y: -525, scale: 0.75 }, { x: -105.4, y: -648, scale: 0.82, duration: 4.6, ease: E.cam, immediateRender: false }, S(275.4));
+      const pins = $("sc014-pins");
+      const PTS = [[1540, 1730], [1478, 1786], [1560, 1790], [2282, 1823], [1558, 1234], [1994, 993], [1814, 1890], [1812, 1806], [890, 939], [1300, 1520], [2050, 1400], [1700, 1560]];
+      PTS.forEach((p, k) => {
+        const d = document.createElement("div"); d.className = "p3-pin"; d.style.left = p[0] + "px"; d.style.top = p[1] + "px"; pins.appendChild(d);
+        gsap.set(d, { opacity: 0 });
+        tl.fromTo(d, { opacity: 0, scale: 1.8 }, { opacity: 1, scale: 1, duration: 2 / 12, ease: "steps(2)", immediateRender: true }, S(277.5) + Math.floor(k * 1.5) / 12);
+      });
+    })();
+    words("sc014-lt", [T(276.72), T(276.96), T(277.44)], { dur: 0.4, y: 10 });
+
+    /* ===== sc015 · org chart: GRUPO VÁZQUEZ (vertical whip up) ===== */
+    whip("sc014", "sc015", S(280.00), { dir: -1, vertical: true });
+    (function () {
+      const svg = $("sc015-svg");
+      // the empty "new group" frame (dashed, appears on "new group")
+      const fr = el(svg, "rect", { x: 130, y: 80, width: 1660, height: 920, rx: 26, fill: "none", stroke: UD, "stroke-width": 5, "stroke-dasharray": "22 16", opacity: 0 });
+      tl.fromTo(fr, { opacity: 0 }, { opacity: 0.85, duration: 0.5, ease: C(E.out, 0.5), immediateRender: true }, S(281.6));
+      // the bank (Credicentro) drops in
+      tl.fromTo($("sc015-cc"), { opacity: 0, y: -260, rotation: -4 }, { opacity: 1, y: 0, rotation: 0, duration: 0.9, ease: C(E.out, 0.9), immediateRender: true }, S(280.95));
+      // company cards
+      const CARDS = [["itti", "tech"], ["Pagopar", "payments"], ["Hendyla", "e-commerce"], ["La Tribuna", "newspaper"], ["Crónica", "newspaper"], ["650 AM", "radio"]];
+      const TS = [285.52, 285.86, 286.3, 287.36, 287.66, 287.94];
+      const box = $("sc015-cards");
+      ink(svg, "M960 452 L961 530", S(285.3), 0.25, { color: INK, width: 4 }, 80);
+      ink(svg, "M310 532 C700 528 1200 533 1610 531", S(285.35), 0.6, { color: INK, width: 4 }, 1300);
+      CARDS.forEach((c, k) => {
+        const x = 195 + k * 260;
+        const d = document.createElement("div"); d.className = "p3-card"; d.style.left = x + "px"; d.style.top = "620px"; d.style.width = "230px"; d.style.height = "160px";
+        d.innerHTML = '<div class="band"></div><div class="nm t-display" style="top:48px; font-size:40px">' + c[0] + '</div><div class="ct t-label" style="top:108px">' + c[1] + "</div>";
+        box.appendChild(d);
+        gsap.set(d, { opacity: 0, rotation: (k % 2 ? 1.2 : -1.2) });
+        tl.fromTo(d, { opacity: 0, scale: 1.25 }, { opacity: 1, scale: 1, duration: 2 / 12, ease: "steps(2)", immediateRender: true }, S(TS[k]));
+        ink(svg, "M" + (x + 115) + " 532 L" + (x + 116) + " 618", S(TS[k]) - 0.1, 0.2, { color: INK, width: 4 }, 90);
+      });
+      tl.fromTo($("sc015-shot"), { scale: 1.03 }, { scale: 1.0, duration: 8.65, ease: E.cam, immediateRender: false }, S(280.0));
+    })();
+    words("sc015-h", [T(283.28), T(283.28)], { dur: 0.6, y: 14 });
+
+    /* ===== sc016 · FACE M (hard cut) ===== */
+    face("sc016", 288.65, 293.35, "M");
+    words("sc016-lt", [T(290.00), T(290.72), T(290.80)], { dur: 0.4, y: 10 });
+
+    /* ===== sc017 · collage of industries (paper slide →) ===== */
+    slide("sc016", "sc017", S(293.35));
+    ["p1", "p2", "p3", "p4"].forEach((p, k) => {
+      const e = $("sc017-" + p), r = [-2.5, 2, 1.5, -1.8][k];
+      gsap.set(e, { opacity: 0 });
+      tl.fromTo(e, { opacity: 0, scale: 1.18, rotation: r * 2 }, { opacity: 1, scale: 1, rotation: r, duration: 3 / 12, ease: "steps(3)", immediateRender: true }, S([294.16, 294.64, 294.96, 295.3][k]));
+    });
+    words("sc017-a", [T(294.16), T(294.48), T(294.64), T(294.96)], { dur: 0.35, y: 10 });
+    out($("sc017-a"), S(296.1), 0.2);
+    words("sc017-b", [T(296.40), T(296.56), T(296.96)], { dur: 0.35, y: 10 });
+    tl.fromTo($("sc017-shot"), { scale: 1.0 }, { scale: 1.04, duration: 4.1, ease: "none", immediateRender: false }, S(293.35));
+
+    /* ===== sc018 · FACE W (whip left) ===== */
+    whip("sc017", "sc018", S(297.45), { dir: -1 });
+    face("sc018", 297.45, 301.00, "W");
+
+    /* ===== sc019 · world map: family groups (hard cut) ===== */
+    (function () {
+      const wx = (lon) => (lon + 180) * 7.1111 - 391.1, wy = (lat) => (90 - lat) * 7.1111 - 85.33;
+      const lab = $("sc019-labels");
+      const L = [
+        ["UNITED STATES", -100, 40, 34, ASHL, null], ["PARAGUAY", -58, -23, 22, TL, "dot"],
+        ["ASIA", 100, 34, 52, BONE, 301.37], ["SOUTH AMERICA", -64, -6, 40, BONE, 302.49], ["MIDDLE EAST", 45, 26, 36, BONE, 304.01],
+      ];
+      L.forEach((l) => {
+        const d = document.createElement("div");
+        d.className = "p3-mapl " + (l[5] === "dot" ? "t-label" : "c t-display");
+        d.style.fontSize = l[3] + "px"; d.style.color = l[4];
+        d.textContent = l[0];
+        if (l[5] === "dot") {
+          const dot = document.createElement("div"); dot.className = "p3-dot"; dot.style.left = wx(l[1]) + "px"; dot.style.top = wy(l[2]) + "px"; dot.style.width = "10px"; dot.style.height = "10px"; dot.style.margin = "-5px 0 0 -5px"; lab.appendChild(dot);
+          d.style.left = (wx(l[1]) + 16) + "px"; d.style.top = (wy(l[2]) - 12) + "px";
+        } else { d.style.left = (wx(l[1]) - 200) + "px"; d.style.width = "400px"; d.style.textAlign = "center"; d.style.top = (wy(l[2]) - l[3] * 0.5) + "px"; }
+        lab.appendChild(d);
+        if (typeof l[5] === "number") rise(d, T(l[5]), { dur: 0.5, y: 8 });
+      });
+      [["as", 301.37], ["sa", 302.49], ["me", 304.01]].forEach((g) => {
+        gsap.set($("sc019-" + g[0]), { opacity: 0 });
+        tl.fromTo($("sc019-" + g[0]), { opacity: 0 }, { opacity: 1, duration: 0.5, ease: C(E.out, 0.5), immediateRender: true }, S(g[1]));
+      });
+      tl.fromTo($("sc019-cam"), { scale: 1.0 }, { scale: 1.06, duration: 5.25, ease: E.cam, immediateRender: false }, S(301.0));
+    })();
+    words("sc019-lt", [T(304.81), T(304.89), T(305.13), T(305.45)], { dur: 0.35, y: 10 });
+
+    /* ===== sc020 · isotype: one family, every big business (cut on action) ===== */
+    (function () {
+      const svg = $("sc020-svg");
+      $("sc020-f1").innerHTML = '<svg viewBox="0 0 400 400">' + gmSvg("#6f7772", 40, 90, 0.62) + gmSvg("#8b928d", 160, 110, 0.55) + "</svg>";
+      $("sc020-f2").innerHTML = '<svg viewBox="0 0 400 400">' + gmSvg("#8b928d", 90, 90, 0.6) + "</svg>";
+      $("sc020-f3").innerHTML = '<svg viewBox="0 0 400 400">' + gmSvg("#8b928d", 90, 90, 0.6) + "</svg>";
+      gsap.set([$("sc020-f2"), $("sc020-f3")], { opacity: 0 });
+      pop($("sc020-f1"), S(308.15), { from: 0.7, dur: 0.8 });
+      pop($("sc020-f2"), S(308.85), { from: 0.7, dur: 0.6 });
+      pop($("sc020-f3"), S(309.3), { from: 0.7, dur: 0.6 });
+      gsap.set($("sc020-f1"), { opacity: 0 });
+      const grid = $("sc020-grid"), blds = [];
+      const BLD = '<svg viewBox="0 0 100 100"><path class="f" d="M14 90 L14 34 L50 12 L86 34 L86 90 Z" fill="#e4dccb" stroke="' + INK + '" stroke-width="5"/><path d="M28 46 v30 M44 46 v30 M56 46 v30 M72 46 v30" stroke="' + INK + '" stroke-width="5"/><path d="M8 91 H92" stroke="' + INK + '" stroke-width="5"/></svg>';
+      for (let r = 0; r < 4; r++) for (let c = 0; c < 6; c++) {
+        const d = document.createElement("div"); d.className = "p3-bld"; d.style.left = (760 + c * 170) + "px"; d.style.top = (150 + r * 175) + "px"; d.innerHTML = BLD; grid.appendChild(d);
+        gsap.set(d, { opacity: 0 }); blds.push(d);
+        tl.fromTo(d, { opacity: 0, scale: 1.3 }, { opacity: 1, scale: 1, duration: 2 / 12, ease: "steps(2)", immediateRender: true }, S(306.45) + Math.floor((r * 6 + c) * 0.6) / 12);
+      }
+      // wires: family → spine → rows
+      ink(svg, "M492 456 C580 452 640 460 700 458", S(309.8), 0.4, { color: UD, width: 6 }, 210);
+      ink(svg, "M700 200 C702 400 698 600 701 730", S(310.1), 0.5, { color: UD, width: 6 }, 530);
+      [206, 381, 556, 731].forEach((y, k) => ink(svg, "M701 " + y + " C720 " + (y - 2) + " 740 " + (y + 2) + " 758 " + y, S(310.45) + k / 12, 0.2, { color: UD, width: 6 }, 60));
+      // every big business: the buildings fill teal, one by one (12 fps)
+      blds.forEach((d, i) => tl.to(d.querySelector(".f"), { attr: { fill: UL }, duration: 0.001 }, S(311.55) + Math.floor(i * 0.55) / 12));
+      tl.fromTo($("sc020-shot"), { scale: 1.0 }, { scale: 1.04, duration: 7.7, ease: "none", immediateRender: false }, S(306.25));
+    })();
+    words("sc020-a", [T(306.57), T(306.81), T(307.13)], { dur: 0.35, y: 10 });
+    out($("sc020-a"), S(307.95), 0.12);
+    words("sc020-b", [T(308.09), T(308.33)], { dur: 0.3, y: 10 });
+    out($("sc020-b"), S(308.7), 0.1);
+    words("sc020-c", [T(308.81), T(309.29)], { dur: 0.3, y: 10 });
+    out($("sc020-c"), S(311.3), 0.15);
+    words("sc020-d", [T(311.53), T(312.17), T(312.49)], { dur: 0.3, y: 10 });
+
+    /* ===== sc021 · FACE C → W exactly at the EDL join 316.017 ===== */
+    face("sc021", 313.95, 316.017, "C");
+    tl.set($("sc021-fw"), { scale: FR.W[0] }, S(316.017));
+    face("sc021", 316.017, 319.45, "W");
+    gsap.set($("sc021-scrim"), { opacity: 0 });
+    tl.set($("sc021-scrim"), { opacity: 1 }, S(316.017));
+    words("sc021-lt", [T(316.49), T(316.65), T(316.97), T(317.21), T(317.37)], { dur: 0.3, y: 10 });
+
+    /* ===== sc022 · J-curve (whip right) ===== */
+    whip("sc021", "sc022", S(319.45), { dir: 1 });
+    (function () {
+      const svg = $("sc022-svg");
+      // zero line (dashed, no filter)
+      ink(svg, "M180 520 L1760 521", S(319.5), 0.5, { color: INK, width: 3, opacity: 0.55, dasharray: "14 12" });
+      // hatched losing area (below zero), revealed with the dive
+      const pat = el(svg, "pattern", { id: SEG + "-hatch", width: 18, height: 18, patternUnits: "userSpaceOnUse", patternTransform: "rotate(45)" });
+      el(pat, "rect", { x: 0, y: 0, width: 5, height: 18, fill: TD, opacity: 0.35 });
+      const area = el(svg, "path", { d: "M230 520 C330 700 500 800 680 812 C820 822 1000 822 1150 800 C1260 760 1330 650 1395 520 Z", fill: "url(#" + SEG + "-hatch)", opacity: 0 });
+      tl.fromTo(area, { opacity: 0 }, { opacity: 1, duration: 0.8, ease: C(E.out, 0.8), immediateRender: true }, S(321.0));
+      ink(svg, "M230 520 C330 700 500 800 680 812", S(320.85), 0.9, { color: UD, width: 10 }, 620);
+      ink(svg, "M680 812 C820 822 1000 822 1150 800", S(322.55), 0.9, { color: UD, width: 10 }, 480);
+      ink(svg, "M1150 800 C1260 760 1330 650 1395 520 C1470 380 1560 300 1700 250", S(323.5), 1.0, { color: UD, width: 10 }, 720);
+      const dot = el(svg, "circle", { cx: 230, cy: 520, r: 14, fill: UD });
+      gsap.set(dot, { opacity: 0 }); tl.set(dot, { opacity: 1 }, S(319.7));
+      // bracket under the trough
+      ink(svg, "M660 880 L662 900 L1170 902 L1172 882", S(322.6), 0.6, { color: INK, width: 4 }, 560);
+      const end = el(svg, "circle", { cx: 1700, cy: 250, r: 14, fill: UD });
+      gsap.set(end, { opacity: 0 }); tl.set(end, { opacity: 1 }, S(324.5));
+      tl.fromTo($("sc022-shot"), { scale: 1.0 }, { scale: 1.035, duration: 5.65, ease: "none", immediateRender: false }, S(319.45));
+    })();
+    words("sc022-a", [T(319.69), T(319.85), T(320.09)], { dur: 0.3, y: 10 });
+    words("sc022-b", [T(320.89), T(321.45)], { dur: 0.35, y: 10 });
+    words("sc022-c", [T(322.57), T(322.73), T(322.97), T(323.21)], { dur: 0.3, y: 10 });
+    words("sc022-d", [T(324.41)], { dur: 0.4, y: 10 });
+
+    /* ===== sc023 · FACE M (hard cut) ===== */
+    face("sc023", 325.10, 327.15, "M");
+    words("sc023-lt", [T(325.61), T(325.77), T(325.93)], { dur: 0.3, y: 10 });
+
+    /* ===== sc024 · money flow + crack (light-flash whip); push continues into the cut ===== */
+    whip("sc023", "sc024", S(327.15), { dir: 1, flash: true });
+    (function () {
+      const svg = $("sc024-svg"), sinks = $("sc024-sinks");
+      const NAMES = ["itti", "Pagopar", "Hendyla", "La Tribuna", "Crónica", "650 AM"];
+      const pipes = [];
+      NAMES.forEach((n, k) => {
+        const y = 120 + k * 150, d = document.createElement("div"); d.className = "p3-sink"; d.style.top = y + "px";
+        d.innerHTML = '<div class="nm t-label">' + n + "</div>";
+        // a small falling sparkline (losing money) in each box
+        d.innerHTML += '<svg style="position:absolute; left:250px; top:22px; width:140px; height:70px" viewBox="0 0 140 70"><path d="M6 14 L40 22 L66 18 L96 40 L132 58" fill="none" stroke="' + ASHL + '" stroke-width="4" stroke-linecap="round"/></svg>';
+        sinks.appendChild(d);
+        gsap.set(d, { opacity: 0 });
+        tl.fromTo(d, { opacity: 0, x: 30 }, { opacity: 1, x: 0, duration: 0.5, ease: C(E.out, 0.5), immediateRender: true }, S(327.3) + k * 0.08);
+        const p0 = [630, 540], p3 = [1220, y + 56], c1 = [900, 540], c2 = [960, y + 56];
+        pipes.push([p0, c1, c2, p3]);
+        ink(svg, "M" + p0 + " C" + c1 + " " + c2 + " " + p3, S(327.4) + k * 0.06, 0.6, { color: UD, width: 6, opacity: 0.9 }, 760);
+      });
+      // money dots flowing down the pipes (deterministic, gated); stutter after the crack
+      const dots = [];
+      pipes.forEach((p, k) => { for (let j = 0; j < 4; j++) dots.push({ c: el(svg, "circle", { r: 9, fill: UL, opacity: 0 }), p: p, ph: j / 4 + k * 0.07 }); });
+      const bez = (p, u) => { const v = 1 - u; return [v * v * v * p[0][0] + 3 * v * v * u * p[1][0] + 3 * v * u * u * p[2][0] + u * u * u * p[3][0], v * v * v * p[0][1] + 3 * v * v * u * p[1][1] + 3 * v * u * u * p[2][1] + u * u * u * p[3][1]]; };
+      const tc = S(331.77);
+      FX.onFrame(FX.gate(S(327.15), S(332.6), (t) => {
+        const run = t - S(327.9);
+        dots.forEach((d) => {
+          if (run < 0) { d.c.setAttribute("opacity", 0); return; }
+          let tt = run; if (t > tc) tt = (tc - S(327.9)) + (t - tc) * 0.25;   // flow slows to a trickle after the crack
+          const u = (tt * 0.45 + d.ph) % 1, q = bez(d.p, u);
+          const flick = t > tc ? (Math.floor(t * 12) % 3 === 0 ? 0.2 : 0.7) : 0.95;
+          d.c.setAttribute("cx", q[0].toFixed(1)); d.c.setAttribute("cy", q[1].toFixed(1)); d.c.setAttribute("opacity", flick);
+        });
+      }));
+      // the crack through the source box on "problem"
+      const crk = $("sc024-crk");
+      FX.markup.pen(tl, crk, S(331.77), { points: [[420, 372], [392, 450], [430, 520], [378, 600], [404, 660], [360, 712]], color: TL, width: 6, filter: PEN, dur: 0.3, seed: 241, blend: "normal" });
+      FX.markup.pen(tl, crk, S(331.92), { points: [[430, 520], [500, 560], [540, 640]], color: TL, width: 4, filter: PEN, dur: 0.22, seed: 242, blend: "normal" });
+      tl.to($("sc024-src"), { boxShadow: "0 0 12px rgba(31,165,149,0.25), inset 0 0 10px rgba(31,165,149,0.15)", borderColor: "#5f8f88", duration: 0.25, ease: "steps(3)" }, S(331.85));
+      // camera: slow drift, then pushes into the crack and keeps moving into the cut (hand-off to pys04)
+      tl.fromTo($("sc024-cam"), { scale: 1.0, x: 0 }, { scale: 1.08, x: 40, duration: 4.0, ease: "none", immediateRender: false }, S(327.15));
+      tl.to($("sc024-cam"), { scale: 1.32, x: 120, duration: 1.45, ease: "power2.in" }, S(331.15));
+    })();
+    words("sc024-a", [T(328.81), T(329.13), T(329.21), T(329.37), T(329.53)], { dur: 0.3, y: 10 });
+    out($("sc024-a"), S(330.9), 0.2);
+    words("sc024-b", [T(331.45), T(331.61), T(331.77), T(332.01)], { dur: 0.25, y: 10 });
+
+    FX.mount(tl, DURATION);
+    window.__timelines = window.__timelines || {};
+    window.__timelines[SEG] = tl;
+  })();
+  </script>
+</template>
+</body>
+</html>

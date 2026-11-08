@@ -58,3 +58,25 @@ rv = "".join(f'<path d="{riv[k]}"/>' for k in ["paraguay", "parana", "pilcomayo"
   f'<g fill="none" stroke="#f2eee3" stroke-opacity="0.4" stroke-width="4">{bor}</g>'
   f'<path d="{pp["paraguay"]}" fill="#cf5a33" fill-opacity="0.55" stroke="#f1b296" stroke-width="6" stroke-linejoin="round"/></svg>')
 print("ok")
+
+# ---- 2.5D clean plate for sc012: remove the subject from the backdrop (normalised-convolution fill), PIL+numpy only
+def clean_plate():
+    import numpy as np
+    from PIL import ImageFilter
+    src = Image.open("assets/paraguay/shared/photos/miguel_vazquez.jpg").convert("RGB")
+    cut = Image.open(OUT / "miguel_cut.png").split()[-1]
+    m = cut.point(lambda v: 255 if v > 20 else 0).filter(ImageFilter.MaxFilter(31))
+    w = 1 - np.asarray(m, dtype=np.float32) / 255
+    a = np.asarray(src, dtype=np.float32)
+    out = a.copy()
+    for it in range(40):   # grow the known region inward, ring by ring
+        if w.min() > 0.5: break
+        num = np.stack([np.asarray(Image.fromarray(out[..., c] * w).filter(ImageFilter.GaussianBlur(18)), dtype=np.float32) for c in range(3)], -1)
+        den = np.asarray(Image.fromarray(w.astype(np.float32)).filter(ImageFilter.GaussianBlur(18)), dtype=np.float32)
+        new = (den > 0.08) & (w < 0.5)
+        fill = num / np.maximum(den, 1e-4)[..., None]
+        out[new] = fill[new]; w = np.where(new, 1.0, w).astype(np.float32)
+    out = np.asarray(Image.fromarray(np.clip(out, 0, 255).astype(np.uint8)).filter(ImageFilter.GaussianBlur(4)), dtype=np.float32) * (1 - (np.asarray(m, dtype=np.float32)[..., None] / 255) * 0) 
+    Image.fromarray(np.clip(out, 0, 255).astype(np.uint8)).save(OUT / "miguel_plate.jpg", quality=92)
+if (OUT / "miguel_cut.png").exists():
+    clean_plate()

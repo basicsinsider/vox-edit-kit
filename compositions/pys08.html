@@ -1,0 +1,814 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8" /></head>
+<body>
+<template>
+  <style>
+    #root { position: absolute; inset: 0; overflow: hidden; background: var(--night); }
+    .p8-scene { position: absolute; inset: 0; overflow: hidden; visibility: hidden; opacity: 0; }
+    .p8-shot { position: absolute; inset: 0; overflow: hidden; transform-origin: 50% 50%; background: var(--night); }
+    .p8-paper { background: var(--paper); }
+    .p8-abs { position: absolute; }
+    .p8-full { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; object-fit: cover; }
+    .p8-fcw { position: absolute; inset: 0; transform-origin: 1000px 220px; }
+    .p8-vw { position: absolute; inset: 0; transform-origin: 50% 50%; }
+    .p8-cam { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 960px 540px; }
+    .p8-p1, .p8-p2 { position: absolute; inset: 0; background-size: cover; background-position: center; pointer-events: none; }
+    .p8-p2 { opacity: 0.9; mix-blend-mode: multiply; }
+    .p8-mk { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; pointer-events: none; }
+    .p8-w { display: inline-block; white-space: pre; opacity: 0; }
+    .p8-ink { color: var(--ink); }
+    .p8-credit { position: absolute; right: 30px; bottom: 20px; font-size: 13px; letter-spacing: 0.08em; color: rgba(242,238,227,0.66); z-index: 5; }
+    .p8-credit.ink { color: rgba(22,32,28,0.62); }
+    .p8-lt { position: absolute; left: 96px; bottom: 104px; width: 900px; font-size: 64px; line-height: 1.0; }
+    .p8-scrim-bl { position: absolute; inset: 0; pointer-events: none;
+      background: radial-gradient(ellipse 60% 54% at 0% 100%, rgba(10,13,12,0.86) 0%, rgba(10,13,12,0.55) 45%, rgba(10,13,12,0) 100%); }
+    .p8-logo { position: absolute; background: var(--ink); -webkit-mask-position: center; mask-position: center; -webkit-mask-size: contain; mask-size: contain; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; }
+    .p8-mark { position: relative; display: inline-block; }
+    .p8-mark .p8-hlb { position: absolute; left: -10px; right: -10px; top: 22%; bottom: 10%; background: var(--yellow); mix-blend-mode: multiply; transform-origin: 0 50%; transform: scaleX(0); z-index: -1; }
+    .p8-ul { position: absolute; left: -4px; right: -4px; bottom: -10px; height: 22px; overflow: visible; }
+    #pys08-flash { position: absolute; inset: 0; background: #f6f2ea; opacity: 0; pointer-events: none; z-index: 7; }
+    #pys08-grain, #pys08-dust, #pys08-vig { z-index: 8; }
+
+    /* sc001 rewind timeline */
+    #pys08-sc001-axis { position: absolute; left: 240px; top: 598px; width: 1440px; height: 4px; background: var(--ash); }
+    .p8-ytick { position: absolute; top: 580px; width: 4px; height: 40px; background: var(--ash-light); }
+    .p8-ylab { position: absolute; top: 640px; width: 200px; text-align: center; font-size: 26px; color: var(--ash-light); }
+    #pys08-sc001-head { position: absolute; left: 0; top: 0; width: 120px; height: 360px; }
+    #pys08-sc001-head .line { position: absolute; left: 58px; top: 120px; width: 4px; height: 210px; background: var(--ueno-light); box-shadow: 0 0 18px rgba(147,224,211,0.55); }
+    #pys08-sc001-trail { position: absolute; top: 590px; height: 20px; left: 300px; width: 1320px; background: linear-gradient(90deg, rgba(31,165,149,0.9), rgba(31,165,149,0)); transform-origin: 0 50%; }
+    /* sc003 tree */
+    .p8-tile { position: absolute; width: 170px; height: 130px; background: #f4efe4; box-shadow: 0 10px 20px rgba(22,32,28,0.22); }
+    .p8-tile svg { position: absolute; left: 45px; top: 18px; width: 80px; height: 94px; }
+    #pys08-sc003-base { position: absolute; left: 560px; top: 800px; width: 800px; height: 150px; background: var(--ueno-dark); box-shadow: 0 18px 30px rgba(22,32,28,0.3); }
+    #pys08-sc003-base .tex { position: absolute; inset: 0; background: url('assets/textures/paper_fiber_01.jpg') center / cover; mix-blend-mode: multiply; opacity: 0.45; }
+    .p8-chip { position: absolute; left: 0; top: 0; width: 34px; height: 22px; border-radius: 4px; background: var(--ueno); box-shadow: 0 2px 4px rgba(22,32,28,0.35); opacity: 0; }
+    /* sc006 brands */
+    .p8-lcard { position: absolute; width: 400px; height: 150px; background: #f6f2e8; box-shadow: 0 12px 24px rgba(22,32,28,0.24); }
+    .p8-colh { position: absolute; width: 480px; text-align: center; font-size: 46px; line-height: 1.05; }
+    /* sc009 related parties */
+    .p8-card { position: absolute; background: #f4efe4; box-shadow: 0 16px 30px rgba(22,32,28,0.28); }
+    #pys08-sc009-own { left: 840px; top: 96px; width: 240px; height: 300px; padding: 12px; transform: rotate(-1.5deg); }
+    #pys08-sc009-own .ph { width: 240px; height: 300px; background: url('assets/paraguay/pys08/derived/miguel_ash.jpg') 50% 22% / 340px auto no-repeat; }
+    #pys08-sc009-bank { left: 200px; top: 560px; width: 480px; height: 260px; border-top: 16px solid var(--ueno); }
+    #pys08-sc009-cos { left: 1240px; top: 560px; width: 480px; height: 260px; border-top: 16px solid var(--ueno-dark); }
+    /* sc010 bar */
+    #pys08-sc010-col { position: absolute; left: 520px; top: 180px; width: 300px; height: 760px; background: var(--paper-2); box-shadow: inset 0 0 0 4px rgba(22,32,28,0.75);
+      background-image: repeating-linear-gradient(135deg, rgba(22,32,28,0) 0 18px, rgba(22,32,28,0.08) 18px 21px); }
+    #pys08-sc010-fill { position: absolute; left: 524px; top: 788px; width: 292px; height: 152px; background: var(--ueno); transform-origin: 50% 100%; }
+    #pys08-sc010-ex { position: absolute; left: 524px; top: 692px; width: 292px; height: 96px; background: var(--ink); transform-origin: 50% 100%;
+      background-image: repeating-linear-gradient(135deg, rgba(236,230,214,0) 0 14px, rgba(236,230,214,0.35) 14px 18px); }
+    #pys08-sc010-line { position: absolute; left: 470px; top: 786px; width: 840px; height: 0; border-top: 5px dashed var(--ink); transform-origin: 0 50%; }
+    /* sc012 rope */
+    #pys08-sc012-cliff { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; }
+    #pys08-sc012-bank { position: absolute; left: 0; top: 0; width: 300px; height: 170px; background: var(--ueno); box-shadow: 0 16px 30px rgba(0,0,0,0.5); }
+    #pys08-sc012-hang { position: absolute; left: 0; top: 0; width: 360px; height: 340px; }
+    .p8-hcard { position: absolute; width: 170px; height: 74px; background: #f1ece0; box-shadow: 0 8px 14px rgba(0,0,0,0.5); }
+    /* sc014 quote */
+    #pys08-sc014-q { position: absolute; left: 110px; top: 40px; font-size: 360px; line-height: 1; color: var(--ueno-dark); opacity: 0.22; }
+    /* sc015 pillars */
+    #pys08-sc015-bank { position: absolute; left: 540px; top: 300px; width: 840px; height: 210px; background: var(--ueno); transform-origin: 0% 100%; box-shadow: 0 20px 40px rgba(0,0,0,0.5); }
+    .p8-pil { position: absolute; top: 510px; width: 130px; height: 390px; background: linear-gradient(90deg, #2a312d, #4b5550 45%, #2a312d); }
+    .p8-pil .cap { position: absolute; left: -20px; top: 0; width: 170px; height: 70px; background: #f1ece0; }
+    /* board (sc018 / sc021 / sc023) */
+    #pys08-board-cam { position: absolute; left: 0; top: 0; width: 3000px; height: 1700px; transform-origin: 0 0; }
+    #pys08-board-cork { position: absolute; left: -1500px; top: -1000px; width: 6000px; height: 3700px; background: url('assets/textures/cork_01.jpg') center / 1500px auto repeat; filter: brightness(0.8) saturate(0.55); }
+    .p8-bcard { position: absolute; background: #ece6da; box-shadow: 0 14px 26px rgba(0,0,0,0.45); }
+    .p8-pin { position: absolute; width: 20px; height: 20px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #c9efe7, #1fa595 55%, #0c5c54); box-shadow: 0 3px 4px rgba(0,0,0,0.45); }
+    .p8-reg { width: 300px; height: 210px; }
+    .p8-reg .hd { position: absolute; left: 18px; top: 16px; font-size: 17px; color: var(--ink); }
+    .p8-reg svg { position: absolute; left: 22px; top: 52px; width: 120px; height: 140px; }
+    .p8-reg i { position: absolute; left: 160px; height: 7px; background: rgba(22,32,28,0.28); }
+    .p8-own { width: 150px; height: 120px; }
+    .p8-own svg { position: absolute; left: 14px; top: 12px; width: 80px; height: 96px; }
+    .p8-own b { position: absolute; left: 96px; top: 28px; font-size: 56px; color: var(--ink); }
+    #pys08-board-lamp { position: absolute; inset: 0; pointer-events: none;
+      background: radial-gradient(ellipse 62% 66% at 50% 46%, rgba(255,240,215,0.08) 0%, rgba(14,19,17,0) 45%, rgba(14,19,17,0.72) 100%); }
+    .p8-tag { position: absolute; background: #ece6da; color: var(--ink); padding: 12px 20px 8px; font-size: 34px; box-shadow: 0 8px 16px rgba(0,0,0,0.45); }
+    /* sc020 papers */
+    #pys08-sc020-form { position: absolute; left: 240px; top: 110px; width: 860px; height: 860px; background: #f3efe5; box-shadow: 0 26px 50px rgba(22,32,28,0.32); transform: rotate(-1deg); }
+    .p8-fl { position: absolute; left: 70px; font-size: 26px; color: var(--ink-soft); }
+    .p8-rule { position: absolute; left: 70px; right: 70px; height: 2px; background: rgba(22,32,28,0.35); }
+    #pys08-sc020-stamp { position: absolute; left: 330px; top: 380px; width: 470px; text-align: center; font-size: 74px; line-height: 1; color: var(--ueno-dark); border: 9px solid var(--ueno-dark); padding: 20px 0 12px; transform: rotate(-7deg); mix-blend-mode: multiply; opacity: 0; }
+    #pys08-sc020-cal { position: absolute; left: 1290px; top: 130px; width: 380px; height: 400px; }
+    .p8-calp { position: absolute; left: 0; top: 0; width: 380px; height: 400px; background: #f4f0e6; box-shadow: 0 18px 36px rgba(22,32,28,0.3); transform-origin: 50% 0; }
+    .p8-calp .band { position: absolute; left: 0; top: 0; width: 380px; height: 110px; background: var(--ash-dark); }
+    .p8-calp .big { position: absolute; left: 0; top: 160px; width: 380px; text-align: center; font-size: 96px; color: var(--ink); line-height: 1; }
+    #pys08-sc020-slip { position: absolute; left: 1150px; top: 560px; width: 680px; height: 400px; background: #f6f2e8; border-top: 18px solid var(--ueno); box-shadow: 0 26px 50px rgba(22,32,28,0.36); }
+  </style>
+
+  <div id="root" data-composition-id="pys08" data-vo-start="798.00" data-duration="142.60" data-width="1920" data-height="1080">
+    <svg id="pys08-defs" width="0" height="0" style="position:absolute"></svg>
+
+    <!-- sc001 · 798.00–800.55 · this is where we come back to the beginning of the story · rewind timeline -->
+    <div class="p8-scene" id="pys08-sc001"><div class="p8-shot" id="pys08-sc001-shot">
+      <div class="p8-cam" id="pys08-sc001-cam">
+        <div id="pys08-sc001-trail"></div>
+        <div id="pys08-sc001-axis"></div>
+        <div class="p8-ytick" style="left:298px"></div><div class="p8-ylab t-label" style="left:200px">2015</div>
+        <div class="p8-ytick" style="left:818px"></div><div class="p8-ylab t-label" style="left:720px">2021</div>
+        <div class="p8-ytick" style="left:1098px"></div><div class="p8-ylab t-label" style="left:1000px">2023</div>
+        <div class="p8-ytick" style="left:1618px"></div><div class="p8-ylab t-label" style="left:1520px">2026</div>
+        <div id="pys08-sc001-head"><svg viewBox="0 0 120 100" style="position:absolute; left:0; top:0; width:120px; height:100px"><path d="M60 22 L22 50 L60 78 Z M100 22 L62 50 L100 78 Z" fill="#93e0d3"/></svg><div class="line"></div></div>
+      </div>
+      <div class="p8-abs t-display clean" id="pys08-sc001-t" style="left:0; width:1920px; top:780px; text-align:center; font-size:96px"><span class="p8-w">back </span><span class="p8-w">to </span><span class="p8-w">the </span><span class="p8-w">beginning</span></div>
+    </div></div>
+
+    <!-- sc002 · 800.55–806.87 · FACE M · the family … wants to start this conglomerate -->
+    <div class="p8-scene" id="pys08-sc002"><div class="p8-shot" id="pys08-sc002-shot">
+      <div class="p8-fcw" id="pys08-sc002-fw"><video id="pys08-sc002-v" class="p8-full" src="assets/facecam/paraguay_facecam_master.mp4" muted playsinline data-start="2.55" data-duration="6.40" data-media-start="800.55"></video></div>
+      <div class="p8-scrim-bl"></div>
+      <div class="p8-lt t-display clean" id="pys08-sc002-lt"><span class="p8-w">this </span><span class="p8-w" style="color:var(--ueno-light)">conglomerate</span></div>
+    </div></div>
+
+    <!-- sc003 · 806.87–813.75 · multiple different businesses … funded by their profitable business -->
+    <div class="p8-scene" id="pys08-sc003"><div class="p8-shot p8-paper" id="pys08-sc003-shot">
+      <div class="p8-p1" style="background-image:url('assets/textures/paper_cream_01.jpg')"></div>
+      <div class="p8-p2" style="background-image:url('assets/textures/paper_graph_01_hires.jpg'); filter:saturate(0.3); opacity:0.5"></div>
+      <div class="p8-cam" id="pys08-sc003-cam">
+        <svg id="pys08-sc003-svg" class="p8-mk" viewBox="0 0 1920 1080"></svg>
+        <div id="pys08-sc003-tiles"></div>
+        <div id="pys08-sc003-chips"></div>
+        <div class="p8-abs t-label p8-ink" id="pys08-sc003-kick" style="left:560px; top:760px; width:800px; text-align:center; font-size:24px; opacity:0">Credicentro</div>
+        <div id="pys08-sc003-base"><div class="tex"></div>
+          <div class="p8-abs t-serif-i" id="pys08-sc003-pb" style="left:0; top:38px; width:800px; text-align:center; font-size:66px; color:var(--bone)"><span class="p8-w">profitable </span><span class="p8-w">business</span></div></div>
+      </div>
+      <div class="p8-abs t-serif-i p8-ink" id="pys08-sc003-a" style="left:0; top:96px; width:1920px; text-align:center; font-size:72px"><span class="p8-w">multiple </span><span class="p8-w">different </span><span class="p8-w">businesses</span></div>
+      <div class="p8-abs t-serif-i p8-ink" id="pys08-sc003-b" style="left:0; top:96px; width:1920px; text-align:center; font-size:72px"><span class="p8-w">funding </span><span class="p8-w">it </span><span class="p8-w" style="color:var(--ueno-dark)">all</span></div>
+    </div></div>
+
+    <!-- sc004 · 813.75–818.47 · FACE W · Well, guess what? … still losing money -->
+    <div class="p8-scene" id="pys08-sc004"><div class="p8-shot" id="pys08-sc004-shot">
+      <div class="p8-fcw" id="pys08-sc004-fw"><video id="pys08-sc004-v" class="p8-full" src="assets/facecam/paraguay_facecam_master.mp4" muted playsinline data-start="15.75" data-duration="4.78" data-media-start="813.75"></video></div>
+      <div class="p8-scrim-bl"></div>
+      <div class="p8-lt t-display clean" id="pys08-sc004-lt"><span class="p8-w">still </span><span class="p8-w">losing </span><span class="p8-w">money</span></div>
+    </div></div>
+
+    <!-- sc005 · 818.47–824.39 · big loans from this bank … Ueno · HQ sign -->
+    <div class="p8-scene" id="pys08-sc005"><div class="p8-shot" id="pys08-sc005-shot">
+      <div class="p8-vw" id="pys08-sc005-vw"><img class="p8-full" src="assets/paraguay/pys08/derived/ueno_sign_teal.jpg" alt="">
+        <svg id="pys08-sc005-mk" class="p8-mk" viewBox="0 0 1920 1080"></svg></div>
+      <div class="p8-abs t-display p8-ink" id="pys08-sc005-lt" style="left:96px; top:96px; font-size:120px"><span class="p8-w">big </span><span class="p8-w" style="color:var(--ueno-dark)">loans</span></div>
+      <div class="p8-credit ink t-label">Photo: Reuters</div>
+    </div></div>
+
+    <!-- sc006 · 824.39–828.79 · media / tech / software companies, anything you can imagine · brand board -->
+    <div class="p8-scene" id="pys08-sc006"><div class="p8-shot p8-paper" id="pys08-sc006-shot">
+      <div class="p8-p1" style="background-image:url('assets/textures/paper_cream_02.jpg')"></div>
+      <div class="p8-p2" style="background-image:url('assets/textures/paper_fiber_01.jpg'); opacity:0.5"></div>
+      <div class="p8-cam" id="pys08-sc006-cam">
+        <div class="p8-colh t-display p8-ink" id="pys08-sc006-h1" style="left:120px; top:110px"><span class="p8-w">media </span><span class="p8-w">companies</span></div>
+        <div class="p8-colh t-display p8-ink" id="pys08-sc006-h2" style="left:720px; top:110px"><span class="p8-w">tech </span><span class="p8-w">companies</span></div>
+        <div class="p8-colh t-display p8-ink" id="pys08-sc006-h3" style="left:1320px; top:110px"><span class="p8-w">software </span><span class="p8-w">companies</span></div>
+        <div id="pys08-sc006-cards"></div>
+      </div>
+      <div class="p8-abs t-serif-i p8-ink" id="pys08-sc006-any" style="left:0; top:880px; width:1920px; text-align:center; font-size:74px"><span class="p8-w">anything </span><span class="p8-w">you </span><span class="p8-w">can </span><span class="p8-w">imagine</span></div>
+      <div class="p8-credit ink t-label">Logos: La Tribuna, Crónica, itti, Pagopar (Grupo Vázquez)</div>
+    </div></div>
+
+    <!-- sc007 · 828.79–834.71 · FACE C · getting loans … become a big company in their field -->
+    <div class="p8-scene" id="pys08-sc007"><div class="p8-shot" id="pys08-sc007-shot">
+      <div class="p8-fcw" id="pys08-sc007-fw"><video id="pys08-sc007-v" class="p8-full" src="assets/facecam/paraguay_facecam_master.mp4" muted playsinline data-start="30.79" data-duration="5.97" data-media-start="828.79"></video></div>
+    </div></div>
+
+    <!-- sc008 · 834.71–839.233 · FACE M · according to Paraguay's law, this is not illegal -->
+    <div class="p8-scene" id="pys08-sc008"><div class="p8-shot" id="pys08-sc008-shot">
+      <div class="p8-fcw" id="pys08-sc008-fw"><video id="pys08-sc008-v" class="p8-full" src="assets/facecam/paraguay_facecam_master.mp4" muted playsinline data-start="36.71" data-duration="4.56" data-media-start="834.71"></video></div>
+      <div class="p8-scrim-bl"></div>
+      <div class="p8-lt t-display clean" id="pys08-sc008-lt" style="width:1000px"><span class="p8-w">according </span><span class="p8-w">to </span><span class="p8-w" style="color:var(--tierra-light)">Paraguay's </span><span class="p8-w">law</span></div>
+    </div></div>
+
+    <!-- sc009 · 839.233–846.08 · companies it's related to … the same owner · related parties -->
+    <div class="p8-scene" id="pys08-sc009"><div class="p8-shot p8-paper" id="pys08-sc009-shot">
+      <div class="p8-p1" style="background-image:url('assets/textures/paper_cream_01.jpg')"></div>
+      <div class="p8-p2" style="background-image:url('assets/textures/paper_lined_01_hires.jpg'); filter:saturate(0.3); opacity:0.45"></div>
+      <div class="p8-cam" id="pys08-sc009-cam">
+        <svg id="pys08-sc009-svg" class="p8-mk" viewBox="0 0 1920 1080"></svg>
+        <div class="p8-card" id="pys08-sc009-own"><div class="ph"></div></div>
+        <div class="p8-card" id="pys08-sc009-bank"><div class="p8-logo" style="left:80px; top:70px; width:320px; height:90px; background:var(--ueno-dark); -webkit-mask-image:url('assets/paraguay/shared/logos/ueno_logo.png'); mask-image:url('assets/paraguay/shared/logos/ueno_logo.png')"></div>
+          <div class="p8-abs t-label p8-ink" style="left:0; top:186px; width:480px; text-align:center; font-size:24px">bank</div></div>
+        <div class="p8-card" id="pys08-sc009-cos">
+          <div class="p8-logo" style="left:40px; top:50px; width:180px; height:46px; -webkit-mask-image:url('assets/paraguay/pys08/logos/latribuna.svg'); mask-image:url('assets/paraguay/pys08/logos/latribuna.svg')"></div>
+          <div class="p8-logo" style="left:260px; top:40px; width:180px; height:60px; -webkit-mask-image:url('assets/paraguay/pys08/derived/cronica_mask.png'); mask-image:url('assets/paraguay/pys08/derived/cronica_mask.png')"></div>
+          <div class="p8-logo" style="left:60px; top:130px; width:140px; height:70px; -webkit-mask-image:url('assets/paraguay/pys08/logos/itti_logo.svg'); mask-image:url('assets/paraguay/pys08/logos/itti_logo.svg')"></div>
+          <div class="p8-logo" style="left:250px; top:135px; width:190px; height:56px; -webkit-mask-image:url('assets/paraguay/pys08/logos/pagopar.svg'); mask-image:url('assets/paraguay/pys08/logos/pagopar.svg')"></div>
+        </div>
+        <div class="p8-abs t-serif-i p8-ink" id="pys08-sc009-so" style="left:660px; top:430px; width:600px; text-align:center; font-size:58px"><span class="p8-w">the </span><span class="p8-w">same </span><span class="p8-w">owner</span></div>
+      </div>
+      <div class="p8-abs t-serif-i p8-ink" id="pys08-sc009-rel" style="left:0; top:880px; width:1920px; text-align:center; font-size:70px"><span class="p8-w">companies </span><span class="p8-w">that </span><span class="p8-w">it's </span><span class="p8-w">related </span><span class="p8-w">to</span></div>
+      <div class="p8-credit ink t-label">Photo: Miguel Vázquez, via La Gaceta</div>
+    </div></div>
+
+    <!-- sc010 · 846.08–859.733 · deposits · loans to yourself · self-dealing · below 20% legal / above illegal -->
+    <div class="p8-scene" id="pys08-sc010"><div class="p8-shot p8-paper" id="pys08-sc010-shot">
+      <div class="p8-p1" style="background-image:url('assets/textures/paper_cream_02.jpg')"></div>
+      <div class="p8-p2" style="background-image:url('assets/textures/paper_stained_01_hires.jpg'); opacity:0.55"></div>
+      <div class="p8-cam" id="pys08-sc010-cam">
+        <div id="pys08-sc010-col"></div>
+        <div id="pys08-sc010-fill"></div>
+        <div id="pys08-sc010-ex"></div>
+        <div id="pys08-sc010-line"></div>
+        <svg id="pys08-sc010-svg" class="p8-mk" viewBox="0 0 1920 1080"></svg>
+        <div class="p8-abs t-label p8-ink" id="pys08-sc010-dep" style="left:470px; top:962px; width:400px; text-align:center; font-size:30px"><span class="p8-w">deposits</span></div>
+        <div class="p8-abs t-display p8-ink" id="pys08-sc010-20" style="left:1000px; top:660px; width:820px; text-align:right; font-size:104px"><span class="p8-w" style="font-size:58px">below </span><span class="p8-mark"><span class="p8-hlb" id="pys08-sc010-hl"></span><span class="p8-w">20%</span></span></div>
+        <div class="p8-abs t-serif-i" id="pys08-sc010-legal" style="left:1000px; top:830px; width:820px; text-align:right; font-size:70px; color:var(--ueno-dark)"><span class="p8-w">it's </span><span class="p8-w">legal</span></div>
+        <div class="p8-abs t-serif-i p8-ink" id="pys08-sc010-ill" style="left:1000px; top:830px; width:820px; text-align:right; font-size:70px"><span class="p8-w">that's </span><span class="p8-w">illegal</span></div>
+      </div>
+      <div class="p8-abs t-serif-i p8-ink" id="pys08-sc010-you" style="left:1000px; top:250px; width:820px; text-align:right; font-size:84px"><span class="p8-w">to </span><span class="p8-w" style="color:var(--ueno-dark)">yourself</span></div>
+      <div class="p8-abs t-display" id="pys08-sc010-sd" style="left:1000px; top:250px; width:820px; text-align:right; font-size:84px"><span class="label-box" id="pys08-sc010-lb" style="opacity:0"><span class="p8-w">self-dealing</span></span></div>
+    </div></div>
+
+    <!-- sc011 · 859.733–864.10 · FACE W · this law is about to become a big problem -->
+    <div class="p8-scene" id="pys08-sc011"><div class="p8-shot" id="pys08-sc011-shot">
+      <div class="p8-fcw" id="pys08-sc011-fw"><video id="pys08-sc011-v" class="p8-full" src="assets/facecam/paraguay_facecam_master.mp4" muted playsinline data-start="61.733" data-duration="4.42" data-media-start="859.733"></video></div>
+      <div class="p8-scrim-bl"></div>
+      <div class="p8-lt t-display clean" id="pys08-sc011-lt"><span class="p8-w">a </span><span class="p8-w">big </span><span class="p8-w">problem</span></div>
+    </div></div>
+
+    <!-- sc012 · 864.10–872.72 · struggling … need money to survive … the bank needs them to survive itself · roped together -->
+    <div class="p8-scene" id="pys08-sc012"><div class="p8-shot" id="pys08-sc012-shot">
+      <div class="p8-cam" id="pys08-sc012-cam">
+        <svg id="pys08-sc012-cliff" viewBox="0 0 1920 1080"><defs><linearGradient id="pys08-sc012-g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2c3430"/><stop offset="1" stop-color="#151b18"/></linearGradient></defs>
+          <path d="M1060 560 L1072 600 L1060 650 L1080 720 L1066 800 L1090 900 L1074 1080 L1920 1080 L1920 560 Z" fill="url(#pys08-sc012-g)"/>
+          <path d="M1060 560 L1920 562" stroke="#7d8781" stroke-width="4" fill="none"/>
+          <path id="pys08-sc012-rope" d="M0 0" stroke="#d9c9a3" stroke-width="7" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div id="pys08-sc012-bank"><div class="p8-logo" style="left:50px; top:50px; width:200px; height:60px; background:var(--bone); -webkit-mask-image:url('assets/paraguay/shared/logos/ueno_logo.png'); mask-image:url('assets/paraguay/shared/logos/ueno_logo.png')"></div></div>
+        <div id="pys08-sc012-hang"></div>
+      </div>
+      <div class="p8-abs t-display clean" id="pys08-sc012-a" style="left:96px; top:96px; width:900px; font-size:76px; line-height:1.02"><span class="p8-w">struggling </span><span class="p8-w">very </span><span class="p8-w">badly</span></div>
+      <div class="p8-abs t-display clean" id="pys08-sc012-b" style="left:96px; top:96px; width:900px; font-size:76px; line-height:1.02"><span class="p8-w">need </span><span class="p8-w">money </span><span class="p8-w">to </span><span class="p8-w">survive</span></div>
+      <div class="p8-abs t-display clean" id="pys08-sc012-c" style="left:96px; top:96px; width:900px; font-size:76px; line-height:1.02"><span class="p8-w">to </span><span class="p8-w">survive </span><span class="p8-w" style="color:var(--ueno-light)">itself</span></div>
+    </div></div>
+
+    <!-- sc013 · 872.72–877.12 · FACE C · the famous quote about banking -->
+    <div class="p8-scene" id="pys08-sc013"><div class="p8-shot" id="pys08-sc013-shot">
+      <div class="p8-fcw" id="pys08-sc013-fw"><video id="pys08-sc013-v" class="p8-full" src="assets/facecam/paraguay_facecam_master.mp4" muted playsinline data-start="74.72" data-duration="4.45" data-media-start="872.72"></video></div>
+    </div></div>
+
+    <!-- sc014 · 877.12–886.88 · owe a million … your problem / owe a billion … bank's problem · typeset quote card -->
+    <div class="p8-scene" id="pys08-sc014"><div class="p8-shot p8-paper" id="pys08-sc014-shot">
+      <div class="p8-p1" style="background-image:url('assets/textures/paper_cream_01.jpg')"></div>
+      <div class="p8-p2" style="background-image:url('assets/textures/paper_fiber_01.jpg'); opacity:0.5"></div>
+      <div class="p8-cam" id="pys08-sc014-cam">
+        <div id="pys08-sc014-q" class="t-serif">&ldquo;</div>
+        <div class="p8-abs t-serif-i p8-ink" id="pys08-sc014-r1" style="left:300px; top:190px; width:1400px; font-size:66px"><span class="p8-w">owe </span><span class="p8-w">a </span><span class="p8-w p8-mark">million<svg class="p8-ul" viewBox="0 0 100 20" preserveAspectRatio="none"><path id="pys08-sc014-u1" d="M2 12 C30 6 70 16 98 8" pathLength="1" fill="none" stroke="#16201c" stroke-width="5" vector-effect="non-scaling-stroke" stroke-linecap="round" stroke-dasharray="1 1" stroke-dashoffset="1"/></svg></span><span class="p8-w"> dollars</span></div>
+        <div class="p8-abs t-display p8-ink" id="pys08-sc014-y1" style="left:300px; top:276px; width:1400px; font-size:76px"><span class="p8-w">your </span><span class="p8-w">problem.</span></div>
+        <div class="p8-abs" style="left:300px; top:432px; width:1320px; height:3px; background:rgba(22,32,28,0.25)"></div>
+        <div class="p8-abs t-serif-i p8-ink" id="pys08-sc014-r2" style="left:300px; top:490px; width:1500px; font-size:104px"><span class="p8-w">owe </span><span class="p8-w">a </span><span class="p8-w p8-mark">billion<svg class="p8-ul" viewBox="0 0 100 20" preserveAspectRatio="none"><path id="pys08-sc014-u2" d="M2 12 C30 6 70 16 98 8" pathLength="1" fill="none" stroke="#0c5c54" stroke-width="7" vector-effect="non-scaling-stroke" stroke-linecap="round" stroke-dasharray="1 1" stroke-dashoffset="1"/></svg></span><span class="p8-w"> dollars</span></div>
+        <div class="p8-abs t-display" id="pys08-sc014-y2" style="left:300px; top:640px; width:1600px; font-size:178px; color:var(--ueno-dark); line-height:1"><span class="p8-w">bank's </span><span class="p8-w">problem.</span></div>
+      </div>
+    </div></div>
+
+    <!-- sc015 · 886.88–893.36 · owed so much money … could not afford to have these companies go out · pillars -->
+    <div class="p8-scene" id="pys08-sc015"><div class="p8-shot" id="pys08-sc015-shot">
+      <div class="p8-cam" id="pys08-sc015-cam">
+        <div class="p8-abs" style="left:0; top:900px; width:1920px; height:180px; background:linear-gradient(180deg,#1d2421,#0e1311)"></div>
+        <div class="p8-abs" style="left:0; top:898px; width:1920px; height:3px; background:#56605b"></div>
+        <div id="pys08-sc015-pils"></div>
+        <div id="pys08-sc015-bank"><div class="p8-logo" style="left:260px; top:55px; width:320px; height:100px; background:var(--bone); -webkit-mask-image:url('assets/paraguay/shared/logos/ueno_logo.png'); mask-image:url('assets/paraguay/shared/logos/ueno_logo.png')"></div>
+          <svg id="pys08-sc015-crack" viewBox="0 0 840 210" style="position:absolute; left:0; top:0; width:840px; height:210px; overflow:visible"></svg></div>
+      </div>
+      <div class="p8-abs t-display clean" id="pys08-sc015-a" style="left:96px; top:96px; width:1700px; font-size:76px"><span class="p8-w">owed </span><span class="p8-w">so </span><span class="p8-w">much </span><span class="p8-w">money</span></div>
+      <div class="p8-abs t-display clean" id="pys08-sc015-b" style="left:96px; top:96px; width:1700px; font-size:76px"><span class="p8-w">could </span><span class="p8-w">not </span><span class="p8-w" style="color:var(--ueno-light)">afford</span></div>
+    </div></div>
+
+    <!-- sc016 · 893.36–898.71 · FACE M · it's not allowed to -->
+    <div class="p8-scene" id="pys08-sc016"><div class="p8-shot" id="pys08-sc016-shot">
+      <div class="p8-fcw" id="pys08-sc016-fw"><video id="pys08-sc016-v" class="p8-full" src="assets/facecam/paraguay_facecam_master.mp4" muted playsinline data-start="95.36" data-duration="5.40" data-media-start="893.36"></video></div>
+      <div class="p8-scrim-bl"></div>
+      <div class="p8-lt t-display clean" id="pys08-sc016-lt"><span class="p8-w">not </span><span class="p8-w">allowed</span></div>
+    </div></div>
+
+    <!-- sc017 · 898.71–902.283 · FACE W · start doing stuff illegally -->
+    <div class="p8-scene" id="pys08-sc017"><div class="p8-shot" id="pys08-sc017-shot">
+      <div class="p8-fcw" id="pys08-sc017-fw"><video id="pys08-sc017-v" class="p8-full" src="assets/facecam/paraguay_facecam_master.mp4" muted playsinline data-start="100.71" data-duration="3.62" data-media-start="898.71"></video></div>
+      <div class="p8-scrim-bl"></div>
+      <div class="p8-lt t-display clean" id="pys08-sc017-lt"><span class="p8-w">doing </span><span class="p8-w">stuff </span><span class="p8-w">illegally</span></div>
+    </div></div>
+
+    <!-- BOARD · sc018 902.283–908.95 · sc021 923.59–932.23 · sc023 935.67–940.60 · the shell-company case file -->
+    <div class="p8-scene" id="pys08-board"><div class="p8-shot" id="pys08-board-shot">
+      <div id="pys08-board-cam">
+        <div id="pys08-board-cork"></div>
+        <svg id="pys08-board-str" viewBox="0 0 3000 1700" style="position:absolute; left:0; top:0; width:3000px; height:1700px; overflow:visible"></svg>
+        <div id="pys08-board-items"></div>
+        <svg id="pys08-board-top" viewBox="0 0 3000 1700" style="position:absolute; left:0; top:0; width:3000px; height:1700px; overflow:visible"></svg>
+      </div>
+      <div id="pys08-board-lamp"></div>
+      <div class="p8-tag t-label" id="pys08-sc018-a" style="left:96px; top:940px; opacity:0"><span class="p8-w">owns </span><span class="p8-w">the </span><span class="p8-w">whole </span><span class="p8-w">thing</span></div>
+      <div class="p8-tag t-label" id="pys08-sc018-b" style="left:96px; top:940px; opacity:0"><span class="p8-w">shell </span><span class="p8-w">companies</span></div>
+      <div class="p8-tag t-label" id="pys08-sc018-c" style="left:96px; top:940px; opacity:0"><span class="p8-w">fake </span><span class="p8-w">companies</span></div>
+      <div class="p8-tag t-label" id="pys08-sc018-d" style="left:96px; top:940px; opacity:0"><span class="p8-w">random </span><span class="p8-w">people</span></div>
+      <div class="p8-tag t-label" id="pys08-sc021-a" style="left:96px; top:940px; opacity:0"><span class="p8-w">ends </span><span class="p8-w">up </span><span class="p8-w">at </span><span class="p8-w">the </span><span class="p8-w">company</span></div>
+      <div class="p8-tag t-label" id="pys08-sc021-b" style="left:96px; top:940px; opacity:0"><span class="p8-w">to </span><span class="p8-w">pay </span><span class="p8-w" style="color:var(--ueno-dark)">payroll</span></div>
+      <div class="p8-tag t-label" id="pys08-sc023-a" style="left:96px; top:940px; opacity:0"><span class="p8-w">not </span><span class="p8-w">supposed </span><span class="p8-w">to</span></div>
+      <div class="p8-credit t-label" id="pys08-board-cr">Cork texture: Trougnouf (Benoit Brummer), CC BY 4.0 · Photo: Miguel Vázquez, via La Gaceta</div>
+    </div></div>
+
+    <!-- sc019 · 908.95–912.79 · FACE M · low-level employees -->
+    <div class="p8-scene" id="pys08-sc019"><div class="p8-shot" id="pys08-sc019-shot">
+      <div class="p8-fcw" id="pys08-sc019-fw"><video id="pys08-sc019-v" class="p8-full" src="assets/facecam/paraguay_facecam_master.mp4" muted playsinline data-start="110.95" data-duration="3.89" data-media-start="908.95"></video></div>
+      <div class="p8-scrim-bl"></div>
+      <div class="p8-lt t-display clean" id="pys08-sc019-lt"><span class="p8-w">low-</span><span class="p8-w">level </span><span class="p8-w">employees</span></div>
+    </div></div>
+
+    <!-- sc020 · 912.79–923.59 · created today … the very next day … no money, no business … tens of millions of dollars in loans -->
+    <div class="p8-scene" id="pys08-sc020"><div class="p8-shot p8-paper" id="pys08-sc020-shot">
+      <div class="p8-p1" style="background-image:url('assets/textures/paper_cream_02.jpg'); filter:brightness(0.86)"></div>
+      <div class="p8-p2" style="background-image:url('assets/textures/paper_stained_01_hires.jpg'); opacity:0.5"></div>
+      <div class="p8-cam" id="pys08-sc020-cam">
+        <div id="pys08-sc020-form">
+          <div class="p8-abs t-label p8-ink" style="left:70px; top:64px; font-size:30px">Certificate of incorporation</div>
+          <div class="p8-rule" style="top:120px; height:4px; background:var(--ink)"></div>
+          <div class="p8-fl t-label" style="top:170px">Company</div><div class="p8-rule" style="top:236px; left:290px"></div>
+          <div class="p8-abs t-serif-i p8-ink" style="left:620px; top:182px; font-size:44px">S.A.</div>
+          <div class="p8-fl t-label" style="top:276px">Owner</div><div class="p8-rule" style="top:342px; left:290px"></div>
+          <svg viewBox="0 0 400 480" style="position:absolute; left:300px; top:262px; width:60px; height:72px"><path id="pys08-sc020-gm" fill="#8b928d" d=""/></svg>
+          <div class="p8-fl t-label" id="pys08-sc020-fm" style="top:610px; font-size:30px; color:var(--ink)"><span class="p8-w">money</span></div><div class="p8-rule" style="top:676px; left:290px"></div>
+          <div class="p8-fl t-label" id="pys08-sc020-fb" style="top:720px; font-size:30px; color:var(--ink)"><span class="p8-w">business</span></div><div class="p8-rule" style="top:786px; left:290px"></div>
+          <div class="p8-abs t-label p8-ink" id="pys08-sc020-no1" style="left:300px; top:606px; font-size:30px"><span class="p8-w">no</span></div>
+          <div class="p8-abs t-label p8-ink" id="pys08-sc020-no2" style="left:300px; top:716px; font-size:30px"><span class="p8-w">no</span></div>
+          <svg id="pys08-sc020-fsvg" viewBox="0 0 860 860" style="position:absolute; left:0; top:0; width:860px; height:860px; overflow:visible"></svg>
+          <div id="pys08-sc020-stamp" class="t-display"><span class="p8-w">created</span><br><span class="p8-w">today</span></div>
+        </div>
+        <div id="pys08-sc020-cal">
+          <div class="p8-calp" id="pys08-sc020-p2"><div class="band"></div><div class="big t-display" style="font-size:84px; top:180px"><span class="p8-w">next </span><span class="p8-w">day</span></div></div>
+          <div class="p8-calp" id="pys08-sc020-p1"><div class="band"></div><div class="big t-display"><span class="p8-w">today</span></div></div>
+          <div class="p8-abs t-label" id="pys08-sc020-very" style="left:0; top:34px; width:380px; text-align:center; font-size:30px; color:var(--bone)"><span class="p8-w">the </span><span class="p8-w">very</span></div>
+        </div>
+        <div id="pys08-sc020-slip">
+          <div class="p8-abs t-display p8-ink" id="pys08-sc020-tens" style="left:50px; top:56px; width:600px; font-size:82px; line-height:1.0"><span class="p8-mark"><span class="p8-hlb" id="pys08-sc020-hl"></span><span class="p8-w">tens </span><span class="p8-w">of </span><span class="p8-w">millions</span></span><br><span class="p8-w" style="font-size:56px">of </span><span class="p8-w" style="font-size:56px">dollars</span></div>
+          <div class="p8-abs t-serif-i" id="pys08-sc020-loans" style="left:50px; top:290px; width:600px; font-size:64px; color:var(--ueno-dark)"><span class="p8-w">in </span><span class="p8-w">loans</span></div>
+        </div>
+      </div>
+    </div></div>
+
+    <!-- sc022 · 932.23–935.67 · FACE C · they're doing all this shell company business -->
+    <div class="p8-scene" id="pys08-sc022"><div class="p8-shot" id="pys08-sc022-shot">
+      <div class="p8-fcw" id="pys08-sc022-fw"><video id="pys08-sc022-v" class="p8-full" src="assets/facecam/paraguay_facecam_master.mp4" muted playsinline data-start="134.23" data-duration="3.49" data-media-start="932.23"></video></div>
+    </div></div>
+
+    <div id="pys08-flash"></div>
+    <div id="pys08-grain" class="tx tx-grain" style="background-image:url('assets/textures/grain_01_norm.jpg')"></div>
+    <div id="pys08-dust" class="tx tx-dust" style="background-image:url('assets/textures/dust_02.jpg')"></div>
+    <div id="pys08-vig" class="vignette"></div>
+    <audio id="pys08-vo" class="temp-vo" src="vo_py.mp3" data-start="0" data-duration="142.60" data-media-start="798.00" data-volume="1"></audio>
+  </div>
+  <script>
+  (function () {
+    const SEG = "pys08", SEG_START = 798.00, SEG_END = 940.60, DURATION = 142.60;
+    const T = (s) => +(s - SEG_START).toFixed(3);   // TEXT cues (audited): literal master word start − 0.06
+    const S = (s) => +(s - SEG_START).toFixed(3);   // STRUCTURAL cues (cuts, camera, objects)
+    const tl = gsap.timeline({ paused: true });
+    const $ = (id) => document.getElementById(SEG + "-" + id);
+    const NS = "http://www.w3.org/2000/svg";
+    const defs = $("defs");
+    const E = FX.ease;
+    const C = (e, d) => FX.choppy(e, d, 12);
+    const INK = "#16201c", BONE = "#f2eee3", TEAL = "#1fa595", TEALD = "#0c5c54", TEALL = "#93e0d3", ASH = "#8b928d", ASHD = "#353c38", PLUML = "#cfa8dc";
+    const GM = "M200 40c-52 0-86 40-86 96 0 40 18 74 44 92-4 14-10 24-22 30-58 22-96 52-108 104-6 26-8 58-8 118h360c0-60-2-92-8-118-12-52-50-82-108-104-12-6-18-16-22-30 26-18 44-52 44-92 0-56-34-96-86-96z";
+    // building outline (a company); SHELL = same outline, empty dashed facade
+    const BLDG = (col, dashed) => '<g fill="none" stroke="' + col + '" stroke-width="6" stroke-linejoin="round"><path d="M10 112 L10 30 L60 8 L110 30 L110 112 Z"' + (dashed ? ' stroke-dasharray="10 8"' : "") + '/>' +
+      (dashed ? "" : '<path d="M30 46 v50 M50 46 v50 M70 46 v50 M90 46 v50"/>') + '<path d="M2 114 H118"/></g>';
+    const LOGO = {
+      trib: "assets/paraguay/pys08/logos/latribuna.svg", cron: "assets/paraguay/pys08/derived/cronica_mask.png",
+      itti: "assets/paraguay/pys08/logos/itti_logo.svg", pago: "assets/paraguay/pys08/logos/pagopar.svg", ueno: "assets/paraguay/shared/logos/ueno_logo.png",
+    };
+    const logoDiv = (key, x, y, w, h, col) => '<div class="p8-logo" style="left:' + x + "px; top:" + y + "px; width:" + w + "px; height:" + h + "px; background:" + (col || "var(--ink)") +
+      "; -webkit-mask-image:url('" + LOGO[key] + "'); mask-image:url('" + LOGO[key] + "')\"></div>";
+
+    // ---------- scenes: [id, element, start, end, ground] ----------
+    const SC = [
+      ["sc001", "sc001", 798.00, 800.55, "night"], ["sc002", "sc002", 800.55, 806.87, "face"], ["sc003", "sc003", 806.87, 813.75, "paper"],
+      ["sc004", "sc004", 813.75, 818.47, "face"], ["sc005", "sc005", 818.47, 824.39, "light"], ["sc006", "sc006", 824.39, 828.79, "paper"],
+      ["sc007", "sc007", 828.79, 834.71, "face"], ["sc008", "sc008", 834.71, 839.233, "face"], ["sc009", "sc009", 839.233, 846.08, "paper"],
+      ["sc010", "sc010", 846.08, 859.733, "paper"], ["sc011", "sc011", 859.733, 864.10, "face"], ["sc012", "sc012", 864.10, 872.72, "night"],
+      ["sc013", "sc013", 872.72, 877.12, "face"], ["sc014", "sc014", 877.12, 886.88, "paper"], ["sc015", "sc015", 886.88, 893.36, "night"],
+      ["sc016", "sc016", 893.36, 898.71, "face"], ["sc017", "sc017", 898.71, 902.283, "face"], ["sc018", "board", 902.283, 908.95, "cork"],
+      ["sc019", "sc019", 908.95, 912.79, "face"], ["sc020", "sc020", 912.79, 923.59, "paper"], ["sc021", "board", 923.59, 932.23, "cork"],
+      ["sc022", "sc022", 932.23, 935.67, "face"], ["sc023", "board", 935.67, 940.60, "cork"],
+    ];
+    const GROUND = { paper: [0.32, 0.16, 0.26], night: [1, 0.42, 0.36], cork: [0.9, 0.3, 0.3], face: [0, 0, 0], light: [0.6, 0.2, 0.3] };
+    const EARLY = { sc006: 0.45 };   // paper slide: the incoming scene is visible during the slide
+    SC.forEach((s, i) => {
+      const el = $(s[1]), a = s[2] - (EARLY[s[0]] || 0);
+      if (i === 0) gsap.set(el, { autoAlpha: 1 });
+      else tl.fromTo(el, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.001, immediateRender: false }, S(a));
+      if (s[3] < SEG_END) tl.set(el, { autoAlpha: 0 }, S(s[3]) + 0.05);
+    });
+    gsap.set([$("vig"), $("dust"), $("grain")], { opacity: 0 });
+    SC.forEach((s) => { const v = GROUND[s[4]]; tl.set([$("vig"), $("dust"), $("grain")], { opacity: (i) => v[i] }, S(s[2])); });
+
+    // ---------- helpers ----------
+    const show = (el, t) => tl.fromTo(el, { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, t);
+    const rise = (el, t, o) => { o = o || {}; const d = o.dur || 0.6;
+      tl.fromTo(el, { opacity: 0, y: o.y == null ? 16 : o.y }, { opacity: 1, y: 0, duration: d, ease: C(E.out, d), immediateRender: true }, t); };
+    const pop = (el, t, o) => { o = o || {}; const d = o.dur || 0.8;
+      tl.fromTo(el, { opacity: 0, scale: o.from == null ? 0.6 : o.from }, { opacity: 1, scale: 1, duration: d, ease: C(E.out, d), immediateRender: true }, t); };
+    const pin = (el, t) => tl.fromTo(el, { opacity: 0, scale: 1.25 }, { opacity: 1, scale: 1, duration: 2 / 12, ease: "steps(2)", immediateRender: true }, t);
+    const out = (el, t, d) => tl.to(el, { opacity: 0, duration: d || 0.25, ease: "power1.in" }, t);
+    const W = (id) => Array.from($(id).querySelectorAll(".p8-w"));
+    function words(id, cues, o) { const ws = W(id); cues.forEach((c, i) => rise(ws[i], c, o)); }
+    function el(parent, tag, attrs) { const n = document.createElementNS(NS, tag); for (const k in attrs) n.setAttribute(k, attrs[k]); parent.appendChild(n); return n; }
+    function div(parent, cls, css, html) { const d = document.createElement("div"); d.className = cls; d.style.cssText = css; if (html) d.innerHTML = html; parent.appendChild(d); return d; }
+    function ink(parent, d, t, dur, o) {
+      o = o || {};
+      const p = el(parent, "path", { d: d, fill: "none", stroke: o.color || INK, "stroke-width": o.width || 5, "stroke-linecap": "round", "stroke-linejoin": "round" });
+      if (o.filter) p.setAttribute("filter", o.filter);
+      if (o.opacity != null) p.setAttribute("opacity", o.opacity);
+      const len = p.getTotalLength() || 1;
+      p.setAttribute("stroke-dasharray", len + " " + len); p.setAttribute("stroke-dashoffset", len);
+      tl.fromTo(p, { attr: { "stroke-dashoffset": len } }, { attr: { "stroke-dashoffset": 0 }, duration: dur, ease: o.ease || C(E.out, dur), immediateRender: true }, t);
+      return p;
+    }
+    const whipN = { n: 0 };
+    function whip(a, b, t, o) {
+      o = Object.assign({ dir: 1, vertical: false, flash: false, dur: 0.32 }, o);
+      const k = ++whipN.n, ba = FX.whipDefs(defs, SEG + "-wa" + k), bb = FX.whipDefs(defs, SEG + "-wb" + k), h = o.dur / 2;
+      const A = $(a + "-shot"), B = $(b + "-shot");
+      tl.set(A, { filter: "url(#" + SEG + "-wa" + k + ")" }, t - h - 0.01); tl.set(A, { filter: "none" }, t + 0.06);
+      tl.set(B, { filter: "url(#" + SEG + "-wb" + k + ")" }, t - 0.001); tl.set(B, { filter: "none" }, t + h + 0.02);
+      FX.whip(tl, A, B, t, { dir: o.dir, vertical: o.vertical, dur: o.dur, blurA: ba, blurB: bb });
+      if (o.flash) tl.fromTo($("flash"), { opacity: 0 }, { opacity: 0.85, duration: 0.08, yoyo: true, repeat: 1, ease: "power2.in", immediateRender: false }, t - 0.08);
+    }
+    function slide(a, b, t, o) {
+      o = Object.assign({ from: 1, d: 0.45 }, o);
+      const A = $(a + "-shot"), B = $(b + "-shot"), dist = 1980 * o.from;
+      tl.fromTo(B, { x: dist, boxShadow: "0 0 80px rgba(0,0,0,0.5)" }, { x: 0, duration: o.d, ease: C(E.inOut, o.d), immediateRender: false }, t - o.d);
+      tl.set(B, { boxShadow: "none" }, t);
+      tl.fromTo(A, { x: 0 }, { x: -dist * 0.12, duration: o.d, ease: E.in, immediateRender: false }, t - o.d);
+    }
+    // face cam framing: W 1.0 / M 1.25 / C 1.55 around (1000, 220), slow 2–3 % push
+    const FR = { W: [1.0, 1.03], M: [1.25, 1.285], C: [1.55, 1.59] };
+    function face(id, a, b, k) {
+      const fw = $(id + "-fw");
+      gsap.set(fw, { scale: FR[k][0] });
+      tl.fromTo(fw, { scale: FR[k][0] }, { scale: FR[k][1], duration: b - a, ease: "none", immediateRender: false }, S(a));
+    }
+    // sample a path into points at build time (no getPointAtLength inside onUpdate)
+    function samplePath(p, n) { const L = p.getTotalLength(), pts = []; for (let i = 0; i <= n; i++) { const q = p.getPointAtLength((L * i) / n); pts.push([q.x, q.y]); } return pts; }
+    const gmSvg = (fill) => '<path fill="' + fill + '" d="' + GM + '"/>';
+    $("sc020-gm").setAttribute("d", GM);
+
+    FX.grain($("grain"), 801);
+    FX.dust($("dust"), 802, 2);
+    const PEN = FX.markupDefs(defs, SEG + "-pen", { boil: 4 });
+    defs.setAttribute("viewBox", "0 0 1 1");
+
+    /* ===== sc001 · rewind to the beginning (fresh shot; cut on action from pys07) ===== */
+    (function () {
+      const head = $("sc001-head"), st = { x: 1560 };
+      gsap.set(head, { x: 1560, y: 270 });
+      gsap.set($("sc001-trail"), { scaleX: 0 });
+      // playhead races back 2026 → 2015 (12 fps steps), trail = the rewound stretch
+      tl.fromTo(st, { x: 1560 }, { x: 240, duration: 1.35, ease: C(E.inOut, 1.35), immediateRender: false,
+        onUpdate: () => { gsap.set(head, { x: st.x }); gsap.set($("sc001-trail"), { scaleX: Math.max(0, (st.x + 60 - 300) / 1320) }); } }, S(798.0));
+      tl.fromTo($("sc001-cam"), { scale: 1.08 }, { scale: 1.0, duration: 2.55, ease: E.cam, immediateRender: false }, S(798.0));
+      FX.focusHunt(tl, $("sc001-cam"), S(799.4), { dur: 0.8 });
+      words("sc001-t", [T(799.13), T(799.29), T(799.45), T(799.53)], { dur: 0.5, y: 14 });
+    })();
+
+    /* ===== sc002 · FACE M (whip left) ===== */
+    whip("sc001", "sc002", S(800.55), { dir: -1 });
+    face("sc002", 800.55, 806.87, "M");
+    words("sc002-lt", [T(804.25), T(804.41)], { dur: 0.6, y: 12 });
+    out($("sc002-lt"), S(806.3));
+
+    /* ===== sc003 · profitable business funds many new businesses (whip up) ===== */
+    whip("sc002", "sc003", S(806.87), { dir: -1, vertical: true });
+    (function () {
+      const box = $("sc003-tiles"), svg = $("sc003-svg"), chips = $("sc003-chips");
+      const XS = [190, 400, 610, 820, 1100, 1310, 1520, 1730], YS = [300, 380, 330, 400, 400, 330, 380, 300];
+      const tiles = XS.map((x, i) => {
+        const tdiv = div(box, "p8-tile", "left:" + (x - 85) + "px; top:" + YS[i] + "px", '<svg viewBox="0 0 120 120">' + BLDG(ASHD, false) + "</svg>");
+        gsap.set(tdiv, { rotation: (i % 2 ? 1.5 : -1.5) });
+        pin(tdiv, S(807.95) + Math.floor(i / 2) * (2 / 12));
+        return tdiv;
+      });
+      // pipes from the base to every tile, then money chips travel up
+      XS.forEach((x, i) => {
+        const y2 = YS[i] + 136, sx = 700 + i * 74;
+        const p = ink(svg, "M" + sx + " 800 C" + sx + " " + (y2 + 160) + " " + x + " " + (y2 + 150) + " " + (x + 1) + " " + y2, S(809.85) + i * 0.05, 0.7, { color: TEAL, width: 5, opacity: 0.85 });
+        const pts = samplePath(p, 40);
+        for (let k = 0; k < 2; k++) {
+          const ch = div(chips, "p8-chip", ""), s = { u: 0 }, t0 = S(810.5) + i * 0.09 + k * 0.7;
+          tl.fromTo(s, { u: 0 }, { u: 1, duration: 0.9, ease: "none", immediateRender: false, onUpdate: () => {
+            const q = pts[Math.min(40, Math.floor(s.u * 40))]; gsap.set(ch, { x: q[0] - 17, y: q[1] - 11, opacity: s.u > 0.02 && s.u < 0.97 ? 1 : 0 }); } }, t0);
+        }
+      });
+      rise($("sc003-kick"), S(806.95), { dur: 0.5, y: 8 });
+      tl.fromTo($("sc003-base"), { y: 260 }, { y: 0, duration: 0.9, ease: C(E.out, 0.9), immediateRender: true }, S(806.87));
+      tl.fromTo($("sc003-cam"), { scale: 1.0 }, { scale: 1.04, duration: 6.2, ease: "none", immediateRender: false }, S(806.87));
+      tl.to($("sc003-cam"), { scale: 1.16, y: -60, duration: 0.6, ease: E.in }, S(813.15));   // cut on action
+    })();
+    words("sc003-a", [T(807.93), T(808.33), T(808.65)], { dur: 0.5, y: 12 });
+    out($("sc003-a"), S(809.5));
+    words("sc003-b", [T(809.77), T(810.17), T(810.41)], { dur: 0.5, y: 12 });
+    out($("sc003-b"), S(812.3));
+    words("sc003-pb", [T(812.49), T(813.05)], { dur: 0.35, y: 10 });
+
+    /* ===== sc004 · FACE W (cut on action) ===== */
+    face("sc004", 813.75, 818.47, "W");
+    words("sc004-lt", [T(816.09), T(816.49), T(816.89)], { dur: 0.45, y: 12 });
+    out($("sc004-lt"), S(818.0));
+
+    /* ===== sc005 · Ueno HQ sign (light-flash whip) ===== */
+    whip("sc004", "sc005", S(818.47), { dir: 1, flash: true });
+    tl.fromTo($("sc005-vw"), { scale: 1.08 }, { scale: 1.0, duration: 5.92, ease: E.cam, immediateRender: false }, S(818.47));
+    gsap.set($("sc005-vw"), { transformOrigin: "40% 70%" });
+    words("sc005-lt", [T(820.65), T(820.97)], { dur: 0.6, y: 14 });
+    out($("sc005-lt"), S(823.2));
+    (function () {
+      const c = FX.markup.circle(tl, $("sc005-mk"), T(823.61), { cx: 690, cy: 805, rx: 470, ry: 150, rot: -3, color: TEALD, width: 9, dur: 0.6, filter: PEN, seed: 4 });
+      gsap.set(c, { opacity: 0 }); tl.set(c, { opacity: 1 }, T(823.61));
+    })();
+
+    /* ===== sc006 · the group's brands (paper slide from the right) ===== */
+    slide("sc005", "sc006", S(824.39));
+    (function () {
+      const box = $("sc006-cards");
+      const card = (x, y, inner) => div(box, "p8-lcard", "left:" + x + "px; top:" + y + "px", inner);
+      const c1 = card(160, 270, logoDiv("trib", 50, 48, 300, 54)), c2 = card(160, 470, logoDiv("cron", 70, 32, 260, 86));
+      const c3 = card(760, 270, logoDiv("itti", 120, 25, 160, 100)), c4 = card(1360, 270, logoDiv("pago", 60, 38, 280, 74));
+      [c1, c2, c3, c4].forEach((c, i) => gsap.set(c, { rotation: [-1.2, 0.8, 1.1, -0.9][i] }));
+      pin(c1, T(825.29)); pin(c2, T(825.29) + 2 / 12); pin(c3, T(826.09)); pin(c4, T(826.97));
+      // anything you can imagine: blank company cards fill the board at 12 fps
+      const SL = [[760, 470], [1360, 470], [160, 670], [760, 670], [1360, 670]];
+      SL.forEach((q, i) => {
+        const c = card(q[0], q[1], '<svg viewBox="0 0 120 120" style="position:absolute; left:40px; top:28px; width:80px; height:94px">' + BLDG(ASH, false) + '</svg><i style="position:absolute; left:150px; top:56px; width:180px; height:8px; background:rgba(22,32,28,0.22)"></i><i style="position:absolute; left:150px; top:80px; width:130px; height:8px; background:rgba(22,32,28,0.22)"></i>');
+        gsap.set(c, { rotation: (i % 2 ? 1 : -1) * 0.8 });
+        pin(c, S(827.40) + i * (2 / 12));
+      });
+      tl.fromTo($("sc006-cam"), { scale: 1.0 }, { scale: 1.035, duration: 4.4, ease: "none", immediateRender: false }, S(824.39));
+      tl.to($("sc006-cam"), { scale: 1.12, duration: 0.45, ease: E.in }, S(828.34));   // cut on action
+    })();
+    words("sc006-h1", [T(824.89), T(825.29)], { dur: 0.4, y: 10 });
+    words("sc006-h2", [T(825.77), T(826.09)], { dur: 0.4, y: 10 });
+    words("sc006-h3", [T(826.49), T(826.97)], { dur: 0.4, y: 10 });
+    words("sc006-any", [T(827.37), T(827.77), T(827.85), T(828.01)], { dur: 0.35, y: 10 });
+
+    /* ===== sc007 · FACE C · sc008 · FACE M ===== */
+    face("sc007", 828.79, 834.71, "C");
+    face("sc008", 834.71, 839.233, "M");
+    words("sc008-lt", [T(836.42), T(836.74), T(836.90), T(837.78)], { dur: 0.4, y: 12 });
+
+    /* ===== sc009 · related parties (whip right, at the join 839.233) ===== */
+    whip("sc008", "sc009", S(839.233), { dir: 1 });
+    (function () {
+      const svg = $("sc009-svg");
+      tl.fromTo($("sc009-bank"), { x: -500 }, { x: 0, duration: 0.9, ease: C(E.out, 0.9), immediateRender: true }, S(839.25));
+      tl.fromTo($("sc009-cos"), { x: 600 }, { x: 0, duration: 0.9, ease: C(E.out, 0.9), immediateRender: true }, S(839.9));
+      // give money → companies
+      const a = FX.markup.pen(tl, svg, S(840.62), { points: [[700, 690], [960, 650], [1220, 690]], color: TEALD, width: 8, dur: 0.6, filter: PEN, seed: 7 });
+      const ah = FX.markup.pen(tl, svg, S(841.2), { points: [[1186, 662], [1222, 690], [1184, 716]], color: TEALD, width: 8, dur: 0.2, filter: PEN, seed: 8 });
+      // the owner card drops in, then two ownership lines
+      tl.fromTo($("sc009-own"), { opacity: 0, y: -260 }, { opacity: 1, y: 0, duration: 0.8, ease: C(E.out, 0.8), immediateRender: true }, S(843.05));
+      FX.markup.pen(tl, svg, S(843.95), { points: [[880, 420], [700, 470], [480, 550]], color: INK, width: 5, dur: 0.5, filter: PEN, seed: 9 });
+      FX.markup.pen(tl, svg, S(844.15), { points: [[1040, 420], [1220, 470], [1440, 550]], color: INK, width: 5, dur: 0.5, filter: PEN, seed: 10 });
+      tl.fromTo($("sc009-cam"), { scale: 1.0 }, { scale: 1.03, duration: 5.6, ease: "none", immediateRender: false }, S(839.233));
+      tl.to($("sc009-cam"), { scale: 1.22, x: 260, y: 60, duration: 1.1, ease: E.in }, S(844.98));   // push toward the bank → bar (cut on action)
+    })();
+    words("sc009-rel", [T(841.30), T(841.70), T(841.86), T(842.10), T(842.42)], { dur: 0.4, y: 10 });
+    out($("sc009-rel"), S(843.25));
+    words("sc009-so", [T(843.46), T(843.62), T(843.86)], { dur: 0.45, y: 10 });
+
+    /* ===== sc010 · the 20 % self-dealing line (cut on action) ===== */
+    (function () {
+      const fill = $("sc010-fill"), ex = $("sc010-ex"), line = $("sc010-line");
+      tl.fromTo($("sc010-col"), { scaleY: 0.0, transformOrigin: "50% 100%" }, { scaleY: 1, duration: 1.0, ease: C(E.out, 1.0), immediateRender: true }, S(846.1));
+      gsap.set(fill, { scaleY: 0 }); gsap.set(ex, { scaleY: 0 });
+      tl.to(fill, { scaleY: 0.55, duration: 1.0, ease: C(E.out, 1.0) }, S(848.72));
+      tl.to(fill, { scaleY: 0.85, duration: 0.8, ease: C(E.out, 0.8) }, S(852.1));
+      tl.fromTo(line, { scaleX: 0 }, { scaleX: 1, duration: 0.7, ease: C(E.out, 0.7), immediateRender: true }, S(853.9));
+      tl.to($("sc010-hl"), { scaleX: 1, duration: 0.4, ease: C("power1.inOut", 0.4) }, T(854.50) + 0.3);
+      tl.to(fill, { scaleY: 1, duration: 0.3, ease: C(E.out, 0.3) }, S(856.72));
+      tl.to(ex, { scaleY: 1, duration: 0.7, ease: C(E.out, 0.7) }, S(856.98));
+      FX.markup.cross(tl, $("sc010-svg"), T(857.78), { x: 670, y: 740, s: 70, color: INK, width: 9, dur: 0.16, filter: PEN });
+      tl.fromTo($("sc010-cam"), { scale: 1.08, x: 30 }, { scale: 1.0, x: 0, duration: 4.0, ease: E.cam, immediateRender: false }, S(846.08));
+      tl.to($("sc010-cam"), { scale: 1.06, duration: 9.0, ease: "none" }, S(850.1));
+      tl.to($("sc010-cam"), { scale: 1.16, duration: 0.6, ease: E.in }, S(859.13));   // cut on action at the join
+    })();
+    words("sc010-dep", [T(847.22)], { dur: 0.5, y: 8 });
+    words("sc010-you", [T(850.18), T(850.34)], { dur: 0.5, y: 12 });
+    out($("sc010-you"), S(851.85));
+    show($("sc010-lb"), T(852.02)); words("sc010-sd", [T(852.02)], { dur: 0.5, y: 10 });
+    out($("sc010-sd"), S(853.75));
+    words("sc010-20", [T(854.18), T(854.50)], { dur: 0.5, y: 12 });
+    words("sc010-legal", [T(855.30), T(855.54)], { dur: 0.45, y: 10 });
+    out($("sc010-legal"), S(856.9));
+    words("sc010-ill", [T(857.38), T(857.78)], { dur: 0.45, y: 10 });
+
+    /* ===== sc011 · FACE W (hard cut at the join 859.733) ===== */
+    face("sc011", 859.733, 864.10, "W");
+    words("sc011-lt", [T(861.38), T(861.54), T(861.78)], { dur: 0.45, y: 12 });
+    out($("sc011-lt"), S(863.6));
+
+    /* ===== sc012 · roped together (whip down) ===== */
+    whip("sc011", "sc012", S(864.10), { dir: 1, vertical: true });
+    (function () {
+      const bank = $("sc012-bank"), hang = $("sc012-hang"), rope = $("sc012-rope");
+      // hanging company cards (logos), arranged in a bunch under the rope's end
+      const HC = [["trib", 0, 0], ["itti", 180, 10], ["cron", 20, 90], ["pago", 190, 100]];
+      HC.forEach((h, i) => { const c = div(hang, "p8-hcard", "left:" + h[1] + "px; top:" + h[2] + "px", logoDiv(h[0], 18, 14, 134, 46)); gsap.set(c, { rotation: [-4, 3, 2, -3][i] }); });
+      el($("sc012-cliff"), "g", {});
+      // state: bank x on the ledge, load y below the edge
+      const st = { bx: 1560, hy: 700, sw: 0 };
+      const EDGE = [1060, 560];
+      const draw = () => {
+        gsap.set(bank, { x: st.bx, y: 390 });
+        const hx = 900 + Math.sin(st.sw) * 14;
+        gsap.set(hang, { x: hx - 175, y: st.hy, rotation: Math.sin(st.sw) * 2 });
+        rope.setAttribute("d", "M" + st.bx + " 470 L" + (EDGE[0] + 6) + " " + (EDGE[1] - 4) + " Q" + (EDGE[0] - 30) + " " + (EDGE[1] + 10) + " " + hx + " " + (st.hy + 4));
+      };
+      draw();
+      tl.fromTo(st, { bx: 1560, hy: 640, sw: 0 }, { bx: 1560, hy: 700, sw: 3, duration: 1.8, ease: C(E.out, 1.8), immediateRender: false, onUpdate: draw }, S(864.10));
+      // struggling: they sink
+      tl.to(st, { hy: 820, sw: 6, duration: 2.0, ease: C(E.inOut, 2.0), onUpdate: draw }, S(865.0));
+      // the bank is dragged toward the edge as they keep sinking
+      tl.to(st, { bx: 1250, hy: 900, sw: 9, duration: 2.6, ease: C(E.inOut, 2.6), onUpdate: draw }, S(868.3));
+      tl.to(st, { bx: 1150, hy: 960, sw: 11, duration: 1.4, ease: C(E.in, 1.4), onUpdate: draw }, S(871.32));
+      tl.fromTo($("sc012-cam"), { scale: 1.0 }, { scale: 1.05, duration: 8.62, ease: "none", immediateRender: false }, S(864.10));
+    })();
+    words("sc012-a", [T(864.10), T(864.74), T(864.98)], { dur: 0.45, y: 12 });
+    out($("sc012-a"), S(865.75));
+    words("sc012-b", [T(865.94), T(866.26), T(866.66), T(866.82)], { dur: 0.45, y: 12 });
+    out($("sc012-b"), S(869.0));
+    words("sc012-c", [T(871.54), T(871.70), T(872.10)], { dur: 0.3, y: 10 });
+
+    /* ===== sc013 · FACE C (cut on action: the bank sliding) ===== */
+    face("sc013", 872.72, 877.12, "C");
+
+    /* ===== sc014 · the famous quote (whip right) ===== */
+    whip("sc013", "sc014", S(877.12), { dir: 1 });
+    tl.fromTo($("sc014-q"), { opacity: 0, y: 30 }, { opacity: 0.22, y: 0, duration: 0.8, ease: C(E.out, 0.8), immediateRender: true }, S(877.2));
+    words("sc014-r1", [T(877.62), T(877.94), T(878.10), T(878.50)], { dur: 0.45, y: 10 });
+    tl.to($("sc014-u1"), { attr: { "stroke-dashoffset": 0 }, duration: 0.4, ease: C("sine.inOut", 0.4) }, S(878.25));
+    words("sc014-y1", [T(879.94), T(880.18)], { dur: 0.45, y: 10 });
+    words("sc014-r2", [T(882.02), T(882.42), T(882.50), T(882.90)], { dur: 0.45, y: 14 });
+    tl.to($("sc014-u2"), { attr: { "stroke-dashoffset": 0 }, duration: 0.45, ease: C("sine.inOut", 0.45) }, S(882.7));
+    words("sc014-y2", [T(884.18), T(884.90)], { dur: 0.6, y: 18 });
+    gsap.set($("sc014-cam"), { transformOrigin: "900px 760px" });
+    tl.fromTo($("sc014-cam"), { scale: 1.0 }, { scale: 1.03, duration: 8.3, ease: "none", immediateRender: false }, S(877.12));
+    tl.to($("sc014-cam"), { scale: 1.16, duration: 1.4, ease: E.in }, S(885.48));   // "That's the exact case" — push in, cut on action
+
+    /* ===== sc015 · the pillars (hard cut on action) ===== */
+    (function () {
+      const box = $("sc015-pils"), XS = [560, 735, 895, 1055, 1230];
+      const K = ["trib", "itti", "cron", "pago", null];
+      const pils = XS.map((x, i) => div(box, "p8-pil", "left:" + x + "px", '<div class="cap">' + (K[i] ? logoDiv(K[i], 22, 12, 126, 46) : '<svg viewBox="0 0 120 120" style="position:absolute; left:60px; top:6px; width:50px; height:58px">' + BLDG(ASHD, false) + "</svg>") + "</div>"));
+      pils.forEach((p, i) => tl.fromTo(p, { y: 420 }, { y: 0, duration: 0.6, ease: C(E.out, 0.6), immediateRender: true }, S(886.9) + i * (2 / 12)));
+      tl.fromTo($("sc015-bank"), { y: -500 }, { y: 0, duration: 0.7, ease: C(E.out, 0.7), immediateRender: true }, S(887.6));
+      // "go out": the last pillar slides out, the bank tilts and cracks — motion into the cut
+      tl.to(pils[4], { x: 260, duration: 0.9, ease: C(E.in, 0.9) }, S(892.55));
+      tl.to($("sc015-bank"), { rotation: 3.5, duration: 0.8, ease: C(E.in, 0.8) }, S(892.85));
+      const cr = ink($("sc015-crack"), "M640 0 L612 46 L640 80 L598 130 L626 170 L604 210", S(892.95), 0.3, { color: "#0b1210", width: 6 });
+      tl.fromTo($("sc015-cam"), { scale: 1.04 }, { scale: 1.0, duration: 6.48, ease: E.cam, immediateRender: false }, S(886.88));
+    })();
+    words("sc015-a", [T(887.86), T(888.34), T(888.50), T(888.74)], { dur: 0.45, y: 12 });
+    out($("sc015-a"), S(890.3));
+    words("sc015-b", [T(890.74), T(890.98), T(891.22)], { dur: 0.45, y: 12 });
+
+    /* ===== sc016 · FACE M · sc017 · FACE W ===== */
+    face("sc016", 893.36, 898.71, "M");
+    words("sc016-lt", [T(897.61), T(897.77)], { dur: 0.45, y: 12 });
+    face("sc017", 898.71, 902.283, "W");
+    words("sc017-lt", [T(900.89), T(901.13), T(901.45)], { dur: 0.4, y: 12 });
+
+    /* ===== BOARD · the shell-company case file ===== */
+    const BC = { S1: [1000, 990], S2: [1500, 1010], S3: [2000, 990], BANK: [380, 840], CO: [2620, 840], OWN: [1500, 580] };
+    (function () {
+      const items = $("board-items"), str = $("board-str"), top = $("board-top"), cam = $("board-cam");
+      const card = (cx, cy, w, h, cls, html, rot) => { const c = div(items, "p8-bcard " + (cls || ""), "left:" + (cx - w / 2) + "px; top:" + (cy - h / 2) + "px; width:" + w + "px; height:" + h + "px", html); gsap.set(c, { rotation: rot || 0 }); return c; };
+      const pinAt = (x, y) => div(items, "p8-pin", "left:" + (x - 10) + "px; top:" + (y - 10) + "px");
+      const at = (c, p, t) => { gsap.set([c, p], { opacity: 0 }); pin(c, t); tl.set(p, { opacity: 1 }, t + 2 / 12); };
+      const strg = (a, b, t, o) => { o = o || {}; const mx = (a[0] + b[0]) / 2, my = (a[1] + b[1]) / 2 + (o.sag == null ? 60 : o.sag);
+        return ink(o.top ? top : str, "M" + a[0] + " " + a[1] + " Q" + mx + " " + my + " " + b[0] + " " + b[1], t, o.dur || 0.5, { color: o.color || TEAL, width: o.width || 4, opacity: o.opacity == null ? 0.95 : o.opacity }); };
+      const regHTML = '<div class="hd t-label">Company S.A.</div><svg viewBox="0 0 120 120">' + BLDG(ASHD, true) + '</svg><i style="top:70px; width:110px"></i><i style="top:92px; width:80px"></i><i style="top:114px; width:96px"></i><i style="top:136px; width:64px"></i>';
+      const ownHTML = '<svg viewBox="0 0 400 480">' + gmSvg(ASH) + '</svg><b class="t-display">?</b>';
+
+      /* sc018 · 902.283–908.95 — whip left at the join */
+      // owner card (Miguel Vázquez) at the top
+      const own = card(BC.OWN[0], BC.OWN[1], 300, 360, "", '<div style="position:absolute; left:14px; top:14px; width:272px; height:332px; background:url(\'assets/paraguay/pys08/derived/miguel_ash.jpg\') 50% 18% / 380px auto no-repeat"></div>', -1.5);
+      const ownP = pinAt(BC.OWN[0], BC.OWN[1] - 172);
+      at(own, ownP, S(902.35));
+      const shells = [BC.S1, BC.S2, BC.S3].map((p, i) => {
+        const c = card(p[0], p[1], 300, 210, "p8-reg", regHTML, [-2, 1.5, -1][i]);
+        const pp = pinAt(p[0], p[1] - 98);
+        at(c, pp, S(904.98) + i * (3 / 12));
+        strg([BC.OWN[0], BC.OWN[1] + 150], [p[0], p[1] - 98], S(905.2) + i * (3 / 12), { color: "#23302b", width: 4, sag: 30 });
+        const o = card(p[0] + 120, p[1] + 130, 150, 120, "p8-own", ownHTML, [3, -2, 2.5][i]);
+        const op = pinAt(p[0] + 120, p[1] + 74);
+        at(o, op, S(907.42) + i * (2 / 12));
+        return c;
+      });
+      // camera: start a touch close on the owner, settle on the whole cluster; push at the end (cut on action)
+      const camTo = (x, y, s) => ({ x: 960 - x * s, y: 540 - y * s, scale: s });
+      gsap.set(cam, camTo(1500, 760, 1.12));
+      tl.fromTo(cam, camTo(1500, 700, 1.12), Object.assign(camTo(1500, 810, 1.0), { duration: 3.6, ease: E.cam, immediateRender: false }), S(902.283));
+      tl.to(cam, Object.assign(camTo(1500, 830, 1.04), { duration: 2.4, ease: "none" }), S(905.9));
+      tl.to(cam, Object.assign(camTo(1500, 880, 1.16), { duration: 0.65, ease: E.in }), S(908.3));
+      FX.focusHunt(tl, cam, S(902.4), { dur: 0.8 });
+
+      /* sc021 · 923.59–932.23 — the money route bank → shells → group company */
+      const bank = card(BC.BANK[0], BC.BANK[1], 360, 240, "", '<div style="position:absolute; left:0; top:0; width:360px; height:18px; background:var(--ueno)"></div>' + logoDiv("ueno", 50, 70, 260, 80, "var(--ueno-dark)") + '<div class="p8-abs t-label p8-ink" style="left:0; top:178px; width:360px; text-align:center; font-size:22px">bank</div>', 1.5);
+      const bankP = pinAt(BC.BANK[0], BC.BANK[1] - 112);
+      const co = card(BC.CO[0], BC.CO[1], 360, 240, "", '<div style="position:absolute; left:0; top:0; width:360px; height:18px; background:var(--ueno-dark)"></div>' + logoDiv("trib", 40, 56, 280, 50) + logoDiv("itti", 120, 126, 120, 60), -1.5);
+      const coP = pinAt(BC.CO[0], BC.CO[1] - 112);
+      at(bank, bankP, S(923.62)); at(co, coP, S(923.9));
+      const hops = [[BC.BANK[0] + 170, BC.BANK[1]], [BC.S1[0] - 140, BC.S1[1]], [BC.S1[0] + 140, BC.S1[1] - 20], [BC.S2[0] - 140, BC.S2[1]], [BC.S2[0] + 140, BC.S2[1] - 20], [BC.S3[0] - 140, BC.S3[1]], [BC.S3[0] + 140, BC.S3[1] - 20], [BC.CO[0] - 170, BC.CO[1]]];
+      const routeT = [924.2, 925.2, 926.1, 927.0];
+      const routes = [];
+      for (let i = 0; i < 4; i++) routes.push(strg(hops[i * 2], hops[i * 2 + 1], S(routeT[i]), { color: TEAL, width: 7, sag: 90, dur: 0.7, top: true }));
+      // money token travels each hop as it is drawn (rerouting)
+      const tok = div(items, "p8-chip", "width:46px; height:30px; background:var(--ueno-light); box-shadow:0 0 0 3px #0c5c54, 0 6px 10px rgba(0,0,0,0.5); z-index:3");
+      $("board-items").appendChild(tok);
+      const pts = []; routes.forEach((r) => samplePath(r, 30).forEach((q) => pts.push(q)));
+      const tk = { u: 0 };
+      tl.fromTo(tk, { u: 0 }, { u: 1, duration: 4.0, ease: "none", immediateRender: false, onUpdate: () => {
+        const q = pts[Math.min(pts.length - 1, Math.floor(tk.u * (pts.length - 1)))]; gsap.set(tok, { x: q[0] - 23, y: q[1] - 15, opacity: tk.u < 0.995 ? 1 : 0 }); } }, S(924.4));
+      gsap.set(tok, { opacity: 0 });
+      // payroll: pay slips fan out of the company card
+      for (let k = 0; k < 5; k++) {
+        const s = div(items, "p8-bcard", "left:" + (BC.CO[0] - 60) + "px; top:" + (BC.CO[1] + 60) + "px; width:120px; height:70px", '<i style="position:absolute; left:14px; top:16px; width:70px; height:7px; background:rgba(22,32,28,0.3)"></i><i style="position:absolute; left:14px; top:34px; width:50px; height:7px; background:rgba(12,92,84,0.6)"></i>');
+        gsap.set(s, { opacity: 0 });
+        tl.fromTo(s, { opacity: 0, x: 0, y: 0, rotation: 0 }, { opacity: 1, x: -230 + k * 115, y: 230 + (k % 2) * 30, rotation: -12 + k * 6, duration: 0.7, ease: C(E.out, 0.7), immediateRender: false }, S(929.9) + k * (1 / 12));
+      }
+      tl.fromTo(cam, camTo(1500, 900, 0.72), Object.assign(camTo(1500, 880, 0.70), { duration: 6.0, ease: "none", immediateRender: false }), S(923.59));
+      tl.to(cam, Object.assign(camTo(2300, 960, 0.86), { duration: 2.0, ease: E.inOut }), S(929.2));
+      tl.to(cam, Object.assign(camTo(2420, 980, 0.95), { duration: 0.6, ease: E.in }), S(931.63));
+
+      /* sc023 · 935.67–940.60 — the full web: more shells, the forbidden direct line, pen X; pull-back into the cut */
+      const extra = [[620, 420], [980, 330], [2020, 330], [2380, 420], [700, 1400], [1200, 1450], [1800, 1450], [2300, 1400], [2700, 1300]];
+      extra.forEach((p, i) => {
+        const c = card(p[0], p[1], 260, 180, "p8-reg", regHTML, (i % 2 ? 1.5 : -1.5));
+        const pp = pinAt(p[0], p[1] - 84);
+        at(c, pp, S(935.75) + i * (1 / 12));
+        const q = [BC.S1, BC.S2, BC.S3][i % 3];
+        strg([p[0], p[1]], [q[0], q[1]], S(935.85) + i * (1 / 12), { color: TEAL, width: 4, sag: 40, opacity: 0.8, dur: 0.6 });
+      });
+      const direct = el(top, "path", { d: "M" + (BC.BANK[0] + 170) + " " + (BC.BANK[1] - 70) + " Q1500 560 " + (BC.CO[0] - 170) + " " + (BC.CO[1] - 70), fill: "none", stroke: BONE, "stroke-width": 7, "stroke-dasharray": "22 16", opacity: 0 });
+      tl.to(direct, { opacity: 0.95, duration: 0.35, ease: "power1.out" }, S(937.0));
+      FX.markup.cross(tl, top, T(938.89), { x: 1500, y: 640, s: 80, color: PLUML, width: 14, dur: 0.18 });
+      tl.fromTo(cam, camTo(700, 840, 1.15), Object.assign(camTo(1500, 860, 0.70), { duration: 3.2, ease: E.cam, immediateRender: false }), S(935.67));
+      tl.to(cam, Object.assign(camTo(1500, 850, 0.66), { duration: 2.0, ease: "none" }), S(938.6));
+    })();
+    whip("sc017", "board", S(902.283), { dir: -1 });
+    words("sc018-a", [T(902.89), T(903.21), T(903.29), T(903.53)], { dur: 0.35, y: 8 }); show($("sc018-a"), T(902.89)); out($("sc018-a"), S(904.75), 0.15);
+    words("sc018-b", [T(904.97), T(905.37)], { dur: 0.35, y: 8 }); show($("sc018-b"), T(904.97)); out($("sc018-b"), S(905.78), 0.12);
+    words("sc018-c", [T(905.93), T(906.25)], { dur: 0.35, y: 8 }); show($("sc018-c"), T(905.93)); out($("sc018-c"), S(907.2), 0.15);
+    words("sc018-d", [T(907.37), T(907.93)], { dur: 0.35, y: 8 }); show($("sc018-d"), T(907.37)); out($("sc018-d"), S(908.9), 0.05);
+
+    /* ===== sc019 · FACE M (cut on action) ===== */
+    face("sc019", 908.95, 912.79, "M");
+    words("sc019-lt", [T(910.25), T(910.49), T(910.81)], { dur: 0.4, y: 12 });
+    out($("sc019-lt"), S(912.3));
+
+    /* ===== sc020 · created today → tens of millions in loans (whip up) ===== */
+    whip("sc019", "sc020", S(912.79), { dir: -1, vertical: true });
+    (function () {
+      const svg = $("sc020-fsvg");
+      tl.fromTo($("sc020-form"), { y: 900, rotation: 4 }, { y: 0, rotation: -1, duration: 1.0, ease: C(E.out, 1.0), immediateRender: true }, S(912.85));
+      tl.fromTo($("sc020-cal"), { y: -700 }, { y: 0, duration: 0.9, ease: C(E.out, 0.9), immediateRender: true }, S(913.3));
+      // created today: rubber stamp
+      tl.fromTo($("sc020-stamp"), { opacity: 0, scale: 1.6 }, { opacity: 0.92, scale: 1, duration: 0.18, ease: "power3.in", immediateRender: true }, T(914.81));
+      const sw = W("sc020-stamp"); show(sw[0], T(914.81)); show(sw[1], T(915.29));
+      words("sc020-p1", [T(915.29)], { dur: 0.35, y: 8 });
+      // the very next day: calendar page tears off
+      words("sc020-very", [T(915.77), T(916.01)], { dur: 0.3, y: 6 });
+      tl.to($("sc020-p1"), { rotationX: -95, y: 120, opacity: 0, duration: 0.45, ease: C(E.in, 0.45) }, S(916.2));
+      out($("sc020-very"), S(916.2), 0.15);
+      words("sc020-p2", [T(916.25), T(916.49)], { dur: 0.35, y: 8 });
+      // no money, no business
+      words("sc020-no1", [T(917.69)], { dur: 0.3, y: 6 }); words("sc020-fm", [T(917.85)], { dur: 0.3, y: 6 });
+      FX.markup.pen(tl, svg, S(918.0), { points: [[380, 640], [640, 646]], color: INK, width: 6, dur: 0.3, filter: PEN, seed: 21 });
+      words("sc020-no2", [T(918.25)], { dur: 0.3, y: 6 }); words("sc020-fb", [T(918.41)], { dur: 0.3, y: 6 });
+      FX.markup.pen(tl, svg, S(918.6), { points: [[380, 750], [640, 757]], color: INK, width: 6, dur: 0.3, filter: PEN, seed: 22 });
+      // the loan slip slides over the calendar
+      tl.fromTo($("sc020-slip"), { x: 900, rotation: 6 }, { x: 0, rotation: 1.5, duration: 0.9, ease: C(E.out, 0.9), immediateRender: true }, S(920.4));
+      tl.to($("sc020-hl"), { scaleX: 1, duration: 0.45, ease: C("power1.inOut", 0.45) }, S(922.1));
+      tl.fromTo($("sc020-cam"), { scale: 1.0 }, { scale: 1.04, duration: 7.5, ease: "none", immediateRender: false }, S(912.79));
+      tl.to($("sc020-cam"), { scale: 1.1, x: -120, y: -40, duration: 3.0, ease: E.inOut }, S(920.3));
+    })();
+    words("sc020-tens", [T(921.37), T(921.77), T(921.93), T(922.33), T(922.41)], { dur: 0.4, y: 10 });
+    words("sc020-loans", [T(922.73), T(922.89)], { dur: 0.35, y: 10 });
+
+    /* ===== sc021 · the route (whip right) ===== */
+    whip("sc020", "board", S(923.59), { dir: 1 });
+    words("sc021-a", [T(927.45), T(927.77), T(927.93), T(928.09), T(928.25)], { dur: 0.3, y: 8 }); show($("sc021-a"), T(927.45)); out($("sc021-a"), S(929.2), 0.15);
+    words("sc021-b", [T(929.45), T(929.53), T(929.85)], { dur: 0.3, y: 8 }); show($("sc021-b"), T(929.45)); out($("sc021-b"), S(932.0), 0.15);
+
+    /* ===== sc022 · FACE C (cut on action) ===== */
+    face("sc022", 932.23, 935.67, "C");
+
+    /* ===== sc023 · the full web (light-flash whip) ===== */
+    whip("sc022", "board", S(935.67), { dir: 1, flash: true });
+    words("sc023-a", [T(938.89), T(939.05), T(939.37)], { dur: 0.3, y: 8 }); show($("sc023-a"), T(938.89));
+
+    FX.mount(tl, DURATION);
+    window.__timelines = window.__timelines || {};
+    window.__timelines[SEG] = tl;
+  })();
+  </script>
+</template>
+</body>
+</html>

@@ -1,0 +1,760 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8" /></head>
+<body>
+<template>
+  <style>
+    #root { position: absolute; inset: 0; overflow: hidden; background: var(--night); }
+    .p4-scene { position: absolute; inset: 0; overflow: hidden; visibility: hidden; opacity: 0; }
+    .p4-shot { position: absolute; inset: 0; overflow: hidden; transform-origin: 50% 50%; background: var(--night); }
+    .p4-paper { background: var(--paper); }
+    .p4-abs { position: absolute; }
+    .p4-full { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; object-fit: cover; }
+    .p4-fcw { position: absolute; inset: 0; transform-origin: 1045px 215px; }
+    .p4-vw { position: absolute; inset: 0; transform-origin: 50% 50%; }
+    .p4-p1, .p4-p2 { position: absolute; inset: -20px; background-size: cover; background-position: center; pointer-events: none; }
+    .p4-p2 { opacity: 0.9; mix-blend-mode: multiply; }
+    .p4-mk { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; pointer-events: none; }
+    .p4-w { display: inline-block; white-space: pre; opacity: 0; }
+    .p4-ink { color: var(--ink); }
+    .p4-credit { position: absolute; right: 30px; bottom: 20px; font-size: 13px; letter-spacing: 0.08em; color: rgba(242,238,227,0.66); z-index: 5; }
+    .p4-credit.ink { color: rgba(22,32,28,0.62); }
+    .p4-lt { position: absolute; left: 96px; bottom: 104px; width: 820px; font-size: 64px; line-height: 1.0; }
+    .p4-scrim-bl { position: absolute; inset: 0; pointer-events: none;
+      background: radial-gradient(ellipse 58% 52% at 0% 100%, rgba(10,14,12,0.86) 0%, rgba(10,14,12,0.55) 45%, rgba(10,14,12,0) 100%); }
+    .p4-scrim-b { position: absolute; left: 0; right: 0; bottom: 0; height: 520px; pointer-events: none;
+      background: linear-gradient(180deg, rgba(10,14,12,0), rgba(10,14,12,0.86)); }
+    .p4-card { position: absolute; background: #f4efe3; box-shadow: 0 22px 44px rgba(22,32,28,0.30); }
+    .p4-rule { position: absolute; left: 0; top: 0; right: 0; height: 16px; }
+    .p4-cap { position: absolute; left: 0; width: 1920px; text-align: center; font-size: 62px; line-height: 1.05; }
+    .p4-tag { position: absolute; background: var(--ink); color: var(--paper); padding: 10px 18px 6px; font-size: 30px; white-space: nowrap; }
+    .p4-hlr { position: absolute; background: var(--yellow); mix-blend-mode: multiply; transform-origin: 0 50%; opacity: 0.9; }
+    #pys04-flash { position: absolute; inset: 0; background: #f6f2ea; opacity: 0; pointer-events: none; z-index: 7; }
+    #pys04-grain, #pys04-dust, #pys04-vig { z-index: 8; }
+    /* sc007 2.5D */
+    .p4-layer { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 960px 540px; }
+    /* sc008 */
+    .p4-panel { position: absolute; background: #f7f3ea; border-radius: 22px; box-shadow: 0 24px 50px rgba(22,32,28,0.22); overflow: hidden; }
+    .p4-panel img { position: absolute; }
+    .p4-bar { position: absolute; height: 14px; border-radius: 7px; background: rgba(22,32,28,0.16); }
+    /* sc010 map */
+    #pys04-sc010-cam { position: absolute; left: -120px; top: -67px; width: 2160px; height: 1215px; transform-origin: 1070px 684px; }
+    #pys04-sc010-cam > img { position: absolute; left: 0; top: 0; width: 2160px; height: 1215px; }
+    .p4-country { position: absolute; font-size: 44px; letter-spacing: 0.04em; color: #f0ede6; text-shadow: 0 2px 6px rgba(0,0,0,0.75); white-space: nowrap; }
+    .p4-city { position: absolute; font-size: 24px; color: #f0ede6; text-shadow: 0 1px 4px rgba(0,0,0,0.85); white-space: nowrap; }
+    /* sc012 doc */
+    #pys04-sc012-cam { position: absolute; left: 0; top: 0; width: 1100px; height: 1553px; transform-origin: 0 0; }
+    #pys04-sc012-page { position: absolute; left: 0; top: 0; width: 1100px; height: 1553px; box-shadow: 0 30px 70px rgba(22,32,28,0.35); transform: rotate(-1.2deg); transform-origin: 550px 600px; }
+    #pys04-sc012-page img { position: absolute; left: 0; top: 0; width: 1100px; height: 1553px; }
+    .p4-lbox { position: absolute; left: 96px; bottom: 96px; font-size: 72px; }
+    /* sc019 receipt */
+    #pys04-sc019-rc { position: absolute; left: 330px; top: 70px; width: 560px; height: 940px; background: #f3efe6; transform: rotate(-2deg); box-shadow: 0 30px 60px rgba(0,0,0,0.5); color: var(--ink); }
+    .p4-rl { position: absolute; left: 44px; right: 44px; font-size: 26px; display: flex; justify-content: space-between; }
+    #pys04-sc019-stamp { position: absolute; left: 250px; top: 690px; padding: 14px 26px 6px; background: var(--yellow); color: var(--ink); font-size: 92px; transform: rotate(-8deg); box-shadow: 0 6px 14px rgba(0,0,0,0.25); opacity: 0; }
+    .reel { display: inline-block; overflow: hidden; vertical-align: top; }
+    .reel-strip { display: flex; flex-direction: column; }
+  </style>
+
+  <div id="root" data-composition-id="pys04" data-vo-start="332.60" data-duration="124.80" data-width="1920" data-height="1080">
+    <svg id="pys04-defs" width="0" height="0" style="position:absolute"></svg>
+
+    <!-- sc001 · 332.60–335.30 · By 2020, around COVID times · Asunción plate + year -->
+    <div class="p4-scene" id="pys04-sc001"><div class="p4-shot" id="pys04-sc001-shot">
+      <div class="p4-vw" id="pys04-sc001-vw"><img class="p4-full" src="assets/paraguay/shared/photos/asuncion_skyline.jpg" style="filter: grayscale(0.85) brightness(0.62) contrast(1.06)" /></div>
+      <div class="p4-scrim-bl"></div>
+      <div class="p4-abs t-display halate yellow" id="pys04-sc001-y" style="left:96px; top:520px; font-size:250px; line-height:1"><span class="p4-w">2020</span></div>
+      <div class="p4-abs t-serif-i clean" id="pys04-sc001-k" style="left:104px; top:800px; font-size:64px"><span class="p4-w">around </span><span class="p4-w">COVID </span><span class="p4-w">times</span></div>
+      <div class="p4-credit t-label">Asunción · Photo: Wikimedia Commons</div>
+    </div></div>
+
+    <!-- sc002 · 335.30–339.05 · not being a bank / cannot take in deposits · Credicentro card -->
+    <div class="p4-scene" id="pys04-sc002"><div class="p4-shot p4-paper" id="pys04-sc002-shot">
+      <div class="p4-p1" style="background-image:url('assets/textures/paper_cream_01.jpg')"></div>
+      <div class="p4-p2" style="background-image:url('assets/textures/paper_fiber_01.jpg'); opacity:0.5"></div>
+      <div class="p4-card" id="pys04-sc002-card" style="left:560px; top:170px; width:800px; height:470px">
+        <div class="p4-rule" style="background:var(--ueno-dark)"></div>
+        <div class="p4-abs t-label p4-ink" style="left:60px; top:70px; font-size:26px; opacity:0.7">COMPANY</div>
+        <div class="p4-abs t-display p4-ink" style="left:56px; top:108px; font-size:92px">Credicentro</div>
+        <div class="p4-abs" style="left:60px; top:260px; width:680px; height:150px; border:4px dashed rgba(22,32,28,0.45)"></div>
+        <div class="p4-abs t-label p4-ink" style="left:60px; top:310px; width:680px; text-align:center; font-size:48px">DEPOSITS</div>
+      </div>
+      <svg id="pys04-sc002-svg" class="p4-mk" viewBox="0 0 1920 1080"></svg>
+      <div class="p4-cap t-serif-i p4-ink" id="pys04-sc002-a" style="top:760px"><span class="p4-w">not </span><span class="p4-w">being </span><span class="p4-w">a </span><span class="p4-w">bank</span></div>
+      <div class="p4-cap t-serif-i p4-ink" id="pys04-sc002-b" style="top:760px"><span class="p4-w">cannot </span><span class="p4-w">take </span><span class="p4-w">in </span><span class="p4-w">deposits</span></div>
+    </div></div>
+
+    <!-- sc003 · 339.05–342.40 · FACE M · grow a lot faster -->
+    <div class="p4-scene" id="pys04-sc003"><div class="p4-shot" id="pys04-sc003-shot">
+      <div class="p4-fcw" id="pys04-sc003-fw"><video id="pys04-sc003-v" class="p4-full" src="assets/facecam/paraguay_facecam_master.mp4" muted playsinline data-start="6.45" data-duration="3.45" data-media-start="339.05"></video></div>
+      <div class="p4-scrim-bl"></div>
+      <div class="p4-lt t-display clean" id="pys04-sc003-lt"><span class="p4-w">grow </span><span class="p4-w">a </span><span class="p4-w">lot </span><span class="p4-w">faster</span></div>
+    </div></div>
+
+    <!-- sc004 · 342.40–350.50 · 2021 merger board -->
+    <div class="p4-scene" id="pys04-sc004"><div class="p4-shot p4-paper" id="pys04-sc004-shot">
+      <div class="p4-vw" id="pys04-sc004-vw">
+        <div class="p4-p1" style="background-image:url('assets/textures/paper_graph_01_hires.jpg')"></div>
+        <div class="p4-p2" style="background-image:url('assets/textures/paper_cream_02.jpg'); opacity:0.35"></div>
+        <div class="p4-abs" style="left:0; width:1920px; top:96px; text-align:center; font-size:110px"><span class="label-box" id="pys04-sc004-yb" style="color:var(--yellow); opacity:0">2021</span></div>
+        <div class="p4-card" id="pys04-sc004-l" style="left:190px; top:330px; width:680px; height:300px">
+          <div class="p4-rule" style="background:var(--ueno-dark)"></div>
+          <div class="p4-abs t-display p4-ink" style="left:48px; top:110px; font-size:84px">Credicentro</div>
+        </div>
+        <div class="p4-card" id="pys04-sc004-r" style="left:1050px; top:330px; width:680px; height:300px">
+          <div class="p4-rule" style="background:var(--ash)"></div>
+          <div class="p4-abs t-label p4-ink" style="left:48px; top:56px; font-size:24px; opacity:0.7">A LICENSED BANK</div>
+          <div class="p4-abs t-display p4-ink" style="left:44px; top:92px; font-size:56px; line-height:1.0">Financiera<br>El Comercio</div>
+          <svg class="p4-abs" style="left:470px; top:120px; width:170px; height:120px; overflow:visible" viewBox="0 0 170 120"><path id="pys04-sc004-spark" d="M4 30 L40 22 L72 40 L104 36 L136 70 L166 104" fill="none" stroke="#7a2f18" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="p4-cap t-serif-i p4-ink" id="pys04-sc004-a" style="top:720px"><span class="p4-w">already </span><span class="p4-w">existed</span></div>
+        <div class="p4-cap t-serif-i p4-ink" id="pys04-sc004-b" style="top:720px"><span class="p4-w">but </span><span class="p4-w">was </span><span class="p4-w" style="color:var(--tierra-dark)">struggling</span></div>
+      </div>
+    </div></div>
+
+    <!-- sc005 · 350.50–354.15 · FACE W · a real bank -->
+    <div class="p4-scene" id="pys04-sc005"><div class="p4-shot" id="pys04-sc005-shot">
+      <div class="p4-fcw" id="pys04-sc005-fw"><video id="pys04-sc005-v" class="p4-full" src="assets/facecam/paraguay_facecam_master.mp4" muted playsinline data-start="17.90" data-duration="3.75" data-media-start="350.50"></video></div>
+      <div class="p4-scrim-bl"></div>
+      <div class="p4-lt t-display clean" id="pys04-sc005-lt"><span class="p4-w">a </span><span class="p4-w">real </span><span class="p4-w">bank</span></div>
+    </div></div>
+
+    <!-- sc006 · 354.15–356.65 · merges these two companies · cards collide -->
+    <div class="p4-scene" id="pys04-sc006"><div class="p4-shot p4-paper" id="pys04-sc006-shot">
+      <div class="p4-vw" id="pys04-sc006-vw">
+        <div class="p4-p1" style="background-image:url('assets/textures/paper_graph_01_hires.jpg')"></div>
+        <div class="p4-p2" style="background-image:url('assets/textures/paper_cream_02.jpg'); opacity:0.35"></div>
+        <div class="p4-card" id="pys04-sc006-r" style="left:1050px; top:330px; width:680px; height:300px">
+          <div class="p4-rule" style="background:var(--ash)"></div>
+          <div class="p4-abs t-label p4-ink" style="left:48px; top:56px; font-size:24px; opacity:0.7">A LICENSED BANK</div>
+          <div class="p4-abs t-display p4-ink" style="left:44px; top:92px; font-size:56px; line-height:1.0">Financiera<br>El Comercio</div>
+        </div>
+        <div class="p4-card" id="pys04-sc006-l" style="left:190px; top:330px; width:680px; height:300px">
+          <div class="p4-rule" style="background:var(--ueno-dark)"></div>
+          <div class="p4-abs t-display p4-ink" style="left:48px; top:110px; font-size:84px">Credicentro</div>
+        </div>
+        <div class="p4-abs" id="pys04-sc006-ring" style="left:600px; top:300px; width:720px; height:360px; border:10px solid var(--ueno); opacity:0"></div>
+        <div class="p4-cap t-serif-i p4-ink" id="pys04-sc006-a" style="top:740px"><span class="p4-w">merges </span><span class="p4-w">these </span><span class="p4-w">two </span><span class="p4-w">companies</span></div>
+      </div>
+    </div></div>
+
+    <!-- sc007 · 356.65–359.45 · creates the bank … Ueno · 2.5D ueno tower -->
+    <div class="p4-scene" id="pys04-sc007"><div class="p4-shot" id="pys04-sc007-shot">
+      <div class="p4-layer" id="pys04-sc007-bg"><img class="p4-full" src="assets/paraguay/pys04/derived/tower_bg.jpg" style="filter: saturate(0.5) brightness(0.62) contrast(1.05)" />
+        <div class="p4-abs" style="left:0; top:0; width:1920px; height:420px; background:linear-gradient(180deg, rgba(10,14,12,0.86), rgba(10,14,12,0.55) 60%, rgba(10,14,12,0))"></div></div>
+      <div class="p4-layer" id="pys04-sc007-logo"><img class="p4-abs" id="pys04-sc007-li" src="assets/paraguay/shared/logos/ueno_logo.png" style="left:510px; top:140px; width:900px; height:137px; filter: drop-shadow(0 0 22px rgba(47,217,142,0.45)) drop-shadow(0 0 60px rgba(31,165,149,0.35))" /></div>
+      <div class="p4-layer" id="pys04-sc007-fg"><img class="p4-full" src="assets/paraguay/pys04/derived/tower_fg.png" style="filter: saturate(0.6) brightness(0.8) contrast(1.05)" /></div>
+      <div class="p4-scrim-b" style="height:300px; opacity:0.6"></div>
+      <div class="p4-credit t-label">ueno headquarters, Asunción · Photo: Reuters</div>
+    </div></div>
+
+    <!-- sc008 · 359.45–366.55 · a modern bank, a fintech: apps, websites, online banking -->
+    <div class="p4-scene" id="pys04-sc008"><div class="p4-shot p4-paper" id="pys04-sc008-shot">
+      <div class="p4-p1" style="background-image:url('assets/textures/paper_cream_02.jpg')"></div>
+      <div class="p4-p2" style="background-image:url('assets/textures/paper_fiber_01.jpg'); opacity:0.4"></div>
+      <div class="p4-vw" id="pys04-sc008-vw">
+        <div class="p4-panel" id="pys04-sc008-p1" style="left:136px; top:330px; width:520px; height:380px; background:#dfece8"><img src="assets/paraguay/pys04/photos/ueno_app_phone.png" style="left:-140px; top:6px; width:800px; height:447px" /></div>
+        <div class="p4-panel" id="pys04-sc008-p2" style="left:700px; top:330px; width:520px; height:380px">
+          <div class="p4-abs" style="left:0; top:0; width:520px; height:46px; background:#e3ddd0"></div>
+          <div class="p4-abs" style="left:20px; top:16px; width:14px; height:14px; border-radius:7px; background:var(--tierra)"></div>
+          <div class="p4-abs" style="left:42px; top:16px; width:14px; height:14px; border-radius:7px; background:var(--ash)"></div>
+          <div class="p4-abs" style="left:64px; top:16px; width:14px; height:14px; border-radius:7px; background:var(--ash-light)"></div>
+          <div class="p4-abs t-label p4-ink" style="left:100px; top:10px; width:380px; height:26px; border-radius:13px; background:#f7f3ea; font-size:16px; line-height:28px; padding-left:16px; opacity:0.8">ueno.com.py</div>
+          <div class="p4-abs" style="left:0; top:46px; width:520px; height:150px; background:var(--ueno-dark)"></div>
+          <img class="p4-abs" src="assets/paraguay/shared/logos/ueno_logo.png" style="left:40px; top:96px; width:290px; height:44px" />
+          <div class="p4-bar" style="left:40px; top:230px; width:360px"></div>
+          <div class="p4-bar" style="left:40px; top:262px; width:420px"></div>
+          <div class="p4-bar" style="left:40px; top:294px; width:300px"></div>
+          <div class="p4-abs" style="left:40px; top:322px; width:150px; height:36px; border-radius:18px; background:var(--ueno)"></div>
+        </div>
+        <div class="p4-panel" id="pys04-sc008-p3" style="left:1264px; top:330px; width:520px; height:380px; background:#e6ecf2"><img src="assets/paraguay/pys04/photos/ueno_app_duo.png" style="left:-60px; top:30px; width:640px; height:392px" /></div>
+      </div>
+      <div class="p4-cap t-display p4-ink" id="pys04-sc008-a" style="top:130px; font-size:84px"><span class="p4-w">a </span><span class="p4-w">modern </span><span class="p4-w">bank</span></div>
+      <div class="p4-cap t-display p4-ink" id="pys04-sc008-b" style="top:130px; font-size:84px"><span class="p4-w">like </span><span class="p4-w">a </span><span class="p4-w" style="color:var(--ueno-dark)">fintech</span></div>
+      <div class="p4-abs t-label p4-ink" id="pys04-sc008-l1" style="left:136px; width:520px; top:750px; text-align:center; font-size:36px; opacity:0">apps</div>
+      <div class="p4-abs t-label p4-ink" id="pys04-sc008-l2" style="left:700px; width:520px; top:750px; text-align:center; font-size:36px; opacity:0">websites</div>
+      <div class="p4-abs t-label p4-ink" id="pys04-sc008-l3" style="left:1264px; width:520px; top:750px; text-align:center; font-size:36px"><span class="p4-w">online </span><span class="p4-w">banking</span></div>
+      <div class="p4-credit t-label ink">App images: ueno bank (ueno.com.py)</div>
+    </div></div>
+
+    <!-- sc009 · 366.55–371.00 · FACE C · surprisingly well -->
+    <div class="p4-scene" id="pys04-sc009"><div class="p4-shot" id="pys04-sc009-shot">
+      <div class="p4-fcw" id="pys04-sc009-fw"><video id="pys04-sc009-v" class="p4-full" src="assets/facecam/paraguay_facecam_master.mp4" muted playsinline data-start="33.95" data-duration="4.50" data-media-start="366.55"></video></div>
+    </div></div>
+
+    <!-- sc010 · 371.00–375.40 · one of the few banks … online focused · Paraguay night map -->
+    <div class="p4-scene" id="pys04-sc010"><div class="p4-shot" id="pys04-sc010-shot" style="background:#1a1d24">
+      <div id="pys04-sc010-cam">
+        <img src="assets/paraguay/pys04/derived/py_night_crop.jpg" />
+        <svg id="pys04-sc010-map" class="p4-abs" style="left:0; top:0; width:2160px; height:1215px; overflow:visible" viewBox="1860 2700 2160 1215"><path id="pys04-sc010-rv1" d="M3131.0,2462.8L3128.3,2461.3L3126.7,2460.7L3124.8,2460.5L3123.3,2460.7L3116.6,2463.2L3111.9,2463.4L3110.3,2463.7L3107.1,2465.3L3103.0,2466.0L3099.6,2466.8L3098.5,2466.8L3097.0,2467.3L3096.0,2468.5L3094.4,2470.9L3093.3,2471.6L3091.7,2472.1L3087.0,2472.8L3079.5,2475.7L3078.1,2476.5L3077.0,2477.5L3075.7,2478.4L3072.3,2479.7L3070.8,2480.7L3066.8,2485.5L3064.5,2487.5L3061.1,2488.7L3057.5,2489.0L3056.0,2489.5L3054.4,2490.7L3053.1,2491.4L3041.1,2493.5L3038.4,2495.0L3037.0,2497.9L3037.9,2499.0L3038.1,2499.8L3037.1,2500.3L3034.8,2500.8L3033.5,2501.7L3032.9,2502.6L3033.1,2503.5L3034.3,2504.2L3032.7,2505.5L3031.3,2505.1L3030.4,2504.8L3029.4,2505.1L3028.4,2505.7L3027.5,2505.9L3026.8,2506.9L3026.9,2509.1L3027.3,2511.5L3027.8,2512.9L3025.8,2513.3L3024.1,2513.0L3023.5,2514.0L3022.7,2514.8L3022.1,2516.0L3022.2,2517.2L3023.5,2518.0L3020.9,2518.9L3019.5,2520.3L3019.6,2521.8L3019.8,2523.0L3019.5,2524.0L3018.4,2524.6L3018.9,2530.3L3019.4,2531.5L3020.5,2532.3L3022.2,2532.5L3024.1,2532.5L3025.4,2532.7L3026.3,2533.4L3028.6,2537.2L3029.8,2538.3L3031.8,2538.9L3032.6,2539.3L3034.8,2541.7L3036.3,2542.9L3037.0,2544.8L3036.2,2546.5L3035.8,2547.5L3036.7,2548.2L3038.1,2549.7L3038.7,2551.1L3039.0,2552.7L3039.1,2556.3L3038.5,2560.0L3038.9,2561.3L3040.8,2560.6L3042.2,2561.8L3043.4,2563.0L3044.2,2564.5L3044.5,2566.2L3046.0,2567.4L3047.4,2567.8L3047.9,2568.9L3048.2,2569.9L3049.8,2572.1L3052.1,2573.8L3053.1,2575.4L3052.7,2577.1L3050.7,2579.2L3049.8,2580.8L3047.9,2584.5L3047.7,2585.4L3048.6,2587.8L3048.8,2591.5L3049.3,2592.9L3050.2,2593.6L3051.6,2593.7L3052.5,2594.0L3054.3,2595.5L3055.5,2596.6L3055.6,2598.4L3056.0,2600.1L3057.9,2600.9L3058.7,2600.7L3059.8,2599.9L3062.0,2601.3L3063.9,2602.3L3065.0,2604.1L3066.5,2607.9L3068.0,2610.6L3068.2,2612.2L3067.3,2613.9L3059.6,2621.4L3059.1,2623.0L3059.8,2624.9L3060.3,2625.7L3061.0,2627.6L3062.2,2628.8L3063.4,2629.3L3063.9,2630.3L3063.8,2632.3L3062.6,2633.2L3061.3,2633.8L3060.6,2634.6L3060.1,2635.8L3057.3,2638.7L3056.3,2639.5L3053.4,2640.8L3043.9,2643.0L3038.5,2641.8L3037.2,2642.1L3036.8,2643.0L3036.5,2643.8L3035.1,2644.7L3034.1,2644.8L3033.2,2645.0L3031.6,2645.8L3029.4,2647.6L3027.6,2649.7L3023.9,2656.5L3023.4,2658.0L3023.1,2659.6L3023.0,2661.7L3021.2,2663.5L3020.8,2664.6L3020.7,2665.5L3020.3,2666.5L3019.8,2667.5L3019.2,2668.3L3018.3,2669.2L3016.1,2670.2L3015.2,2670.9L3014.4,2671.8L3011.7,2673.5L3010.3,2674.6L3009.7,2675.9L3008.3,2683.5L3008.4,2685.3L3009.0,2686.8L3011.4,2689.9L3012.2,2693.6L3012.0,2695.7L3011.4,2697.6L3010.5,2699.4L3009.5,2700.5L3006.8,2701.8L3005.7,2702.7L3004.8,2705.7L3002.6,2707.8L3001.5,2709.2L3000.3,2713.0L2999.4,2714.8L2997.5,2715.8L2996.8,2717.2L2996.7,2718.1L2996.5,2719.1L2994.5,2720.2L2992.9,2721.3L2991.8,2723.0L2992.3,2724.5L2992.3,2726.4L2991.9,2728.1L2991.3,2729.4L2988.0,2732.6L2985.5,2733.9L2983.8,2735.2L2982.3,2736.7L2981.6,2738.0L2981.6,2738.8L2982.1,2740.5L2982.1,2741.4L2981.7,2742.5L2981.2,2743.4L2972.8,2752.4L2971.2,2753.6L2969.5,2754.1L2966.0,2754.2L2964.3,2754.6L2959.5,2756.9L2947.6,2760.4L2946.5,2761.3L2944.3,2764.2L2944.0,2765.1L2943.5,2766.8L2942.9,2768.0L2943.7,2769.1L2944.0,2770.1L2943.9,2772.0L2944.4,2778.5L2944.7,2779.6L2947.1,2781.3L2948.0,2782.2L2948.6,2783.2L2948.7,2784.3L2948.8,2786.6L2949.4,2789.5L2949.4,2790.4L2949.2,2791.4L2948.1,2794.3L2947.9,2795.9L2949.6,2797.3L2950.3,2799.0L2950.4,2800.9L2949.9,2802.4L2951.4,2804.3L2950.6,2805.8L2949.4,2807.3L2949.6,2809.1L2951.1,2809.9L2951.2,2811.4L2949.9,2812.9L2944.4,2815.5L2943.5,2816.0L2944.2,2817.7L2944.5,2818.7L2942.6,2819.2L2941.3,2819.7L2940.9,2820.5L2939.6,2821.4L2938.2,2822.7L2937.6,2824.6L2937.6,2826.4L2937.6,2827.4L2936.6,2828.9L2937.1,2829.9L2938.0,2830.7L2938.6,2831.6L2938.0,2832.4L2936.2,2834.9L2934.7,2836.4L2933.5,2837.2L2932.9,2838.3L2933.2,2840.5L2934.9,2841.0L2934.0,2841.6L2929.7,2843.8L2929.5,2846.3L2928.3,2846.5L2927.0,2845.6L2925.3,2846.7L2925.2,2848.5L2925.7,2852.2L2927.0,2853.2L2928.0,2853.6L2928.1,2854.8L2927.9,2855.8L2929.2,2856.7L2930.0,2856.5L2930.9,2856.1L2931.7,2855.9L2932.6,2856.2L2934.4,2857.0L2935.9,2857.4L2937.5,2858.6L2948.5,2860.0L2950.5,2860.5L2950.6,2861.9L2950.2,2863.5L2950.5,2865.2L2951.3,2865.6L2953.7,2865.8L2954.5,2867.1L2955.6,2869.4L2955.8,2870.6L2956.0,2872.8L2956.7,2876.6L2956.9,2878.7L2956.6,2880.5L2955.2,2884.0L2954.8,2885.9L2955.0,2886.8L2955.5,2887.8L2954.8,2888.8L2953.9,2889.5L2951.8,2890.9L2949.2,2893.1L2947.9,2895.0L2945.6,2899.7L2946.5,2900.5L2947.6,2901.1L2948.6,2901.3L2949.9,2901.4L2949.4,2902.6L2947.7,2905.4L2946.7,2906.6L2942.7,2909.4L2941.8,2910.6L2942.4,2911.9L2942.6,2912.8L2941.8,2913.7L2940.9,2913.5L2940.1,2913.1L2938.3,2912.9L2937.3,2914.4L2936.0,2915.5L2934.9,2916.4L2933.6,2917.0L2932.3,2917.4L2929.2,2917.6L2929.1,2918.4L2930.3,2919.3L2930.5,2920.8L2930.3,2922.0L2929.1,2923.8L2927.8,2924.9L2926.5,2925.8L2923.8,2926.6L2922.5,2927.7L2921.6,2929.1L2920.6,2931.6L2920.3,2932.6L2917.0,2934.5L2916.1,2936.1L2915.0,2936.9L2912.8,2938.3L2911.8,2939.4L2910.9,2940.8L2909.8,2942.0L2908.0,2942.9L2906.0,2942.4L2904.8,2942.2L2904.0,2943.3L2902.7,2944.5L2901.8,2944.6L2899.8,2945.4L2897.4,2949.0L2895.3,2949.8L2893.9,2951.6L2892.4,2952.6L2889.1,2953.9L2889.2,2955.2L2890.3,2955.4L2891.4,2956.2L2892.1,2957.1L2892.3,2958.0L2889.4,2959.0L2888.8,2960.4L2889.3,2962.0L2890.8,2963.0L2891.7,2962.4L2893.0,2961.9L2894.1,2962.9L2893.7,2966.0L2893.9,2968.1L2894.4,2970.2L2895.1,2971.6L2896.3,2973.1L2898.0,2974.4L2899.8,2975.3L2901.2,2975.7L2902.4,2976.4L2902.2,2977.9L2900.9,2980.3L2900.8,2982.0L2900.9,2984.1L2901.2,2986.2L2902.1,2988.2L2902.2,2989.1L2902.1,2991.0L2902.3,2992.1L2903.3,2993.8L2903.7,2994.7L2903.6,2995.6L2903.1,2997.2L2903.1,2998.2L2903.6,2999.1L2905.0,2999.6L2905.7,2996.7L2906.7,2996.1L2908.0,2996.3L2909.1,2997.0L2909.8,2998.8L2910.6,2999.8L2911.8,3000.7L2912.7,3002.1L2911.2,3003.2L2909.5,3003.5L2908.0,3005.0L2906.8,3005.9L2906.8,3007.2L2908.8,3007.3L2910.4,3007.7L2911.7,3008.6L2912.6,3009.9L2912.8,3011.4L2912.0,3012.2L2908.7,3014.0L2908.0,3015.1L2908.2,3016.1L2909.3,3016.6L2911.8,3018.3L2913.6,3020.3L2914.4,3018.8L2915.9,3020.1L2916.0,3021.9L2915.3,3023.9L2913.1,3027.2L2913.2,3028.4L2914.4,3030.9L2914.9,3034.7L2914.6,3038.6L2913.5,3042.2L2911.7,3044.8L2909.5,3046.4L2909.0,3048.1L2909.9,3049.2L2910.8,3050.6L2912.1,3050.9L2912.9,3051.8L2912.3,3054.0L2907.1,3062.0L2905.9,3064.9L2905.6,3066.7L2905.6,3068.6L2906.3,3070.0L2907.7,3070.6L2907.9,3073.0L2906.9,3074.9L2906.4,3076.4L2906.7,3077.8L2907.5,3079.3L2908.5,3080.5L2909.3,3081.0L2906.4,3087.4L2906.4,3089.1L2906.7,3090.6L2906.6,3092.2L2905.6,3094.0L2905.0,3095.5L2905.7,3096.7L2906.8,3098.1L2907.4,3100.0L2907.1,3101.0L2905.2,3104.5L2904.3,3106.0L2902.6,3110.9L2902.5,3112.1L2902.5,3113.4L2902.7,3114.6L2903.1,3115.6L2903.6,3119.1L2904.2,3120.5L2903.4,3125.7L2903.7,3127.7L2904.3,3129.6L2905.1,3130.6L2906.3,3131.0L2908.2,3131.1L2909.7,3131.5L2910.4,3132.4L2911.2,3135.1L2914.9,3139.7L2915.2,3140.6L2913.8,3142.0L2913.9,3145.5L2914.9,3155.0L2916.0,3157.6L2918.0,3159.9L2918.9,3161.3L2919.3,3163.1L2918.5,3163.9L2916.8,3163.9L2913.4,3163.3L2909.8,3163.9L2907.2,3165.7L2906.3,3168.2L2908.0,3170.8L2910.6,3171.6L2911.7,3172.8L2912.0,3174.8L2912.5,3175.7L2915.0,3176.0L2916.4,3177.0L2917.1,3178.9L2917.9,3180.0L2918.1,3181.7L2917.5,3182.6L2916.4,3183.3L2915.8,3184.9L2918.4,3187.4L2919.4,3188.7L2919.8,3190.5L2918.1,3193.8L2919.3,3194.9L2922.8,3196.6L2923.5,3197.6L2924.0,3199.2L2925.3,3199.6L2928.4,3199.6L2929.9,3200.3L2930.5,3201.3L2930.6,3202.8L2930.5,3204.5L2931.1,3205.9L2932.3,3207.1L2933.9,3208.1L2936.8,3209.5L2938.0,3210.5L2940.0,3213.0L2940.8,3213.7L2942.1,3214.9L2942.4,3217.3L2941.8,3218.6L2941.2,3219.7L2940.5,3220.9L2940.8,3222.1L2941.2,3222.9L2942.6,3224.2L2943.2,3225.1L2944.2,3225.9L2944.5,3227.1L2945.1,3229.6L2945.3,3230.4L2945.1,3231.9L2944.9,3232.8L2944.2,3234.4L2944.0,3235.3L2944.0,3236.3L2944.4,3238.1L2944.5,3239.0L2944.7,3240.2L2946.7,3243.9L2948.8,3246.2L2954.5,3249.4L2956.9,3251.4L2958.1,3252.8L2958.4,3254.3L2956.6,3255.7L2956.6,3257.1L2957.7,3258.2L2958.0,3259.3L2957.4,3261.8L2957.2,3264.4L2956.9,3265.2L2955.1,3266.4L2953.9,3267.7L2953.3,3268.6L2953.1,3269.6L2954.4,3270.3L2955.5,3270.3L2957.7,3272.1L2958.1,3274.2L2958.2,3276.4L2959.0,3278.5L2960.6,3278.0L2961.9,3278.8L2962.5,3280.3L2962.0,3281.6L2961.4,3283.2L2962.5,3284.3L2965.3,3284.1L2967.3,3285.9L2966.5,3287.5L2965.2,3289.2L2964.4,3290.8L2969.2,3295.8L2970.1,3296.9L2970.7,3298.0L2971.2,3299.4L2971.6,3302.9L2973.0,3305.2L2973.5,3306.7L2973.6,3308.6L2972.5,3313.3L2972.9,3314.7L2973.9,3316.1L2974.7,3317.6L2974.6,3319.3L2972.2,3321.1L2972.0,3322.3L2972.5,3323.7L2972.5,3324.7L2971.9,3326.2L2971.3,3327.2L2970.2,3328.5L2969.8,3329.7L2971.2,3330.5L2972.4,3331.6L2972.9,3332.9L2971.2,3336.3L2970.9,3337.9L2970.5,3339.2L2969.2,3340.1L2968.3,3340.1L2967.0,3339.7L2966.0,3340.1L2964.6,3345.4L2960.5,3350.9L2961.2,3352.1L2962.6,3351.8L2963.3,3353.0L2963.1,3354.0L2962.9,3355.5L2963.6,3356.5L2964.5,3357.5L2964.4,3358.7L2963.3,3359.1L2961.6,3358.9L2959.5,3358.3L2957.7,3358.5L2956.9,3360.5L2953.1,3365.4L2952.3,3366.0L2951.3,3366.6L2950.4,3367.0L2949.0,3367.5L2947.5,3369.1L2942.1,3369.4L2939.9,3369.0L2939.0,3369.2L2938.6,3370.3L2938.3,3372.4L2937.6,3374.8L2936.5,3376.9L2935.4,3378.7L2934.3,3379.7L2933.3,3380.2L2931.1,3380.9L2929.9,3381.5L2929.0,3382.3L2927.3,3384.4L2929.7,3390.3L2929.7,3391.3L2934.6,3395.0L2935.7,3396.1L2936.2,3397.3L2936.3,3398.6L2935.3,3405.9L2934.9,3407.4L2933.9,3408.4L2932.9,3408.6L2932.0,3409.2L2931.7,3411.2L2929.9,3411.7L2927.6,3411.4L2927.0,3413.7L2926.0,3414.8L2924.4,3414.8L2923.5,3414.9L2921.9,3415.6L2920.9,3416.5L2919.3,3418.9L2920.3,3420.1L2921.9,3420.7L2921.1,3421.7L2919.8,3423.0L2918.3,3424.2L2916.8,3424.7L2915.6,3425.4L2915.9,3427.0L2917.1,3429.8L2916.2,3431.0L2914.6,3432.1L2913.0,3433.0L2911.3,3433.6L2911.3,3434.8L2913.1,3435.4L2913.2,3436.3L2912.8,3437.3L2909.5,3440.1L2909.0,3441.4L2912.6,3442.4L2912.6,3443.5L2911.6,3444.9L2902.5,3451.4L2899.9,3452.9L2894.8,3454.7L2893.2,3458.3L2892.5,3460.0L2891.8,3461.0L2891.1,3459.9L2889.7,3459.2L2889.9,3460.7L2890.8,3461.6L2892.1,3462.2L2893.2,3463.0L2893.3,3464.1L2891.9,3465.1L2890.1,3465.8L2888.9,3466.1L2888.2,3468.1L2888.6,3470.8L2888.4,3472.1L2888.0,3473.3L2885.4,3477.8L2884.9,3479.2L2885.1,3480.2L2887.0,3481.9L2886.8,3482.8L2885.7,3483.6L2885.2,3485.7L2884.8,3487.0L2884.5,3488.3L2884.8,3489.7L2887.0,3491.5L2888.2,3493.3L2888.1,3494.3L2886.8,3495.2L2886.5,3496.5L2887.3,3497.9L2887.2,3499.2L2886.2,3499.2L2883.8,3498.8L2882.7,3499.5L2882.3,3501.1L2882.1,3507.7L2881.2,3508.2L2880.3,3508.2L2879.0,3508.6L2879.1,3509.4L2879.7,3510.4L2878.9,3512.2L2877.6,3512.0L2876.2,3511.5L2874.9,3511.9L2873.9,3513.8L2874.9,3514.9L2876.3,3516.0L2876.8,3517.4L2875.8,3518.3L2872.2,3518.6L2870.7,3520.4L2869.0,3521.1L2865.5,3522.0L2864.3,3522.8L2863.6,3523.8L2863.8,3525.0L2865.0,3526.0L2864.4,3527.2L2863.0,3528.8L2862.3,3530.0L2861.8,3531.2L2861.8,3532.6L2860.8,3532.9L2860.2,3532.0L2859.5,3531.0L2858.3,3532.0L2857.7,3533.3L2857.5,3535.6L2857.6,3536.9L2857.2,3537.7L2853.3,3538.4L2851.5,3539.4L2850.3,3541.1L2849.9,3543.5L2850.4,3544.6L2851.5,3545.6L2853.4,3547.0L2854.4,3548.6L2854.5,3550.3L2854.2,3554.6" fill="none" stroke="#9fc3e3" stroke-width="2.4" stroke-opacity="0.55"/><path id="pys04-sc010-rv2" d="M2854.2,3554.4L2853.4,3554.7L2851.2,3555.4L2850.2,3555.8L2847.4,3558.1L2841.6,3561.6L2840.8,3562.7L2832.7,3568.0L2831.9,3571.3L2832.0,3572.8L2832.2,3574.3L2832.8,3575.6L2835.0,3579.3L2836.2,3582.1L2837.1,3585.1L2837.6,3588.2L2837.7,3591.3L2837.5,3592.9L2835.9,3597.1L2835.5,3598.7L2835.4,3600.2L2835.7,3603.4L2835.6,3605.0L2832.8,3615.6L2831.5,3617.9L2829.4,3620.0L2827.1,3621.4L2824.6,3622.1L2821.5,3622.1L2819.9,3622.2L2818.5,3622.9L2817.5,3623.9L2816.8,3625.2L2816.3,3626.7L2816.1,3628.2L2816.1,3629.7L2816.7,3632.7L2816.8,3634.3L2816.1,3639.1L2816.3,3640.6L2817.9,3644.3L2818.0,3645.7L2816.1,3656.6L2816.5,3663.1L2816.4,3664.7L2816.0,3666.3L2815.4,3667.8L2812.4,3673.2L2812.0,3674.7L2812.0,3676.1L2812.2,3677.6L2811.4,3681.3L2811.2,3683.3L2810.6,3684.9L2808.9,3687.8L2808.3,3689.3L2808.1,3695.0L2807.7,3697.9L2806.5,3700.1L2805.4,3700.9L2801.7,3702.7L2799.4,3704.5L2797.3,3706.5L2795.1,3708.1L2787.5,3710.7L2785.2,3711.9L2783.1,3713.4L2781.4,3715.4L2780.2,3717.8L2777.5,3727.7L2777.0,3730.5L2776.8,3747.7L2774.0,3759.1L2773.6,3760.2L2771.1,3764.8L2770.4,3767.2L2771.1,3769.8L2773.8,3774.1L2776.2,3781.1L2776.5,3784.1L2776.4,3785.6L2775.9,3787.1L2773.7,3791.2L2773.1,3792.6L2772.9,3794.2L2772.7,3797.4L2772.4,3799.0L2770.9,3803.2L2770.7,3804.7L2772.0,3812.3L2772.5,3813.6L2774.7,3817.5L2775.0,3818.9L2774.9,3820.3L2774.4,3823.4L2774.4,3828.3L2774.2,3829.8L2772.5,3833.8L2772.2,3835.4L2771.9,3840.2L2771.4,3841.8L2766.7,3849.8L2762.5,3855.0L2760.9,3857.7L2757.2,3862.1L2754.1,3867.5L2749.4,3873.8L2744.7,3881.8L2743.8,3882.9L2740.6,3885.5L2739.8,3886.6L2737.4,3893.7L2736.6,3894.9L2733.4,3898.6L2731.9,3901.1L2731.0,3901.9L2729.8,3902.2L2728.6,3902.9L2727.3,3904.7L2726.0,3905.4L2724.8,3906.4L2723.2,3908.5L2721.1,3910.6L2717.2,3916.1L2714.9,3918.5L2712.3,3920.6L2710.8,3921.5L2709.2,3922.1L2707.6,3922.6L2705.9,3922.8L2700.6,3922.9L2698.9,3922.7L2697.3,3922.8L2695.2,3923.3L2694.0,3924.2L2693.5,3925.5L2693.8,3926.9L2693.7,3928.3L2693.4,3929.7L2692.5,3932.1L2692.1,3934.8L2691.9,3935.6L2691.4,3936.8L2689.2,3939.5L2688.3,3941.5L2688.1,3943.6L2688.5,3945.6L2689.4,3947.6L2691.6,3950.5L2692.5,3952.1L2692.9,3953.8L2692.5,3955.4L2689.9,3959.6L2689.3,3961.1L2689.2,3962.7L2689.8,3967.7L2689.7,3969.4L2689.5,3971.1L2687.8,3976.1L2687.4,3977.8L2687.3,3979.5L2687.7,3984.6L2687.6,3986.3L2687.0,3988.1L2684.7,3993.5L2684.4,3995.1L2684.6,3996.6L2685.2,3998.0L2688.1,4002.0L2688.9,4003.4L2689.4,4005.1L2690.0,4012.7L2690.7,4016.0L2691.8,4019.1L2696.0,4027.0L2697.3,4028.9L2698.4,4029.7L2699.1,4030.7L2701.1,4036.4L2705.9,4042.3L2710.9,4045.3L2712.3,4045.9M2712.3,4045.9L2720.9,4048.0L2723.3,4048.9L2727.4,4052.3L2729.0,4051.5L2730.6,4052.9L2731.5,4052.6L2732.3,4051.5L2733.6,4050.9L2734.6,4051.2L2736.1,4052.4L2737.3,4052.8L2738.4,4053.3L2740.1,4052.3L2742.7,4054.4L2744.0,4055.2L2744.6,4054.1L2744.9,4053.2L2746.4,4053.1L2747.1,4055.3L2747.9,4055.4L2748.8,4055.0L2749.7,4053.6L2749.6,4052.8L2750.5,4051.5L2751.6,4052.4L2752.0,4053.2L2752.1,4054.1L2752.8,4055.4L2754.4,4055.3L2756.2,4054.6L2757.5,4053.8L2758.8,4052.7L2761.6,4052.0L2762.7,4052.0L2763.6,4052.3L2764.0,4053.9L2764.5,4055.8L2765.8,4055.9L2767.1,4055.0L2768.5,4055.2L2770.4,4057.3L2774.1,4059.7L2773.1,4060.8L2772.9,4061.6L2773.1,4062.5L2773.8,4063.4L2774.7,4063.7L2776.9,4063.7L2778.8,4064.2L2779.5,4065.6L2779.8,4067.2L2780.6,4068.8L2785.1,4070.8L2786.0,4071.0L2787.0,4071.1L2788.1,4071.7L2791.4,4075.8L2793.8,4077.1L2794.4,4078.0L2795.0,4082.1L2796.0,4083.3L2798.9,4084.9L2801.7,4088.3L2802.1,4089.2L2806.4,4093.0L2807.4,4094.4L2808.1,4095.9L2808.6,4097.6L2808.6,4099.8M2712.3,4045.9L2714.0,4046.6L2714.8,4047.3L2716.2,4048.7L2717.1,4050.3L2719.3,4052.3L2725.5,4055.4L2735.5,4065.1L2748.9,4073.6L2750.2,4074.0L2752.0,4074.3L2755.7,4076.0L2757.0,4076.9L2758.5,4078.2L2761.5,4082.3L2762.6,4083.3L2773.0,4088.4L2775.9,4088.9L2777.9,4088.4L2782.4,4087.0L2785.5,4089.1L2788.5,4092.3L2792.4,4094.1L2799.2,4094.1L2800.0,4093.2L2801.4,4092.8L2802.6,4092.8L2803.2,4094.1L2803.4,4095.2L2803.4,4097.3L2803.7,4098.1L2805.1,4099.0L2806.1,4099.2L2807.0,4098.7L2807.8,4099.0M2808.6,4099.8L2809.3,4100.8L2810.4,4101.6L2818.6,4101.5L2820.7,4101.7L2822.3,4102.5L2823.6,4103.5L2829.3,4106.6L2833.6,4110.0L2835.0,4110.7L2838.9,4111.5L2840.3,4112.0L2848.3,4118.6L2851.5,4120.1L2855.3,4120.1L2862.4,4117.4L2866.6,4116.6" fill="none" stroke="#9fc3e3" stroke-width="2.4" stroke-opacity="0.55"/><path id="pys04-sc010-pyf" d="M2537.0,3127.7L2538.7,3123.5L2540.9,3115.5L2542.9,3108.1L2546.3,3096.6L2549.4,3087.1L2553.1,3074.9L2555.6,3066.0L2558.5,3056.4L2561.3,3046.9L2563.8,3038.2L2566.4,3029.6L2566.6,3024.0L2566.4,3011.8L2566.4,3003.7L2566.4,2996.4L2566.1,2988.7L2566.9,2986.4L2569.7,2982.0L2571.4,2979.6L2573.1,2977.2L2576.5,2972.1L2580.2,2967.0L2583.6,2961.9L2587.0,2956.8L2588.4,2954.8L2589.8,2952.8L2590.9,2950.7L2592.3,2948.7L2593.5,2946.6L2593.7,2945.4L2594.3,2944.5L2595.4,2942.2L2596.3,2940.1L2598.5,2934.0L2600.8,2927.7L2603.1,2921.6L2605.3,2915.4L2606.7,2911.3L2607.3,2910.3L2608.4,2909.7L2615.5,2908.7L2617.2,2908.4L2620.8,2907.9L2624.5,2907.3L2626.2,2907.0L2652.7,2901.2L2679.3,2895.4L2705.8,2889.4L2732.4,2883.6L2744.2,2881.0L2750.7,2880.9L2765.4,2880.8L2780.4,2880.6L2795.0,2880.3L2809.7,2880.2L2816.2,2880.1L2817.6,2880.5L2820.2,2882.2L2822.4,2883.7L2826.4,2886.3L2833.7,2890.8L2841.1,2895.5L2848.1,2900.1L2855.5,2904.7L2862.8,2909.3L2870.1,2913.8L2877.5,2918.5L2884.8,2923.0L2887.9,2925.0L2888.8,2926.0L2889.1,2927.1L2888.8,2930.0L2888.8,2932.7L2890.2,2937.5L2890.5,2940.1L2890.2,2941.9L2890.5,2945.4L2890.2,2947.3L2889.1,2951.7L2889.1,2953.8L2889.3,2955.2L2890.5,2955.4L2891.3,2956.2L2892.2,2957.1L2892.4,2958.1L2889.3,2959.1L2888.8,2960.5L2889.3,2962.0L2890.7,2963.0L2891.6,2962.5L2893.0,2961.9L2894.1,2962.9L2893.9,2966.0L2893.9,2968.1L2894.4,2970.1L2895.0,2971.5L2896.4,2973.1L2898.1,2974.4L2899.8,2975.4L2901.2,2975.7L2902.3,2976.4L2902.3,2977.9L2900.9,2980.3L2900.9,2982.0L2900.9,2984.2L2901.2,2986.2L2902.0,2988.1L2902.3,2989.1L2902.0,2991.0L2902.3,2992.1L2903.4,2993.8L2903.7,2994.7L2903.7,2995.7L2903.2,2997.2L2903.2,2998.2L2903.7,2999.2L2905.1,2999.6L2905.7,2996.6L2906.8,2996.1L2908.0,2996.2L2909.1,2997.1L2909.9,2998.8L2910.8,2999.8L2911.9,3000.6L2912.8,3002.2L2911.4,3003.2L2909.7,3003.6L2908.8,3004.0L2908.0,3005.0L2906.8,3005.9L2906.3,3006.7L2908.8,3007.4L2910.5,3007.7L2911.6,3008.6L2912.8,3009.8L2912.8,3011.4L2911.9,3012.3L2908.8,3014.1L2908.0,3015.1L2908.2,3016.1L2909.4,3016.6L2911.9,3018.3L2913.6,3020.3L2914.5,3018.8L2915.9,3020.1L2916.2,3021.9L2915.3,3023.9L2913.3,3027.1L2913.3,3028.4L2914.5,3031.0L2915.0,3034.7L2914.7,3038.6L2913.6,3042.2L2911.6,3044.7L2909.7,3046.4L2909.1,3048.1L2909.9,3049.3L2910.8,3050.5L2912.2,3051.0L2913.0,3051.8L2912.5,3054.0L2907.1,3062.0L2906.0,3064.9L2905.7,3066.7L2905.7,3068.6L2906.3,3070.0L2907.7,3070.7L2908.5,3071.4L2908.0,3073.1L2906.8,3074.9L2906.3,3076.4L2906.8,3077.8L2907.7,3079.3L2908.5,3080.5L2909.4,3081.0L2909.9,3081.9L2906.3,3087.4L2906.6,3089.1L2906.8,3090.5L2906.6,3092.2L2905.7,3094.1L2905.1,3095.5L2905.7,3096.6L2906.8,3098.1L2907.4,3100.0L2907.1,3101.0L2905.4,3104.4L2904.6,3105.2L2904.3,3106.0L2902.6,3111.0L2902.6,3112.1L2902.6,3113.4L2902.6,3114.2L2903.7,3114.8L2904.6,3115.5L2905.4,3116.9L2906.3,3117.9L2909.1,3118.8L2909.9,3118.8L2911.1,3118.2L2912.5,3118.6L2913.6,3119.8L2914.7,3119.9L2916.2,3118.8L2917.0,3118.8L2918.4,3118.9L2919.3,3118.3L2919.3,3117.4L2920.4,3117.4L2922.4,3116.6L2923.2,3116.8L2924.3,3117.1L2926.0,3117.2L2926.9,3116.9L2928.0,3116.5L2928.9,3116.8L2930.0,3120.2L2930.8,3121.9L2932.0,3122.9L2933.4,3123.2L2935.1,3122.9L2935.9,3122.6L2937.6,3122.5L2939.9,3123.9L2943.0,3123.2L2945.2,3123.7L2946.1,3123.9L2947.2,3124.3L2949.8,3125.9L2950.6,3125.4L2952.6,3126.3L2953.4,3126.3L2954.0,3125.3L2955.1,3125.2L2958.8,3126.0L2960.2,3125.7L2962.2,3124.0L2963.3,3123.7L2963.9,3125.4L2965.3,3126.0L2966.1,3125.4L2968.1,3125.4L2970.4,3126.3L2971.2,3127.3L2972.9,3127.9L2973.7,3128.0L2975.4,3127.6L2978.0,3127.7L2979.1,3127.7L2981.1,3128.3L2981.9,3128.3L2982.8,3127.7L2982.8,3129.1L2983.9,3129.3L2985.9,3130.0L2986.7,3130.1L2987.6,3127.9L2988.4,3129.1L2989.3,3131.3L2989.6,3132.4L2991.3,3132.7L2992.4,3132.2L2994.1,3130.3L2994.9,3129.0L2996.1,3129.3L2999.4,3128.4L3000.3,3129.0L3001.4,3128.0L3002.0,3126.4L3003.7,3126.7L3006.2,3129.8L3007.6,3130.1L3007.1,3128.0L3008.5,3127.1L3011.9,3124.9L3012.7,3124.0L3013.8,3121.6L3014.7,3121.2L3015.5,3119.5L3016.9,3117.2L3017.5,3116.4L3018.4,3115.7L3019.8,3115.2L3025.4,3114.2L3026.5,3114.4L3027.4,3115.2L3029.4,3120.3L3031.3,3123.2L3033.6,3125.4L3038.1,3128.0L3040.4,3130.3L3041.8,3131.1L3042.9,3131.4L3056.5,3132.1L3057.6,3131.8L3058.4,3131.3L3059.6,3131.8L3060.7,3132.7L3062.1,3133.2L3066.9,3133.8L3068.3,3134.7L3069.5,3132.4L3073.4,3137.6L3076.5,3140.0L3077.4,3140.9L3077.9,3143.0L3078.2,3150.1L3078.8,3153.1L3080.2,3155.8L3082.2,3158.1L3084.7,3159.5L3086.4,3160.0L3087.5,3160.6L3088.1,3161.6L3088.4,3163.5L3087.8,3165.4L3087.8,3166.9L3088.4,3168.3L3087.5,3171.8L3086.1,3174.2L3085.3,3176.8L3085.3,3179.9L3087.2,3186.3L3087.2,3187.8L3086.7,3190.7L3087.0,3192.1L3088.9,3194.5L3089.8,3195.8L3090.3,3197.4L3089.8,3200.5L3089.8,3201.9L3090.6,3202.9L3092.9,3204.3L3094.9,3211.3L3094.9,3212.7L3093.2,3216.5L3092.9,3217.9L3093.5,3219.8L3095.7,3222.3L3096.6,3223.9L3096.6,3226.4L3094.3,3231.1L3094.6,3234.1L3095.1,3236.5L3095.1,3239.9L3095.4,3242.7L3096.8,3244.9L3100.2,3248.6L3101.9,3253.8L3103.1,3270.0L3103.9,3272.2L3105.6,3274.1L3108.1,3275.1L3112.9,3275.5L3115.5,3276.1L3118.3,3277.1L3121.1,3277.6L3123.9,3277.4L3126.5,3276.1L3128.7,3275.1L3133.5,3275.1L3136.1,3274.4L3137.2,3273.8L3140.0,3273.7L3141.4,3273.4L3142.6,3272.7L3144.3,3270.4L3145.4,3269.3L3150.5,3266.6L3160.6,3263.0L3162.1,3262.3L3164.0,3260.2L3165.2,3259.6L3167.1,3260.2L3180.7,3267.6L3182.1,3268.7L3186.6,3274.7L3194.0,3279.1L3195.9,3280.2L3194.5,3281.6L3191.7,3283.6L3189.7,3285.9L3189.2,3288.6L3189.2,3289.8L3190.3,3292.5L3190.6,3295.6L3191.4,3296.8L3193.1,3299.2L3193.7,3301.0L3194.8,3303.7L3194.8,3306.1L3194.0,3308.7L3193.1,3310.5L3190.0,3314.9L3189.2,3317.8L3189.2,3320.3L3190.3,3326.0L3190.0,3328.8L3187.2,3337.5L3186.3,3340.5L3184.1,3343.6L3183.5,3345.0L3179.8,3360.2L3179.0,3363.2L3179.0,3364.7L3179.0,3366.1L3179.6,3367.7L3181.5,3371.0L3181.8,3372.5L3181.3,3374.1L3178.4,3376.4L3177.6,3377.9L3175.9,3383.4L3173.9,3386.4L3172.5,3388.3L3170.2,3390.3L3168.6,3393.4L3167.4,3396.4L3167.4,3397.3L3167.4,3399.0L3167.7,3400.9L3168.3,3402.5L3168.8,3404.0L3168.8,3406.1L3168.3,3408.1L3168.0,3409.8L3169.4,3412.5L3169.7,3414.2L3168.3,3414.9L3165.7,3414.8L3164.9,3415.5L3164.9,3417.8L3166.3,3422.2L3166.6,3423.9L3166.9,3425.0L3168.8,3427.1L3169.1,3428.1L3169.1,3430.0L3168.3,3431.5L3167.4,3432.8L3167.1,3434.2L3167.7,3437.9L3167.7,3439.5L3167.1,3440.8L3166.3,3441.0L3164.6,3441.2L3163.8,3441.5L3163.5,3442.3L3163.5,3443.2L3163.8,3444.0L3164.0,3446.6L3164.9,3449.3L3164.9,3451.1L3163.2,3456.5L3163.5,3457.8L3164.9,3459.5L3165.2,3460.6L3164.9,3461.5L3163.8,3462.7L3163.2,3463.9L3163.2,3466.1L3163.2,3470.0L3162.1,3472.5L3161.8,3473.5L3160.9,3478.6L3160.6,3479.9L3159.8,3481.2L3157.5,3483.7L3155.3,3485.6L3154.2,3486.8L3153.3,3488.4L3153.6,3489.5L3153.9,3490.8L3154.2,3492.4L3154.2,3494.2L3153.9,3496.4L3153.0,3498.2L3151.9,3499.5L3150.8,3499.8L3149.9,3498.9L3146.2,3498.9L3144.6,3499.5L3143.1,3500.6L3142.3,3502.3L3141.2,3506.1L3140.6,3507.7L3140.0,3508.8L3138.9,3510.1L3137.5,3510.8L3133.8,3511.1L3132.1,3511.7L3127.0,3516.5L3126.5,3517.9L3127.6,3521.3L3127.3,3523.2L3125.9,3524.2L3124.2,3524.4L3121.1,3524.3L3120.0,3523.9L3118.6,3523.2L3116.9,3522.5L3114.9,3522.5L3111.0,3524.6L3107.3,3525.0L3105.9,3525.4L3104.5,3526.3L3103.1,3527.7L3102.2,3529.3L3101.6,3531.0L3101.6,3534.9L3100.8,3536.2L3098.8,3536.4L3096.6,3536.2L3095.1,3536.4L3094.0,3537.6L3093.7,3539.5L3093.5,3540.9L3092.0,3541.6L3090.1,3542.0L3089.8,3543.3L3091.8,3546.8L3092.0,3547.7L3092.3,3548.7L3092.0,3549.5L3091.2,3551.2L3091.5,3552.5L3091.2,3553.7L3090.6,3555.6L3089.2,3557.1L3087.5,3557.9L3085.5,3558.2L3083.6,3559.9L3080.7,3563.0L3077.6,3565.3L3072.8,3562.7L3070.9,3562.2L3070.0,3561.7L3069.2,3560.9L3068.0,3557.8L3066.9,3556.1L3065.2,3555.5L3063.5,3555.6L3061.6,3555.8L3059.6,3555.9L3057.9,3555.6L3052.8,3553.7L3050.8,3553.2L3048.8,3553.1L3046.6,3554.2L3045.2,3555.2L3042.4,3558.5L3040.7,3559.2L3038.4,3559.8L3036.4,3560.7L3036.1,3562.6L3036.4,3564.9L3036.1,3566.7L3035.3,3568.4L3033.6,3570.0L3032.2,3572.1L3031.1,3574.8L3029.6,3576.8L3027.1,3577.3L3024.6,3576.4L3022.3,3574.5L3020.3,3572.2L3018.6,3570.0L3015.5,3566.3L3010.5,3565.4L3008.5,3566.0L3004.8,3567.0L3000.9,3570.0L2998.0,3570.5L2995.2,3568.8L2990.4,3564.3L2987.6,3563.2L2984.8,3563.4L2981.9,3564.6L2974.0,3568.7L2971.5,3569.3L2968.4,3569.1L2965.8,3569.0L2965.0,3568.7L2962.2,3566.6L2961.3,3566.1L2957.9,3565.1L2957.1,3565.0L2956.2,3564.6L2954.6,3562.9L2953.7,3562.4L2952.0,3562.0L2949.8,3561.9L2941.8,3563.0L2939.9,3562.7L2938.2,3562.2L2925.2,3556.1L2924.3,3555.6L2916.4,3554.1L2913.0,3552.9L2909.4,3552.2L2908.5,3552.1L2906.0,3551.1L2901.5,3550.1L2899.8,3549.8L2897.5,3549.8L2892.7,3550.5L2891.6,3550.7L2882.8,3549.5L2861.7,3551.4L2854.6,3554.2L2854.6,3550.4L2854.3,3548.7L2853.5,3547.0L2851.5,3545.7L2850.4,3544.6L2850.1,3543.6L2850.4,3541.2L2851.5,3539.5L2853.2,3538.3L2857.1,3537.8L2857.7,3536.9L2857.4,3535.5L2857.4,3534.1L2858.0,3532.7L2858.8,3531.4L2859.7,3531.1L2860.3,3532.0L2860.8,3532.9L2861.9,3532.7L2861.9,3531.2L2862.2,3530.0L2863.1,3528.8L2864.5,3527.1L2865.1,3526.0L2863.9,3525.0L2863.6,3523.9L2864.2,3522.7L2865.6,3522.0L2869.0,3521.0L2870.7,3520.5L2871.5,3519.3L2875.8,3518.3L2876.9,3517.5L2876.3,3515.9L2874.9,3514.9L2874.1,3513.8L2874.9,3512.0L2876.3,3511.5L2877.8,3512.0L2878.9,3512.1L2880.0,3511.1L2879.2,3509.4L2879.2,3508.6L2880.3,3508.3L2881.4,3508.3L2882.3,3507.7L2882.3,3501.2L2882.8,3499.5L2883.1,3498.6L2886.2,3499.2L2887.1,3499.2L2887.4,3497.9L2886.5,3496.5L2886.5,3495.5L2888.2,3494.2L2888.2,3493.2L2887.6,3492.1L2885.4,3490.3L2884.5,3488.3L2884.8,3487.0L2885.4,3485.7L2885.4,3484.3L2886.8,3482.9L2887.1,3481.9L2885.1,3480.2L2884.8,3479.2L2885.4,3477.8L2888.2,3473.4L2888.5,3472.1L2888.8,3470.8L2888.2,3468.1L2888.2,3466.7L2889.1,3466.1L2890.2,3465.9L2891.9,3465.1L2893.3,3464.2L2893.3,3463.0L2892.2,3462.2L2890.7,3461.6L2889.9,3460.8L2889.9,3459.2L2891.3,3459.9L2891.9,3460.9L2892.7,3460.0L2893.3,3458.3L2894.1,3455.5L2895.0,3454.7L2900.1,3452.9L2902.6,3451.4L2911.6,3444.9L2912.8,3443.6L2912.8,3442.5L2909.1,3441.3L2909.7,3440.0L2912.5,3437.9L2913.3,3436.4L2913.3,3435.4L2911.4,3434.8L2911.4,3433.7L2913.0,3432.9L2914.7,3432.1L2915.9,3431.4L2917.3,3429.8L2915.9,3427.0L2915.6,3425.4L2917.0,3424.7L2918.4,3424.2L2919.8,3423.0L2921.2,3421.7L2922.1,3420.6L2921.2,3420.5L2920.4,3420.2L2919.3,3418.9L2921.0,3416.5L2921.8,3415.6L2923.5,3414.9L2924.3,3414.8L2925.2,3414.9L2926.0,3414.8L2926.9,3414.4L2927.4,3411.8L2930.0,3411.7L2931.1,3411.7L2932.0,3409.3L2932.8,3408.6L2933.9,3408.4L2935.1,3407.4L2935.4,3405.9L2936.5,3398.6L2936.2,3397.2L2935.6,3396.2L2934.8,3394.9L2929.7,3391.2L2929.7,3390.3L2927.4,3384.4L2924.9,3382.7L2923.5,3380.6L2921.0,3375.2L2920.1,3374.1L2917.6,3373.0L2916.4,3372.1L2912.8,3368.1L2911.6,3367.1L2910.2,3366.6L2904.0,3366.6L2902.9,3366.3L2902.3,3365.4L2902.0,3364.4L2900.9,3363.6L2899.2,3363.7L2898.4,3363.7L2893.0,3361.0L2891.9,3361.0L2891.0,3359.8L2884.0,3355.1L2882.6,3355.1L2881.4,3356.1L2879.2,3358.3L2878.0,3358.9L2877.2,3359.5L2876.3,3359.6L2875.2,3359.3L2874.7,3358.2L2874.1,3357.3L2869.0,3351.8L2867.3,3349.3L2866.2,3348.4L2864.5,3347.6L2847.3,3344.2L2846.7,3343.2L2845.6,3342.5L2843.9,3341.7L2839.9,3341.6L2838.2,3341.2L2823.3,3330.1L2820.7,3329.5L2819.9,3329.0L2818.2,3327.4L2817.1,3326.9L2815.6,3326.9L2814.0,3326.3L2811.1,3324.4L2809.2,3323.7L2806.9,3322.2L2803.8,3321.2L2802.9,3320.5L2802.1,3319.5L2800.7,3319.3L2799.0,3317.9L2796.4,3316.9L2795.0,3315.4L2793.6,3312.4L2792.8,3311.5L2789.7,3309.0L2788.0,3308.1L2787.4,3306.7L2786.6,3305.7L2784.9,3305.0L2783.2,3303.9L2782.3,3303.3L2781.5,3302.3L2779.5,3301.6L2778.1,3300.9L2776.1,3300.6L2775.3,3300.3L2773.3,3297.9L2770.5,3294.9L2742.2,3276.6L2740.8,3276.2L2739.1,3276.4L2735.5,3277.6L2733.5,3278.1L2727.6,3278.3L2721.6,3277.4L2719.1,3277.5L2718.2,3277.4L2717.4,3276.9L2716.0,3275.5L2715.1,3275.1L2714.3,3274.9L2711.5,3275.1L2706.7,3274.1L2704.1,3272.2L2702.7,3271.5L2699.9,3271.5L2698.2,3268.7L2697.4,3268.0L2695.9,3267.3L2695.1,3267.0L2694.2,3266.9L2690.6,3267.0L2688.3,3265.4L2687.5,3265.3L2683.0,3265.4L2680.7,3265.4L2679.0,3265.3L2676.7,3263.9L2674.2,3261.7L2671.4,3260.3L2668.3,3261.2L2665.7,3259.6L2664.0,3257.1L2663.5,3255.5L2662.3,3253.7L2661.2,3252.1L2659.2,3251.0L2657.8,3248.7L2657.0,3248.0L2657.8,3246.6L2658.1,3244.7L2657.8,3243.0L2656.7,3242.3L2655.3,3241.7L2654.2,3240.8L2653.3,3239.6L2652.2,3238.8L2650.2,3238.8L2648.8,3238.3L2647.4,3236.8L2646.5,3236.5L2645.1,3235.9L2644.3,3234.8L2643.7,3233.5L2643.1,3232.4L2638.1,3230.3L2636.1,3230.1L2635.0,3229.8L2633.3,3228.4L2632.1,3227.6L2631.0,3227.0L2629.6,3226.9L2627.9,3226.7L2627.1,3226.3L2626.2,3224.3L2625.1,3223.5L2625.1,3222.6L2625.6,3221.6L2624.5,3220.9L2623.7,3220.8L2622.8,3220.5L2618.9,3216.4L2617.7,3215.8L2614.1,3215.8L2612.9,3215.5L2611.2,3213.7L2610.1,3213.0L2609.0,3212.4L2607.9,3211.7L2607.6,3210.3L2607.6,3208.7L2607.3,3207.7L2607.0,3206.9L2606.2,3205.9L2605.3,3205.2L2603.3,3204.2L2602.5,3203.3L2600.8,3200.8L2591.5,3194.9L2588.7,3191.8L2587.5,3190.3L2587.2,3189.4L2587.5,3187.4L2586.7,3185.4L2585.0,3182.3L2583.9,3180.6L2582.4,3178.9L2581.6,3177.9L2581.3,3176.9L2580.2,3176.4L2579.3,3175.8L2578.5,3174.5L2577.9,3173.1L2576.0,3170.8L2575.4,3170.0L2575.1,3169.0L2573.4,3168.0L2574.3,3165.6L2572.6,3164.6L2572.6,3163.5L2573.1,3161.6L2572.8,3160.8L2572.0,3160.6L2571.2,3160.5L2569.2,3159.6L2568.0,3158.8L2568.0,3157.6L2569.2,3156.1L2569.7,3154.7L2568.9,3153.2L2567.2,3151.3L2566.4,3151.1L2565.8,3149.4L2564.9,3148.3L2564.1,3148.0L2561.3,3147.7L2559.0,3147.0L2553.7,3143.3L2552.2,3141.9L2551.7,3140.6L2548.0,3139.1L2546.9,3138.6L2544.9,3136.2L2543.8,3135.1L2541.8,3134.5L2540.9,3134.5L2539.8,3134.1L2539.0,3133.7L2538.4,3132.8L2539.0,3131.4L2539.3,3130.5L2538.7,3129.4L2538.4,3128.3L2537.0,3127.7Z" fill="#cf5a33" fill-opacity="0.55" stroke="#f1b296" stroke-width="3" stroke-linejoin="round"/></svg>
+        <svg id="pys04-sc010-fx" class="p4-abs" style="left:0; top:0; width:2160px; height:1215px; overflow:visible" viewBox="0 0 2160 1215"></svg>
+        <div class="p4-country t-display" id="pys04-sc010-py" style="left:840px; top:440px; font-size:58px">PARAGUAY</div>
+        <div class="p4-country t-display" id="pys04-sc010-br" style="left:1460px; top:300px">BRAZIL</div>
+        <div class="p4-country t-display" id="pys04-sc010-ar" style="left:760px; top:930px">ARGENTINA</div>
+        <div class="p4-country t-display" id="pys04-sc010-bo" style="left:560px; top:170px">BOLIVIA</div>
+        <div class="p4-city t-label" id="pys04-sc010-as" style="left:1100px; top:708px">ASUNCIÓN</div>
+      </div>
+      <div class="p4-scrim-b" style="height:360px"></div>
+      <div class="p4-lt t-display clean" id="pys04-sc010-a" style="width:1100px"><span class="p4-w">one </span><span class="p4-w">of </span><span class="p4-w">the </span><span class="p4-w">few </span><span class="p4-w">banks</span></div>
+      <div class="p4-lt t-display clean" id="pys04-sc010-b" style="width:1100px"><span class="p4-w" style="color:var(--ueno-light)">online </span><span class="p4-w" style="color:var(--ueno-light)">focused</span></div>
+      <div class="p4-credit t-label">Relief: AWS Terrain Tiles · Natural Earth</div>
+    </div></div>
+
+    <!-- sc011 · 375.40–378.45 · FACE W · crazy promos -->
+    <div class="p4-scene" id="pys04-sc011"><div class="p4-shot" id="pys04-sc011-shot">
+      <div class="p4-fcw" id="pys04-sc011-fw"><video id="pys04-sc011-v" class="p4-full" src="assets/facecam/paraguay_facecam_master.mp4" muted playsinline data-start="42.80" data-duration="3.10" data-media-start="375.40"></video></div>
+      <div class="p4-scrim-bl"></div>
+      <div class="p4-lt t-display clean" id="pys04-sc011-lt"><span class="p4-w">crazy </span><span class="p4-w">promos</span></div>
+    </div></div>
+
+    <!-- sc012 · 378.45–388.60 · the real promo terms: new customer / credit card / 50% back -->
+    <div class="p4-scene" id="pys04-sc012"><div class="p4-shot p4-paper" id="pys04-sc012-shot">
+      <div class="p4-p1" style="background-image:url('assets/textures/paper_stained_01_hires.jpg'); filter:brightness(0.82)"></div>
+      <div id="pys04-sc012-cam"><div id="pys04-sc012-page">
+        <img src="assets/paraguay/pys04/docs/promo50-1.png" />
+        <div class="p4-hlr" id="pys04-sc012-h1" style="left:735px; top:787px; width:286px; height:26px"></div>
+        <div class="p4-hlr" id="pys04-sc012-h2" style="left:127px; top:808px; width:278px; height:26px"></div>
+        <div class="p4-hlr" id="pys04-sc012-h3" style="left:127px; top:524px; width:345px; height:26px"></div>
+      </div></div>
+      <div class="p4-lbox t-display" id="pys04-sc012-a"><span class="p4-w label-box" style="margin-right:0.14em">a</span><span class="p4-w label-box" style="margin-right:0.14em">new</span><span class="p4-w label-box" style="margin-right:0.14em">customer</span></div>
+      <div class="p4-lbox t-display" id="pys04-sc012-b"><span class="p4-w label-box" style="margin-right:0.14em">open</span><span class="p4-w label-box" style="margin-right:0.14em">an</span><span class="p4-w label-box" style="margin-right:0.14em">account</span></div>
+      <div class="p4-lbox t-display" id="pys04-sc012-c" style="font-size:110px"><span class="p4-w label-box" style="margin-right:0.14em;color:var(--yellow)">50%</span><span class="p4-w label-box" style="margin-right:0.14em">back</span></div>
+      <div class="p4-credit t-label ink">Document: ueno bank S.A., promo terms (Aug 2025)</div>
+    </div></div>
+
+    <!-- sc013 · 388.60–392.05 · FACE M · a 50% discount -->
+    <div class="p4-scene" id="pys04-sc013"><div class="p4-shot" id="pys04-sc013-shot">
+      <div class="p4-fcw" id="pys04-sc013-fw"><video id="pys04-sc013-v" class="p4-full" src="assets/facecam/paraguay_facecam_master.mp4" muted playsinline data-start="56.00" data-duration="3.50" data-media-start="388.60"></video></div>
+      <div class="p4-scrim-bl"></div>
+      <div class="p4-lt t-display clean" id="pys04-sc013-lt"><span class="p4-w">a </span><span class="p4-w" style="color:var(--yellow)">50% </span><span class="p4-w">discount</span></div>
+    </div></div>
+
+    <!-- sc014 · 392.05–399.10 · limits: no private jet, car, house -->
+    <div class="p4-scene" id="pys04-sc014"><div class="p4-shot p4-paper" id="pys04-sc014-shot">
+      <div class="p4-p1" style="background-image:url('assets/textures/paper_lined_01_hires.jpg')"></div>
+      <div class="p4-p2" style="background-image:url('assets/textures/paper_cream_01.jpg'); opacity:0.35"></div>
+      <div class="p4-vw" id="pys04-sc014-vw">
+        <div class="p4-cap t-serif p4-ink" id="pys04-sc014-h" style="top:150px; font-size:86px"><span class="p4-w">limits </span><span class="p4-w">to </span><span class="p4-w">this </span><span class="p4-w">promo</span></div>
+        <svg id="pys04-sc014-ico" class="p4-mk" viewBox="0 0 1920 1080"></svg>
+        <div class="p4-abs t-label p4-ink" id="pys04-sc014-l1" style="left:280px; width:400px; top:770px; text-align:center; font-size:34px; opacity:0">private jet</div>
+        <div class="p4-abs t-label p4-ink" id="pys04-sc014-l2" style="left:760px; width:400px; top:770px; text-align:center; font-size:34px; opacity:0">car</div>
+        <div class="p4-abs t-label p4-ink" id="pys04-sc014-l3" style="left:1240px; width:400px; top:770px; text-align:center; font-size:34px; opacity:0">house</div>
+        <svg id="pys04-sc014-pen" class="p4-mk" viewBox="0 0 1920 1080"></svg>
+      </div>
+    </div></div>
+
+    <!-- sc015 · 399.10–404.75 · FACE W · getting people in the door -->
+    <div class="p4-scene" id="pys04-sc015"><div class="p4-shot" id="pys04-sc015-shot">
+      <div class="p4-fcw" id="pys04-sc015-fw"><video id="pys04-sc015-v" class="p4-full" src="assets/facecam/paraguay_facecam_master.mp4" muted playsinline data-start="66.50" data-duration="5.70" data-media-start="399.10"></video></div>
+      <div class="p4-scrim-bl"></div>
+      <div class="p4-lt t-display clean" id="pys04-sc015-lt" style="width:900px"><span class="p4-w">getting </span><span class="p4-w">people </span><span class="p4-w">in </span><span class="p4-w">the </span><span class="p4-w">door</span></div>
+    </div></div>
+
+    <!-- sc016 · 404.75–412.55 · daily necessities: groceries, gas · Vox layered panels -->
+    <div class="p4-scene" id="pys04-sc016"><div class="p4-shot" id="pys04-sc016-shot">
+      <img class="p4-full" id="pys04-sc016-bg" src="assets/paraguay/pys04/photos/mercado4_05.jpg" style="filter: grayscale(1) blur(14px) brightness(0.38); transform: scale(1.12)" />
+      <div class="p4-abs" id="pys04-sc016-a" style="left:150px; top:250px; width:800px; height:533px; background:#f2eee3; padding:12px; box-shadow:0 30px 60px rgba(0,0,0,0.5); opacity:0">
+        <img src="assets/paraguay/pys04/photos/mercado4_05.jpg" style="width:800px; height:533px; object-fit:cover; filter: grayscale(1) contrast(1.05)" /></div>
+      <div class="p4-abs" id="pys04-sc016-b" style="left:990px; top:330px; width:760px; height:507px; background:#f2eee3; padding:12px; box-shadow:0 30px 60px rgba(0,0,0,0.5); opacity:0">
+        <img src="assets/paraguay/pys04/photos/gasolinera_pozo_colorado.jpg" style="width:760px; height:507px; object-fit:cover; filter: grayscale(0.85) contrast(1.05)" /></div>
+      <div class="p4-tag t-label" id="pys04-sc016-ta" style="left:186px; top:820px; opacity:0">groceries</div>
+      <div class="p4-tag t-label" id="pys04-sc016-tb" style="left:1026px; top:874px; opacity:0">gas</div>
+      <div class="p4-abs t-display clean" id="pys04-sc016-h" style="left:96px; top:96px; font-size:80px"><span class="p4-w">daily </span><span class="p4-w">necessities</span></div>
+      <div class="p4-abs t-display clean" id="pys04-sc016-h2" style="left:96px; top:96px; font-size:80px"><span class="p4-w">every </span><span class="p4-w">single </span><span class="p4-w">day</span></div>
+      <div class="p4-credit t-label">Mercado 4, Asunción: David C. Ramalleiro, CC BY 2.0 · Pozo Colorado station: Wikimedia Commons, CC0</div>
+    </div></div>
+
+    <!-- sc017 · 412.55–417.00 · a lot of people who were low income · isotype walk to the door -->
+    <div class="p4-scene" id="pys04-sc017"><div class="p4-shot p4-paper" id="pys04-sc017-shot">
+      <div class="p4-p1" style="background-image:url('assets/textures/paper_cream_01.jpg')"></div>
+      <div class="p4-p2" style="background-image:url('assets/textures/paper_stained_01_hires.jpg'); opacity:0.45"></div>
+      <div class="p4-abs" style="left:1440px; top:300px; width:300px; height:560px; background:var(--ueno-dark); box-shadow:0 20px 40px rgba(22,32,28,0.3)"></div>
+      <div class="p4-abs" style="left:1470px; top:330px; width:240px; height:530px; background:#0a2a26"></div>
+      <img class="p4-abs" src="assets/paraguay/shared/logos/ueno_logo.png" style="left:1450px; top:220px; width:280px; height:43px" />
+      <svg id="pys04-sc017-ppl" class="p4-mk" viewBox="0 0 1920 1080"></svg>
+      <div class="p4-abs" style="left:1740px; top:280px; width:140px; height:620px; background:var(--paper)"></div>
+      <div class="p4-abs t-display p4-ink" id="pys04-sc017-a" style="left:96px; top:110px; font-size:84px"><span class="p4-w">a </span><span class="p4-w">lot </span><span class="p4-w">of </span><span class="p4-w">people</span></div>
+      <div class="p4-abs t-display p4-ink" id="pys04-sc017-b" style="left:96px; top:110px; font-size:84px"><span class="p4-w" style="color:var(--tierra)">low </span><span class="p4-w" style="color:var(--tierra)">income</span></div>
+    </div></div>
+
+    <!-- sc018 · 417.00–419.65 · FACE C · a huge difference to them -->
+    <div class="p4-scene" id="pys04-sc018"><div class="p4-shot" id="pys04-sc018-shot">
+      <div class="p4-fcw" id="pys04-sc018-fw"><video id="pys04-sc018-v" class="p4-full" src="assets/facecam/paraguay_facecam_master.mp4" muted playsinline data-start="84.40" data-duration="2.70" data-media-start="417.00"></video></div>
+    </div></div>
+
+    <!-- sc019 · 419.65–424.30 · 50% off their monthly grocery bill · receipt + ueno card -->
+    <div class="p4-scene" id="pys04-sc019"><div class="p4-shot" id="pys04-sc019-shot" style="background:radial-gradient(ellipse 70% 70% at 45% 45%, #2b332f 0%, #141a17 60%, #0b0f0d 100%)">
+      <div class="p4-vw" id="pys04-sc019-vw">
+        <div id="pys04-sc019-rc">
+          <div class="p4-abs t-display" style="left:0; width:560px; top:46px; text-align:center; font-size:40px">COMPRA MENSUAL</div>
+          <div class="p4-abs t-label" style="left:0; width:560px; top:100px; text-align:center; font-size:20px; opacity:0.7">SUPERMERCADO · ASUNCIÓN</div>
+          <div class="p4-abs" style="left:44px; right:44px; top:146px; border-top:3px dashed rgba(22,32,28,0.5)"></div>
+          <div id="pys04-sc019-rows"></div>
+          <div class="p4-abs" style="left:44px; right:44px; top:600px; border-top:3px dashed rgba(22,32,28,0.5)"></div>
+          <div class="p4-rl t-display" style="top:618px; font-size:38px"><span>TOTAL</span><span id="pys04-sc019-tot">Gs. 486.000</span></div>
+          <div class="p4-abs" id="pys04-sc019-strike" style="left:300px; top:640px; width:216px; height:5px; background:var(--tierra); transform-origin:0 50%"></div>
+          <div class="p4-rl t-display" id="pys04-sc019-new" style="top:860px; font-size:40px; opacity:0"><span>A PAGAR</span><span>Gs. 243.000</span></div>
+          <div id="pys04-sc019-stamp" class="t-display">−50%</div>
+        </div>
+        <img class="p4-abs" id="pys04-sc019-card" src="assets/paraguay/pys04/photos/ueno_card_green.png" style="left:1010px; top:420px; width:640px; height:480px" />
+      </div>
+      <div class="p4-abs t-display halate yellow" id="pys04-sc019-a" style="left:1060px; top:140px; font-size:150px; line-height:1"><span class="p4-w">50% </span><span class="p4-w">off</span></div>
+      <div class="p4-abs t-serif-i clean" id="pys04-sc019-b" style="left:1060px; top:190px; width:780px; font-size:66px; line-height:1.05"><span class="p4-w">their </span><span class="p4-w">monthly </span><span class="p4-w">grocery </span><span class="p4-w">bill</span></div>
+      <div class="p4-credit t-label">Card: ueno bank (ueno.com.py) · receipt illustrative</div>
+    </div></div>
+
+    <!-- sc020 · 424.30–428.20 · FACE M · something very unique -->
+    <div class="p4-scene" id="pys04-sc020"><div class="p4-shot" id="pys04-sc020-shot">
+      <div class="p4-fcw" id="pys04-sc020-fw"><video id="pys04-sc020-v" class="p4-full" src="assets/facecam/paraguay_facecam_master.mp4" muted playsinline data-start="91.70" data-duration="3.95" data-media-start="424.30"></video></div>
+      <div class="p4-scrim-bl"></div>
+      <div class="p4-lt t-display clean" id="pys04-sc020-lt" style="width:900px"><span class="p4-w">something </span><span class="p4-w">very </span><span class="p4-w">unique</span></div>
+    </div></div>
+
+    <!-- sc021 · 428.20–435.10 · never had a bank account → first ever bank accounts · phones light up -->
+    <div class="p4-scene" id="pys04-sc021"><div class="p4-shot" id="pys04-sc021-shot" style="background:radial-gradient(ellipse 80% 70% at 50% 55%, #1c2622 0%, #0e1311 75%)">
+      <div class="p4-vw" id="pys04-sc021-vw"><svg id="pys04-sc021-svg" class="p4-mk" viewBox="0 0 1920 1080"></svg></div>
+      <div class="p4-abs t-display clean" id="pys04-sc021-a" style="left:96px; top:96px; font-size:76px"><span class="p4-w">never </span><span class="p4-w">had </span><span class="p4-w">a </span><span class="p4-w">bank </span><span class="p4-w">account</span></div>
+      <div class="p4-abs t-display clean" id="pys04-sc021-b" style="left:96px; top:96px; font-size:76px"><span class="p4-w">first </span><span class="p4-w">ever </span><span class="p4-w">bank </span><span class="p4-w" style="color:var(--ueno-light)">accounts</span></div>
+    </div></div>
+
+    <!-- sc022 · 435.10–438.55 · FACE W · a problem down the line -->
+    <div class="p4-scene" id="pys04-sc022"><div class="p4-shot" id="pys04-sc022-shot">
+      <div class="p4-fcw" id="pys04-sc022-fw"><video id="pys04-sc022-v" class="p4-full" src="assets/facecam/paraguay_facecam_master.mp4" muted playsinline data-start="102.50" data-duration="3.50" data-media-start="435.10"></video></div>
+      <div class="p4-scrim-bl"></div>
+      <div class="p4-lt t-display clean" id="pys04-sc022-lt" style="width:900px"><span class="p4-w">a </span><span class="p4-w" style="color:var(--tierra-light)">problem </span><span class="p4-w">down </span><span class="p4-w">the </span><span class="p4-w">line</span></div>
+    </div></div>
+
+    <!-- sc023 · 438.55–443.45 · a very good trajectory · line climbs -->
+    <div class="p4-scene" id="pys04-sc023"><div class="p4-shot p4-paper" id="pys04-sc023-shot">
+      <div class="p4-vw" id="pys04-sc023-vw" style="transform-origin:1500px 300px">
+        <div class="p4-p1" style="background-image:url('assets/textures/paper_graph_01_hires.jpg')"></div>
+        <div class="p4-p2" style="background-image:url('assets/textures/paper_stained_01_hires.jpg'); opacity:0.3"></div>
+        <svg id="pys04-sc023-svg" class="p4-mk" viewBox="0 0 1920 1080"></svg>
+        <img class="p4-abs" id="pys04-sc023-logo" src="assets/paraguay/shared/logos/ueno_logo.png" style="left:180px; top:900px; width:200px; height:30px; opacity:0" />
+      </div>
+      <div class="p4-abs t-serif-i p4-ink" id="pys04-sc023-a" style="left:120px; top:150px; font-size:78px"><span class="p4-w">a </span><span class="p4-w">very </span><span class="p4-w">good </span><span class="p4-w" style="color:var(--ueno-dark)">trajectory</span></div>
+    </div></div>
+
+    <!-- sc024 · 443.45–450.80 · this small bank buys a bank four times bigger · ueno vs Visión Banco -->
+    <div class="p4-scene" id="pys04-sc024"><div class="p4-shot" id="pys04-sc024-shot" style="background:radial-gradient(ellipse 80% 70% at 55% 50%, #1d2522 0%, #0e1311 75%)">
+      <div class="p4-vw" id="pys04-sc024-vw" style="transform-origin:960px 600px">
+        <div class="p4-abs" id="pys04-sc024-u" style="left:430px; top:600px; width:220px; height:220px; background:#0c2723; border:6px solid var(--ueno); box-sizing:border-box">
+          <img class="p4-abs" src="assets/paraguay/shared/logos/ueno_logo.png" style="left:24px; top:88px; width:160px; height:24px" /></div>
+        <div class="p4-abs" id="pys04-sc024-v" style="left:1030px; top:380px; width:440px; height:440px; overflow:hidden; border:6px solid var(--ash-light); box-sizing:border-box; opacity:0">
+          <img src="assets/paraguay/pys04/photos/vision_banco_abc.jpg" style="position:absolute; left:-230px; top:-6px; width:668px; height:440px; filter: grayscale(0.7) brightness(0.85)" /></div>
+        <svg id="pys04-sc024-svg" class="p4-mk" viewBox="0 0 1920 1080"></svg>
+        <div class="p4-abs t-label clean" id="pys04-sc024-vt" style="left:1030px; width:440px; top:850px; text-align:center; font-size:30px; opacity:0">Visión Banco</div>
+      </div>
+      <div class="p4-abs t-label clean" id="pys04-sc024-k" style="left:96px; top:110px; font-size:34px"><span class="p4-w">few </span><span class="p4-w">years </span><span class="p4-w">after</span></div>
+      <div class="p4-abs t-display clean" id="pys04-sc024-a" style="left:96px; top:110px; font-size:76px"><span class="p4-w">this </span><span class="p4-w">small </span><span class="p4-w" style="color:var(--ueno-light)">bank</span></div>
+      <div class="p4-abs t-display clean" id="pys04-sc024-b" style="left:96px; top:110px; font-size:76px"><span class="p4-w">four </span><span class="p4-w">times </span><span class="p4-w">bigger</span></div>
+      <div class="p4-abs t-display halate yellow" id="pys04-sc024-x" style="left:380px; top:330px; width:320px; text-align:center; font-size:200px; line-height:1; opacity:0">4×</div>
+      <div class="p4-credit t-label">Visión Banco HQ: Visión Banco via ABC Color</div>
+    </div></div>
+
+    <!-- sc025 · 450.80–454.00 · FACE C · head scratcher -->
+    <div class="p4-scene" id="pys04-sc025"><div class="p4-shot" id="pys04-sc025-shot">
+      <div class="p4-fcw" id="pys04-sc025-fw"><video id="pys04-sc025-v" class="p4-full" src="assets/facecam/paraguay_facecam_master.mp4" muted playsinline data-start="118.20" data-duration="3.25" data-media-start="450.80"></video></div>
+    </div></div>
+
+    <!-- sc026 · 454.00–457.40 · FACE W · how the hell do you buy something four times bigger than you? -->
+    <div class="p4-scene" id="pys04-sc026"><div class="p4-shot" id="pys04-sc026-shot">
+      <div class="p4-fcw" id="pys04-sc026-fw"><video id="pys04-sc026-v" class="p4-full" src="assets/facecam/paraguay_facecam_master.mp4" muted playsinline data-start="121.40" data-duration="3.40" data-media-start="454.00"></video></div>
+      <div class="p4-scrim-bl"></div>
+      <div class="p4-lt t-display clean" id="pys04-sc026-lt" style="width:900px"><span class="p4-w">four </span><span class="p4-w">times </span><span class="p4-w">bigger </span><span class="p4-w">than </span><span class="p4-w">you?</span></div>
+    </div></div>
+
+    <div id="pys04-flash"></div>
+    <div id="pys04-grain" class="tx tx-grain" style="background-image:url('assets/textures/grain_01_norm.jpg')"></div>
+    <div id="pys04-dust" class="tx tx-dust" style="background-image:url('assets/textures/dust_02.jpg')"></div>
+    <div id="pys04-vig" class="vignette"></div>
+    <audio id="pys04-vo" class="temp-vo" src="vo_py.mp3" data-start="0" data-duration="124.80" data-media-start="332.60" data-volume="1"></audio>
+  </div>
+  <script>
+  (function () {
+    const SEG = "pys04", SEG_START = 332.60, SEG_END = 457.40, DURATION = 124.80;
+    const T = (s) => +(s - SEG_START).toFixed(3);   // TEXT cues (audited): literal master word start − 0.06
+    const S = T;                                       // STRUCTURAL cues (cuts, camera, objects)
+    const tl = gsap.timeline({ paused: true });
+    const $ = (id) => document.getElementById(SEG + "-" + id);
+    const NS = "http://www.w3.org/2000/svg";
+    const defs = $("defs");
+    const E = FX.ease;
+    const C = (e, d) => FX.choppy(e, d, 12);
+    const INK = "#16201c", BONE = "#f2eee3", TEAL = "#1fa595", TEALD = "#0c5c54", TEALL = "#93e0d3", TIERRA = "#cf5a33", TIERRAL = "#f1b296", ASH = "#8b928d", ASHD = "#353c38";
+    const GM = "M200 40c-52 0-86 40-86 96 0 40 18 74 44 92-4 14-10 24-22 30-58 22-96 52-108 104-6 26-8 58-8 118h360c0-60-2-92-8-118-12-52-50-82-108-104-12-6-18-16-22-30 26-18 44-52 44-92 0-56-34-96-86-96z";
+
+    // ---------- scenes: [id, start, end, ground] (master seconds) ----------
+    const SC = [
+      ["sc001", 332.60, 335.30, "night"], ["sc002", 335.30, 339.05, "paper"], ["sc003", 339.05, 342.40, "face"], ["sc004", 342.40, 350.50, "paper"],
+      ["sc005", 350.50, 354.15, "face"], ["sc006", 354.15, 356.65, "paper"], ["sc007", 356.65, 359.45, "night"], ["sc008", 359.45, 366.55, "paper"],
+      ["sc009", 366.55, 371.00, "face"], ["sc010", 371.00, 375.40, "map"], ["sc011", 375.40, 378.45, "face"], ["sc012", 378.45, 388.60, "paper"],
+      ["sc013", 388.60, 392.05, "face"], ["sc014", 392.05, 399.10, "paper"], ["sc015", 399.10, 404.75, "face"], ["sc016", 404.75, 412.55, "night"],
+      ["sc017", 412.55, 417.00, "paper"], ["sc018", 417.00, 419.65, "face"], ["sc019", 419.65, 424.30, "night"], ["sc020", 424.30, 428.20, "face"],
+      ["sc021", 428.20, 435.10, "night"], ["sc022", 435.10, 438.55, "face"], ["sc023", 438.55, 443.45, "paper"], ["sc024", 443.45, 450.80, "night"],
+      ["sc025", 450.80, 454.00, "face"], ["sc026", 454.00, 457.40, "face"],
+    ];
+    const GROUND = { paper: [0.32, 0.16, 0.26], night: [1, 0.42, 0.36], map: [0.8, 0.25, 0.3], face: [0, 0, 0] };
+    const EARLY = { sc017: 0.45 };   // paper slide: the incoming scene is visible during the slide
+    SC.forEach((s, i) => {
+      const el = $(s[0]), a = s[1] - (EARLY[s[0]] || 0);
+      if (i === 0) gsap.set(el, { autoAlpha: 1 });
+      else tl.fromTo(el, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.001, immediateRender: false }, S(a));
+      if (s[2] < SEG_END) tl.set(el, { autoAlpha: 0 }, S(s[2]) + 0.05);
+    });
+    gsap.set([$("vig"), $("dust"), $("grain")], { opacity: 0 });
+    SC.forEach((s) => { const v = GROUND[s[3]]; tl.set([$("vig"), $("dust"), $("grain")], { opacity: (i) => v[i] }, S(s[1])); });
+    gsap.set([$("vig"), $("dust"), $("grain")], { opacity: (i) => GROUND.night[i] });
+
+    // ---------- helpers (as ivs03) ----------
+    const show = (el, t) => tl.fromTo(el, { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, t);
+    const rise = (el, t, o) => { o = o || {}; const d = o.dur || 0.6;
+      tl.fromTo(el, { opacity: 0, y: o.y == null ? 16 : o.y }, { opacity: 1, y: 0, duration: d, ease: C(E.out, d), immediateRender: true }, t); };
+    const pop = (el, t, o) => { o = o || {}; const d = o.dur || 0.8;
+      tl.fromTo(el, { opacity: 0, scale: o.from == null ? 0.6 : o.from }, { opacity: 1, scale: 1, duration: d, ease: C(E.out, d), immediateRender: true }, t); };
+    const out = (el, t, d) => tl.to(el, { opacity: 0, duration: d || 0.25, ease: "power1.in" }, t);
+    const W = (id) => Array.from($(id).querySelectorAll(".p4-w"));
+    function words(id, cues, o) { const ws = W(id); cues.forEach((c, i) => rise(ws[i], c, o)); }
+    function el(parent, tag, attrs) { const n = document.createElementNS(NS, tag); for (const k in attrs) n.setAttribute(k, attrs[k]); parent.appendChild(n); return n; }
+    function ink(parent, d, t, dur, o) {
+      o = o || {};
+      const p = el(parent, "path", { d: d, fill: "none", stroke: o.color || INK, "stroke-width": o.width || 5, "stroke-linecap": "round", "stroke-linejoin": "round" });
+      if (o.filter) p.setAttribute("filter", o.filter);
+      if (o.opacity != null) p.setAttribute("opacity", o.opacity);
+      const len = o.len || p.getTotalLength() || 1;
+      p.setAttribute("stroke-dasharray", len + " " + len); p.setAttribute("stroke-dashoffset", len);
+      tl.fromTo(p, { attr: { "stroke-dashoffset": len } }, { attr: { "stroke-dashoffset": 0 }, duration: dur, ease: o.ease || C(E.out, dur), immediateRender: true }, t);
+      return p;
+    }
+    const whipN = { n: 0 };
+    function whip(a, b, t, o) {
+      o = Object.assign({ dir: 1, vertical: false, flash: false, dur: 0.32 }, o);
+      const k = ++whipN.n, ba = FX.whipDefs(defs, SEG + "-wa" + k), bb = FX.whipDefs(defs, SEG + "-wb" + k), h = o.dur / 2;
+      const A = $(a + "-shot"), B = $(b + "-shot");
+      tl.set(A, { filter: "url(#" + SEG + "-wa" + k + ")" }, t - h - 0.01); tl.set(A, { filter: "none" }, t + 0.06);
+      tl.set(B, { filter: "url(#" + SEG + "-wb" + k + ")" }, t - 0.001); tl.set(B, { filter: "none" }, t + h + 0.02);
+      FX.whip(tl, A, B, t, { dir: o.dir, vertical: o.vertical, dur: o.dur, blurA: ba, blurB: bb });
+      if (o.flash) tl.fromTo($("flash"), { opacity: 0 }, { opacity: 0.85, duration: 0.08, yoyo: true, repeat: 1, ease: "power2.in", immediateRender: false }, t - 0.08);
+    }
+    function slide(a, b, t, o) {
+      o = Object.assign({ from: 1, d: 0.45 }, o);
+      const A = $(a + "-shot"), B = $(b + "-shot"), dist = 1980 * o.from;
+      tl.fromTo(B, { x: dist, boxShadow: "0 0 80px rgba(0,0,0,0.5)" }, { x: 0, duration: o.d, ease: C(E.inOut, o.d), immediateRender: false }, t - o.d);
+      tl.set(B, { boxShadow: "none" }, t);
+      tl.fromTo(A, { x: 0 }, { x: -dist * 0.12, duration: o.d, ease: E.in, immediateRender: false }, t - o.d);
+    }
+    const FR = { W: [1.0, 1.03], M: [1.25, 1.285], C: [1.55, 1.59] };
+    function face(id, a, b, k) {
+      const fw = $(id + "-fw");
+      gsap.set(fw, { scale: FR[k][0] });
+      tl.fromTo(fw, { scale: FR[k][0] }, { scale: FR[k][1], duration: b - a, ease: "none", immediateRender: false }, S(a));
+    }
+    function push(id, a, b, s0, s1, o) {
+      o = o || {};
+      const vw = $(id + "-vw");
+      if (o.origin) gsap.set(vw, { transformOrigin: o.origin });
+      gsap.set(vw, { scale: s0 });
+      tl.fromTo(vw, { scale: s0 }, { scale: s1, duration: b - a, ease: o.ease || "none", immediateRender: false }, S(a));
+    }
+    const gated = (a, b, fn) => { const on = FX.onFrame; FX.onFrame = (f) => on(FX.gate(S(a), S(b), f)); fn(); FX.onFrame = on; };
+
+    FX.grain($("grain"), 401);
+    FX.dust($("dust"), 402, 2);
+    const PEN = FX.markupDefs(defs, SEG + "-pen", { boil: 4 });
+    defs.setAttribute("viewBox", "0 0 1 1");
+
+    /* ===== sc001 · 2020, around COVID times (fresh shot) ===== */
+    push("sc001", 332.60, 335.30, 1.02, 1.08, { origin: "40% 60%" });
+    words("sc001-y", [T(333.21)], { dur: 0.7, y: 24 });
+    words("sc001-k", [T(334.01), T(334.41), T(334.89)], { dur: 0.35, y: 10 });
+
+    /* ===== sc002 · Credicentro can't take deposits (whip right) ===== */
+    whip("sc001", "sc002", S(335.30), { dir: 1 });
+    tl.fromTo($("sc002-card"), { y: -30, rotation: -1.5 }, { y: 0, rotation: -0.6, duration: 1.2, ease: C(E.out, 1.2), immediateRender: true }, S(335.30));
+    words("sc002-a", [T(336.33), T(336.57), T(336.89), T(337.05)], { dur: 0.3, y: 10 });
+    out($("sc002-a"), S(337.45), 0.2);
+    words("sc002-b", [T(337.69), T(338.01), T(338.25), T(338.41)], { dur: 0.25, y: 8 });
+    (function () {
+      const svg = $("sc002-svg");
+      const xs = FX.markup.cross(tl, svg, S(337.75), { x: 960, y: 515, s: 70, dur: 0.18, color: TIERRA, width: 10, filter: PEN });
+      gsap.set(xs, { opacity: 0 }); tl.set(xs, { opacity: 1 }, S(337.75));
+    })();
+    tl.fromTo($("sc002-shot"), { scale: 1 }, { scale: 1.05, duration: 0.5, ease: E.in, immediateRender: false }, S(338.55));
+
+    /* ===== sc003 · FACE M (hard cut on action) ===== */
+    face("sc003", 339.05, 342.40, "M");
+    words("sc003-lt", [T(340.89), T(341.37), T(341.53), T(341.69)], { dur: 0.3, y: 10 });
+
+    /* ===== sc004 · 2021 merger board (whip up) ===== */
+    whip("sc003", "sc004", S(342.40), { dir: 1, vertical: true });
+    push("sc004", 342.40, 350.00, 1.0, 1.04, { ease: E.cam });
+    tl.to($("sc004-vw"), { scale: 1.12, duration: 0.5, ease: E.in }, S(350.00));
+    show($("sc004-yb"), T(342.89));
+    tl.fromTo($("sc004-yb"), { y: 20 }, { y: 0, duration: 0.7, ease: C(E.out, 0.7), immediateRender: true }, T(342.89));
+    gsap.set([$("sc004-l"), $("sc004-r")], { opacity: 0 });
+    tl.fromTo($("sc004-l"), { opacity: 0, x: -260 }, { opacity: 1, x: 0, duration: 1.2, ease: C(E.out, 1.2), immediateRender: true }, S(344.65));
+    tl.fromTo($("sc004-r"), { opacity: 0, x: 260 }, { opacity: 1, x: 0, duration: 1.2, ease: C(E.out, 1.2), immediateRender: true }, S(347.93));
+    (function () {
+      const p = $("sc004-spark"), len = p.getTotalLength() || 220;
+      p.setAttribute("stroke-dasharray", len + " " + len);
+      tl.fromTo(p, { attr: { "stroke-dashoffset": len } }, { attr: { "stroke-dashoffset": 0 }, duration: 0.9, ease: C(E.inOut, 0.9), immediateRender: true }, S(349.40));
+    })();
+    words("sc004-a", [T(348.49), T(348.89)], { dur: 0.35, y: 10 });
+    out($("sc004-a"), S(349.20), 0.15);
+    words("sc004-b", [T(349.37), T(349.61), T(349.93)], { dur: 0.3, y: 8 });
+
+    /* ===== sc005 · FACE W (cut on the board's push) ===== */
+    face("sc005", 350.50, 354.15, "W");
+    words("sc005-lt", [T(353.45), T(353.53), T(353.77)], { dur: 0.2, y: 8 });
+
+    /* ===== sc006 · merges these two companies (hard cut) ===== */
+    push("sc006", 354.15, 356.65, 1.0, 1.06, { ease: E.cam });
+    tl.fromTo($("sc006-l"), { x: 0 }, { x: 420, duration: 0.9, ease: C(E.inOut, 0.9), immediateRender: false }, S(354.49));
+    tl.fromTo($("sc006-r"), { x: 0 }, { x: -440, duration: 0.9, ease: C(E.inOut, 0.9), immediateRender: false }, S(354.49));
+    tl.fromTo($("sc006-ring"), { opacity: 0, scale: 1.12 }, { opacity: 1, scale: 1, duration: 0.6, ease: C(E.out, 0.6), immediateRender: true }, S(355.40));
+    words("sc006-a", [T(354.49), T(354.89), T(355.13), T(355.29)], { dur: 0.3, y: 8 });
+    tl.to($("sc006-vw"), { scale: 1.2, duration: 0.45, ease: E.in }, S(356.20));
+
+    /* ===== sc007 · 2.5D ueno tower, the logo rises behind the roof (light-flash whip) ===== */
+    whip("sc006", "sc007", S(356.65), { dir: 1, flash: true });
+    tl.fromTo($("sc007-bg"), { scale: 1.10, x: 0 }, { scale: 1.14, x: -24, duration: 2.8, ease: E.cam, immediateRender: true }, S(356.65));
+    tl.fromTo($("sc007-fg"), { scale: 1.04, x: 30 }, { scale: 1.10, x: -60, duration: 2.8, ease: E.cam, immediateRender: true }, S(356.65));
+    tl.fromTo($("sc007-logo"), { scale: 1.07, x: 10 }, { scale: 1.12, x: -40, duration: 2.8, ease: E.cam, immediateRender: true }, S(356.65));
+    tl.fromTo($("sc007-li"), { y: 150, opacity: 0 }, { y: 0, opacity: 1, duration: 0.9, ease: C(E.out, 0.9), immediateRender: true }, T(358.78));
+    FX.focusHunt(tl, $("sc007-bg"), S(356.75), { dur: 0.7 });
+
+    /* ===== sc008 · fintech: apps, websites, online banking (hard cut on action) ===== */
+    push("sc008", 359.45, 366.55, 1.06, 1.0, { ease: E.cam });
+    ["p1", "p2", "p3"].forEach((p, i) => tl.fromTo($("sc008-" + p), { opacity: 0, y: 60 }, { opacity: 1, y: 0, duration: 1.0, ease: C(E.out, 1.0), immediateRender: true }, S(359.50) + i * 0.25));
+    words("sc008-a", [T(360.38), T(360.54), T(361.02)], { dur: 0.45, y: 12 });
+    out($("sc008-a"), S(361.95), 0.2);
+    words("sc008-b", [T(362.22), T(362.30), T(362.46)], { dur: 0.45, y: 12 });
+    out($("sc008-b"), S(363.55), 0.25);
+    rise($("sc008-l1"), T(363.90), { dur: 0.35, y: 10 });
+    tl.fromTo($("sc008-p1"), { scale: 1 }, { scale: 1.06, duration: 0.5, ease: C(E.out, 0.5), yoyo: true, repeat: 1, immediateRender: false }, T(363.90));
+    rise($("sc008-l2"), T(364.38), { dur: 0.35, y: 10 });
+    tl.fromTo($("sc008-p2"), { scale: 1 }, { scale: 1.06, duration: 0.5, ease: C(E.out, 0.5), yoyo: true, repeat: 1, immediateRender: false }, T(364.38));
+    words("sc008-l3", [T(365.26), T(365.74)], { dur: 0.3, y: 10 });
+    tl.fromTo($("sc008-p3"), { scale: 1 }, { scale: 1.06, duration: 0.5, ease: C(E.out, 0.5), yoyo: true, repeat: 1, immediateRender: false }, T(365.26));
+
+    /* ===== sc009 · FACE C (whip right) ===== */
+    whip("sc008", "sc009", S(366.55), { dir: 1 });
+    face("sc009", 366.55, 371.00, "C");
+
+    /* ===== sc010 · Paraguay map: few banks, one online (hard cut on action) ===== */
+    tl.fromTo($("sc010-pyf"), { opacity: 0 }, { opacity: 1, duration: 0.6, ease: C(E.out, 0.6), immediateRender: true }, S(371.05));
+    tl.fromTo($("sc010-cam"), { scale: 1.0 }, { scale: 1.08, duration: 4.4, ease: E.cam, immediateRender: true }, S(371.00));
+    (function () {
+      const fx = $("sc010-fx");
+      // Asunción in crop px: 1070.3, 683.8
+      const AX = 1070, AY = 684;
+      const rnd = FX.rng(31);
+      const banks = [];
+      for (let k = 0; k < 8; k++) {
+        const a = rnd() * Math.PI * 2, r = 14 + rnd() * 26;
+        const c = el(fx, "circle", { cx: (AX + Math.cos(a) * r).toFixed(1), cy: (AY + Math.sin(a) * r).toFixed(1), r: 7, fill: "#c3c7c1", stroke: "#0e1311", "stroke-width": 2 });
+        gsap.set(c, { opacity: 0 }); tl.set(c, { opacity: 1 }, S(371.82) + Math.floor(k / 2) / 12);
+        banks.push(c);
+      }
+      const u = el(fx, "circle", { cx: AX + 4, cy: AY - 4, r: 12, fill: TEAL, stroke: BONE, "stroke-width": 3 });
+      gsap.set(u, { opacity: 0 });
+      tl.fromTo(u, { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, S(373.60));
+      tl.to(banks, { opacity: 0.45, duration: 0.3 }, S(373.70));
+      gated(373.6, 375.5, () => FX.radioWaves(fx, AX + 4, AY - 4, { rings: 4, max: 560, period: 1.5, width: 7, color: TEALL, from: S(373.75), to: S(375.6) }));
+      // labels appear with the map
+      ["py", "br", "ar", "bo", "as"].forEach((k, i) => rise($("sc010-" + k), S(371.05) + i * 0.05, { dur: 0.6, y: 10 }));
+      // counter-scale labels during the push so they stay the same size
+      tl.fromTo([$("sc010-py"), $("sc010-br"), $("sc010-ar"), $("sc010-bo"), $("sc010-as")], { scale: 1 }, { scale: 1 / 1.08, duration: 4.4, ease: E.cam, immediateRender: false }, S(371.00));
+    })();
+    words("sc010-a", [T(371.82), T(371.98), T(372.06), T(372.22), T(372.46)], { dur: 0.35, y: 10 });
+    out($("sc010-a"), S(373.70), 0.2);
+    words("sc010-b", [T(374.14), T(374.70)], { dur: 0.3, y: 8 });
+
+    /* ===== sc011 · FACE W ===== */
+    face("sc011", 375.40, 378.45, "W");
+    words("sc011-lt", [T(377.34), T(377.82)], { dur: 0.3, y: 10 });
+
+    /* ===== sc012 · the real promo terms (whip down) ===== */
+    whip("sc011", "sc012", S(378.45), { dir: 1, vertical: true });
+    (function () {
+      const cam = $("sc012-cam");
+      // camera keyframes: page point (px,py) centred at scale s
+      const at = (px, py, s) => ({ x: 960 - px * s, y: 540 - py * s, scale: s });
+      const K0 = at(560, 420, 0.95), K1 = at(560, 800, 1.55), K2 = at(420, 540, 1.75), K3 = at(420, 560, 1.85);
+      gsap.set(cam, K0);
+      tl.fromTo(cam, K0, Object.assign({ duration: 1.7, ease: E.cam, immediateRender: false }, K1), S(378.75));
+      tl.fromTo(cam, K1, Object.assign({ duration: 1.5, ease: E.cam, immediateRender: false }, K2), S(384.60));
+      tl.fromTo(cam, K2, Object.assign({ duration: 2.0, ease: "none", immediateRender: false }, K3), S(386.10));
+      FX.focusHunt(tl, $("sc012-page"), S(380.40), { dur: 0.7 });
+      [["h1", S(380.86), 0.55], ["h2", S(381.40), 0.5], ["h3", S(386.54), 0.8]].forEach((h) =>
+        tl.fromTo($("sc012-" + h[0]), { scaleX: 0 }, { scaleX: 1, duration: h[2], ease: C("power1.inOut", h[2]), immediateRender: true }, h[1]));
+    })();
+    words("sc012-a", [T(380.86), T(380.94), T(381.10)], { dur: 0.3, y: 8 });
+    out($("sc012-a"), S(383.30), 0.2);
+    words("sc012-b", [T(383.74), T(384.14), T(384.30)], { dur: 0.3, y: 8 });
+    out($("sc012-b"), S(385.60), 0.2);
+    words("sc012-c", [T(387.66), T(388.30)], { dur: 0.25, y: 8 });
+
+    /* ===== sc013 · FACE M (hard cut on the camera drift) ===== */
+    face("sc013", 388.60, 392.05, "M");
+    words("sc013-lt", [T(390.86), T(390.94), T(391.42)], { dur: 0.3, y: 10 });
+
+    /* ===== sc014 · limits: no private jet / car / house (whip left) ===== */
+    whip("sc013", "sc014", S(392.05), { dir: -1 });
+    push("sc014", 392.05, 399.10, 1.0, 1.04, { ease: "none" });
+    words("sc014-h", [T(393.02), T(393.42), T(393.58), T(393.82)], { dur: 0.45, y: 10 });
+    (function () {
+      const svg = $("sc014-ico"), pen = $("sc014-pen");
+      const JET = '<path d="M12 104 L84 92 L130 40 L150 40 L128 92 L176 90 L192 70 L202 70 L196 100 L202 130 L192 130 L176 110 L128 108 L150 160 L130 160 L84 108 L12 96 Z" fill="none" stroke-width="7" stroke-linejoin="round"/>';
+      const CAR = '<path d="M14 128 L14 98 L44 92 L72 58 L148 58 L176 92 L196 98 L196 128 Z" fill="none" stroke-width="7" stroke-linejoin="round"/><path d="M80 66 L70 92 L108 92 L108 66 Z M118 66 L118 92 L162 92 L144 66 Z" fill="none" stroke-width="5"/><circle cx="58" cy="132" r="18" fill="#ece6d6" stroke-width="7"/><circle cx="154" cy="132" r="18" fill="#ece6d6" stroke-width="7"/>';
+      const HOUSE = '<path d="M24 92 L104 24 L184 92" fill="none" stroke-width="7" stroke-linejoin="round" stroke-linecap="round"/><path d="M44 80 L44 170 L164 170 L164 80" fill="none" stroke-width="7" stroke-linejoin="round"/><path d="M88 170 L88 120 L120 120 L120 170" fill="none" stroke-width="6"/><path d="M134 50 L134 26 L152 26 L152 66" fill="none" stroke-width="6"/>';
+      const items = [[JET, 480, T(395.74), "l1"], [CAR, 960, T(396.70), "l2"], [HOUSE, 1440, T(397.26), "l3"]];
+      items.forEach((it, i) => {
+        const g = el(svg, "g", {}); const gi = el(g, "g", { transform: "translate(" + (it[1] - 190) + " 300) scale(1.9)", stroke: INK }); gi.innerHTML = it[0];
+        gsap.set(g, { opacity: 0 });
+        tl.fromTo(g, { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.6, ease: C(E.out, 0.6), immediateRender: true }, it[2]);
+        rise($("sc014-" + it[3]), it[2], { dur: 0.35, y: 8 });
+        const xs = FX.markup.cross(tl, pen, it[2] + 0.38, { x: it[1], y: 500, s: 120, dur: 0.16, color: TIERRA, width: 11, filter: PEN });
+        gsap.set(xs, { opacity: 0 }); tl.set(xs, { opacity: 1 }, it[2] + 0.38);
+      });
+    })();
+
+    /* ===== sc015 · FACE W (cut) ===== */
+    face("sc015", 399.10, 404.75, "W");
+    words("sc015-lt", [T(403.34), T(403.74), T(403.98), T(404.14), T(404.30)], { dur: 0.2, y: 8 });
+
+    /* ===== sc016 · daily necessities: groceries, gas (whip right) ===== */
+    whip("sc015", "sc016", S(404.75), { dir: 1 });
+    tl.fromTo($("sc016-bg"), { scale: 1.12, x: 0 }, { scale: 1.18, x: -40, duration: 7.8, ease: "none", immediateRender: true }, S(404.75));
+    words("sc016-h", [T(406.94), T(407.26)], { dur: 0.45, y: 10 });
+    tl.fromTo($("sc016-a"), { opacity: 0, x: -120, rotation: -4 }, { opacity: 1, x: 0, rotation: -2, duration: 1.1, ease: C(E.out, 1.1), immediateRender: true }, S(408.00));
+    tl.to($("sc016-a"), { x: -26, y: -10, duration: 3.5, ease: "none" }, S(409.10));
+    tl.fromTo($("sc016-b"), { opacity: 0, x: 140, rotation: 4 }, { opacity: 1, x: 0, rotation: 1.5, duration: 1.1, ease: C(E.out, 1.1), immediateRender: true }, S(408.72));
+    tl.to($("sc016-b"), { x: 20, y: 12, duration: 2.8, ease: "none" }, S(409.82));
+    rise($("sc016-ta"), T(408.06), { dur: 0.4, y: 8 });
+    rise($("sc016-tb"), T(408.78), { dur: 0.4, y: 8 });
+    out($("sc016-h"), S(410.55), 0.2);
+    words("sc016-h2", [T(410.86), T(411.10), T(411.34)], { dur: 0.3, y: 8 });
+
+    /* ===== sc017 · a lot of people / low income walking to the door (paper slide) ===== */
+    slide("sc016", "sc017", S(412.55));
+    (function () {
+      const svg = $("sc017-ppl"), rnd = FX.rng(77), ppl = [];
+      for (let row = 0; row < 3; row++) for (let k = 0; k < 10; k++) {
+        const x0 = 120 + k * 150 + row * 50 + (rnd() - 0.5) * 30, y0 = 430 + row * 140;
+        const g = el(svg, "g", {}); const gi = el(g, "g", { transform: "translate(" + x0.toFixed(1) + " " + y0 + ") scale(0.22)" }); gi.innerHTML = '<path fill="' + TIERRA + '" d="' + GM + '"/>';
+        ppl.push({ g, x0 });
+      }
+      // everyone walks right in 12 fps steps; anyone past the door frame (x > 1480) slips inside (hidden by the door's right jamb)
+      const prox = { x: 0 };
+      tl.fromTo(prox, { x: 0 }, { x: 330, duration: 4.4, ease: C("none", 4.4), immediateRender: true, onUpdate: () => {
+        ppl.forEach((p, i) => { const bob = (Math.floor(prox.x / 18 + i) % 2) * 6; const x = p.x0 + prox.x;
+          p.g.setAttribute("transform", "translate(" + prox.x.toFixed(1) + " " + (-bob) + ")"); p.g.setAttribute("opacity", x > 1520 ? 0 : 1); }); } }, S(412.20));
+    })();
+    words("sc017-a", [T(414.86), T(415.02), T(415.18), T(415.26)], { dur: 0.3, y: 10 });
+    out($("sc017-a"), S(415.62), 0.15);
+    words("sc017-b", [T(415.90), T(416.22)], { dur: 0.3, y: 8 });
+
+    /* ===== sc018 · FACE C (cut) ===== */
+    face("sc018", 417.00, 419.65, "C");
+
+    /* ===== sc019 · 50% off the monthly grocery bill (whip up) ===== */
+    whip("sc018", "sc019", S(419.65), { dir: 1, vertical: true });
+    push("sc019", 419.65, 424.30, 1.04, 1.0, { ease: E.cam, origin: "40% 50%" });
+    (function () {
+      const rows = [["ARROZ 5 KG", "38.000"], ["ACEITE 2 L", "29.500"], ["LECHE 12 L", "84.000"], ["YERBA MATE 2 KG", "52.000"], ["HARINA 5 KG", "31.500"], ["AZÚCAR 5 KG", "34.000"], ["CARNE 6 KG", "168.000"], ["HUEVOS 30 U", "49.000"]];
+      const box = $("sc019-rows");
+      rows.forEach((r, i) => { const d = document.createElement("div"); d.className = "p4-rl t-label"; d.style.top = (172 + i * 52) + "px";
+        d.innerHTML = "<span>" + r[0] + "</span><span>Gs. " + r[1] + "</span>"; box.appendChild(d); });
+      tl.fromTo($("sc019-card"), { x: 300, rotation: 14, opacity: 0 }, { x: 0, rotation: 6, opacity: 1, duration: 1.1, ease: C(E.out, 1.1), immediateRender: true }, S(419.70));
+      tl.fromTo($("sc019-stamp"), { opacity: 0, scale: 1.6 }, { opacity: 1, scale: 1, duration: 0.25, ease: C("power2.in", 0.25), immediateRender: true }, T(420.21));
+      tl.fromTo($("sc019-strike"), { scaleX: 0 }, { scaleX: 1, duration: 0.35, ease: C(E.out, 0.35), immediateRender: true }, S(420.70));
+      rise($("sc019-new"), S(421.00), { dur: 0.6, y: 10 });
+    })();
+    words("sc019-a", [T(420.21), T(420.93)], { dur: 0.3, y: 12 });
+    out($("sc019-a"), S(421.05), 0.15);
+    words("sc019-b", [T(421.25), T(421.65), T(422.21), T(422.69)], { dur: 0.35, y: 10 });
+
+    /* ===== sc020 · FACE M (cut) ===== */
+    face("sc020", 424.30, 428.20, "M");
+    words("sc020-lt", [T(426.69), T(427.01), T(427.17)], { dur: 0.3, y: 10 });
+
+    /* ===== sc021 · phones light up: first ever bank accounts (whip right) ===== */
+    whip("sc020", "sc021", S(428.20), { dir: 1 });
+    push("sc021", 428.20, 435.10, 1.0, 1.06, { ease: E.cam, origin: "50% 60%" });
+    (function () {
+      const svg = $("sc021-svg"), rnd = FX.rng(55), ph = [];
+      const COLS = 12, ROWS = 4, w = 76, h = 132, gx = 128, gy = 172, x0 = 960 - ((COLS - 1) * gx) / 2, y0 = 330;
+      for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) {
+        const x = x0 + c * gx - w / 2, y = y0 + r * gy;
+        const g = el(svg, "g", {});
+        el(g, "rect", { x: x, y: y, width: w, height: h, rx: 12, fill: "#141b18", stroke: "#4a5550", "stroke-width": 4 });
+        const scr = el(g, "rect", { x: x + 7, y: y + 14, width: w - 14, height: h - 28, rx: 4, fill: TEAL, opacity: 0 });
+        el(g, "rect", { x: x + w / 2 - 9, y: y + 5, width: 18, height: 4, rx: 2, fill: "#4a5550" });
+        gsap.set(g, { opacity: 0 });
+        tl.set(g, { opacity: 1 }, S(428.30) + Math.floor((r * COLS + c) / 6) / 12);
+        ph.push({ scr, k: rnd() });
+      }
+      ph.sort((a, b) => a.k - b.k).forEach((p, i) => {
+        const t = S(432.53) + Math.floor(i / 3) / 12;
+        tl.set(p.scr, { attr: { opacity: 0.95 } }, t);
+        tl.to(p.scr, { attr: { opacity: 0.75 }, duration: 0.4 }, t + 0.1);
+      });
+    })();
+    words("sc021-a", [T(429.89), T(430.13), T(430.29), T(430.37), T(430.69)], { dur: 0.3, y: 10 });
+    out($("sc021-a"), S(432.25), 0.2);
+    words("sc021-b", [T(432.53), T(432.77), T(433.09), T(433.41)], { dur: 0.3, y: 10 });
+
+    /* ===== sc022 · FACE W (cut) ===== */
+    face("sc022", 435.10, 438.55, "W");
+    words("sc022-lt", [T(437.57), T(437.65), T(437.89), T(438.13), T(438.21)], { dur: 0.15, y: 6 });
+
+    /* ===== sc023 · a very good trajectory (hard cut at the take join) ===== */
+    push("sc023", 438.55, 442.90, 1.0, 1.05, { ease: E.cam });
+    tl.to($("sc023-vw"), { scale: 1.16, duration: 0.55, ease: E.in }, S(442.90));
+    (function () {
+      const svg = $("sc023-svg");
+      const d = "M220 880 C320 860 380 900 470 830 C560 760 610 800 700 720 C790 640 840 690 930 590 C1020 490 1080 540 1170 440 C1260 340 1330 380 1420 300 C1500 230 1560 250 1640 200";
+      ink(svg, "M200 960 L1700 958", S(438.60), 0.6, { color: INK, width: 3, opacity: 0.5 });
+      ink(svg, d, S(438.75), 2.6, { color: TEALD, width: 10, ease: C(E.inOut, 2.6) });
+      const head = el(svg, "path", { d: "M1606 190 L1648 197 L1628 236", fill: "none", stroke: TEALD, "stroke-width": 10, "stroke-linecap": "round", "stroke-linejoin": "round" });
+      gsap.set(head, { opacity: 0 }); tl.set(head, { opacity: 1 }, S(441.35));
+      rise($("sc023-logo"), S(438.70), { dur: 0.6, y: 8 });
+    })();
+    words("sc023-a", [T(439.97), T(440.05), T(440.29), T(440.45)], { dur: 0.4, y: 10 });
+
+    /* ===== sc024 · small ueno vs Visión Banco, 4× (cut on the push) ===== */
+    push("sc024", 443.45, 450.80, 1.04, 1.0, { ease: E.cam });
+    tl.fromTo($("sc024-u"), { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 1.0, ease: C(E.out, 1.0), immediateRender: true }, S(443.55));
+    words("sc024-k", [T(443.73), T(444.05), T(444.37)], { dur: 0.35, y: 8 });
+    out($("sc024-k"), S(445.80), 0.2);
+    words("sc024-a", [T(446.05), T(446.29), T(446.69)], { dur: 0.35, y: 10 });
+    tl.fromTo($("sc024-v"), { opacity: 0, scale: 0.5 }, { opacity: 1, scale: 1, duration: 1.0, ease: C(E.out, 1.0), immediateRender: true }, T(448.05));
+    rise($("sc024-vt"), T(448.05), { dur: 0.4, y: 8 });
+    out($("sc024-a"), S(448.45), 0.2);
+    words("sc024-b", [T(448.69), T(449.01), T(449.41)], { dur: 0.3, y: 10 });
+    (function () {
+      const svg = $("sc024-svg");
+      // four ueno-sized squares tile the Visión square (2 × 2 = 4 × the area)
+      const X = 1036, Y = 386, s = 214;
+      [[0, 0], [1, 0], [0, 1], [1, 1]].forEach((q, i) => {
+        const x = X + q[0] * s, y = Y + q[1] * s;
+        const p = ink(svg, "M" + (x + 3) + " " + (y + 2) + " L" + (x + s - 2) + " " + (y + 4) + " L" + (x + s - 3) + " " + (y + s - 2) + " L" + (x + 2) + " " + (y + s - 3) + " Z", S(448.75) + i * 0.18, 0.4, { color: TEALL, width: 6 });
+      });
+    })();
+    tl.fromTo($("sc024-x"), { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.8, ease: C(E.out, 0.8), immediateRender: true }, T(448.69));
+
+    /* ===== sc025 · FACE C (hard cut) ===== */
+    face("sc025", 450.80, 454.00, "C");
+
+    /* ===== sc026 · FACE W — his question (framing jump) ===== */
+    face("sc026", 454.00, 457.40, "W");
+    words("sc026-lt", [T(455.89), T(456.21), T(456.45), T(456.85), T(457.01)], { dur: 0.2, y: 8 });
+
+    FX.mount(tl, DURATION);
+    window.__timelines = window.__timelines || {};
+    window.__timelines[SEG] = tl;
+  })();
+  </script>
+</template>
+</body>
+</html>
