@@ -288,9 +288,7 @@ def build_music_epidemic(sheet, act, pauses, vo=None):
     duck_rep = None
     dk = sheet.get("vo_duck", {})
     if vo is not None and dk is not False:           # MANUAL §0: VO-driven duck, default ON (cue sheet "vo_duck": false to disable)
-        v = vo[:N] if len(vo) >= N else np.pad(vo, ((0, N - len(vo)), (0, 0)))
-        x, duck_rep, _ = E.vo_duck(x, v, VO_LUFS, **(dk if isinstance(dk, dict) else {}))
-        del v
+        x, duck_rep, _ = E.vo_duck(x, vo[:N], VO_LUFS, **(dk if isinstance(dk, dict) else {}))
     pk = np.abs(x).max()
     if pk > db(-1.0):
         x *= db(-1.0) / pk

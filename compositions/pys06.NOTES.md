@@ -54,3 +54,17 @@ at face-shot edges, 681.133 inside B-roll). Shot edges checked frame by frame (a
 `compositions/pys06.sfx.json` — 57 markers (master seconds), one HERO per scene + whips/pushes/entrances. Types used: whoosh, whoosh_soft,
 whoosh_big, card_flip, boom_low, air_swell, pop_soft, marker_long, marker_scratch, dot_ticks, dot_slide, pin_pop, stamp_thud, paper_slide,
 paper_rustle, paper_tear, gate_creak, counter_ticks, typewriter, crowd (= crowd_room alias). No bleeps in this segment.
+
+## Fix round 1 (Krish, MANUAL §0 "No narration captions") — 2026-11-08
+- Removed every caption that repeated his words: face-cam lower thirds (sc001 political capital, sc006, sc008 ×2, sc011, sc015 ×2, sc018,
+  sc020) and their scrims; sc003 "took over the presidency"; sc004 "a lot of deposits"; sc007 "the pension fund" / "laws around it"; sc010
+  "all the pension money", "sitting in one bank", "spread it out", "lose everything overnight"; sc012 "the entire pension money"; sc016 "a new
+  bank" / "growing very fast" / "wasn't really super safe"; sc017 "stepped aside" pen note + "deposits keep on flowing"; sc019 "out there
+  protesting"; sc021 "probably still is".
+- sc002 card had only his words → now pictures: plum card front = government building seal (power), teal back = banknote with a "$"
+  medallion and corner marks (cash). Flip timing unchanged.
+- Kept (labels/diagram/document text): PRESIDENT PEÑA (2.5D), IPS on the building, GOVERNMENT AGENCIES node labels, waffle "10%" +
+  "ANY SINGLE BANK", pie "ueno bank" + "roughly 30%" (+ new small legend "IPS PENSION FUND" under the disc), the typeset rule sheet,
+  "THE PRESIDENT" + the string label now a single t-label "INVESTOR"; sc021 "probably still is" became a short pulse of the string.
+- Timings, transitions, face cam (32.5 %) and duration (110.60) unchanged. sfx: removed the "real cash lands" boom (56 markers).
+- Checks: lint 0 errors (pys06), sync_audit 0 flagged, changed scenes re-snapshotted and looked at (`work/pys06/.snap/f1`, `f2`).

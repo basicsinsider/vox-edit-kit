@@ -79,3 +79,18 @@ Morocco's team; `wall_street_sign.jpg` is not a valid image.
 ## SFX
 `compositions/pys02.sfx.json` — 41 markers (whips/slides, pins, stamp, counter, pencil, highlighter, card flip, booms on 2026 / the tower cut,
 riser on the hand-off push). Hero per scene marked `normal`.
+
+## Fix round 1 (Krish, 720p review — MANUAL §0 "No narration captions")
+- **Removed every narration caption**: sc001 "a very interesting country", sc002 "the World Cup"/"surprisingly well", sc003 "one of their politicians",
+  sc004 "lost to France", sc006 "calling her racist", sc008 the skin-colour quote, sc010 "the only global news story", sc011 "not the case",
+  sc012 "a success story"/"a boring one"/"South America", sc014 "safer for foreign investors"/"a big deal", sc015 "the first time in its history",
+  sc017 "in bonds", sc018 "infrastructure projects", sc019 both lines, sc020 title "the economy was growing" + "the strongest growth" callout,
+  sc021 "good news was all around", sc022 "one bad news" (card face is now a tierra "?" — the news "no one knew about"), sc023 both lines.
+- **Kept** (graphics, not captions): PARAGUAY title on the skyline, map labels (sc012), Moody's ladder + 2024 + INVESTMENT GRADE stamp (sc013),
+  2026 over the news wall (sc010), "$350 million" counter (sc017), chart labels sc020 "first half of this year" + new "Economic growth" axis label
+  and "Previous record" line label, sc015 new "first investment grade" label under 2024, TV name strap (sc007), credits.
+- **The real tweet**: Krish's screenshot `assets/paraguay/pys02/photos/celeste_amarilla_tweet_krish.png` (X / @CelesteSenadora quoting Diario Olé,
+  translated view) replaces the blurred typeset post — sc003 full card on the dark ground, 3D tilt settling + push to the text + focus hunt (readable);
+  sc005 the same post (top crop) on the wall beside him, no blur; sc006 the post centred among the reply cards. Credit "X / @CelesteSenadora" on all three.
+- Timings, transitions, face cam (31.9 %) and duration (97.60) unchanged. sfx: removed the 197.40 highlighter marker (callout gone); notes updated.
+- lint 0 errors, sync_audit 0 flagged (remaining text cues are the kept graphics), changed scenes snapshotted and looked at.

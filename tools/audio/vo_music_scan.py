@@ -13,31 +13,14 @@ import sys
 
 import numpy as np
 import soundfile as sf
-from scipy import signal
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 from dsp import ROOT                                    # noqa: E402
-from loudness import _B1, _A1, _B2, _A2   # noqa: E402
+import epidemic_bed as E                                 # noqa: E402
 
 SR = 48000
 HOP = 0.1
-
-
-def kpow(path, a, b):
-    """K-weighted channel-summed power per sample (float32) for path[a:b] seconds."""
-    x, sr = sf.read(path, start=int(a * SR), frames=int((b - a) * SR), dtype="float32", always_2d=True)
-    assert sr == SR, (path, sr)
-    y = signal.lfilter(_B2, _A2, signal.lfilter(_B1, _A1, x, axis=0), axis=0)
-    return (y.astype(np.float64) ** 2).sum(1)
-
-
-def win_lufs(p, win):
-    c = np.concatenate([[0.0], np.cumsum(p)])
-    w, h = int(win * SR), int(HOP * SR)
-    starts = np.arange(0, len(p) - w, h)
-    m = (c[starts + w] - c[starts]) / w
-    return -0.691 + 10 * np.log10(m + 1e-20), (starts + w / 2) / SR
 
 
 def spans(mask, t, min_len=0.0):
@@ -56,24 +39,32 @@ def spans(mask, t, min_len=0.0):
 
 
 def scan(vo, beds, a, b, gap, quiet=False):
-    pv = kpow(vo, a, b)
-    pm = kpow(os.path.join(beds, "music_bed.wav"), a, b)
-    ps = kpow(os.path.join(beds, "sfx.wav"), a, b)
-    # gated integrated loudness of the VO from its 400 ms blocks (BS.1770 gating), reusing the K-weighted power
-    lb, _ = win_lufs(pv, 0.4)
+    ev = E.hop_energy(vo, 0.01)[int(a / 0.01):int(b / 0.01)]
+    em = E.hop_energy(os.path.join(beds, "music_bed.wav"), 0.01)[int(a / 0.01):int(b / 0.01)]
+    es = E.hop_energy(os.path.join(beds, "sfx.wav"), 0.01)[int(a / 0.01):int(b / 0.01)]
+    n = min(len(ev), len(em), len(es)); ev, em, es = ev[:n], em[:n], es[:n]
+    lb = E.window_lufs(ev, 0.4, 0.01)[::10]          # gated integrated loudness of the VO (BS.1770, 400 ms blocks, 100 ms hop)
     z = 10 ** ((lb + 0.691) / 10)
-    z1 = z[lb > -70]
-    rel = -0.691 + 10 * np.log10(z1.mean()) - 10
-    vo_lufs = -0.691 + 10 * np.log10(z1[lb[lb > -70] > rel].mean())
+    keep = lb > -70
+    rel = -0.691 + 10 * np.log10(z[keep].mean()) - 10
+    vo_lufs = -0.691 + 10 * np.log10(z[keep & (lb > rel)].mean())
     if not quiet:
         print(f"VO {vo_lufs:.1f} LUFS-I over {a:.1f}–{b:.1f} s")
     res = {}
+    k = int(round(HOP / 0.01))
     for win in (0.4, 3.0):
-        lv, t = win_lufs(pv, win)
-        lm, _ = win_lufs(pm, win)
-        lms, _ = win_lufs(pm + ps, win)
-        t = t + a
+        lv = E.window_lufs(ev, win, 0.01)[::k]
+        lm = E.window_lufs(em, win, 0.01)[::k]
+        lms = E.window_lufs(em + es, win, 0.01)[::k]
+        t = a + np.arange(len(lv)) * HOP
         spk = lv > vo_lufs - 15
+        if win == 0.4:      # 'speaking' = real speech: the VO's 0.4 s level max-held over 0.5 s within 10 LU of its LUFS-I
+            from scipy.ndimage import maximum_filter1d
+            hold = maximum_filter1d(lv, 5)
+            spk = (hold > vo_lufs - 10) & (lv > vo_lufs - 20)
+            lv = hold       # compare with the local speech level (word gaps don't count as 'music above the voice')
+        else:
+            spk = lv > vo_lufs - 12
         dm, dms = lv - lm, lv - lms
         res[win] = (t, lv, lm, lms, spk, dm, dms)
         if quiet:
