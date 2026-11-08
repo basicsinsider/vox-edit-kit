@@ -371,10 +371,16 @@ GAIN = {
     "drone_buzz": (0.05, 0.07), "explosion_distant": (0.12, 0.16), "train_pass": (0.07, 0.09),
     "car_engine": (0.06, 0.08), "car_door": (0.07, 0.09), "keyboard": (0.045, 0.06), "heartbeat": (0.10, 0.13),
     "glitch": (0.035, 0.045), "fire_crackle": (0.06, 0.08), "siren_distant": (0.04, 0.05), "door_knock": (0.06, 0.08),
+    # Paraguay types (project/paraguay/SOUND_PLAN.md §4) — Epidemic recordings, cut per event
+    "app_notify": (0.035, 0.045), "app_error": (0.035, 0.045), "cash_register": (0.06, 0.08), "coins": (0.05, 0.07),
+    "card_swipe": (0.05, 0.065), "atm": (0.045, 0.06), "rubber_stamp": (0.08, 0.11), "music_box": (0.025, 0.035),
+    "gavel": (0.08, 0.10), "camera_flash": (0.05, 0.07), "handcuffs": (0.05, 0.065), "stadium_crowd": (0.04, 0.055),
+    "bleep": (1.0, 1.0),   # not used: bleeps are placed at a fixed level re the VO (place_bleeps)
 }
 LOWTYPES = {"boom_low", "stamp_thud", "explosion_distant", "heartbeat"}
 SFX_TRIM_DB = -3.0   # this VO is quiet (speech peaks ~ -16 dBFS): trims the table so SFX sit ~20 dB under local VO peaks
-AMBTYPES = {"projector_loop", "crt_hum", "wind", "factory_hum", "crowd_room", "tube_hum", "city_night"}
+AMBTYPES = {"projector_loop", "crt_hum", "wind", "factory_hum", "crowd_room", "tube_hum", "city_night",
+            "crowd_chant", "crowd_murmur", "newsroom"}          # Paraguay: protest chants, indoor walla, newsroom
 
 
 def epi(name, start=0.0, dur=None):
@@ -525,6 +531,75 @@ def render_epidemic(m, i, rng):
         y = epi("door_knock_apartment")
         y = y[:int(min(len(y) / SR, d or 1.6) * SR)]
         return fade(y, 0.0, 0.1), onset(y), "epi:door_knock_apartment"
+    # ---------------- Paraguay types (project/paraguay/SOUND_PLAN.md §4)
+    if ty == "app_notify":
+        nm = ["notification_tone_02", "notification_app_general_01"][i % 2]
+        y = epi(nm)
+        return y, onset(y), f"epi:{nm}"
+    if ty == "app_error":
+        nm = ["app_error_04", "app_error_01"][i % 2]
+        y = epi(nm)
+        return y, onset(y), f"epi:{nm}"
+    if ty == "cash_register":
+        y = epi("cash_register_kaching")
+        return y, loudest(y), "epi:cash_register_kaching (bell on t)"
+    if ty == "coins":
+        nm = "coins_handful_drop_wood" if any(k in note for k in ("handful", "pile", "many", "pour")) else "coins_drop_01"
+        y = epi(nm)
+        return fade(y, 0.0, 0.3), onset(y), f"epi:{nm}"
+    if ty == "card_swipe":
+        nm = ["card_swipe_03", "card_swipe_04"][i % 2]
+        y = epi(nm)
+        return y, onset(y), f"epi:{nm}"
+    if ty == "atm":                     # button beeps / cash flap excerpt of the ATM recording
+        dur = max(0.6, d or 1.5)
+        y = fade(epi("atm_cash_buttons_beep", float(rng.uniform(1.0, 20.0)), dur), 0.01, min(0.3, dur / 3))
+        return y, 0.0, f"epi:atm_cash_buttons_beep {dur:.1f}s"
+    if ty == "rubber_stamp" or (ty == "stamp_thud" and any(k in note for k in ("rubber", "approved", "rejected", "stamp"))):
+        nm = ["rubber_stamp_document_01", "stamp_hand_press_short"][i % 2]
+        y = epi(nm) if nm == "rubber_stamp_document_01" else epi(nm, 0.0, 1.2)
+        o = onset(y)
+        if nm == "stamp_hand_press_short":
+            y = fade(y[max(0, int((o - 0.02) * SR)):int((o + 0.6) * SR)], 0.005, 0.15)
+            o = 0.02
+        return y, o, f"epi:{nm}"
+    if ty == "music_box":               # carousel / merry-go-round hint: very low, high-passed by the bus
+        if (d or 0) > 4.5:
+            y = fade(epi("music_box_antique_melody", float(rng.uniform(2.0, 40.0)), d), min(1.0, d / 3), min(1.5, d / 3))
+            return y, 0.0, f"epi:music_box_antique_melody {d:.1f}s"
+        y = epi("music_box_wind_up")
+        y = fade(y[:int(min(len(y) / SR, d or 4.5) * SR)], 0.05, 0.6)
+        return y, 0.0, "epi:music_box_wind_up"
+    if ty == "gavel":
+        nm = "gavel_x2" if any(k in note for k in ("twice", "x2", "double")) else "gavel_single_01"
+        y = epi(nm)
+        return y, onset(y), f"epi:{nm}"
+    if ty == "camera_flash":            # press photographers: a burst for dur > 1 s, else one modern flash
+        if (d or 0) > 1.0:
+            dur = min(d, 8.0)
+            y = fade(epi("press_paparazzi_flashes_medium", float(rng.uniform(0.0, max(0.0, 8.0 - dur))), dur), 0.3, min(0.8, dur / 3))
+            return y, 0.0, f"epi:press_paparazzi_flashes_medium {dur:.1f}s"
+        y = epi("camera_flash_modern_01")
+        return y, onset(y), "epi:camera_flash_modern_01"
+    if ty == "handcuffs":
+        y = epi("handcuffs_click_slow")
+        o = onset(y)
+        y = fade(y[max(0, int((o - 0.02) * SR)):int((o + min(d or 1.2, 3.0)) * SR)], 0.005, 0.2)
+        return y, 0.02, "epi:handcuffs_click_slow"
+    if ty == "stadium_crowd":           # World Cup: distant stadium cheer, swells on t
+        dur = max(1.5, d or 3.0)
+        full = epi("stadium_cheer_goal_01")
+        lk = loudest(full)
+        a = max(0.0, lk - 0.8)
+        y = fade(full[int(a * SR):int((a + dur + 1.0) * SR)], 0.5, min(1.5, dur / 2))
+        return y, lk - a, f"epi:stadium_cheer_goal_01 {dur:.1f}s"
+    if ty == "typewriter":
+        nm = ["typewriter_hermes_03", "typewriter_hermes_01"][i % 2]
+        dur = max(0.4, d or 1.2)
+        full = epi(nm)
+        a = float(rng.uniform(0.2, max(0.3, len(full) / SR - dur - 0.2)))
+        y = fade(full[int(a * SR):int((a + dur) * SR)], 0.01, 0.1)
+        return y, 0.0, f"epi:{nm} {dur:.1f}s"
     if ty == "burn_crackle" and (d or 0) >= 2.0:
         y = fade(epi("fire_burning_crackles", float(rng.uniform(1, 25)), d), 0.4, min(0.8, d / 3))
         return y, 0.0, f"epi:fire_burning_crackles {d:.1f}s"
@@ -867,9 +942,29 @@ def build_sfx_and_amb(markers, scenes, act, vo):
             g = round(float(g), 4)
             amb_log.append(dict(t=m["t"], type=m["type"], dur=d, gain=g, file=nm))
             continue
+        elif m["type"] in ("crowd_chant", "crowd_murmur", "newsroom"):     # Paraguay (SOUND_PLAN §4): felt, not heard
+            n_ = m.get("note", "").lower()
+            if m["type"] == "crowd_chant":
+                nm = "protest_distant_drums_chants" if any(k in n_ for k in ("drum", "street", "march")) else \
+                    ("protest_chanting_02" if any(k in n_ for k in ("close", "near", "loud")) else "protest_distant_chanting_walla")
+                rel = -22.0
+            elif m["type"] == "crowd_murmur":
+                nm, rel = "crowd_walla_indoor_large_02", -25.0
+            else:
+                nm, rel = "office_small_group_keyboard", -26.0
+            y = epi(nm, float(rng.uniform(3, 50)), d + 0.6)
+            g = db(VO_LUFS + rel - integrated_lufs(y)) * (db(-4) if quiet else 1.0)
+            y = fade(y, min(1.0, d / 3), min(1.5, d / 3))
+            i0 = int(m["t"] * SR)
+            k_ = min(len(y), N - i0)
+            amb[i0:i0 + k_] += g * y[:k_]
+            amb_log.append(dict(t=m["t"], type=m["type"], dur=d, gain=round(float(g), 4), file=nm))
+            continue
         elif m["type"] == "city_night" or (m["type"] == "wind" and EPIDEMIC and
                                              any(k in m.get("note", "").lower() for k in ("winter", "snow", "moscow", "cold"))):
             nm = "city_night_distant_traffic_01" if m["type"] == "city_night" else "wind_winter_08"
+            if m["type"] == "city_night" and any(k in m.get("note", "").lower() for k in ("asunci", "paraguay", "tropic", "insect")):
+                nm = "city_night_rooftop_insects"           # warm night, distant traffic + insects (Asunción)
             y = epi(nm, float(rng.uniform(3, 40)), d + 0.6)
             g = db(VO_LUFS - 24.0 - integrated_lufs(y)) * (db(-4) if quiet else 1.0)   # felt, not heard
             y = fade(y, min(0.8, d / 3), min(1.2, d / 3))
@@ -902,6 +997,29 @@ def build_sfx_and_amb(markers, scenes, act, vo):
         print(f"{nm}: peak {20*np.log10(np.abs(x).max()+1e-12):.1f} dBFS  LUFS {integrated_lufs(x):.1f}")
     json.dump({"sfx": log, "ambience": amb_log}, open(os.path.join(BED, "sfx_placements.json"), "w"), indent=1)
     return sfx, amb, log
+
+
+def place_bleeps(sfx, bleeps):
+    """TV-style censor bleep over a muted word (Krish's request, project/paraguay/DECISIONS.md §3): a 1 kHz sine of exactly
+    the word's length (5 ms ramps), loudness ≈ VO − 4 LU (a stereo sine of amplitude A reads ≈ 20·log10(A) LUFS), added
+    to the SFX bus after the restraint pass and the caps. The VO word itself is muted by the lead in the final mix."""
+    out = []
+    for b in bleeps:
+        t, d = float(b["t"]), max(0.08, float(b.get("dur", 0.3)))
+        f = float(b.get("hz", 1000.0))
+        n = int(round(d * SR))
+        y = np.sin(2 * np.pi * f * np.arange(n) / SR)
+        r = int(0.005 * SR)
+        y[:r] *= np.linspace(0, 1, r)
+        y[-r:] *= np.linspace(1, 0, r)
+        a = float(db(VO_LUFS + float(b.get("rel_lu", -4.0))))
+        i0 = int(round(t * SR))
+        k = min(n, N - i0)
+        if k <= 0:
+            continue                       # beyond --len (test builds of a part)
+        sfx[i0:i0 + k] += a * np.stack([y[:k], y[:k]], 1)
+        out.append(dict(t=t, dur=d, hz=f, amp_dbfs=round(20 * np.log10(a), 1), note=b.get("note", "")))
+    return out
 
 
 def scenes_from_notes():
@@ -951,7 +1069,18 @@ if __name__ == "__main__":
              "car": "car_engine", "engine": "car_engine", "typing": "keyboard", "keyboard_typing": "keyboard",
              "keys": "keyboard", "heartbeat_low": "heartbeat", "pulse_low": "heartbeat", "camera_shutter": "shutter",
              "glitch_digital": "glitch", "digital_glitch": "glitch", "siren": "siren_distant", "knock": "door_knock",
-             "fire": "fire_crackle", "city": "city_night", "city_ambience": "city_night"}
+             "fire": "fire_crackle", "city": "city_night", "city_ambience": "city_night",
+             # Paraguay: likely editor spellings -> SOUND_PLAN §4 types
+             "censor": "bleep", "beep_censor": "bleep", "censor_bleep": "bleep", "notification_app": "app_notify",
+             "app_ping": "app_notify", "error": "app_error", "error_tone": "app_error", "app_fail": "app_error",
+             "kaching": "cash_register", "cash": "cash_register", "register": "cash_register", "coin": "coins",
+             "coin_drop": "coins", "card": "card_swipe", "swipe": "card_swipe", "atm_beep": "atm", "cash_machine": "atm",
+             "stamp": "rubber_stamp", "stamp_paper": "rubber_stamp", "musicbox": "music_box", "carousel": "music_box",
+             "merry_go_round": "music_box", "hammer": "gavel", "flash": "camera_flash", "camera_flashes": "camera_flash",
+             "paparazzi": "camera_flash", "press_flash": "camera_flash", "cuffs": "handcuffs", "handcuff": "handcuffs",
+             "stadium": "stadium_crowd", "cheer": "stadium_crowd", "crowd_cheer": "stadium_crowd",
+             "protest": "crowd_chant", "chant": "crowd_chant", "chants": "crowd_chant", "protest_chant": "crowd_chant",
+             "murmur": "crowd_murmur", "walla": "crowd_murmur", "office": "newsroom", "newsroom_amb": "newsroom"}
     for m in markers:
         m["type"] = ALIAS.get(m["type"], m["type"])
     markers.sort(key=lambda m: m["t"])
@@ -985,6 +1114,11 @@ if __name__ == "__main__":
     if dup:                                       # the cue sheet's stinger already hits that word: no double hits
         markers = [m for m in markers if m not in dup]
         print(f"dropped {len(dup)} boom/riser markers duplicating a stinger: " + ", ".join(f"{m['type']}@{m['t']}" for m in dup))
+    bleeps = [dict(b) for b in sheet.get("bleeps", [])]
+    for m in [m for m in markers if m["type"] == "bleep"]:
+        markers.remove(m)
+        if not any(abs(float(b["t"]) - m["t"]) <= 0.3 for b in bleeps):
+            bleeps.append(dict(t=m["t"], dur=m.get("dur", 0.3), note=f"editor marker {m.get('scene', '')}"))
     SFX_TRIM_DB = -3.0 + (VO_LUFS + 27.2)          # the table was tuned for a −27.2 LUFS VO
     print(f"VO {VO_FILE}: {VO_LUFS:.1f} LUFS (measured, untouched); {len(markers)} markers; {len(pauses)} pauses")
     import epidemic_bed as E
@@ -995,7 +1129,14 @@ if __name__ == "__main__":
         print(f"hierarchy (§10.8): kept {len(kept)} / {len(markers)} markers, dropped {len(dropped)}")
         markers = kept
     build_music_epidemic(sheet, act, pauses)
-    build_sfx_and_amb(markers, [(0.0, LEN, "PAPER", set())], act, vo)
+    sfx, _amb, _log = build_sfx_and_amb(markers, [(0.0, LEN, "PAPER", set())], act, vo)
+    if bleeps:                                    # added after the SFX bus is written: rewrite it with the bleeps on top
+        bl = place_bleeps(sfx, bleeps)
+        sf.write(os.path.join(BED, "sfx.wav"), sfx, SR, subtype="PCM_24")
+        pl = json.load(open(os.path.join(BED, "sfx_placements.json")))
+        pl["bleeps"] = bl
+        json.dump(pl, open(os.path.join(BED, "sfx_placements.json"), "w"), indent=1)
+        print(f"bleeps: {len(bl)} placed at " + ", ".join(f"{b['t']:.2f}+{b['dur']:.2f}s" for b in bl))
     rel = os.path.relpath(BED, ROOT)
     tl = [dict(id=i, src=f"{rel}/{f}", start=0, duration=LEN, media_start=0, volume=1.0)
           for i, f in (("bed-music", "music_bed.wav"), ("bed-sfx", "sfx.wav"), ("bed-amb", "ambience.wav"))]

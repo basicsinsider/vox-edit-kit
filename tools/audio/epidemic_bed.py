@@ -127,9 +127,12 @@ def place_stingers(sheet, bed, length, vo_lufs, bed_lufs):
 
 # ---------------------------------------------------------------- §10.8 hierarchy & restraint
 MOVES = {"whip", "whoosh_soft", "whoosh", "whoosh_big", "air_swell", "rewind"}
-AMB = {"projector_loop", "crt_hum", "wind", "factory_hum", "crowd_room", "tube_hum", "city_night"}
+AMB = {"projector_loop", "crt_hum", "wind", "factory_hum", "crowd_room", "tube_hum", "city_night",
+       "crowd_chant", "crowd_murmur", "newsroom"}                      # Paraguay ambience types
 ALWAYS = {"boom_low", "riser", "plane_pass", "phone_ring", "teletype", "explosion_distant"}
-RANK = {"boom_low": 10, "riser": 9, "explosion_distant": 9, "train_pass": 8, "heartbeat": 7, "drone_buzz": 7,
+RANK = {"gavel": 8, "cash_register": 7, "handcuffs": 7, "app_error": 6, "rubber_stamp": 7, "camera_flash": 5,
+        "stadium_crowd": 6, "atm": 5, "card_swipe": 5, "coins": 5, "app_notify": 5, "music_box": 4,   # Paraguay types
+        "boom_low": 10, "riser": 9, "explosion_distant": 9, "train_pass": 8, "heartbeat": 7, "drone_buzz": 7,
         "car_engine": 6, "car_door": 6, "phone_vibrate": 6, "message_ping": 5, "radio_static": 5, "siren_distant": 5,
         "door_knock": 6, "keyboard": 4, "glitch": 4, "fire_crackle": 6, "stamp_thud": 8, "phone_ring": 8, "plane_pass": 8, "teletype": 7, "burn_crackle": 7,
         "film_burn": 7, "medal_ring": 7, "domino_run": 7, "domino_tick": 5, "radio_pulse": 5, "dial_click": 5, "scanner_sweep": 4, "string_draw": 3, "circuit_clunk": 6, "switch_click": 5, "typewriter": 5, "clock_tick": 5, "card_flip": 4, "solder_hiss": 4, "map_pin": 6, "paper_tear": 6, "highlighter_swipe": 6, "counter_ticks": 5, "odometer_tick": 5,
