@@ -1,6 +1,6 @@
 """Build the map kit (assets/maps/kit): graded relief + satellite bases, regional crops, vector overlays.
 Usage:  .venv/bin/python tools/map_kit.py <region> [steps]      steps: relief,sat,overlay (default all)
-        regions: world, east_asia, pacific, us, bay_area, northeast, taiwan, eastern_europe, russia   (see REGIONS)
+        regions: world, east_asia, pacific, us, bay_area, northeast, taiwan, eastern_europe, russia, south_america, paraguay   (see REGIONS)
 Data:   AWS Terrain Tiles (terrarium; SRTM/GMTED/ETOPO1, public domain) for relief,
         Esri World Imagery tiles for satellite (credit "Esri, Maxar, Earthstar Geographics"),
         NASA Blue Marble NG topo-bathy (public domain) for the world satellite base,
@@ -15,6 +15,7 @@ Image.MAX_IMAGE_PIXELS = None
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = f"{ROOT}/assets/maps/kit"
 VEC = os.environ.get("MK_VEC", "/tmp/mk/vec")
+OSM = os.environ.get("MK_OSM", "/tmp/mk/osm")  # Nominatim lookup JSONs (osm_ids=R…, polygon_geojson=1), see README
 BM = "/tmp/mk/dl/bm_topobathy_200408.jpg"
 
 # ppd = px per degree of latitude; k = x squash (cos of centre latitude) so close-ups keep true shapes.
@@ -30,6 +31,16 @@ REGIONS = {
   # Ivan project (2026-11-01): Poland -> Ukraine/Belarus -> western Russia -> Tatarstan/Kazakhstan NW edge; whole Russia
   "eastern_europe": dict(lon0=20, lon1=62, lat0=42, lat1=62, ppd=240, k=0.6157, zt=8, ze=8, zf=7, flat_water=[(46, 36, 55.5, 47.5)]),
   "russia":    dict(lon0=20, lon1=190, lat0=40, lat1=78, ppd=75, k=0.515, zt=6, ze=None, zf=15, flat_water=[(46, 36, 55.5, 47.5)]),
+  # Paraguay project (2026-11-08): whole South America with margin; Paraguay close-up (landlocked: vector land/lake mask
+  # + NE rivers burnt in as water, hillshade from the un-flattened DEM so reservoirs don't get cliff rims, no sat water swap)
+  "south_america": dict(lon0=-95, lon1=-25, lat0=-58, lat1=15, ppd=84, k=0.9336, zt=7, ze=8, zf=12, river_rank=4),
+  "paraguay":  dict(lon0=-63.5, lon1=-53.5, lat0=-28, lat1=-19, ppd=560, k=0.9171, zt=10, ze=10, zf=5, vec_mask=True,
+                    burn_rivers={"Paraguay": 3, "Paraná": 5}, sat_water=False, river_rank=9,
+                    # NE 1:10M rivers/borders are 2-13 km off the imagery at this scale -> OpenStreetMap geometry (Nominatim
+                    # lookup polygon_geojson, threshold 0.0002-0.0003 deg; ODbL) for these countries, rivers and reservoirs
+                    osm={"countries": {"Paraguay": "c_paraguay", "Brazil": "c_brazil", "Argentina": "c_argentina", "Bolivia": "c_bolivia"},
+                         "rivers": {"Paraguay": "r_paraguay", "Paraná": "r_parana", "Pilcomayo": "r_pilcomayo"},
+                         "water": ["r_yacyreta", "r_itaipu"]}),
 }
 
 PLACES = {  # lon, lat
@@ -71,6 +82,23 @@ PLACES = {  # lon, lat
   "olenya_airbase": (33.4640, 68.1510), "belaya_airbase": (103.5750, 52.9150), "murmansk": (33.0827, 68.9585),
   "irkutsk": (104.2964, 52.2870), "novosibirsk": (82.9346, 55.0084), "astana": (71.4491, 51.1694), "almaty": (76.8512, 43.2220),
   "kirillov_blast_site": (37.7893, 55.7176), "sarvarov_blast_site": (37.7386, 55.6077), "kazan_aircraft_plant": (49.1300, 55.8600),
+  # Paraguay project (south_america / paraguay)
+  "asuncion": (-57.6340, -25.2830), "brasilia": (-47.8825, -15.7942), "buenos_aires": (-58.3816, -34.6037), "la_paz": (-68.1193, -16.4897),
+  "sucre": (-65.2627, -19.0196), "santa_cruz_de_la_sierra": (-63.1812, -17.7833), "montevideo": (-56.1645, -34.9011),
+  "santiago": (-70.6693, -33.4489), "lima": (-77.0428, -12.0464), "quito": (-78.4678, -0.1807), "bogota": (-74.0721, 4.7110),
+  "caracas": (-66.9036, 10.4806), "georgetown": (-58.1551, 6.8013), "paramaribo": (-55.2038, 5.8520), "cayenne": (-52.3350, 4.9224),
+  "panama_city": (-79.5199, 8.9824), "sao_paulo": (-46.6333, -23.5505), "rio_de_janeiro": (-43.1729, -22.9068),
+  "cordoba": (-64.1888, -31.4201), "porto_alegre": (-51.2177, -30.0346), "curitiba": (-49.2733, -25.4284),
+  "ciudad_del_este": (-54.6111, -25.5097), "encarnacion": (-55.8661, -27.3306), "concepcion": (-57.4314, -23.4064),
+  "san_lorenzo": (-57.5097, -25.3397), "luque": (-57.4872, -25.2700), "pedro_juan_caballero": (-55.7356, -22.5472),
+  "filadelfia": (-60.0328, -22.3528), "pilar": (-58.3008, -26.8569), "villarrica": (-56.4350, -25.7500),
+  "coronel_oviedo": (-56.4447, -25.4500), "foz_do_iguacu": (-54.5882, -25.5163), "posadas": (-55.8961, -27.3671),
+  "clorinda": (-57.7186, -25.2847), "formosa_ar": (-58.1781, -26.1775), "itaipu_dam": (-54.5888, -25.4080),
+  # Asunción landmarks (OSM/Nominatim positions, checked by eye on the Esri aerials 2026-11-08)
+  "palacio_legislativo": (-57.63537, -25.27923), "palacio_de_lopez": (-57.63717, -25.27734), "plaza_de_armas": (-57.63459, -25.27989),
+  "plaza_de_los_heroes": (-57.63502, -25.28243), "plaza_de_la_democracia": (-57.63475, -25.28338),
+  "banco_central_del_paraguay": (-57.57549, -25.27794), "ueno_hq_santa_teresa_3088": (-57.55454, -25.28974),
+  "torres_del_paseo_la_galeria": (-57.56340, -25.28434), "mburuvicha_roga": (-57.60166, -25.29303),
 }
 CREDIT_RELIEF = "Relief: AWS Terrain Tiles (SRTM/GMTED/ETOPO1, public domain); vectors: Natural Earth (public domain)"
 CREDIT_ESRI = "Imagery: Esri, Maxar, Earthstar Geographics"
@@ -250,8 +278,18 @@ def do_relief(name, R):
             ref = np.argmin(np.abs(lats - (84.0 if lats[side][0] > 0 else -84.0)))
             row = np.convolve(np.pad(E[ref], 200, mode="wrap"), np.ones(401, np.float32) / 401, "same")[200:-200]
             E[side] = row
-    if R["ppd"] <= 400:
+    if R["ppd"] <= 400 or R.get("vec_mask"):
         lm = land_water_mask(R, W, H)
+        if R.get("burn_rivers"):
+            d = ImageDraw.Draw(lm)
+            for poly in [p for k in R.get("osm", {}).get("water", []) for p in osm_geo(k)]:
+                for i, r in enumerate(poly):
+                    d.polygon(ring_px(R, r), fill=0 if i == 0 else 255)
+            for nm, ls in osm_swap(river_fix(geo_lines(f"{VEC}/ne_10m_rivers_lake_centerlines.geojson")), R, "rivers"):
+                if nm not in R["burn_rivers"]: continue
+                for l in ls:
+                    pts = ring_px(R, l)
+                    if len(pts) > 1 and in_view(pts, W, H): d.line(pts, fill=0, width=R["burn_rivers"][nm], joint="curve")
     else:  # close-ups: coast from the elevation itself (sharper than 1:10M vectors), lakes from NE
         lm = Image.fromarray(((E > 0.5) * 255).astype(np.uint8)).filter(ImageFilter.MedianFilter(3))
     lmb = lm.filter(ImageFilter.GaussianBlur(0.7))
@@ -259,6 +297,7 @@ def do_relief(name, R):
     halo_r = max(2.0, W / 900)
     halo = np.asarray(lm.filter(ImageFilter.GaussianBlur(halo_r)), np.float32) / 255 * (1 - land)
     halo = np.clip(halo * 2.2, 0, 1)
+    Eh = E.copy() if R.get("vec_mask") else None  # hillshade source (water keeps its real surface -> no cliff rims)
     if R["ppd"] > 400:  # close-ups: flat sea (ETOPO bathymetry shows tile seams at this scale)
         E = np.where(land > 0.5, E, -150).astype(np.float32)  # flat water + coastal halo
     for lo_a, la_a, lo_b, la_b in R.get("flat_water", []):  # inland seas whose bathymetry shows tile seams (Caspian)
@@ -268,7 +307,7 @@ def do_relief(name, R):
     outs = {k: np.zeros((H, W, 3), np.uint8) for k in ("atlas", "night")}
     for a in range(0, H, 1024):
         a0, b1 = max(0, a - 2), min(H, a + 1026)
-        s = hillshade(E[a0:b1], lats[a0:b1], R, R["zf"])
+        s = hillshade((E if Eh is None else Eh)[a0:b1], lats[a0:b1], R, R["zf"])
         sl = slice(a - a0, a - a0 + min(1024, H - a))
         for k in outs:
             outs[k][a:a + 1024] = style(E[a0:b1][sl], land[a0:b1][sl], halo[a0:b1][sl], s[sl], k)
@@ -298,13 +337,16 @@ def do_sat(name, R):
     A = resample(M, X0, Y0, R["ze"], R, W, H); del M
     A = np.clip(A + 0.5, 0, 255).astype(np.uint8)
     mp = f"{OUT}/{name}_landmask.png"
-    if R["ppd"] > 400 and os.path.exists(mp):  # close-ups: Esri's water is a patchwork of sources -> one calm water tone
+    if R["ppd"] > 400 and R.get("sat_water", True) and os.path.exists(mp):  # close-ups: Esri's water is a patchwork of sources -> one calm water tone
         land = np.asarray(Image.open(mp).filter(ImageFilter.GaussianBlur(1.5)), np.float32)[..., None] / 255
         water = np.median(A[land[..., 0] < 0.05].reshape(-1, 3), axis=0) if (land < 0.05).any() else np.array([20, 40, 60])
         A = np.clip(A * land + water.astype(np.float32) * 0.8 * (1 - land), 0, 255).astype(np.uint8)
     save(grade_nat(A), f"{name}_sat"); save(grade_desat(A), f"{name}_satdesat")
 
-def slug(s): return re.sub(r"[^a-z0-9]+", "_", s.lower()).strip("_")
+def slug(s):
+    import unicodedata  # strip accents first (Paraná -> parana, not "paran")
+    s = unicodedata.normalize("NFKD", s).encode("ascii", "ignore").decode()
+    return re.sub(r"[^a-z0-9]+", "_", s.lower()).strip("_")
 def pathd(pts, closed=True):
     out = []; last = None
     for x, y in pts:
@@ -325,6 +367,36 @@ def crimea_fix(items):
     if crimea:
         out = [(nm, polys + crimea) if nm == "Ukraine" else (nm, polys) for nm, polys in out] + [("Crimea", crimea)]
     return out
+def osm_geo(key):
+    g = json.load(open(f"{OSM}/{key}.json"))[0]["geojson"]; c = g["coordinates"]
+    return {"Polygon": [c], "MultiPolygon": c, "LineString": [c], "MultiLineString": c}[g["type"]]
+def osm_swap(items, R, kind):
+    """Replace Natural Earth features by OSM ones where the region asks for it (R['osm'][kind] = {name: json key})."""
+    m = R.get("osm", {}).get(kind, {})
+    if not m: return items
+    out = [(nm, g) for nm, g in items if nm not in m]
+    return out + [(nm, osm_geo(k)) for nm, k in m.items()]
+def river_fix(items):
+    """Natural Earth 10m names the Paraguay river 'Paraná' (the scalerank-2 trunk from Mato Grosso, -14.3, down to the
+    confluence at Corrientes, -27.3): the line that starts at (-55.08, -14.32) is renamed 'Paraguay' (#river-paraguay)."""
+    out = []
+    for nm, ls in items:
+        if nm == "Paraná":
+            par = [l for l in ls if abs(l[0][0] + 55.0753) < 0.01 and abs(l[0][1] + 14.3194) < 0.01]
+            rest = [l for l in ls if l not in par]
+            if par: out.append(("Paraguay", par))
+            if rest: out.append((nm, rest))
+        else: out.append((nm, ls))
+    return out
+def guiana_fix(items):
+    """world-atlas puts French Guiana inside #c-france: give it its own #c-french_guiana (France keeps its other parts)."""
+    out = []; fg = []
+    for nm, polys in items:
+        if nm == "France":
+            def sa(p): return sum(q[0] for q in p[0]) / len(p[0]) < -40 and sum(q[1] for q in p[0]) / len(p[0]) < 10
+            fg += [p for p in polys if sa(p)]; polys = [p for p in polys if not sa(p)]
+        out.append((nm, polys))
+    return out + ([("French Guiana", fg)] if fg else [])
 def do_overlay(name, R):
     W, H = geom(R); g = {}
     def polys_svg(items, prefix):
@@ -337,13 +409,14 @@ def do_overlay(name, R):
                         if len(pts) > 2 and in_view(pts, W, H): ds.append(pathd(pts))
             if ds: parts.append(f'<path id="{prefix}-{slug(nm)}" data-name="{nm}" d="{"".join(ds)}"/>')
         return parts
-    g["countries"] = polys_svg(crimea_fix(topo_decode(f"{VEC}/world-atlas_2_countries-10m.json", "countries")), "c")
+    g["countries"] = polys_svg(osm_swap(guiana_fix(crimea_fix(topo_decode(f"{VEC}/world-atlas_2_countries-10m.json", "countries"))), R, "countries"), "c")
     g["land"] = polys_svg(topo_decode(f"{VEC}/world-atlas_2_land-10m.json", "land"), "land")
     if name in ("us", "bay_area", "northeast", "pacific", "world"):
         g["us_states"] = polys_svg(topo_decode(f"{VEC}/us-atlas_3_states-10m.json", "states"), "st")
     g["lakes"] = polys_svg(geo_polys(f"{VEC}/ne_10m_lakes.geojson", lambda p: p["scalerank"] <= (9 if R["ppd"] > 100 else 3)), "lake")
     riv = []
-    for nm, ls in geo_lines(f"{VEC}/ne_10m_rivers_lake_centerlines.geojson", lambda p: p["scalerank"] <= (6 if R["ppd"] > 100 else 3)):
+    rr = R.get("river_rank", 6 if R["ppd"] > 100 else 3)
+    for nm, ls in osm_swap(river_fix(geo_lines(f"{VEC}/ne_10m_rivers_lake_centerlines.geojson", lambda p: p["scalerank"] <= rr)), R, "rivers"):
         ds = [pathd(pts, False) for l in ls if len(l) > 1 for pts in ring_variants(R, l) if in_view(pts, W, H)]
         ds = [d for d in ds if d]
         if ds: riv.append(f'<path id="river-{slug(nm) or "x"}" data-name="{nm}" d="{"".join(ds)}"/>')
@@ -402,6 +475,15 @@ AERIALS = {  # name: (z, lon0, lat0, lon1, lat1, places)
   "ivanovo_severny_airbase_z16": (16, 40.9515, 57.0443, 41.0099, 57.0695, ["ivanovo_severny_airbase"]),
   "alabuga_sez_z16": (16, 51.9622, 55.8119, 52.0714, 55.8577, ["alabuga_drone_factory", "alabuga_nw_new_halls"]),
   "kazan_aircraft_plant_z16": (16, 49.0979, 55.8495, 49.1683, 55.8803, ["kazan_aircraft_plant"]),
+  # Paraguay project (2026-11-08)
+  "asuncion_city_z15": (15, -57.6700, -25.3500, -57.5200, -25.2450, ["asuncion", "palacio_legislativo", "palacio_de_lopez", "plaza_de_armas",
+      "plaza_de_los_heroes", "plaza_de_la_democracia", "banco_central_del_paraguay", "ueno_hq_santa_teresa_3088", "torres_del_paseo_la_galeria",
+      "mburuvicha_roga"]),
+  "asuncion_congress_z18": (18, -57.6440, -25.2865, -57.6270, -25.2725, ["palacio_legislativo", "palacio_de_lopez", "plaza_de_armas",
+      "plaza_de_los_heroes", "plaza_de_la_democracia"]),
+  "asuncion_banco_central_z18": (18, -57.5830, -25.2835, -57.5680, -25.2725, ["banco_central_del_paraguay"]),
+  "asuncion_ueno_hq_z18": (18, -57.5690, -25.2945, -57.5490, -25.2800, ["ueno_hq_santa_teresa_3088", "torres_del_paseo_la_galeria"]),
+  "asuncion_mburuvicha_roga_z18": (18, -57.6090, -25.2985, -57.5945, -25.2875, ["mburuvicha_roga"]),
 }
 EXTRA = {"stanford_main_quad": (-122.1697, 37.4275), "hoover_tower": (-122.1665, 37.4275), "stanford_research_park": (-122.1480, 37.4110)}
 def do_aerial(name):
@@ -431,3 +513,22 @@ def do_aerial(name):
     json.dump(meta, open(f"{OUT}/aerial_{name}.json", "w"), indent=1)
 if __name__ == "__main__" and sys.argv[1] == "aerial":
     for n in (sys.argv[2:] or AERIALS): do_aerial(n)
+
+# ---------- crops of the world bases (no rebuild; same plate carrée as world.json) ----------
+CROPS = {  # name: (lon0, lon1, lat0, lat1, places)  — Paraguay project: "Paraguay vs the US", IMF Washington -> Asunción
+  "americas": (-130, -20, -58, 55, ["washington_dc", "new_york", "miami", "asuncion", "brasilia", "buenos_aires", "la_paz", "lima",
+                                     "bogota", "caracas", "santiago", "sao_paulo", "panama_city", "los_angeles", "houston", "chicago"]),
+}
+def do_crop(name):
+    lon0, lon1, lat0, lat1, keys = CROPS[name]; meta = {"name": name, "projection": "equirectangular (plate carree), crop of the world bases", "variants": {}}
+    for src, out, ppd in (("world_night.jpg", f"{name}_night", 16384 / 360), ("world_satdesat_21600.jpg", f"{name}_satdesat", 21600 / 360)):
+        x0, x1, y0, y1 = [int(round(v)) for v in ((lon0 + 180) * ppd, (lon1 + 180) * ppd, (90 - lat1) * ppd, (90 - lat0) * ppd)]
+        im = Image.open(f"{OUT}/{src}").crop((x0, y0, x1, y1)); save(im, out, q=90)
+        meta["variants"][out + ".jpg"] = {"width": im.width, "height": im.height, "source": src, "crop_px": [x0, y0, x1, y1],
+            "formula": f"x = (lon + 180) * {ppd:.4f} - {x0} ; y = (90 - lat) * {ppd:.4f} - {y0}",
+            "places": {k: {"lon": PLACES[k][0], "lat": PLACES[k][1], "x": round((PLACES[k][0] + 180) * ppd - x0, 1),
+                           "y": round((90 - PLACES[k][1]) * ppd - y0, 1)} for k in keys}}
+    meta["credit"] = {"night": CREDIT_RELIEF, "satdesat": CREDIT_BM}
+    json.dump(meta, open(f"{OUT}/{name}.json", "w"), indent=1); print("  wrote", name + ".json")
+if __name__ == "__main__" and sys.argv[1] == "crop":
+    for n in (sys.argv[2:] or CROPS): do_crop(n)

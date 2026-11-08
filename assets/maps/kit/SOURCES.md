@@ -26,3 +26,16 @@ Build tools: `tools/map_tiles.py` (fetch), `tools/map_kit.py` (build; `map_kit.p
 Place coordinates: blast sites and airfields from the lead's brief (checked against the imagery: airfields/runways and the avenue/street
 are where expected); Alabuga SEZ located by eye on Esri z12/z14 (the brief's 55.79N 52.05E is the M7 highway S of the SEZ).
 
+
+## Paraguay project additions (fetched 2026-11-08, no login, no payment)
+| asset(s) | source | licence / credit |
+|---|---|---|
+| `south_america_{atlas,night,landmask}`, `paraguay_{atlas,night,landmask}` | AWS Terrain Tiles terrarium (z7 / z10) — SRTM / GMTED2010 / ETOPO1 | public domain |
+| `south_america_{sat,satdesat}`, `paraguay_{sat,satdesat}` | Esri World Imagery tiles z8 / z10 | © Esri and its data providers, fair use per MANUAL §10.9; on-screen credit "Esri, Maxar, Earthstar Geographics" |
+| `south_america_overlay.svg`, `paraguay_overlay.svg` (other countries/rivers), lakes | Natural Earth 10m via jsDelivr (world-atlas@2, NE lakes + rivers geojson) | public domain |
+| `paraguay_overlay.svg` Paraguay/Brazil/Argentina/Bolivia borders, Paraguay/Paraná/Pilcomayo rivers; Itaipu + Yacyretá water in `paraguay_*` reliefs/landmask | OpenStreetMap via nominatim.openstreetmap.org `lookup` (relations 287077, 59470, 286393, 252645, 302330, 421678, 1085755, 49550, 102679), polygon_geojson simplified 0.0002–0.0003° | © OpenStreetMap contributors, ODbL — credit "© OpenStreetMap contributors" when the overlay is on screen |
+| `americas_night.jpg`, `americas_satdesat.jpg` | crops of `world_night.jpg` / `world_satdesat_21600.jpg` | as the world bases (PD / NASA Blue Marble) |
+| `aerial_asuncion_{city_z15,congress_z18,banco_central_z18,ueno_hq_z18,mburuvicha_roga_z18}` (.jpg + .json) | Esri World Imagery tiles, stitched unmodified | © Esri and its data providers, fair use; credit "Esri, Maxar, Earthstar Geographics" |
+Place coordinates: Asunción landmarks from OpenStreetMap/Nominatim, checked by eye on the aerials. Ueno address: ueno's 2026 shareholder
+notice (https://www.ueno.com.py/wp-content/uploads/2026/06/Convocatoria-de-Asambleas-31d50a9a-d9aa-4a4d-9a06-5adcb678a3ea.pdf) — Av. Santa
+Teresa 3088 c/ Concejal Vargas; older sources give Santa Teresa 1827 (Torres del Paseo). BCP address: bcp.gov.py (Av. Federación Rusa y Augusto Roa Bastos).

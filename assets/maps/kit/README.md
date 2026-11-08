@@ -66,6 +66,33 @@ Known limits: `eastern_europe_sat` is Esri z8 (≈ 1.4 px per source px) — sof
 `#c-russia` has a vertical seam at 180° in `russia_overlay.svg` (Chukotka split by Natural Earth) — fill only, or hide the stroke there.
 The Caspian is drawn as flat water in both reliefs (its bathymetry tiles had seams).
 
+## South America / Paraguay (Paraguay project, 2026-11-08)
+Built with the same tools/styles (`map_kit.py south_america|paraguay`, `map_kit.py aerial <name>`, `map_kit.py crop americas`).
+Preview: `_preview_paraguay.jpg`. Palette (`lib/palette_paraguay.css`): fill `#c-paraguay` tierra `#cf5a33`, neighbours neutral.
+Overlay ids: `#c-paraguay #c-brazil #c-argentina #c-bolivia #c-chile #c-peru #c-uruguay #c-colombia #c-venezuela #c-ecuador #c-guyana
+#c-suriname #c-french_guiana #c-falkland_is #c-panama …` (French Guiana split out of `#c-france` by `guiana_fix()`); rivers `#river-paraguay
+#river-parana #river-pilcomayo #river-amazonas …`; cities `#p-asuncion #p-brasilia #p-buenos_aires #p-la_paz #p-ciudad_del_este #p-encarnacion
+#p-concepcion #p-san_lorenzo #p-luque …` (ids use `_`, same keys as `json → places`). **Natural Earth calls the Paraguay river "Paraná"** —
+`river_fix()` renames that line to `#river-paraguay`; `slug()` now strips accents (`Paraná` → `parana`, it used to give `paran`).
+
+| file | what | size | formula (lon/lat → px) | credit line |
+|---|---|---|---|---|
+| `south_america_{atlas,night,sat,satdesat}.jpg` + `south_america.json` + `_overlay.svg` + `_landmask.png` | 95–25°W × 15°N–58°S: whole continent + Panama/Costa Rica edge, Falklands, S. Georgia; 37 places (capitals, São Paulo/Rio, Paraguay cities, Asunción landmarks) | 5490×6132 | `x = (lon + 95) * 78.4224 ; y = (15 - lat) * 84` (k = cos 21°; shapes true around Paraguay, Patagonia slightly wide) | atlas/night: AWS Terrain Tiles (PD) + Natural Earth (PD) · sat: Esri, Maxar, Earthstar Geographics |
+| `paraguay_{atlas,night,sat,satdesat}.jpg` + `paraguay.json` + `_overlay.svg` + `_landmask.png` | 63.5–53.5°W × 19–28°S: all Paraguay + edges of Bolivia, Brazil (Foz do Iguaçu, Itaipu), Argentina (Clorinda, Formosa, Posadas); Itaipu + Yacyretá + Yguazú reservoirs and the Paraguay/Paraná rivers are water in the reliefs | 5136×5040 | `x = (lon + 63.5) * 513.576 ; y = (-19 - lat) * 560` (k = cos 23.5°) | same + rivers/borders/reservoirs © OpenStreetMap contributors (ODbL) |
+| `americas_night.jpg` / `americas_satdesat.jpg` + `americas.json` | crops of `world_night` / `world_satdesat_21600`, 130–20°W × 55°N–58°S (US East Coast/Washington → Asunción → Buenos Aires) | 5006×5143 / 6600×6780 | night: `x = (lon + 180) * 45.5111 - 2276 ; y = (90 - lat) * 45.5111 - 1593`; satdesat: `x = (lon + 180) * 60 - 3000 ; y = (90 - lat) * 60 - 2100` (exact values + place px in json). Borders: `world_overlay.svg` with `viewBox="2276 1593 5006 5143"` over the night crop | night: AWS Terrain/NE (PD) · satdesat: NASA Blue Marble NG |
+| `aerial_asuncion_city_z15.jpg` | all of Asunción (river, bay, downtown → Villa Morra), all landmark pins below | 3840×2816, 4.3 m/px | Web Mercator, formula in json | Esri, Maxar, Earthstar Geographics |
+| `aerial_asuncion_congress_z18.jpg` | downtown by the bay: `palacio_de_lopez` 1509,1097 (U-shaped palace facing the bay garden), `palacio_legislativo` 1844,1486, `plaza_de_armas` 1990,1622, `plaza_de_los_heroes` 1910,2146, `plaza_de_la_democracia` 1960,2342 | 3584×3072, 0.54 m/px | same | same |
+| `aerial_asuncion_banco_central_z18.jpg` | Banco Central del Paraguay campus (Av. Federación Rusa y Augusto Roa Bastos, Las Lomas): pin 1487,1220 = campus centre; long office block just right of the pin, round-roofed hall up-left | 3072×2560, 0.54 m/px | same | same |
+| `aerial_asuncion_ueno_hq_z18.jpg` | ueno HQ, Av. Santa Teresa 3088 c/ Concejal Vargas (address from ueno's own 2026 shareholder notice): pin `ueno_hq_santa_teresa_3088` 2832,2117 on the modern office block with car park at the Santa Teresa / Concejal Vargas corner; also `torres_del_paseo_la_galeria` 1181,1004 (older address, Santa Teresa 1827 — Paseo La Galería towers) | 4096×3328, 0.54 m/px | same | same |
+| `aerial_asuncion_mburuvicha_roga_z18.jpg` | Mburuvicha Róga presidential residence on Av. Mariscal López: pin 1472,1260 (house + pool; helipad lawn to the south) | 2816×2560, 0.54 m/px | same | same |
+
+Positions: Asunción landmarks from OpenStreetMap (Nominatim), each checked by eye on the aerial (buildings/plazas where expected).
+Known limits: Esri imagery over downtown has a colour seam on the bay water (x ≈ 1920 in `congress_z18`) and a cloud shadow SE of
+the plazas; `asuncion_city_z15` has one small cloud + shadows (S-centre). The Ueno HQ pin is OSM's — the Esri photo may predate a
+façade/rename, so frame the block, don't claim signage. `paraguay_atlas` is mostly flat Chaco (pale by nature; relief only in the east).
+NE 1:10M borders/rivers were 2–13 km off the imagery at Paraguay scale, so `paraguay_overlay.svg` uses OSM geometry for
+`#c-paraguay/brazil/argentina/bolivia` and `#river-paraguay/parana/pilcomayo` (REGIONS `osm=`; JSONs from Nominatim `lookup?osm_ids=R287077,R59470,R286393,R252645,R302330,R421678,R1085755,R49550,R102679&polygon_geojson=1&polygon_threshold=0.0002–0.0003`, cached in `/tmp/mk/osm`); other rivers there (Uruguay, Bermejo…) are still NE and can sit ~1–3 km off. On `south_america_*` NE is accurate to ~1–2 px.
+
 ## Sharpness (checked by 640 px crops at full res)
 - Regional crops are ≥ 5970 px wide (Taiwan ≥ 4399 tall), so a 1920 frame showing ⅓ of the map is a 1:1 crop — a 2–3× camera
   push stays sharp. The aerials are native tile pixels (no resampling).
@@ -83,5 +110,5 @@ The Caspian is drawn as flat water in both reliefs (its bathymetry tiles had sea
 - Vintage scans: the 1943 map is conic (curved graticule) — the affine only holds locally around East Asia; re-check pins by eye.
 
 ## Rebuild / extend
-`.venv/bin/python tools/map_tiles.py fetch terr|esri <z> lon0 lat0 lon1 lat1` then `.venv/bin/python tools/map_kit.py <region>`
+`.venv/bin/python tools/map_tiles.py fetch terr|esri <z> lon0 lat0 lon1 lat1` (vectors: world-atlas@2 + NE geojson into `/tmp/mk/vec`; Paraguay also needs the OSM JSONs in `/tmp/mk/osm`) then `.venv/bin/python tools/map_kit.py <region>`
 (regions in `REGIONS`, aerials in `AERIALS`; add a dict entry for a new place). One region at a time (peak ≈ 3 GB for the world).
