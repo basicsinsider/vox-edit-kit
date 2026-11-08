@@ -5,9 +5,9 @@ set -e
 n=$1; L=$2; R="$(cd "$(dirname "$0")/.." && pwd)"; cd "$R"; P=renders/$n/pieces
 log(){ echo "$(date -u +%Y-%m-%dT%H:%MZ) $*" | tee -a renders/render_log.txt; }
 need(){ local avail=$(df --output=avail -B1 . | tail -1); [ $avail -gt $1 ] || { log "$n: NOT ENOUGH DISK (need $1, have $avail) before $2"; exit 1; }; }
-segs=$(grep -o "id=\"${n}s0[0-9]-host\"" work/qa${n#c}/index.html | cut -d'"' -f2 | sed 's/-host//')
+segs=$(grep -o "id=\"${n}s[0-9][0-9]-host\"" work/qa${n#c}/index.html | cut -d'"' -f2 | sed 's/-host//')
 for s in $segs; do [ -s $P/$s.mp4 ] || { log "$n: missing piece $s"; exit 1; }; done
-sz=$(du -cb $P/${n}s0*.mp4 | tail -1 | cut -f1)
+sz=$(du -cb $P/${n}s[0-9][0-9].mp4 | tail -1 | cut -f1)
 need $((sz + 300000000)) concat
 for s in $segs; do echo "file '$R/$P/$s.mp4'"; done > $P/list.txt
 ffmpeg -v error -y -f concat -safe 0 -i $P/list.txt -c copy renders/$n/${n}_picture.mp4
