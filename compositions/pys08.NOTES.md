@@ -88,3 +88,18 @@ against place_sound.py's vocabulary (it asserts on unknown types). No bleeps in 
    letters' darkness first (PIL), as in `assets/paraguay/pys08/derived/cronica_mask.png`.
 5. A segment that starts 0.05 s before an EDL join (pys08: 798.00 vs join 798.05) shows one frame of the previous take if it opens on
    the face cam — open on a graphic or start the face clip at the join.
+
+## Fix round 1 (Krish, 720p review — MANUAL §0 "No narration captions")
+Removed every caption that only repeated the narration (27 elements + their cues): sc001 "back to the beginning"; face-cam lower thirds
+sc002 / sc004 / sc008 / sc011 / sc016 / sc017 / sc019 (and their text scrims — the face cam is now fully clean); sc003 "multiple different
+businesses" / "funding it all"; sc005 "big loans"; sc006 "anything you can imagine"; sc009 "companies that it's related to"; sc010 "to
+yourself"; sc012 ×3; sc015 ×2; the cork-board tags in sc018 (×4), sc021 (×2), sc023 ("not supposed to"); sc020's "the very" band label.
+KEPT: the million/billion quote card (sc014) untouched; diagram/chart text — sc003 CREDICENTRO + "profitable business" block label, sc006
+column headers (media / tech / software companies) + logo cards, sc009 "the same owner" label under the owner card, sc010 DEPOSITS,
+"below 20%" (yellow key) and "it's legal" / "that's illegal" as annotations of the bar; "self-dealing" label-box moved ONTO the bar (beside
+the teal fill, inside the chart camera) and now stays up as the fill's label; cork-board card text, the registration form, "created today"
+stamp, calendar "today" / "next day", loan slip, logos, credits. No scene went empty (each keeps its picture/diagram/animation).
+Timings, transitions, face-cam % (32.6 %) and duration (142.60) unchanged. sfx.json unchanged — none of its 48 markers belonged to a text pop.
+Checks: lint 0 errors for pys08, sync_audit 0 flagged (remaining text cues: "profitable business", headers, "the same owner", DEPOSITS,
+self-dealing, below 20%, legal/illegal, quote card, stamp, calendar, form, loan slip), 15 changed-scene frames snapshotted and looked at.
+Backup of the pre-fix file: not in the repo (git history 990a149 has it).

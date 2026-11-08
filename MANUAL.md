@@ -763,6 +763,7 @@ on action. Use it whenever the narrator quotes someone or introduces a historic 
 ## Changelog
 - 2026-11-08 — Paraguay sound phase 1: E-minor Epidemic family chosen + analysed, 28 new SFX + the old set re-downloaded, place_sound
   types/bleeps added (§10.8 "Paraguay"), `project/paraguay/SOUND_PLAN.md` + generated cue sheet (`project/paraguay/gen/make_cuesheet.py`).
+- 2026-11-08 — Split rendering tested and rejected: a segment host with a negative `data-start` (to render only part of a segment) is NOT honoured — the render still starts at the segment's local 0 (frames compared to a snapshot at the same time). One helper per segment stays the method; 4K speed is set by the slowest segment.
 - 2026-11-08 — Render helpers: a `setsid nohup …render_piece.sh… &` started from a helper's tool call was still killed when that call ended (pys02 helper); launch the render as the tool's own tracked background job (`run_in_background`) and wait with a Monitor until-loop on the log.
 - 2026-11-08 — Paraguay (27:02 from a 36:06 raw take, `project/paraguay/`): EDL tools generalised — the keep list is written as
   PHRASE ANCHORS (`project/paraguay/gen/edl_keep.py`: start phrase + time hint + end phrase + note [+ {in/out} override]) resolved to word ids,

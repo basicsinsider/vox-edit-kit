@@ -46,3 +46,6 @@ First scene: rewind timeline (graphic; the face cam's first 0.05 s is the previo
 camera pull-back over the full web is still moving at 940.60 (cut on action into pys09).
 Ground run: night · face · paper · face · night-photo · paper · face · face · paper · paper · face · night · face · paper · night · face · face ·
 cork · face · paper · cork · face · cork (never > 3 in a row on one ground).
+
+**Fix round 1 (MANUAL §0 "No narration captions"):** all narration captions in the table above were removed (face-cam lower thirds, word-by-word
+lines, board tags); only diagram labels, the quote card, document/stamp/calendar text and logos remain — see compositions/pys08.NOTES.md.
