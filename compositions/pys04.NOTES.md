@@ -73,3 +73,21 @@ where we need to talk about the secret weapon" — a straight cut works (or pys0
 - ueno.com.py answers Cloudflare 403 to curl from this box and web.archive.org resets through the proxy; news-site `og:image` URLs (ABC,
   Última Hora resizers) download fine at any width (`&width=1600`).
 - A `markup` that has no tween (a leftover `.p4-hlr` highlight div) is fully visible from frame 0 — delete unused highlight divs.
+
+## Fix round 1 (Krish, 720p review — MANUAL §0 "No narration captions")
+- Removed every caption that repeated the narration (34 elements + their cues): sc001 "around COVID times"; sc002 "not being a bank" /
+  "cannot take in deposits"; sc004 "already existed" / "but was struggling"; sc006 "merges these two companies"; sc008 "a modern bank" /
+  "like a fintech"; sc010 "one of the few banks" / "online focused"; sc012 label boxes "a new customer" / "open an account" / "50% back";
+  sc014 "limits to this promo"; sc016 "daily necessities" / "every single day"; sc017 "a lot of people" / "low income"; sc019 "50% off" /
+  "their monthly grocery bill"; sc021 "never had a bank account" / "first ever bank accounts"; sc023 "a very good trajectory"; sc024
+  "few years after" / "this small bank" / "four times bigger"; every face-cam lower third (sc003, 005, 011, 013, 015, 020, 022, 026) and
+  their dark scrims (he is now clean on camera).
+- Kept: 2020 / 2021 date markers, Credicentro / Financiera El Comercio cards + DEPOSITS slot + pen X, APPS / WEBSITES / ONLINE BANKING UI
+  labels, map labels, the real ueno terms page + highlighter + ad + pen circle, receipt text + −50% sticker, PRIVATE JET / CAR / HOUSE icon
+  labels, groceries / gas photo tags, the 4× chart (+ "Visión Banco" tag), logos, credits.
+- No empty frames: sc014's icons now sit ghosted (20 %) from 392.40 and turn solid on their words; sc016's photo cards enter at 405.10 /
+  405.90 (they used to wait for the words, under the old header); sc024 gets a "UENO" chart label under the small square (446.29) so the
+  two squares read as a labelled comparison.
+- Timings, transitions, face cam (31.7 %) and the 124.80 duration unchanged. sfx.json: removed the "50% back" label pop (387.66); moved the
+  sc016 card slides to 405.10 / 405.90 (54 markers).
+- Checks: lint 0 errors for pys04, sync_audit 0 flagged, changed scenes snapshotted and looked at (`work/pys04/.snap/f1–f3`).
