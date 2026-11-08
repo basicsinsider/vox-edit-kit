@@ -10,7 +10,7 @@
     .q-paper { background: var(--paper); }
     .q-abs { position: absolute; }
     .q-full { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; object-fit: cover; }
-    .q-fcw { position: absolute; inset: 0; transform-origin: 1000px 220px; }
+    .q-fcw { position: absolute; inset: 0; transform-origin: 1000px 150px; }
     .q-vw { position: absolute; inset: 0; transform-origin: 50% 50%; }
     .q-cam { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 960px 540px; }
     .q-p1, .q-p2 { position: absolute; inset: 0; background-size: cover; background-position: center; pointer-events: none; }
@@ -60,9 +60,9 @@
     .q-btn { position: absolute; width: 112px; height: 112px; border-radius: 28px; background: #e2ddd1; }
     .q-skel { position: absolute; height: 18px; border-radius: 9px; background: rgba(22,32,28,0.12); }
     /* sc015 receipt */
-    #pys13-sc015-rc { position: absolute; left: 700px; top: 120px; width: 520px; height: 1300px; background: #f3efe6; box-shadow: 0 30px 60px rgba(0,0,0,0.55); transform-origin: 50% 0; }
-    .q-rl { position: absolute; left: 40px; right: 40px; font-size: 40px; color: var(--ink); opacity: 0; }
-    .q-dots { position: absolute; left: 40px; right: 40px; height: 0; border-top: 4px dotted rgba(22,32,28,0.45); }
+    #pys13-sc015-rc { position: absolute; left: 580px; top: 110px; width: 760px; height: 860px; background: #f3efe6; box-shadow: 0 30px 60px rgba(0,0,0,0.55); transform-origin: 50% 0; }
+    .q-rl { position: absolute; left: 60px; right: 60px; font-size: 76px; color: var(--ink); opacity: 0; }
+    .q-dots { position: absolute; left: 60px; right: 60px; height: 0; border-top: 4px dotted rgba(22,32,28,0.45); }
     #pys13-sc015-slot { position: absolute; left: 640px; top: 96px; width: 640px; height: 40px; border-radius: 10px; background: #050606; box-shadow: 0 6px 12px rgba(0,0,0,0.6); }
     /* sc019 notes */
     .q-note { position: absolute; width: 300px; height: 140px; background: #dfe3d6; border: 3px solid var(--ash-dark); box-sizing: border-box; box-shadow: 0 6px 10px rgba(22,32,28,0.25); }
@@ -238,16 +238,16 @@
       <div class="q-desk"></div>
       <div class="q-cam" id="pys13-sc015-cam">
         <div id="pys13-sc015-rc">
-          <div class="q-dots" style="top:60px"></div>
-          <div class="q-rl t-display" id="pys13-sc015-i1" style="top:110px">groceries</div>
-          <div class="q-dots" id="pys13-sc015-d1" style="top:175px; opacity:0"></div>
-          <div class="q-rl t-display" id="pys13-sc015-i2" style="top:220px">gas</div>
-          <div class="q-dots" id="pys13-sc015-d2" style="top:285px; opacity:0"></div>
-          <div class="q-rl t-display" id="pys13-sc015-i3" style="top:330px"><span class="q-w">normal </span><span class="q-w">things</span></div>
-          <div class="q-dots" id="pys13-sc015-d3" style="top:395px; opacity:0"></div>
-          <svg id="pys13-sc015-svg" class="q-abs" style="left:0; top:0; width:520px; height:600px; overflow:visible" viewBox="0 0 520 600"></svg>
+          <div class="q-dots" style="top:70px"></div><div class="q-dots" style="top:92px"></div>
+          <div class="q-rl t-display" id="pys13-sc015-i1" style="top:160px">groceries</div>
+          <div class="q-dots" id="pys13-sc015-d1" style="top:270px; opacity:0"></div>
+          <div class="q-rl t-display" id="pys13-sc015-i2" style="top:330px">gas</div>
+          <div class="q-dots" id="pys13-sc015-d2" style="top:440px; opacity:0"></div>
+          <div class="q-rl t-display" id="pys13-sc015-i3" style="top:500px"><span class="q-w">normal </span><span class="q-w">things</span></div>
+          <div class="q-dots" id="pys13-sc015-d3" style="top:610px; opacity:0"></div>
+          <div class="q-dots" style="top:760px"></div><div class="q-dots" style="top:782px"></div>
+          <svg id="pys13-sc015-svg" class="q-abs" style="left:0; top:0; width:760px; height:860px; overflow:visible" viewBox="0 0 760 860"></svg>
         </div>
-        <div id="pys13-sc015-slot"></div>
       </div>
     </div></div>
 
@@ -726,10 +726,8 @@
     whip("sc014", "sc015", S(1514.55), { dir: -1, flash: true });
     (function () {
       const rc = $("sc015-rc"), svg = $("sc015-svg");
-      // the receipt prints down out of the slot at 12 fps; the camera follows it
-      tl.fromTo(rc, { y: -330 }, { y: -230, duration: 0.6, ease: C(E.out, 0.6), immediateRender: true }, S(1514.60));
-      tl.to(rc, { y: -120, duration: 0.6, ease: C(E.out, 0.6) }, S(1516.10));
-      tl.to(rc, { y: 0, duration: 0.6, ease: C(E.out, 0.6) }, S(1517.62));
+      // the receipt slides up into frame, then each line prints on its word (12 fps)
+      tl.fromTo(rc, { y: 300, rotation: 3 }, { y: 0, rotation: -1.5, duration: 0.9, ease: C(E.out, 0.9), immediateRender: true }, S(1514.55));
       tl.fromTo($("sc015-cam"), { scale: 1.04 }, { scale: 1.0, duration: 5.2, ease: "none", immediateRender: false }, S(1514.55));
       tl.fromTo($("sc015-i1"), { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, T(1514.85));
       tl.fromTo($("sc015-d1"), { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, S(1515.30));
@@ -739,9 +737,9 @@
       words("sc015-i3", [T(1517.65), T(1517.97)], { dur: 0.001, y: 0 });
       tl.fromTo($("sc015-d3"), { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, S(1518.30));
       // can't pay: a tierra pen strike through every line
-      ink(svg, "M30 150 C160 140 320 160 490 146", S(1518.55), 0.22, { color: TIERRA, width: 9, filter: PEN });
-      ink(svg, "M30 258 C160 252 320 266 490 254", S(1518.75), 0.22, { color: TIERRA, width: 9, filter: PEN });
-      ink(svg, "M30 368 C160 360 320 374 490 362", S(1518.95), 0.22, { color: TIERRA, width: 9, filter: PEN });
+      ink(svg, "M40 205 C230 192 480 214 720 198", S(1518.55), 0.22, { color: TIERRA, width: 9, filter: PEN });
+      ink(svg, "M40 375 C230 366 480 384 720 370", S(1518.75), 0.22, { color: TIERRA, width: 9, filter: PEN });
+      ink(svg, "M40 545 C230 536 480 554 720 540", S(1518.95), 0.22, { color: TIERRA, width: 9, filter: PEN });
       tl.to($("sc015-cam"), { scale: 1.12, duration: 0.35, ease: E.in }, S(1519.45));
     })();
 
