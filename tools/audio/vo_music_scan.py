@@ -51,11 +51,11 @@ def scan(vo, beds, a, b, gap, quiet=False):
     if not quiet:
         print(f"VO {vo_lufs:.1f} LUFS-I over {a:.1f}–{b:.1f} s")
     res = {}
-    k = int(round(HOP / 0.01))
+    stride = int(round(HOP / 0.01))
     for win in (0.4, 3.0):
-        lv = E.window_lufs(ev, win, 0.01)[::k]
-        lm = E.window_lufs(em, win, 0.01)[::k]
-        lms = E.window_lufs(em + es, win, 0.01)[::k]
+        lv = E.window_lufs(ev, win, 0.01)[::stride]
+        lm = E.window_lufs(em, win, 0.01)[::stride]
+        lms = E.window_lufs(em + es, win, 0.01)[::stride]
         t = a + np.arange(len(lv)) * HOP
         spk = lv > vo_lufs - 15
         if win == 0.4:      # 'speaking' = real speech: the VO's 0.4 s level max-held over 0.5 s within 10 LU of its LUFS-I
