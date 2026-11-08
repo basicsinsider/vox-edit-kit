@@ -736,6 +736,16 @@ on action. Use it whenever the narrator quotes someone or introduces a historic 
 - [ ] Smooth long eases, 12 fps. [ ] Cuts on action; whips, no iris. [ ] No photo/clip used > 2× in a chunk.
 
 ## Changelog
+- 2026-11-08 — Paraguay (27:02 from a 36:06 raw take, `project/paraguay/`): EDL tools generalised — the keep list is written as
+  PHRASE ANCHORS (`project/paraguay/gen/edl_keep.py`: start phrase + time hint + end phrase + note [+ {in/out} override]) resolved to word ids,
+  so it survives transcript patches. Checks that caught real faults: (1) voiced energy inside every ASR gap > 2 s — Parakeet dropped a whole
+  4 s line inside a 13.8 s "gap" (re-ASR the window alone and patch it in); (2) re-transcribe the EDITED VO and diff it against the kept
+  words (`gen/vo_diff.py`) — found leaked 'uh', 'oh', a stammered 'back back', a whispered 2nd 'now'; fix with 10 ms RMS (`gen/fine.py`) +
+  short-window ASR (`gen/asr_win.sh`; Whisper small.en confirms a join reads clean); (3) the silence pass must use −55 dBFS, not −70: room
+  noise at −60 survived and left seconds of murmur/breaths between 0.5 s pieces. Long ASR 'words' (e.g. 'fail.' 25 s) hide pauses — cap with
+  an `out` override. Face-cam master: one ffmpeg pass with `-filter_script:v` select(between(n,f0,f1−1)+…) on the 60 fps source → 30 fps
+  (frame-exact, 1621.867 s = VO); ~35 min on the shared 4-core box. Mouth-motion vs VO-onset correlation reads +2 frames on BOTH the raw
+  and the cut master (method bias / source offset, not the cut). Raw footage deleted after extraction to free 7.5 GB (re-download from Drive).
 - 2026-11-02 — Ivan v3 (4K, Krish's fix round 1, `project/ivan/FIXES_ROUND1.md`): map labels (Haskoy caps, constant screen size during
   camera moves), Crimea always inside Ukraine (kit overlays; world-kit polygons need `#c-crimea` moved), markups re-aimed, frame-exact
   face-cam edges (scan the face cam for EDL take joins — they sit inside shots), repeated words found with a Whisper pass (Parakeet hides
