@@ -9,9 +9,10 @@ for b in $(git ls-remote --heads origin "${BRANCH_PREFIX:-render}/${ONLY}*" 2>/d
   avail=$(df --output=avail -B1 . | tail -1); [ $avail -gt 1200000000 ] || { echo "$s: skipped — only $avail bytes free"; continue; }
   T=$(mktemp -d "$R/work/_pc_XXXX")
   git fetch -q --depth 1 origin "$b" || { rm -rf "$T"; continue; }
-  git archive FETCH_HEAD "pieces/$s" | tar -x -C "$T" || { echo "$s: archive failed"; rm -rf "$T"; continue; }
-  mkdir -p "renders/$ch/pieces"; cat "$T/pieces/$s/$s.mp4.part"* > "$out.tmp"
-  want=$(cut -d' ' -f1 "$T/pieces/$s/$s.mp4.sha256"); got=$(sha256sum "$out.tmp" | cut -d' ' -f1)
+  # blob-by-blob (not `git archive`): on a blob:none partial clone, archive lazily fetched the WHOLE tree (~7.7 GB, Paraguay 4K)
+  mkdir -p "renders/$ch/pieces"; : > "$out.tmp"
+  for f in $(git ls-tree --name-only FETCH_HEAD "pieces/$s/" | grep '\.part' | sort); do git cat-file blob "FETCH_HEAD:$f" >> "$out.tmp" || { echo "$s: blob $f failed"; break; }; done
+  want=$(git cat-file blob "FETCH_HEAD:pieces/$s/$s.mp4.sha256" | cut -d' ' -f1); got=$(sha256sum "$out.tmp" | cut -d' ' -f1)
   if [ "$want" = "$got" ]; then mv "$out.tmp" "$out"; echo "$s: collected ($(ffprobe -v error -count_packets -select_streams v -show_entries stream=nb_read_packets -of csv=p=0 "$out") frames, sha ok)"
   else rm -f "$out.tmp"; echo "$s: SHA MISMATCH ($got vs $want) — not used"; fi
   rm -rf "$T"; git update-ref -d "refs/remotes/origin/$b" 2>/dev/null
