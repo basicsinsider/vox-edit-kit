@@ -1,0 +1,1012 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8" /></head>
+<body>
+<template>
+  <style>
+    #root { position: absolute; inset: 0; overflow: hidden; background: var(--night); }
+    .q-scene { position: absolute; inset: 0; overflow: hidden; visibility: hidden; opacity: 0; }
+    .q-shot { position: absolute; inset: 0; overflow: hidden; transform-origin: 50% 50%; background: var(--night); }
+    .q-paper { background: var(--paper); }
+    .q-abs { position: absolute; }
+    .q-full { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; object-fit: cover; }
+    .q-fcw { position: absolute; inset: 0; transform-origin: 1000px 220px; }
+    .q-vw { position: absolute; inset: 0; transform-origin: 50% 50%; }
+    .q-cam { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 960px 540px; }
+    .q-p1, .q-p2 { position: absolute; inset: 0; background-size: cover; background-position: center; pointer-events: none; }
+    .q-p2 { opacity: 0.9; mix-blend-mode: multiply; }
+    .q-mk { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; pointer-events: none; }
+    .q-w { display: inline-block; white-space: pre; opacity: 0; }
+    .q-ink { color: var(--ink); }
+    .q-credit { position: absolute; right: 30px; bottom: 20px; font-size: 13px; letter-spacing: 0.08em; color: rgba(242,238,227,0.66); z-index: 5; }
+    .q-credit.ink { color: rgba(22,32,28,0.62); }
+    .q-lt { position: absolute; left: 96px; bottom: 104px; width: 1000px; font-size: 64px; line-height: 1.0; }
+    .q-cap { position: absolute; left: 96px; bottom: 186px; font-size: 24px; opacity: 0; }
+    .q-scrim-bl { position: absolute; inset: 0; pointer-events: none;
+      background: radial-gradient(ellipse 60% 54% at 0% 100%, rgba(10,13,12,0.84) 0%, rgba(10,13,12,0.52) 45%, rgba(10,13,12,0) 100%); }
+    .q-scrim-b { position: absolute; left: 0; right: 0; bottom: 0; height: 480px; pointer-events: none;
+      background: linear-gradient(180deg, rgba(10,13,12,0), rgba(10,13,12,0.88)); }
+    .q-scrim-t { position: absolute; left: 0; right: 0; top: 0; height: 520px; pointer-events: none;
+      background: linear-gradient(0deg, rgba(10,13,12,0), rgba(10,13,12,0.86)); }
+    .q-desk { position: absolute; inset: -40px; background: radial-gradient(ellipse 60% 70% at 55% 45%, #2a312d 0%, #161b19 55%, #0b0e0d 100%); }
+    .q-mark { position: relative; display: inline-block; isolation: isolate; }
+    .q-mark .q-hlb { position: absolute; left: -10px; right: -10px; top: 18%; bottom: 8%; background: var(--yellow); mix-blend-mode: multiply; transform-origin: 0 50%; transform: scaleX(0); z-index: -1; }
+    .q-stamp { position: absolute; padding: 16px 30px 8px; border: 9px solid var(--plum); color: var(--plum); line-height: 0.98; opacity: 0; }
+    .q-card { position: absolute; background: #f4efe4; padding: 14px; box-shadow: 0 22px 44px rgba(22,32,28,0.32); }
+    .q-pin { position: absolute; width: 22px; height: 22px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #d9b6e3, #7a3f8e 55%, #3e1f4c); box-shadow: 0 3px 4px rgba(0,0,0,0.4); }
+    .q-pcard { position: absolute; overflow: hidden; border: 3px solid rgba(244,238,226,0.85); box-shadow: 0 30px 70px rgba(0,0,0,0.6); border-radius: 6px; }
+    .q-pcard video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    .q-bgblur { position: absolute; left: -60px; top: -60px; width: 2040px; height: 1200px; object-fit: cover; filter: blur(30px) brightness(0.42) saturate(0.6); }
+    #pys13-flash { position: absolute; inset: 0; background: #f6f2ea; opacity: 0; pointer-events: none; z-index: 7; }
+    #pys13-night { position: absolute; inset: 0; background: #070908; opacity: 0; pointer-events: none; z-index: 9; }
+    #pys13-grain, #pys13-dust, #pys13-vig { z-index: 8; }
+
+    /* sc003 ballots */
+    .q-ballot { position: absolute; top: 300px; width: 230px; height: 330px; background: #f3eee2; box-shadow: 0 16px 30px rgba(22,32,28,0.28); }
+    .q-ballot .seal { position: absolute; left: 85px; top: 28px; width: 60px; height: 60px; border-radius: 50%; border: 6px solid var(--plum); box-sizing: border-box; }
+    .q-ballot .ln { position: absolute; left: 34px; height: 9px; background: rgba(22,32,28,0.18); }
+    .q-ballot .bx { position: absolute; left: 75px; top: 214px; width: 80px; height: 80px; border: 5px solid var(--ink); box-sizing: border-box; }
+    /* sc008 2.5D */
+    #pys13-sc008-stage { position: absolute; inset: 0; perspective: 1200px; perspective-origin: 960px 520px; }
+    #pys13-sc008-c3 { position: absolute; inset: 0; transform-style: preserve-3d; }
+    .q-l3 { position: absolute; left: -96px; top: -204px; width: 2112px; height: 1408px; transform-origin: 1056px 744px; }
+    .q-l3 img { position: absolute; inset: 0; width: 100%; height: 100%; }
+    /* sc009 phone */
+    #pys13-sc009-phone { position: absolute; left: 1210px; top: 70px; width: 480px; height: 960px; border-radius: 64px; background: #0a0c0b; box-shadow: 0 0 0 3px #3a403c, 0 40px 90px rgba(0,0,0,0.7); }
+    #pys13-sc009-scr { position: absolute; left: 18px; top: 18px; width: 444px; height: 924px; border-radius: 48px; overflow: hidden; background: #f1ede4; }
+    .q-hdr { position: absolute; left: 0; top: 0; width: 444px; height: 300px; background: var(--ueno-dark); }
+    .q-ring { position: absolute; border-radius: 50%; box-sizing: border-box; }
+    .q-dot { position: absolute; width: 26px; height: 26px; border-radius: 50%; border: 3px solid var(--ueno-light); box-sizing: border-box; }
+    .q-btn { position: absolute; width: 112px; height: 112px; border-radius: 28px; background: #e2ddd1; }
+    .q-skel { position: absolute; height: 18px; border-radius: 9px; background: rgba(22,32,28,0.12); }
+    /* sc015 receipt */
+    #pys13-sc015-rc { position: absolute; left: 700px; top: 120px; width: 520px; height: 1300px; background: #f3efe6; box-shadow: 0 30px 60px rgba(0,0,0,0.55); transform-origin: 50% 0; }
+    .q-rl { position: absolute; left: 40px; right: 40px; font-size: 40px; color: var(--ink); opacity: 0; }
+    .q-dots { position: absolute; left: 40px; right: 40px; height: 0; border-top: 4px dotted rgba(22,32,28,0.45); }
+    #pys13-sc015-slot { position: absolute; left: 640px; top: 96px; width: 640px; height: 40px; border-radius: 10px; background: #050606; box-shadow: 0 6px 12px rgba(0,0,0,0.6); }
+    /* sc019 notes */
+    .q-note { position: absolute; width: 300px; height: 140px; background: #dfe3d6; border: 3px solid var(--ash-dark); box-sizing: border-box; box-shadow: 0 6px 10px rgba(22,32,28,0.25); }
+    .q-note b { position: absolute; right: 18px; top: 10px; font-size: 38px; color: var(--ash-dark); }
+    .q-note i { position: absolute; left: 22px; top: 32px; width: 70px; height: 70px; border-radius: 50%; border: 4px solid rgba(53,60,56,0.6); }
+    .q-mon { position: absolute; top: 860px; width: 70px; height: 70px; border: 4px solid var(--ink); box-sizing: border-box; }
+    .q-mon u { position: absolute; inset: 6px; background: var(--tierra); transform: scale(0); }
+    /* sc024 landscape phone */
+    #pys13-sc024-ph { position: absolute; left: 700px; top: 250px; width: 1124px; height: 580px; border-radius: 56px; background: #0a0c0b; box-shadow: 0 0 0 3px #3a403c, 0 40px 90px rgba(0,0,0,0.7); }
+    #pys13-sc024-scr { position: absolute; left: 20px; top: 20px; width: 1084px; height: 540px; border-radius: 40px; overflow: hidden; background: #000; }
+    /* sc035 map */
+    #pys13-sc035-cam { position: absolute; left: 0; top: 0; width: 5006px; height: 5143px; transform-origin: 0 0; }
+    #pys13-sc035-cam img { position: absolute; left: 0; top: 0; width: 5006px; height: 5143px; }
+    .q-lab { position: absolute; left: 0; top: 0; white-space: nowrap; }
+    .q-cty { font-size: 54px; letter-spacing: 0.04em; color: #f0ede6; text-shadow: 0 2px 10px rgba(0,0,0,0.7); }
+    .q-city { font-size: 24px; }
+    .q-pdot { position: absolute; width: 18px; height: 18px; margin: -9px 0 0 -9px; border-radius: 50%; background: var(--bone); box-shadow: 0 0 0 4px rgba(20,19,18,0.6); }
+    /* sc036 censor */
+    .q-censor { display: inline-block; background: #050606; color: var(--bone); padding: 0.04em 0.24em 0; border: 3px solid var(--bone); transform: rotate(-3deg); }
+    /* post (sc037 / sc040) */
+    .q-post { position: absolute; width: 900px; height: 790px; border-radius: 26px; background: #121615; box-shadow: 0 0 0 2px rgba(244,238,226,0.25), 0 40px 90px rgba(0,0,0,0.65); overflow: hidden; }
+    .q-post img { position: absolute; left: 20px; top: 110px; width: 860px; height: 617px; object-fit: cover; border-radius: 10px; }
+    .q-post .av { position: absolute; left: 26px; top: 26px; width: 60px; height: 60px; border-radius: 50%; background: radial-gradient(circle, #5a5f5c, #2b302d); filter: blur(2px); }
+    .q-post .nb { position: absolute; left: 106px; height: 16px; border-radius: 8px; background: rgba(244,238,226,0.28); }
+    .q-icon { position: absolute; width: 90px; height: 90px; opacity: 0; }
+    /* sc033 newspaper */
+    #pys13-sc033-stage { position: absolute; inset: 0; perspective: 1600px; }
+    #pys13-sc033-page { position: absolute; left: 160px; top: 40px; width: 1600px; height: 1200px; transform-origin: 50% 40%; box-shadow: 0 40px 90px rgba(0,0,0,0.6); }
+    #pys13-sc033-page img { width: 1600px; height: 1200px; }
+  </style>
+
+  <div id="root" data-composition-id="pys13" data-vo-start="1456.50" data-duration="165.37" data-width="1920" data-height="1080">
+    <svg id="pys13-defs" width="0" height="0" style="position:absolute"></svg>
+
+    <!-- sc001 · 1456.50–1460.98 · FACE W · the board does the right thing -->
+    <div class="q-scene" id="pys13-sc001"><div class="q-shot" id="pys13-sc001-shot"><div class="q-fcw" id="pys13-sc001-fw"><video id="pys13-sc001-v" class="q-full" src="assets/facecam/paraguay_facecam_master.mp4" muted playsinline data-start="0.000" data-duration="4.560" data-media-start="1456.54"></video></div><div class="q-scrim-bl"></div><div class="q-lt t-display clean" id="pys13-sc001-lt"><span class="q-w">the </span><span class="q-w">board</span></div></div></div>
+
+    <!-- sc002 · 1460.98–1466.82 · head of the board = former CEO of Ueno · Carvallo at the BCP press table -->
+    <div class="q-scene" id="pys13-sc002"><div class="q-shot" id="pys13-sc002-shot">
+      <div class="q-vw" id="pys13-sc002-vw" style="transform-origin: 44% 0%"><video id="pys13-sc002-v" class="q-full" src="assets/paraguay/pys13/footage/bcp_carvallo.mp4" muted playsinline data-start="4.480" data-duration="5.920" data-media-start="0"></video></div>
+      <div class="q-scrim-bl"></div>
+      <div class="q-cap t-label clean" id="pys13-sc002-cap">Carlos Carvallo</div>
+      <div class="q-lt t-display clean" id="pys13-sc002-a"><span class="q-w">head </span><span class="q-w">of </span><span class="q-w">the </span><span class="q-w">board</span></div>
+      <div class="q-lt t-display clean" id="pys13-sc002-b"><span class="q-w">former </span><span class="q-w">CEO </span><span class="q-w">of </span><span class="q-w" style="color:var(--ueno-light)">Ueno</span></div>
+      <div class="q-credit t-label">Video: Telefuturo</div>
+    </div></div>
+
+    <!-- sc003 · 1466.82–1471.94 · votes unanimously … a bad bank · ballots + stamp -->
+    <div class="q-scene" id="pys13-sc003"><div class="q-shot q-paper" id="pys13-sc003-shot">
+      <div class="q-p1" style="background-image:url('assets/textures/paper_graph_01_hires.jpg')"></div>
+      <div class="q-p2" style="background-image:url('assets/textures/paper_cream_02.jpg'); opacity:0.85"></div>
+      <div class="q-cam" id="pys13-sc003-cam">
+        <div class="q-abs t-display q-ink" id="pys13-sc003-t" style="left:0; width:1920px; top:120px; text-align:center; font-size:84px"><span class="q-w">votes </span><span class="q-w">unanimously</span></div>
+        <div id="pys13-sc003-ballots"></div>
+        <svg id="pys13-sc003-svg" class="q-mk" viewBox="0 0 1920 1080"></svg>
+        <div class="q-stamp t-display" id="pys13-sc003-stamp" style="left:560px; top:420px; width:800px; text-align:center; font-size:132px"><span class="q-w">A </span><span class="q-w">BAD </span><span class="q-w">BANK</span></div>
+      </div>
+    </div></div>
+
+    <!-- sc004 · 1471.94–1476.83 · take it over … make everyone whole · BCP board press conference -->
+    <div class="q-scene" id="pys13-sc004"><div class="q-shot" id="pys13-sc004-shot">
+      <div class="q-vw" id="pys13-sc004-vw" style="transform-origin: 50% 0%"><video id="pys13-sc004-v" class="q-full" src="assets/paraguay/pys13/footage/bcp_board_wide.mp4" muted playsinline data-start="15.440" data-duration="4.970" data-media-start="0"></video></div>
+      <div class="q-scrim-bl"></div>
+      <div class="q-cap t-label clean" id="pys13-sc004-cap">Banco Central del Paraguay</div>
+      <div class="q-lt t-display clean" id="pys13-sc004-a"><span class="q-w">take </span><span class="q-w">it </span><span class="q-w">over</span></div>
+      <div class="q-lt t-display clean" id="pys13-sc004-b"><span class="q-w">make </span><span class="q-w">everyone </span><span class="q-w">whole</span></div>
+      <div class="q-credit t-label">Video: Telefuturo</div>
+    </div></div>
+
+    <div class="q-scene" id="pys13-sc005"><div class="q-shot" id="pys13-sc005-shot"><div class="q-fcw" id="pys13-sc005-fw"><video id="pys13-sc005-v" class="q-full" src="assets/facecam/paraguay_facecam_master.mp4" muted playsinline data-start="20.330" data-duration="4.630" data-media-start="1476.86"></video></div><div class="q-scrim-bl"></div><div class="q-lt t-display clean" id="pys13-sc005-lt"><span class="q-w">take </span><span class="q-w">care </span><span class="q-w">of </span><span class="q-w">this </span><span class="q-w">bankruptcy</span></div></div></div>
+    <div class="q-scene" id="pys13-sc006"><div class="q-shot" id="pys13-sc006-shot"><div class="q-fcw" id="pys13-sc006-fw"><video id="pys13-sc006-v" class="q-full" src="assets/facecam/paraguay_facecam_master.mp4" muted playsinline data-start="24.880" data-duration="4.100" data-media-start="1481.38"></video></div><div class="q-scrim-bl"></div><div class="q-lt t-display clean" id="pys13-sc006-lt"><span class="q-w">we </span><span class="q-w">don't </span><span class="q-w">exactly </span><span class="q-w">know</span></div></div></div>
+    <div class="q-scene" id="pys13-sc007"><div class="q-shot" id="pys13-sc007-shot"><div class="q-fcw" id="pys13-sc007-fw"><video id="pys13-sc007-v" class="q-full" src="assets/facecam/paraguay_facecam_master.mp4" muted playsinline data-start="28.900" data-duration="1.280" data-media-start="1485.42"></video></div></div></div>
+
+    <!-- sc008 · 1486.60–1488.30 · HERO · the bank is done · 2.5D ueno sign, lights out -->
+    <div class="q-scene" id="pys13-sc008"><div class="q-shot" id="pys13-sc008-shot">
+      <div id="pys13-sc008-stage"><div id="pys13-sc008-c3">
+        <div class="q-l3" id="pys13-sc008-pl"><img id="pys13-sc008-pli" src="assets/paraguay/pys13/derived/ueno_sign_plate.jpg" alt=""></div>
+        <div class="q-l3" id="pys13-sc008-lt3"><img id="pys13-sc008-lti" src="assets/paraguay/pys13/derived/ueno_sign_letters.png" alt=""></div>
+      </div></div>
+      <div class="q-scrim-t"></div>
+      <div class="q-abs t-display halate" id="pys13-sc008-t" style="left:0; width:1920px; top:150px; text-align:center; font-size:132px"><span class="q-w">the </span><span class="q-w">bank </span><span class="q-w">is </span><span class="q-w">done.</span></div>
+      <div class="q-credit t-label">Photo: Reuters</div>
+    </div></div>
+
+    <!-- sc009 · 1488.30–1492.62 · apps would just not work · our phone UI -->
+    <div class="q-scene" id="pys13-sc009"><div class="q-shot" id="pys13-sc009-shot">
+      <div class="q-desk"></div>
+      <div class="q-cam" id="pys13-sc009-cam">
+        <div id="pys13-sc009-phone"><div id="pys13-sc009-scr">
+          <div id="pys13-sc009-pin" class="q-abs" style="inset:0; background:var(--ueno-dark)">
+            <div class="q-ring" style="left:172px; top:170px; width:100px; height:100px; border:8px solid var(--ueno-light)"></div>
+            <div id="pys13-sc009-dots"></div>
+          </div>
+          <div id="pys13-sc009-home" class="q-abs" style="inset:0; opacity:0">
+            <div class="q-hdr"></div>
+            <div class="q-ring" style="left:36px; top:70px; width:56px; height:56px; border:6px solid var(--ueno-light)"></div>
+            <div class="q-skel" style="left:36px; top:176px; width:160px; background:rgba(147,224,211,0.35)"></div>
+            <div class="q-abs t-display" id="pys13-sc009-bal" style="left:36px; top:206px; font-size:72px; color:#f1ede4; opacity:0">—</div>
+            <div class="q-skel" id="pys13-sc009-bsk" style="left:36px; top:228px; width:300px; height:44px; border-radius:12px; background:rgba(147,224,211,0.25)"></div>
+            <div class="q-btn" id="pys13-sc009-b1" style="left:36px; top:340px"></div>
+            <div class="q-btn" id="pys13-sc009-b2" style="left:166px; top:340px"></div>
+            <div class="q-btn" id="pys13-sc009-b3" style="left:296px; top:340px"></div>
+            <svg class="q-abs" id="pys13-sc009-ic" style="left:0; top:0; width:444px; height:924px" viewBox="0 0 444 924"></svg>
+            <div class="q-skel" style="left:36px; top:500px; width:372px; height:70px; border-radius:16px"></div>
+            <div class="q-skel" style="left:36px; top:590px; width:372px; height:70px; border-radius:16px"></div>
+            <div class="q-skel" style="left:36px; top:680px; width:372px; height:70px; border-radius:16px"></div>
+            <div id="pys13-sc009-veil" class="q-abs" style="inset:0; background:rgba(12,18,16,0.55); opacity:0"></div>
+            <svg class="q-abs" id="pys13-sc009-spin" style="left:162px; top:400px; width:120px; height:120px; opacity:0" viewBox="0 0 120 120"><circle cx="60" cy="60" r="44" fill="none" stroke="rgba(241,237,228,0.25)" stroke-width="10"/><path d="M60 16 A44 44 0 0 1 104 60" fill="none" stroke="#93e0d3" stroke-width="10" stroke-linecap="round"/></svg>
+            <div id="pys13-sc009-toast" class="q-abs" style="left:28px; top:780px; width:388px; height:110px; border-radius:22px; background:#1b2220; box-shadow:0 14px 30px rgba(0,0,0,0.45); opacity:0">
+              <div class="q-ring" style="left:22px; top:25px; width:60px; height:60px; background:var(--tierra)"></div>
+              <div class="q-abs t-display" style="left:22px; top:30px; width:60px; text-align:center; font-size:46px; color:#f4eee2">!</div>
+              <div class="q-skel" style="left:104px; top:34px; width:230px; background:rgba(241,178,150,0.55)"></div>
+              <div class="q-skel" style="left:104px; top:64px; width:160px; background:rgba(244,238,226,0.25)"></div>
+            </div>
+          </div>
+        </div></div>
+      </div>
+      <div class="q-lt t-display clean" id="pys13-sc009-a" style="bottom:auto; top:380px; width:1000px"><span class="q-w">checking </span><span class="q-w">their </span><span class="q-w">apps</span></div>
+      <div class="q-lt t-display clean" id="pys13-sc009-b" style="bottom:auto; top:380px; width:1000px"><span class="q-w">it </span><span class="q-w">would </span><span class="q-w">just </span><span class="q-w">not </span><span class="q-w">work</span></div>
+      <div class="q-lt t-display clean" id="pys13-sc009-c" style="bottom:auto; top:380px; width:1000px"><span class="q-w">couldn't </span><span class="q-w">see </span><span class="q-w">your </span><span class="q-w">balance</span></div>
+    </div></div>
+
+    <!-- sc010 · 1492.62–1495.06 · couldn't draw money · real ueno ATMs on closure day -->
+    <div class="q-scene" id="pys13-sc010"><div class="q-shot" id="pys13-sc010-shot">
+      <img class="q-bgblur" src="assets/paraguay/shared/photos/ueno_branch_people_efe.jpg" alt="">
+      <div class="q-pcard" id="pys13-sc010-card" style="left:1170px; top:96px; width:666px; height:888px"><video id="pys13-sc010-v" class="q-full" src="assets/paraguay/pys13/footage/ueno_atms.mp4" muted playsinline data-start="36.120" data-duration="2.520" data-media-start="0"></video></div>
+      <div class="q-lt t-display clean" id="pys13-sc010-a" style="width:960px"><span class="q-w">you </span><span class="q-w">couldn't </span><span class="q-w">draw </span><span class="q-w">money</span></div>
+      <div class="q-lt t-display clean" id="pys13-sc010-b" style="width:960px"><span class="q-w">couldn't </span><span class="q-w">do </span><span class="q-w">anything</span></div>
+      <div class="q-credit t-label">Video: NPY</div>
+    </div></div>
+
+    <div class="q-scene" id="pys13-sc011"><div class="q-shot" id="pys13-sc011-shot"><div class="q-fcw" id="pys13-sc011-fw"><video id="pys13-sc011-v" class="q-full" src="assets/facecam/paraguay_facecam_master.mp4" muted playsinline data-start="38.560" data-duration="3.770" data-media-start="1495.06"></video></div><div class="q-scrim-bl"></div><div class="q-lt t-display clean" id="pys13-sc011-lt"><span class="q-w">a </span><span class="q-w">big </span><span class="q-w">problem</span></div></div></div>
+
+    <!-- sc012 · 1498.75–1503.87 · a lot of people … low income people · branch crowd → closed branch -->
+    <div class="q-scene" id="pys13-sc012"><div class="q-shot" id="pys13-sc012-shot">
+      <div class="q-vw" id="pys13-sc012-p1"><img class="q-full" src="assets/paraguay/shared/photos/ueno_branch_crowd.jpg" alt="" style="filter:saturate(0.55) contrast(1.05)"></div>
+      <div class="q-vw" id="pys13-sc012-p2" style="opacity:0"><img class="q-full" src="assets/paraguay/shared/photos/ueno_closed_branch_clients_reuters.jpg" alt="" style="filter:saturate(0.55) contrast(1.05)"></div>
+      <div class="q-scrim-bl"></div>
+      <div class="q-lt t-display clean" id="pys13-sc012-a"><span class="q-w">a </span><span class="q-w">lot </span><span class="q-w">of </span><span class="q-w">people</span></div>
+      <div class="q-lt t-display clean" id="pys13-sc012-b"><span class="q-w" style="color:var(--tierra-light)">low </span><span class="q-w" style="color:var(--tierra-light)">income </span><span class="q-w">people</span></div>
+      <div class="q-credit t-label" id="pys13-sc012-cr">Photos: Infobae · Reuters</div>
+    </div></div>
+
+    <!-- sc013 · 1503.87–1511.40 · get their money back … the FDIC of Paraguay -->
+    <div class="q-scene" id="pys13-sc013"><div class="q-shot q-paper" id="pys13-sc013-shot">
+      <div class="q-p1" style="background-image:url('assets/textures/paper_cream_01.jpg')"></div>
+      <div class="q-p2" style="background-image:url('assets/textures/paper_fiber_01.jpg'); opacity:0.5"></div>
+      <div class="q-cam" id="pys13-sc013-cam">
+        <div id="pys13-sc013-A" class="q-abs" style="inset:0">
+          <div class="q-abs t-display q-ink" id="pys13-sc013-t1" style="left:96px; top:110px; font-size:84px"><span class="q-w">get </span><span class="q-w">their </span><span class="q-w">money </span><span class="q-w">back</span></div>
+          <svg id="pys13-sc013-svg" class="q-mk" viewBox="0 0 1920 1080"></svg>
+          <div id="pys13-sc013-coins"></div>
+        </div>
+        <div id="pys13-sc013-B" class="q-abs" style="inset:0">
+          <div class="q-card" id="pys13-sc013-fdic" style="left:300px; top:240px; width:620px; height:330px; transform:rotate(-2deg); opacity:0">
+            <div class="q-abs" style="left:40px; top:60px; width:540px; height:214px; background:url('assets/paraguay/shared/logos/fdic.png') center/contain no-repeat; filter:grayscale(1) contrast(1.4); mix-blend-mode:multiply"></div>
+          </div>
+          <div class="q-card" id="pys13-sc013-flag" style="left:1010px; top:250px; width:560px; height:308px; transform:rotate(1.6deg); opacity:0">
+            <img src="assets/paraguay/shared/logos/flag_paraguay.png" alt="" style="width:560px; height:308px; object-fit:cover; filter:saturate(0.8)">
+          </div>
+          <div class="q-pin" id="pys13-sc013-pin1" style="left:600px; top:228px; opacity:0"></div>
+          <div class="q-pin" id="pys13-sc013-pin2" style="left:1280px; top:238px; opacity:0"></div>
+          <div class="q-abs t-display q-ink" id="pys13-sc013-t2" style="left:0; width:1920px; top:680px; text-align:center; font-size:110px"><span class="q-w">the </span><span class="q-w">FDIC </span><span class="q-w">of </span><span class="q-w" style="color:var(--tierra-dark)">Paraguay</span></div>
+        </div>
+      </div>
+      <div class="q-credit ink t-label">FDIC logo: US Gov (PD) · Flag: PD</div>
+    </div></div>
+
+    <div class="q-scene" id="pys13-sc014"><div class="q-shot" id="pys13-sc014-shot"><div class="q-fcw" id="pys13-sc014-fw"><video id="pys13-sc014-v" class="q-full" src="assets/facecam/paraguay_facecam_master.mp4" muted playsinline data-start="54.900" data-duration="3.230" data-media-start="1511.40"></video></div><div class="q-scrim-bl"></div><div class="q-lt t-display clean" id="pys13-sc014-lt"><span class="q-w">money </span><span class="q-w">in </span><span class="q-w">their </span><span class="q-w">hands</span></div></div></div>
+
+    <!-- sc015 · 1514.55–1519.80 · groceries, gas, normal things · till receipt -->
+    <div class="q-scene" id="pys13-sc015"><div class="q-shot" id="pys13-sc015-shot">
+      <div class="q-desk"></div>
+      <div class="q-cam" id="pys13-sc015-cam">
+        <div id="pys13-sc015-rc">
+          <div class="q-dots" style="top:60px"></div>
+          <div class="q-rl t-display" id="pys13-sc015-i1" style="top:110px">groceries</div>
+          <div class="q-dots" id="pys13-sc015-d1" style="top:175px; opacity:0"></div>
+          <div class="q-rl t-display" id="pys13-sc015-i2" style="top:220px">gas</div>
+          <div class="q-dots" id="pys13-sc015-d2" style="top:285px; opacity:0"></div>
+          <div class="q-rl t-display" id="pys13-sc015-i3" style="top:330px"><span class="q-w">normal </span><span class="q-w">things</span></div>
+          <div class="q-dots" id="pys13-sc015-d3" style="top:395px; opacity:0"></div>
+          <svg id="pys13-sc015-svg" class="q-abs" style="left:0; top:0; width:520px; height:600px; overflow:visible" viewBox="0 0 520 600"></svg>
+        </div>
+        <div id="pys13-sc015-slot"></div>
+      </div>
+    </div></div>
+
+    <div class="q-scene" id="pys13-sc016"><div class="q-shot" id="pys13-sc016-shot"><div class="q-fcw" id="pys13-sc016-fw"><video id="pys13-sc016-v" class="q-full" src="assets/facecam/paraguay_facecam_master.mp4" muted playsinline data-start="63.300" data-duration="7.350" data-media-start="1519.82"></video></div><div class="q-scrim-bl"></div><div class="q-lt t-display clean" id="pys13-sc016-lt"><span class="q-w">weeks </span><span class="q-w">or </span><span class="q-w">months</span></div></div></div>
+
+    <!-- sc017 · 1527.07–1529.80 · protest all over the place · montage -->
+    <div class="q-scene" id="pys13-sc017"><div class="q-shot" id="pys13-sc017-shot">
+      <div class="q-vw" id="pys13-sc017-vw">
+        <video id="pys13-sc017-v1" class="q-full" src="assets/paraguay/pys13/footage/mont_avenue.mp4" muted playsinline data-start="70.570" data-duration="1.110" data-media-start="0"></video>
+        <video id="pys13-sc017-v2" class="q-full" src="assets/paraguay/pys13/footage/mont_aerial.mp4" muted playsinline data-start="71.600" data-duration="0.930" data-media-start="0"></video>
+        <video id="pys13-sc017-v3" class="q-full" src="assets/paraguay/pys13/footage/mont_flags.mp4" muted playsinline data-start="72.450" data-duration="0.930" data-media-start="0"></video>
+      </div>
+      <div class="q-scrim-bl"></div>
+      <div class="q-lt t-display clean" id="pys13-sc017-a" style="width:1200px"><span class="q-w">protest </span><span class="q-w">all </span><span class="q-w">over </span><span class="q-w">the </span><span class="q-w">place</span></div>
+      <div class="q-credit t-label">Video: EFE · Última Hora</div>
+    </div></div>
+
+    <!-- sc018 · 1529.80–1534.27 · regulators … different solutions · BCP board member -->
+    <div class="q-scene" id="pys13-sc018"><div class="q-shot" id="pys13-sc018-shot">
+      <div class="q-vw" id="pys13-sc018-vw" style="transform-origin: 50% 0%"><video id="pys13-sc018-v" class="q-full" src="assets/paraguay/pys13/footage/bcp_member.mp4" muted playsinline data-start="73.300" data-duration="4.550" data-media-start="0"></video></div>
+      <div class="q-scrim-bl"></div>
+      <div class="q-cap t-label clean" id="pys13-sc018-cap" style="font-size:30px; bottom:184px"><span class="q-w">regulators</span></div>
+      <div class="q-lt t-display clean" id="pys13-sc018-a"><span class="q-w">different </span><span class="q-w">solutions</span></div>
+      <div class="q-credit t-label">Video: Telefuturo</div>
+    </div></div>
+
+    <!-- sc019 · 1534.27–1541.23 · $1,500 … monthly expenses -->
+    <div class="q-scene" id="pys13-sc019"><div class="q-shot q-paper" id="pys13-sc019-shot">
+      <div class="q-p1" style="background-image:url('assets/textures/paper_lined_01_hires.jpg')"></div>
+      <div class="q-p2" style="background-image:url('assets/textures/paper_cream_01.jpg'); opacity:0.8"></div>
+      <div class="q-cam" id="pys13-sc019-cam">
+        <div id="pys13-sc019-notes"></div>
+        <div class="q-abs t-display" id="pys13-sc019-num" style="left:900px; top:250px; font-size:220px; opacity:0"><span class="label-box" style="color:var(--yellow)" id="pys13-sc019-n">$0</span></div>
+        <div class="q-abs t-serif-i q-ink" id="pys13-sc019-m" style="left:910px; top:560px; font-size:72px"><span class="q-w">monthly </span><span class="q-w">expenses</span></div>
+        <div id="pys13-sc019-mons"></div>
+      </div>
+    </div></div>
+
+    <div class="q-scene" id="pys13-sc020"><div class="q-shot" id="pys13-sc020-shot"><div class="q-fcw" id="pys13-sc020-fw"><video id="pys13-sc020-v" class="q-full" src="assets/facecam/paraguay_facecam_master.mp4" muted playsinline data-start="84.730" data-duration="4.920" data-media-start="1541.23"></video></div></div></div>
+    <div class="q-scene" id="pys13-sc021"><div class="q-shot" id="pys13-sc021-shot"><div class="q-fcw" id="pys13-sc021-fw"><video id="pys13-sc021-v" class="q-full" src="assets/facecam/paraguay_facecam_master.mp4" muted playsinline data-start="89.570" data-duration="1.460" data-media-start="1546.10"></video></div></div></div>
+
+    <!-- sc022 · 1547.45–1550.83 · chaos, uncertainty, people are scared · tear gas -->
+    <div class="q-scene" id="pys13-sc022"><div class="q-shot" id="pys13-sc022-shot">
+      <div class="q-vw" id="pys13-sc022-vw"><video id="pys13-sc022-v" class="q-full" src="assets/paraguay/pys13/footage/teargas_running.mp4" muted playsinline data-start="90.950" data-duration="3.460" data-media-start="0"></video></div>
+      <div class="q-scrim-bl"></div>
+      <div class="q-lt t-display clean" id="pys13-sc022-a"><span class="q-w">chaos, </span><span class="q-w">uncertainty</span></div>
+      <div class="q-lt t-display clean" id="pys13-sc022-b"><span class="q-w">people </span><span class="q-w">are </span><span class="q-w">scared</span></div>
+      <div class="q-credit t-label">Video: Monumental AM (via @argennoti)</div>
+    </div></div>
+
+    <!-- sc023 · 1550.83–1552.59 · arrests are being made -->
+    <div class="q-scene" id="pys13-sc023"><div class="q-shot" id="pys13-sc023-shot">
+      <div class="q-vw" id="pys13-sc023-vw" style="transform-origin: 50% 0%"><video id="pys13-sc023-v" class="q-full" src="assets/paraguay/pys13/footage/arrest_scrum.mp4" muted playsinline data-start="94.330" data-duration="1.840" data-media-start="0"></video></div>
+      <div class="q-scrim-bl"></div>
+      <div class="q-lt t-display clean" id="pys13-sc023-a"><span class="q-w">arrests </span><span class="q-w">are </span><span class="q-w">being </span><span class="q-w">made</span></div>
+      <div class="q-credit t-label">Video: NPY</div>
+    </div></div>
+
+    <!-- sc024 · 1552.59–1557.95 · tried resigning … immunity for life · his resignation video in a phone -->
+    <div class="q-scene" id="pys13-sc024"><div class="q-shot" id="pys13-sc024-shot">
+      <img class="q-bgblur" src="assets/paraguay/shared/photos/pena_address_reuters.jpg" alt="">
+      <div class="q-cam" id="pys13-sc024-cam">
+        <div id="pys13-sc024-ph"><div id="pys13-sc024-scr"><video id="pys13-sc024-v" class="q-full" src="assets/paraguay/pys13/footage/pena_resignation.mp4" muted playsinline data-start="96.090" data-duration="5.440" data-media-start="0"></video></div></div>
+      </div>
+      <div class="q-lt t-display clean" id="pys13-sc024-a" style="width:600px; bottom:auto; top:380px"><span class="q-w">tried </span><span class="q-w">resigning</span></div>
+      <div class="q-lt t-display clean" id="pys13-sc024-b" style="width:600px; bottom:auto; top:380px"><span class="q-w" style="color:var(--plum-light)">immunity </span><span class="q-w">for </span><span class="q-w">life</span></div>
+      <div class="q-credit t-label">Video: Santiago Peña (@SantiPenap)</div>
+    </div></div>
+
+    <div class="q-scene" id="pys13-sc025"><div class="q-shot" id="pys13-sc025-shot"><div class="q-fcw" id="pys13-sc025-fw"><video id="pys13-sc025-v" class="q-full" src="assets/facecam/paraguay_facecam_master.mp4" muted playsinline data-start="101.450" data-duration="2.170" data-media-start="1557.95"></video></div><div class="q-scrim-bl"></div><div class="q-lt t-display clean" id="pys13-sc025-lt"><span class="q-w">nothing's </span><span class="q-w">gonna </span><span class="q-w">happen </span><span class="q-w">to </span><span class="q-w">him</span></div></div></div>
+
+    <!-- sc026 · 1560.04–1563.48 · Senate rejects … impeaches him · vote board -->
+    <div class="q-scene" id="pys13-sc026"><div class="q-shot" id="pys13-sc026-shot">
+      <div class="q-cam" id="pys13-sc026-cam" style="transform-origin: 880px 560px">
+        <img class="q-abs" src="assets/paraguay/shared/photos/senate_vote_board_reuters.jpg" alt="" style="left:0; top:-110px; width:1920px; height:1420px; filter:saturate(0.6) contrast(1.05)">
+        <svg id="pys13-sc026-svg" class="q-mk" viewBox="0 0 1920 1080"></svg>
+      </div>
+      <div class="q-abs t-display" id="pys13-sc026-a" style="left:96px; top:72px; font-size:58px"><span class="label-box" id="pys13-sc026-ab" style="opacity:0"><span class="q-w">rejects </span><span class="q-w">his </span><span class="q-w">resignation</span></span></div>
+      <div class="q-abs t-display" id="pys13-sc026-b" style="left:96px; top:72px; font-size:58px"><span class="label-box" id="pys13-sc026-bb" style="opacity:0; background:var(--plum-dark)"><span class="q-w">impeaches </span><span class="q-w">him</span></span></div>
+      <div class="q-credit t-label">Photo: Reuters / Cesar Olmedo</div>
+    </div></div>
+
+    <div class="q-scene" id="pys13-sc027"><div class="q-shot" id="pys13-sc027-shot"><div class="q-fcw" id="pys13-sc027-fw"><video id="pys13-sc027-v" class="q-full" src="assets/facecam/paraguay_facecam_master.mp4" muted playsinline data-start="106.980" data-duration="2.660" data-media-start="1563.50"></video></div><div class="q-scrim-bl"></div><div class="q-lt t-display clean" id="pys13-sc027-lt"><span class="q-w">does </span><span class="q-w">not </span><span class="q-w">have </span><span class="q-w">that </span><span class="q-w">immunity</span></div></div></div>
+
+    <!-- sc028 · 1566.06–1569.13 · under house arrest · Regimiento gate -->
+    <div class="q-scene" id="pys13-sc028"><div class="q-shot" id="pys13-sc028-shot">
+      <img class="q-bgblur" src="assets/paraguay/shared/photos/police_pena_residence_reuters.jpg" alt="">
+      <div class="q-pcard" id="pys13-sc028-card" style="left:1170px; top:96px; width:666px; height:888px"><video id="pys13-sc028-v" class="q-full" src="assets/paraguay/pys13/footage/regimiento_gate.mp4" muted playsinline data-start="109.560" data-duration="3.150" data-media-start="0"></video></div>
+      <div class="q-lt t-display clean" id="pys13-sc028-a" style="width:960px"><span class="q-w">under </span><span class="q-w">house </span><span class="q-w">arrest</span></div>
+      <div class="q-credit t-label">Video: Monumental AM 1080</div>
+    </div></div>
+
+    <!-- sc029 · 1569.13–1572.92 · head of the board … under arrest · Carvallo at the Fiscalía -->
+    <div class="q-scene" id="pys13-sc029"><div class="q-shot" id="pys13-sc029-shot">
+      <div class="q-vw" id="pys13-sc029-vw"><video id="pys13-sc029-v" class="q-full" src="assets/paraguay/pys13/footage/carvallo_fiscalia.mp4" muted playsinline data-start="112.630" data-duration="3.870" data-media-start="0"></video></div>
+      <div class="q-scrim-bl"></div>
+      <div class="q-cap t-label clean" id="pys13-sc029-cap">Carlos Carvallo</div>
+      <div class="q-lt t-display clean" id="pys13-sc029-a"><span class="q-w">head </span><span class="q-w">of </span><span class="q-w">the </span><span class="q-w">board</span></div>
+      <div class="q-lt t-display clean" id="pys13-sc029-b"><span class="q-w">under </span><span class="q-w">arrest</span></div>
+      <div class="q-credit t-label">Video: Última Hora</div>
+    </div></div>
+
+    <!-- sc030 · 1572.92–1576.60 · the guy who owned the whole thing … under arrest · case card -->
+    <div class="q-scene" id="pys13-sc030"><div class="q-shot q-paper" id="pys13-sc030-shot">
+      <div class="q-p1" style="background-image:url('assets/textures/paper_stained_01_hires.jpg')"></div>
+      <div class="q-p2" style="background-image:url('assets/textures/paper_cream_02.jpg'); opacity:0.8"></div>
+      <div class="q-cam" id="pys13-sc030-cam">
+        <div class="q-card" id="pys13-sc030-card" style="left:150px; top:170px; width:760px; height:470px; transform:rotate(-2deg)">
+          <img src="assets/paraguay/shared/photos/miguel_vazquez.jpg" alt="" style="width:760px; height:428px; object-fit:cover; filter:grayscale(0.85) contrast(1.05)">
+          <div class="q-abs" style="left:14px; right:14px; bottom:12px; height:12px; background:var(--ueno)"></div>
+        </div>
+        <div class="q-pin" id="pys13-sc030-pin" style="left:520px; top:156px"></div>
+        <div class="q-abs t-label q-ink" id="pys13-sc030-cap" style="left:160px; top:690px; font-size:28px; opacity:0">Miguel Vázquez</div>
+        <div class="q-abs t-display q-ink" id="pys13-sc030-t" style="left:1010px; top:250px; width:820px; font-size:80px; line-height:1.02"><span class="q-w">owned </span><span class="q-w">the </span><span class="q-w">whole </span><span class="q-w">thing</span></div>
+        <div class="q-stamp t-display" id="pys13-sc030-stamp" style="left:1010px; top:560px; font-size:110px; transform:rotate(-6deg)"><span class="q-w">UNDER </span><span class="q-w">ARREST</span></div>
+      </div>
+      <div class="q-credit ink t-label">Photo: via La Gaceta</div>
+    </div></div>
+
+    <!-- sc031 · 1576.60–1583.24 · twenty or so people … making these decisions · directors in cuffs -->
+    <div class="q-scene" id="pys13-sc031"><div class="q-shot" id="pys13-sc031-shot">
+      <div class="q-vw" id="pys13-sc031-vw" style="transform-origin: 50% 0%">
+        <video id="pys13-sc031-v1" class="q-full" src="assets/paraguay/pys13/footage/directors_led.mp4" muted playsinline data-start="120.100" data-duration="3.360" data-media-start="0"></video>
+        <video id="pys13-sc031-v2" class="q-full" src="assets/paraguay/pys13/footage/directors_car.mp4" muted playsinline data-start="123.380" data-duration="3.440" data-media-start="0"></video>
+      </div>
+      <div class="q-scrim-bl"></div>
+      <div class="q-lt t-display clean" id="pys13-sc031-a"><span class="q-w" style="color:var(--yellow)">twenty </span><span class="q-w">or </span><span class="q-w">so </span><span class="q-w">people</span></div>
+      <div class="q-lt t-display clean" id="pys13-sc031-b"><span class="q-w">making </span><span class="q-w">these </span><span class="q-w">decisions</span></div>
+      <div class="q-credit t-label">Video: NPY</div>
+    </div></div>
+
+    <div class="q-scene" id="pys13-sc032"><div class="q-shot" id="pys13-sc032-shot"><div class="q-fcw" id="pys13-sc032-fw"><video id="pys13-sc032-v" class="q-full" src="assets/facecam/paraguay_facecam_master.mp4" muted playsinline data-start="126.740" data-duration="4.420" data-media-start="1583.24"></video></div><div class="q-scrim-bl"></div><div class="q-lt t-display clean" id="pys13-sc032-lt"><span class="q-w">we'll </span><span class="q-w">find </span><span class="q-w">out </span><span class="q-w">more</span></div></div></div>
+
+    <!-- sc033 · 1587.58–1589.88 · a very interesting story · ABC Color homepage -->
+    <div class="q-scene" id="pys13-sc033"><div class="q-shot" id="pys13-sc033-shot">
+      <div class="q-desk"></div>
+      <div id="pys13-sc033-stage"><div id="pys13-sc033-page"><img src="assets/paraguay/shared/docs/abc_homepage_2026-11-08.jpg" alt=""></div></div>
+      <div class="q-scrim-bl"></div>
+      <div class="q-lt t-display clean" id="pys13-sc033-a"><span class="q-w">a </span><span class="q-w">very </span><span class="q-w">interesting </span><span class="q-w">story</span></div>
+      <div class="q-credit t-label">ABC Color, 8 Nov 2026</div>
+    </div></div>
+
+    <div class="q-scene" id="pys13-sc034"><div class="q-shot" id="pys13-sc034-shot"><div class="q-fcw" id="pys13-sc034-fw"><video id="pys13-sc034-v" class="q-full" src="assets/facecam/paraguay_facecam_master.mp4" muted playsinline data-start="133.380" data-duration="4.420" data-media-start="1589.88"></video></div><div class="q-scrim-bl"></div><div class="q-lt t-display clean" id="pys13-sc034-lt"><span class="q-w">going </span><span class="q-w">viral</span></div></div></div>
+
+    <!-- sc035 · 1594.22–1599.77 · the daughter of the president … United States … 20 years old · map -->
+    <div class="q-scene" id="pys13-sc035"><div class="q-shot" id="pys13-sc035-shot" style="background:#0b0f14">
+      <div id="pys13-sc035-cam">
+        <img src="assets/maps/kit/americas_night.jpg" alt="">
+        <img src="assets/paraguay/pys13/derived/map_us_outline.svg" alt="" id="pys13-sc035-us" style="opacity:0">
+        <img src="assets/paraguay/pys13/derived/map_paraguay_fill.svg" alt="">
+        <svg id="pys13-sc035-svg" class="q-abs" style="left:0; top:0; width:5006px; height:5143px; overflow:visible" viewBox="0 0 5006 5143"></svg>
+      </div>
+      <div id="pys13-sc035-labs">
+        <div class="q-lab t-display q-cty" id="pys13-sc035-lpy">PARAGUAY</div>
+        <div class="q-lab t-display q-cty" id="pys13-sc035-lus" style="opacity:0">UNITED STATES</div>
+        <div class="q-pdot" id="pys13-sc035-dasu"></div>
+        <div class="q-lab t-label clean q-city" id="pys13-sc035-lasu">Asunción</div>
+        <div class="q-pdot" id="pys13-sc035-dny" style="opacity:0"></div>
+        <div class="q-lab t-label clean q-city" id="pys13-sc035-lny" style="opacity:0">New York</div>
+      </div>
+      <div class="q-scrim-bl"></div>
+      <div class="q-lt t-display clean" id="pys13-sc035-a" style="width:1100px"><span class="q-w">the </span><span class="q-w">daughter </span><span class="q-w">of </span><span class="q-w">the </span><span class="q-w">president</span></div>
+      <div class="q-lt t-display clean" id="pys13-sc035-b"><span class="q-w halate yellow">20 </span><span class="q-w">years </span><span class="q-w">old</span></div>
+      <div class="q-credit t-label">Map: Natural Earth / AWS Terrain</div>
+    </div></div>
+
+    <!-- sc036 · 1599.77–1603.16 · FACE C · people do stupid [BLEEP] when they're young -->
+    <div class="q-scene" id="pys13-sc036"><div class="q-shot" id="pys13-sc036-shot"><div class="q-fcw" id="pys13-sc036-fw"><video id="pys13-sc036-v" class="q-full" src="assets/facecam/paraguay_facecam_master.mp4" muted playsinline data-start="143.270" data-duration="3.470" data-media-start="1599.80"></video></div>
+      <div class="q-scrim-bl"></div>
+      <div class="q-lt t-display clean" id="pys13-sc036-lt" style="width:1100px"><span class="q-w">people </span><span class="q-w">do </span><span class="q-w">stupid </span><span class="q-w"><span class="q-censor" id="pys13-sc036-cz">#$%!</span></span><br><span class="q-w">when </span><span class="q-w">they're </span><span class="q-w">young</span></div>
+    </div></div>
+
+    <!-- sc037 · 1603.16–1607.24 · on her Instagram … tax the poor · the story (face blurred) -->
+    <div class="q-scene" id="pys13-sc037"><div class="q-shot" id="pys13-sc037-shot">
+      <div class="q-desk"></div>
+      <div class="q-cam" id="pys13-sc037-cam">
+        <div class="q-post" id="pys13-sc037-post" style="left:860px; top:150px">
+          <div class="av"></div><div class="nb" style="top:38px; width:220px"></div><div class="nb" style="top:66px; width:120px; opacity:0.6"></div>
+          <img src="assets/paraguay/pys13/derived/tax_the_poor_story_blur.jpg" alt="">
+        </div>
+        <svg id="pys13-sc037-svg" class="q-mk" viewBox="0 0 1920 1080"></svg>
+      </div>
+      <div class="q-scrim-bl"></div>
+      <div class="q-lt t-display clean" id="pys13-sc037-a" style="width:700px"><span class="q-w">on </span><span class="q-w">her </span><span class="q-w">Instagram</span></div>
+      <div class="q-lt t-display clean" id="pys13-sc037-b" style="width:700px"><span class="q-w">tax </span><span class="q-w">the </span><span class="q-w">poor</span></div>
+      <div class="q-credit t-label">Instagram story via IBTimes UK · face blurred</div>
+    </div></div>
+
+    <div class="q-scene" id="pys13-sc038"><div class="q-shot" id="pys13-sc038-shot"><div class="q-fcw" id="pys13-sc038-fw"><video id="pys13-sc038-v" class="q-full" src="assets/facecam/paraguay_facecam_master.mp4" muted playsinline data-start="150.740" data-duration="3.760" data-media-start="1607.24"></video></div><div class="q-scrim-bl"></div><div class="q-lt t-display clean" id="pys13-sc038-lt"><span class="q-w">Paraguayan </span><span class="q-w">people </span><span class="q-w">are </span><span class="q-w">not </span><span class="q-w">happy</span></div></div></div>
+
+    <!-- sc039 · 1610.92–1615.58 · people at Columbia … also not happy · Low Library -->
+    <div class="q-scene" id="pys13-sc039"><div class="q-shot" id="pys13-sc039-shot">
+      <div class="q-vw" id="pys13-sc039-vw" style="transform-origin: 50% 40%"><img class="q-full" src="assets/paraguay/shared/photos/columbia_low_library.jpg" alt="" style="filter:grayscale(0.8) brightness(0.8) contrast(1.08)"></div>
+      <div class="q-abs" style="inset:0; background:var(--plum-dark); mix-blend-mode:soft-light; opacity:0.55"></div>
+      <div class="q-scrim-bl"></div>
+      <div class="q-abs" id="pys13-sc039-logo" style="left:96px; top:84px; width:420px; height:64px; background:var(--bone); -webkit-mask:url('assets/paraguay/shared/logos/columbia_university.png') left center / contain no-repeat; mask:url('assets/paraguay/shared/logos/columbia_university.png') left center / contain no-repeat; opacity:0"></div>
+      <div class="q-lt t-display clean" id="pys13-sc039-a"><span class="q-w">people </span><span class="q-w">at </span><span class="q-w">Columbia</span></div>
+      <div class="q-lt t-display clean" id="pys13-sc039-b"><span class="q-w">also </span><span class="q-w">not </span><span class="q-w">happy</span></div>
+      <div class="q-credit t-label">Photo: Magpieturtle, CC BY 4.0</div>
+    </div></div>
+
+    <!-- sc040 · 1615.58–1621.87 · going viral … adding more fire … already mad about · ENDING -->
+    <div class="q-scene" id="pys13-sc040"><div class="q-shot" id="pys13-sc040-shot">
+      <div class="q-vw" id="pys13-sc040-vw"><video id="pys13-sc040-v" class="q-full" src="assets/paraguay/pys13/footage/protest_fire.mp4" muted playsinline data-start="161.800" data-duration="3.650" data-media-start="0"></video></div>
+      <div class="q-abs" id="pys13-sc040-dk" style="inset:0; background:radial-gradient(ellipse 60% 70% at 55% 45%, #2a312d 0%, #161b19 55%, #0b0e0d 100%)"></div>
+      <svg id="pys13-sc040-svg" class="q-mk" viewBox="0 0 1920 1080"></svg>
+      <div id="pys13-sc040-icons"></div>
+      <div class="q-scrim-bl" id="pys13-sc040-scrim"></div>
+      <div class="q-lt t-display clean" id="pys13-sc040-a" style="width:700px"><span class="q-w">going </span><span class="q-w">viral</span></div>
+      <div class="q-lt t-display halate" id="pys13-sc040-b" style="width:1100px"><span class="q-w">adding </span><span class="q-w">more </span><span class="q-w">fire</span></div>
+      <div class="q-lt t-display clean" id="pys13-sc040-c" style="width:1100px"><span class="q-w">already </span><span class="q-w">mad </span><span class="q-w">about</span></div>
+      <div class="q-credit t-label" id="pys13-sc040-cr">Video: via @subhankar_org</div>
+    </div></div>
+
+    <div id="pys13-flash"></div>
+    <div id="pys13-grain" class="tx tx-grain" style="background-image:url('assets/textures/grain_01_norm.jpg')"></div>
+    <div id="pys13-dust" class="tx tx-dust" style="background-image:url('assets/textures/dust_02.jpg')"></div>
+    <div id="pys13-vig" class="vignette"></div>
+    <div id="pys13-night"></div>
+    <audio id="pys13-vo" class="temp-vo" src="vo_py.mp3" data-start="0" data-duration="165.37" data-media-start="1456.50" data-volume="1"></audio>
+  </div>
+
+  <script>
+  (function () {
+    const SEG = "pys13", SEG_START = 1456.50, SEG_END = 1621.87, DURATION = 165.37;
+    const T = (s) => +(s - SEG_START).toFixed(3);   // TEXT cues (audited): literal master word start − 0.06
+    const S = (s) => +(s - SEG_START).toFixed(3);   // STRUCTURAL cues (cuts, camera, objects)
+    const tl = gsap.timeline({ paused: true });
+    const $ = (id) => document.getElementById(SEG + "-" + id);
+    const NS = "http://www.w3.org/2000/svg";
+    const defs = $("defs");
+    const E = FX.ease;
+    const C = (e, d) => FX.choppy(e, d, 12);
+    const INK = "#16201c", BONE = "#f4eee2", PLUM = "#7a3f8e", PLUML = "#cfa8dc", UENO = "#1fa595", UENOL = "#93e0d3", TIERRA = "#cf5a33", TIERRAL = "#f1b296";
+
+    // ---------- scenes ----------
+    const SC = [
+      ["sc001", 1456.50, 1460.98, "face"], ["sc002", 1460.98, 1466.82, "foot"], ["sc003", 1466.82, 1471.94, "paper"], ["sc004", 1471.94, 1476.83, "foot"],
+      ["sc005", 1476.83, 1481.38, "face"], ["sc006", 1481.38, 1485.40, "face"], ["sc007", 1485.40, 1486.60, "face"], ["sc008", 1486.60, 1488.30, "night"],
+      ["sc009", 1488.30, 1492.62, "night"], ["sc010", 1492.62, 1495.06, "foot"], ["sc011", 1495.06, 1498.75, "face"], ["sc012", 1498.75, 1503.87, "foot"],
+      ["sc013", 1503.87, 1511.40, "paper"], ["sc014", 1511.40, 1514.55, "face"], ["sc015", 1514.55, 1519.80, "night"], ["sc016", 1519.80, 1527.07, "face"],
+      ["sc017", 1527.07, 1529.80, "foot"], ["sc018", 1529.80, 1534.27, "foot"], ["sc019", 1534.27, 1541.23, "paper"], ["sc020", 1541.23, 1546.07, "face"],
+      ["sc021", 1546.07, 1547.45, "face"], ["sc022", 1547.45, 1550.83, "foot"], ["sc023", 1550.83, 1552.59, "foot"], ["sc024", 1552.59, 1557.95, "night"],
+      ["sc025", 1557.95, 1560.04, "face"], ["sc026", 1560.04, 1563.48, "foot"], ["sc027", 1563.48, 1566.06, "face"], ["sc028", 1566.06, 1569.13, "foot"],
+      ["sc029", 1569.13, 1572.92, "foot"], ["sc030", 1572.92, 1576.60, "paper"], ["sc031", 1576.60, 1583.24, "foot"], ["sc032", 1583.24, 1587.58, "face"],
+      ["sc033", 1587.58, 1589.88, "paper"], ["sc034", 1589.88, 1594.22, "face"], ["sc035", 1594.22, 1599.77, "night"], ["sc036", 1599.77, 1603.16, "face"],
+      ["sc037", 1603.16, 1607.24, "night"], ["sc038", 1607.24, 1610.92, "face"], ["sc039", 1610.92, 1615.58, "foot"], ["sc040", 1615.58, 1621.87, "night"],
+    ];
+    const GROUND = { paper: [0.32, 0.16, 0.26], night: [1, 0.42, 0.36], foot: [0.75, 0.28, 0.3], face: [0, 0, 0] };
+    const EARLY = { sc019: 0.45 };   // paper slide: the incoming scene is visible during the slide
+    SC.forEach((s, i) => {
+      const el = $(s[0]), a = s[1] - (EARLY[s[0]] || 0);
+      if (i === 0) gsap.set(el, { autoAlpha: 1 });
+      else tl.fromTo(el, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.001, immediateRender: false }, S(a));
+      if (s[2] < SEG_END) tl.set(el, { autoAlpha: 0 }, S(s[2]) + 0.05);
+    });
+    gsap.set([$("vig"), $("dust"), $("grain")], { opacity: 0 });
+    SC.forEach((s) => { const v = GROUND[s[3]]; tl.set([$("vig"), $("dust"), $("grain")], { opacity: (i) => v[i] }, S(s[1])); });
+
+    // ---------- helpers ----------
+    const rise = (el, t, o) => { o = o || {}; const d = o.dur || 0.6;
+      tl.fromTo(el, { opacity: 0, y: o.y == null ? 16 : o.y }, { opacity: 1, y: 0, duration: d, ease: C(E.out, d), immediateRender: true }, t); };
+    const out = (el, t, d) => tl.to(el, { opacity: 0, duration: d || 0.25, ease: "power1.in" }, t);
+    const W = (id) => Array.from($(id).querySelectorAll(".q-w"));
+    function words(id, cues, o) { const ws = W(id); cues.forEach((c, i) => rise(ws[i], c, o)); }
+    function svgEl(parent, tag, attrs) { const n = document.createElementNS(NS, tag); for (const k in attrs) n.setAttribute(k, attrs[k]); parent.appendChild(n); return n; }
+    function ink(parent, d, t, dur, o) {
+      o = o || {};
+      const p = svgEl(parent, "path", { d: d, fill: "none", stroke: o.color || INK, "stroke-width": o.width || 5, "stroke-linecap": "round", "stroke-linejoin": "round" });
+      if (o.filter) p.setAttribute("filter", o.filter);
+      const len = p.getTotalLength() || 1;
+      p.setAttribute("stroke-dasharray", len + " " + len); p.setAttribute("stroke-dashoffset", len);
+      gsap.set(p, { opacity: 0 }); tl.set(p, { opacity: o.opacity == null ? 1 : o.opacity }, t);
+      tl.fromTo(p, { attr: { "stroke-dashoffset": len } }, { attr: { "stroke-dashoffset": 0 }, duration: dur, ease: o.ease || C(E.out, dur), immediateRender: true }, t);
+      return p;
+    }
+    const whipN = { n: 0 };
+    function whip(a, b, t, o) {
+      o = Object.assign({ dir: 1, vertical: false, flash: false, dur: 0.32 }, o);
+      const k = ++whipN.n, ba = FX.whipDefs(defs, SEG + "-wa" + k), bb = FX.whipDefs(defs, SEG + "-wb" + k), h = o.dur / 2;
+      const A = $(a + "-shot"), B = $(b + "-shot");
+      tl.set(A, { filter: "url(#" + SEG + "-wa" + k + ")" }, t - h - 0.01); tl.set(A, { filter: "none" }, t + 0.06);
+      tl.set(B, { filter: "url(#" + SEG + "-wb" + k + ")" }, t - 0.001); tl.set(B, { filter: "none" }, t + h + 0.02);
+      FX.whip(tl, A, B, t, { dir: o.dir, vertical: o.vertical, dur: o.dur, blurA: ba, blurB: bb });
+      if (o.flash) tl.fromTo($("flash"), { opacity: 0 }, { opacity: 0.85, duration: 0.08, yoyo: true, repeat: 1, ease: "power2.in", immediateRender: false }, t - 0.08);
+    }
+    function slide(a, b, t, o) {
+      o = Object.assign({ from: 1, d: 0.45 }, o);
+      const A = $(a + "-shot"), B = $(b + "-shot"), dist = 1980 * o.from;
+      tl.fromTo(B, { x: dist, boxShadow: "0 0 80px rgba(0,0,0,0.5)" }, { x: 0, duration: o.d, ease: C(E.inOut, o.d), immediateRender: false }, t - o.d);
+      tl.set(B, { boxShadow: "none" }, t);
+      tl.fromTo(A, { x: 0 }, { x: -dist * 0.12, duration: o.d, ease: E.in, immediateRender: false }, t - o.d);
+    }
+    const FR = { W: [1.0, 1.03], M: [1.25, 1.285], C: [1.55, 1.59] };
+    function face(id, a, b, k) {
+      const fw = $(id + "-fw");
+      gsap.set(fw, { scale: FR[k][0] });
+      tl.fromTo(fw, { scale: FR[k][0] }, { scale: FR[k][1], duration: b - a, ease: "none", immediateRender: false }, S(a));
+    }
+    function push(id, a, b, s0, s1) { tl.fromTo($(id), { scale: s0 }, { scale: s1, duration: b - a, ease: "none", immediateRender: false }, S(a)); }
+    function stamp(id, ts) {   // stamp: punches in (3 steps) on its first word, later words appear on their own cues
+      const st = $(id), ws = W(id);
+      tl.fromTo(st, { opacity: 0, scale: 1.5 }, { opacity: 1, scale: 1, duration: 0.25, ease: "steps(3)", immediateRender: true }, ts[0]);
+      ts.forEach((t, i) => tl.fromTo(ws[i], { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, t));
+    }
+    function heart(parent, x, y, s, fill) {
+      return svgEl(parent, "path", { d: "M0 -8 C-10 -26 -38 -18 -34 4 C-31 20 -10 30 0 42 C10 30 31 20 34 4 C38 -18 10 -26 0 -8 Z", fill: fill, transform: "translate(" + x + " " + y + ") scale(" + s + ")" });
+    }
+
+    FX.grain($("grain"), 1313);
+    FX.dust($("dust"), 1314, 2);
+    const PEN = FX.markupDefs(defs, SEG + "-pen", { boil: 4 });
+    defs.setAttribute("viewBox", "0 0 1 1");
+
+    /* ===== sc001 · FACE W · the board does the right thing ===== */
+    face("sc001", 1456.50, 1460.98, "W");
+    (function () {   // two lines: "the board" / "does the right thing"
+      const lt = $("sc001-lt"); lt.innerHTML = '<span class="q-w">the </span><span class="q-w">board</span><br><span class="q-w">does </span><span class="q-w">the </span><span class="q-w">right </span><span class="q-w">thing</span>';
+    })();
+    words("sc001-lt", [T(1458.76), T(1459.00), T(1459.96), T(1460.20), T(1460.36), T(1460.60)], { dur: 0.4, y: 10 });
+
+    /* ===== sc002 · Carvallo at the BCP press table (hard cut) ===== */
+    push("sc002-vw", 1460.98, 1466.82, 1.52, 1.6);
+    rise($("sc002-cap"), S(1461.30), { dur: 0.5, y: 8 });
+    words("sc002-a", [T(1462.04), T(1462.28), T(1462.44), T(1462.60)], { dur: 0.45, y: 10 });
+    out($("sc002-a"), S(1463.40), 0.15);
+    words("sc002-b", [T(1463.56), T(1463.96), T(1464.68), T(1465.16)], { dur: 0.45, y: 10 });
+
+    /* ===== sc003 · unanimous vote → A BAD BANK (whip →) ===== */
+    whip("sc002", "sc003", S(1466.82), { dir: 1 });
+    (function () {
+      const host = $("sc003-ballots"), svg = $("sc003-svg"), xs = [290, 570, 850, 1130, 1410];
+      tl.fromTo($("sc003-cam"), { scale: 1.0 }, { scale: 1.04, duration: 5.1, ease: "none", immediateRender: false }, S(1466.82));
+      xs.forEach((x, i) => {
+        const b = document.createElement("div"); b.className = "q-ballot"; b.style.left = x + "px";
+        b.style.transform = "rotate(" + [-2, 1, -1, 2, -1.5][i] + "deg)";
+        b.innerHTML = '<div class="seal"></div><div class="ln" style="top:118px; width:160px"></div><div class="ln" style="top:144px; width:120px"></div><div class="ln" style="top:170px; width:140px"></div><div class="bx"></div>';
+        host.appendChild(b);
+        tl.fromTo(b, { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.6, ease: C(E.out, 0.6), immediateRender: true }, S(1466.95) + i * 2 / 12);
+        // the tick (pen) — one per board member, staggered across "unanimously"
+        const cx = x + 115, cy = 554;
+        ink(svg, "M" + (cx - 28) + " " + (cy - 2) + " L" + (cx - 8) + " " + (cy + 22) + " C" + (cx + 4) + " " + (cy - 4) + " " + (cx + 22) + " " + (cy - 30) + " " + (cx + 46) + " " + (cy - 52), S(1468.30) + i * 0.16, 0.22, { color: PLUM, width: 9, filter: PEN });
+      });
+      words("sc003-t", [T(1467.72), T(1468.28)], { dur: 0.5, y: 14 });
+      stamp("sc003-stamp", [T(1470.92), T(1471.00), T(1471.32)]);
+      gsap.set($("sc003-stamp"), { rotation: -6 });
+      tl.fromTo($("sc003-cam"), { x: 0 }, { x: 8, duration: 0.05, yoyo: true, repeat: 3, ease: "none", immediateRender: false }, S(1471.02));
+    })();
+
+    /* ===== sc004 · BCP board wide (hard cut) ===== */
+    push("sc004-vw", 1471.94, 1476.83, 1.5, 1.56);
+    rise($("sc004-cap"), S(1472.10), { dur: 0.5, y: 8 });
+    words("sc004-a", [T(1472.84), T(1473.00), T(1473.16)], { dur: 0.45, y: 10 });
+    out($("sc004-a"), S(1474.80), 0.2);
+    out($("sc004-cap"), S(1474.80), 0.2);
+    words("sc004-b", [T(1475.24), T(1475.48), T(1475.80)], { dur: 0.45, y: 10 });
+
+    /* ===== sc005–sc007 · FACE W / M / C (cuts at the EDL joins) ===== */
+    face("sc005", 1476.83, 1481.38, "W");
+    words("sc005-lt", [T(1479.88), T(1480.04), T(1480.20), T(1480.28), T(1480.52)], { dur: 0.35, y: 10 });
+    face("sc006", 1481.38, 1485.40, "M");
+    words("sc006-lt", [T(1483.32), T(1483.48), T(1483.64), T(1483.88)], { dur: 0.4, y: 10 });
+    face("sc007", 1485.40, 1486.60, "C");
+
+    /* ===== sc008 · HERO 2.5D · the bank is done (hard cut, lights out) ===== */
+    (function () {
+      const P = 1200, pl = $("sc008-pl"), lt = $("sc008-lt3");
+      gsap.set(pl, { z: -300, scale: (P + 300) / P });
+      gsap.set(lt, { z: 0, scale: 1 });
+      tl.fromTo($("sc008-c3"), { z: 0, x: 30, rotationY: 1.2 }, { z: 70, x: -30, rotationY: -1.2, duration: 1.7, ease: E.cam, immediateRender: false }, S(1486.60));
+      words("sc008-t", [T(1486.60), T(1486.68), T(1486.92), T(1487.08)], { dur: 0.35, y: 10 });
+      // lights out on "done": flicker (12 fps steps) then dark
+      const pli = $("sc008-pli"), lti = $("sc008-lti");
+      gsap.set([pli, lti], { filter: "brightness(1) saturate(1)" });
+      tl.set([pli, lti], { filter: "brightness(0.35) saturate(0.2)" }, S(1487.16));
+      tl.set([pli, lti], { filter: "brightness(0.9) saturate(0.8)" }, S(1487.16) + 1 / 12);
+      tl.set([pli, lti], { filter: "brightness(0.3) saturate(0.15)" }, S(1487.16) + 2 / 12);
+      tl.set([pli, lti], { filter: "brightness(0.6) saturate(0.4)" }, S(1487.16) + 3 / 12);
+      tl.set(pli, { filter: "brightness(0.2) saturate(0) blur(2px)" }, S(1487.16) + 4 / 12);
+      tl.set(lti, { filter: "brightness(0.42) saturate(0)" }, S(1487.16) + 4 / 12);
+    })();
+
+    /* ===== sc009 · our phone app: PIN → spinner → error → balance "—" (hard cut) ===== */
+    (function () {
+      const dots = $("sc009-dots"), ic = $("sc009-ic");
+      tl.fromTo($("sc009-cam"), { scale: 1.0 }, { scale: 1.05, duration: 4.0, ease: "none", immediateRender: false }, S(1488.30));
+      gsap.set($("sc009-cam"), { transformOrigin: "1450px 540px" });
+      for (let k = 0; k < 4; k++) {
+        const d = document.createElement("div"); d.className = "q-dot"; d.style.left = (130 + k * 56) + "px"; d.style.top = "380px"; dots.appendChild(d);
+        tl.fromTo(d, { backgroundColor: "rgba(0,0,0,0)" }, { backgroundColor: UENOL, duration: 0.001, immediateRender: true }, S(1488.45) + k * 2 / 12);
+      }
+      tl.to($("sc009-pin"), { opacity: 0, duration: 0.15 }, S(1489.15));
+      tl.fromTo($("sc009-home"), { opacity: 0 }, { opacity: 1, duration: 0.15, immediateRender: true }, S(1489.15));
+      // button icons: down arrow (withdraw), right arrow (transfer), grid
+      [[92, 396, "M92 372 L92 420 M74 404 L92 422 L110 404"], [222, 396, "M198 396 L246 396 M230 378 L248 396 L230 414"], [352, 396, "M334 380 h14 v14 h-14 Z M356 380 h14 v14 h-14 Z M334 400 h14 v14 h-14 Z M356 400 h14 v14 h-14 Z"]].forEach((q) =>
+        svgEl(ic, "path", { d: q[2], fill: "none", stroke: "#0c5c54", "stroke-width": 6, "stroke-linecap": "round", "stroke-linejoin": "round" }));
+      // spinner
+      tl.fromTo($("sc009-veil"), { opacity: 0 }, { opacity: 1, duration: 0.2, immediateRender: true }, S(1489.35));
+      tl.fromTo($("sc009-spin"), { opacity: 0 }, { opacity: 1, duration: 0.1, immediateRender: true }, S(1489.35));
+      gsap.set($("sc009-spin"), { transformOrigin: "60px 60px" });
+      tl.fromTo($("sc009-spin"), { rotation: 0 }, { rotation: 720, duration: 1.6, ease: "steps(19)", immediateRender: false }, S(1489.35));
+      tl.to($("sc009-spin"), { opacity: 0, duration: 0.1 }, S(1490.98));
+      tl.to($("sc009-veil"), { opacity: 0.25, duration: 0.2 }, S(1490.98));
+      // error toast + buttons greyed
+      tl.fromTo($("sc009-toast"), { opacity: 0, y: 80 }, { opacity: 1, y: 0, duration: 0.45, ease: C(E.out, 0.45), immediateRender: true }, S(1491.00));
+      tl.fromTo($("sc009-phone"), { x: 0 }, { x: 10, duration: 0.05, yoyo: true, repeat: 3, ease: "none", immediateRender: false }, S(1491.02));
+      // balance: skeleton → "—"
+      tl.to($("sc009-bsk"), { opacity: 0, duration: 0.1 }, S(1491.66));
+      tl.fromTo($("sc009-bal"), { opacity: 0 }, { opacity: 1, duration: 0.1, immediateRender: true }, S(1491.66));
+      words("sc009-a", [T(1489.32), T(1489.64), T(1489.80)], { dur: 0.35, y: 10 });
+      out($("sc009-a"), S(1490.32), 0.12);
+      words("sc009-b", [T(1490.44), T(1490.68), T(1490.84), T(1491.00), T(1491.16)], { dur: 0.3, y: 10 });
+      out($("sc009-b"), S(1491.50), 0.12);
+      words("sc009-c", [T(1491.64), T(1491.88), T(1492.04), T(1492.20)], { dur: 0.3, y: 10 });
+      // cut on action: fast push into the phone
+      tl.to($("sc009-cam"), { scale: 1.22, duration: 0.3, ease: E.in }, S(1492.32));
+    })();
+
+    /* ===== sc010 · real ueno ATMs (cut on action) ===== */
+    tl.fromTo($("sc010-card"), { scale: 1.06, rotation: 1.5 }, { scale: 1.0, rotation: 0.5, duration: 2.44, ease: E.cam, immediateRender: false }, S(1492.62));
+    words("sc010-a", [T(1492.60), T(1492.68), T(1493.24), T(1493.56)], { dur: 0.3, y: 10 });
+    out($("sc010-a"), S(1493.76), 0.1);
+    words("sc010-b", [T(1493.88), T(1494.20), T(1494.36)], { dur: 0.3, y: 10 });
+
+    /* ===== sc011 · FACE W ===== */
+    face("sc011", 1495.06, 1498.75, "W");
+    words("sc011-lt", [T(1495.64), T(1495.80), T(1496.04)], { dur: 0.4, y: 10 });
+    out($("sc011-lt"), S(1498.2), 0.2);
+
+    /* ===== sc012 · branch crowd → closed branch (hard cut, cut on push) ===== */
+    gsap.set($("sc012-p1"), { transformOrigin: "62% 60%" });
+    push("sc012-p1", 1498.75, 1501.40, 1.0, 1.06);
+    tl.to($("sc012-p1"), { scale: 1.14, duration: 0.25, ease: E.in }, S(1501.15));
+    tl.set($("sc012-p1"), { opacity: 0 }, S(1501.40));
+    tl.set($("sc012-p2"), { opacity: 1 }, S(1501.40));
+    gsap.set($("sc012-p2"), { transformOrigin: "35% 50%" });
+    tl.fromTo($("sc012-p2"), { scale: 1.12 }, { scale: 1.03, duration: 2.47, ease: E.cam, immediateRender: false }, S(1501.40));
+    words("sc012-a", [T(1498.77), T(1498.85), T(1499.01), T(1499.17)], { dur: 0.35, y: 10 });
+    out($("sc012-a"), S(1501.30), 0.12);
+    words("sc012-b", [T(1501.73), T(1502.05), T(1502.45)], { dur: 0.4, y: 10 });
+
+    /* ===== sc013 · money back → the FDIC of Paraguay (whip ↑) ===== */
+    whip("sc012", "sc013", S(1503.87), { dir: 1, vertical: true });
+    (function () {
+      const svg = $("sc013-svg"), host = $("sc013-coins");
+      tl.fromTo($("sc013-cam"), { scale: 1.0 }, { scale: 1.035, duration: 7.5, ease: "none", immediateRender: false }, S(1503.87));
+      // the jar (pen) — the bank account the money returns to
+      ink(svg, "M640 470 C640 440 660 430 700 430 L940 430 C980 430 1000 440 1000 470 L1000 860 C1000 900 980 916 940 916 L700 916 C660 916 640 900 640 860 Z", S(1504.10), 0.9, { color: INK, width: 7, filter: PEN });
+      ink(svg, "M622 432 C700 418 940 418 1018 432", S(1504.6), 0.35, { color: INK, width: 7, filter: PEN });
+      // coins come back in (from the right) on "money back"
+      for (let k = 0; k < 12; k++) {
+        const c = document.createElement("div"); c.className = "q-abs";
+        const x = 690 + (k % 4) * 66, y = 860 - Math.floor(k / 4) * 34;
+        c.style.cssText = "left:" + x + "px; top:" + y + "px; width:70px; height:26px; border-radius:50%; background:" + TIERRA + "; border:3px solid #7a2f18; box-sizing:border-box";
+        host.appendChild(c);
+        const t0 = S(1506.20) + Math.floor(k * 0.5) / 12;
+        tl.fromTo(c, { opacity: 0, x: 760, y: -260 }, { opacity: 1, x: 0, y: 0, duration: 0.55, ease: C(E.out, 0.55), immediateRender: true }, t0);
+      }
+      ink(svg, "M1660 470 C1600 360 1300 330 1090 470", S(1506.10), 0.5, { color: TIERRA, width: 7, filter: PEN });
+      ink(svg, "M1112 430 L1084 476 L1138 490", S(1506.55), 0.18, { color: TIERRA, width: 7, filter: PEN });
+      words("sc013-t1", [T(1505.97), T(1506.13), T(1506.29), T(1506.53)], { dur: 0.4, y: 12 });
+      tl.to($("sc013-A"), { opacity: 0, duration: 0.3, ease: "power1.in" }, S(1508.55));
+      // the FDIC card + Paraguay flag
+      tl.fromTo($("sc013-fdic"), { opacity: 0, y: -60 }, { opacity: 1, y: 0, duration: 0.6, ease: C(E.out, 0.6), immediateRender: true }, S(1509.10));
+      tl.fromTo($("sc013-pin1"), { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, S(1509.55));
+      tl.fromTo($("sc013-flag"), { opacity: 0, y: -60 }, { opacity: 1, y: 0, duration: 0.6, ease: C(E.out, 0.6), immediateRender: true }, S(1510.15));
+      tl.fromTo($("sc013-pin2"), { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, S(1510.60));
+      words("sc013-t2", [T(1509.01), T(1509.25), T(1510.05), T(1510.21)], { dur: 0.45, y: 14 });
+    })();
+
+    /* ===== sc014 · FACE C ===== */
+    face("sc014", 1511.40, 1514.55, "C");
+    words("sc014-lt", [T(1512.05), T(1512.29), T(1512.45), T(1512.69)], { dur: 0.4, y: 10 });
+
+    /* ===== sc015 · till receipt (light-flash whip) ===== */
+    whip("sc014", "sc015", S(1514.55), { dir: -1, flash: true });
+    (function () {
+      const rc = $("sc015-rc"), svg = $("sc015-svg");
+      // the receipt prints down out of the slot at 12 fps; the camera follows it
+      tl.fromTo(rc, { y: -330 }, { y: -230, duration: 0.6, ease: C(E.out, 0.6), immediateRender: true }, S(1514.60));
+      tl.to(rc, { y: -120, duration: 0.6, ease: C(E.out, 0.6) }, S(1516.10));
+      tl.to(rc, { y: 0, duration: 0.6, ease: C(E.out, 0.6) }, S(1517.62));
+      tl.fromTo($("sc015-cam"), { scale: 1.04 }, { scale: 1.0, duration: 5.2, ease: "none", immediateRender: false }, S(1514.55));
+      tl.fromTo($("sc015-i1"), { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, T(1514.85));
+      tl.fromTo($("sc015-d1"), { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, S(1515.30));
+      tl.fromTo($("sc015-i2"), { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, T(1516.13));
+      tl.fromTo($("sc015-d2"), { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, S(1516.60));
+      tl.fromTo($("sc015-i3"), { opacity: 1 }, { opacity: 1, duration: 0.001, immediateRender: true }, S(1514.55));
+      words("sc015-i3", [T(1517.65), T(1517.97)], { dur: 0.001, y: 0 });
+      tl.fromTo($("sc015-d3"), { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, S(1518.30));
+      // can't pay: a tierra pen strike through every line
+      ink(svg, "M30 150 C160 140 320 160 490 146", S(1518.55), 0.22, { color: TIERRA, width: 9, filter: PEN });
+      ink(svg, "M30 258 C160 252 320 266 490 254", S(1518.75), 0.22, { color: TIERRA, width: 9, filter: PEN });
+      ink(svg, "M30 368 C160 360 320 374 490 362", S(1518.95), 0.22, { color: TIERRA, width: 9, filter: PEN });
+      tl.to($("sc015-cam"), { scale: 1.12, duration: 0.35, ease: E.in }, S(1519.45));
+    })();
+
+    /* ===== sc016 · FACE M (cut at the EDL join) ===== */
+    face("sc016", 1519.80, 1527.07, "M");
+    words("sc016-lt", [T(1523.09), T(1523.49), T(1523.65)], { dur: 0.4, y: 10 });
+    out($("sc016-lt"), S(1526.40), 0.25);
+
+    /* ===== sc017 · protest montage (hard cuts on action, clip data-starts) ===== */
+    tl.fromTo($("sc017-vw"), { scale: 1.0 }, { scale: 1.06, duration: 2.73, ease: "none", immediateRender: false }, S(1527.07));
+    words("sc017-a", [T(1528.13), T(1528.61), T(1528.77), T(1529.01), T(1529.17)], { dur: 0.3, y: 10 });
+
+    /* ===== sc018 · regulators: BCP board member (whip →) ===== */
+    whip("sc017", "sc018", S(1529.80), { dir: 1 });
+    push("sc018-vw", 1529.80, 1534.27, 1.5, 1.57);
+    words("sc018-cap", [T(1530.05)], { dur: 0.45, y: 8 });
+    words("sc018-a", [T(1531.41), T(1531.81)], { dur: 0.45, y: 10 });
+
+    /* ===== sc019 · $1,500 (paper slide ←) ===== */
+    slide("sc018", "sc019", S(1534.27), { from: 1, d: 0.45 });
+    (function () {
+      const host = $("sc019-notes"), mons = $("sc019-mons");
+      tl.fromTo($("sc019-cam"), { scale: 1.0 }, { scale: 1.035, duration: 6.9, ease: "none", immediateRender: false }, S(1534.27));
+      for (let k = 0; k < 15; k++) {   // fifteen hundreds dealt onto the stack
+        const n = document.createElement("div"); n.className = "q-note"; n.innerHTML = "<i></i><b class='t-display'>100</b>";
+        n.style.left = "300px"; n.style.top = (640 - k * 12) + "px"; n.style.transform = "rotate(" + ((k % 3) - 1) * 2.5 + "deg)";
+        host.appendChild(n);
+        const t0 = S(1535.40) + k * 1 / 12;
+        tl.fromTo(n, { opacity: 0, x: -500, y: -200 }, { opacity: 1, x: 0, y: 0, duration: 0.4, ease: C(E.out, 0.4), immediateRender: true }, t0);
+      }
+      tl.fromTo($("sc019-num"), { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, T(1536.37));
+      FX.text.count(tl, $("sc019-n"), T(1536.37), 0, 1500, 0.9, (v) => "$" + Math.round(v).toLocaleString("en-US"));
+      words("sc019-m", [T(1539.65), T(1540.21)], { dur: 0.45, y: 12 });
+      for (let k = 0; k < 12; k++) {   // a month strip: three months tick off under "monthly expenses"
+        const m = document.createElement("div"); m.className = "q-mon"; m.style.left = (910 + k * 78) + "px"; m.innerHTML = "<u></u>"; mons.appendChild(m);
+        tl.fromTo(m, { opacity: 0 }, { opacity: 1, duration: 0.3, immediateRender: true }, S(1539.55) + k / 24);
+        if (k < 3) tl.fromTo(m.firstChild, { scale: 0 }, { scale: 1, duration: 0.3, ease: C(E.out, 0.3), immediateRender: true }, S(1540.30) + k * 0.25);
+      }
+    })();
+
+    /* ===== sc020–021 · FACE W / C ===== */
+    face("sc020", 1541.23, 1546.07, "W");
+    face("sc021", 1546.07, 1547.45, "C");
+
+    /* ===== sc022 · tear gas: chaos, uncertainty, people are scared (hard cut at the join) ===== */
+    push("sc022-vw", 1547.45, 1550.83, 1.0, 1.07);
+    words("sc022-a", [T(1548.37), T(1549.01)], { dur: 0.4, y: 10 });
+    out($("sc022-a"), S(1549.75), 0.12);
+    words("sc022-b", [T(1549.89), T(1550.13), T(1550.29)], { dur: 0.35, y: 10 });
+
+    /* ===== sc023 · arrests are being made (cut on action) ===== */
+    push("sc023-vw", 1550.83, 1552.59, 1.36, 1.42);
+    words("sc023-a", [T(1551.17), T(1551.73), T(1551.97), T(1552.13)], { dur: 0.3, y: 10 });
+
+    /* ===== sc024 · the resignation video in a phone (whip ←) ===== */
+    whip("sc023", "sc024", S(1552.59), { dir: -1 });
+    tl.fromTo($("sc024-cam"), { scale: 1.04, x: 30 }, { scale: 1.0, x: 0, duration: 5.36, ease: E.cam, immediateRender: false }, S(1552.59));
+    gsap.set($("sc024-cam"), { transformOrigin: "1260px 540px" });
+    words("sc024-a", [T(1553.17), T(1553.57)], { dur: 0.45, y: 10 });
+    out($("sc024-a"), S(1556.30), 0.2);
+    words("sc024-b", [T(1556.61), T(1557.25), T(1557.41)], { dur: 0.4, y: 10 });
+
+    /* ===== sc025 · FACE C ===== */
+    face("sc025", 1557.95, 1560.04, "C");
+    words("sc025-lt", [T(1558.70), T(1559.10), T(1559.26), T(1559.50), T(1559.66)], { dur: 0.3, y: 10 });
+
+    /* ===== sc026 · Senate vote board (hard cut) ===== */
+    (function () {
+      tl.fromTo($("sc026-cam"), { scale: 1.0 }, { scale: 1.12, duration: 3.44, ease: E.cam, immediateRender: false }, S(1560.04));
+      tl.fromTo($("sc026-ab"), { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, T(1560.70));
+      words("sc026-a", [T(1560.70), T(1561.18), T(1561.34)], { dur: 0.3, y: 8 });
+      out($("sc026-a"), S(1562.16), 0.1);
+      tl.fromTo($("sc026-bb"), { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, T(1562.30));
+      words("sc026-b", [T(1562.30), T(1563.02)], { dur: 0.3, y: 8 });
+      const c = FX.markup.circle(tl, $("sc026-svg"), S(1562.36), { cx: 880, cy: 584, rx: 470, ry: 64, rot: -1.5, dur: 0.55, color: PLUML, width: 8, filter: PEN, seed: 13 });
+      gsap.set(c, { opacity: 0 }); tl.set(c, { opacity: 1 }, S(1562.36));
+    })();
+
+    /* ===== sc027 · FACE M (cut at the join) ===== */
+    face("sc027", 1563.48, 1566.06, "M");
+    words("sc027-lt", [T(1564.46), T(1564.78), T(1564.94), T(1565.10), T(1565.34)], { dur: 0.3, y: 10 });
+
+    /* ===== sc028 · Regimiento gate (hard cut) ===== */
+    tl.fromTo($("sc028-card"), { scale: 1.05, rotation: -1.5 }, { scale: 1.0, rotation: -0.5, duration: 3.07, ease: E.cam, immediateRender: false }, S(1566.06));
+    words("sc028-a", [T(1566.30), T(1566.54), T(1566.86)], { dur: 0.35, y: 10 });
+
+    /* ===== sc029 · Carvallo at the Fiscalía (cut on action) ===== */
+    push("sc029-vw", 1569.13, 1572.92, 1.02, 1.08);
+    rise($("sc029-cap"), S(1569.20), { dur: 0.4, y: 8 });
+    words("sc029-a", [T(1569.18), T(1569.42), T(1569.50), T(1569.58)], { dur: 0.4, y: 10 });
+    out($("sc029-a"), S(1571.70), 0.15);
+    out($("sc029-cap"), S(1571.70), 0.15);
+    words("sc029-b", [T(1571.98), T(1572.22)], { dur: 0.35, y: 10 });
+
+    /* ===== sc030 · Vázquez case card + stamp (whip →) ===== */
+    whip("sc029", "sc030", S(1572.92), { dir: 1 });
+    (function () {
+      tl.fromTo($("sc030-cam"), { scale: 1.0 }, { scale: 1.04, duration: 3.7, ease: "none", immediateRender: false }, S(1572.92));
+      tl.fromTo($("sc030-card"), { opacity: 0, y: -50 }, { opacity: 1, y: 0, duration: 0.6, ease: C(E.out, 0.6), immediateRender: true }, S(1573.05));
+      tl.fromTo($("sc030-pin"), { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, S(1573.50));
+      rise($("sc030-cap"), S(1573.60), { dur: 0.4, y: 8 });
+      words("sc030-t", [T(1574.14), T(1574.46), T(1574.54), T(1574.70)], { dur: 0.35, y: 12 });
+      stamp("sc030-stamp", [T(1575.34), T(1575.58)]);
+      tl.fromTo($("sc030-cam"), { x: 0 }, { x: 8, duration: 0.05, yoyo: true, repeat: 3, ease: "none", immediateRender: false }, S(1575.40));
+    })();
+
+    /* ===== sc031 · directors in cuffs (hard cut; clip cut on action at 1579.88) ===== */
+    push("sc031-vw", 1576.60, 1583.24, 1.34, 1.42);
+    words("sc031-a", [T(1576.94), T(1577.58), T(1577.74), T(1577.98)], { dur: 0.4, y: 10 });
+    out($("sc031-a"), S(1580.60), 0.25);
+    words("sc031-b", [T(1582.14), T(1582.46), T(1582.70)], { dur: 0.3, y: 10 });
+
+    /* ===== sc032 · FACE W ===== */
+    face("sc032", 1583.24, 1587.58, "W");
+    words("sc032-lt", [T(1585.26), T(1585.50), T(1585.74), T(1586.06)], { dur: 0.4, y: 10 });
+
+    /* ===== sc033 · ABC Color homepage on a tilted page (hard cut) ===== */
+    (function () {
+      const pg = $("sc033-page");
+      tl.fromTo(pg, { rotationX: 22, rotationZ: -5, scale: 1.0, y: 60 }, { rotationX: 10, rotationZ: -2, scale: 1.55, y: 40, x: 100, duration: 2.3, ease: E.cam, immediateRender: false }, S(1587.58));
+      FX.focusHunt(tl, pg, S(1588.85), { dur: 0.6, a: 3, b: 4 });
+      words("sc033-a", [T(1587.58), T(1587.82), T(1588.14), T(1588.62)], { dur: 0.35, y: 10 });
+    })();
+
+    /* ===== sc034 · FACE M ===== */
+    face("sc034", 1589.88, 1594.22, "M");
+    words("sc034-lt", [T(1592.78), T(1593.02)], { dur: 0.4, y: 10 });
+
+    /* ===== sc035 · Americas night map: Paraguay → the United States (whip ↑) ===== */
+    whip("sc034", "sc035", S(1594.22), { dir: 1, vertical: true });
+    (function () {
+      const cam = $("sc035-cam"), svg = $("sc035-svg");
+      const PY = [3258, 3540], ASU = [3293, 3654], NY = [2548, 650], US = [1560, 790];
+      const L = [[$("sc035-lpy"), PY[0], PY[1], 0.5], [$("sc035-lus"), US[0], US[1], 0.5], [$("sc035-dasu"), ASU[0], ASU[1], -1], [$("sc035-lasu"), ASU[0] + 22, ASU[1] + 6, -2],
+                 [$("sc035-dny"), NY[0], NY[1], -1], [$("sc035-lny"), NY[0] + 22, NY[1] - 34, -2]];
+      const v = { x: 3240, y: 3420, s: 0.78 };
+      const apply = () => {
+        cam.style.transform = "translate(" + (960 - v.x * v.s).toFixed(1) + "px," + (540 - v.y * v.s).toFixed(1) + "px) scale(" + v.s.toFixed(4) + ")";
+        L.forEach((q) => { const el = q[0], sx = 960 + (q[1] - v.x) * v.s, sy = 540 + (q[2] - v.y) * v.s;
+          if (q[3] === -1) { el.style.left = sx.toFixed(1) + "px"; el.style.top = sy.toFixed(1) + "px"; }
+          else if (q[3] === -2) { el.style.transform = "translate(" + sx.toFixed(1) + "px," + (sy - 14).toFixed(1) + "px)"; }
+          else { el.style.transform = "translate(" + sx.toFixed(1) + "px," + sy.toFixed(1) + "px) translate(-50%,-50%)"; } });
+      };
+      apply();
+      tl.fromTo(v, { x: 3240, y: 3420, s: 0.78 }, { x: 3200, y: 3300, s: 0.74, duration: 1.6, ease: "none", immediateRender: false, onUpdate: apply }, S(1594.22));
+      tl.to(v, { x: 2150, y: 950, s: 0.6, duration: 1.9, ease: E.cam, onUpdate: apply }, S(1595.82));
+      tl.to(v, { x: 2120, y: 930, s: 0.58, duration: 2.05, ease: "none", onUpdate: apply }, S(1597.72));
+      // route Asunción → New York (dashed, drawn on), New York pin, US outline
+      const d = "M" + ASU[0] + " " + ASU[1] + " Q2500 2200 " + NY[0] + " " + NY[1];
+      const rp = svgEl(svg, "path", { d: d, fill: "none" });
+      const len = rp.getTotalLength() || 3300, N = Math.floor(len / 54), pts = [];
+      for (let i = 0; i <= N * 2; i++) { const pt = rp.getPointAtLength(Math.min(len, i * 27)); pts.push([pt.x, pt.y]); }
+      for (let i = 0; i < N; i++) {   // a dashed route revealed dash by dash
+        const a = pts[2 * i], b = pts[2 * i + 1];
+        const sgm = svgEl(svg, "path", { d: "M" + a[0].toFixed(1) + " " + a[1].toFixed(1) + " L" + b[0].toFixed(1) + " " + b[1].toFixed(1), stroke: TIERRAL, "stroke-width": 9, "stroke-linecap": "round", fill: "none" });
+        tl.fromTo(sgm, { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, S(1595.82) + (i / N) * 1.6);
+      }
+      rp.remove();
+      tl.fromTo($("sc035-us"), { opacity: 0 }, { opacity: 1, duration: 0.6, immediateRender: true }, S(1596.6));
+      tl.fromTo($("sc035-dny"), { opacity: 0, scale: 0 }, { opacity: 1, scale: 1, duration: 0.4, ease: C(E.out, 0.4), immediateRender: true }, S(1597.40));
+      tl.fromTo($("sc035-lny"), { opacity: 0 }, { opacity: 1, duration: 0.4, immediateRender: true }, S(1597.45));
+      tl.fromTo($("sc035-lus"), { opacity: 0 }, { opacity: 1, duration: 0.5, ease: "power1.out", immediateRender: true }, S(1597.18));
+      tl.to([$("sc035-lpy"), $("sc035-lasu"), $("sc035-dasu")], { opacity: 0, duration: 0.3 }, S(1596.40));
+      words("sc035-a", [T(1594.22), T(1594.46), T(1595.02), T(1595.26), T(1595.50)], { dur: 0.35, y: 10 });
+      out($("sc035-a"), S(1597.90), 0.2);
+      words("sc035-b", [T(1598.22), T(1598.46), T(1598.62)], { dur: 0.4, y: 10 });
+    })();
+
+    /* ===== sc036 · FACE C + censor beat (cut at the join) ===== */
+    face("sc036", 1599.77, 1603.16, "C");
+    (function () {
+      const ws = W("sc036-lt");
+      [T(1599.90), T(1600.06), T(1600.22)].forEach((t, i) => rise(ws[i], t, { dur: 0.3, y: 10 }));
+      tl.fromTo(ws[3], { opacity: 0, scale: 1.6 }, { opacity: 1, scale: 1, duration: 0.17, ease: "steps(2)", immediateRender: true }, T(1600.54));
+      tl.fromTo($("sc036-cz"), { x: 0 }, { x: 6, duration: 0.04, yoyo: true, repeat: 5, ease: "none", immediateRender: false }, S(1600.62));
+      [T(1600.78), T(1600.86), T(1601.02)].forEach((t, i) => rise(ws[4 + i], t, { dur: 0.3, y: 10 }));
+      out($("sc036-lt"), S(1602.50), 0.25);
+    })();
+
+    /* ===== sc037 · the "tax the poor" story (whip →) ===== */
+    whip("sc036", "sc037", S(1603.16), { dir: 1 });
+    (function () {
+      gsap.set($("sc037-cam"), { transformOrigin: "1310px 690px" });
+      tl.fromTo($("sc037-cam"), { scale: 1.0 }, { scale: 1.08, duration: 4.08, ease: E.cam, immediateRender: false }, S(1603.16));
+      tl.fromTo($("sc037-post"), { opacity: 0, y: 60 }, { opacity: 1, y: 0, duration: 0.6, ease: C(E.out, 0.6), immediateRender: true }, S(1603.20));
+      words("sc037-a", [T(1603.18), T(1603.50), T(1603.74)], { dur: 0.4, y: 10 });
+      out($("sc037-a"), S(1605.60), 0.15);
+      words("sc037-b", [T(1605.90), T(1606.30), T(1606.46)], { dur: 0.35, y: 10 });
+      // the shirt's "Tax The Poor": img x = 860+20 + (px−0)*860/1115, y = 150+110 + py*617/800 (px ~ 640–885, py ~ 655–705)
+      const c = FX.markup.circle(tl, $("sc037-svg"), S(1605.95), { cx: 1478, cy: 790, rx: 130, ry: 44, rot: -3, dur: 0.6, color: TIERRA, width: 8, filter: PEN, seed: 21 });
+      gsap.set(c, { opacity: 0 }); tl.set(c, { opacity: 1 }, S(1605.95));
+    })();
+
+    /* ===== sc038 · FACE W ===== */
+    face("sc038", 1607.24, 1610.92, "W");
+    words("sc038-lt", [T(1608.54), T(1609.42), T(1609.66), T(1609.82), T(1609.98)], { dur: 0.35, y: 10 });
+    out($("sc038-lt"), S(1610.55), 0.2);
+
+    /* ===== sc039 · Columbia (hard cut) ===== */
+    push("sc039-vw", 1610.92, 1615.58, 1.0, 1.06);
+    tl.fromTo($("sc039-logo"), { opacity: 0, y: 10 }, { opacity: 0.95, y: 0, duration: 0.5, ease: C(E.out, 0.5), immediateRender: true }, S(1611.95));
+    words("sc039-a", [T(1611.34), T(1611.66), T(1611.90)], { dur: 0.4, y: 10 });
+    out($("sc039-a"), S(1614.20), 0.2);
+    words("sc039-b", [T(1614.54), T(1614.70), T(1614.86)], { dur: 0.35, y: 10 });
+
+    /* ===== sc040 · ENDING: viral post burns into the protest fire, fade to night (whip ↑) ===== */
+    whip("sc039", "sc040", S(1615.58), { dir: 1, vertical: true });
+    (function () {
+      const svg = $("sc040-svg"), X0 = 510, Y0 = 145, PW = 900, PH = 790;
+      svg.innerHTML = '<defs>' +
+        '<filter id="pys13-burn" filterUnits="userSpaceOnUse" x="' + X0 + '" y="' + Y0 + '" width="' + PW + '" height="' + PH + '" color-interpolation-filters="sRGB">' +
+        '<feImage href="assets/maps/burn_b.png" x="' + X0 + '" y="' + Y0 + '" width="' + PW + '" height="' + PH + '" preserveAspectRatio="none" result="n"/>' +
+        '<feColorMatrix id="pys13-bm" in="n" type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  -12 0 0 0 13" result="t"/>' +
+        '<feComposite in="SourceGraphic" in2="t" operator="in"/></filter>' +
+        '<filter id="pys13-ring" filterUnits="userSpaceOnUse" x="' + X0 + '" y="' + Y0 + '" width="' + PW + '" height="' + PH + '" color-interpolation-filters="sRGB">' +
+        '<feImage href="assets/maps/burn_b.png" x="' + X0 + '" y="' + Y0 + '" width="' + PW + '" height="' + PH + '" preserveAspectRatio="none" result="n"/>' +
+        '<feColorMatrix id="pys13-ra" in="n" type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  -12 0 0 0 13" result="e"/>' +
+        '<feColorMatrix id="pys13-rb" in="n" type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  -12 0 0 0 15.2" result="l"/>' +
+        '<feComposite in="l" in2="e" operator="arithmetic" k1="0" k2="1" k3="-1" k4="0" result="ring"/>' +
+        '<feFlood flood-color="#ffb070" result="fl"/><feComposite in="fl" in2="ring" operator="in" result="r2"/>' +
+        '<feGaussianBlur in="r2" stdDeviation="4" result="gl"/><feMerge><feMergeNode in="gl"/><feMergeNode in="r2"/></feMerge></filter>' +
+        '<clipPath id="pys13-pclip"><rect x="' + X0 + '" y="' + Y0 + '" width="' + PW + '" height="' + PH + '" rx="26"/></clipPath></defs>' +
+        '<g id="pys13-sc040-post" filter="url(#pys13-burn)"><g clip-path="url(#pys13-pclip)">' +
+        '<rect x="' + X0 + '" y="' + Y0 + '" width="' + PW + '" height="' + PH + '" fill="#121615"/>' +
+        '<circle cx="' + (X0 + 56) + '" cy="' + (Y0 + 56) + '" r="30" fill="#3f4441"/>' +
+        '<rect x="' + (X0 + 106) + '" y="' + (Y0 + 38) + '" width="220" height="16" rx="8" fill="#5a5f5c"/>' +
+        '<rect x="' + (X0 + 106) + '" y="' + (Y0 + 66) + '" width="120" height="16" rx="8" fill="#3f4441"/>' +
+        '<image href="assets/paraguay/pys13/derived/tax_the_poor_story_blur.jpg" x="' + (X0 + 20) + '" y="' + (Y0 + 110) + '" width="860" height="617" preserveAspectRatio="xMidYMid slice"/>' +
+        '</g></g>' +
+        '<rect x="' + X0 + '" y="' + Y0 + '" width="' + PW + '" height="' + PH + '" fill="#fff" filter="url(#pys13-ring)"/>';
+      const post = document.getElementById("pys13-sc040-post");
+      tl.fromTo(post, { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.5, ease: C(E.out, 0.5), immediateRender: true }, S(1615.62));
+      // going viral: hearts / shares pop around the post at 12 fps
+      const isvg = svgEl($("sc040-icons"), "svg", { viewBox: "0 0 1920 1080", width: 1920, height: 1080, style: "position:absolute; left:0; top:0; overflow:visible" });
+      const rnd = FX.rng(1340), icons = [];
+      for (let k = 0; k < 22; k++) {
+        const side = k % 2 ? 1 : -1, x = side > 0 ? 1460 + rnd() * 330 : 140 + rnd() * 300, y = 120 + rnd() * 560;
+        const h = heart(isvg, x, y, 0.8 + rnd() * 0.7, k % 3 === 0 ? TIERRA : (k % 3 === 1 ? TIERRAL : BONE));
+        const t0 = S(1616.50) + Math.floor(k * 0.9) / 12;
+        tl.fromTo(h, { opacity: 0 }, { opacity: 0.95, duration: 0.001, immediateRender: true }, t0);
+        icons.push(h);
+      }
+      tl.to(icons, { opacity: 0, duration: 0.3 }, S(1618.30));
+      words("sc040-a", [T(1616.54), T(1616.78)], { dur: 0.35, y: 10 });
+      out($("sc040-a"), S(1618.30), 0.15);
+      // the burn: the post burns away into the fire (fire clip starts under it at 1618.30)
+      const M = (o) => "0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  -12 0 0 0 " + o.toFixed(3);
+      const b = { v: 13 }, g = (id) => document.getElementById("pys13-" + id);
+      tl.fromTo(b, { v: 13 }, { v: -2.6, duration: 1.3, ease: C("power1.inOut", 1.3), immediateRender: true,
+        onUpdate: () => { g("bm").setAttribute("values", M(b.v)); g("ra").setAttribute("values", M(b.v)); g("rb").setAttribute("values", M(b.v + 2.2)); } }, S(1618.40));
+      tl.to($("sc040-dk"), { opacity: 0, duration: 1.0, ease: "power1.inOut" }, S(1618.55));
+      tl.fromTo($("sc040-vw"), { scale: 1.0 }, { scale: 1.08, duration: 3.57, ease: "none", immediateRender: false }, S(1618.30));
+      words("sc040-b", [T(1618.54), T(1618.94), T(1619.10)], { dur: 0.45, y: 12 });
+      out($("sc040-b"), S(1620.42), 0.15);
+      words("sc040-c", [T(1620.70), T(1621.02), T(1621.26)], { dur: 0.3, y: 8 });
+      gsap.set($("sc040-cr"), { opacity: 0 }); tl.set($("sc040-cr"), { opacity: 1 }, S(1618.60));
+      // designed end: fade to night
+      tl.fromTo($("night"), { opacity: 0 }, { opacity: 1, duration: 0.37, ease: "power1.in", immediateRender: false }, S(1621.50));
+    })();
+
+    FX.mount(tl, DURATION);
+    window.__timelines = window.__timelines || {};
+    window.__timelines[SEG] = tl;
+  })();
+  </script>
+</template>
+</body>
+</html>

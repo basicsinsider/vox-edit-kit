@@ -76,7 +76,7 @@
     .p5-ccard .tg { position: absolute; left: 182px; top: 116px; font-size: 24px; color: var(--bone); padding: 6px 14px 3px; }
     .p5-row { position: absolute; height: 64px; }
     .p5-row i { position: absolute; top: 18px; height: 10px; background: rgba(22,32,28,0.22); }
-    #pys05-sc010-stamp { position: absolute; left: 150px; top: 48px; font-size: 50px; color: var(--ink); border: 6px solid var(--ink); padding: 10px 22px 2px;
+    #pys05-sc010-stamp { position: absolute; left: 236px; top: 92px; font-size: 40px; color: var(--ink); border: 6px solid var(--ink); padding: 10px 22px 2px;
       transform: rotate(-9deg); mix-blend-mode: multiply; opacity: 0; }
     #pys05-sc010-cal { position: absolute; left: 885px; top: 470px; width: 150px; height: 170px; perspective: 600px; }
     .p5-calp { position: absolute; left: 0; top: 0; width: 150px; height: 170px; background: #f6f2e8; box-shadow: 0 8px 16px rgba(22,32,28,0.25); transform-origin: 50% 0%; }
@@ -420,7 +420,7 @@
       ["sc021", 581.47, 587.80, "night"], ["sc022", 587.80, 595.60, "paper"],
     ];
     const GROUND = { paper: [0.32, 0.16, 0.26], night: [1, 0.42, 0.36], face: [0, 0, 0] };
-    const EARLY = { sc003: 0.45, sc022: 0.45 };   // slides: the incoming scene is visible during the slide
+    const EARLY = { sc022: 0.35 };   // slides: the incoming scene is visible during the slide
     function ground(kind, t) { const v = GROUND[kind]; tl.set([$("vig"), $("dust"), $("grain")], { opacity: (i) => v[i] }, t); }
     SC.forEach((s, i) => {
       const el = $(s[0]), a = s[1] - (EARLY[s[0]] || 0);
@@ -502,7 +502,8 @@
     words("sc002-lt", [T(467.49), T(468.37)], { dur: 0.35, y: 12 });
 
     /* ===== sc003 · Credicentro certificate + outside investors (paper slides over the face) ===== */
-    slide("sc002", "sc003", S(469.22));
+    // hard cut at the EDL join 469.2167; the certificate settles in (motion on the cut)
+    tl.fromTo($("sc003-cert"), { scale: 1.08, y: 30 }, { scale: 1, y: 0, duration: 1.0, ease: C(E.out, 1.0), immediateRender: false }, S(469.22));
     (function () {
       const svg = $("sc003-svg"), cam = $("sc003-cam");
       // investors: four grey figures stop-motion in from the right
@@ -540,7 +541,7 @@
       tl.fromTo(cam, { x: 0 }, { x: -1070, duration: 1.5, ease: E.cam, immediateRender: false }, S(480.7));
       pop($("sc004-c2"), S(481.35), { dur: 0.9, from: 0.85 });
       words("sc004-l2", [T(482.14)], { dur: 0.5 });
-      words("sc004-y", [T(483.34)], { dur: 0.6, y: 24 });
+      words("sc004-y", [T(483.34)], { dur: 0.45, y: 24 });
       tl.to(cam, { scale: 1.06, duration: 2.0, ease: "none" }, S(482.55));
     })();
 
@@ -551,7 +552,7 @@
     words("sc005-k", [T(485.74), T(485.98), T(486.46)], { dur: 0.4, y: 8 });
     words("sc005-a", [T(487.34), T(487.58), T(487.74), T(487.90), T(488.30), T(488.70), T(488.86), T(489.18), T(489.82)], { dur: 0.35, y: 10 });
     out($("sc005-a"), S(490.40), 0.3);
-    words("sc005-b", [T(490.78), T(491.02), T(491.58)], { dur: 0.35, y: 10 });
+    words("sc005-b", [T(490.78), T(491.02), T(491.58)], { dur: 0.25, y: 10 });
 
     /* ===== sc006 · FACE W · between you and I (hard cut) ===== */
     face("sc006", 492.30, 497.55, "W");
@@ -634,7 +635,7 @@
     face("sc012", 532.80, 537.47, "M");
     words("sc012-a", [T(534.14), T(534.30)], { dur: 0.35, y: 10 });
     out($("sc012-a"), S(535.75), 0.25);
-    words("sc012-b", [T(536.14), T(536.38), T(536.46), T(536.62), T(536.86)], { dur: 0.25, y: 10 });
+    words("sc012-b", [T(536.14), T(536.38), T(536.46), T(536.62), T(536.86)], { dur: 0.15, y: 8 });
     face("sc013", 537.47, 543.75, "W");
     words("sc013-lt", [T(538.87), T(538.95), T(539.35)], { dur: 0.35, y: 10 });
     out($("sc013-lt"), S(541.2), 0.3);
@@ -647,9 +648,9 @@
       show($("sc014-ls"), S(544.0));
       const sq = FX.markup.pen(tl, svg, T(545.43), { points: [[962, 422], [1320, 420], [1318, 780], [960, 778], [962, 418]], jitter: 2, seed: 9, dur: 0.6, width: 5, color: INK, filter: PEN });
       Array.from($("sc014-big").querySelectorAll(".p5-cell")).forEach((c, i) => tl.fromTo(c, { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, S(545.85) + i * 2 / 12));
-      FX.markup.pen(tl, svg, S(546.30), { points: [[1140, 424], [1141, 776]], jitter: 3, seed: 11, dur: 0.25, width: 4, color: BONE, filter: PEN, blend: "normal" });
-      FX.markup.pen(tl, svg, S(546.30), { points: [[964, 600], [1316, 601]], jitter: 3, seed: 12, dur: 0.25, width: 4, color: BONE, filter: PEN, blend: "normal" });
-      show($("sc014-lb"), S(546.2));
+      FX.markup.pen(tl, svg, S(546.02), { points: [[1140, 424], [1141, 776]], jitter: 3, seed: 11, dur: 0.25, width: 4, color: BONE, filter: PEN, blend: "normal" });
+      FX.markup.pen(tl, svg, S(546.02), { points: [[964, 600], [1316, 601]], jitter: 3, seed: 12, dur: 0.25, width: 4, color: BONE, filter: PEN, blend: "normal" });
+      show($("sc014-lb"), S(546.0));
       const ws = W("sc014-t");
       [T(545.43), T(545.83), T(546.15)].forEach((c, i) => rise(ws[i], c, { dur: 0.35, y: 10 }));
       [0, 1].forEach((i) => tl.fromTo(ws[i], { "--hl": 0 }, { "--hl": 1, duration: 0.3, ease: C("sine.inOut", 0.3), immediateRender: true }, S(545.6) + i * 0.4));
@@ -693,9 +694,9 @@
       const svg = $("sc018-svg");
       const B = [[1190, 360, 1410, 250, 1630, 360], [1200, 380, 1620, 381], [1240, 400, 1241, 720], [1330, 400, 1331, 720], [1500, 400, 1501, 720], [1590, 400, 1591, 720], [1180, 740, 1640, 741], [1160, 770, 1660, 771]];
       B.forEach((q, i) => { const d = q.length === 6 ? "M" + q[0] + " " + q[1] + " L" + q[2] + " " + q[3] + " L" + q[4] + " " + q[5] + " Z" : "M" + q[0] + " " + q[1] + " L" + q[2] + " " + q[3];
-        ink(svg, d, T(569.83) + i * 0.05, 0.45, { color: "#aab1ac", width: 6, opacity: 0.9 }); });
+        ink(svg, d, S(569.30) + i * 0.05, 0.45, { color: "#aab1ac", width: 6, opacity: 0.9 }); });
     })();
-    words("sc018-b", [T(569.83), T(569.91), T(570.15)], { dur: 0.35, y: 10 });
+    words("sc018-b", [T(569.83), T(569.91), T(570.15)], { dur: 0.25, y: 10 });
 
     /* ===== sc019 · the expenses stack (light-flash whip) ===== */
     whip("sc018", "sc019", S(571.00), { dir: 1, flash: true });
@@ -739,15 +740,14 @@
       order.forEach((b, i) => tl.to(b, { opacity: 0, y: 30, duration: 1 / 12, ease: "none" }, S(583.55) + Math.floor(i * 0.62) / 12));
       tl.fromTo($("sc021-cam"), { scale: 1.06 }, { scale: 1.0, duration: 6.33, ease: E.cam, immediateRender: false }, S(581.47));
       // sold to Ueno: a teal tag swings on
-      tl.fromTo($("sc021-tag"), { opacity: 0, rotation: -40 }, { opacity: 1, rotation: 6, duration: 0.6, ease: C(E.out, 0.6), immediateRender: true }, T(586.47));
-      tl.to($("sc021-tag"), { rotation: 0, duration: 0.5, ease: C(E.out, 0.5) }, S(587.07));
+      tl.fromTo($("sc021-tag"), { opacity: 0, rotation: -40 }, { opacity: 1, rotation: 0, duration: 0.45, ease: C(E.out, 0.45), immediateRender: true }, T(586.47));
     })();
     words("sc021-a", [T(583.51), T(583.59), T(583.75), T(583.91), T(584.23), T(584.63), T(584.87)], { dur: 0.3, y: 10 });
     out($("sc021-a"), S(586.0), 0.3);
-    words("sc021-b", [T(586.47), T(586.79), T(586.95)], { dur: 0.3, y: 10 });
+    words("sc021-b", [T(586.47), T(586.79), T(586.95)], { dur: 0.2, y: 8 });
 
     /* ===== sc022 · the seesaw (paper slides up) — ends in motion ===== */
-    slide("sc021", "sc022", S(587.80), { vertical: true });
+    slide("sc021", "sc022", S(587.80), { vertical: true, d: 0.35 });
     (function () {
       const beam = $("sc022-beam"), big = $("sc022-big"), small = $("sc022-small");
       gsap.set(beam, { rotation: -6 });

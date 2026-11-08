@@ -61,14 +61,15 @@ Transitions: whip ×4 (incl. 3 vertical), light-flash whip, slides ×4, hard cut
 Own: `assets/paraguay/pys02/` (SOURCES.md): Celeste Amarilla official portrait (Commons, CC BY-SA 4.0, Congreso de Paraguay — credited on screen),
 derived Wall St sign layer + inpainted far plate, South America borders/Paraguay fill SVGs. Shared: asuncion_skyline, wc_fra_par_mbappe_* (4),
 wall_street_nyse, ueno_tower_aerial_reuters, logos/moodys.png.
-**For the lead:** `assets/paraguay/shared/` had no SOURCES.md when I built this — the WC photos / Asunción skyline / Wall St / ueno tower need
-their rows (my on-screen credits are generic: "Photos: World Cup 2026, France v Paraguay (press, fair use)", "Photo: Reuters (fair use)",
-"Photo: Wikimedia Commons" — please correct them to the real owners once logged). `shared/photos/paraguay_team_match.jpg` is actually
-**Morocco's** team photo, not Paraguay — don't use it. `shared/photos/wall_street_sign.jpg` is not a valid image file.
+**Credits (fix, after the shared SOURCES.md files landed):** on-screen credits now follow `assets/paraguay/shared/*/SOURCES.md`:
+sc001 "Photo: P. S. F. Freitas / Wikimedia Commons, CC BY-SA 4.0"; sc002 / sc004 / sc022 World Cup photos "Bryan Berlin / Wikimedia Commons,
+CC BY-SA 4.0" (sc022 credit newly added); sc010 screens "Photos: Bryan Berlin … · portrait: Congreso de Paraguay, CC BY-SA 4.0" (newly added);
+sc017 "Photo: Carlos Delgado / Wikimedia Commons, CC BY-SA 3.0"; sc023 "Photo: © Reuters (fair use)"; sc013 Moody's logo "© Moody's, fair use"
+(unchanged). Re-linted (0 errors), sync_audit clean, credit frames snapshotted and read. Still true: `shared/photos/paraguay_team_match.jpg` is
+Morocco's team; `wall_street_sign.jpg` is not a valid image.
 
 ## Gotchas for MANUAL
-- `tools/build_index.py` does not pick up `pys*` compositions (its regex is `seg|intro|ivs|c\d+s`) — I used a private copy with `pys` added
-  (scratchpad); the lead should add `pys` to the regex.
+- (fixed by the lead) `tools/build_index.py` now picks up `pys*`.
 - fx.css `.hl` strikes again: a `.hl` headline bar inside my news screens painted a full yellow highlighter — renamed `.hb` (MANUAL §4.2 c5s03 note).
 - Lint 0.8.217 errors (`gsap_non_transform_motion`) on tweening `top` — use `y`.
 - 2.5D from one photo: if the near layer is cut from the same photo, the far plate still contains it and parallax shows it doubled — fill the
