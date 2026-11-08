@@ -39,3 +39,7 @@ Face cam: sc001 5.60 + sc006 1.97 + sc007 5.21 + sc008 2.18 + sc010 1.34 + sc011
 = **31.36 s of 102.00 = 30.7 %** (≈ 35 % target; the rest is numbers/mechanics that need a picture).
 First scene: face cam W, fresh shot. Last scene: the carousel spinning up at 1042.60 (cut on action → pys10 "Now luckily the central bank…").
 Ground rhythm: face · paper · night · paper · paper · face · face · face · chalk · face · face · footage · paper · face · paper · face · face · night · night · night (never > 3 in a row).
+
+**As built** (see compositions/pys09.NOTES.md): as planned; sc003 calendar re-centres when the text clears; sc015 "old loan, it's good"
+sits under the rows (framing 3); sc018 pull-back to 0.63 with 72 cards; sc019 shows "$0" from the whip so the frame is never empty;
+"more than" cues 1030.09/1030.25. Face cam 30.7 %.
