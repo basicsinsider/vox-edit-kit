@@ -51,3 +51,7 @@ Face-cam edges checked frame by frame (10 fps strips of the first 0.4 s / last 0
 Face cam: sc004 3.68 + sc007 5.92 + sc008 6.27 + sc010 3.12 + sc013 4.08 + sc016 5.76 + sc020 4.85 + sc021 4.53 + sc023 2.80 + sc025 1.89 + sc028 2.16
 + sc030 6.54 + sc031 3.97 = **55.57 s of 165.20 = 33.6 %**.
 First scene: BCP seal photo, fresh shot. Last scene: news-monitor push accelerating into the cut (hand-off motion → pys11).
+
+**As built:** sc018 + sc019 are one scene (`pys10-sc018`) with the punch-in as a hard camera cut at 1145.83; sc011 adds a dashed buyer slot on
+"find a company" (1097.10); sc022's pen circle sits on the return arrow (the loop), not the whole diagram; sc024's folder lifts to centre after
+the report drops in. Face cam 55.57 s = 33.6 %. Details: compositions/pys10.NOTES.md.
