@@ -9,7 +9,7 @@ day → that's Paraguay → why the president is being arrested / the country fa
 
 Cue = word start from `transcript_py.json`; every text cue is a literal `T(word − 0.06)`. Face cam = `assets/facecam/paraguay_facecam_master.mp4`,
 `data-media-start` = master second at the shot's start. Face position in the frame ≈ (1020, 330); framings W 1.0, M 1.25, C 1.5 (origin
-1020px 210px = ~120 px above the face), 2–3 % push inside. No face cam in 0–10 s; 10 pops of 1.2–2.0 s after 16 s. EDL joins in range:
+1020px 210px = ~120 px above the face), 2–3 % push inside. No face cam in 0–10 s; 9 pops of 1.3–2.0 s after 16 s (a 10th at 109.85 was dropped — see below). EDL joins in range:
 16.000, 31.117, 44.117, 47.65, 73.10, 75.20, 80.067, 82.45 — face-cam shots never span one (pops 1 and 3 START exactly on a join).
 Grounds: N night, P paper, F footage/photo, C face cam (clean: grain/dust/vignette OFF). Colours: tierra = Paraguay/people, Ueno teal =
 the bank/money, plum = power (Peña, insurance/government), yellow = one key number per scene. US banks neutral (ash / bone tiles).
@@ -45,10 +45,12 @@ the bank/money, plum = power (Peña, insurance/government), yellow = one key num
 | sc027 | 102.90–105.00 | including the National Pension Fund. | IPS (Instituto de Previsión Social) building — the pension fund; plum kicker IPS | F | push, scrim | kicker "IPS" 103.13 · "the National Pension Fund" 102.89/103.13/103.69/104.25 | hard cut | — |
 | sc028 | 105.00–106.90 | So now the big question everyone is asking | FACE pop 8 — M 1.25 | C | clean | — | hard cut | — |
 | sc029 | 106.90–109.85 | is what's gonna happen to the pension money? | EFE footage: protesters with "La plata de los trabajadores ¡no se roba!" (the workers' money) | F | push, scrim | "what's gonna happen" 107.93/108.33/108.65 → "to the pension money?" 108.89/109.05/109.13/109.53 | hard cut | crowd_room |
-| sc030 | 109.85–111.10 | And more importantly, | FACE pop 9 — C 1.5 | C | clean | — | hard cut | — |
-| sc031 | 111.10–113.30 | where the hell did all the money go? | Night callback of the donut: the teal ring of "all the money" unwinds and drains away, leaving a dashed empty ring | N | ring unwind, line | "where the hell did all the money go?" 111.13/111.45/111.61/111.85/112.09/112.33/112.49/112.81 | hard cut | whoosh_reverse (drain) |
+| sc031 | 109.85–113.30 | And more importantly, where the hell did all the money go? | Night callback of the donut: the teal ring of "all the money" unwinds and drains away, leaving a dashed empty ring | N | ring unwind, line | "where the hell did all the money go?" 111.13/111.45/111.61/111.85/112.09/112.33/112.49/112.81 | hard cut | whoosh_reverse (drain) |
 | sc032 | 113.30–114.84 | So. Let's look at | FACE pop 10 — W 1.0 | C | clean | — | hard cut | — |
 | sc033 | 114.84–116.00 | exactly how we got here. | Night: a year ruler rewinds fast right → left (2026 … back), still moving at the cut = designed hand-off into pys02's fresh shot | N | ruler scroll, motion blur | "how we got here" 115.28/115.52/115.68/115.84 | cut on action → pys02 | rewind_whoosh |
 
 First scene: the X clip post (no narrator). Last scene: the rewinding year ruler, still moving at 116.00 (cut on action into pys02).
 Assets: `assets/paraguay/pys01/` (footage trims, derived maps) — logged in its SOURCES.md; shared photos/logos from `assets/paraguay/shared/`.
+
+**As built:** pop 9 (109.85–111.10) dropped — he looks down at his notes; the money ring (sc031) starts at 109.85. sc003/sc004 cut moved to
+11.50 (slide), sc026 starts 89.95 (slide), sc027 102.85. Pop 10 renumbered pop 9. Face cam 14.76 s = 12.7 %. Details: `compositions/pys01.NOTES.md`.
