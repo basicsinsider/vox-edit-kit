@@ -66,3 +66,17 @@ before a join (226.533 → cut 226.40, 245.283 → 245.25, 275.417 → 275.40) o
 `compositions/pys03.sfx.json` — 52 markers (hero per scene + whips/moves): paper_tear + rewind on the joke, marker_scratch on the crossed bank /
 circle / deposits, stamp_thud on 1950 / 2015 / GRUPO VÁZQUEZ, pin_pop on map pins & prints, tone_blip on the region fills, dot_ticks on the
 isotype, circuit_clunk + boom_low on the crack. No bleeps in this segment.
+
+## Fix round 1 (Krish, 720p review — MANUAL §0 "No narration captions")
+- Removed every caption that only repeated his words (31 elements + their cues): sc001 "background on this bank", sc004 "the important parts",
+  sc005 "a long time ago / very profitable / wasn't technically a bank", sc006 "giving loans out / high interest rate / a bit of a loan sharking",
+  sc007 "decades ago", sc008 kicker "it was called", sc009 the three bottom captions, sc011 "an old company / part of this family / the leadership
+  changes", sc012 "a new member" (its 2.5D title layer removed), sc013 "very different", sc014 "a national conglomerate", sc016 "diversify the
+  business", sc017 "invest in different industries / a major group", sc019 "a very common phenomenon", sc020 all four captions, sc021 "the problem
+  with this idea", sc023 "not a problem", sc024 "making a lot of money / where the problem starts".
+- Kept: the "born in 1950" history card (the joke), the Credicentro title, "2015" on the family tree, GRUPO VÁZQUEZ + company cards, map labels,
+  J-curve labels (a new business / loses money / a very long time / profitable), the Miguel Vázquez name tag, credits.
+- No empty frames: sc006 painting re-centred (the text column is gone); sc017 2×2 collage re-centred; sc009 got short diagram labels on the
+  objects instead (LOANS on the teal arrows 252.2, DEPOSITS on the crossed arrow 254.0, LICENSE under the document 255.6).
+- Timings, transitions, face cam (31 %) and duration (119.00) unchanged. No sfx marker belonged to a caption pop → sfx.json unchanged.
+- lint: 0 errors in pys03; sync_audit 0 flagged; snapshots of all changed scenes looked at (16 frames).
