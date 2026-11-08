@@ -375,6 +375,7 @@ GAIN = {
     "app_notify": (0.035, 0.045), "app_error": (0.035, 0.045), "cash_register": (0.06, 0.08), "coins": (0.05, 0.07),
     "card_swipe": (0.05, 0.065), "atm": (0.045, 0.06), "rubber_stamp": (0.08, 0.11), "music_box": (0.025, 0.035),
     "gavel": (0.08, 0.10), "camera_flash": (0.05, 0.07), "handcuffs": (0.05, 0.065), "stadium_crowd": (0.04, 0.055),
+    "crack": (0.07, 0.09),   # ice crack (number/glass splitting)
     "bleep": (1.0, 1.0),   # not used: bleeps are placed at a fixed level re the VO (place_bleeps)
 }
 LOWTYPES = {"boom_low", "stamp_thud", "explosion_distant", "heartbeat"}
@@ -386,6 +387,9 @@ AMBTYPES = {"projector_loop", "crt_hum", "wind", "factory_hum", "crowd_room", "t
 def epi(name, start=0.0, dur=None):
     import epidemic_bed as E
     return E.read_window(E.sfx_path(name), start, dur)
+
+
+_GAVEL = [1]
 
 
 def render_epidemic(m, i, rng):
@@ -570,8 +574,13 @@ def render_epidemic(m, i, rng):
         y = epi("music_box_wind_up")
         y = fade(y[:int(min(len(y) / SR, d or 4.5) * SR)], 0.05, 0.6)
         return y, 0.0, "epi:music_box_wind_up"
+    if ty == "crack":
+        nm = ["ice_crack_medium_long_01", "ice_crack_medium"][i % 2]
+        y = epi(nm)
+        return fade(y, 0.0, 0.3), onset(y), f"epi:{nm}"
     if ty == "gavel":
-        nm = "gavel_x2" if any(k in note for k in ("twice", "x2", "double")) else "gavel_single_01"
+        _GAVEL[0] += 1                     # alternate the single takes in order of use (never the same knock twice)
+        nm = "gavel_x2" if any(k in note for k in ("twice", "x2", "double")) else ["gavel_single_01", "gavel_single_02"][_GAVEL[0] % 2]
         y = epi(nm)
         return y, onset(y), f"epi:{nm}"
     if ty == "camera_flash":            # press photographers: a burst for dur > 1 s, else one modern flash
@@ -1080,9 +1089,12 @@ if __name__ == "__main__":
              "paparazzi": "camera_flash", "press_flash": "camera_flash", "cuffs": "handcuffs", "handcuff": "handcuffs",
              "stadium": "stadium_crowd", "cheer": "stadium_crowd", "crowd_cheer": "stadium_crowd",
              "protest": "crowd_chant", "chant": "crowd_chant", "chants": "crowd_chant", "protest_chant": "crowd_chant",
-             "murmur": "crowd_murmur", "walla": "crowd_murmur", "office": "newsroom", "newsroom_amb": "newsroom"}
+             "murmur": "crowd_murmur", "walla": "crowd_murmur", "office": "newsroom", "newsroom_amb": "newsroom",
+             "marker_short": "marker_scratch", "crack_glass": "crack", "ice_crack": "crack", "glass_crack": "crack"}
     for m in markers:
         m["type"] = ALIAS.get(m["type"], m["type"])
+        if m.get("level") in ("loud", "hero", "high"):
+            m["level"] = "normal"                 # editors' spellings of the louder level
     markers.sort(key=lambda m: m["t"])
     unknown = {m["type"] for m in markers} - set(GAIN) - AMBTYPES
     assert not unknown, unknown
@@ -1104,6 +1116,21 @@ if __name__ == "__main__":
     act, pauses, vo = vo_activity()
     sheet = json.load(open(os.path.join(ROOT, a.cues)))
     DUCKS = sheet.get("ducks", [])
+    # sound designer's edits of editor markers (cue sheet "marker_edits": drop / retype one marker by t + type)
+    for ed in sheet.get("marker_edits", []):
+        hit = [m for m in markers if m["type"] == ed["type"] and abs(m["t"] - ed["t"]) < 0.02]
+        if not hit:
+            print(f"  !! marker_edit matched nothing: {ed}")
+            continue
+        for m in hit:
+            if ed["action"] == "drop":
+                markers.remove(m)
+            else:
+                m["type"] = ed["to"]
+                m["note"] = (m.get("note", "") + " | " + ed.get("note", "")).strip(" |")
+                if "dur" in ed:
+                    m["dur"] = ed["dur"]
+        print(f"marker_edit {ed['action']} {ed['type']}@{ed['t']}" + (f" -> {ed['to']}" if ed["action"] != "drop" else ""))
     if DUCKS:                                     # no SFX inside an insert clip (editor rule) — drop and report them
         ins = [m for m in markers if any(d["start"] + 0.1 < m["t"] < d["end"] - 0.1 for d in DUCKS)]
         markers = [m for m in markers if m not in ins]

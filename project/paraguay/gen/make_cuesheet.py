@@ -165,11 +165,9 @@ layers = [
 ]
 
 stingers = [
-    dict(file="boom_cinematic_deep", t=18.80, sync="loudest", rel_lu=-25, note="'it all started with one bank'"),
     dict(file="boom_sub_bass_clean_01", t=27.68, sync="loudest", rel_lu=-28, note="'Around 60% of adults'"),
     dict(file="swell_reverse_timpani_cymbal", t=115.34, sync="loudest", rel_lu=-27, note="swell into 'Let's look at exactly how we got here'"),
     dict(file="boom_sub_bass_clean_01", t=205.59, sync="loudest", rel_lu=-26, note="'there was one bad news'"),
-    dict(file="riser_reverse_cymbal_short", t=448.75, sync="loudest", rel_lu=-28, note="ends on 'four times bigger' (music cut)"),
     dict(file="boom_cinematic_deep", t=524.28, sync="loudest", rel_lu=-25, note="'the next day he becomes part of the central bank'"),
     dict(file="boom_dark_cinematic_low_hit", t=650.32, sync="loudest", rel_lu=-27, note="'That law gets changed'"),
     dict(file="boom_dark_cinematic_low_hit", t=797.27, sync="loudest", rel_lu=-22, note="'too good to be true. And guess what? It was.' (music cut)"),
@@ -178,6 +176,24 @@ stingers = [
     dict(file="riser_reverse_cymbal_short", t=1233.54, sync="loudest", rel_lu=-28, note="ends on 'ABC Color'"),
     dict(file="boom_dark_cinematic_low_hit", t=1486.66, sync="loudest", rel_lu=-21, note="'the bank is done' (music cut)"),
     dict(file="boom_cinematic_deep", t=1562.36, sync="loudest", rel_lu=-23, note="'the Senate rejects his resignation and then impeaches him'"),
+]
+
+# phase 2: the editors' booms on 20.8 ('UENO' logo, hero) and 448.69 ('4×' lands, hero) replace my stingers at 18.80 / 448.75
+# (picture-synced; a stinger within 0.6 s would drop them). Edits of editor markers (place_sound applies them by t + type):
+marker_edits = [
+    dict(t=207.76, type="boom_low", action="drop", note="2.2 s after the 'one bad news' stinger 205.59 — one hit is enough"),
+    dict(t=232.42, type="camera_flash", action="drop", note="'flash' = a white flash frame, not a camera: no sound"),
+    dict(t=331.8, type="boom_low", action="drop", note="1.4 s before the 2020 boom 333.21 (hero) across the join"),
+    dict(t=575.03, type="boom_low", action="retype", to="stamp_thud", note="blocks drop: thuds, the boom kept for the hero 577.27"),
+    dict(t=575.83, type="boom_low", action="retype", to="stamp_thud", note="blocks drop: thud"),
+    dict(t=590.0, type="boom_low", action="retype", to="stamp_thud", note="big block lands: thud; boom kept for the slam 593.05"),
+    dict(t=652.55, type="paper_tear", action="retype", to="crack", note="the 10% cap line cracks"),
+    dict(t=653.56, type="boom_low", action="drop", note="third hit in 3.3 s after the 'law gets changed' stinger + crack"),
+    dict(t=690.0, type="crowd_room", action="retype", to="crowd_chant", note="editor 'crowd' = protest ambience (alias was office walla)"),
+    dict(t=724.85, type="dot_ticks", action="retype", to="coins", note="money chips pour into the bank: handful of coins (editor's wish)"),
+    dict(t=797.25, type="paper_tear", action="retype", to="crack", note="ice crack through 0.58% on 'It was.' (editor's wish)"),
+    dict(t=892.95, type="paper_tear", action="retype", to="crack", note="the bank cracks"),
+    dict(t=1041.17, type="riser", action="drop", note="fights DOX's own drop at 1041.6 + the music box (lead's note)"),
 ]
 
 bleeps = [   # Krish: "Can we bleep the shit part?" — the lead mutes these exact VO spans in the final mix (DECISIONS §3)
@@ -191,7 +207,7 @@ sheet = dict(length=LEN, bed_lu_under_vo=14.0,
                  "project/paraguay/gen/make_cuesheet.py — edit there. Key family E minor / G major. Acts = SEGMENTS.md §3 (P1–P13 = "
                  "pys01–pys13). 'bleeps' = place_sound.py adds a 1 kHz bleep (VO − 3 LU) over each muted word. No insert ducks: the "
                  "X clip's own crowd is a layer (P1).",
-             layers=layers, stingers=stingers, ducks=[], bleeps=bleeps)
+             layers=layers, stingers=stingers, ducks=[], bleeps=bleeps, marker_edits=marker_edits)
 out = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "music_cuesheet.json")
 json.dump(sheet, open(out, "w"), indent=1)
 print("wrote", os.path.normpath(out), len(layers), "layers,", len(stingers), "stingers,", len(bleeps), "bleeps")

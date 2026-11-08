@@ -130,7 +130,7 @@ MOVES = {"whip", "whoosh_soft", "whoosh", "whoosh_big", "air_swell", "rewind"}
 AMB = {"projector_loop", "crt_hum", "wind", "factory_hum", "crowd_room", "tube_hum", "city_night",
        "crowd_chant", "crowd_murmur", "newsroom"}                      # Paraguay ambience types
 ALWAYS = {"boom_low", "riser", "plane_pass", "phone_ring", "teletype", "explosion_distant"}
-RANK = {"gavel": 8, "cash_register": 7, "handcuffs": 7, "app_error": 6, "rubber_stamp": 7, "camera_flash": 5,
+RANK = {"crack": 7, "gavel": 8, "cash_register": 7, "handcuffs": 7, "app_error": 6, "rubber_stamp": 7, "camera_flash": 5,
         "stadium_crowd": 6, "atm": 5, "card_swipe": 5, "coins": 5, "app_notify": 5, "music_box": 4,   # Paraguay types
         "boom_low": 10, "riser": 9, "explosion_distant": 9, "train_pass": 8, "heartbeat": 7, "drone_buzz": 7,
         "car_engine": 6, "car_door": 6, "phone_vibrate": 6, "message_ping": 5, "radio_static": 5, "siren_distant": 5,
