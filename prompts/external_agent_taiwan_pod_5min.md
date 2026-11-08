@@ -16,9 +16,9 @@ our GitHub repo. This is a test of whether you can match our quality, so follow 
 `git clone --depth 1 --branch claude/paraguay-edit https://github.com/basicsinsider/vox-edit-kit` (≈4 GB checkout).
 Work on a NEW branch named `external/taiwan-pod-5min` and push your work there. Never push to any other branch.
 
-**The source video (5 minutes):** `BB_podcast_v2_first5min.mp4` — the first ~5 minutes of our latest Taiwan podcast
-cut: 1080p, 24 fps, two cameras edited together (Sam = host/narrator, Sanket = guest). The audio is already cleaned and
-levelled. Download link: **GOFILE_LINK_HERE** (Krish fills this in). If you can't download it, ask Krish to put it at
+**The source video (5 minutes):** `BB_podcast_v2_first5min.mp4` — the first 4:59 of our latest Taiwan podcast
+cut (0:00–0:07 Sam and Sanket side by side, then Sam; it ends on a sentence): 1080p, 24 fps, two cameras edited together (Sam = host/narrator, Sanket = guest). The audio is already cleaned and
+levelled. Download link: **https://gofile.io/d/Md3nAL2U** (156 MB, 4:59.000, md5 `db7c0d7ecdeebfa02551bb49ef6b3565` — check it after downloading). If you can't download it, ask Krish to put it at
 `vox-edit-kit/input/BB_podcast_v2_first5min.mp4` — do not create accounts anywhere to get it.
 
 **Epidemic Sound (music + SFX):** the API key is in the environment variable `EPIDEMIC_SOUND_MCP_API_KEY` (Krish sets it
