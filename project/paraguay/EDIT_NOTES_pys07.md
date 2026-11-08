@@ -32,3 +32,4 @@ EDL joins inside the range (edl_frames.json): 737.15, 756.817, 760.717, 780.967,
 Face cam: sc001 4.10 + sc004 4.64 + sc005 5.93 + sc009 3.74 + sc010 3.38 + sc012 2.70 + sc015 3.83 = **28.32 s of 91.80 = 30.9 %**
 (≈ 35 % target; the rest of the lines are numbers that need a picture).
 First scene: face cam W, fresh shot. Last scene: the cracked 0.58 % halves still falling at 798.00 (cut on action into pys08).
+- Fix round 1 (narration captions removed): see compositions/pys07.NOTES.md.

@@ -64,3 +64,16 @@ crack sample would be better if the library has one). Money chips in sc003 marke
 - Face cam 30.9 % (< 35 %).
 - sc011 tilt: the ratio row leaves through the top edge during the tilt (camera move on a document — intended).
 - Lint warnings only (nested media start basis, file size, negative z-index); 0 errors for pys07.
+
+## Fix round 1 (Krish, "No narration captions", MANUAL §0)
+Removed every caption that repeated his words: sc001 "with the benefit of hindsight", sc002 "the president", sc002n "sells his stake",
+sc003 "still a private investor" / "money from the government", sc004 CONFLICT / OF / INTEREST stamp, sc005 "wasn't the only law",
+sc006 "a pretty strong law", sc008 "in simple words", sc010 "above board", sc012 "sounds really good", sc013 "suspiciously good",
+sc015 "too good to be true", sc016 "It was." — plus the dark scrims that only existed under them (face cam now fully clean).
+Kept (graphics/labels): timeline AUG 2023 → March 2025 + "roughly two years" bracket, BCP label, ratio EQUITY/DEBT ≥ 12%, cushion labels
+(cash, short term assets), "at least 12%", LOANS, the report sheet (ratio, 12%, 15%, bad loans, just 0.58%, half-square label), the bar chart
+(normal healthy bank / in South America / % axis / 2 to 4% / just 0.5%), the 0.58% stinger number, the ABC headline, credits.
+Re-composed scenes that had empty space: sc002n ABC card centred (push origin moved), sc003 panels centred vertically (arrow/coins follow),
+sc008 now opens on the whole chart with dashed ghost outlines of the cushion and the loans tower, then pushes into the cushion (was:
+the caption over an empty zoom). Timings, transitions, face cam (30.9 %) and duration 91.80 unchanged. sfx: removed `stamp_thud` 730.12;
+added `pop_soft` 746.35 (ghost outlines) + `whoosh_soft` 746.26 (push). Lint 0 errors for pys07; sync_audit 0 flagged; changed scenes snapshotted.
