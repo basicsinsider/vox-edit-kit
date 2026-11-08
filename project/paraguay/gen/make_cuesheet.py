@@ -39,7 +39,7 @@ layers = [
     L("P1", DR, "instruments", 14.0, 40.0, 60.0, -19, 3.0, 4.0, note="glue under the Starfall → DOX join (26.4)"),
     L("P1", "dox", "full", 26.0, 116.4, 113.0, -15, 1.2, 0.4,
       auto=[[26.0, 0], [38.0, 0], [39.0, -2], [50.0, -2], [51.0, 0], [77.0, 0], [78.0, -2], [92.0, -2], [93.0, 0],
-            [104.5, 0], [106.5, 1.5], [116.4, 1.5]],
+            [104.5, 0], [116.4, 0]],   # (the +1.5 lift into "how we got here" removed: Krish 2026-11-08)
       note="the money pulse under the numbers ('how big it was. Around 60%' 26.4/27.68 → Chase 10% → 60% market share); "
            "its 139–155 drop/silence lands on 'Now imagine…all collapsing in one day' 52.0 → 'that's kinda like…Paraguay' 58.8 → 68; "
            "back at 73, its 168–173 build on 'FDIC…97%' 80.7–84.9; lift on 'So now the big question' 105.03 into 'how we got here' 116.3"),
@@ -71,17 +71,18 @@ layers = [
     L("P3", DR, "instruments", 324.0, 346.0, 200.0, -19, 3.0, 3.0, note="glue into P4 ('by 2020, around COVID')"),
     # ================= P4 (pys04, 332.6–457.4): COVID → the merger → Ueno, a fintech → the boom → 50 % promos → 'four times bigger'
     L("P4", "i_can_see_the_world", "instruments", 333.4, 448.9, 30.0, -15, 2.0, 0.2,
+      auto=[[333.4, 0], [396.5, 0], [398.4, -3], [448.9, -3]],   # its 95–145 peak was the 7:20 complaint (Krish 2026-11-08)
       note="E-minor/G acoustic (charango-like plucks, restless): low under COVID / 2021 merge; drums (file 40) on 'in 2021, he merges' "
            "344.7; its 90 s breath at 393.4 between '50% discount' and the limits joke; 95–145 peak = 'nonetheless…huge hit' 398.1 → "
            "groceries → low income → first accounts; ends dead on 'buying a bank that's four times bigger' 448.75"),
-    L("P4", "i_can_see_the_world", "melody", 333.4, 448.9, 30.0, -16.5, 2.0, 0.2),
+    L("P4", "i_can_see_the_world", "melody", 333.4, 448.9, 30.0, -16.5, 2.0, 0.2, auto=[[333.4, 0], [396.5, 0], [398.4, -3], [448.9, -3]]),
     L("P4", "i_can_see_the_world", "drums", 343.4, 448.9, 40.0, -21, 1.0, 0.2),
-    L("P4", "i_can_see_the_world", "bass", 398.4, 448.9, 95.0, -21, 0.5, 0.2),
+    L("P4", "i_can_see_the_world", "bass", 398.4, 448.9, 95.0, -22.5, 0.5, 0.2),
     L("P4", DR, "bass", 440.0, 470.0, 210.0, -18, 2.0, 3.0, note="near-silence for 'how the hell do you buy something four times bigger' 454.4 (face cam joke)"),
     L("P4", DR, "instruments", 447.0, 462.0, 220.0, -19, 1.0, 2.0),
     # ================= P5 (pys05, 457.4–595.6): the secret weapon — political capital (Neon Noir, investigative pulse)
     L("P5", "neon_noir", "instruments", 457.6, 595.8, 14.6, -15, 1.5, 1.2,
-      auto=[[457.6, 0], [489.0, 0], [490.0, -1.5], [509.0, -1.5], [510.0, 0]],
+      auto=[[457.6, 0], [472.0, 0], [474.0, -3], [509.0, -3], [511.0, 0]],   # its 35–50 peak (instruments +4…+7 LU) pulled down
       note="its 35–50 peak on 'then finance minister…who goes on to become the president…2023' 478.7–482.6; its 80 s accent on "
            "'the next day he becomes part of the central bank' 524.3; melody out (95–145) under the acquisition going wrong; "
            "150 dip = 'bigger and in a worse position' ~593"),
@@ -123,7 +124,7 @@ layers = [
     L("P9", DR, "bass", 1034.0, 1085.0, 270.0, -18, 3.0, 4.0, note="floor while Crossing the Border starts from nothing"),
     # ================= P10–P11 (pys10–11, 1042.6–1294.5): the central bank catches on → the buyer → the report buried → ABC Color
     L("P10", "crossing_the_border", "instruments", 1043.5, 1294.0, 0.0, -14, 2.0, 3.0,
-      auto=[[1043.5, 7], [1075.0, 5], [1105.0, 3], [1140.0, 0], [1271.0, 0]],
+      auto=[[1043.5, 7], [1075.0, 5], [1105.0, 3], [1140.0, 0], [1146.0, -3], [1252.0, -3], [1258.0, 0], [1271.0, 0]],   # peak −3
       note="slow dark build (file 0–105, −32 → −2 LU, lifted by auto) from 'luckily the central bank did catch on' 1043; build "
            "through 'a buyer…owned by the same group' 1125 (stinger); 105–210 peak = '$79 million…$80 million…the report…head of the "
            "central bank (Aug 14/15)…buries it' 1146–1193 → 'two months later' → ABC Color 1233.5 → 'last week' 1258.8; "
@@ -134,7 +135,7 @@ layers = [
     L("P11", DR, "instruments", 1280.0, 1300.0, 140.0, -19, 2.0, 3.0),
     # ================= P12 (pys12, 1294.5–1456.5): the IMF → the Senate presses → burying looks like corruption → the unique law
     L("P12", "where_it_all_happened", "instruments", 1294.5, 1440.5, 0.0, -15, 1.5, 1.5,
-      auto=[[1294.5, 0], [1329.0, 0], [1330.0, -1.5], [1345.0, -1.5], [1346.0, 0], [1384.0, 0], [1385.0, -1.5], [1402.0, -1.5], [1403.0, 0]],
+      auto=[[1294.5, 0], [1329.0, 0], [1330.0, -1.5], [1345.0, -1.5], [1346.0, 0], [1354.0, 0], [1357.0, -2.5], [1440.5, -2.5]],   # peak −2.5
       note="E-minor 'crime scene' pulse: thin 20–45 under 'developing country…investors rely on the IMF assessment'; full band back "
            "(file 45) on 'whatever IMF says is very important' 1337–1339; 75–145 peak = 'the Senate…pressure on the central bank' 1369 → "
            "'one bad bank vs every bank' → 'a very unique law' 1417 → 'criminally held liable whenever the thing blows apart' 1437–1440.7 (file 145 = its end)"),
@@ -151,13 +152,13 @@ layers = [
     L("P13", "starfall", "bass", 1482.6, 1486.7, 80.0, -19, 0.4, 0.1),
     L("P13", "starfall", "drums", 1482.6, 1486.7, 80.0, -21, 0.4, 0.1),
     L("P13", "buried_in_the_dirt", "instruments", 1490.5, LEN, 0.0, -15, 2.0, 2.5,
-      auto=[[1490.5, 0], [1499.0, 0], [1500.0, -1.5], [1540.0, -1.5], [1541.0, 0]],
+      auto=[[1490.5, 0], [1499.0, 0], [1500.0, -1.5], [1540.0, -1.5], [1541.0, 0], [1570.0, 0], [1573.0, -3], [1597.0, -3], [1600.0, 0]],
       note="E-minor orchestral drama (sentimental) for the people: rises from the silence after the apps stop working; "
            "melody (file 65) on 'the Senate rejects his resignation…impeaches him' 1560; 85–105 peak = the arrests → 'investigation "
            "ongoing' → 'going viral' 1575–1595; the file's own 110 s drop on the bleep 'stupid [bleep]' 1600.6; quiet tail under "
            "'tax the poor…Columbia…more fire' to the end"),
     L("P13", "buried_in_the_dirt", "bass", 1490.5, LEN, 0.0, -21, 2.0, 2.5),
-    L("P13", "buried_in_the_dirt", "melody", 1555.5, 1601.0, 65.0, -16.5, 1.5, 0.4),
+    L("P13", "buried_in_the_dirt", "melody", 1555.5, 1601.0, 65.0, -16.5, 1.5, 0.4, auto=[[1555.5, 0], [1570.0, 0], [1573.0, -3], [1601.0, -3]]),
     L("P13", "buried_in_the_dirt", "drums", 1510.5, 1600.8, 20.0, -21.5, 2.0, 0.3),
     L("P13", "sfx", "chant", 1525.5, 1547.0, 20.0, -28, 2.0, 3.0, file="sfx/protest_distant_drums_chants.wav",
       note="distant street protest (drums, chants) under 'that's why we are seeing protest all over the place' 1528.2"),
@@ -207,7 +208,8 @@ sheet = dict(length=LEN, bed_lu_under_vo=14.0,
                  "project/paraguay/gen/make_cuesheet.py — edit there. Key family E minor / G major. Acts = SEGMENTS.md §3 (P1–P13 = "
                  "pys01–pys13). 'bleeps' = place_sound.py adds a 1 kHz bleep (VO − 3 LU) over each muted word. No insert ducks: the "
                  "X clip's own crowd is a layer (P1).",
-             layers=layers, stingers=stingers, ducks=[], bleeps=bleeps, marker_edits=marker_edits)
+             layers=layers, stingers=stingers, ducks=[], bleeps=bleeps, marker_edits=marker_edits,
+             vo_duck=dict(gap=12.0, attack=0.05, release=0.4, max_cut=-15.0))
 out = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "music_cuesheet.json")
 json.dump(sheet, open(out, "w"), indent=1)
 print("wrote", os.path.normpath(out), len(layers), "layers,", len(stingers), "stingers,", len(bleeps), "bleeps")

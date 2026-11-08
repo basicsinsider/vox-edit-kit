@@ -215,3 +215,68 @@ def hierarchy(markers, min_gap=0.25, per_scene_extra_every=6.0):
     kept = [ms[i] for i in sorted(final, key=lambda i: ms[i]["t"])]
     dropped = [dict(ms[i], why=w) for i, w in sorted(drop.items(), key=lambda kv: ms[kv[0]]["t"]) if i not in final]
     return kept, dropped
+
+
+# ---------------------------------------------------------------- MANUAL §0 "Music never drowns the voice": VO-driven duck
+def _kpow(x):
+    from scipy import signal
+    from loudness import _B1, _A1, _B2, _A2
+    x = np.asarray(x, np.float64)
+    if x.ndim == 1:
+        x = x[:, None]
+    y = signal.lfilter(_B2, _A2, signal.lfilter(_B1, _A1, x, axis=0), axis=0)
+    return (y ** 2).sum(1)
+
+
+def _frame_lufs(p, win, hop, n_frames):
+    """K-weighted loudness of windows `win` s centred on frames k·hop (edges padded)."""
+    c = np.concatenate([[0.0], np.cumsum(p)])
+    w = int(win * SR)
+    ctr = (np.arange(n_frames) * hop * SR).astype(np.int64)
+    a = np.clip(ctr - w // 2, 0, len(p))
+    b = np.clip(ctr + w // 2, 0, len(p))
+    m = (c[b] - c[a]) / np.maximum(b - a, 1)
+    return -0.691 + 10 * np.log10(m + 1e-20)
+
+
+def vo_duck(music, vo, vo_lufs, gap=12.0, margin=0.5, attack=0.05, release=0.4, max_cut=-15.0, passes=2, log=print):
+    """Sidechain the MUSIC bed from the VO (the VO is only read): wherever he speaks, the music's momentary (0.4 s) loudness stays
+    ≥ gap LU under the VO's local speech level (0.4 s loudness max-held over 0.5 s, so word gaps don't pump) and its short-term (3 s)
+    loudness ≥ gap LU under the VO's short-term loudness. Gain computed every 10 ms, looks 50 ms ahead, attack `attack` s, release
+    `release` s, never more than `max_cut` dB. Returns (ducked music, report)."""
+    from scipy.ndimage import maximum_filter1d, minimum_filter1d
+    hop = 0.01
+    nf = int(len(music) / SR / hop) + 1
+    pv = _kpow(vo)
+    lv4 = _frame_lufs(pv, 0.4, hop, nf)
+    lv3 = _frame_lufs(pv, 3.0, hop, nf)
+    del pv
+    hold = maximum_filter1d(lv4, int(0.5 / hop))
+    speak4 = hold > vo_lufs - 10
+    speak3 = lv3 > vo_lufs - 12
+    total = np.zeros(nf)
+    ts = np.arange(nf) * hop
+    tsmp = np.arange(len(music)) / SR
+    a_c, r_c = 1 - np.exp(-hop / attack), 1 - np.exp(-hop / release)
+    for _ in range(passes):
+        pm = _kpow(music)
+        lm4, lm3 = _frame_lufs(pm, 0.4, hop, nf), _frame_lufs(pm, 3.0, hop, nf)
+        del pm
+        need = np.zeros(nf)
+        need = np.where(speak4, np.minimum(need, hold - gap - margin - lm4), need)
+        need = np.where(speak3, np.minimum(need, lv3 - gap - margin - lm3), need)
+        need = np.clip(need, max_cut - total, 0.0)
+        need = minimum_filter1d(need, int(0.1 / hop))          # centred → 50 ms look-ahead
+        g = np.zeros(nf)
+        cur = 0.0
+        for k in range(nf):                                    # dB one-pole: fast down, slow up
+            cur += (need[k] - cur) * (a_c if need[k] < cur else r_c)
+            g[k] = cur
+        total += g
+        music = music * db(np.interp(tsmp, ts, g))[:, None]
+    rep = dict(gap=gap, attack=attack, release=release, max_cut=max_cut,
+               ducked_pct=round(float((total < -0.5).mean() * 100), 1), mean_cut_db_while_ducked=round(float(total[total < -0.5].mean()), 2)
+               if (total < -0.5).any() else 0.0, max_cut_db=round(float(total.min()), 2))
+    log(f"vo_duck: ≥{gap:g} LU under the VO — ducked {rep['ducked_pct']}% of the time, mean {rep['mean_cut_db_while_ducked']} dB, "
+        f"max {rep['max_cut_db']} dB")
+    return music, rep, total

@@ -252,7 +252,7 @@ def speech_env(act):
     return np.interp(np.arange(N) / SR, tf, s)
 
 
-def build_music_epidemic(sheet, act, pauses):
+def build_music_epidemic(sheet, act, pauses, vo=None):
     """Layered Epidemic bed (MANUAL §10.3): sum the cue-sheet layers, frequency pocket in the voice band while he speaks
     (§10.8: −4.5 dB @ 2.5 kHz, −2.5 dB @ 1.2 kHz), small lifts in VO pauses ≥ 0.6 s, normalise to VO − bed_lu_under_vo,
     then add the stingers. Writes <out>/music_bed.wav + music_report.json."""
@@ -271,7 +271,7 @@ def build_music_epidemic(sheet, act, pauses):
             continue
         if any(a < d["end"] + 0.5 and b > d["start"] - 0.5 for d in DUCKS):
             continue                       # no lift around an insert clip (its own audio is the foreground)
-        lift = 2.5 if L >= 1.2 else 1.5
+        lift = 2.0 if L >= 1.2 else 1.5          # modest (Krish 2026-11-08: the music must never drown the voice)
         r = min(0.5, max(0.1, (L - 0.45) / 2))
         up, dn = a + 0.15 + r, b - 0.3
         if dn <= up:
@@ -285,12 +285,19 @@ def build_music_epidemic(sheet, act, pauses):
     if DUCKS:
         x = x * db(duck_env(DUCKS, "db"))[:, None]
     x = E.place_stingers(sheet, x, LEN, VO_LUFS, target)
+    duck_rep = None
+    dk = sheet.get("vo_duck", {})
+    if vo is not None and dk is not False:           # MANUAL §0: VO-driven duck, default ON (cue sheet "vo_duck": false to disable)
+        v = vo[:N] if len(vo) >= N else np.pad(vo, ((0, N - len(vo)), (0, 0)))
+        x, duck_rep, _ = E.vo_duck(x, v, VO_LUFS, **(dk if isinstance(dk, dict) else {}))
+        del v
     pk = np.abs(x).max()
     if pk > db(-1.0):
         x *= db(-1.0) / pk
     out = os.path.join(BED, "music_bed.wav")
     sf.write(out, x, SR, subtype="PCM_24")
-    json.dump(dict(vo_lufs=VO_LUFS, target_lufs=target, layers=rep, pauses_lifted=len(pauses)),
+    json.dump(dict(vo_lufs=VO_LUFS, target_lufs=target, final_lufs=round(integrated_lufs(x), 2), vo_duck=duck_rep, layers=rep,
+                   pauses_lifted=len(pauses)),
               open(os.path.join(BED, "music_report.json"), "w"), indent=1)
     print(f"music: {out}  LUFS {integrated_lufs(x):.1f} (target {target:.1f})  peak {20*np.log10(np.abs(x).max()):.1f} dBFS"
           f"  layers {len(rep)}")
@@ -1155,7 +1162,7 @@ if __name__ == "__main__":
                   open(os.path.join(BED, "sfx_hierarchy.json"), "w"), indent=1)
         print(f"hierarchy (§10.8): kept {len(kept)} / {len(markers)} markers, dropped {len(dropped)}")
         markers = kept
-    build_music_epidemic(sheet, act, pauses)
+    build_music_epidemic(sheet, act, pauses, vo)
     sfx, _amb, _log = build_sfx_and_amb(markers, [(0.0, LEN, "PAPER", set())], act, vo)
     if bleeps:                                    # added after the SFX bus is written: rewrite it with the bleeps on top
         bl = place_bleeps(sfx, bleeps)
