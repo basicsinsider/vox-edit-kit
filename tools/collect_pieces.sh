@@ -7,7 +7,7 @@ for b in $(git ls-remote --heads origin "${BRANCH_PREFIX:-render}/${ONLY}*" 2>/d
   s=${b#${BRANCH_PREFIX:-render}/}; ch=${s%s[0-9][0-9]}; out="renders/$ch/pieces/$s.mp4"
   [ -s "$out" ] && continue
   avail=$(df --output=avail -B1 . | tail -1); [ $avail -gt 1200000000 ] || { echo "$s: skipped — only $avail bytes free"; continue; }
-  T=$(mktemp -d "$R/work/_pc_XXXX")
+  mkdir -p "$R/work"; T=$(mktemp -d "$R/work/_pc_XXXX")
   git fetch -q --depth 1 origin "$b" || { rm -rf "$T"; continue; }
   # blob-by-blob (not `git archive`): on a blob:none partial clone, archive lazily fetched the WHOLE tree (~7.7 GB, Paraguay 4K)
   mkdir -p "renders/$ch/pieces"; : > "$out.tmp"
