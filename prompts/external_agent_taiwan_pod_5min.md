@@ -16,14 +16,10 @@ our GitHub repo. This is a test of whether you can match our quality, so follow 
 `git clone --depth 1 --branch claude/paraguay-edit https://github.com/basicsinsider/vox-edit-kit` (≈4 GB checkout).
 Work on a NEW branch named `external/taiwan-pod-5min` and push your work there. Never push to any other branch.
 
-**Repo 2 — how the podcast was cut (private):** `https://github.com/basicsinsider/bb-cutting-trimming`, branch
-**`claude/busy-keller-494um1`**. Read `README.md`, `CLAUDE.md` and `edit/EDIT_NOTES.md` (what was cut, camera rules,
-speakers, delivery rule). You only need to read it; do not change it.
-
-**The source video:** `BB_podcast_v2.mp4` — the latest Taiwan podcast cut, 1:58:03, 1080p, 24 fps, two cameras
-(Sam = host/narrator, Sanket = guest), audio already cleaned and levelled. Krish will put it in your workspace at
-`vox-edit-kit/input/BB_podcast_v2.mp4` (it is from https://gofile.io/d/eujv01cW). If it isn't there, ask Krish for it —
-do not create accounts anywhere to download it.
+**The source video (5 minutes):** `BB_podcast_v2_first5min.mp4` — the first ~5 minutes of our latest Taiwan podcast
+cut: 1080p, 24 fps, two cameras edited together (Sam = host/narrator, Sanket = guest). The audio is already cleaned and
+levelled. Download link: **GOFILE_LINK_HERE** (Krish fills this in). If you can't download it, ask Krish to put it at
+`vox-edit-kit/input/BB_podcast_v2_first5min.mp4` — do not create accounts anywhere to get it.
 
 **Epidemic Sound (music + SFX):** the API key is in the environment variable `EPIDEMIC_SOUND_MCP_API_KEY` (Krish sets it
 as a secret in your environment settings). `tools/epidemic_mcp.py` reads it from there (or from `~/.secrets/epidemic_key`).
@@ -54,9 +50,8 @@ Report anything that fails to install instead of working around it silently.
    at them. That is the quality bar.
 
 ## 3. The job
-1. **Cut the source to its first 5:00.** Re-encode the cut (`-ss 0 -t 300`, frame-accurate), and keep picture and sound
-   in sync. Then take the cut point back to the nearest sentence end (≤ 5:10) so it doesn't stop mid-word. That 5-minute
-   piece is your narration. It's already cleaned: do NOT process its audio (no EQ/compression/gain/normalising — MANUAL §0).
+1. **The 5-minute file is your narration.** Use it as delivered. It's already cleaned: do NOT process its audio
+   (no EQ/compression/gain/normalising — MANUAL §0). Never cut inside a word.
 2. **Transcribe it** with Parakeet (`npx --yes hyperframes@0.8.217 transcribe …`, see MANUAL) to get word timings.
    - Fix ASR misspellings of names only: Robert Tsao, Morris Chang, UMC, TSMC, Hsinchu Science Park, Sam, Sanket,
      "Searching Lessons". On-screen text = exactly what is said, no fact-checking.
@@ -70,8 +65,7 @@ Report anything that fails to install instead of working around it silently.
    - No one on camera for the first 10 s.
    - In the first 1–2 min the speakers pop in on camera often, but only for 1–2 s each.
    - After that: ~35 % on camera, ~65 % edit (B-roll/graphics).
-   - When someone is on camera, show whoever is speaking (Sanket whenever he speaks or reacts, as in the podcast cut's
-     rules); keep the cameras clean and modern (MANUAL §10.5).
+   - When someone is on camera, show whoever is speaking (Sanket whenever he speaks or reacts, as in the podcast cut); keep the cameras clean and modern (MANUAL §10.5).
 5. **Edit in HyperFrames** (`compositions/pod5s01.html`, `pod5s02.html` …) using `lib/fx.js` / `lib/fx.css` effects,
    the map kit (`assets/maps/kit/`), the reference layouts, real archival images/footage (copyrighted OK under fair use,
    credited; log every asset in its folder's `SOURCES.md`), vintage papers.
@@ -95,8 +89,9 @@ Report anything that fails to install instead of working around it silently.
    - Watch disk space before every big write.
 9. **Deliver:**
    - Push the plan, compositions, notes and tools you add to `external/taiwan-pod-5min`.
-   - Final 1080p MP4 + a 720p review copy: upload both to gofile.io (the owner's standing delivery rule — the exact
-     upload command is in `bb-cutting-trimming/CLAUDE.md`), check the uploaded md5, and give Krish the links.
+   - Final 1080p MP4 + a 720p review copy: upload both to gofile.io (the owner's standing delivery rule — pick a server from
+     `https://api.gofile.io/servers`, then `curl -F file=@… https://<server>.gofile.io/contents/uploadfile`), check the
+     uploaded md5, and give Krish the links.
    - Never commit video files over 95 MB.
 10. **Report:** what you built, scene list, assets used and what was missing, timings (setup, edit, render), and anything
     in the kit that didn't work for you.
