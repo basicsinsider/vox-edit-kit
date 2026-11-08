@@ -191,7 +191,7 @@
     <!-- sc006 · 1066.71–1073.27 · two options; first: bad loans, write it down as a loss · the fork -->
     <div class="q-scene" id="pys10-sc006"><div class="q-shot q-paper" id="pys10-sc006-shot">
       <div class="q-p1" style="background-image:url('assets/textures/paper_cream_02.jpg')"></div>
-      <div class="q-p2" style="background-image:url('assets/textures/paper_lined_01_hires.jpg'); opacity:0.45"></div>
+      <div class="q-p2" style="background-image:url('assets/textures/paper_lined_01_hires.jpg'); background-size:125% auto; background-position:85% 40%; opacity:0.45"></div>
       <div class="q-cam" id="pys10-sc006-cam"></div>
       <div class="q-abs t-display q-ink" id="pys10-sc006-t" style="left:0; width:1920px; top:84px; text-align:center; font-size:76px"><span class="q-w">two </span><span class="q-w">options</span></div>
     </div></div>
@@ -233,7 +233,7 @@
     <!-- sc011 · 1094.02–1101.86 · second option: find a company or a bank willing to buy out these loans · the fork (②) -->
     <div class="q-scene" id="pys10-sc011"><div class="q-shot q-paper" id="pys10-sc011-shot">
       <div class="q-p1" style="background-image:url('assets/textures/paper_cream_02.jpg')"></div>
-      <div class="q-p2" style="background-image:url('assets/textures/paper_lined_01_hires.jpg'); opacity:0.45"></div>
+      <div class="q-p2" style="background-image:url('assets/textures/paper_lined_01_hires.jpg'); background-size:125% auto; background-position:85% 40%; opacity:0.45"></div>
       <div class="q-cam" id="pys10-sc011-cam"></div>
       <div class="q-abs t-display q-ink" id="pys10-sc011-a" style="left:0; width:1920px; top:900px; text-align:center; font-size:60px"><span class="q-w">you </span><span class="q-w">can </span><span class="q-w">survive</span></div>
       <div class="q-abs t-display q-ink" id="pys10-sc011-b" style="left:0; width:1920px; top:900px; text-align:center; font-size:60px"><span class="q-w">find </span><span class="q-w">a </span><span class="q-w">company </span><span class="q-w">or </span><span class="q-w">a </span><span class="q-w">bank</span></div>
@@ -662,7 +662,7 @@
     /* ===== the fork (sc006 option 1; sc011 option 2) ===== */
     function fork(host, svg, lit) {
       // trunk + branches
-      const P = { trunk: "M960 210 C961 260 959 300 960 340", L: "M960 340 C900 400 700 400 482 448", R: "M960 340 C1020 400 1220 400 1438 448" };
+      const P = { trunk: "M960 210 C978 250 944 300 960 340", L: "M960 340 C900 400 700 400 482 448", R: "M960 340 C1020 400 1220 400 1438 448" };
       const n1 = div(host, "q-num t-display", "left:420px; top:450px", "1"), n2 = div(host, "q-num t-display", "left:1380px; top:450px", "2");
       const bar0 = div(host, "q-bar0", "left:200px; top:860px; width:560px"), bar = div(host, "q-bar", "left:200px; top:860px; width:560px");
       const st = div(host, "q-stamp t-display", "left:268px; top:650px; transform:rotate(-5deg)", '<span class="q-w">BAD </span><span class="q-w">LOANS</span>');
@@ -680,7 +680,7 @@
       pop(f.n1, S(1067.85), { dur: 0.7, from: 0.6 });
       pop(f.n2, S(1067.95), { dur: 0.7, from: 0.6 });
       tl.to(f.n2, { opacity: 0.3, duration: 0.3 }, S(1068.6));
-      tl.fromTo(f.n1, { backgroundColor: "#ece6d6" }, { backgroundColor: "#f3cd3a", duration: 0.001, immediateRender: false }, S(1067.95));
+      tl.fromTo(f.n1, { backgroundColor: "#ece6d6" }, { backgroundColor: PLUML, duration: 0.001, immediateRender: false }, S(1067.95));
       // the loans bar (teal) appears under option 1, then is written down
       gsap.set([f.bar, f.bar0], { opacity: 0 });
       tl.fromTo(f.bar, { opacity: 1, scaleX: 0 }, { scaleX: 1, duration: 0.8, ease: C(E.out, 0.8), immediateRender: false }, S(1068.4));
@@ -726,7 +726,7 @@
       const f = fork(cam, svg, 2);
       ink(svg, f.P.trunk, null, 0, { width: 7, filter: PEN }); ink(svg, f.P.L, null, 0, { width: 7, filter: PEN, opacity: 0.3 });
       const rb = ink(svg, f.P.R, null, 0, { width: 7, filter: PEN });
-      gsap.set(f.bar, { scaleX: 0.22 }); gsap.set([f.n1, f.st, f.bar, f.bar0], { opacity: 0.25 }); gsap.set(f.st.querySelectorAll(".q-w"), { opacity: 1 });
+      gsap.set([f.n1, f.st, f.bar, f.bar0], { opacity: 0 });
       tl.fromTo(f.n2, { backgroundColor: "#ece6d6", borderColor: INK }, { backgroundColor: UENOL, borderColor: UENOD, duration: 0.001, immediateRender: true }, S(1094.5));
       // buyer card at the end of branch 2
       const card = div(cam, "q-buyer", "left:1290px; top:620px; width:300px; height:200px", buyerHTML(false));
@@ -742,7 +742,8 @@
       // camera: centre on option 2
       gsap.set(cam, { transformOrigin: "0 0" });
       tl.fromTo(cam, { x: -200, y: 0, scale: 1.0 }, { x: -480, y: -60, scale: 1.0, duration: 2.0, ease: E.cam, immediateRender: false }, S(1094.02));
-      tl.to(cam, { x: -560, y: -110, scale: 1.06, duration: 5.4, ease: "none" }, S(1096.2));
+      tl.to(cam, { x: 960 - 1440 * 1.3, y: 520 - 640 * 1.3, scale: 1.3, duration: 2.6, ease: E.cam }, S(1096.2));
+      tl.to(cam, { x: 960 - 1440 * 1.34, y: 520 - 640 * 1.34, scale: 1.34, duration: 2.6, ease: "none" }, S(1098.8));
       tl.to($("sc011-shot"), { scale: 1.08, duration: 0.4, ease: E.in }, S(1101.46));
     })();
     words("sc011-a", [T(1095.56), T(1095.72), T(1095.96)], { dur: 0.4, y: 10 });
@@ -851,15 +852,15 @@
     words("sc017-ic", [T(1137.00), T(1137.16)], { dur: 0.3, y: 8 });
 
     /* ===== the circular-flow diagram (sc018 animated, sc022 static copy) ===== */
-    const SH = [[700, 300], [960, 250], [1220, 300]];
+    const SH = [[760, 330], [960, 250], [1160, 330]];
     const NEWC = [1620, 600], UEC = [300, 600];
     function diagram(host, anim) {
       const svg = el(host, "svg", { class: "q-mk", viewBox: "0 0 1920 1080" });
       const nd = div(host, "q-node", "left:" + (UEC[0] - 120) + "px; top:" + (UEC[1] - 120) + "px", '<div class="q-logo"></div>');
       const sh = SH.map((p) => div(host, "q-shell", "left:" + (p[0] - 90) + "px; top:" + (p[1] - 60) + "px", bldg(UENOD) + "<i></i>"));
       const nc = div(host, "q-buyer", "left:" + (NEWC[0] - 150) + "px; top:" + (NEWC[1] - 100) + "px", buyerHTML(true));
-      const a1 = SH.map((p, i) => [[UEC[0] + 90, UEC[1] - 90], [UEC[0] + 140 + i * 120, p[1] + 160 - i * 30], [p[0] - 30, p[1] + 66]]);
-      const a2 = SH.map((p, i) => [[p[0] + 30, p[1] + 66], [NEWC[0] - 300 + i * 90, p[1] + 170 - i * 20], [NEWC[0] - 100, NEWC[1] - 106]]);
+      const a1 = SH.map((p) => [[UEC[0] + 96, UEC[1] - 84], [p[0] - 250, p[1] + 50], [p[0] - 104, p[1] + 10]]);
+      const a2 = SH.map((p) => [[p[0] + 104, p[1] + 10], [NEWC[0] - 70, p[1] + 10], [NEWC[0] - 50, NEWC[1] - 112]]);
       const loop = [[NEWC[0] - 40, NEWC[1] + 108], [960, 1010], [UEC[0] + 40, UEC[1] + 126]];
       const qd = (q) => "M" + q[0][0] + " " + q[0][1] + " Q" + q[1][0] + " " + q[1][1] + " " + q[2][0] + " " + q[2][1];
       const head = (q, s) => { const a = Math.atan2(q[2][1] - q[1][1], q[2][0] - q[1][0]), x = q[2][0], y = q[2][1];
@@ -893,7 +894,7 @@
       tl.set(lab2, { opacity: 0 }, S(1145.83));
       // $79 million (yellow key, highlighter + count) above the new company
       const k79 = div(cam, "q-abs t-display q-ink", "left:" + (NEWC[0] - 300) + "px; width:600px; top:" + (NEWC[1] - 250) + "px; text-align:center; font-size:84px; line-height:1",
-        '<span class="q-w t-serif-i" style="font-size:44px">around </span><span class="q-mark"><span class="q-hlb" id="pys10-sc018-hl"></span><span id="pys10-sc018-n" style="opacity:0">$0</span> <span class="q-w">million</span></span>');
+        '<span class="q-w t-serif-i" style="font-size:44px; margin-right:24px">around</span><span class="q-mark"><span class="q-hlb" id="pys10-sc018-hl"></span><span id="pys10-sc018-n" style="opacity:0">$0</span> <span class="q-w">million</span></span>');
       rise(k79.querySelector(".q-w"), T(1146.01), { dur: 0.3, y: 8 });
       const n = $("sc018-n"); show(n, T(1146.33));
       FX.text.count(tl, n, T(1146.33), 0, 79, 0.7, (v) => "$" + Math.round(v));
@@ -914,8 +915,8 @@
       // camera: wide drift → punch-in on the new company (hard cut at 1145.83) → pull back as the loop closes
       gsap.set(cam, { transformOrigin: "0 0" });
       tl.fromTo(cam, { scale: 1.0, x: 0, y: 0 }, { scale: 1.03, x: -29, y: -16, duration: 7.97, ease: "none", immediateRender: false }, S(1137.86));
-      tl.set(cam, { scale: 1.7, x: 960 - NEWC[0] * 1.7, y: 600 - NEWC[1] * 1.7 }, S(1145.83));
-      tl.to(cam, { x: 960 - NEWC[0] * 1.62 - 40, y: 600 - NEWC[1] * 1.62, scale: 1.62, duration: 2.6, ease: "none" }, S(1145.84));
+      tl.set(cam, { scale: 1.9, x: 960 - NEWC[0] * 1.9, y: 560 - 520 * 1.9 }, S(1145.83));
+      tl.to(cam, { x: 960 - NEWC[0] * 1.82, y: 560 - 520 * 1.82, scale: 1.82, duration: 2.7, ease: "none" }, S(1145.84));
       tl.to(cam, { scale: 0.96, x: 38, y: -10, duration: 1.5, ease: E.inOut }, S(1148.6));
       tl.to(cam, { scale: 1.0, x: 0, y: -20, duration: 4.3, ease: "none" }, S(1150.1));
       FX.focusHunt(tl, cam, S(1145.85), { dur: 0.6 });
