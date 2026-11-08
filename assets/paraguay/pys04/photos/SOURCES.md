@@ -1,0 +1,7 @@
+# assets/paraguay/pys04/photos — sources (pys04 editor, 2026-11-08)
+| file | subject | URL | licence | author | date | size |
+|---|---|---|---|---|---|---|
+| vision_banco_abc.jpg | Visión Banco headquarters at night (Asunción), "VISION" sign | https://www.abc.com.py/economia/2024/01/20/ueno-bank-anuncia-inicio-de-fusion-con-vision-banco/ (og:image, resizer width 1600) | © Visión Banco / ABC Color, fair use (credit "Photo: Visión Banco via ABC Color") | Visión Banco (press photo credited to the bank in ABC) | article 2024-01-20 | 1600×1055 |
+| mercado4_05.jpg | Mercado 4, Asunción: a vendor at her produce stall (bananas, groceries) — B/W | https://commons.wikimedia.org/wiki/File:%22Mercado_4%22_Asunci%C3%B3n_(Paraguay)_05.jpg | CC BY 2.0 (credit on screen; photographer's signature kept) | David C. Ramalleiro (Flickr) | 2023 | 1280×853 (Commons thumb) |
+| gasolinera_pozo_colorado.jpg | Service station (gas) in Pozo Colorado, Chaco, Paraguay | https://commons.wikimedia.org/wiki/File:Estaci%C3%B3n_de_servicio_(gasolinera)_en_Pozo_Colorado,_Chaco,_Presidente_Hayes,_Paraguay.jpg | CC0 | Commons uploader (see page) | — | 1920×1440 (Commons thumb) |
+Tried, blocked: ueno.com.py promo PDFs ("Reintegro 50% Primera Compra") — Cloudflare 403; web.archive.org copies reset by the proxy. The promo is typeset in our own type instead (no ueno marks copied).
