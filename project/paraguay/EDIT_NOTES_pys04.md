@@ -43,3 +43,8 @@ Face cam: sc003 3.35 + sc005 3.65 + sc009 4.45 + sc011 3.05 + sc013 3.45 + sc015
 sc026 3.40 = **40.2 s of 124.8 s = 32 %**.
 First scene: Asunción plate (fresh shot). Last scene: face cam W asking the question (pys05 opens "Well, this is where we need to talk about the
 secret weapon" — the lead can cut straight).
+
+**As built (after snapshots / hold audit):** cuts moved sc001/002 → 335.45 (let "around COVID times" settle before the whip), sc004/005 → 350.75
+("struggling" + droop hold 0.5 s), sc012/013 → 389.00 ("50% back" holds 0.45 s). sc012 gained the REAL ueno ad ("Activá tu tarjeta… 50% de
+reintegro en tu primera compra", shared/docs) sliding up over the terms at 385.30 + a pen circle on "50% de reintegro" (the third highlight was
+dropped). sc023's small logo dropped. Face cam = 39.55 s = 31.7 %. See compositions/pys04.NOTES.md.
