@@ -35,3 +35,5 @@ Face cam: sc001 6.30 + sc004 2.16 + sc007 3.12 + sc010 5.20 + sc011 2.68 + sc013
 First scene: face W (fresh shot, still frame for 0.12 s). Last scene: push into the ueno tower still accelerating at 1294.50 (cut-on-action hand-off).
 Newspaper treatments (two different ones of the same real article, no back-to-back repeat): sc008 3D tilted page + halftone + push; sc018 flat
 torn clipping with pen circle. pys10 ends on the buried report — pys11 opens on his face, not on a document.
+
+**Fix round 1 (MANUAL §0 "No narration captions"):** all captions that repeat his words removed (see compositions/pys11.NOTES.md); only document text, diagram labels (DEPARTMENT, the three pressure cards), name/place tags and credits remain. sc006 opens on the real ABC homepage; sc016 cards are on the board from the start.

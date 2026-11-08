@@ -66,3 +66,19 @@ First scene: face W (fresh shot). Last scene: push into the ueno tower still acc
 - Face-cam C framing with origin 1000 220 cropped the top of Krish's head in this take; origin y ≈ 110 for C, 150 for M keeps the head in.
 - An EDL join 0.12 s after the segment start: hold a still of the post-join frame for those 3 frames instead of shifting `data-media-start`
   (keeps lip sync exact).
+
+## Fix round 1 (Krish, 720p review — MANUAL §0 "No narration captions")
+- Removed every caption that repeated his words: sc001 "this whole thing / fall apart", sc002 "two months after", sc003 "wrote this report" /
+  "moved out of the department", sc005 "somehow, some way" / "a newspaper in Paraguay", sc006 "one of the oldest / and one of the biggest",
+  sc008 "they published it", sc009 label-box "everything else", sc010 "because of the media", sc012 "later down the line", sc013 "just happened
+  last week" / "thanks to the media", sc014 "made public" / "subsequent investigations", sc015 "breaks the political back", sc016 slab text
+  "political pressure" (the slab stays as a plain plum weight), sc017 "senators from his own party", sc018 label-boxes "request an investigation" /
+  "ask the central bank", sc019 "is this bank actually good?", sc020 "one of the biggest banks". Scrims that only served those captions removed
+  (face-cam shots are now fully clean).
+- Kept: ABC logo, real ABC pages/clippings + highlighters + pen circle, phones, calendar sheets, org chart (+ new small diagram label
+  "DEPARTMENT" on the dashed box), the central bank / the president / anyone else card labels (diagram labels, still on their words),
+  PARTIDO COLORADO name tag (moved to the lower-left, bottom 104), "Congreso Nacional · Asunción" place tag, credits.
+- No empty frames: sc006 now opens on the real ABC Color homepage (newsprint tint, sharp) for "one of the oldest… biggest", which blurs/dims
+  as the logo pops on "ABC"; sc016's three cards are on the board from the scene start (slab hangs over them) and each is pressed as he names
+  it; sc002's calendar is centred. Timings, transitions, face cam (32.1 %) and duration 86.70 unchanged.
+- sfx.json: no text-pop markers existed, nothing removed. lint: 0 errors in pys11; sync_audit 0 flagged (only the 7 card-label cues remain).
