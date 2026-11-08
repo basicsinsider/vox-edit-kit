@@ -159,3 +159,65 @@ focus, jets, telegraph, phone ring/dial, office/factory ambiences, rubber stamp)
 | fire_burning_crackles.wav | 7c4ae63a-5be3-4b2b-b2fc-08bfd5e3da98 | Fire, Burning, Crackles | `fire_crackle`, `burn_crackle` ≥ 2 s |
 | police_siren_distant.wav | 3ee522b6-0203-4fcb-9596-72f34b22b21a | Vehicles, Siren, Police Siren, Distant | `siren_distant` (dur) |
 | door_knock_apartment.wav | 3b5d39a2-3bc2-4076-b78b-a9cb10aa46bf | Doors, Knock, Apartment Door | `door_knock` |
+
+### "Paraguay" (Searching Lessons, 2026-11-08) — cue sheet `project/paraguay/music_cuesheet.json`, plan `project/paraguay/SOUND_PLAN.md`
+Key family **E minor / G major** (new: Ivan was D minor, the Taiwan chunks D/F/G/A minor). Urgent investigative financial-crisis tone with
+a wry narrator; Latin-American colour from acoustic/nylon guitars and plucked strings (no tasteful Paraguayan-harp track exists in the
+catalogue: "harp"/"paraguayan harp"/"harp south america" searches return children's/celtic/cumbia material). Found with SearchRecordings +
+SearchSimilarToRecording (seeds: Melting Glass, Neon Noir, Fake Photisms, Desert Whispers, Crossing the Border, Andean Valley, And Then,
+In Disguise, Starfall, Formations); key measured from the LQ previews, confirmed on the WAVs (`ANALYSIS.md`).
+**New (tested 2026-11-08): `DownloadRecording` now delivers a real `MELODY` stem** (`python3 tools/epidemic_fetch.py <id> <name> FULL MELODY
+BASS DRUMS INSTRUMENTS`) — no need to derive it. Tracks without a DRUMS/MELODY stem answer NOT_FOUND (DOX, Fake Photisms).
+Stems-sum check (full − Σ stems over 60 s): clean for We Picked Irises (−23 dB), I Can See the World (−23), Desert Whispers (−11); NOT
+summing (−3…+6 dB: stems mastered separately) for And Then, Starfall, In Disguise, Neon Noir, Where It All Happened, Crossing the Border,
+Buried in the Dirt (stems used as layers anyway, like Ivan); Fake Photisms and DOX: stems far under the full mix → `full` is the layer.
+Pulse strength (onset autocorrelation, 1 = none): And Then bass 1.1 / instruments 1.6 → tempo-free glue (its drums stem 5.7 is not used).
+
+| folder | title — artist | kosmosId | stems downloaded | bpm | key (meas.) | role in Paraguay / why |
+|---|---|---|---|---|---|---|
+| `and_then/` | And Then — DEX 1200 (ambient, dark drone, suspense) | 56e2fef0-f63b-45e7-97c4-db880304c35a | full, melody, bass, drums, instruments | 73 (free) | E minor | DRONE glue under every join (bass + instruments only) |
+| `starfall/` | Starfall — Roots and Recognition (cinematic, dark, main title, sad) | 5879ab51-10c8-4345-bb75-352bc2d6c380 | full, melody, bass, drums, instruments | 82 | E minor | weight: cold open (X clip → "it all started with one bank") and its return for the board vote → "the bank is done" (84 s peak, cut) |
+| `dox/` | DOX — Lennon Hutton (ambient, dark, pulses, restless) | 07e2e4ec-0727-4b5a-a76a-c360d6afb20e | full, bass, instruments (no drums/melody exist) | 74 | E minor | the money pulse: 60 % / Chase / market share / FDIC in the cold open; returns for the merry-go-round scheme (its 139 s drop on "Merry go around") |
+| `in_disguise/` | In Disguise — The Fly Guy Five (quirky, sneaky, eccentric) | 20470259-69bc-444e-bc8e-01066aed76ca | full, melody, bass, drums, instruments | 84 | E minor | the wry colour: World Cup + the tweet; returns (instruments + bass only) for "Luckily for Ueno…that law gets changed" |
+| `andean_valley/` | Andean Valley — Madison York (acoustic, eccentric, South America) | da44a4a7-0a79-3df4-a8dc-d988b886e7a8 | full, melody, bass, drums, instruments | 95 | E minor | Latin colour for "a success story, a boring one…especially in South America" → investment grade → Wall Street bonds |
+| `we_picked_irises/` | We Picked Irises — Jay Taylor (contemporary classical, hopeful, adventure) | eb6d9817-79bf-4a3d-bbda-502ca4450ec5 | full, melody, bass, drums, instruments | 125 | G major (relative) | background: the 1950 joke, the money-lending company, the 2015 heir building a conglomerate (drums on "2015") |
+| `i_can_see_the_world/` | I Can See The World From Here — Mythical Score Society (acoustic, restless; found by "charango") | fb49f858-5443-388a-b468-6743a598604e | full, melody, bass, drums, instruments | 142 | E minor (alt G) | the Ueno fintech boom: merger → app → 50 % promos → first bank accounts; ends on "four times bigger" |
+| `neon_noir/` | Neon Noir — Lennon Hutton (cinematic, pulses, restless, suspense) | c4470b69-5cac-4373-ad4f-5704a41bd1ff | full, melody, bass, drums, instruments | 85 | E minor | investigative pulse: political capital — finance minister → president, CEO → central bank "the next day" |
+| `desert_whispers/` | Desert Whispers — Tellsonic (acoustic, cinematic, dark, mysterious) | 6905cdbd-6f5e-4b54-840a-225684dbad18 | full, melody, bass, drums, instruments | 110 | E minor | dark nylon-guitar tension: hindsight → conflict of interest → 12 % / 15 % / 0.58 % → cut dead on "It was." |
+| `fake_photisms/` | Fake Photisms — Martin Klem (ambient, mysterious, suspense) | dd42a193-a22a-344b-8525-7510bfd9a262 | full, melody, bass, instruments (no drums) | 111 | E minor | self-dealing → "owe a billion" → shell companies "created today" (full mix) |
+| `where_it_all_happened/` | Where It All Happened — Dian Shuai (cinematic, crime scene, dark) | cb482655-8724-41cf-b82c-32188f35bcb8 | full, melody, bass, drums, instruments | 118 | E minor | the IMF act: full band back on "whatever IMF says is very important", peak through the Senate pressure → "criminally liable…blows apart" |
+| `crossing_the_border/` | Crossing the Border — Hampus Naeselius (ambient, dark, suspense) | b8cee8b1-ca97-4507-97c3-a8b3be5ede97 | full, melody, bass, drums, instruments | 80 | E minor | the slow dark build from "the central bank did catch on" → buyer → $79/$80 M → report buried → ABC Color → "last week" |
+| `buried_in_the_dirt/` | Buried in the Dirt — Christoffer Moe Ditlevsen (drama, orchestral, sentimental) | 0909f59e-2fa3-4979-b867-d707677d3e75 | full, melody, bass, drums, instruments | 90 | E minor (r = 0.96) | the people + the ending: apps dead → protests → impeachment → arrests → the daughter coda (its 110 s drop on the bleep) |
+
+Auditioned for Paraguay (previews, key measured): Lighthouse Drawings (Broad Sky, E minor drone — spare glue), Loose Sails (Pulsed, E minor),
+Fractured Paintings (Trevor Kowalski, E minor, busy orchestral build — too trailer-like), Paradigm Shift (E minor, vocal presence), The Frozen
+Tears (E minor, 60 bpm sentimental — spare ending), The Detective (CMD, E minor, 50 bpm crime scene — spare), Tension 2 (E minor orchestral
+pulses — spare), Behind the Curtain (E major/minor drone pulses), It May Be June / At the Ballet (G major comedy — too cartoonish), Tea with
+Turtles (E minor harp, children's — too cute), Mystery Unfold (E major), My Brother (Yi Nantiro, South America, C minor — off key).
+Fulls kept (needed for Fake Photisms / DOX layers and for re-analysis); all WAVs gitignored — re-download with the ids above.
+
+### SFX added for "Paraguay" (2026-11-08) — `sfx/` (the whole intro + Ivan SFX set above was re-downloaded too; ids in the tables above)
+Many Epidemic SFX arrive as 96 kHz / 24-bit WAV (ambiences 50–130 MB each); `epidemic_bed.read_window` resamples to 48 kHz on read.
+
+| file | Epidemic id | Epidemic title | use (place_sound type) |
+|---|---|---|---|
+| protest_distant_chanting_walla.wav | 273dd863-cc20-4411-8f93-554d548b54d5 | Ambience, Protest, Environmental Protest, Walla, Distant Chanting | `crowd_chant` (default); cold-open cue-sheet layer |
+| protest_chanting_02.wav | ebc072c0-77ab-475d-9b6a-2148430740eb | Ambience, Protest, Environmental Protest, Chanting 02 | `crowd_chant` + note "close/near/loud" |
+| protest_distant_drums_chants.wav | e0f65fdc-3d49-4b2c-9474-f3c80cac5501 | Ambience, Protest, Peaceful, Distant, Scattered Voices, Shouts, Drums, Chants, Traffic | `crowd_chant` + note "drum/street/march"; P13 cue-sheet layer |
+| censor_tone_various.wav | 5a4c848a-a7e6-4a73-ba47-e6976cb998e0 | Beeps, General, Censor Tone, Plop, Various Lengths | spare (the bleeps are generated at the exact word length) |
+| notification_tone_02.wav / notification_app_general_01.wav | b671d57a-4e9e-4b0b-bef3-b8753b5b4f2b / 71e405a7-fc54-41a6-8080-02a6a1196ae5 | UI, Alert, Mobile Phone, Notification Tone 02 / Notification, Mobile, App, General 01 | `app_notify` |
+| app_error_04.wav / app_error_01.wav | 10cc1fb8-b9e7-4dd9-8646-6c91ebf5683b / 0592f7ba-df26-4876-8f18-d0b2940c1cf2 | UI, Alert, Mobile, App, Error 04 / 01 | `app_error` (the app that won't load) |
+| cash_register_kaching.wav | 6caad476-d3e4-44ad-afa1-1e9187c46bd0 | Cash Register, Kaching, Money | `cash_register` (bell on t) |
+| coins_drop_01.wav / coins_handful_drop_wood.wav | 8e7e3f28-f5cc-4f6c-9342-7e762b5b98a6 / 528e259c-0839-4835-8fc8-f829cbbe1c0b | Objects, Coin, Money, Coins, Drop 01 / Handful, Drop Onto Wood | `coins` (note "handful/pile/many/pour" → handful) |
+| card_swipe_03.wav / card_swipe_04.wav | 7866c8b9-51ae-4f70-8944-a1e514802576 / eadeffe2-a88f-4c80-805c-b95a09b97258 | Credit Card, Swipe In Machine 03 / 04 | `card_swipe` |
+| atm_cash_buttons_beep.wav | 0849ca76-ec23-48bb-bd12-da7b68f25490 | Machines, Appliance, ATM, Money, Cash, Press, Button, … Beep, Open, Close | `atm` (dur; random excerpt) |
+| stamp_hand_press_short.wav | edfbe8a5-c4b4-4af0-879f-cddd7bea480c | Objects, Office, Stamp Hand, Press, Mark, Short | `rubber_stamp` (alternates with rubber_stamp_document_01) |
+| music_box_wind_up.wav / music_box_antique_melody.wav | a7eba5d8-f447-471f-9c23-3a31b91593fc / c06a90e2-dfc0-4f26-acb5-48b7b71ab1bb | Toys, Mechanical, Wind Up Music Box / Clocks, Chime, Antique Music Box, Melody | `music_box` (dur > 4.5 s → melody); merry-go-round cue-sheet layer |
+| gavel_single_01.wav / gavel_x2.wav | 58112fd3-2705-43ec-8938-721abd7023ae / 115c882d-964a-427f-8475-c07cfb4f8464 | Wood, Impact, Gavel Hit, Courtroom, Single 01 / x2 | `gavel` (note "twice/x2/double" → x2) |
+| press_paparazzi_flashes_medium.wav / camera_flash_modern_01.wav | f69fe12e-73a4-4df3-98f6-f6f38cfc2639 / b1cd56e3-e25e-4318-98d4-45d50e05750f | Press Conference, Paparazzi, Only Cameras, Medium Busy / Camera, Flash, Modern, Design 01 | `camera_flash` (dur > 1 s → burst) |
+| crowd_walla_indoor_large_02.wav | 5da8d8bf-618c-4b2b-80ab-61bcd8627ab1 | Indoor, Large Crowds, Walla 02 | `crowd_murmur` (ambience: Senate, press room) |
+| city_night_rooftop_insects.wav | e5bb207a-3a01-43cb-b4dd-213da670f9f2 | Ambience, Urban, City, Rooftop Terrace, Night, Traffic, Insects Chirp In Distance | `city_night` + note "asuncion/paraguay/tropic/insect" |
+| office_small_group_keyboard.wav | 4a021a7c-c853-4b78-a560-ae148371ef21 | Ambience, Office, Small Group, Walla, Keyboard Typing 02 | `newsroom` (ambience: ABC Color newsroom, central-bank office) |
+| typewriter_hermes_03.wav / typewriter_hermes_01.wav | 0a427b93-1857-4cef-a41f-b4e91a255c2e / 696833a1-6679-4c18-9c6c-96429c06fbf4 | Communications, Typewriter, Old, Hermes, Typing 03 / 01 | `typewriter` (Epidemic mode: real Hermes excerpt of dur) |
+| handcuffs_click_slow.wav | b672bfea-dfea-44e1-bf94-04eb0e6252c1 | Equipment, Tactical, Handcuffs, Slow Adjustment, Click, Police Officer | `handcuffs` |
+| stadium_cheer_goal_01.wav | c76a6846-f54f-4229-bde1-85a1bd55d2f4 | Crowds, Sport, Stadium, Cheering, Whistles, Clapping, Excited, Reaction, Goal 01 | `stadium_crowd` (World Cup; swells on t) |

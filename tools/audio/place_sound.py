@@ -1001,7 +1001,7 @@ def build_sfx_and_amb(markers, scenes, act, vo):
 
 def place_bleeps(sfx, bleeps):
     """TV-style censor bleep over a muted word (Krish's request, project/paraguay/DECISIONS.md §3): a 1 kHz sine of exactly
-    the word's length (5 ms ramps), loudness ≈ VO − 4 LU (a stereo sine of amplitude A reads ≈ 20·log10(A) LUFS), added
+    the word's length (5 ms ramps), loudness ≈ VO − 3 LU (a stereo sine of amplitude A reads ≈ 20·log10(A) LUFS), added
     to the SFX bus after the restraint pass and the caps. The VO word itself is muted by the lead in the final mix."""
     out = []
     for b in bleeps:
@@ -1012,7 +1012,7 @@ def place_bleeps(sfx, bleeps):
         r = int(0.005 * SR)
         y[:r] *= np.linspace(0, 1, r)
         y[-r:] *= np.linspace(1, 0, r)
-        a = float(db(VO_LUFS + float(b.get("rel_lu", -4.0))))
+        a = float(db(VO_LUFS + float(b.get("rel_lu", -3.0))))
         i0 = int(round(t * SR))
         k = min(n, N - i0)
         if k <= 0:

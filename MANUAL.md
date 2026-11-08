@@ -691,6 +691,18 @@ on action. Use it whenever the narrator quotes someone or introduces a historic 
   explosion_distant, train_pass, car_engine, car_door, keyboard, heartbeat, glitch, fire_crackle, siren_distant, door_knock, city_night
   (+ winter wind, film shutter, passport stamp by note). Several Epidemic tracks' stems don't sum to the full mix (derived melody ≈ 0 dB)
   or are 10–20 LU under it (melody not a stem) → use `full` as the layer for those (Tracker, Make Way for Hearses).
+- **Paraguay (2026-11-08, `project/paraguay/SOUND_PLAN.md`)**: new key family **E minor / G major** (12 tracks + the And Then drone; ids in
+  `assets/audio/epidemic/LOG.md`). `DownloadRecording` now delivers a real **MELODY** stem (`epidemic_fetch.py <id> <name> FULL MELODY BASS
+  DRUMS INSTRUMENTS`; tracks without it answer NOT_FOUND). Check two things per track before layering: does Σ stems ≈ full (60 s residual;
+  −23 dB = clean, ≥ −6 dB = stems mastered separately, stems ≫ 6 LU under full = use `full`), and is the "drone" really tempo-free (onset
+  autocorrelation: And Then bass 1.1 / instruments 1.6, but its drums 5.7 → not used). Many Epidemic SFX are 96 kHz/24-bit (50–130 MB
+  ambiences). A dense VO (median 3.3 words/s, 95 % of frames inside ASR words) leaves almost no pause lifts — thin layers by hand. For a
+  27-min bed don't risk the shared box with test builds of the whole length: estimate per-act levels by building each act's layers alone +
+  the global normalisation (matches the real build within ≈ 0.6 LU), test-build only the first minutes. New types: `bleep` (cue-sheet
+  `bleeps` or markers → 1 kHz at the exact word length, VO − 3 LU, after the caps; the lead mutes the word in the final mix), `app_notify`,
+  `app_error`, `cash_register`, `coins`, `card_swipe`, `atm`, `rubber_stamp`, `music_box`, `gavel`, `camera_flash`, `handcuffs`,
+  `stadium_crowd`, Hermes `typewriter`, ambiences `crowd_chant`, `crowd_murmur`, `newsroom`, `city_night` + "asuncion" (warm night + insects).
+  Cue-sheet `"file"` layers may point outside the Epidemic folder (the X clip's own crowd under the cold open).
 
 ### 10.9 Long-form rules (Krish, 2026-10-31 evening)
 - **Copyrighted material is allowed** for this channel (used the way YouTube's fair-use guidelines allow: commentary/
@@ -736,6 +748,8 @@ on action. Use it whenever the narrator quotes someone or introduces a historic 
 - [ ] Smooth long eases, 12 fps. [ ] Cuts on action; whips, no iris. [ ] No photo/clip used > 2× in a chunk.
 
 ## Changelog
+- 2026-11-08 — Paraguay sound phase 1: E-minor Epidemic family chosen + analysed, 28 new SFX + the old set re-downloaded, place_sound
+  types/bleeps added (§10.8 "Paraguay"), `project/paraguay/SOUND_PLAN.md` + generated cue sheet (`project/paraguay/gen/make_cuesheet.py`).
 - 2026-11-08 — Paraguay (27:02 from a 36:06 raw take, `project/paraguay/`): EDL tools generalised — the keep list is written as
   PHRASE ANCHORS (`project/paraguay/gen/edl_keep.py`: start phrase + time hint + end phrase + note [+ {in/out} override]) resolved to word ids,
   so it survives transcript patches. Checks that caught real faults: (1) voiced energy inside every ASR gap > 2 s — Parakeet dropped a whole
