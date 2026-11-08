@@ -47,3 +47,5 @@ First scene: vault-raid footage, fresh shot. Last scene: gavel slam, push contin
 2.5D: none in this segment (the strongest depth moment of these words is diagrammatic; the escalation pull-back plays that role).
 
 **As built:** as planned (all cue times unchanged). Layout fixes after the snapshot pass are listed in `compositions/pys12.NOTES.md`.
+
+**Fix round 1:** narration captions removed (see compositions/pys12.NOTES.md); scene table text column is superseded where it lists captions.

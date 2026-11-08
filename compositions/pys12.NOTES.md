@@ -86,3 +86,16 @@ flag_paraguay; maps south_america_atlas, americas_night.
    (top-right) and the chyron (bottom); `bcp_board_a` is best kept whole on a monitor (its chyron is the breaking news).
 6. `mapCam(cam, labelsHost, labels, cx, cy)` (in pys12): one proxy {fx, fy, s} drives a `transform-origin:0 0` map camera and keeps
    Haskoy/`t-label` place labels at constant screen size (positions written in onUpdate) — reusable for any kit map push/pan.
+
+## Fix round 1 (Krish, 720p review — MANUAL §0 "No narration captions")
+- Removed every caption that only repeated the narration: sc001, sc002, sc003 label-box, sc004 serif title, sc005, sc006, sc007, sc008
+  (both titles), sc010, sc013 ("literally last week"), sc014, sc015 bottom line, sc016 ("on the central bank", "not bury it"), sc017,
+  sc018 (all three), sc019, sc020, sc021, sc022 (both), sc023, sc028 (incl. the "dis" gag), sc029, sc030, sc031. The dark corner scrims on
+  face-cam shots were removed with their text (face cam is clean now).
+- Kept: map labels (sc003, sc012 incl. Washington/IMF/Asunción + route), chart text (sc004 bar labels; its chart title is now a static
+  "Foreign investors' *trust*" that appears with the chart, not word-cued), "BORROWING RATE" axis label, the clipboard checklist items
+  (header now a static "Checklist"), the gauge label "POLITICAL PRESSURE", the IMF seal + stamp, BREAKING NEWS tag, central bank / Senate tags,
+  the law page with its typed clause + underline + highlighter (header now a static "The law"), credits.
+- No scene became empty (every one still has its picture/graphic). Timings, transitions, face cam (34.0 %) and duration 162.00 unchanged.
+- sfx.json: removed the 'dis' pin_pop (1445.32); all other markers are on objects/moves, kept (42 markers).
+- Checks: lint 0 errors for pys12, sync_audit 0 flagged, changed scenes snapshotted and looked at (sc001, sc004, sc011, sc016, sc025, sc028, sc031).
