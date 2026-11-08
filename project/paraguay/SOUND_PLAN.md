@@ -14,7 +14,7 @@ where the narrator jokes; weight for the collapse, protests and arrests. No trai
 |---|---|
 | `vo_py.wav` (= `vo_py.mp3`, 48 kHz stereo, 1621.87 s) | **−26.0 LUFS-I** (both files), true peak −1.7 dBTP, LRA 7.6 LU (low −30.5 / high −22.8). Never processed. |
 | VO short-term (10 s windows) | −21.5 … −32.8 LUFS; loudest 0–60 s (cold open −22…−25), 530, 570, 880, 1110; quietest 1460–1530 and 1580 (the ending, −29…−31) |
-| Bed target | **VO − 14 LU = −40.0 LUFS** (sum of all layers, `bed_lu_under_vo` 14); per act −12.6…−16.7 LU re the VO (§5) |
+| Bed target | fix round 1: `bed_lu_under_vo` 13 + the VO duck → **−41.8 LUFS ≈ VO − 16 LU** (§7.1; the first build was VO − 14) |
 | Noise floor / gate | 20 ms frames: the floor (cut silences, room) sits at −75…−95 dBFS, speech mode ≈ −33 dBFS, a clear valley at −50…−60 → place_sound's gate `min(−45, VO_LUFS − 13.5)` = **−45 dBFS** is right for this VO (the Ivan fix doesn't change it). place_sound finds **70 pauses ≥ 0.6 s**; the ASR transcript only 3 (word ends are padded) — trust the level, not the words, for pauses |
 | Speech density | 5408 words, median **3.3 words/s** (p90 3.9) — the densest VO so far: 88 of 163 ten-second windows ≥ 3.3 w/s. Few lifts possible; the cue sheet thins layers by hand (`auto` dips) under the densest explanations and lets the music breathe on the jokes |
 | X clip own audio (`assets/paraguay/shared/footage/x_congress_audio.wav`) | 29.2 s, **−13.9 LUFS-I** (peak −0.1), silent 0–2.3 s, S −10.6…−19 → under the cold open at **−17 LU re the VO** (layer gain −27.9 dB); measured 0–5 s: whole bed −16.5 LU re VO |
@@ -197,6 +197,29 @@ sfx_hierarchy. Build 2 min 37 s on the free box. Two passes (2nd: P8 trim +1 dB,
   1490.5 for the dead apps); end fades to −76 dB by 1621.3.
 - `tools/final_mix_paraguay.sh` fits the beds as built (three beds at unity, amix normalize=0, the bleep tones live in sfx.wav, its VO
   mute windows = §3.1 with 5 ms fades just outside the bleep's span). No conflict.
+
+## 7.1 Fix round 1 — "music never drowns the voice" (Krish, 720p review, 2026-11-08: "too loud…around 7:20")
+Built with the final `compositions/pys*.sfx.json` (600 markers → 419 kept). Changes:
+- **VO-driven duck on the music bed** (`epidemic_bed.vo_duck`, now place_sound's default; cue sheet `vo_duck` = gap 12 LU, attack 50 ms,
+  release 400 ms, max 15 dB): ducked 64 % of the time, mean −3.9 dB while ducked (max −16.3 with both passes). The VO is only read.
+- Hot layers pulled down: I Can See the World peak −3 dB from 398.4 (the 7:20 area), Neon Noir 474–509 −3, Crossing the Border peak
+  1146–1252 −3, Where It All Happened 1357–1440 −2.5, Buried in the Dirt 1573–1600 −3; DOX's +1.5 lift into "how we got here" removed;
+  pause lifts ≤ 2 dB; booms (LOWTYPES) 2 dB lower in the SFX caps. `bed_lu_under_vo` 13.0 before the duck.
+- Scan (`tools/audio/vo_music_scan.py`), music vs the VO while he speaks — before (the 720p beds) → after:
+
+| | before | after |
+|---|---|---|
+| 3 s windows: median gap / p5 / min | 14.0 / 8.0 / **2.3 LU** | 14.8 / 12.8 / **11.0 LU** |
+| 3 s windows < 12 LU | 30.5 % (188 spans) | **0.3 %** (32 spans, all ≥ 11.0) |
+| 0.4 s windows (vs local speech level): p5 / % < 12 LU | 7.5 / 24.1 % | 12.3 / 2.9 % |
+| 420–460 s, 3 s: median / min gap, % < 12 | 12.2 / 6.1 LU, 47.5 % | 14.5 / 11.2 LU, 1.0 % |
+| worst minutes (3 s min gap) | 19:xx 2.3, 20:xx 3.2, 26:xx 3.4, 08:xx 4.5 | every minute 11.0–12.7 |
+| music+sfx 3 s min gap | 2.3 | 6.3 (single hero booms: 153.8, 577.3, 593.1, 1270.2; whip 1358.9) |
+
+- Levels: music −41.8 LUFS = **−16.0 LU re the VO** while he speaks (was −14.6); per act P1 −15.5 · P2 −15.5 · P3 −16.0 · P4 −16.6 ·
+  P5 −16.2 · P6 −16.3 · P7 −14.8 · P8 −16.9 · P9 −15.4 · P10–11 −16.9 · P11 −16.2 · P12 −15.8 · P13 −16.1. measure_mix: mix −25.9 vs VO
+  −26.0 LUFS-I (Δ 0.1 LU), true peak −1.7 dBTP; SFX median −20.7 dB re the local VO peak. Loudest music left: the cold open
+  (18 s / 23 s, −34.6/−36.2 LUFS-S, where the VO is loudest, −19…−22 → gaps 14.6–15.2).
 
 ## 8. Open questions for the lead
 1. **X clip media start**: the crowd layer reads the clip's audio from **3.0 s** over 0–6.6 (`XCLIP_MEDIA_START` in make_cuesheet.py) =

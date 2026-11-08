@@ -716,6 +716,16 @@ on action. Use it whenever the narrator quotes someone or introduces a historic 
   touching their files (place_sound applies them by t + type and prints each); new type `crack` (ice cracks); gavel takes alternate;
   `level: "loud"` reads as normal. Prefer an editor's picture-synced boom over your own stinger when they are < 2.5 s apart (a stinger
   within 0.6 s drops the editor's boom). The full 1622 s build ran in 2 min 37 s on a free box.
+- **VO-driven music duck — DEFAULT for every Epidemic bed (Krish 2026-11-08, "the music bed becomes too loud and drowns out the
+  narrator", Paraguay 7:20).** `epidemic_bed.vo_duck()` runs inside place_sound after the stingers: the MUSIC bed only (never the VO) is
+  sidechained so that wherever he speaks its 0.4 s loudness stays ≥ 12 LU under the VO's local speech level (0.4 s loudness max-held over
+  0.5 s, so word gaps don't pump) and its 3 s loudness ≥ 12 LU under the VO's 3 s loudness; gain every 10 ms, 50 ms look-ahead, attack
+  50 ms, release 400 ms, ≤ 15 dB. Cue sheet `"vo_duck": {gap, attack, release, max_cut}` tunes it, `"vo_duck": false` disables it.
+  The duck takes ≈ 2.5 dB off the bed, so set `bed_lu_under_vo` ≈ 13 to land ≈ 16 LU under on average. Pause lifts are now ≤ 2 dB.
+  Check with **`tools/audio/vo_music_scan.py --vo <vo.wav> --beds <dir>`** (0.4 s + 3 s windows, music and music+sfx vs the VO, every
+  span < 12 LU, loudest moments, per-minute minima; chunked, memory-light). A quiet passage of the VO is the usual culprit (Paraguay 420–443 s:
+  the music was a steady −37 LUFS-S but the VO dropped to −31), so the duck must follow the VO, not the music's own peaks. Memory: the
+  whole-length build peaks at ≈ 7.5 GB (keep the duck/scan chunked; a non-chunked version OOM-killed the box).
 
 ### 10.9 Long-form rules (Krish, 2026-10-31 evening)
 - **Copyrighted material is allowed** for this channel (used the way YouTube's fair-use guidelines allow: commentary/
