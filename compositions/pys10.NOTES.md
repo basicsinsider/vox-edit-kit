@@ -77,3 +77,22 @@ No new downloads.
   transformed `translate(R − x·k, R − y·k) scale(k)` from one proxy tweened with `onUpdate` (sc022). (4) `paper_lined_01_hires` has a
   punched hole near the left edge that reads as a white blob at full frame — scale/offset it (`background-size:125%; position:85% 40%`).
   (5) Contact-sheet thumbnails misjudge face-cam crops (looked cropped, full frame was fine) — check face framings on the full PNG.
+
+## Fix round 1 (Krish, 720p review — MANUAL §0 "No narration captions")
+- Removed every caption that echoed his words: all face-cam lower thirds (sc004/007/008/013/016/021/023/028/031), "did catch on" / "stepped in" /
+  "able to trace" / "where it's not supposed to" / "legally speaking" (sc002), "loaning out money" / "something entirely different" (sc003),
+  "do something about these loans" + "this bank" tag (sc005), "two options" title (sc006), "give itself over to the government" / "right now"
+  (sc009), the three option-2 lines (sc011), the four folder lines (sc012), "this buyer" / "very suspicious origins" (sc014), "buying these loans" /
+  "owned by the same group" (sc015), "in cash" (sc017), "its own money" (sc020), "the regulators" / "very quickly realized" (sc022),
+  "wrote up a report" (sc024), "two years ago" (sc027), "buries the report" (sc029), "what's going on here" (sc032), and the ALLEGEDLY
+  label-box (sc030: the hard punch-in + dark veil now carry the beat alone). Corner scrims that only served those captions were removed
+  (face cam is clean again).
+- Kept (labels / diagram / document text): "Banco Central del Paraguay" kicker (sc002) and name label on the BCP panel (sc005, was "the central
+  bank"), fork ① ②, BAD LOANS stamp, loan bar (its caption became a small "Loss" label in the hatched stub), FOR SALE tag, ASSET strike,
+  buyer cards, Grupo Vázquez / VINANZAS S.A. org chart, the Vinanzas statement ("Cash", "less than", $100,000 + highlighter), the circular-flow
+  labels + $79 million counter, the report + "To the head of the central bank" folder, Carvallo's caption + two role tags, AUG 14 / AUG 15
+  calendar, credits.
+- Bleep beats kept: "#$%!" stamp on the folder (sc012) and the "#$%!" censor bar on face cam (sc020, now a standalone bar, no caption).
+- No scene became empty (every removed caption sat over a picture). Timings, transitions, face cam (33.6 %) and duration (165.20) unchanged.
+  sfx.json: removed `cash_register` 1162.97 (it sounded the removed "$80 million" line); 59 markers, both bleeps kept.
+- Checks: lint 0 errors in pys10, sync_audit 0 flagged, snapshots of the changed scenes looked at (sc002, 005, 006, 012, 014, 017, 020, 030).
