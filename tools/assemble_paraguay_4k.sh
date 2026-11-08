@@ -12,7 +12,7 @@ n=$(ls renders/py/pieces/pys*.mp4 | grep -v fixed | wc -l); [ "$n" = 13 ] || { l
 for p in renders/py/pieces/pys??.mp4; do ffprobe -v error -select_streams v -show_entries stream=width,height -of csv=p=0 "$p" | grep -q 3840,2160 || { log "$p is not 4K"; exit 1; }; done
 python3 tools/assemble_paraguay.py renders/py/pieces renders/py/py_4k_picture.mp4
 rm -rf renders/py/pieces
-ffmpeg -v error -y -i renders/py/py_4k_picture.mp4 -i assets/audio/paraguay/py_mix_final.m4a -map 0:v -map 1:a -c copy -shortest -movflags +faststart renders/py/paraguay_final.mp4
+ffmpeg -v error -y -i renders/py/py_4k_picture.mp4 -i assets/audio/paraguay/py_mix_final.m4a -map 0:v -map 1:a -c copy -movflags +faststart renders/py/paraguay_final.mp4
 rm -f renders/py/py_4k_picture.mp4
 ffprobe -v error -show_entries format=duration:stream=codec_name,width,height,nb_frames -of compact renders/py/paraguay_final.mp4
 ls -la renders/py/paraguay_final.mp4; df -h . | tail -1
