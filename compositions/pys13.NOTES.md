@@ -54,3 +54,17 @@ the derived image; credit line says "face blurred".
 - Telefuturo/NPY clips: the lower third starts ≈ 66 % of frame height and a weather/logo bug sits top-left/right — scale 1.75 with origin (x, 25 %).
 - Haskoy renders "#$%!" fine (checked); Haskoy's em-dash is tiny — draw a bar for a "—" balance.
 - Mixed vertical clips (720×960): portrait card over a blurred still of the same subject reads better than a 2.7× cover crop.
+
+## Fix round 1 (Krish, 720p review — MANUAL §0 "No narration captions")
+- Removed every caption that repeated the narrator: all 11 face-cam lower thirds, and the word-by-word lines on sc002, 003 ("votes unanimously"),
+  004, 008 ("the bank is done."), 009, 010, 012, 013 (both lines), 017, 018 (+ "regulators" kicker), 019 ("monthly expenses"), 022, 023, 024,
+  026 (label-boxes), 028, 029, 030 ("owned the whole thing"), 031, 033, 035 (incl. "20 years old"), 036 (kept only the bleep), 037, 039, 040.
+  Scrims that only served those captions were removed too (kept on sc002/sc029 for the name tags and sc036 for the censor box).
+- Kept: map labels, ballots + A BAD BANK stamp, phone-app UI, receipt items, $1,500 counter + month strip, FDIC/flag cards, name tags
+  (Carlos Carvallo ×2, Miguel Vázquez), UNDER ARREST stamp, ABC page, the blurred "tax the poor" post + circle, "#$%!" censor
+  beat (sfx bleep 1600.60/0.24 unchanged), credits.
+- Re-composed the now caption-free scenes: phone (sc009), ATM card (sc010), resignation phone (sc024), Regimiento card (sc028) and the post
+  (sc037) centred; FDIC/flag cards lowered to the optical centre; UNDER ARREST stamp moved up beside the card. No empty frames (every scene keeps
+  its picture). Timings, transitions, face cam (33 %) and DUR 165.37 unchanged. sfx.json: no text-pop markers existed — unchanged.
+- Checks: lint 0 errors for pys13; sync_audit 0 flagged (remaining T() cues = the two stamps, receipt items, $1,500 and the censor);
+  snapshots of all changed scenes looked at (3 batches).
