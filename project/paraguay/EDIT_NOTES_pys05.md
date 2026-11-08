@@ -45,3 +45,8 @@ Face cam: sc002 4.37 + sc006 5.25 + sc008 6.50 + sc009 4.80 + sc011 3.50 + sc012
 138.20 s = 31.9 %** (slightly under 35 % — the B-roll lines here are almost all concrete facts that need pictures).
 Grounds: N F P N N(plum) F P F F P F F F P N F P N P F N P — never > 3 in a row.
 First scene: night photo + title (fresh shot). Last scene: the seesaw slam with a camera push still moving at 595.60 (cut on action).
+
+**As built** (compositions/pys05.html is the reference): sc001 runs to 465.40 (title holds ≥ 0.6 s before the whip), sc002 = 465.40–469.22;
+sc002→sc003 is a hard cut on the join (a paper slide covered "2020"; the certificate settles in instead); sc016 ends 556.91 (master 24 fps
+frame 556.9167 = join) with a hard cut into sc017 (the slide hid "four times bigger"); sc022 slide 0.35 s. Face cam as built: 3.82 + 5.25
++ 6.50 + 4.80 + 3.50 + 4.67 + 6.28 + 5.46 + 3.25 = **43.53 s = 31.5 %**. See compositions/pys05.NOTES.md.
