@@ -45,3 +45,5 @@ Face cam: sc002 4.54 + sc006 3.73 + sc009 4.47 + sc010 5.70 + sc014 3.74 + sc017
 + sc026 2.15 + sc029 3.84 + sc030 3.56 = **55.13 s of 162.00 = 34.0 %**.
 First scene: vault-raid footage, fresh shot. Last scene: gavel slam, push continuing into the cut (hand-off motion → pys13).
 2.5D: none in this segment (the strongest depth moment of these words is diagrammatic; the escalation pull-back plays that role).
+
+**As built:** as planned (all cue times unchanged). Layout fixes after the snapshot pass are listed in `compositions/pys12.NOTES.md`.
