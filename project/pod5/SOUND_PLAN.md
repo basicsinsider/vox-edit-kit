@@ -1,0 +1,26 @@
+# Sound Design Plan — Taiwan Podcast First 5 Minutes (`pod5`, 0.00–299.00 s)
+
+Follows `MANUAL.md §10.8`, `assets/audio/MIX_RULES.md`, and `project/intro/SOUND_PLAN.md`.
+- **Voiceover (`vo_pod5.wav`)**: Untouched 48 kHz PCM audio extracted from `input/BB_podcast_v2_first5min.mp4` (`-16.0 LUFS` integrated). Passed at unity (`volume=1.0`, zero EQ/compression/limiting) into `tools/final_mix.sh`.
+- **Target Music Bed Level**: `~14 LU` below voice (`~ -30 LUFS` integrated during active speech; swells up to `-23 LUFS` only in pauses/transitions).
+- **Key & Aesthetic Family**: **D minor / F major ("Melting Glass" family)** — layered Epidemic stems (`BASS`, `INSTRUMENTS`, `DRUMS`, `MELODY`), never a single flat full track alone without glue.
+
+## Act-by-Act Musical Architecture (`project/pod5/music_cuesheet.json`)
+
+| Act | Time (s) | Stems Layered | Musical Role & Transitions |
+|---|---|---|---|
+| **Continuous Drone Glue (Acts 0–VI)** | `0.00 – 299.00` | `woodwind_reviere` (`bass` + `instruments`) | Tempo-free D-minor floor sitting at `-36 to -38 LUFS` across seam joins so no track entry or exit ever feels bare. |
+| **Act 0 — Cold Open (`1983 · Robert Tsao · Fab`)** | `0.00 – 17.60` | `melting_glass` (`instruments` + `melody`) + `factory_hum_light_activity_01` (ambience) | Krish's signature anchor track opens immediately on `"Our story starts in 1983"`, joined by subtle 1983 fab room tone on `"walking around his factory floor, Fab"`. |
+| **Act I — The Telephone Boom & Bust (`4M → 24M · 6× · Died Away`)** | `17.60 – 55.47` | `lightbulb_moment` (`bass` + `instruments`, then `drums` enter at `24.08 s` on `"4 million → 24 million"`) | Same composer as `Melting Glass` (Eden Avery, D minor). Builds momentum through `"went up drastically"`, peaks with drums through `"24 million · 6X · record profits"`, and **cuts dead at `48.80 s`** on `"the phone boom… died away"` with a low sub drop (`boom_sub_bass_clean_01`), leaving only the cold `woodwind_reviere` drone under `"UMC's sales also died away"`. |
+| **Act II — The Pure-Play Foundry Insight** | `55.47 – 96.19` | `interstice_of_sound` (`bass` + `instruments`) + `melting_glass` (`bass` + `instruments` entering at `68.75 s`) | Warm F-major/D-minor contemplative pad as Tsao diagnoses single-product fragility (`55.47 s`), adding the gentle pulse of `melting_glass` at `68.75 s` (`"any product that was in demand · pure-play foundry · see the future"`). |
+| **Act III — The 1-Year-Old UMC & The Board's Condition** | `96.19 – 129.74` | `interstice_of_sound` (`bass` + `instruments`) + `office_aircon_people_quiet` (boardroom room tone) | Quiet institutional tension under `"ask permission from his board… just a CEO"`, warm relief swell on `"tell him yes, almost on the spot"` (`124.2 s`), then **hard stop at `128.80 s`** on `"giving him one condition"`. |
+| **Act IVa — The Mysterious US Chip Executive** | `129.74 – 167.02` | `estimations` (`bass` + `instruments`, entering on its quiet mysterious intro `7–44 s`, plus soft `drums` at `142.30 s`) | Intrigue and scale (`"most respected Chinese-American in the chip business · 25,000 people · approval condition"`). |
+| **Act IVb — Flight to New York & Dinner ("On Top of the World")** | `167.02 – 192.33` | `anytime_soon` (`bass` + `instruments` + `drums`, aligned so its `121–128 s` build lands on `"on top of the world"` at `184.0 s`) + `restaurant_crowded_distant_01` (`174–181.5 s`) | Travelling F-major contemporary-classical ostinato for the flight to New York, warm distant restaurant murmur under the dinner proposal, soaring into the return flight peak (`182–192 s`). |
+| **Act V — The Hosts' Q&A (Sanket & Sam unpack the US Advisor)** | `192.33 – 260.20` | `pardon_my_french` (`bass` + `instruments`, `192.5–226.6 s`) → `interstice_of_sound` (`bass` + `instruments`) + `melting_glass` (`instruments`, `226.6–260.2 s`) | Elegant, inquisitive chamber pluck (`pardon_my_french`) under Sanket's `"Why is he advising a competitor?"`, crossfading into warm reflective `interstice_of_sound` + `melting_glass` as Sam explains the historical/geopolitical tie and `"advising them for free ($0) out of the goodness of his heart"`. |
+| **Act VI — The Reversal, Stonewall & Teletype Order** | `260.20 – 299.00` | `estimations` (`bass` + `drums` + `instruments` rising ostinato, `263.5–291.55 s`) → `interstice_of_sound` (`bass` + `instruments`, `291.55–299.00 s`) | Enters cold after `"to his surprise"` (`263.5 s`), drives the stonewall and young-CEO powerlessness (`275–291 s`), and drops out on `"drop this whole thing"` (`291.55 s`), leaving a wistful, unresolved `interstice_of_sound` pad + antique teletype ticks through `299.00 s`. |
+
+## Spot SFX Discipline (`compositions/pod5s01.sfx.json` & `pod5s02.sfx.json`)
+- Placed via `.venv/bin/python tools/audio/place_sound.py` using real Epidemic Sound recordings (`assets/audio/epidemic/sfx/`).
+- Restraint pass rules enforced:
+  - Subtle paper slides (`paper_slide`), stamp hits (`rubber_stamp`), marker circles (`marker`), and focus ticks (`camera_focus`) sit `18–26 dB` below voice.
+  - Diegetic spot effects match the story world: 1980s push-button telephone dial/ring (`phone_dial`, `phone_ring`) in Act I, jet pass (`jet_pass`) on the Taipei ↔ NYC flights in Act IVb, and antique teletype (`telegraph`) on the final board directive in Act VI.
