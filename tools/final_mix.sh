@@ -6,8 +6,15 @@
 set -e
 cd "$(dirname "$0")/.."
 N=$1; VO=$2; L=$3; B=$4; P=$5; O=$6
+VOICE_CHANNELS=$(ffprobe -v error -select_streams a:0 -show_entries stream=channels -of csv=p=0 "$VO")
+if [ "$VOICE_CHANNELS" = "1" ]; then
+  # Keep mono dialogue at unity; downmix only the stereo beds to the source layout.
+  MIX_FILTER='[1:a]aformat=sample_fmts=fltp:sample_rates=48000:channel_layouts=mono[vo];[2:a]pan=mono|c0=0.5*c0+0.5*c1[m];[3:a]pan=mono|c0=0.5*c0+0.5*c1[s];[4:a]pan=mono|c0=0.5*c0+0.5*c1[a];[vo][m][s][a]amix=inputs=4:normalize=0:duration=first[mix]'
+else
+  MIX_FILTER='[1:a]aresample=48000,aformat=channel_layouts=stereo[vo];[2:a]aresample=48000[m];[3:a]aresample=48000[s];[4:a]aresample=48000[a];[vo][m][s][a]amix=inputs=4:normalize=0:duration=first[mix]'
+fi
 ffmpeg -v error -y -i "$P" -i "$VO" -i "$B/music_bed.wav" -i "$B/sfx.wav" -i "$B/ambience.wav" \
-  -filter_complex "[1:a]aresample=48000,aformat=channel_layouts=stereo[vo];[2:a]aresample=48000[m];[3:a]aresample=48000[s];[4:a]aresample=48000[a];[vo][m][s][a]amix=inputs=4:normalize=0:duration=first[mix]" \
+  -filter_complex "$MIX_FILTER" \
   -map 0:v -map "[mix]" -c:v copy -c:a aac -b:a 320k -t "$L" -movflags +faststart "$O/${N}_final.mp4"
 # review copy: bitrate capped so a 10-min chunk stays under ~90 MB
 ffmpeg -v error -y -i "$O/${N}_final.mp4" -vf scale=1280:720 -c:v libx264 -preset medium -crf 24 -maxrate 1000k -bufsize 2000k \

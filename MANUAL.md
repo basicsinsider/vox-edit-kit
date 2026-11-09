@@ -883,6 +883,8 @@ on action. Use it whenever the narrator quotes someone or introduces a historic 
 - 2026-10-31 — c6s02 finished (35 scenes): fixed raw-seconds `slide()` calls and the pre-burn ring blobs (§4.2), motif CSS aligned with c6s01's masters; sfx.json + NOTES with CCK card/circle, young cards, Moscow plan and isotype exports for c6s03.
 - 2026-11-01 — Ivan sound design: Epidemic D-minor family (Code of Violence, Tracker, Estimations, Close Call, Make Way for Hearses, Letters Never Sent, Woodwind Reviere drone); place_sound.py: relative VO gate, insert `ducks`, ambience scaling, stinger de-dup, 15 new SFX types (§10.8).
 
+- 2026-11-08 — Podcast mono source: `tools/final_mix.sh` now detects a mono VO and downmixes only the stereo beds to mono before `amix=normalize=0`; the 48 kHz mono VO stays at unity. A five-second silence-mix check matched decoded source samples exactly. Stereo sources retain the prior path.
+
 ## 11. Render process (owner rule, 2026-10-31) — use for EVERY render
 Goal: a 10-min chunk in ≤ 1 hour, and no render ever lost. Owner's rules: **a render is never killed for any reason**; while
 a render runs, nothing else heavy runs (no snapshots, agents' builds, sound jobs) — it gets the whole CPU.
