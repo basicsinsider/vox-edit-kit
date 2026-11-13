@@ -3,8 +3,9 @@
 Sound designer. Sources: BRIEF.md rule 4 (the owner's loudest complaint: music always much lower than the voice), SEGMENTS.md §0/§1/§3,
 `sections.json`, MANUAL §7, §10.3, §10.8 and its block **"Music limits — BINDING"**; earlier plans `project/paraguay/SOUND_PLAN.md`,
 `project/ivan/SOUND_PLAN.md`. Tracks / ids / why: `assets/audio/epidemic/LOG.md` ("Podcast"). Measured stems, sections, keys:
-`assets/audio/epidemic/ANALYSIS.md`. Status: **phase 1 done (2026-11-13)** — tools, tracks, cue-sheet generator, two test islands;
-phase 2 (after picture lock) = markers, word-exact section cues, all 39 islands, the full-length pre-mix and `SOUND_REPORT.md`.
+`assets/audio/epidemic/ANALYSIS.md`. Status: phase 1 done (tools, tracks, generator, two test islands); **phase 2 (2026-11-13):
+islands isl00–isl33 (pd01–pd39) built from the editors' final markers, ALL LIMITS MET in every island; pd40–pd44 (isl34–isl38) wait
+for their pictures** — then `pd_islands.py --skip-built --format flac` builds only what is new or changed. Numbers: `SOUND_REPORT.md`.
 
 ## 0. The design in one paragraph
 Music and SFX exist only in **islands**: (a) the intro 0–346 s, whose tail fades over 5 s under Sam's first on-camera line, and (b) each
@@ -72,8 +73,11 @@ executive/politics, Until Now = motion, One Step Away = betrayal → the walkout
 | I6 | 183.0–229.0 | Sunkit's questions 182.88–227.2 (face-cam pop-ins) | floor + a breath of Stay This Way melody: nothing rhythmic over two voices |
 | I7 | 229.3–274.5 | "but to his surprise" 230.48 · "stonewalled" 244.08 (bass in) · "so he drops the idea" 268.83 | Stay This Way |
 | I8 | 271.6–351.3 | "fast forward two years" 272.8 · "Just across the street" 277.07 (bass) · "And guess who" 297.87 (melody up) · **"Morris" 315.02** = file 100.0 s, the full band + riser/low hit · **"TSMC" 323.74** (deep hit) · "betrayal" 327.42 · "rivalry" 342.62 · pd03 ends 346.00 → 5 s fade under "So this is the rivalry…" | One Step Away |
-Stingers sit in the music bed (so the duck governs them too): −28…−31 LU re the voice. An editor's `boom_low`/`riser` marker within
-0.6 s of one is dropped automatically (no double hits).
+Stingers sit in the music bed (so the duck governs them too). Phase 2: the editors' picture-synced hits win (MANUAL §10.8 Paraguay
+note) — pd01 has whoosh 48.84 + boom 51.96 on the bust, pd03 air_swell 313.17 + boom_low 314.99 "MORRIS CHANG" (→ the dark cinematic
+low hit), so our stingers there were removed. Kept: a felt sub drop on "one condition" 123.86 (−31 LU; pd02 has only a highlighter) and
+a deep low boom under pd03's TSMC stamp at 323.74 (−30 LU). Per-cue trims from the act-level check (`TRIM` in the generator):
+I2 +1, I5 −0.5, I6 +0.5 (+ the aside's melody raised from −29 to −20.5), I8 −1.5, I1/I4 instruments −21 → every intro cue −23.0…−24.0 LU.
 
 ## 5. Cue table — the 38 section islands (generated; `project/podcast/cues/index.json` lists every island's tracks)
 Every section: floor + its colour from `section start − 0.8 s` (fade-in 1.3 s: still rising at the cut) to `section end + 3.0 s`
@@ -111,8 +115,16 @@ in `gen/make_cuesheet.py`.
   reported; unknown types are mapped (`PD_ALIAS`) or dropped and reported in `SOUND_REPORT.md`.
 - **Hierarchy**: place_sound's restraint pass keeps, per scene, the hero event (+1 per 6 s), every camera move/whip (a low whoosh), ambience
   and booms/risers; small text/arrow ticks go. Never two hits within 0.25 s; repeats are pitch-shifted ±1–3 st.
-- **Levels** (as coded, 4 dB lower than Paraguay): hero −16 dB, sub hits −19 dB, everything else −22 dB under the voice's local peak;
-  music + SFX together stay ≥ 14 LU under the voice in every 3 s window (test island: 18.0).
+- **Levels** (as coded, 4 dB lower than Paraguay): hero −16 dB, sub hits −19 dB, everything else −22 dB under the voice's local peak.
+- **SFX-bus duck (new in phase 2, `pd_islands.py`)**: the peak caps do not bound the *loudness* of sustained or clustered sounds — the
+  first full intro build measured music + SFX only 11.4 LU under the voice (phone ring 20 s, whoosh clusters 77 s, the reveal 315 s). So
+  after place_sound the SFX bus alone is sidechained from the voice exactly like the music (`vo_duck`, gap 17.5 LU in 3 s windows,
+  ceiling VO_I − 17.5, 0.4 s gap only 10 LU so hits keep their transient): music ≥ 20 + SFX ≥ 17.5 → together ≥ 15.6 LU (> 14).
+  Active 0–28 % of the time per island, mean −3 dB. Intro after it: music + SFX min 16.3 LU.
+- **Editors' invented types** are mapped in `PD_ALIAS` (checked before place_sound's own aliases): title_thud → stamp_thud,
+  pen_scratch → marker_scratch, tile_fill → counter_ticks, pop → pop_soft, route_draw / line_draw → marker_long, tick_run / pop_run →
+  dot_ticks, stamp → rubber_stamp, swipe (a fill sliding in) → highlighter_swipe (not place_sound's card_swipe), tile_place → dot_slide,
+  ratchet → dial_click. ED02's `t_master` field is ignored.
 - **Section edges**: a section hard-cuts in from the speakers — its first whoosh may sit on frame 0 (the island starts 1 s earlier, so
   nothing is clipped); nothing sounds after the last frame except the music's 3 s tail. No SFX and no room tone outside an island.
 - Ambience: the generated room tone under each island (≈ −57 LUFS) plus editors' ambience markers (factory hum, projector, crowd) —
@@ -145,7 +157,15 @@ No 3 s window without speech exists in either test (the "pauses" line of the ver
 music at VO − 20 everywhere. The duck was active 33–37 % of the time (mean −2.3 / −3.6 dB, max −6.7 / −11.6 dB). Stitch check: the
 island in the full-length file is bit-identical to its pre-mix; 1 s before it and after the test intro the file is exactly zero.
 
-## 9. Open points for phase 2
+## 8b. Phase-2 results (2026-11-13, islands isl00–isl33 = pd01–pd39; details per island in `SOUND_REPORT.md`)
+Pooled over 34 islands (1951 s): 3 s music gap while speaking min **19.5** / p5 **20.8** / median **22.6** LU; 0.4 s p1 **18.6**;
+music + SFX min **16.1**; mix − voice ≤ **+0.02 LU** per island. Every cue −22.4…−24.0 LU re the voice. Full-length check of the
+stitched FLAC exactly as the final mix is built (mono VO duplicated L = R at unity + the bed, `amix normalize=0`): voice alone
+−18.2 LUFS-I, mix −18.2 LUFS-I, LRA 3.8 = 3.8. pd08 needed a different passage of Sliding Doors (`OFFSET_OVERRIDE` 60: the 104 s
+passage ducked to −24.1). Boundary moves applied from `sections.json`: pd09, pd26, pd34, pd37, pd39. Islands rebuild only when their cue
+sheet, markers or window change (`inputs_sha` in each report.json). Build time: 34 islands in ≈ 11.5 min, one at a time.
+
+## 9. Open points (phase 1 list; 1–3 done for pd01–pd39)
 1. Editors' `compositions/pdNN.sfx.json` (none existed during phase 1) → preflight → download missing SFX.
 2. Any section boundary the lead moved → `sections.json` is the only source; re-run `make_cuesheet.py`.
 3. Word-exact section cues, stingers and marker edits (§5); per-cue balance to −20…−24 LU re the voice.
