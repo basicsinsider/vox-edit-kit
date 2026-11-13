@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8" /></head>
+<body>
+<template>
+  <style>
+    #root { position: absolute; inset: 0; overflow: hidden; background: #0c0f14; }
+    .p40-stage { position: absolute; inset: 0; overflow: hidden; perspective: 1700px; perspective-origin: 960px 300px; background: #0c0f14; }
+    .p40-plane { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 960px 640px; transform: rotateX(24deg); }
+    #pd40-cam { position: absolute; left: 0; top: 0; width: 6398px; height: 4950px; transform-origin: 0 0; }
+    #pd40-map { position: absolute; left: 0; top: 0; width: 6398px; height: 4950px; filter: brightness(1.18) contrast(1.06) saturate(0.5); }
+    #pd40-svg { position: absolute; left: 0; top: 0; width: 6398px; height: 4950px; overflow: visible; }
+    .p40-ml { position: absolute; white-space: nowrap; }
+    .p40-shade { position: absolute; inset: 0; pointer-events: none; background: linear-gradient(180deg, rgba(12,15,20,0.86) 0%, rgba(12,15,20,0.5) 24%, rgba(12,15,20,0) 42%); }
+    .p40-haze { position: absolute; left: 0; top: 0; width: 1920px; height: 300px; pointer-events: none; background: linear-gradient(180deg, rgba(12,15,20,1) 0%, rgba(12,15,20,0.0) 100%); }
+    #pd40-tsmc { position: absolute; left: 2760px; top: 3300px; font-size: 70px; line-height: 1; padding: 16px 22px 10px; background: var(--magenta); color: var(--bone); white-space: nowrap; opacity: 0; }
+    #pd40-tsmc::after { content: ""; position: absolute; inset: 0; background-image: url('assets/textures/paper_fiber_01_norm.jpg'); background-size: 500px auto; mix-blend-mode: overlay; opacity: 0.5; pointer-events: none; }
+    #pd40-q { position: absolute; left: 96px; top: 84px; font-size: 104px; line-height: 1; white-space: nowrap; }
+    #pd40-qk { position: absolute; left: 100px; top: 206px; font-size: 26px; color: var(--magenta-light); white-space: nowrap; opacity: 0; }
+    .p40-w { display: inline-block; white-space: pre; opacity: 0; }
+    .p40-credit { position: absolute; right: 96px; bottom: 28px; font-size: 13px; letter-spacing: 0.08em; color: rgba(238,238,232,0.45); z-index: 5; }
+    #pd40-grain, #pd40-dust, #pd40-vig { z-index: 8; }
+  </style>
+
+  <div id="root" data-composition-id="pd40" data-vo-start="5012.2333" data-duration="15.1667" data-width="1920" data-height="1080">
+    <!-- sc001 · 5012.23–5027.40 · "So right now … if you know the geopolitics right now, TSMC, this leading company, it has been nicknamed like the
+         Taiwanese shield. It's like a shield against a Chinese invasion, because the world is not gonna let Taiwan get invaded as long as
+         it's producing world class chips." · tilted East Asia night relief, Taiwan green, TSMC magenta pin, the nickname as a quoted label,
+         a shield drawn round the island, invasion arrows stop at it, chips fly out to the world (ref 7c824c47; map/Taiwan path ported from pd28) -->
+    <div class="p40-stage" id="pd40-stage">
+      <div class="p40-plane" id="pd40-plane">
+        <div id="pd40-cam">
+          <img id="pd40-map" src="assets/maps/kit/east_asia_night.jpg" alt="">
+          <svg id="pd40-svg" viewBox="0 0 6398 4950"></svg>
+          <div class="p40-ml t-display" style="left:1500px; top:2980px; font-size:150px; color:rgba(194,197,202,0.62)">CHINA</div>
+          <div class="p40-ml t-display" style="left:2880px; top:3760px; font-size:84px; color:var(--board-light)">TAIWAN</div>
+          <div class="p40-ml t-label" style="left:2140px; top:3930px; font-size:38px; color:rgba(194,197,202,0.85)">Taiwan Strait</div>
+          <div class="p40-ml t-label" style="left:3880px; top:2560px; font-size:44px; color:rgba(194,197,202,0.6)">Japan</div>
+          <div class="p40-ml t-label" style="left:2900px; top:4560px; font-size:44px; color:rgba(194,197,202,0.6)">Philippines</div>
+          <div id="pd40-tsmc" class="t-display">TSMC</div>
+        </div>
+      </div>
+      <div class="p40-haze"></div>
+      <div class="p40-shade"></div>
+      <div id="pd40-q" class="t-display halate"><span class="p40-w" id="pd40-q1">“TAIWANESE </span><span class="p40-w" id="pd40-q2">SHIELD”</span></div>
+      <div id="pd40-qk" class="t-label">TSMC’s nickname</div>
+      <div class="p40-credit t-label">Relief: AWS Terrain Tiles / Natural Earth (PD)</div>
+    </div>
+
+    <div id="pd40-grain" class="tx tx-grain" style="background-image:url('assets/textures/grain_01_norm.jpg'); opacity:0.36"></div>
+    <div id="pd40-dust" class="tx tx-dust" style="background-image:url('assets/textures/dust_02.jpg'); opacity:0.32"></div>
+    <div id="pd40-vig" class="vignette" style="opacity:0.9"></div>
+  </div>
+
+  <script>
+  (function () {
+    const SEG = "pd40", START = 5012.2333, DUR = 15.1667, END = START + DUR;
+    const T = (s) => +(s - START).toFixed(3);   // TEXT cues (audited): literal = word start − 0.06
+    const S = (s) => +(s - START).toFixed(3);   // structural cues
+    const tl = gsap.timeline({ paused: true });
+    const $ = (id) => document.getElementById(SEG + "-" + id);
+    const E = FX.ease, C = (e, d) => FX.choppy(e, d, 12), NS = "http://www.w3.org/2000/svg";
+    const BONE = "#eeeee8", ASHL = "#c2c5ca", BOARD = "#2f9e5b", BOARDL = "#9bd8b0", MAG = "#d1307a", MAGL = "#f3a6c8", MAGD = "#7a1746";
+    const svg = $("svg"), cam = $("cam");
+    const mk = (parent, tag, a) => { const n = document.createElementNS(NS, tag); for (const k in a) n.setAttribute(k, a[k]); parent.appendChild(n); return n; };
+    const camAt = (cx, cy, z) => ({ x: 960 - cx * z, y: 540 - cy * z, scale: z });
+    const rise = (el, t, o) => { o = o || {}; const d = o.dur || 0.5;
+      tl.fromTo(el, { opacity: 0, y: o.y == null ? 14 : o.y }, { opacity: 1, y: 0, duration: d, ease: C(E.out, d), immediateRender: true }, t); };
+    const gated = (a, b, fn) => { const on = FX.onFrame; FX.onFrame = (f) => on(FX.gate(S(a), S(b), f)); fn(); FX.onFrame = on; };
+    const drawLine = (p, t, dur, ease) => { const L = p.getTotalLength(); p.setAttribute("stroke-dasharray", L + " " + L);
+      gsap.set(p, { attr: { "stroke-dashoffset": L }, opacity: 0 }); tl.set(p, { opacity: 1 }, t);
+      tl.fromTo(p, { attr: { "stroke-dashoffset": L } }, { attr: { "stroke-dashoffset": 0 }, duration: dur, ease: ease || C(E.inOut, dur), immediateRender: false }, t); return p; };
+
+    // Taiwan outline (kit east_asia pixel space; same path + placement as pd28)
+    const TW_D = "M237.9 51.6L227.3 65.8L225.5 73.1L225.5 81.0L226.8 91.1L226.4 97.5L231.0 102.8L234.7 104.3L231.9 104.3L229.6 105.6L231.5 111.4L228.2 116.2L228.2 119.0L229.6 121.8L225.0 124.8L221.8 130.6L221.3 135.7L220.4 138.5L219.9 142.8L219.5 145.1L220.9 147.6L217.2 151.9L212.1 158.2L211.6 160.3L206.6 165.1L203.8 174.5L199.7 182.6L200.6 187.6L202.4 190.2L202.0 193.7L199.7 198.5L197.8 210.2L190.9 240.1L183.1 278.8L179.9 295.0L175.3 302.6L173.4 311.7L173.0 322.1L169.7 328.4L166.5 331.5L165.1 335.8L161.4 346.9L155.4 357.8L148.1 365.4L146.2 369.0L146.2 373.8L144.9 377.1L140.2 382.7L126.9 394.6L124.6 396.8L120.9 406.5L115.4 415.1L112.2 430.3L106.6 442.2L106.2 458.4L105.7 489.5L102.9 493.8L101.1 500.4L101.6 508.3L96.0 502.0L88.2 499.2L87.3 503.7L83.6 501.7L84.1 496.9L81.3 490.6L81.3 487.8L81.7 480.4L83.1 477.1L72.5 448.3L67.9 439.4L62.9 434.6L60.1 433.1L57.3 428.8L50.4 424.7L46.7 421.7L44.0 421.4L36.6 416.1L36.6 415.1L34.8 409.2L31.5 404.2L25.6 397.6L25.6 392.8L25.6 387.5L21.9 380.4L19.1 372.8L20.0 369.2L19.1 366.9L16.8 362.4L15.4 354.3L14.0 349.0L14.5 345.2L15.4 339.3L11.7 339.8L10.4 342.9L8.0 341.6L7.6 336.8L4.8 336.8L2.5 338.8L0.7 335.5L1.6 332.5L4.8 331.5L6.7 329.5L1.6 326.4L4.8 324.9L1.6 321.4L3.0 318.6L5.3 316.8L3.9 313.0L5.3 309.5L6.2 306.9L8.0 301.1L9.9 299.8L9.0 296.3L12.2 295.5L12.7 294.0L10.8 294.5L9.4 292.7L12.7 289.7L13.1 284.4L12.2 278.0L10.8 276.3L12.2 273.0L9.9 270.4L12.2 263.4L12.2 248.4L15.9 239.0L17.7 229.4L21.4 223.6L24.6 219.0L26.5 213.7L30.6 208.6L32.9 203.1L37.5 190.7L40.3 186.6L42.6 185.3L43.5 183.1L46.7 179.5L47.7 172.7L49.5 169.9L55.5 160.8L58.3 156.0L64.2 141.3L67.0 133.2L77.1 121.5L78.5 115.9L82.2 107.6L84.1 103.0L88.2 100.7L89.1 98.2L93.7 94.2L99.7 94.2L100.6 89.3L103.4 84.3L106.2 79.7L109.8 72.4L109.8 69.6L110.3 67.1L111.7 64.8L112.6 61.2L114.9 58.7L116.3 56.2L118.1 51.4L126.0 39.7L138.4 33.4L142.6 30.3L149.0 27.3L164.2 24.5L169.7 20.7L173.0 20.2L175.7 22.0L177.1 24.3L177.1 20.7L172.5 16.7L173.9 14.4L176.2 10.8L180.8 4.7L190.9 0.9L198.3 3.2L205.2 14.4L208.4 13.6L208.9 15.1L210.7 19.2L213.9 21.2L237.9 28.1L237.0 31.3L238.4 38.7L240.7 41.2L245.7 40.7L249.4 42.5L240.7 49.1Z";
+    const defs = mk(svg, "defs", {});
+    const pat = mk(defs, "pattern", { id: SEG + "-dots", width: 16, height: 16, patternUnits: "userSpaceOnUse", patternTransform: "rotate(45)" });
+    mk(pat, "circle", { cx: 8, cy: 8, r: 3.6, fill: "#17603a" });
+    const g = mk(svg, "g", { transform: "translate(2565 3406)" });
+    const tw = mk(g, "path", { d: TW_D, fill: BOARD, "fill-opacity": 0.35, stroke: BOARDL, "stroke-width": 7, "stroke-linejoin": "round" });
+    mk(g, "path", { d: TW_D, fill: "url(#" + SEG + "-dots)", opacity: 0.55 });
+    tw.style.filter = "drop-shadow(0 0 14px rgba(155,216,176,0.7))";
+    // frame 0: Taiwan's fill is already swelling, the camera already pushing in
+    tl.fromTo(tw, { attr: { "fill-opacity": 0.35 } }, { attr: { "fill-opacity": 0.74 }, duration: 1.2, ease: C(E.out, 1.2), immediateRender: true }, 0);
+    gsap.set(cam, camAt(2560, 3560, 0.6));
+    tl.fromTo(cam, camAt(2560, 3560, 0.6), Object.assign(camAt(2610, 3600, 0.84), { duration: S(5018.6), ease: "sine.out", immediateRender: true }), 0);
+
+    // ---- "TSMC, this leading company" (ASR "PSMC"): the magenta pin at Hsinchu + name tag
+    const HX = 2683, HY = 3484;
+    const pin = mk(svg, "g", { opacity: 0 });
+    mk(pin, "circle", { cx: HX, cy: HY, r: 30, fill: MAG, stroke: BONE, "stroke-width": 7 });
+    mk(pin, "circle", { cx: HX, cy: HY, r: 9, fill: BONE });
+    const lead = mk(svg, "path", { d: "M" + (HX + 26) + " " + (HY - 26) + " L2752 3394", fill: "none", stroke: MAGL, "stroke-width": 6, "stroke-linecap": "round" });
+    tl.fromTo(pin, { attr: { opacity: 0 } }, { attr: { opacity: 1 }, duration: 0.001, immediateRender: false }, S(5015.5));
+    tl.fromTo(pin, { scale: 0.2, svgOrigin: HX + " " + HY }, { scale: 1, duration: 0.5, ease: C(E.out, 0.5), immediateRender: false }, S(5015.5));
+    gated(5015.4, END, () => FX.radioWaves(svg, HX, HY, { rings: 3, max: 260, period: 1.6, width: 9, color: MAGL, from: S(5015.5), to: S(5020.5) }));
+    drawLine(lead, S(5015.55), 0.3);
+    rise($("tsmc"), T(5015.51), { dur: 0.45, y: 18 });   // TSMC (ASR "PSMC")
+
+    // ---- nicknamed the “Taiwanese shield” (quoted, word by word)
+    rise($("qk"), T(5018.26), { dur: 0.45, y: 10 });      // nicknamed → kicker
+    rise($("q1"), T(5019.06), { dur: 0.5, y: 18 });       // Taiwanese
+    rise($("q2"), T(5019.70), { dur: 0.5, y: 18 });       // shield
+
+    // ---- "a shield" drawn round the island (TSMC's colour = the shield)
+    const cx = 2700, cy = 3650;
+    const shD = "M" + (cx - 250) + " " + (cy - 330) + " Q" + cx + " " + (cy - 400) + " " + (cx + 250) + " " + (cy - 330) +
+      " L" + (cx + 246) + " " + (cy + 20) + " Q" + (cx + 214) + " " + (cy + 270) + " " + cx + " " + (cy + 390) +
+      " Q" + (cx - 214) + " " + (cy + 270) + " " + (cx - 246) + " " + (cy + 20) + " Z";
+    const shFill = mk(svg, "path", { d: shD, fill: MAG, "fill-opacity": 0, stroke: "none" });
+    const sh = mk(svg, "path", { d: shD, fill: "none", stroke: MAGL, "stroke-width": 14, "stroke-linejoin": "round" });
+    sh.style.filter = "drop-shadow(0 0 16px rgba(243,166,200,0.75))";
+    drawLine(sh, S(5020.6), 1.0);
+    tl.to(shFill, { attr: { "fill-opacity": 0.16 }, duration: 0.6, ease: C(E.out, 0.6) }, S(5021.4));
+
+    // ---- "against a Chinese invasion": arrows from the mainland stop at the shield
+    const arrows = [["M2150 3300 Q2300 3330 2428 3390", 2428, 3390], ["M2110 3560 Q2280 3560 2440 3600", 2440, 3600], ["M2160 3800 Q2300 3780 2446 3760", 2446, 3760]];
+    arrows.forEach((a, i) => {
+      const p = mk(svg, "path", { d: a[0], fill: "none", stroke: ASHL, "stroke-width": 16, "stroke-linecap": "round" });
+      drawLine(p, S(5021.55) + i * 0.12, 0.7, C("sine.in", 0.7));
+      const hx = a[1], hy = a[2];
+      const head = mk(svg, "path", { d: "M" + (hx - 40) + " " + (hy - 30) + " L" + hx + " " + hy + " L" + (hx - 42) + " " + (hy + 28), fill: "none", stroke: ASHL, "stroke-width": 16, "stroke-linecap": "round", "stroke-linejoin": "round", opacity: 0 });
+      tl.set(head, { attr: { opacity: 1 } }, S(5022.2) + i * 0.12);
+      // impact: a short magenta-light flash ring where each arrow hits the shield
+      const hit = mk(svg, "circle", { cx: hx + 10, cy: hy, r: 10, fill: "none", stroke: MAGL, "stroke-width": 10, opacity: 0 });
+      tl.fromTo(hit, { attr: { r: 10, opacity: 1 } }, { attr: { r: 90, opacity: 0 }, duration: 0.5, ease: C(E.out, 0.5), immediateRender: false }, S(5022.25) + i * 0.12);
+      // the arrows are pushed back a little (repelled)
+      tl.to([p, head], { x: -46, duration: 0.6, ease: C(E.out, 0.6) }, S(5022.45) + i * 0.12);
+    });
+    tl.fromTo(sh, { attr: { "stroke-width": 14 } }, { attr: { "stroke-width": 22 }, duration: 0.18, yoyo: true, repeat: 1, ease: "sine.out", immediateRender: false }, S(5022.25));
+
+    // ---- "because the world …": the camera pulls back to the region; "… producing world class chips": chips fly out to the world
+    tl.to(cam, Object.assign(camAt(2760, 3560, 0.56), { duration: 1.8, ease: E.cam }), S(5022.95));
+    tl.to(cam, Object.assign(camAt(2780, 3560, 0.53), { duration: END - 5024.75, ease: "none" }), S(5024.75));
+    tl.to(tw, { attr: { "fill-opacity": 0.92 }, duration: 0.3, yoyo: true, repeat: 1, ease: "sine.inOut" }, S(5024.05));   // "Taiwan"
+    const dests = [[5300, 2600, 3700, 2800], [5500, 3800, 4000, 3300], [4100, 5300, 3500, 4200], [3150, 1600, 2950, 2700], [500, 2900, 1800, 2900], [600, 4900, 1800, 4100]];
+    dests.forEach((d, i) => {
+      const t0 = S(5025.86) + i * 0.08, dur = 1.0;
+      const route = mk(svg, "path", { d: "M" + HX + " " + HY + " Q" + d[2] + " " + d[3] + " " + d[0] + " " + d[1], fill: "none", stroke: MAGL, "stroke-width": 7, "stroke-linecap": "round", "stroke-dasharray": "4 22", opacity: 0 });
+      const rc = mk(svg, "clipPath", { id: SEG + "-rc" + i }); const rr = mk(rc, "circle", { cx: HX, cy: HY, r: 0 });
+      route.setAttribute("clip-path", "url(#" + SEG + "-rc" + i + ")");
+      tl.set(route, { attr: { opacity: 0.85 } }, t0);
+      tl.fromTo(rr, { attr: { r: 0 } }, { attr: { r: 3200 }, duration: dur, ease: C("sine.in", dur), immediateRender: false }, t0);
+      const outer = mk(svg, "g", { opacity: 0 }), chip = mk(outer, "g", {});
+      mk(chip, "rect", { x: -34, y: -34, width: 68, height: 68, rx: 6, fill: "#161a24", stroke: MAGL, "stroke-width": 6 });
+      mk(chip, "rect", { x: -16, y: -16, width: 32, height: 32, fill: MAG });
+      for (let k = -1; k <= 1; k++) { [[-46, k * 18, -34, k * 18], [34, k * 18, 46, k * 18], [k * 18, -46, k * 18, -34], [k * 18, 34, k * 18, 46]].forEach((l) => mk(chip, "line", { x1: l[0], y1: l[1], x2: l[2], y2: l[3], stroke: MAGL, "stroke-width": 5 })); }
+      const pr = { u: 0 };
+      const put = () => { const u = pr.u, a = (1 - u) * (1 - u), b = 2 * u * (1 - u), c = u * u;
+        const x = a * HX + b * d[2] + c * d[0], y = a * HY + b * d[3] + c * d[1];
+        chip.setAttribute("transform", "translate(" + x.toFixed(1) + " " + y.toFixed(1) + ") rotate(" + (u * 40 - 20).toFixed(1) + ")"); };
+      put();
+      tl.set(outer, { attr: { opacity: 1 } }, t0);
+      tl.fromTo(pr, { u: 0 }, { u: 1, duration: dur, ease: C("sine.in", dur), immediateRender: false, onUpdate: put }, t0);
+      tl.set(outer, { attr: { opacity: 0 } }, t0 + dur + 0.01);
+    });
+
+    FX.grain($("grain"), 3); FX.dust($("dust"), 5, 2);
+    FX.mount(tl, DUR);
+    window.__timelines = window.__timelines || {};
+    window.__timelines[SEG] = tl;
+  })();
+  </script>
+</template>
+</body>
+</html>
