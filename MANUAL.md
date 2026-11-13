@@ -19,9 +19,12 @@ feedback, update the relevant section and add a line to the Changelog at the bot
   graph text (titles, values, axis/legend and explanatory labels), document/newspaper text, credits — and only where the edit plan marks it,
   a cold-open caption line or a quoted line the narrator reads out as a quote (Paraguay kept the first 7 s and the "owe a million / a billion"
   quote). When in doubt, no text.
-- **Music never drowns the voice** (Krish, Paraguay review, 2026-11-08): the bed must stay clearly under the narrator everywhere — check the
-  music against the VO in short windows (not just the average), duck it automatically wherever it gets close (e.g. a 0.4 s-window
-  short-term-loudness check: music ≥ 12 LU under the voice while he speaks), and listen to the loudest music moments before delivery.
+- **Music is ALWAYS much lower than the voice** (Krish, 2026-11-13 — YouTube viewers still found the music too loud after the
+  2026-11-08 duck). Binding limits, measured, for every video (§10.8 "Music limits"): the music's short-term (3 s) loudness sits
+  **≥ 20 LU under the voice while he speaks and is never closer than 18 LU at any moment**; in pauses and between sections it stays
+  ≥ 18 LU under the VO's integrated loudness (no pause lifts); SFX stay well below the voice; the voice's loudness is unchanged in the
+  final mix. Prove it with `tools/audio/vo_music_scan.py` (must print ALL LIMITS MET) + `measure_mix.py` + `act_levels.py`, and
+  report the numbers to Krish with the 720p review.
 
 1. Documentary/explainer edit over a narrated voiceover. 1920×1080, 24 fps.
 2. **Never touch the voiceover.** No EQ, compression, gain, noise reduction or re-timing. Unity gain.
@@ -727,6 +730,22 @@ on action. Use it whenever the narrator quotes someone or introduces a historic 
   the music was a steady −37 LUFS-S but the VO dropped to −31), so the duck must follow the VO, not the music's own peaks. Memory: the
   whole-length build peaks at ≈ 7.5 GB (keep the duck/scan chunked; a non-chunked version OOM-killed the box).
 
+- **Music limits — BINDING for every video (Krish 2026-11-13; replaces the 12 LU figures above and the "−12…−17" act aim).**
+  Viewers complained the music was too loud even after the 2026-11-08 duck, so:
+  | what | limit | where it is enforced |
+  |---|---|---|
+  | music vs voice while he speaks, 3 s short-term windows | **≥ 20 LU under** (5th percentile and median), **never < 18 LU** in any window | `epidemic_bed.vo_duck` defaults `gap=20`, `margin=0.7`, 3 passes, up to −30 dB |
+  | music vs local speech level, 0.4 s windows | ≥ 18 LU under (1st percentile ≥ 15) | `vo_duck` `gap_fast=18` |
+  | music in pauses / between sections / intro-outro | 3 s loudness ≥ 20 LU under the VO's integrated loudness (never < 18); **no pause lifts** | `vo_duck` `ceiling=20`; `place_sound` `pause_lift_db` default 0 |
+  | bed target | VO − 22 LU integrated (`bed_lu_under_vo` default 22); per-act aim −20…−24 LU re VO in `act_levels.py` | `place_sound.build_music_epidemic` |
+  | SFX | peak caps 4 dB lower than before: hero −16 dB, sub hits −19 dB, the rest −22 dB under the VO's local peak; music+SFX 3 s ≥ 14 LU under | `place_sound` SFX caps |
+  | voice | untouched: final mix vs VO alone < 0.5 LU apart, VO stream never processed | `measure_mix.py` |
+  Check, in this order, and paste the numbers into the delivery note for Krish: `tools/audio/vo_music_scan.py --vo <vo.wav> --beds <dir>`
+  (prints a VERDICT block; exit code 2 unless ALL LIMITS MET) → `act_levels.py` → `measure_mix.py`. Cue sheets must not set a smaller
+  `vo_duck.gap`/`bed_lu_under_vo` than these. Tested 2026-11-13 on an Epidemic full mix (Silent Sun, looped, bed at VO − 22) against
+  5 min of the Paraguay VO (−25.0 LUFS): 3 s gap min 19.2 / p5 20.8 / median 22.6 LU, 0.4 s p1 18.2 LU; duck active 53 % of the time,
+  mean −2.9 dB.
+
 ### 10.9 Long-form rules (Krish, 2026-10-31 evening)
 - **Copyrighted material is allowed** for this channel (used the way YouTube's fair-use guidelines allow: commentary/
   documentary, short excerpts, transformed with our treatments, credited). So news photos/footage, press photos, company
@@ -771,6 +790,7 @@ on action. Use it whenever the narrator quotes someone or introduces a historic 
 - [ ] Smooth long eases, 12 fps. [ ] Cuts on action; whips, no iris. [ ] No photo/clip used > 2× in a chunk.
 
 ## Changelog
+- 2026-11-13 — **Music limits tightened (Krish: viewers still found the music too loud)**: ≥ 20 LU under the voice in 3 s windows, never < 18, restrained in pauses (no lifts, ceiling VO − 20), bed target VO − 22, SFX caps −4 dB; `vo_duck` new defaults + `ceiling`/`gap_fast`, `vo_music_scan.py` prints a PASS/FAIL verdict (§0, §10.8 "Music limits"). inspo-frames asset references saved in `references/inspo-assets/` (57 assets, INDEX.md + contact sheets; search with `filters.kind=asset`).
 - 2026-11-08 — Paraguay sound phase 1: E-minor Epidemic family chosen + analysed, 28 new SFX + the old set re-downloaded, place_sound
   types/bleeps added (§10.8 "Paraguay"), `project/paraguay/SOUND_PLAN.md` + generated cue sheet (`project/paraguay/gen/make_cuesheet.py`).
 - 2026-11-08 — **Premiere Pro hand-off** (Krish): `tools/premiere_xml_paraguay.py` writes a Final Cut Pro 7 XML (xmeml v4 — Premiere imports it via File > Import; edit + media transfer, effects don't): seq 1 = the 4K master split into one clip per scene (names + markers from EDIT_NOTES) on V2, clean face cam on V1 (off), stems as L/R pairs (VO bleeped, music, SFX, ambience = the delivered mix at 0 dB); seq 2 = the EDL dialogue cut on the raw take (60 fps, frame-exact). Media paths point at /Paraguay_Premiere/Media/… → one Link Media + "Relink others automatically". Package = XML + Media + Assets (whole project library + used textures/maps/fonts with SOURCES) + Source (compositions, notes, EDL, cue sheet) + README, zipped (store) and sent as one gofile folder with the master (guest token + folderId adds files to the same folder). Example: `project/paraguay/premiere/`.

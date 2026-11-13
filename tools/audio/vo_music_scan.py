@@ -98,6 +98,25 @@ def scan(vo, beds, a, b, gap, quiet=False):
                 row.append(f"{int(m0//60):02d}:{dm[s].min():4.1f}/{dms[s].min():4.1f}")
         for i in range(0, len(row), 7):
             print("   " + "  ".join(row[i:i + 7]))
+        # ---- verdict against the limits of MANUAL §10.8 "Music limits" (Krish 2026-11-13)
+        nospk = ~spk
+        rest = (vo_lufs - lm)[nospk]                      # pauses / between sections: music vs the VO's integrated loudness
+        t4, lv4, lm4, lms4, spk4, dm4, dms4 = res[0.4]
+        ok = True
+        def line(name, val, lim):
+            nonlocal ok
+            good = val >= lim; ok &= bool(good)
+            print(f"   {'PASS' if good else 'FAIL'}  {name}: {val:.1f} LU (limit ≥ {lim:g})")
+        print(f"\nVERDICT (VO {vo_lufs:.1f} LUFS-I):")
+        line("3 s music gap while he speaks — MIN (never closer than 18)", dm[spk].min(), 18.0)
+        line("3 s music gap while he speaks — 5th percentile (at least 20)", np.percentile(dm[spk], 5), 20.0)
+        line("3 s music gap while he speaks — median", np.median(dm[spk]), 20.0)
+        if nospk.any():
+            line("3 s music in pauses / between sections vs VO LUFS-I — MIN", rest.min(), 18.0)
+        line("0.4 s music gap vs local speech level — 1st percentile", np.percentile(dm4[spk4], 1), 15.0)
+        line("3 s music+SFX gap while he speaks — MIN", dms[spk].min(), 14.0)
+        print("   " + ("ALL LIMITS MET" if ok else "LIMITS NOT MET — lower the bed / fix the spans above"))
+        res["ok"] = ok
     return res
 
 
@@ -105,10 +124,11 @@ if __name__ == "__main__":
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--vo", default="vo_py.wav")
     ap.add_argument("--beds", default="assets/audio/paraguay")
-    ap.add_argument("--gap", type=float, default=12.0)
+    ap.add_argument("--gap", type=float, default=18.0)
     ap.add_argument("--from", dest="a", type=float, default=0.0)
     ap.add_argument("--to", dest="b", type=float, default=None)
     o = ap.parse_args()
     vo = os.path.join(ROOT, o.vo)
     b = o.b or sf.info(vo).duration
-    scan(vo, os.path.join(ROOT, o.beds), o.a, b, o.gap)
+    r = scan(vo, os.path.join(ROOT, o.beds), o.a, b, o.gap)
+    sys.exit(0 if r.get('ok', True) else 2)

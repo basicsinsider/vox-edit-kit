@@ -271,7 +271,7 @@ def build_music_epidemic(sheet, act, pauses, vo=None):
             continue
         if any(a < d["end"] + 0.5 and b > d["start"] - 0.5 for d in DUCKS):
             continue                       # no lift around an insert clip (its own audio is the foreground)
-        lift = 2.0 if L >= 1.2 else 1.5          # modest (Krish 2026-11-08: the music must never drown the voice)
+        lift = float(sheet.get("pause_lift_db", 0.0))   # no pause lifts by default (Krish 2026-11-13: music restrained in pauses too)
         r = min(0.5, max(0.1, (L - 0.45) / 2))
         up, dn = a + 0.15 + r, b - 0.3
         if dn <= up:
@@ -280,7 +280,7 @@ def build_music_epidemic(sheet, act, pauses, vo=None):
     pts.append((LEN, 0.0))
     pts.sort()
     x = x * db(np.interp(ts, [p[0] for p in pts], [p[1] for p in pts]))[:, None]
-    target = VO_LUFS - float(sheet.get("bed_lu_under_vo", 14.0))
+    target = VO_LUFS - float(sheet.get("bed_lu_under_vo", 22.0))   # Krish 2026-11-13: ≥ 20 LU under the voice
     x *= db(target - integrated_lufs(x))
     if DUCKS:
         x = x * db(duck_env(DUCKS, "db"))[:, None]
@@ -893,7 +893,7 @@ def build_sfx_and_amb(markers, scenes, act, vo):
         rel, floor = (-14.0, -24.0) if ty in LOWTYPES else (-20.0, -30.0)
         if EPIDEMIC:   # §10.8: SFX −10…−20 dB under the VO by importance (hero/normal vs the rest)
             hero = m.get("level") == "normal" or ty in ("boom_low", "riser", "plane_pass")
-            rel = (-12.0 if hero else -15.0) if ty in LOWTYPES else (-12.0 if hero else -18.0)   # booms −2 dB (Krish 2026-11-08)
+            rel = (-16.0 if hero else -19.0) if ty in LOWTYPES else (-16.0 if hero else -22.0)   # −4 dB all round (Krish 2026-11-13: SFX well below the voice)
         allowed = max(vloc * db(rel), db(floor)) if vloc > db(-30) else db(floor)
         pk = np.abs(y).max() * g
         if pk > allowed:

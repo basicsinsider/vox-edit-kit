@@ -271,10 +271,13 @@ def apply_gain_db(x, g_db, hop=0.01, chunk_s=30.0):
     return x
 
 
-def vo_duck(music, vo, vo_lufs, gap=12.0, margin=0.5, attack=0.05, release=0.4, max_cut=-15.0, passes=2, log=print):
-    """Sidechain the MUSIC bed from the VO (the VO is only read): wherever he speaks, the music's momentary (0.4 s) loudness stays
-    ≥ gap LU under the VO's local speech level (0.4 s loudness max-held over 0.5 s, so word gaps don't pump) and its short-term (3 s)
-    loudness ≥ gap LU under the VO's short-term loudness. Gain every 10 ms, 50 ms look-ahead, attack `attack` s, release `release` s,
+def vo_duck(music, vo, vo_lufs, gap=20.0, gap_fast=18.0, margin=0.7, attack=0.05, release=0.4, max_cut=-30.0, ceiling=20.0,
+            passes=3, log=print):
+    """Sidechain the MUSIC bed from the VO (the VO is only read). Limits (Krish 2026-11-13, MANUAL §10.8 "Music limits"):
+    wherever he speaks, the music's short-term (3 s) loudness stays ≥ `gap` (20) LU under the VO's short-term loudness and its
+    momentary (0.4 s) loudness ≥ `gap_fast` (18) LU under the VO's local speech level (0.4 s loudness max-held over 0.5 s, so word
+    gaps don't pump); EVERYWHERE — pauses and between sections included — the music's 3 s loudness stays ≥ `ceiling` (20) LU under
+    the VO's integrated loudness (0.4 s: ceiling − 3). Gain every 10 ms, 50 ms look-ahead, attack `attack` s, release `release` s,
     never more than `max_cut` dB. Modifies `music` in place (chunked, memory-light). Returns (music, report, gain curve dB per 10 ms)."""
     from scipy.ndimage import maximum_filter1d, minimum_filter1d
     hop = 0.01
@@ -289,8 +292,11 @@ def vo_duck(music, vo, vo_lufs, gap=12.0, margin=0.5, attack=0.05, release=0.4, 
         n = min(len(em), len(ev))
         lm4, lm3 = window_lufs(em, 0.4, hop)[:n], window_lufs(em, 3.0, hop)[:n]
         need = np.zeros(n)
-        need = np.where(speak4[:n], np.minimum(need, hold[:n] - gap - margin - lm4), need)
+        need = np.where(speak4[:n], np.minimum(need, hold[:n] - gap_fast - margin - lm4), need)
         need = np.where(speak3[:n], np.minimum(need, lv3[:n] - gap - margin - lm3), need)
+        if ceiling is not None:                                   # absolute cap, also in pauses / between sections
+            need = np.minimum(need, vo_lufs - ceiling - margin - lm3)
+            need = np.minimum(need, vo_lufs - (ceiling - 3.0) - margin - lm4)
         need = minimum_filter1d(np.minimum(need, 0.0), int(0.1 / hop))   # centred → 50 ms look-ahead
         need = np.maximum(need, max_cut - (total if total is not None else 0.0))   # total cut never beyond max_cut
         g = np.zeros(n)
@@ -301,8 +307,8 @@ def vo_duck(music, vo, vo_lufs, gap=12.0, margin=0.5, attack=0.05, release=0.4, 
         apply_gain_db(music, g, hop)
         total = g if total is None else total + g
     d = total < -0.5
-    rep = dict(gap=gap, attack=attack, release=release, max_cut=max_cut, ducked_pct=round(float(d.mean() * 100), 1),
+    rep = dict(gap=gap, gap_fast=gap_fast, ceiling=ceiling, attack=attack, release=release, max_cut=max_cut, ducked_pct=round(float(d.mean() * 100), 1),
                mean_cut_db_while_ducked=round(float(total[d].mean()), 2) if d.any() else 0.0, max_cut_db=round(float(total.min()), 2))
-    log(f"vo_duck: ≥{gap:g} LU under the VO — ducked {rep['ducked_pct']}% of the time, mean {rep['mean_cut_db_while_ducked']} dB "
+    log(f"vo_duck: 3 s ≥{gap:g} LU / 0.4 s ≥{gap_fast:g} LU under the VO, ceiling VO−{ceiling} — ducked {rep['ducked_pct']}% of the time, mean {rep['mean_cut_db_while_ducked']} dB "
         f"while ducked, max {rep['max_cut_db']} dB")
     return music, rep, total
