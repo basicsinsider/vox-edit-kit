@@ -57,6 +57,7 @@ INTRO_END = 346.0      # pd03's last frame (hard cut to Sam on camera)
 INTRO_TAIL = 5.5       # the intro music fades out over ~5 s under his first on-camera line
 PRE = 1.0              # island starts this long before a section's first frame (music enters ~0.8 s before the cut)
 POST = 3.2             # island ends this long after a section's last frame (fade-out over ~2.5–3 s)
+MARKERS_DIR = os.path.join(ROOT, "compositions")   # --markers-dir overrides (tests with dummy markers)
 MERGE_GAP = 20.0       # sections closer than this share one island (music held very low between them)
 
 # editors' marker types that place_sound does not know -> a known type (extend as editors invent names; reported)
@@ -123,7 +124,7 @@ def island_markers(isl, known=None, alias=None):
         known, alias = _known_types()
     ms, notes = [], []
     for s in isl["sections"]:
-        f = os.path.join(ROOT, "compositions", f"{s['id']}.sfx.json")
+        f = os.path.join(MARKERS_DIR, f"{s['id']}.sfx.json")
         if not os.path.exists(f):
             notes.append(f"{s['id']}: no sfx.json (music only)")
             continue
@@ -246,9 +247,10 @@ def measure_island(isl, vo, d, length, log):
     x, _ = sf.read(vo, dtype="float64", always_2d=True)
     beds = sum(sf.read(os.path.join(d, f), dtype="float64", always_2d=True)[0] for f in ("music_bed.wav", "sfx.wav", "ambience.wav"))
     k = min(len(x), len(beds))
-    mix = beds[:k] + x[:k]                               # (k,2) + (k,1): VO in both channels
+    xs = np.repeat(x[:k], 2, 1) * np.sqrt(0.5)           # mono VO → stereo as ffmpeg amix does it (−3 dB per channel: the
+    mix = beds[:k] + xs                                  # same loudness as the mono file; tested 2026-11-13) — the tools' convention
     em = E.hop_energy(mix, 0.01)[:n]
-    e2 = E.hop_energy(np.repeat(x[:k], 2, 1), 0.01)[:n]
+    e2 = E.hop_energy(xs, 0.01)[:n]
     rep["vo_alone_lufs"] = round(lufs_i(e2), 2)
     rep["mix_lufs"] = round(lufs_i(em), 2)
     rep["mix_minus_vo_lu"] = round(rep["mix_lufs"] - rep["vo_alone_lufs"], 2)
@@ -495,7 +497,9 @@ def write_report(islands, total, manifest=None, stitch_issues=None):
             L.append(f"| {r['id']} | {a['cue']} | {a['start']:.1f}–{a['end']:.1f} | {a['vo']} | {a['music']} | {a['re_vo']:+.1f} LU |"
                      if a["re_vo"] is not None else f"| {r['id']} | {a['cue']} | {a['start']:.1f}–{a['end']:.1f} | — | — | — |")
     L += ["", "## Voice unchanged — mix vs voice alone", "",
-          "Voice (mono, both channels, unity) + the pre-mixed beds at unity, per island. Peaks in dBFS.", "",
+          "Voice (mono → stereo at −3 dB per channel, i.e. exactly what `ffmpeg amix` does with a mono input; same loudness as the mono file) "
+          "+ the pre-mixed beds at unity, per island. If the final mix copies the mono voice into both channels at full level instead, "
+          "the voice is 3 dB louder and every gap above grows by 3 LU. Voice peak = the mono file's sample peak, mix peak = per channel; dBFS.", "",
           "| island | voice alone LUFS | mix LUFS | Δ | largest Δ in any 10 s | voice peak | mix peak | beds LUFS |", "|---|---|---|---|---|---|---|---|"]
     for r in built:
         L.append(f"| {r['id']} | {r['vo_alone_lufs']} | {r['mix_lufs']} | {r['mix_minus_vo_lu']:+.2f} | {g(r, 'mix_minus_vo_10s_max', '{:+.2f}')} | "
@@ -558,8 +562,11 @@ if __name__ == "__main__":
     ap.add_argument("--keep-wav", action="store_true", help="keep the island's three 24-bit beds")
     ap.add_argument("--keep-vo", action="store_true", help="keep the island's VO slice (work/sound/isl)")
     ap.add_argument("--no-hierarchy", action="store_true")
+    ap.add_argument("--markers-dir", default=None, help="read pdNN.sfx.json from here instead of compositions/ (tests)")
     ap.add_argument("--skip-built", action="store_true", help="skip islands that already have a full-length report + pre-mix")
     a = ap.parse_args()
+    if a.markers_dir:
+        MARKERS_DIR = os.path.abspath(a.markers_dir)
     islands, total = build_islands()
     if a.list:
         for i in islands:

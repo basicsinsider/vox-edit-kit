@@ -1,0 +1,346 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8" /></head>
+<body>
+<template>
+  <style>
+    #root { position: absolute; inset: 0; overflow: hidden; background: var(--night); }
+    .d15-scene { position: absolute; inset: 0; overflow: hidden; visibility: hidden; opacity: 0; }
+    .d15-shot { position: absolute; inset: 0; overflow: hidden; transform-origin: 50% 50%; background: var(--night); }
+    .d15-paper { background: var(--paper); }
+    .d15-abs { position: absolute; }
+    .d15-cam { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 960px 540px; }
+    .d15-p1 { position: absolute; inset: -40px; background-size: cover; background-position: center; pointer-events: none; mix-blend-mode: multiply; filter: grayscale(1) contrast(1.05); }
+    .d15-bg { position: absolute; inset: -60px; background-size: cover; background-position: center; filter: grayscale(1) blur(9px) brightness(0.3) contrast(1.1); }
+    .d15-mk { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; pointer-events: none; }
+    .d15-w { display: inline-block; white-space: pre; opacity: 0; }
+    .d15-print { position: absolute; background: var(--bone); padding: 12px; box-sizing: border-box; box-shadow: 0 24px 46px rgba(8,10,14,0.45); }
+    .d15-print img { display: block; width: 100%; height: 100%; object-fit: cover; filter: grayscale(1) contrast(1.1); }
+    .d15-print .ht { position: absolute; inset: 12px; background: url('assets/textures/halftone_01_norm.jpg') center / 520px auto; mix-blend-mode: overlay; opacity: 0.26; pointer-events: none; }
+    .d15-cap { position: absolute; padding: 8px 14px 3px; background: var(--ink); color: var(--bone); font-size: 22px; line-height: 1; white-space: nowrap; letter-spacing: 0.14em; }
+    .d15-credit { position: absolute; right: 96px; bottom: 30px; font-size: 13px; letter-spacing: 0.08em; color: rgba(238,238,232,0.62); z-index: 5; }
+    .d15-credit.ink { color: rgba(22,26,36,0.6); }
+    #pd15-flash { position: absolute; inset: 0; background: var(--bone); opacity: 0; pointer-events: none; z-index: 7; }
+    #pd15-grain, #pd15-dust, #pd15-vig { z-index: 8; }
+
+    /* s1 · he crosses the line */
+    #pd15-s1-wash { position: absolute; inset: 0; background: radial-gradient(ellipse 60% 80% at 78% 55%, rgba(209,48,122,0.5), rgba(122,23,70,0.18) 55%, rgba(0,0,0,0) 80%); opacity: 0; mix-blend-mode: screen; }
+    #pd15-s1-man { position: absolute; left: 60px; top: 200px; width: 731px; height: 900px; -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 16%); mask-image: linear-gradient(90deg, transparent 0, #000 16%); }
+    #pd15-s1-man img { position: absolute; left: 0; top: 0; width: 731px; height: 900px; filter: grayscale(1) contrast(1.08) brightness(0.95); }
+    #pd15-s1-man .sh { filter: brightness(0) blur(18px); opacity: 0.6; transform: translate(26px, 18px); }
+    #pd15-s1-name { position: absolute; left: 96px; top: 78px; font-size: 54px; white-space: nowrap; }
+    #pd15-s1-role { position: absolute; left: 98px; top: 142px; font-size: 24px; color: var(--ash-light); white-space: nowrap; }
+
+    /* s2 · eight leave, next door */
+    #pd15-s2-lab { left: 120px; top: 140px; width: 664px; height: 487px; transform: rotate(-2deg); }
+    #pd15-s2-c1 { left: 110px; top: 606px; transform: rotate(-2deg); }
+    #pd15-s2-log { left: 170px; top: 720px; width: 640px; height: 176px; transform: rotate(1.6deg); }
+    #pd15-s2-log img { filter: none; }
+    #pd15-s2-c2 { left: 200px; top: 892px; transform: rotate(1.6deg); }
+    .d15-head { position: absolute; left: 0; top: 0; width: 108px; height: 108px; border-radius: 50%; border: 6px solid var(--bone); box-sizing: border-box; background-color: var(--ash);
+      background-image: url('assets/podcast/pd15/eight_photo.jpg'); background-size: 924px auto; background-repeat: no-repeat; filter: grayscale(1) contrast(1.12); box-shadow: 0 8px 16px rgba(22,26,36,0.35); opacity: 0; }
+
+    /* s3 · the photograph */
+    #pd15-s3-print { left: 800px; top: 102px; width: 1024px; height: 892px; transform: rotate(1.2deg); padding: 14px; }
+    #pd15-s3-blur { position: absolute; left: 14px; top: 14px; width: 996px; height: 864px; object-fit: cover; filter: grayscale(1) contrast(1.1) blur(7px) brightness(0.8); }
+    #pd15-s3-the { position: absolute; left: 100px; top: 372px; font-size: 34px; color: var(--ash-light); }
+    #pd15-s3-title { position: absolute; left: 96px; top: 420px; width: 700px; font-size: 104px; line-height: 0.98; color: var(--bone); }
+
+    /* s4 · he names them */
+    #pd15-s4-face { left: 150px; top: 104px; width: 600px; height: 836px; transform: rotate(-2deg); }
+    #pd15-s4-face img { position: absolute; left: 12px; top: 12px; width: 576px; height: 812px; object-fit: cover; object-position: 50% 20%; filter: none; }
+    #pd15-s4-fm { opacity: 0; }
+    #pd15-s4-face .ht { opacity: 0.5; background-size: 380px auto; }
+    #pd15-s4-print { left: 1090px; top: 210px; width: 664px; height: 580px; transform: rotate(3deg); }
+    .d15-lbl { position: absolute; padding: 12px 22px 4px; background: var(--magenta); color: var(--bone); font-size: 84px; line-height: 1; white-space: nowrap; opacity: 0; box-shadow: 0 10px 18px rgba(22,26,36,0.3); }
+    #pd15-s4-l1 { left: 1060px; top: 644px; transform: rotate(-5deg); }
+    #pd15-s4-l2 { left: 1216px; top: 748px; transform: rotate(-5deg); }
+
+    /* s5 · Fairchild Semiconductor */
+    #pd15-s5-bld { left: 110px; top: 300px; width: 620px; height: 486px; transform: rotate(-1.5deg); }
+    #pd15-s5-bld img { object-position: 0% 50%; }
+    #pd15-s5-f { position: absolute; left: 610px; top: 196px; width: 210px; height: 210px; border-radius: 50%; border: 8px solid var(--bone); box-sizing: border-box; overflow: hidden; box-shadow: 0 16px 30px rgba(8,10,14,0.5); }
+    #pd15-s5-f img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(1) contrast(1.25) brightness(1.05); }
+    #pd15-s5-t1 { position: absolute; left: 890px; top: 300px; font-size: 136px; white-space: nowrap; }
+    #pd15-s5-t2 { position: absolute; left: 894px; top: 436px; font-size: 62px; white-space: nowrap; }
+    #pd15-s5-a { left: 910px; top: 580px; width: 300px; height: 300px; transform: rotate(-3deg); }
+    #pd15-s5-b { left: 1260px; top: 556px; width: 300px; height: 300px; transform: rotate(2.5deg); }
+
+    /* s6 · sold */
+    #pd15-s6-card { position: absolute; left: 430px; top: 150px; width: 1060px; height: 440px; background: var(--bone); box-shadow: 0 26px 50px rgba(22,26,36,0.3); transform: rotate(-1deg); }
+    #pd15-s6-logo { position: absolute; left: 130px; top: 78px; width: 800px; height: 284px; background: var(--ink);
+      -webkit-mask: url('assets/c2/logos/fairchild_semiconductor_logo.png') center / contain no-repeat; mask: url('assets/c2/logos/fairchild_semiconductor_logo.png') center / contain no-repeat; }
+    #pd15-s6-sold { position: absolute; left: 1200px; top: 452px; padding: 16px 30px 4px; border: 11px solid var(--magenta); color: var(--magenta); font-size: 150px; line-height: 1; transform: rotate(-9deg); opacity: 0; mix-blend-mode: multiply; }
+    #pd15-s6-num { position: absolute; left: 0; top: 700px; width: 1920px; text-align: center; font-size: 190px; line-height: 1; color: var(--ink); }
+    .d15-mark { position: relative; display: inline-block; white-space: pre; isolation: isolate; }
+    .d15-mark i { position: absolute; left: -16px; right: -16px; top: 16%; bottom: 8%; background: var(--yellow); mix-blend-mode: multiply; transform-origin: 0 50%; transform: scaleX(0); }
+  </style>
+
+  <div id="root" data-composition-id="pd15" data-vo-start="1860.2" data-duration="37.8" data-width="1920" data-height="1080">
+    <svg id="pd15-defs" width="0" height="0" style="position:absolute"></svg>
+
+    <!-- s1 · 1860.20–1864.50 · "So in one of these days, I think he crosses the line that you're not supposed to cross" -->
+    <div class="d15-scene" id="pd15-s1"><div class="d15-shot" id="pd15-s1-shot">
+      <div class="d15-cam" id="pd15-s1-cam">
+        <div class="d15-bg" style="background-image:url('assets/podcast/pd15/shockley_lab.jpg')"></div>
+        <div id="pd15-s1-wash"></div>
+        <svg id="pd15-s1-mk" class="d15-mk" viewBox="0 0 1920 1080"></svg>
+        <div id="pd15-s1-man"><img class="sh" src="assets/c2/cutouts/shockley_portrait_cut.png" alt="" /><img src="assets/c2/cutouts/shockley_portrait_cut.png" alt="" /></div>
+      </div>
+      <div id="pd15-s1-name" class="t-display clean">WILLIAM SHOCKLEY</div>
+      <div id="pd15-s1-role" class="t-label">Shockley Semiconductor Laboratory</div>
+      <div class="d15-credit t-label">Photos: Stanford University · Computer History Museum</div>
+    </div></div>
+
+    <!-- s2 · 1864.50–1869.90 · "So eight of his best scientists just leave the company that day and start a company next door the very next day." -->
+    <div class="d15-scene" id="pd15-s2"><div class="d15-shot d15-paper" id="pd15-s2-shot">
+      <div class="d15-p1" style="background-image:url('assets/textures/paper_stained_01_hires.jpg');opacity:0.7"></div>
+      <div class="d15-cam" id="pd15-s2-cam">
+        <div class="d15-print" id="pd15-s2-lab"><img src="assets/podcast/pd15/shockley_lab.jpg" alt="" /><div class="ht"></div></div>
+        <div class="d15-cap t-label" id="pd15-s2-c1">Shockley Semiconductor Laboratory</div>
+        <div class="d15-print" id="pd15-s2-log"><img src="assets/podcast/pd15/logbook_group_resigns.jpg" alt="" /></div>
+        <div class="d15-cap t-label" id="pd15-s2-c2">Shockley's logbook · 1957</div>
+        <svg id="pd15-s2-mk" class="d15-mk" viewBox="0 0 1920 1080"></svg>
+        <div id="pd15-s2-heads"></div>
+      </div>
+      <div class="d15-credit ink t-label">Computer History Museum · Stanford University Libraries · Wayne Miller / Magnum Photos</div>
+    </div></div>
+
+    <!-- s3 · 1869.90–1880.60 · "They are named the Traitorous Eight. This is like a famous story … a lot of YouTube videos about these people …
+         [Sunkit] Who's naming it? Is he naming them the traitors?" -->
+    <div class="d15-scene" id="pd15-s3"><div class="d15-shot" id="pd15-s3-shot">
+      <div class="d15-cam" id="pd15-s3-cam">
+        <div class="d15-bg" style="background-image:url('assets/podcast/pd15/eight_photo.jpg')"></div>
+        <div class="d15-print" id="pd15-s3-print"><img src="assets/podcast/pd15/eight_photo.jpg" alt="" /><img id="pd15-s3-blur" src="assets/podcast/pd15/eight_photo.jpg" alt="" /><div class="ht" style="inset:14px"></div></div>
+        <div id="pd15-s3-the" class="t-label"><span class="d15-w">the</span></div>
+        <div id="pd15-s3-title" class="t-display halate"><span class="d15-w">TRAITOROUS</span><br /><span class="d15-w">EIGHT</span></div>
+      </div>
+      <div class="d15-credit t-label">Photo: Wayne Miller / Magnum Photos, 1960</div>
+    </div></div>
+
+    <!-- s4 · 1880.60–1885.45 · "Yeah, he gets very mad. So he sues them and he names them Traitorous Eight." -->
+    <div class="d15-scene" id="pd15-s4"><div class="d15-shot d15-paper" id="pd15-s4-shot">
+      <div class="d15-p1" style="background-image:url('assets/textures/paper_lined_01_hires.jpg');opacity:0.55"></div>
+      <div class="d15-cam" id="pd15-s4-cam">
+        <div class="d15-print" id="pd15-s4-face"><img id="pd15-s4-fg" src="assets/c2/photos/shockley_stanford_painter.jpg" alt="" /><img id="pd15-s4-fm" src="assets/c2/photos/shockley_stanford_painter.jpg" alt="" /><div class="ht"></div></div>
+        <div class="d15-print" id="pd15-s4-print"><img src="assets/podcast/pd15/eight_photo.jpg" alt="" /><div class="ht"></div></div>
+        <svg id="pd15-s4-mk" class="d15-mk" viewBox="0 0 1920 1080"></svg>
+        <div class="d15-lbl t-display" id="pd15-s4-l1">TRAITOROUS</div>
+        <div class="d15-lbl t-display" id="pd15-s4-l2">EIGHT</div>
+      </div>
+      <div class="d15-credit ink t-label">Photos: Chuck Painter / Stanford News Service · Wayne Miller / Magnum Photos</div>
+    </div></div>
+
+    <!-- s5 · 1885.45–1892.90 · "but they start this company which is Fairchild Semiconductor. This is a major company, by the way. It plays a
+         big role all the way through like the 1900s." -->
+    <div class="d15-scene" id="pd15-s5"><div class="d15-shot" id="pd15-s5-shot">
+      <div class="d15-cam" id="pd15-s5-cam">
+        <div class="d15-bg" style="background-image:url('assets/c2/photos/fairchild_bldg_844_charleston.jpg');background-size:230% auto;background-position:8% 35%"></div>
+        <canvas id="pd15-s5-streaks" class="streaks" style="opacity:0.35;filter:blur(2.5px)"></canvas>
+        <div class="d15-print" id="pd15-s5-bld"><img src="assets/c2/photos/fairchild_bldg_844_charleston.jpg" alt="" /><div class="ht"></div></div>
+        <div id="pd15-s5-f"><img src="assets/podcast/pd15/flying_f_wall.jpg" alt="" /></div>
+        <div id="pd15-s5-t1" class="t-display halate"><span class="d15-w">FAIRCHILD</span></div>
+        <div id="pd15-s5-t2" class="t-display clean"><span class="d15-w">SEMICONDUCTOR</span></div>
+        <div class="d15-print" id="pd15-s5-a"><img src="assets/c2/photos/chm_fairchild_wafer_diffusion_area_1958.jpg" alt="" /><div class="ht"></div></div>
+        <div class="d15-print" id="pd15-s5-b"><img src="assets/c2/photos/chm_fairchild_diffusion_furnaces_1960.jpg" alt="" style="object-position:50% 50%" /><div class="ht"></div></div>
+        <svg id="pd15-s5-mk" class="d15-mk" viewBox="0 0 1920 1080"></svg>
+      </div>
+      <div class="d15-credit t-label">Photos: Computer History Museum · Wayne Miller / Magnum Photos · Wikimedia Commons</div>
+    </div></div>
+
+    <!-- s6 · 1892.90–1898.00 · "I think it just got sold in twenty sixteen, twenty fifteen, something like that, for like two billion dollars." -->
+    <div class="d15-scene" id="pd15-s6"><div class="d15-shot d15-paper" id="pd15-s6-shot">
+      <div class="d15-p1" style="background-image:url('assets/textures/paper_graph_01_hires.jpg');opacity:0.8"></div>
+      <div class="d15-cam" id="pd15-s6-cam">
+        <div id="pd15-s6-card"><div id="pd15-s6-logo"></div></div>
+        <div id="pd15-s6-sold" class="t-display"><span id="pd15-s6-sw" style="display:inline-block;filter:url(#pd15-ch6)">SOLD</span></div>
+        <div id="pd15-s6-num" class="t-display"><span class="d15-mark"><i id="pd15-s6-hl"></i><span class="d15-w">$2 </span><span class="d15-w">BILLION</span></span></div>
+      </div>
+    </div></div>
+
+    <div id="pd15-flash"></div>
+    <div id="pd15-grain" class="tx tx-grain" style="background-image:url('assets/textures/grain_01_norm.jpg')"></div>
+    <div id="pd15-dust" class="tx tx-dust" style="background-image:url('assets/textures/dust_02.jpg')"></div>
+    <div id="pd15-vig" class="vignette"></div>
+    <audio id="pd15-vo" class="temp-vo" src="vo_pd.mp3" data-start="0" data-duration="37.8" data-media-start="1860.2" data-volume="1"></audio>
+  </div>
+
+  <script>
+  (function () {
+    const SEG = "pd15", START = 1860.2, END = 1898.0, DURATION = 37.8;
+    const T = (s) => +(s - START).toFixed(3);   // TEXT cues (audited): literal master word start − 0.06
+    const S = (s) => +(s - START).toFixed(3);   // STRUCTURAL cues
+    const tl = gsap.timeline({ paused: true });
+    const $ = (id) => document.getElementById(SEG + "-" + id);
+    const NS = "http://www.w3.org/2000/svg";
+    const defs = $("defs");
+    const E = FX.ease;
+    const C = (e, d) => FX.choppy(e, d, 12);
+    // palette_podcast.css values (SVG attributes cannot read CSS variables)
+    const INK = "#161a24", BONE = "#eeeee8", ASHL = "#c2c5ca", MAG = "#d1307a", MAGL = "#f3a6c8", MAGD = "#7a1746", PAPER = "#e7e6df", NIGHT = "#0c0f15";
+
+    // ---------- scenes ----------
+    const SC = [["s1", 1860.20, 1864.50, "night"], ["s2", 1864.50, 1869.90, "paper"], ["s3", 1869.90, 1880.60, "night"], ["s4", 1880.60, 1885.45, "paper"],
+      ["s5", 1885.45, 1892.90, "night"], ["s6", 1892.90, 1898.00, "paper"]];
+    const GROUND = { paper: [0.3, 0.14, 0.26], night: [1, 0.4, 0.36] };
+    const EARLY = { s6: 0.45 };   // paper slide: the incoming scene is visible during the slide
+    SC.forEach((s, i) => {
+      const el = $(s[0]);
+      if (i === 0) gsap.set(el, { autoAlpha: 1 });
+      else tl.fromTo(el, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.001, immediateRender: false }, S(s[1]) - (EARLY[s[0]] || 0));
+      if (s[2] < END) tl.set(el, { autoAlpha: 0 }, S(s[2]) + 0.06);
+    });
+    const TEX = [$("vig"), $("dust"), $("grain")];
+    gsap.set(TEX, { opacity: (i) => GROUND.night[i] });
+    SC.forEach((s) => { const v = GROUND[s[3]]; tl.set(TEX, { opacity: (i) => v[i] }, S(s[1])); });
+
+    // ---------- helpers ----------
+    const show = (el, t) => tl.fromTo(el, { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, t);
+    const rise = (el, t, o) => { o = o || {}; const d = o.dur || 0.6;
+      tl.fromTo(el, { opacity: 0, y: o.y == null ? 16 : o.y }, { opacity: 1, y: 0, duration: d, ease: C(E.out, d), immediateRender: true }, t); };
+    const W = (id) => Array.from($(id).querySelectorAll(".d15-w"));
+    function el(parent, tag, attrs) { const n = document.createElementNS(NS, tag); for (const k in attrs) n.setAttribute(k, attrs[k]); parent.appendChild(n); return n; }
+    const later = (p, t) => { (Array.isArray(p) ? p : [p]).forEach((q) => { gsap.set(q, { opacity: 0 }); tl.set(q, { opacity: 1 }, t); }); return p; };
+    let whipN = 0;
+    function whip(a, b, t, o) {
+      o = Object.assign({ dir: 1, vertical: false, flash: false, dur: 0.32 }, o);
+      const k = ++whipN, ba = FX.whipDefs(defs, SEG + "-wa" + k), bb = FX.whipDefs(defs, SEG + "-wb" + k), h = o.dur / 2;
+      const A = $(a + "-shot"), B = $(b + "-shot");
+      tl.set(A, { filter: "url(#" + SEG + "-wa" + k + ")" }, t - h - 0.01); tl.set(A, { filter: "none" }, t + 0.06);
+      tl.set(B, { filter: "url(#" + SEG + "-wb" + k + ")" }, t - 0.001); tl.set(B, { filter: "none" }, t + h + 0.02);
+      FX.whip(tl, A, B, t, { dir: o.dir, vertical: o.vertical, dur: o.dur, blurA: ba, blurB: bb });
+      if (o.flash) tl.fromTo($("flash"), { opacity: 0 }, { opacity: 0.8, duration: 0.08, yoyo: true, repeat: 1, ease: "power2.in", immediateRender: false }, t - 0.08);
+    }
+    whip("s1", "s2", S(1864.50), { dir: 1 });
+    whip("s3", "s4", S(1880.60), { dir: -1, vertical: true });
+    whip("s4", "s5", S(1885.45), { dir: -1, flash: true });
+    // paper slide s5 → s6
+    tl.fromTo($("s6-shot"), { x: 1960, boxShadow: "0 0 80px rgba(0,0,0,0.5)" }, { x: 0, duration: 0.45, ease: C(E.inOut, 0.45), immediateRender: false }, S(1892.90) - 0.45);
+
+    // ================= s1 · he crosses the line =================
+    (function () {
+      const mk = $("s1-mk"), man = $("s1-man"), cam = $("s1-cam");
+      const pen = FX.markupDefs(mk, SEG + "-pen1", { boil: 12 });
+      // the line (already being drawn on frame 0)
+      const p = el(mk, "path", { d: "M966 -30 Q948 180 962 380 Q976 600 954 800 Q946 960 960 1110", fill: "none", stroke: MAG, "stroke-width": 12, "stroke-linecap": "round", filter: pen });
+      const len = p.getTotalLength() || 1160; p.setAttribute("stroke-dasharray", len + " " + len);
+      gsap.set(p, { attr: { "stroke-dashoffset": len * 0.72 } });
+      tl.fromTo(p, { attr: { "stroke-dashoffset": len * 0.72 } }, { attr: { "stroke-dashoffset": 0 }, duration: 1.3, ease: C("power1.out", 1.3), immediateRender: false }, 0);
+      // he walks up to it … and crosses on "crosses"
+      tl.fromTo(man, { x: -40 }, { x: 30, duration: 2.15, ease: "none", immediateRender: true }, 0);
+      tl.to(man, { x: 760, duration: 1.0, ease: C(E.inOut, 1.0) }, S(1862.33));
+      tl.to(p, { attr: { "stroke-width": 20, stroke: MAGL }, duration: 0.25, ease: C("none", 0.25) }, S(1862.85));
+      tl.to($("s1-wash"), { opacity: 1, duration: 0.9, ease: C(E.out, 0.9) }, S(1862.93));
+      tl.fromTo(cam, { scale: 1.08 }, { scale: 1.0, duration: 4.3, ease: "none", immediateRender: true }, 0);
+      tl.to(cam, { x: 9, duration: 1 / 12, yoyo: true, repeat: 3, ease: "none" }, S(1863.20));
+    })();
+
+    // ================= s2 · eight leave, and start next door =================
+    (function () {
+      const mk = $("s2-mk"), box = $("s2-heads"), cam = $("s2-cam");
+      const pen = FX.markupDefs(mk, SEG + "-pen2", { boil: 4 });
+      const H = [[70, 364], [130, 424], [250, 414], [365, 419], [425, 394], [495, 359], [590, 424], [690, 419]];   // heads in eight_photo.jpg (800×695)
+      const K = 924 / 800;
+      H.forEach((h, i) => {
+        const d = document.createElement("div"); d.className = "d15-head";
+        d.style.backgroundPosition = (54 - h[0] * K - 6).toFixed(1) + "px " + (54 - h[1] * K - 6).toFixed(1) + "px";
+        box.appendChild(d);
+        const c = i % 4, r = Math.floor(i / 4);
+        const x0 = 196 + c * 132, y0 = 300 + r * 126, x1 = 1168 + c * 136, y1 = 356 + r * 136;
+        gsap.set(d, { x: x0, y: y0 });
+        // "eight": they pop up on the lab, one per 12 fps step
+        tl.fromTo(d, { opacity: 0, scale: 0.5 }, { opacity: 1, scale: 1, duration: 0.3, ease: C(E.out, 0.3), immediateRender: true }, S(1864.73) + i / 12);
+        // "leave": they walk out to the empty lot on the right
+        const t = S(1866.41) + i * 0.09;
+        tl.to(d, { x: x1, duration: 1.0, ease: C(E.inOut, 1.0) }, t);
+        tl.to(d, { y: y0 - 90, duration: 0.5, ease: C("power1.out", 0.5) }, t);
+        tl.to(d, { y: y1, duration: 0.5, ease: C("power1.in", 0.5) }, t + 0.5);
+      });
+      // "start a company next door": the pen builds a house round them
+      later(FX.markup.pen(tl, mk, S(1868.05), { points: [[1110, 650], [1112, 330], [1430, 236], [1748, 330], [1746, 650], [1110, 652]], jitter: 6, seed: 5, dur: 0.9, width: 9, color: MAG, filter: pen, ease: C("power1.inOut", 0.9) }), S(1868.05));
+      later(FX.markup.pen(tl, mk, S(1868.90), { points: [[1060, 664], [1800, 660]], jitter: 5, seed: 7, dur: 0.35, width: 9, color: MAG, filter: pen }), S(1868.90));
+      // ink arrow: out of the lab
+      later(FX.markup.arrow(tl, mk, S(1866.45), { x1: 800, y1: 250, x2: 1090, y2: 300, bend: -60, head: 30, dur: 0.6, color: INK, width: 6, filter: pen }), S(1866.45));
+      tl.fromTo(cam, { scale: 1.05, x: 50 }, { scale: 1.0, x: 0, duration: 2.2, ease: E.cam, immediateRender: false }, S(1864.50));
+      tl.to(cam, { scale: 1.07, x: -50, duration: 3.3, ease: "power1.in" }, S(1866.60));   // push toward the new house → cut on action
+    })();
+
+    // ================= s3 · the photograph, the name =================
+    (function () {
+      const cam = $("s3-cam"), t0 = S(1869.90);
+      tl.fromTo(cam, { scale: 1.12 }, { scale: 1.0, duration: 2.4, ease: E.out, immediateRender: false }, t0);   // continues the push from s2
+      tl.to(cam, { scale: 1.06, duration: 8.3, ease: "none" }, t0 + 2.4);
+      const ws = W("s3-title");
+      rise(W("s3-the")[0], T(1870.65), { dur: 0.3, y: 10 });   // "the"
+      rise(ws[0], T(1871.00), { dur: 0.7, y: 26 });            // "traitorous"
+      rise(ws[1], T(1871.72), { dur: 0.5, y: 26 });            // "eight"
+      // "these people": a sharp spot travels across the eight faces, then the whole print is sharp again
+      FX.focalBlur(tl, $("s3-blur"), [{ x: 500, y: 430, r: 1500 },
+        { t: S(1872.60), x: 90, y: 500, r: 150, dur: 1.0 }, { t: S(1873.70), x: 880, y: 520, r: 150, dur: 3.3 }, { t: S(1877.20), x: 500, y: 430, r: 1500, dur: 1.2 }], { soft: 1.8 });
+    })();
+
+    // ================= s4 · he gets very mad, sues them, names them =================
+    (function () {
+      const mk = $("s4-mk"), cam = $("s4-cam"), t0 = S(1880.60);
+      FX.tintDefs(defs, SEG + "-tg", INK, PAPER); FX.tintDefs(defs, SEG + "-tm", MAGD, "#f6d3e2");
+      $("s4-fg").style.filter = "url(#" + SEG + "-tg) contrast(1.15)"; $("s4-fm").style.filter = "url(#" + SEG + "-tm) contrast(1.25)";
+      const pen = FX.markupDefs(mk, SEG + "-pen4", { boil: 4 });
+      // "very mad": the face floods magenta in three 12 fps steps, the card shakes
+      [[1881.27, 0.4], [1881.43, 0.75], [1881.60, 1]].forEach((k) => tl.set($("s4-fm"), { opacity: k[1] }, S(k[0])));
+      tl.fromTo($("s4-face"), { x: 0 }, { x: 8, duration: 1 / 12, yoyo: true, repeat: 5, ease: "none", immediateRender: false }, S(1881.43));
+      // "sues them": pen arrow from him to the eight
+      later(FX.markup.arrow(tl, mk, S(1882.31), { x1: 790, y1: 420, x2: 1068, y2: 470, bend: -70, head: 34, dur: 0.6, color: INK, width: 7, filter: pen }), S(1882.31));
+      // "names them Traitorous Eight": the label is slapped on the photograph
+      [["s4-l1", T(1883.83)], ["s4-l2", T(1884.55)]].forEach((k) =>
+        tl.fromTo($(k[0]), { opacity: 0, scale: 1.35 }, { opacity: 1, scale: 1, duration: 0.17, ease: C("power2.in", 0.17), immediateRender: true }, k[1]));
+      tl.fromTo(cam, { scale: 1.06 }, { scale: 1.0, duration: 4.85, ease: "none", immediateRender: false }, t0);
+    })();
+
+    // ================= s5 · Fairchild Semiconductor =================
+    (function () {
+      const cam = $("s5-cam"), t0 = S(1885.45), mk = $("s5-mk");
+      const on = FX.onFrame; FX.onFrame = (f) => on(FX.gate(t0 - 0.3, S(1892.90) + 0.2, f));
+      FX.streaks($("s5-streaks"), { seed: 23, speed: 0.4, tint: [194, 197, 202], gain: 0.9 });
+      FX.onFrame = on;
+      tl.fromTo(cam, { scale: 1.07 }, { scale: 1.0, duration: 7.45, ease: "none", immediateRender: false }, t0);
+      tl.fromTo($("s5-f"), { scale: 0.6, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.8, ease: C(E.out, 0.8), immediateRender: true }, t0 + 0.25);
+      rise(W("s5-t1")[0], T(1886.47), { dur: 0.7, y: 30 });   // "Fairchild"
+      rise(W("s5-t2")[0], T(1887.19), { dur: 0.5, y: 20 });   // "Semiconductor(s)"
+      // "a major company": the fab, 1958 and 1960
+      tl.fromTo($("s5-a"), { y: 560, rotation: -12 }, { y: 0, rotation: -3, duration: 1.0, ease: C(E.out, 1.0), immediateRender: true }, S(1888.13));
+      tl.fromTo($("s5-b"), { y: 560, rotation: 12 }, { y: 0, rotation: 2.5, duration: 1.0, ease: C(E.out, 1.0), immediateRender: true }, S(1888.60));
+      // "all the way through the 1900s": a long time line runs on across the frame (no years — none are given)
+      const g = el(mk, "g", { stroke: ASHL, "stroke-linecap": "round", fill: "none" });
+      const line = el(g, "path", { d: "M96 962 L1824 964", "stroke-width": 5 });
+      const L = 1728; line.setAttribute("stroke-dasharray", L + " " + L); gsap.set(line, { attr: { "stroke-dashoffset": L } });
+      tl.to(line, { attr: { "stroke-dashoffset": 0 }, duration: 1.5, ease: C("power1.inOut", 1.5) }, S(1890.45));
+      for (let i = 0; i <= 12; i++) { const x = 96 + i * 144, tk = el(g, "path", { d: "M" + x + " 948 L" + x + " 978", "stroke-width": 4 }); gsap.set(tk, { opacity: 0 });
+        tl.set(tk, { opacity: 1 }, S(1890.45) + 0.15 + (i / 12) * 1.25); }
+    })();
+
+    // ================= s6 · sold, for like two billion dollars =================
+    (function () {
+      const cam = $("s6-cam"), t0 = S(1892.90);
+      const ch = FX.roughDefs(defs, SEG + "-ch6", { scale: 4 });
+      gsap.set($("s6-num"), { display: "block" });
+      tl.fromTo(cam, { y: 150, scale: 1.08 }, { y: 130, scale: 1.12, duration: 3.8, ease: "none", immediateRender: false }, t0 - 0.45);
+      // "sold": the stamp
+      tl.fromTo($("s6-sold"), { opacity: 0, scale: 1.4 }, { opacity: 0.92, scale: 1, duration: 0.1, ease: "power2.in", immediateRender: true }, T(1893.91));
+      FX.chokeSettle(tl, ch, $("s6-sw"), T(1893.91), 3, 0.12);
+      tl.fromTo($("s6-card"), { y: 0 }, { y: 7, duration: 1 / 12, yoyo: true, repeat: 1, ease: "none", immediateRender: false }, S(1893.99));
+      // the camera drops to make room, the number lands on "two billion"
+      tl.to(cam, { y: 0, scale: 1.0, duration: 0.9, ease: C(E.inOut, 0.9) }, S(1896.30));
+      const ws = W("s6-num");
+      rise(ws[0], T(1897.19), { dur: 0.17, y: 20 });   // "two"
+      rise(ws[1], T(1897.35), { dur: 0.17, y: 20 });   // "billion"
+      tl.to($("s6-hl"), { scaleX: 1, duration: 0.25, ease: C("power1.inOut", 0.25) }, S(1897.25));
+    })();
+
+    FX.mount(tl, DURATION);
+    window.__timelines = window.__timelines || {};
+    window.__timelines[SEG] = tl;
+  })();
+  </script>
+</template>
+</body>
+</html>

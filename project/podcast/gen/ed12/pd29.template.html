@@ -1,0 +1,317 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8" /></head>
+<body>
+<template>
+  <style>
+    /* pd29 · 3458.6–3516.6 · July 1971: Kissinger "gets sick" in Pakistan and secretly flies to China.
+       ONE continuous night route map (inspo 73184e83 route line with dots + labels over relief; b57b4e0e pinned photo with a name label on a map).
+       Built from project/podcast/gen/ed12/pd29.template.html (build.py inlines assets/podcast/pd29/pd29_map.json) — edit the template. */
+    #root { position: absolute; inset: 0; overflow: hidden; background: #0b0e14; color: var(--bone); }
+    #pd29-defs { position: absolute; width: 0; height: 0; }
+    #pd29-cam { position: absolute; left: 0; top: 0; width: 3511px; height: 2016px; transform-origin: 0 0; }
+    #pd29-base { position: absolute; left: 0; top: 0; width: 3511px; height: 2016px; filter: brightness(1.55) contrast(1.06); }
+    #pd29-detail { position: absolute; left: 1958.9px; top: 448px; width: 1367.5px; height: 896px; filter: brightness(1.55) contrast(1.06);
+      -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 5%, #000 95%, transparent 100%), linear-gradient(180deg, transparent 0, #000 6%, #000 94%, transparent 100%); -webkit-mask-composite: source-in; mask-image: linear-gradient(90deg, transparent 0, #000 5%, #000 95%, transparent 100%), linear-gradient(180deg, transparent 0, #000 6%, #000 94%, transparent 100%); mask-composite: intersect; }
+    #pd29-svg { position: absolute; left: 0; top: 0; width: 3511px; height: 2016px; overflow: visible; }
+    .pd29-an { position: absolute; left: 0; top: 0; width: 0; height: 0; transform-origin: 0 0; }
+    .pd29-an > div { position: absolute; white-space: nowrap; }
+    .pd29-lab { font-size: 24px; line-height: 1; color: var(--bone); text-shadow: 0 1px 2px rgba(0,0,0,0.6), 0 0 14px rgba(0,0,0,0.7); }
+    .pd29-city { font-size: 22px; line-height: 1; color: var(--ash-light); letter-spacing: 0.12em; text-shadow: 0 1px 2px rgba(0,0,0,0.7), 0 0 12px rgba(0,0,0,0.8); }
+    .pd29-dot { width: 14px; height: 14px; left: -7px; top: -7px; border-radius: 50%; background: var(--bone); box-shadow: 0 0 0 4px rgba(12,15,21,0.55); }
+    .pd29-face { width: 150px; height: 150px; border-radius: 50%; overflow: hidden; border: 5px solid var(--ash-light); box-shadow: 0 10px 30px rgba(0,0,0,0.55); background: #1c1f26; }
+    .pd29-face img { position: absolute; filter: url(#pd29-tint) contrast(1.08); }
+    .pd29-tag { font-size: 24px; line-height: 1; color: var(--bone); text-shadow: 0 1px 2px rgba(0,0,0,0.6), 0 0 14px rgba(0,0,0,0.8); }
+    #pd29-shade { position: absolute; inset: 0; background: radial-gradient(120% 90% at 50% 50%, rgba(8,10,15,0) 55%, rgba(8,10,15,0.5) 100%); pointer-events: none; }
+    #pd29-date { position: absolute; left: 96px; top: 84px; font-size: 124px; white-space: nowrap; }
+    /* Kissinger card (screen space) */
+    #pd29-kcard { position: absolute; left: 96px; top: 124px; width: 480px; height: 720px; }
+    #pd29-kph { position: absolute; left: 6px; top: 6px; width: 352px; height: 428px; overflow: hidden; border: 6px solid var(--bone); box-shadow: 0 18px 44px rgba(0,0,0,0.6); transform: rotate(-2deg); background: #1c1f26; }
+    #pd29-kph img { position: absolute; left: -20px; top: -6px; width: 392px; filter: url(#pd29-tint) contrast(1.08); }
+    #pd29-kph i, #pd29-plane i { position: absolute; inset: 0; background-size: 420px auto; mix-blend-mode: overlay; opacity: 0.35; }
+    #pd29-kname { position: absolute; left: 0; top: 474px; font-size: 66px; line-height: 0.94; white-space: nowrap; }
+    #pd29-krole { position: absolute; left: 2px; top: 612px; font-size: 22px; line-height: 1.35; color: var(--ash-light); white-space: nowrap; }
+    #pd29-sick { position: absolute; left: 318px; top: -22px; font-size: 54px; background: var(--bone); color: var(--ink); padding: 8px 18px 3px; transform: rotate(4deg); box-shadow: 0 8px 22px rgba(0,0,0,0.5); white-space: nowrap; }
+    #pd29-pain { position: absolute; left: 340px; top: 62px; font-size: 36px; line-height: 1; background: var(--bone); color: var(--ink); padding: 6px 16px 9px; transform: rotate(-2deg); box-shadow: 0 8px 22px rgba(0,0,0,0.5); white-space: nowrap; }
+    /* schedule card */
+    #pd29-sched { position: absolute; left: 1470px; top: 318px; width: 354px; height: 444px; background: var(--paper); color: var(--ink); transform: rotate(1.6deg); box-shadow: 0 20px 48px rgba(0,0,0,0.6); }
+    #pd29-sched > i { position: absolute; inset: 0; background-size: cover; mix-blend-mode: multiply; opacity: 0.55; }
+    #pd29-shead { position: absolute; left: 30px; top: 30px; font-size: 26px; line-height: 1; color: var(--ink); white-space: nowrap; }
+    #pd29-srule { position: absolute; left: 30px; top: 68px; width: 294px; height: 3px; background: var(--ink); }
+    .pd29-row { position: absolute; left: 30px; width: 294px; height: 34px; }
+    .pd29-row b { position: absolute; left: 0; top: 7px; width: 20px; height: 20px; border: 3px solid var(--ink); box-sizing: border-box; }
+    .pd29-row u { position: absolute; left: 36px; top: 4px; height: 10px; background: var(--ash); opacity: 0.75; }
+    .pd29-row s { position: absolute; left: 36px; top: 21px; height: 8px; background: var(--ash-light); }
+    #pd29-ssvg { position: absolute; left: 0; top: 0; width: 354px; height: 444px; overflow: visible; }
+    #pd29-two { position: absolute; left: 62px; top: 356px; font-size: 76px; line-height: 1; background: var(--yellow); color: var(--ink); padding: 10px 18px 2px; transform: rotate(-3deg); box-shadow: 0 10px 24px rgba(0,0,0,0.35); white-space: nowrap; }
+    /* plane card */
+    #pd29-plane { position: absolute; left: 96px; top: 96px; width: 400px; height: 320px; }
+    #pd29-plph { position: absolute; left: 0; top: 0; width: 388px; height: 258px; overflow: hidden; border: 6px solid var(--bone); box-shadow: 0 18px 44px rgba(0,0,0,0.6); transform: rotate(-1.5deg); background: #1c1f26; }
+    #pd29-plph img { position: absolute; left: -8px; top: -8px; width: 404px; filter: url(#pd29-tint) contrast(1.1); }
+    #pd29-pllab { position: absolute; left: 2px; top: 292px; font-size: 22px; line-height: 1; color: var(--bone); white-space: nowrap; }
+    #pd29-mk { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; pointer-events: none; }
+    .pd29-cred { position: absolute; right: 96px; bottom: 44px; font-size: 16px; line-height: 1; letter-spacing: 0.1em; color: var(--ash-light); opacity: 0; white-space: nowrap; text-shadow: 0 1px 2px rgba(0,0,0,0.8); }
+  </style>
+  <div id="root" data-composition-id="pd29" data-vo-start="3458.6" data-duration="58.0" data-width="1920" data-height="1080">
+    <svg id="pd29-defs"></svg>
+    <div id="pd29-cam">
+      <img id="pd29-base" src="assets/podcast/pd29/world_night_base.jpg" alt="" />
+      <img id="pd29-detail" src="assets/podcast/pd29/asia_night_detail.jpg" alt="" />
+      <svg id="pd29-svg" viewBox="0 0 3511 2016">
+        <g id="pd29-countries"></g>
+        <g id="pd29-routes"></g>
+      </svg>
+      <div id="pd29-anchors"></div>
+    </div>
+    <div id="pd29-shade"></div>
+    <div id="pd29-date" class="t-display halate">JULY 1971</div>
+    <div id="pd29-kcard">
+      <div id="pd29-kph"><img src="assets/c5/photos/kissinger_portrait_1973_official.jpg" alt="" /><i style="background-image:url('assets/textures/halftone_01_norm.jpg')"></i></div>
+      <div id="pd29-kname" class="t-display clean">HENRY<br/>KISSINGER</div>
+      <div id="pd29-krole" class="t-label">National Security<br/>Advisor</div>
+      <div id="pd29-sick" class="t-display">SICK</div>
+      <div id="pd29-pain" class="t-serif-i">stomach pain</div>
+    </div>
+    <div id="pd29-sched">
+      <i style="background-image:url('assets/textures/paper_fiber_01.jpg')"></i>
+      <div id="pd29-shead" class="t-label">Public events</div>
+      <div id="pd29-srule"></div>
+      <div id="pd29-rows"></div>
+      <svg id="pd29-ssvg" viewBox="0 0 354 444"></svg>
+      <div id="pd29-two" class="t-display">2 DAYS</div>
+    </div>
+    <div id="pd29-plane">
+      <div id="pd29-plph"><img src="assets/c5/photos/pia_boeing_707_340c_an0633118.jpg" alt="" /><i style="background-image:url('assets/textures/halftone_01_norm.jpg')"></i></div>
+      <div id="pd29-pllab" class="t-label clean">Pakistani plane &middot; PIA Boeing 707</div>
+    </div>
+    <svg id="pd29-mk" viewBox="0 0 1920 1080"></svg>
+    <div id="pd29-cred1" class="pd29-cred t-label">Photo: US Department of State</div>
+    <div id="pd29-cred2" class="pd29-cred t-label">Photo: airliners.net / Wikimedia Commons, CC BY-SA</div>
+    <div id="pd29-cred3" class="pd29-cred t-label">Photos: NARA &middot; Wikimedia Commons (public domain)</div>
+    <div id="pd29-grain" class="tx tx-grain" style="background-image:url('assets/textures/grain_02_norm.jpg'); opacity:0.3"></div>
+    <div id="pd29-dust" class="tx tx-dust" style="background-image:url('assets/textures/dust_02.jpg'); opacity:0.22"></div>
+    <div class="vignette" style="opacity:0.5"></div>
+    <audio id="pd29-vo" class="temp-vo" src="vo_pd.mp3" data-start="0" data-duration="58.0" data-media-start="3458.6" data-volume="1"></audio>
+  </div>
+  <script>
+  (function () {
+    const START = 3458.6, DUR = 58.0;
+    const T = (s) => +(s - START).toFixed(3);   // TEXT cues (audited): word start − 0.06
+    const S = T;                                 // structural cues
+    const tl = gsap.timeline({ paused: true });
+    const $ = (id) => document.getElementById("pd29-" + id);
+    const E = FX.ease, C = (e, d) => FX.choppy(e, d, 12);
+    const NS = "http://www.w3.org/2000/svg";
+    const BONE = "#eeeee8", ASHL = "#c2c5ca", ASH = "#878c96", MAG = "#d1307a", MAGL = "#f3a6c8", BOARD = "#2f9e5b", BOARDL = "#9bd8b0";
+    const MAP = /*MAPJSON*/null;
+    const X = (lon) => (lon + 135) * 12.32, Y = (lat) => (86 - lat) * 16;
+    FX.grain($("grain"), 2901);
+    FX.dust($("dust"), 2903, 2);
+    FX.tintDefs($("defs"), "pd29-tint", "#1c1f26", "#e4e3da");
+
+    // ================= camera (map px space, counter-scaled anchors and stroke widths) =================
+    const cam = { cx: 1760, cy: 908, s: 0.595 }, anchors = [], strokes = [];
+    const camEl = $("cam");
+    function applyCam() {
+      const s = cam.s;
+      camEl.style.transform = "translate(" + (960 - cam.cx * s).toFixed(2) + "px," + (540 - cam.cy * s).toFixed(2) + "px) scale(" + s.toFixed(5) + ")";
+      const k = (1 / s).toFixed(5);
+      for (const a of anchors) a.style.transform = "translate(" + a._x + "px," + a._y + "px) scale(" + k + ")";
+      for (const q of strokes) q[0].setAttribute("stroke-width", (q[1] / s).toFixed(3));
+    }
+    function anchor(x, y, html) {
+      const a = document.createElement("div"); a.className = "pd29-an"; a._x = x; a._y = y; a.innerHTML = html;
+      $("anchors").appendChild(a); anchors.push(a); return a;
+    }
+    function mk(tag, attrs, parent, w) {
+      const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]);
+      (parent || $("routes")).appendChild(e); if (w) strokes.push([e, w]); return e;
+    }
+    let camPrev = { cx: cam.cx, cy: cam.cy, s: cam.s }, camT = 0;
+    function camTo(t1, key, ease) {       // continuous chain: every tween starts where the previous one ended
+      tl.fromTo(cam, { cx: camPrev.cx, cy: camPrev.cy, s: camPrev.s }, { cx: key.cx, cy: key.cy, s: key.s, duration: t1 - camT, ease: ease || "none", immediateRender: false, onUpdate: applyCam }, camT);
+      camPrev = key; camT = t1;
+    }
+    // W wide (US → Asia) · A Asia · P Pakistan close · R the hidden leg · W again
+    camTo(S(3459.7), { cx: 1772, cy: 908, s: 0.61 });
+    camTo(S(3462.8), { cx: 2729, cy: 848, s: 1.75 }, E.cam);
+    camTo(S(3468.5), { cx: 2722, cy: 852, s: 1.83 });
+    camTo(S(3470.4), { cx: 2451, cy: 912, s: 2.5 }, E.cam);
+    camTo(S(3488.7), { cx: 2455, cy: 908, s: 2.64 });
+    camTo(S(3490.6), { cx: 2760, cy: 810, s: 1.75 }, E.cam);
+    camTo(S(3496.7), { cx: 2772, cy: 806, s: 1.82 });
+    camTo(S(3498.8), { cx: 1762, cy: 908, s: 0.598 }, E.cam);
+    camTo(DUR, { cx: 1800, cy: 900, s: 0.64 });
+
+    // ================= countries =================
+    const cg = $("countries");
+    const country = (key, fill, stroke, w, o) => mk("path", { d: MAP.paths[key], fill: fill, stroke: stroke, "stroke-linejoin": "round", opacity: o == null ? 1 : o }, cg, w);
+    const cUS = country("us", "rgba(194,197,202,0.16)", ASHL, 1.6);
+    const cIN = country("india", "none", ASH, 1.4, 0);
+    const cCN = country("china", "#343843", ASH, 1.8, 0);
+    cCN.setAttribute("fill-opacity", 0.42);
+    const cPK = country("pakistan", "rgba(238,238,232,0.16)", BONE, 2.4, 0);
+    const cTW = country("taiwan", BOARD, BOARDL, 1.6, 0);
+
+    // ================= routes (sampled arcs; partial drawing by progress, seek-safe) =================
+    function arc(a, b, bend, n) {
+      const mx = (a[0] + b[0]) / 2, my = (a[1] + b[1]) / 2 - bend, pts = [];
+      for (let i = 0; i <= n; i++) { const u = i / n, v = 1 - u; pts.push([v * v * a[0] + 2 * v * u * mx + u * u * b[0], v * v * a[1] + 2 * v * u * my + u * u * b[1]]); }
+      return pts;
+    }
+    const pt = (pts, p) => { const f = Math.min(pts.length - 1.0001, Math.max(0, p * (pts.length - 1))), i = Math.floor(f), u = f - i; return [pts[i][0] + (pts[i + 1][0] - pts[i][0]) * u, pts[i][1] + (pts[i + 1][1] - pts[i][1]) * u, Math.atan2(pts[i + 1][1] - pts[i][1], pts[i + 1][0] - pts[i][0])]; };
+    function dOf(pts, p0, p1, mode) {    // mode: 0 solid · 1 dashed (3 on / 2 off) · 2 dotted
+      const n = pts.length - 1, i0 = Math.ceil(p0 * n), i1 = Math.floor(p1 * n); let d = "";
+      if (p1 <= p0) return "M0 0";
+      if (mode === 2) { for (let i = i0; i <= i1; i += 2) d += "M" + pts[i][0].toFixed(1) + " " + pts[i][1].toFixed(1) + "h0.01"; return d || "M0 0"; }
+      if (mode === 1) { for (let i = i0 - (i0 % 5); i < i1; i += 5) { const a = Math.max(i, i0), b = Math.min(i + 3, i1); if (b > a) { d += "M" + pts[a][0].toFixed(1) + " " + pts[a][1].toFixed(1); for (let k = a + 1; k <= b; k++) d += "L" + pts[k][0].toFixed(1) + " " + pts[k][1].toFixed(1); } } return d || "M0 0"; }
+      const h = pt(pts, p1); d = "M" + pts[i0][0].toFixed(1) + " " + pts[i0][1].toFixed(1);
+      for (let k = i0 + 1; k <= i1; k++) d += "L" + pts[k][0].toFixed(1) + " " + pts[k][1].toFixed(1);
+      return d + "L" + h[0].toFixed(1) + " " + h[1].toFixed(1);
+    }
+    function route(pts, mode, color, w, extra) {
+      const el = mk("path", Object.assign({ d: "M0 0", fill: "none", stroke: color, "stroke-linecap": "round", "stroke-linejoin": "round" }, extra || {}), null, w);
+      const st = { a: 0, b: 0 }; el._st = st; el._pts = pts;
+      el._upd = () => el.setAttribute("d", dOf(pts, st.a, st.b, mode));
+      return el;
+    }
+    const draw = (r, t, dur, from, to, ease, prop) => tl.fromTo(r._st, { [prop || "b"]: from }, { [prop || "b"]: to, duration: dur, ease: ease || C(E.inOut, dur), immediateRender: false, onUpdate: r._upd }, t);
+
+    const WAS = MAP.pts.washington, ISB = MAP.pts.islamabad, BEI = MAP.pts.beijing, TPE = MAP.pts.taipei;
+    const P1 = arc(WAS, ISB, 330, 180), P2 = arc(ISB, BEI, 70, 100), P3 = arc(WAS, BEI, 900, 140), PB = arc(ISB, [2300, 800], 60, 60);
+    const r1glow = route(P1, 0, "rgba(238,238,232,0.18)", 9), r1 = route(P1, 0, BONE, 3.4);
+    const rb = route(PB, 1, ASHL, 3, { opacity: 0.9 });
+    const r3 = route(P3, 2, ASHL, 6);
+    const r2glow = route(P2, 0, "rgba(209,48,122,0.3)", 12), r2 = route(P2, 1, MAGL, 4.2);
+
+    // ================= anchors: dots, labels, portraits =================
+    const dotW = anchor(WAS[0], WAS[1], '<div class="pd29-dot"></div>');
+    const labUS = anchor(X(-112), Y(47.5), '<div class="pd29-lab t-label" style="left:0;top:0">United States</div>');
+    const dotI = anchor(ISB[0], ISB[1], '<div class="pd29-dot"></div><div class="pd29-city t-label" style="left:14px;top:-38px">Islamabad</div>');
+    const labPK = anchor(X(67.3), Y(28.9), '<div class="pd29-lab t-label" style="left:-150px;width:300px;text-align:center;top:-12px;font-size:26px">Pakistan</div>');
+    const labTW = anchor(TPE[0] - 6, Y(21.4), '<div class="pd29-lab t-label" style="left:-100px;width:200px;text-align:center;top:0;font-size:22px;color:#9bd8b0">Taiwan</div>');
+    const labCN = anchor(X(103), Y(35.2), '<div class="pd29-lab t-label" style="left:-150px;width:300px;text-align:center;top:-14px;font-size:30px;color:#c2c5ca">China</div>');
+    const labIN = anchor(X(79), Y(22), '<div class="pd29-lab t-label" style="left:-150px;width:300px;text-align:center;top:-11px;font-size:22px;color:#c2c5ca">India</div>');
+    const dotB = anchor(BEI[0], BEI[1], '<div class="pd29-dot" style="background:#f3a6c8"></div><div class="pd29-city t-label" style="right:20px;top:-10px;color:#eeeee8">Beijing</div>');
+    const plane = anchor(ISB[0], ISB[1], '<div style="left:-32px;top:-32px;width:64px;height:64px"><svg viewBox="-32 -32 64 64" width="64" height="64"><path d="M26 0L8-3.5L-4-23H-10L-5-3.5L-17-2.5L-21-10H-25L-23 0L-25 10H-21L-17 2.5L-5 3.5L-10 23H-4L8 3.5Z" fill="#eeeee8" stroke="#0c0f15" stroke-width="1.5"/></svg></div>');
+    const note = anchor(BEI[0], BEI[1], '<div style="left:-206px;top:-232px;width:3px;height:204px;background:rgba(238,238,232,0.6);transform-origin:50% 0"></div><div class="t-label clean" style="left:-190px;top:-236px;font-size:24px;line-height:1">First time since</div><div class="t-display clean" style="left:-191px;top:-200px;font-size:48px">WORLD WAR TWO</div>');
+    const qm = anchor(2300, 800, '<div class="t-display clean" style="left:-64px;top:-56px;font-size:84px;color:#c2c5ca">?</div>');
+    const nix = anchor(WAS[0], WAS[1], '<div class="pd29-face" style="left:-170px;top:44px"><img src="assets/c5/photos/nixon_official_portrait_nara530679.jpg" alt="" style="left:-34px;top:-22px;width:218px"/></div><div class="pd29-tag t-label" style="left:-190px;top:222px">President Nixon</div>');
+    const mao = anchor(BEI[0], BEI[1], '<div class="pd29-face" style="left:-158px;top:74px"><img src="assets/c3/photos/mao_zedong_with_cap.jpg" alt="" style="left:-30px;top:-38px;width:210px"/></div><div class="pd29-tag t-label" style="right:-34px;top:250px">Mao Zedong</div>');
+    const apex = pt(P3, 0.5);
+    const labFut = anchor(apex[0], apex[1], '<div class="pd29-lab t-label" style="left:-200px;width:400px;text-align:center;top:-46px;font-size:26px">Future trip</div>');
+    const labSum = anchor(apex[0], apex[1], '<div class="pd29-lab t-label" style="left:-250px;width:500px;text-align:center;top:-48px;font-size:28px">Presidential summit</div>');
+    const xmark = anchor(apex[0], apex[1], '<div style="left:-26px;top:-26px;width:52px;height:52px"><svg viewBox="-26 -26 52 52" width="52" height="52"><path d="M-17-16L16 17M17-17L-16 16" stroke="#f3a6c8" stroke-width="7" stroke-linecap="round" fill="none"/></svg></div>');
+    applyCam();
+
+    const kids = (a) => Array.from(a.children);
+    const show = (els, t, d, o) => tl.fromTo(els, { opacity: 0, y: (o && o.y) == null ? 14 : o.y }, { opacity: 1, y: 0, duration: d || 0.5, ease: C(E.out, d || 0.5), immediateRender: false }, t);
+    const hide = (els, t, d) => tl.to(els, { opacity: 0, duration: d || 0.4, ease: "power1.in" }, t);
+    const pop = (els, t, d) => tl.fromTo(els, { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: d || 0.6, ease: C(E.out, d || 0.6), immediateRender: false }, t);
+    [dotI, labPK, labTW, labCN, labIN, dotB, plane, note, qm, nix, mao, labFut, labSum, xmark].forEach((a) => gsap.set(kids(a), { opacity: 0 }));
+    gsap.set([$("kcard"), $("sched"), $("plane"), $("date")], { opacity: 0 });
+    gsap.set([$("kname"), $("krole"), $("sick"), $("pain"), $("shead"), $("two")], { opacity: 0 });
+
+    // ---------- A · 3458.6–3468.5 "So in July 71, he goes to Pakistan. No one's really paying attention to this trip…" ----------
+    // frame 0 is alive: the route has already left Washington and the camera is drifting east
+    r1._st.b = 0.07; r1._upd(); r1glow._st.b = 0.07; r1glow._upd();
+    draw(r1, 0, 2.0, 0.07, 1, C(E.inOut, 2.0)); draw(r1glow, 0, 2.0, 0.07, 1, C(E.inOut, 2.0));
+    tl.fromTo($("date"), { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.7, ease: C(E.out, 0.7), immediateRender: false }, T(3459.09));
+    tl.to(cPK, { opacity: 1, duration: 0.5, ease: C(E.out, 0.5) }, T(3460.45));
+    show(kids(labPK), T(3460.45), 0.5);
+    pop(kids(dotI)[0], S(3460.6), 0.5); tl.to(kids(dotI)[1], { opacity: 1, duration: 0.4 }, S(3460.9));
+    hide($("date"), S(3462.0), 0.6);
+    tl.to(cTW, { opacity: 1, duration: 0.4, ease: C(E.out, 0.4) }, T(3463.97)); show(kids(labTW), T(3463.97), 0.45);
+    tl.to(cCN, { opacity: 1, duration: 0.5, ease: C(E.out, 0.5) }, T(3464.61)); show(kids(labCN), T(3464.61), 0.45);
+    tl.to(cIN, { opacity: 0.9, duration: 0.5, ease: C(E.out, 0.5) }, T(3465.17)); show(kids(labIN), T(3465.17), 0.45);
+    tl.to(cIN, { opacity: 0.4, duration: 0.8 }, S(3467.0));
+
+    // ---------- B · 3468.5–3480.7 "But at this trip, Kissinger gets sick… cancels all his public events for the next two days" ----------
+    tl.fromTo($("kcard"), { opacity: 0, x: -70 }, { opacity: 1, x: 0, duration: 0.9, ease: C(E.out, 0.9), immediateRender: false }, S(3468.65));
+    tl.fromTo($("kph").firstElementChild, { scale: 1.1, transformOrigin: "50% 30%" }, { scale: 1, duration: 20, ease: "none", immediateRender: false }, S(3468.65));
+    tl.to($("cred1"), { opacity: 0.6, duration: 0.4 }, S(3469.4));
+    show($("kname"), T(3469.57), 0.6, { y: 20 });
+    tl.to($("krole"), { opacity: 1, duration: 0.4 }, S(3469.95));
+    tl.fromTo($("sick"), { opacity: 0, scale: 1.5 }, { opacity: 1, scale: 1, duration: 0.35, ease: C(E.out, 0.35), immediateRender: false }, T(3470.45));
+    tl.fromTo($("pain"), { opacity: 0, y: -12 }, { opacity: 1, y: 0, duration: 0.45, ease: C(E.out, 0.45), immediateRender: false }, T(3473.25));
+    // the schedule: rows of public events, struck one by one, "2 DAYS"
+    const rows = $("rows"), rr = FX.rng(77), strikes = [];
+    const pen = FX.markupDefs($("ssvg"), "pd29-pen", { boil: 4 }); $("ssvg").setAttribute("viewBox", "0 0 354 444");
+    for (let i = 0; i < 6; i++) {
+      const y = 92 + i * 44, w1 = 120 + Math.round(rr() * 120), w2 = 70 + Math.round(rr() * 150);
+      rows.insertAdjacentHTML("beforeend", '<div class="pd29-row" style="top:' + y + 'px"><b></b><u style="width:' + w1 + 'px"></u><s style="width:' + w2 + 'px"></s></div>');
+    }
+    tl.fromTo($("sched"), { opacity: 0, x: 90, rotation: 5 }, { opacity: 1, x: 0, rotation: 1.6, duration: 0.8, ease: C(E.out, 0.8), immediateRender: false }, S(3474.95));
+    tl.to($("shead"), { opacity: 1, duration: 0.001 }, T(3475.97));
+    for (let i = 0; i < 6; i++) {
+      const y = 109 + i * 44;
+      const p = FX.markup.pen(tl, $("ssvg"), S(3476.3) + i * (2 / 12), { points: [[22, y + 4], [120, y - 3], [230, y + 3], [334, y - 4]], dur: 0.3, width: 6, color: MAG, filter: pen, seed: 20 + i, jitter: 4 });
+      gsap.set(p, { opacity: 0 }); tl.set(p, { opacity: 1 }, S(3476.3) + i * (2 / 12)); strikes.push(p);
+    }
+    tl.fromTo($("two"), { opacity: 0, scale: 1.4 }, { opacity: 1, scale: 1, rotation: -3, duration: 0.4, ease: C(E.out, 0.4), immediateRender: false }, T(3477.25));
+
+    // ---------- C · 3480.7–3488.9 "…definitely suspicious, right? Why wouldn't he just fly back? … he wasn't really sick." ----------
+    draw(rb, S(3484.55), 0.8, 0, 1, C(E.out, 0.8));
+    pop(kids(qm), S(3485.05), 0.5);
+    // "wasn't really sick" — the tag is crossed out
+    const mkf = FX.markupDefs($("mk"), "pd29-mkf", { boil: 4 });
+    const cross = FX.markup.cross(tl, $("mk"), S(3487.73), { x: 492, y: 138, s: 52, dur: 0.16, color: MAG, width: 11, filter: mkf });
+    gsap.set(cross, { opacity: 0 }); tl.set(cross[0], { opacity: 1 }, S(3487.73)); tl.set(cross[1], { opacity: 1 }, S(3487.73) + 0.2);
+    tl.to($("pain"), { opacity: 0.35, duration: 0.3 }, S(3487.9));
+    // clear the desk before the camera moves on
+    tl.to([$("kcard"), cross[0], cross[1]], { x: -640, duration: 0.55, ease: C(E.in, 0.55) }, S(3488.5));
+    tl.to($("sched"), { x: 560, rotation: 6, duration: 0.55, ease: C(E.in, 0.55) }, S(3488.5));
+    tl.set([$("kcard"), $("sched"), cross[0], cross[1]], { opacity: 0 }, S(3489.1));
+    hide($("cred1"), S(3488.5), 0.3);
+    hide(kids(qm), S(3488.3), 0.3); draw(rb, S(3488.2), 0.5, 0, 1, C(E.in, 0.5), "a");
+
+    // ---------- D · 3488.9–3503.3 the hidden leg: "He had taken a secret Pakistani plane to fly into China…" ----------
+    const head = { p: 0 };
+    const planeIn = kids(plane)[0];
+    function updPlane() { const h = pt(P2, head.p); plane._x = h[0]; plane._y = h[1]; planeIn.style.rotate = (h[2] * 180 / Math.PI).toFixed(1) + "deg"; applyCam(); r2._st.b = head.p; r2._upd(); r2glow._st.b = head.p; r2glow._upd(); }
+    tl.to(planeIn, { opacity: 1, duration: 0.2 }, S(3489.73));
+    tl.fromTo(head, { p: 0 }, { p: 1, duration: 2.5, ease: C(E.inOut, 2.5), immediateRender: false, onUpdate: updPlane }, S(3489.73));
+    tl.fromTo($("plane"), { opacity: 0, y: -40 }, { opacity: 1, y: 0, duration: 0.7, ease: C(E.out, 0.7), immediateRender: false }, S(3490.13));
+    tl.fromTo($("plph").firstElementChild, { scale: 1.12 }, { scale: 1, duration: 7, ease: "none", immediateRender: false }, S(3490.13));
+    tl.to($("cred2"), { opacity: 0.6, duration: 0.4 }, S(3490.6));
+    tl.to(cCN, { attr: { "fill-opacity": 0.6 }, duration: 0.5 }, S(3491.9));
+    tl.fromTo(kids(labCN), { scale: 1 }, { scale: 1.25, duration: 0.5, ease: C(E.out, 0.5), immediateRender: false }, T(3492.05));
+    pop(kids(dotB)[0], S(3492.2), 0.5); tl.to(kids(dotB)[1], { opacity: 1, duration: 0.4 }, S(3492.35));
+    tl.to(planeIn, { opacity: 0, duration: 0.4 }, S(3492.5));
+    const nk = kids(note);
+    tl.fromTo(nk[0], { opacity: 1, scaleY: 0 }, { scaleY: 1, duration: 0.4, ease: C(E.out, 0.4), immediateRender: false }, S(3492.9));
+    show(nk[1], T(3493.09), 0.4, { y: 10 });
+    show(nk[2], T(3493.89), 0.5, { y: 14 });
+    // pull back to the whole route: "to plan a future trip where President Nixon himself would be going to China"
+    hide(nk, S(3496.45), 0.35); hide([$("plane"), $("cred2")], S(3496.45), 0.35);
+    hide([kids(dotI)[1], kids(labTW)[0], kids(labIN)[0]], S(3496.7), 0.5);
+    tl.to(kids(labCN), { scale: 1, duration: 0.5 }, S(3496.7));
+    tl.to(cIN, { opacity: 0, duration: 0.6 }, S(3496.7));
+    draw(r3, S(3497.25), 3.0, 0, 1, C(E.inOut, 3.0));
+    show(kids(labFut), T(3497.33), 0.5);
+    pop(kids(nix)[0], T(3498.13), 0.6); show(kids(nix)[1], T(3498.13), 0.5, { y: 10 });
+    tl.to($("cred3"), { opacity: 0.6, duration: 0.4 }, S(3498.6));
+    pop(kids(mao)[0], T(3502.37), 0.6); show(kids(mao)[1], T(3502.37), 0.5, { y: 10 });
+
+    // ---------- E · 3503.3–3516.6 "…it's all happening in secret. … never made official contacts … now there's presidential summit being planned" ----------
+    tl.to(r2, { attr: { stroke: "#ffffff" }, duration: 0.25, ease: C("none", 0.25), repeat: 3, yoyo: true }, S(3506.6));
+    tl.to(r2glow, { attr: { stroke: "rgba(209,48,122,0.75)" }, duration: 0.5, repeat: 1, yoyo: true }, S(3506.6));
+    // "never made official contacts": the Washington–Beijing line is taken away again
+    hide(kids(labFut), S(3507.9), 0.4);
+    draw(r3, S(3508.3), 1.2, 0, 1, C(E.inOut, 1.2), "a");
+    tl.to([kids(nix)[0], kids(mao)[0]], { opacity: 0.45, duration: 0.6 }, S(3508.6));
+    pop(kids(xmark), S(3509.72), 0.35);
+    // "And now there's presidential summit that is being planned"
+    hide(kids(xmark), S(3513.2), 0.25);
+    tl.set(r3._st, { a: 0, b: 0 }, S(3513.38));
+    draw(r3, S(3513.4), 1.5, 0, 1, C(E.inOut, 1.5));
+    tl.to([kids(nix)[0], kids(mao)[0]], { opacity: 1, duration: 0.5 }, S(3513.4));
+    show(kids(labSum), T(3514.28), 0.55);
+
+    FX.mount(tl, DUR);
+    window.__timelines["pd29"] = tl;
+  })();
+  </script>
+</template>
+</body>
+</html>

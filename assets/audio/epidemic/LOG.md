@@ -223,3 +223,41 @@ Many Epidemic SFX arrive as 96 kHz / 24-bit WAV (ambiences 50–130 MB each); `e
 | stadium_cheer_goal_01.wav | c76a6846-f54f-4229-bde1-85a1bd55d2f4 | Crowds, Sport, Stadium, Cheering, Whistles, Clapping, Excited, Reaction, Goal 01 | `stadium_crowd` (World Cup; swells on t) |
 | ice_crack_medium_long_01.wav / ice_crack_medium.wav | c9092b1a-10a5-43af-9de9-a3f5fe9de4c5 / f222b3dc-7399-4322-8e49-98cd59570350 | Ice, Break, Ice Crack Medium Long 01 / Ice Crack Medium | `crack` (level normal → the long one) — phase 2 |
 | gavel_single_02.wav | 59936633-8ea8-47dd-926b-d782a026fdf7 | Wood, Impact, Gavel Hit, Courtroom, Single 02 | `gavel` (single takes alternate in order of use) — phase 2 |
+
+### "Podcast" — TSMC vs UMC (Searching Lessons, 2026-11-13) — cue sheets `project/podcast/cues/islNN.json` (generator `project/podcast/gen/make_cuesheet.py`), plan `project/podcast/SOUND_PLAN.md`
+Key family **A minor / C major** (new: Taiwan chunks + Ivan were D minor / F, Paraguay E minor / G). Curious, intelligent tech/business
+history: contemporary-classical pulses + light electronics, warm for the Stanford/HP origin stories, dark pulses for geopolitics.
+Found with SearchRecordings (11 terms) + SearchSimilarToRecording (seeds: Melting Glass, Observatory, Mindscape, Sliding Doors, Until Now,
+Stay This Way, One Step Away, Pretend to Wake Up): 328 candidates, key measured from the LQ previews (43 in A minor / C major), then
+confirmed on the WAVs (`ANALYSIS.md`: all ten measure A minor, r = 0.74–0.91). Music lives only in "islands" (the intro + each edited
+section), bed at VO − 22 LU under the binding limits of MANUAL §10.8.
+Fetch: `python3 tools/epidemic_fetch.py <id> <name> FULL MELODY BASS DRUMS INSTRUMENTS` (tracks without DRUMS answer NOT_FOUND).
+**The WAVs were converted to 16-bit after analysis** (disk: 1.7 GB for the set; a re-download is 24-bit — levels are identical).
+Stems-sum check (full − Σ stems over 60 s; ≤ −10 dB = clean): How Did We Get Here −12.2, A Trace of Light −14.7, Stay This Way −7.2,
+Seekers and Finders −4.3, Sliding Doors −2.4, Mindscape −1.1, Observatory +0.5, One Step Away +0.6, Until Now +2.1, Melted Mind +2.6
+(stems mastered separately — used as layers anyway, as in Ivan/Paraguay; the bed is normalised after summing).
+
+| folder | title — artist | kosmosId | stems downloaded | bpm | key (meas.) | role in the podcast / why |
+|---|---|---|---|---|---|---|
+| `how_did_we_get_here/` | How Did We Get Here — Hanna Lindgren (ambient, drone, floating, peaceful) | f2a59c58-76bb-4cf4-82a2-1d0dfbcac42a | full, melody, bass, instruments (no drums exist) | 0 (free) | A minor (0.91) | the tempo-free DRONE floor of every island (melody stem; 346 s long) |
+| `observatory/` | Observatory — Out To The World (electronic, pulses, dreamy, hopeful) | 0c47304b-4e50-43b2-8230-2397e7991316 | full, melody, bass, drums, instruments | 128 | A minor (0.86) | the IDEA theme: intro opening → "an unique insight" → 4 M → 24 M; returns as colour ENG (engineering explainers: oscillator, transistor, wiring problem, the integrated circuit, Moore's Law) |
+| `melted_mind/` | Melted Mind — Max Anson (ambient, hopeful, pulses, suspense) | 6e4f8193-4f20-329f-9409-ca557df0e18f | full, melody, bass, drums, instruments | 134 | A minor (0.79) | intro: "In fact, a chip factory would be more successful if…" → the foundry idea → the board says yes |
+| `mindscape/` | Mindscape — Lennon Hutton (dark, electronic, pulses, suspense) | 4cb08b97-fa28-4f38-9b9c-3e71a2d98b5f | full, melody, bass, instruments (no drums exist) | 108 | A minor (0.77) | intro: "one condition" → the unnamed executive; colour GEO (two Chinas, the UN chapter opener, recognition blocs, Deng, the "Taiwanese shield", the Traitorous Eight) |
+| `until_now/` | Until Now — August Wilhelmsson (adventure, ambient, dreamy, pulses, smooth) | 4385955c-8325-3d69-872f-f38e3f8de5e5 | full, melody, bass, drums, instruments | 154 | A minor (0.74) | intro: the flight to New York → "on top of the world"; colour TW (Taiwan builds: Japanese rule, aid, export zones, the cabinet of engineers, Ten Major Projects, Pan Wen-yuan, the value chain) |
+| `stay_this_way/` | Stay This Way — Hanna Lindgren (ambient, dark, floating) | 94afc29d-2a9e-4d0d-9820-cf1b06ad0048 | full, melody, bass, instruments (no drums exist) | 0 (free) | A minor (0.83) | intro: the phone bust, the aside's air, the cold shoulder / stonewalled; colour DARK (the ROC flees to Taiwan, Chiang's one-party state) |
+| `one_step_away/` | One Step Away — Dian Shuai (build, dark, drama, orchestral hybrid, suspense) | 2dfb0d5d-7d3c-43cb-8216-e76cec2f9b6b | full, melody, bass, drums, instruments | 102 | A minor (0.88) | intro: two years later → "guess who" → its full band (file 100 s) on "Morris Chang" → "TSMC" → betrayal → rivalry; colour OSA (the UN walkout, pd33) |
+| `sliding_doors/` | Sliding Doors — Helmut Schenker (contemporary classical, dreamy, hopeful) | 9d171c14-46c0-4b9c-ae82-d796af632443 | full, melody, bass, drums, instruments | 112 | A minor (0.79) | colour US (warm origin stories: Terman, the trillion-dollar map, Hoover, Bush/Raytheon, Hewlett & Packard, Shockley's move, the Stanford lease, Route 128) |
+| `a_trace_of_light/` | A Trace of Light — Jakob Ahlbom (ambient, dreamy, neoclassical, peaceful) | 6f30a607-b32c-4302-a5cc-828f6bf623a7 | full, melody, bass, drums, instruments | 75 | A minor (0.90) | colour REF (theory / reflection: non-competes, the Field Code, Chiang Ching-kuo, the institute model, the Silicon copycats, Christensen) |
+| `seekers_and_finders/` | Seekers and Finders — Experia (pulses, suspense) | cc31edf0-290e-3049-8a33-dfa501eb8007 | full, melody, bass, drums, instruments | 118 | A minor (0.81) | colour SPY (Kissinger's secret trip, Africa's new votes, July → October, the "important question") — its pulsing bass leads |
+
+Auditioned, not downloaded (previews, key measured): Night Shuttle / Pretend to Wake Up / Waiting for the Call / Drowned Night (Max Anson,
+A minor — spare pulses), Cryptic Secrecy + First on the Scene (Dream Cave, A minor crime-scene — spare tension), Victims & Crimes (Skrya),
+Nemesis (Alec Slayne), Vital (Christoffer Moe Ditlevsen, A minor, 274 s epic build — too big), Impossible Theory (Rachel Sandy — trailer),
+Big Announcement (Out To The World — epic), Water Circles (Luba Hilman, A minor 0.94 drone, 325 s — spare floor), Off-White (Farrell Wooten,
+drone), Three Days in Venice / Boxes of Memories (Franz Gordon, strings — too sentimental), Bright White (Frank Jonsson, C major),
+The Long Ride (Sam Will — too happy), Launch Sequence (Helmut Schenker — action). `silent_sun/` (full only) is the lead's limit-test file.
+
+SFX for the podcast — `sfx/` re-downloaded 2026-11-13 (ids in the SFX table above): whoosh_soft, whoosh_swoosh_light, whoosh_swoosh_wide,
+boom_dark_cinematic_low_hit, boom_cinematic_deep, boom_sub_bass_clean_01, riser_reverse_cymbal_short, swell_reverse_timpani_cymbal,
+paper_slide_wood_table (+_04), marker_circle, marker_drag, highlighter_drag_text, rubber_stamp_document_01, stamp_hand_press_short.
+Everything else is fetched only if an editor's marker needs it (`tools/audio/pd_islands.py --preflight` lists the missing files).

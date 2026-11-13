@@ -1,0 +1,370 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8" /></head>
+<body>
+<template>
+  <style>
+    #root { position: absolute; inset: 0; overflow: hidden; background: var(--night); }
+    .e6-scene { position: absolute; inset: 0; overflow: hidden; visibility: hidden; opacity: 0; }
+    .e6-shot { position: absolute; inset: 0; overflow: hidden; transform-origin: 50% 50%; }
+    .e6-night { background: var(--night); }
+    .e6-paper { background: var(--paper); }
+    .e6-abs { position: absolute; }
+    .e6-p1, .e6-p2 { position: absolute; inset: 0; background-size: cover; background-position: center; pointer-events: none; filter: grayscale(0.9) brightness(1.03); }
+    .e6-p1 { mix-blend-mode: multiply; opacity: 0.55; }
+    .e6-p2 { mix-blend-mode: multiply; opacity: 0.45; }
+    .e6-cam { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
+    .e6-mk { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; pointer-events: none; }
+    .e6-w { display: inline-block; white-space: pre; opacity: 0; }
+    .e6-ink { color: var(--ink); }
+    .e6-credit { position: absolute; right: 96px; bottom: 30px; font-size: 13px; letter-spacing: 0.08em; color: rgba(238,238,232,0.6); z-index: 6; }
+    .e6-credit.ink { color: rgba(22,26,36,0.6); }
+    .e6-ht { position: absolute; inset: 0; background: url('assets/textures/halftone_01_norm.jpg') 0 0 / 300px auto; mix-blend-mode: overlay; opacity: 0.45; pointer-events: none; }
+
+
+    .e6-ml { position: absolute; white-space: nowrap; }
+    /* sc1 Leland Stanford */
+    #pd13-s1-cam { position: absolute; left: -88px; top: 0; width: 2096px; height: 1080px; transform-origin: 50% 50%; }
+    #pd13-s1-cam img { position: absolute; inset: 0; width: 2096px; height: 1080px; filter: grayscale(1) brightness(0.6) contrast(1.1); }
+    #pd13-s1-scrim { position: absolute; left: 0; right: 0; bottom: 0; height: 620px; background: linear-gradient(180deg, rgba(12,15,21,0), rgba(12,15,21,0.9)); }
+    #pd13-s1-card { position: absolute; left: 1200px; top: 110px; width: 540px; height: 815px; box-shadow: 0 40px 80px rgba(0,0,0,0.75); opacity: 0; overflow: hidden; }
+    #pd13-s1-card img { position: absolute; inset: 0; width: 540px; height: 815px; filter: grayscale(1) contrast(1.08) brightness(1.02); }
+    #pd13-s1-k { position: absolute; left: 100px; top: 668px; font-size: 28px; }
+    #pd13-s1-n { position: absolute; left: 96px; top: 720px; font-size: 150px; }
+    /* sc2 aerial lands */
+    #pd13-s2-cam { width: 3584px; height: 2944px; }
+    #pd13-s2-cam > img { position: absolute; left: 0; top: 0; width: 3584px; height: 2944px; filter: grayscale(0.85) brightness(0.72) contrast(1.1); }
+    #pd13-s2-svg { position: absolute; left: 0; top: 0; width: 3584px; height: 2944px; overflow: visible; }
+    #pd13-s2-scrim { position: absolute; left: 0; top: 0; width: 1100px; height: 1080px; background: linear-gradient(90deg, rgba(12,15,21,0.85), rgba(12,15,21,0)); }
+    #pd13-s2-num { position: absolute; left: 96px; top: 380px; font-size: 250px; color: var(--yellow); }
+    #pd13-s2-ac { position: absolute; left: 104px; top: 620px; font-size: 54px; }
+    /* sc3 25 % of San Francisco */
+    #pd13-s3-sheet { position: absolute; left: 110px; top: 46px; width: 988px; height: 988px; box-shadow: 0 30px 70px rgba(22,26,36,0.4); transform: rotate(-1.2deg); overflow: hidden; background: var(--paper-2); }
+    #pd13-s3-cam { width: 2100px; height: 2100px; transform: scale(0.4705); }
+    #pd13-s3-cam > img { position: absolute; left: 0; top: 0; width: 2100px; height: 2100px; filter: saturate(0.3) contrast(1.05); }
+    #pd13-s3-svg { position: absolute; left: 0; top: 0; width: 2100px; height: 2100px; overflow: visible; }
+    #pd13-s3-pc { position: absolute; left: 1200px; top: 330px; font-size: 280px; color: var(--ink); }
+    #pd13-s3-of { position: absolute; left: 1210px; top: 610px; font-size: 44px; color: var(--ink); line-height: 1.3; }
+    /* sc4 the Founding Grant */
+    #pd13-s4-cam { position: absolute; inset: 0; transform-origin: 600px 620px; }
+    #pd13-s4-page { position: absolute; left: 11px; top: -1138px; width: 2122px; height: 3428px; transform-origin: 0 0; transform: scale(0.6); background: var(--paper); box-shadow: 0 30px 70px rgba(22,26,36,0.35); }
+    #pd13-s4-page img { position: absolute; inset: 0; width: 2122px; height: 3428px; filter: grayscale(1) contrast(1.15) brightness(1.04); mix-blend-mode: multiply; }
+    #pd13-s4-hl { position: absolute; left: 136px; top: 3024px; width: 830px; height: 70px; background: var(--yellow); mix-blend-mode: multiply; transform-origin: 0 50%; opacity: 0.9; }
+    #pd13-s4-veil { position: absolute; left: 0; top: 0; width: 2122px; height: 3010px; background: linear-gradient(180deg, rgba(231,230,223,0.75), rgba(231,230,223,0.55)); opacity: 0; }
+    #pd13-s4-one { position: absolute; left: 1340px; top: 150px; font-size: 40px; background: var(--ink); color: var(--paper); padding: 14px 22px 8px; transform: rotate(-2deg); opacity: 0; white-space: nowrap; }
+    #pd13-s4-doc { position: absolute; left: 1344px; top: 236px; font-size: 20px; color: var(--ink); opacity: 0.75; }
+    #pd13-s4-sell { position: absolute; left: 1340px; top: 330px; font-size: 190px; color: var(--ink); }
+    #pd13-s4-terman { position: absolute; left: 1370px; top: 560px; width: 470px; -webkit-mask-image: linear-gradient(180deg, #000 80%, transparent 100%); mask-image: linear-gradient(180deg, #000 80%, transparent 100%); filter: grayscale(1) contrast(1.08) drop-shadow(0 20px 30px rgba(22,26,36,0.4)); opacity: 0; }
+    #pd13-s4-tn { position: absolute; left: 1400px; top: 930px; font-size: 24px; background: var(--ink); color: var(--paper); padding: 9px 14px 5px; opacity: 0; white-space: nowrap; }
+    /* sc5 the land on the desk: sell ✗ → lease */
+    #pd13-s5-grid { position: absolute; inset: 0; opacity: 0.5;
+      background-image: linear-gradient(rgba(22,26,36,0.16) 2px, transparent 2px), linear-gradient(90deg, rgba(22,26,36,0.16) 2px, transparent 2px), linear-gradient(rgba(22,26,36,0.07) 1px, transparent 1px), linear-gradient(90deg, rgba(22,26,36,0.07) 1px, transparent 1px);
+      background-size: 120px 120px, 120px 120px, 24px 24px, 24px 24px; background-position: 0 -20px, -24px 0, 0 -20px, -24px 0; }
+    #pd13-s5-card { position: absolute; left: 150px; top: 250px; width: 1100px; height: 760px; transform-origin: 50% 50%; transform: rotate(-9deg) skewX(-14deg) scaleY(0.82); box-shadow: 26px 34px 0 rgba(22,26,36,0.16), 0 40px 80px rgba(22,26,36,0.3); overflow: hidden; background: var(--ash-dark); }
+    #pd13-s5-card img { position: absolute; width: 1362px; height: 1119px; filter: grayscale(0.9) brightness(0.8) contrast(1.1); }
+    #pd13-s5-svg { position: absolute; width: 1362px; height: 1119px; overflow: visible; }
+    .e6-ptag { position: absolute; background: var(--paper); color: var(--ink); padding: 18px 30px 10px 44px; white-space: nowrap; box-shadow: 0 12px 26px rgba(22,26,36,0.3); opacity: 0;
+      clip-path: polygon(26px 0, 100% 0, 100% 100%, 26px 100%, 0 50%); }
+    #pd13-s5-lbl { position: absolute; left: 150px; top: 110px; font-size: 26px; color: var(--ink); }
+    /* sc6 ground lease form */
+    #pd13-sc6 { z-index: 3; background: transparent; }
+    #pd13-sc6-shot { background: var(--paper); }
+    #pd13-s6-form { position: absolute; left: 360px; top: 72px; width: 1200px; height: 936px; background: var(--bone); box-shadow: 0 30px 70px rgba(22,26,36,0.35); transform: rotate(-0.8deg); transform-origin: 50% 50%; }
+    #pd13-s6-form .tx2 { position: absolute; inset: 0; background: url('assets/textures/paper_cream_01.jpg') center / cover; mix-blend-mode: multiply; opacity: 0.35; filter: grayscale(1); }
+    #pd13-s6-form .hd { position: absolute; left: 70px; top: 54px; font-size: 80px; color: var(--ink); }
+    #pd13-s6-form .sub { position: absolute; right: 70px; top: 92px; font-size: 20px; color: var(--ink); opacity: 0.7; }
+    #pd13-s6-form .rule { position: absolute; left: 70px; right: 70px; height: 4px; background: var(--ink); }
+    #pd13-s6-form .fld { position: absolute; left: 70px; font-size: 22px; color: var(--ink); opacity: 0.65; }
+    #pd13-s6-n { position: absolute; left: 70px; top: 232px; font-size: 230px; }
+    #pd13-s6-n .label-box { background: var(--ink); color: var(--yellow); }
+    #pd13-s6-y { position: absolute; left: 470px; top: 330px; font-size: 96px; color: var(--ink); }
+    .e6-row { position: absolute; left: 70px; font-size: 54px; color: var(--ink); white-space: nowrap; }
+    #pd13-s6-box { position: absolute; left: 70px; top: 548px; width: 50px; height: 50px; border: 5px solid var(--ink); opacity: 0; }
+    #pd13-flash { position: absolute; inset: 0; background: var(--bone); opacity: 0; pointer-events: none; z-index: 7; }
+    #pd13-grain, #pd13-dust, #pd13-vig { z-index: 8; }
+  </style>
+  <div id="root" data-composition-id="pd13" data-vo-start="1592.7333" data-duration="51.0667" data-width="1920" data-height="1080">
+    <svg id="pd13-defs" width="0" height="0" style="position:absolute"></svg>
+
+    <!-- SC1 · 1592.73–1598.00 · when Stanford was set up by Leland Stanford -->
+    <div class="e6-scene e6-night" id="pd13-sc1"><div class="e6-shot" id="pd13-sc1-shot">
+      <div id="pd13-s1-cam"><img src="assets/c2/derived/c2s01/stanford_quad_c1896_center.jpg" alt="" /></div>
+      <div id="pd13-s1-scrim"></div>
+      <div id="pd13-s1-card"><img src="assets/c2/photos/leland_stanford_watkins_1874.jpg" alt="" /><div class="e6-ht" style="opacity:0.18"></div></div>
+      <div id="pd13-s1-k" class="t-label clean"><span class="e6-w">Stanford University</span></div>
+      <div id="pd13-s1-n" class="t-display halate"><span class="e6-w">Leland </span><span class="e6-w">Stanford</span></div>
+      <div class="e6-credit t-label">Photos: Stanford University Archives · Carleton Watkins, 1874</div>
+    </div></div>
+
+    <!-- SC2 · 1598.00–1601.55 · he gave the university eight thousand acres of land -->
+    <div class="e6-scene e6-night" id="pd13-sc2"><div class="e6-shot" id="pd13-sc2-shot">
+      <div class="e6-cam" id="pd13-s2-cam">
+        <img src="assets/c2/derived/c2s02/aerial_stanford_lands_z16_050.jpg" alt="" />
+        <svg id="pd13-s2-svg" viewBox="0 0 3584 2944"></svg>
+        <div class="e6-ml t-label clean" id="pd13-s2-su" style="font-size:36px">Stanford University</div>
+        <div class="e6-ml t-label clean" id="pd13-s2-pal" style="font-size:30px;color:var(--ash-light)">Palo Alto</div>
+      </div>
+      <div id="pd13-s2-scrim"></div>
+      <div id="pd13-s2-num" class="t-display halate yellow"><span id="pd13-s2-nv">0</span></div>
+      <div id="pd13-s2-ac" class="t-label clean"><span class="e6-w">acres</span></div>
+      <div class="e6-credit t-label">Imagery: Esri, Maxar, Earthstar Geographics · outline approximate</div>
+    </div></div>
+
+    <!-- SC3 · 1601.55–1608.70 · basically like 25 % of San Francisco … part of university property -->
+    <div class="e6-scene e6-paper" id="pd13-sc3"><div class="e6-shot" id="pd13-sc3-shot">
+      <div class="e6-p1" style="background-image:url('assets/textures/paper_cream_02.jpg')"></div>
+      <div class="e6-p2" style="background-image:url('assets/textures/paper_fiber_01.jpg')"></div>
+      <div id="pd13-s3-sheet"><div class="e6-cam" id="pd13-s3-cam">
+        <img src="assets/c2/derived/c2s02/bay_atlas_sf_stanford.jpg" alt="" />
+        <svg id="pd13-s3-svg" viewBox="0 0 2100 2100"></svg>
+        <div class="e6-ml t-label e6-ink" style="left:820px;top:330px;font-size:50px">San Francisco</div>
+        <div class="e6-ml t-label e6-ink" style="left:1420px;top:1560px;font-size:50px">Stanford</div>
+        <div class="e6-ml t-serif-i e6-ink" style="left:1000px;top:900px;font-size:64px;opacity:0.5">San Francisco Bay</div>
+      </div></div>
+      <div id="pd13-s3-pc" class="t-display"><span class="e6-w">25%</span></div>
+      <div id="pd13-s3-of" class="t-label"><span class="e6-w">of San </span><span class="e6-w">Francisco</span></div>
+      <div class="e6-credit ink t-label">Relief: AWS Terrain Tiles / Natural Earth · outlines approximate</div>
+    </div></div>
+
+    <!-- SC4 · 1608.70–1622.90 · one condition: they could never sell the land … how does he get around this -->
+    <div class="e6-scene e6-paper" id="pd13-sc4"><div class="e6-shot" id="pd13-sc4-shot">
+      <div class="e6-p1" style="background-image:url('assets/textures/paper_cream_01.jpg')"></div>
+      <div id="pd13-s4-cam">
+        <div id="pd13-s4-page"><img src="assets/c2/documents/stanford_founding_grant_1885_p11_land_clause.jpg" alt="" /><div id="pd13-s4-veil"></div><div id="pd13-s4-hl"></div></div>
+      </div>
+      <div id="pd13-s4-one" class="t-label"><span class="e6-w">One </span><span class="e6-w">condition</span></div>
+      <div id="pd13-s4-doc" class="t-label">The Founding Grant, 1885</div>
+      <div id="pd13-s4-sell" class="t-display"><span class="e6-w">sell</span></div>
+      <img id="pd13-s4-terman" src="assets/c2/cutouts/terman_1955_cut.png" alt="" />
+      <div id="pd13-s4-tn" class="t-label">Frederick Terman</div>
+      <svg id="pd13-s4-mk" class="e6-mk"></svg>
+      <div class="e6-credit ink t-label">Document: Stanford University, Founding Grant (archive.org)</div>
+    </div></div>
+
+    <!-- SC5 · 1622.90–1634.50 · instead of selling the land … how about I just lease it, for a really long time -->
+    <div class="e6-scene e6-paper" id="pd13-sc5"><div class="e6-shot" id="pd13-sc5-shot">
+      <div class="e6-p1" style="background-image:url('assets/textures/paper_cream_01.jpg')"></div>
+      <div id="pd13-s5-grid"></div>
+      <div class="e6-p2" style="background-image:url('assets/textures/paper_fiber_01.jpg')"></div>
+      <div id="pd13-s5-lbl" class="t-label">Stanford's land · 8,000 acres</div>
+      <div id="pd13-s5-card"><img src="assets/c2/derived/c2s02/aerial_stanford_lands_z16_050.jpg" alt="" /><svg id="pd13-s5-svg" viewBox="0 0 3584 2944"></svg></div>
+      <div class="e6-ptag t-display" id="pd13-s5-sell" style="left:1300px;top:330px;font-size:110px;transform:rotate(-3deg)">Sell</div>
+      <div class="e6-ptag t-display" id="pd13-s5-lease" style="left:1300px;top:610px;font-size:110px;transform:rotate(2deg);background:var(--magenta);color:var(--bone)">Lease</div>
+      <svg id="pd13-s5-mk" class="e6-mk"></svg>
+      <div class="e6-credit ink t-label">Imagery: Esri, Maxar, Earthstar Geographics · outline approximate</div>
+    </div></div>
+
+    <!-- SC6 · 1634.30–1643.80 · 99 years, with an option to renew … not selling, just leasing … the university gets a lot of money -->
+    <div class="e6-scene" id="pd13-sc6"><div class="e6-shot" id="pd13-sc6-shot">
+      <div class="e6-p1" style="background-image:url('assets/textures/paper_cream_02.jpg')"></div>
+      <div class="e6-p2" style="background-image:url('assets/textures/paper_stained_01_hires.jpg')"></div>
+      <div id="pd13-s6-form"><div class="tx2"></div>
+        <div class="hd t-serif">Ground Lease</div><div class="sub t-label">Stanford land</div>
+        <div class="rule" style="top:158px"></div>
+        <div class="fld t-label" style="top:186px">Term</div>
+        <div id="pd13-s6-n" class="t-display"><span class="label-box" id="pd13-s6-nb" style="opacity:0"><span id="pd13-s6-nv">0</span></span></div>
+        <div id="pd13-s6-y" class="t-display"><span class="e6-w">years</span></div>
+        <div class="rule" style="top:510px;height:2px;opacity:0.5"></div>
+        <div id="pd13-s6-box"></div>
+        <div class="e6-row t-serif" id="pd13-s6-opt" style="left:150px;top:540px"><span class="e6-w">option </span><span class="e6-w">to renew</span></div>
+        <div class="rule" style="top:640px;height:2px;opacity:0.5"></div>
+        <div class="fld t-label" style="top:664px">Type</div>
+        <div class="e6-row t-serif" id="pd13-s6-ty" style="top:696px"><span class="e6-w">sale</span><span class="e6-w" style="margin-left:90px">lease</span></div>
+        <div class="rule" style="top:796px;height:2px;opacity:0.5"></div>
+        <div class="fld t-label" style="top:820px">Rent paid to</div>
+        <div class="e6-row t-serif" id="pd13-s6-rent" style="top:850px"><span class="e6-w">Stanford University</span></div>
+        <svg id="pd13-s6-mk" class="e6-mk" style="width:1200px;height:936px" ></svg>
+      </div>
+    </div></div>
+
+    <div id="pd13-flash"></div>
+    <div id="pd13-grain" class="tx tx-grain" style="background-image:url('assets/textures/grain_01_norm.jpg')"></div>
+    <div id="pd13-dust" class="tx tx-dust" style="background-image:url('assets/textures/dust_02.jpg')"></div>
+    <div id="pd13-vig" class="vignette"></div>
+    <audio id="pd13-vo" class="temp-vo" src="vo_pd.mp3" data-start="0" data-duration="51.0667" data-media-start="1592.7333" data-volume="1"></audio>
+  </div>
+  <script>
+  (function () {
+    const SEG = "pd13", START = 1592.7333, DURATION = 51.0667, END = START + DURATION;
+    const T = s => +(s - 1592.7333).toFixed(3);   // TEXT cues (audited): literal master word start − 0.06
+    const S = s => +(s - 1592.7333).toFixed(3);   // STRUCTURAL cues
+    const tl = gsap.timeline({ paused: true });
+    const $ = (id) => document.getElementById(SEG + "-" + id);
+    const NS = "http://www.w3.org/2000/svg";
+    const defs = $("defs"), E = FX.ease, C = (e, d) => FX.choppy(e, d, 12);
+    const cs = getComputedStyle(document.documentElement), V = (n, f) => (cs.getPropertyValue(n) || "").trim() || f;
+    const BONE = V("--bone", "#eeeee8"), INK = V("--ink", "#161a24"), MAG = V("--magenta", "#d1307a"), MAGL = V("--magenta-light", "#f3a6c8"),
+      COP = V("--copper", "#e0882a"), ASH = V("--ash", "#878c96"), ASHL = V("--ash-light", "#c2c5ca"), ASHD = V("--ash-dark", "#343843"), PAPER = V("--paper", "#e7e6df");
+    const W = (id) => $(id).querySelectorAll(".e6-w");
+    const el = (p, tag, at) => { const n = document.createElementNS(NS, tag); for (const k in at) n.setAttribute(k, at[k]); p.appendChild(n); return n; };
+    function gated(a, b, fn) { const on = FX.onFrame; FX.onFrame = (f) => on(FX.gate(S(a) - 0.1, S(b) + 0.1, f)); try { return fn(); } finally { FX.onFrame = on; } }
+    function scene(id, a, b) {
+      if (a <= START) gsap.set($(id), { autoAlpha: 1 });
+      else tl.fromTo($(id), { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.001, immediateRender: false }, S(a));
+      if (b < END) tl.set($(id), { autoAlpha: 0 }, S(b));
+    }
+    function ground(kind, t) {
+      const v = kind === "paper" ? [0.3, 0.12, 0.24] : [1, 0.4, 0.34], els = [$("vig"), $("dust"), $("grain")];
+      if (t <= 0) gsap.set(els, { opacity: (i) => v[i] }); else tl.set(els, { opacity: (i) => v[i] }, t);
+    }
+    const show = (e, t) => tl.fromTo(e, { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, t);
+    const pop = (e, t, o) => { o = o || {}; const d = o.dur || 0.5;
+      tl.fromTo(e, { opacity: 0, y: o.y == null ? 12 : o.y }, { opacity: 1, y: 0, duration: d, ease: C(E.out, d), immediateRender: true }, t); };
+    const at = (cx, cy, k) => ({ x: 960 - cx * k, y: 540 - cy * k, scale: k });
+    let whipN = 0;
+    function whip(a, b, t, o) {
+      o = Object.assign({ dir: 1, vertical: false, flash: false, dur: 0.32 }, o);
+      const k = ++whipN, ba = FX.whipDefs(defs, SEG + "-wa" + k), bb = FX.whipDefs(defs, SEG + "-wb" + k), h = o.dur / 2;
+      tl.set(a, { filter: "url(#" + SEG + "-wa" + k + ")" }, t - h - 0.01); tl.set(a, { filter: "none" }, t + 0.06);
+      tl.set(b, { filter: "url(#" + SEG + "-wb" + k + ")" }, t - 0.001); tl.set(b, { filter: "none" }, t + h + 0.02);
+      FX.whip(tl, a, b, t, { dir: o.dir, vertical: o.vertical, dur: o.dur, blurA: ba, blurB: bb });
+      if (o.flash) tl.fromTo($("flash"), { opacity: 0 }, { opacity: 0.8, duration: 0.08, yoyo: true, repeat: 1, ease: "power2.in", immediateRender: false }, t - 0.08);
+    }
+    function ink(parent, d, t, dur, o) {
+      o = o || {};
+      const p = el(parent, "path", { d: d, fill: "none", stroke: o.color || INK, "stroke-width": o.width || 6, "stroke-linecap": o.cap || "round", "stroke-linejoin": "round" });
+      if (o.filter) p.setAttribute("filter", o.filter);
+      const len = p.getTotalLength() || 1;
+      p.setAttribute("stroke-dasharray", len + " " + len); p.setAttribute("stroke-dashoffset", len);
+      gsap.set(p, { opacity: 0 }); tl.set(p, { opacity: o.opacity == null ? 1 : o.opacity }, t);
+      tl.fromTo(p, { attr: { "stroke-dashoffset": len } }, { attr: { "stroke-dashoffset": 0 }, duration: dur, ease: o.ease || C(E.out, dur), immediateRender: true }, t);
+      return p;
+    }
+    FX.grain($("grain"), 131);
+    FX.dust($("dust"), 132, 2);
+
+
+    // Stanford lands (≈ 8,000 acres) — approximate outline (WGS84), ported from c2s02 (traced by eye, not survey-exact)
+    const LANDS = [[-122.1745, 37.4505], [-122.1640, 37.4400], [-122.1520, 37.4300], [-122.1440, 37.4265], [-122.1330, 37.4185], [-122.1340, 37.4040],
+      [-122.1450, 37.3960], [-122.1620, 37.3900], [-122.1820, 37.3880], [-122.2050, 37.3930], [-122.2280, 37.3990], [-122.2420, 37.4060],
+      [-122.2400, 37.4190], [-122.2220, 37.4260], [-122.2050, 37.4300], [-122.1900, 37.4410], [-122.1800, 37.4480]];
+    const centroid = (pts) => [pts.reduce((a, p) => a + p[0], 0) / pts.length, pts.reduce((a, p) => a + p[1], 0) / pts.length];
+    const poly = (pts) => "M" + pts.map((p) => p[0].toFixed(1) + " " + p[1].toFixed(1)).join(" L") + " Z";
+    const ax = (lon) => (((lon + 180) / 360) * 65536 - 10510) * 128;
+    const ay = (lat) => { const r = (lat * Math.PI) / 180; return (((1 - Math.log(Math.tan(r) + 1 / Math.cos(r)) / Math.PI) / 2) * 65536 - 25401) * 128; };
+    const LA = LANDS.map((p) => [ax(p[0]), ay(p[1])]), LAC = centroid(LA);
+
+    /* =================== SC1 · 1592.73–1598.00 · when Stanford was set up by Leland Stanford =================== */
+    scene("sc1", START, 1598.0);
+    ground("night", 0);
+    (function () {
+      tl.fromTo($("s1-cam"), { scale: 1.12, x: 60 }, { scale: 1.0, x: -40, duration: 5.4, ease: E.cam, immediateRender: true }, 0);
+      const card = $("s1-card");
+      tl.fromTo(card, { opacity: 0, x: 260, rotation: 7 }, { opacity: 1, x: 0, rotation: 2, duration: 0.9, ease: C(E.out, 0.9), immediateRender: true }, S(1596.70));
+    })();
+    pop(W("s1-k")[0], T(1595.78), { dur: 0.5 });
+    [T(1596.82), T(1597.38)].forEach((c, i) => pop(W("s1-n")[i], c, { dur: 0.5, y: 20 }));
+    whip($("sc1-shot"), $("sc2-shot"), S(1598.0), { dir: 1 });
+
+    /* =================== SC2 · 1598.00–1601.55 · he gave the university 8,000 acres of land =================== */
+    scene("sc2", 1598.0, 1601.55);
+    (function () {
+      const cam = $("s2-cam"), svg = $("s2-svg"), Q = [ax(-122.1697), ay(37.4275)];
+      tl.fromTo(cam, at(LAC[0] - 340, LAC[1], 0.62), Object.assign(at(LAC[0] - 400, LAC[1], 0.545), { duration: 3.6, ease: E.cam, immediateRender: false }), S(1598.0));
+      const fill = el(svg, "path", { d: poly(LA), fill: MAG, opacity: 0 });
+      const out = ink(svg, poly(LA), S(1598.10), 1.1, { color: MAGL, width: 10, ease: C(E.inOut, 1.1) });
+      tl.to(fill, { opacity: 0.3, duration: 0.5, ease: C(E.out, 0.5) }, S(1599.0));
+      Object.assign($("s2-su").style, { left: Q[0] - 190 + "px", top: Q[1] - 20 + "px" });
+      Object.assign($("s2-pal").style, { left: ax(-122.150) + "px", top: ay(37.449) + "px" });
+    })();
+    tl.fromTo($("s2-num"), { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, T(1599.32));
+    FX.text.count(tl, $("s2-nv"), T(1599.32), 0, 8000, 0.6);
+    show(W("s2-ac")[0], T(1600.04));
+
+    whip($("sc2-shot"), $("sc3-shot"), S(1601.55), { dir: -1, flash: true });
+
+    /* =================== SC3 · 1601.55–1608.70 · 25 % of San Francisco =================== */
+    scene("sc3", 1601.55, 1608.70);
+    ground("paper", S(1601.55));
+    (function () {
+      const bd = (lon, lat) => [((lon + 123) * 4118.4 - 1700) * 0.75, ((38.25 - lat) * 5200 - 2000) * 0.75];
+      const SF = [[-122.5110, 37.7700], [-122.5130, 37.7880], [-122.4780, 37.8110], [-122.4480, 37.8070], [-122.4100, 37.8100], [-122.3880, 37.7950],
+        [-122.3870, 37.7700], [-122.3820, 37.7500], [-122.3650, 37.7330], [-122.3780, 37.7080], [-122.5020, 37.7080], [-122.5070, 37.7350]].map((p) => bd(p[0], p[1]));
+      const LP = LANDS.map((p) => bd(p[0], p[1])), LC = centroid(LP), svg = $("s3-svg");
+      const xs = SF.map((p) => p[0]), ys = SF.map((p) => p[1]);
+      const bx0 = Math.min(...xs), bx1 = Math.max(...xs), by0 = Math.min(...ys), by1 = Math.max(...ys), mx = (bx0 + bx1) / 2, my = (by0 + by1) / 2;
+      tl.to($("sc3-shot"), { scale: 1.03, duration: 5.6, ease: "none" }, S(1602.95));
+      el(svg, "path", { d: poly(LP), fill: "none", stroke: INK, "stroke-width": 7, "stroke-dasharray": "20 12" });
+      el(svg, "path", { d: poly(SF), fill: PAPER, "fill-opacity": 0.55, stroke: INK, "stroke-width": 7 });
+      ink(svg, "M" + mx + " " + (by0 - 14) + " L" + (mx + 3) + " " + (by1 + 14), S(1601.70), 0.35, { width: 5 });
+      ink(svg, "M" + (bx0 - 14) + " " + my + " L" + (bx1 + 14) + " " + (my - 3), S(1601.80), 0.35, { width: 5 });
+      svg.insertAdjacentHTML("beforeend", '<defs><clipPath id="pd13-s3-q"><rect x="' + mx + '" y="' + my + '" width="' + (bx1 - mx + 30) + '" height="' + (by1 - my + 30) + '"/></clipPath></defs>');
+      const q = el(svg, "g", { opacity: 0 }), qi = el(q, "g", { "clip-path": "url(#pd13-s3-q)" }), qm = { x: 0, y: 0 };
+      el(qi, "path", { d: poly(SF), fill: MAG, opacity: 0.8, stroke: INK, "stroke-width": 5 });
+      tl.to(q, { attr: { opacity: 1 }, duration: 0.4, ease: C(E.out, 0.4) }, S(1601.90));
+      const qc = [(mx + bx1) / 2, (my + by1) / 2], setQ = () => qi.setAttribute("transform", "translate(" + qm.x.toFixed(1) + " " + qm.y.toFixed(1) + ")");
+      tl.to(qm, { x: LC[0] - qc[0], y: LC[1] - qc[1], duration: 1.5, ease: C(E.inOut, 1.5), onUpdate: setQ }, S(1604.20));   // "he gives Stanford 25 % of San Francisco"
+    })();
+    pop(W("s3-pc")[0], T(1601.77), { dur: 0.5, y: 20 });
+    [T(1602.49), T(1602.89)].forEach((c, i) => show(W("s3-of")[i], c));
+
+    /* =================== SC4 · 1608.70–1622.90 · one condition — never sell the land; how does he get around this =================== */
+    scene("sc4", 1608.70, 1622.90);
+    tl.fromTo($("sc4-shot"), { scale: 1.25 }, { scale: 1, duration: 0.5, ease: C(E.out, 0.5), immediateRender: false }, S(1608.70));   // hard cut, lands on a punch-out
+    (function () {
+      const cam = $("s4-cam");
+      tl.fromTo(cam, { scale: 1.0 }, { scale: 1.08, duration: 14.2, ease: "none", immediateRender: false }, S(1608.70));
+      tl.fromTo($("s4-veil"), { opacity: 0 }, { opacity: 1, duration: 0.5, ease: C(E.out, 0.5), immediateRender: true }, S(1610.20));
+      tl.fromTo($("s4-hl"), { scaleX: 0 }, { scaleX: 1, duration: 0.8, ease: C("power1.inOut", 0.8), immediateRender: true }, S(1610.45));
+      const mk = $("s4-mk"), f = gated(1608.7, 1622.9, () => FX.markupDefs(mk, SEG + "-mk4", { boil: 4 }));
+      // "sell" is struck out
+      const st = FX.markup.pen(tl, mk, S(1611.20), { points: [[1320, 448], [1500, 430], [1700, 440]], dur: 0.4, width: 14, color: MAG, filter: f, seed: 41 });
+      if (st) { gsap.set(st, { opacity: 0 }); tl.set(st, { opacity: 1 }, S(1611.20)); }
+      // "he" = Terman
+      tl.fromTo($("s4-terman"), { opacity: 0, x: 200 }, { opacity: 1, x: 0, duration: 1.0, ease: C(E.out, 1.0), immediateRender: true }, S(1615.40));
+      tl.fromTo($("s4-tn"), { opacity: 0 }, { opacity: 1, duration: 0.3, immediateRender: true }, S(1616.0));
+      // "how does he get around this" — a pen line goes around the clause
+      const ar = FX.markup.arrow(tl, mk, S(1621.30), { x1: 1380, y1: 830, x2: 630, y2: 716, bend: 170, head: 34, dur: 0.9, color: MAG, width: 7, filter: f });
+      gsap.set(ar, { opacity: 0 }); tl.set(ar, { opacity: 1 }, S(1621.30));
+    })();
+    tl.set($("s4-one"), { opacity: 1 }, T(1609.45));
+    [T(1609.45), T(1609.61)].forEach((c, i) => show(W("s4-one")[i], c));
+    pop(W("s4-sell")[0], T(1610.73), { dur: 0.4 });
+    whip($("sc4-shot"), $("sc5-shot"), S(1622.90), { dir: 1, vertical: true });
+
+    /* =================== SC5 · 1622.90–1634.50 · instead of selling the land … lease it, for a really long time =================== */
+    scene("sc5", 1622.90, 1634.80);
+    (function () {
+      const svg = $("s5-svg"), card = $("s5-card");
+      [svg, card.querySelector("img")].forEach((n) => { n.style.left = (550 - LAC[0] * 0.38) + "px"; n.style.top = (380 - LAC[1] * 0.38) + "px"; });
+      tl.fromTo($("sc5-shot"), { scale: 1 }, { scale: 1.05, duration: 11.6, ease: "none", immediateRender: false, transformOrigin: "800px 600px" }, S(1623.1));
+      el(svg, "path", { d: poly(LA), fill: MAG, opacity: 0.28 });
+      ink(svg, poly(LA), S(1623.30), 2.2, { color: MAGL, width: 14, ease: C(E.inOut, 2.2) });
+      const mk = $("s5-mk"), f = gated(1622.9, 1634.8, () => FX.markupDefs(mk, SEG + "-mk5", { boil: 4 }));
+      const x = FX.markup.cross(tl, mk, S(1629.40), { x: 1500, y: 405, s: 90, dur: 0.2, color: INK, width: 13, filter: f });
+      gsap.set(x, { opacity: 0 }); tl.set(x, { opacity: 1 }, S(1629.40));
+      tl.to($("s5-sell"), { opacity: 0.45, duration: 0.5 }, S(1631.9));
+      tl.to(x, { opacity: 0.5, duration: 0.5 }, S(1631.9));
+    })();
+    pop($("s5-sell"), T(1628.03), { dur: 0.45, y: 16 });
+    pop($("s5-lease"), T(1632.11), { dur: 0.45, y: 16 });
+
+    /* =================== SC6 · 1634.30–1643.80 · 99 years, option to renew; not selling, leasing; the university gets the money =================== */
+    scene("sc6", 1634.30, END + 1);
+    tl.fromTo($("sc6-shot"), { x: 1920 }, { x: 0, duration: 0.5, ease: C(E.out, 0.5), immediateRender: false }, S(1634.30));   // the form slides in over the desk
+    (function () {
+      const form = $("s6-form"), mk = $("s6-mk"), f = gated(1634.3, END, () => FX.markupDefs(mk, SEG + "-mk6", { boil: 4 }));
+      mk.setAttribute("viewBox", "0 0 1200 936");
+      tl.fromTo(form, { scale: 1.0 }, { scale: 1.04, duration: 9.2, ease: "none", immediateRender: false }, S(1634.6));
+      tl.set($("s6-nb"), { opacity: 1 }, T(1635.15));
+      FX.text.count(tl, $("s6-nv"), T(1635.15), 0, 99, 0.55);
+      const tick = FX.markup.pen(tl, mk, S(1637.30), { points: [[78, 572], [96, 592], [136, 540]], dur: 0.3, width: 9, color: MAG, filter: f, seed: 62, jitter: 2 });
+      if (tick) { gsap.set(tick, { opacity: 0 }); tl.set(tick, { opacity: 1 }, S(1637.30)); }
+      const st = FX.markup.pen(tl, mk, S(1639.95), { points: [[60, 738], [120, 728], [190, 736]], dur: 0.3, width: 9, color: INK, filter: f, seed: 63, jitter: 3 });
+      if (st) { gsap.set(st, { opacity: 0 }); tl.set(st, { opacity: 1 }, S(1639.95)); }
+      const c = FX.markup.circle(tl, mk, S(1641.0), { cx: 330, cy: 734, rx: 96, ry: 48, rot: -4, dur: 0.6, color: MAG, width: 6, filter: f, seed: 9 });
+      gsap.set(c, { opacity: 0 }); tl.set(c, { opacity: 1 }, S(1641.0));
+    })();
+    show(W("s6-y")[0], T(1635.87));
+    show($("s6-box"), T(1636.75));
+    [T(1636.75), T(1637.15)].forEach((c, i) => show(W("s6-opt")[i], c));
+    [T(1639.55), T(1640.83)].forEach((c, i) => show(W("s6-ty")[i], c));
+    pop(W("s6-rent")[0], T(1642.27), { dur: 0.4 });
+
+    FX.mount(tl, DURATION);
+    window.__timelines = window.__timelines || {}; window.__timelines[SEG] = tl;
+  })();
+  </script>
+</template>
+</body>
+</html>

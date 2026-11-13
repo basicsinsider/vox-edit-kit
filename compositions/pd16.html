@@ -1,0 +1,957 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8" /></head>
+<body>
+<template>
+  <style>
+    #root { position: absolute; inset: 0; overflow: hidden; background: var(--night); }
+    .d16-scene { position: absolute; inset: 0; overflow: hidden; visibility: hidden; opacity: 0; }
+    .d16-shot { position: absolute; inset: 0; overflow: hidden; transform-origin: 50% 50%; background: var(--night); }
+    .d16-shot.paper { background: var(--paper); }
+    .d16-cam { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 960px 540px; }
+    .d16-a { position: absolute; }
+    .d16-p1 { position: absolute; inset: -60px; background-size: cover; background-position: center; pointer-events: none; filter: grayscale(1); mix-blend-mode: multiply; opacity: 0.72; }
+    .d16-gridn { position: absolute; inset: -500px; pointer-events: none; opacity: 0.5;
+      background-image: linear-gradient(rgba(135,140,150,0.16) 1px, transparent 1px), linear-gradient(90deg, rgba(135,140,150,0.16) 1px, transparent 1px);
+      background-size: 60px 60px; }
+    .d16-glow { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(ellipse 70% 65% at 50% 48%, rgba(52,56,67,0.55) 0%, rgba(12,15,21,0) 75%); }
+    .d16-svg { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; pointer-events: none; }
+    .d16-h { opacity: 0; }
+    .d16-credit { position: absolute; right: 30px; bottom: 20px; font-size: 13px; letter-spacing: 0.08em; color: rgba(238,238,232,0.62); z-index: 5; }
+    .d16-credit.ink { color: rgba(22,26,36,0.62); }
+    .d16-hal { color: var(--bone); filter: blur(0.4px);
+      text-shadow: 0 0 1px rgba(255,240,248,0.9), 0 0 7px rgba(209,48,122,0.5), 0 0 20px rgba(209,48,122,0.3), 0 0 46px rgba(122,23,70,0.28); }
+    .d16-print { position: absolute; background: var(--bone); padding: 14px; box-shadow: 0 26px 54px rgba(0,0,0,0.5); }
+    .d16-print img { display: block; width: 100%; height: 100%; object-fit: cover; filter: grayscale(1) contrast(1.08) brightness(0.98); }
+    .d16-print .ht { position: absolute; inset: 14px; background: url('assets/textures/halftone_01_norm.jpg') center / 520px auto; mix-blend-mode: overlay; opacity: 0.26; }
+    .d16-print.onpaper { background: #f6f6f1; box-shadow: 0 18px 36px rgba(22,26,36,0.28); }
+    .d16-tag { position: absolute; font-size: 26px; padding: 12px 18px 8px; background: var(--paper-2); color: var(--ink); box-shadow: 0 8px 16px rgba(0,0,0,0.3); white-space: nowrap; }
+    .d16-dot { position: absolute; left: 0; top: 0; border-radius: 50%; opacity: 0; }
+    .d16-tile { position: absolute; width: 300px; height: 340px; border: 6px solid var(--magenta); background: rgba(12,15,21,0.92); box-shadow: 0 24px 48px rgba(0,0,0,0.45); }
+    .d16-tile .sy { position: absolute; left: 0; width: 100%; top: 62px; text-align: center; font-size: 190px; color: var(--magenta-light); }
+    .d16-tile .nm { position: absolute; left: 0; width: 100%; bottom: 26px; text-align: center; font-size: 24px; color: var(--bone); }
+    .d16-tile.ge { border-color: var(--copper); }
+    .d16-tile.ge .sy { color: var(--copper-light); }
+    .d16-tile.onpaper { background: var(--ink); box-shadow: 0 16px 30px rgba(22,26,36,0.3); }
+    .d16-med { position: absolute; border-radius: 50%; overflow: hidden; box-shadow: 0 24px 50px rgba(0,0,0,0.5); }
+    .d16-med img { position: absolute; left: 0; top: 0; width: 100%; height: 100%; object-fit: cover; filter: grayscale(1) contrast(1.1); }
+    .d16-ring { position: absolute; inset: 0; border-radius: 50%; border: 8px solid var(--copper); }
+    #pd16-flash { position: absolute; inset: 0; background: var(--bone); opacity: 0; pointer-events: none; z-index: 7; }
+    #pd16-grain, #pd16-dust, #pd16-vig { z-index: 8; }
+
+    /* s01 */
+    #pd16-s01-ttl { left: 1206px; top: 226px; font-size: 92px; }
+    #pd16-s01-rule { left: 1210px; top: 428px; width: 150px; height: 8px; background: var(--magenta); transform-origin: 0 50%; }
+    #pd16-s01-sub { left: 1210px; top: 458px; font-size: 26px; color: var(--ash-light); }
+    /* s02 */
+    #pd16-s02-ph { left: 110px; top: 96px; width: 646px; height: 912px; filter: grayscale(1) contrast(1.06);
+      -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 9%, #000 88%, transparent 100%); mask-image: linear-gradient(90deg, transparent 0, #000 9%, #000 88%, transparent 100%); }
+    #pd16-s02-bar { left: 806px; top: 150px; width: 12px; height: 176px; background: var(--magenta); transform-origin: 50% 0; }
+    #pd16-s02-name { left: 846px; top: 146px; font-size: 128px; white-space: nowrap; }
+    #pd16-s02-role { left: 850px; top: 292px; font-size: 26px; color: var(--ash-light); }
+    #pd16-s02-disc { left: 1010px; top: 404px; width: 560px; height: 560px; border-radius: 50%; overflow: hidden; background: var(--paper);
+      box-shadow: 0 0 0 8px var(--magenta), 0 30px 60px rgba(0,0,0,0.55); }
+    #pd16-s02-disc .tx2 { position: absolute; inset: 0; background: url('assets/textures/paper_graph_01.jpg') center / cover; filter: grayscale(1); mix-blend-mode: multiply; opacity: 0.7; }
+    #pd16-s02-tag { left: 1478px; top: 396px; transform: rotate(3deg); }
+    /* s03 / s05 */
+    .d16-wcard { position: absolute; left: 330px; top: 140px; width: 1260px; height: 800px; background: var(--night); border-radius: 6px; box-shadow: 0 30px 60px rgba(22,26,36,0.4), inset 0 0 0 2px rgba(135,140,150,0.35); overflow: hidden; }
+    .d16-wback { position: absolute; left: 380px; top: 120px; width: 1260px; height: 800px; background: var(--paper-2); box-shadow: 0 14px 30px rgba(22,26,36,0.22); transform: rotate(2.4deg); }
+    .d16-bar { position: absolute; background: var(--magenta-light); box-shadow: 0 0 18px 6px rgba(243,166,200,0.55); opacity: 0; }
+    #pd16-s03-tag { left: 1420px; top: 190px; transform: rotate(-4deg); font-size: 30px; }
+    /* s04 */
+    .d16-l4 { position: absolute; top: 120px; font-size: 28px; }
+    /* s06 */
+    #pd16-s06-ttl { left: 1236px; top: 316px; font-size: 100px; }
+    #pd16-s06-ic { left: 1250px; top: 540px; font-size: 150px; background: var(--magenta); color: var(--bone); padding: 14px 30px 0; line-height: 1; }
+    /* s07 */
+    .d16-dev { position: absolute; width: 300px; height: 300px; background: var(--paper-2); box-shadow: 0 12px 24px rgba(22,26,36,0.2); }
+    .d16-dev svg { position: absolute; left: 60px; top: 50px; width: 180px; height: 180px; overflow: visible; }
+    .d16-badge { position: absolute; right: 18px; bottom: 18px; width: 70px; height: 56px; background: var(--magenta); color: var(--bone); font-size: 24px; text-align: center; line-height: 60px; letter-spacing: 0.08em; opacity: 0; }
+    /* s08 */
+    #pd16-s08-cam { position: absolute; left: 0; top: 0; width: 2400px; height: 1284px; transform-origin: 0 0; }
+    #pd16-s08-map { position: absolute; left: 0; top: 0; width: 2400px; height: 1284px; }
+    #pd16-s08-svg { position: absolute; left: 0; top: 0; width: 2400px; height: 1284px; overflow: visible; }
+    #pd16-s08-tx { left: 974px; top: 700px; width: 520px; text-align: center; font-size: 100px; letter-spacing: 0.04em; }
+    #pd16-s08-dl { left: 1407px; top: 609px; font-size: 24px; }
+    #pd16-s08-card { left: 1440px; top: 392px; width: 250px; height: 178px; padding: 8px; }
+    #pd16-s08-pin { left: 1371px; top: 610px; width: 24px; height: 24px; border-radius: 50%; background: var(--bone); box-shadow: 0 0 0 5px rgba(12,15,21,0.7); }
+    /* s09 */
+    #pd16-s09-med { left: 120px; top: 290px; width: 520px; height: 520px; }
+    #pd16-s09-heat { position: absolute; inset: 0; border-radius: 50%; background: radial-gradient(circle, rgba(246,201,138,0.9) 0%, rgba(224,136,42,0.75) 45%, rgba(138,79,15,0.5) 100%); mix-blend-mode: overlay; opacity: 0; }
+    #pd16-s09-heat2 { position: absolute; left: 60px; top: 230px; width: 640px; height: 640px; border-radius: 50%; background: radial-gradient(circle, rgba(224,136,42,0.55) 30%, rgba(224,136,42,0) 68%); opacity: 0; }
+    #pd16-s09-tile { left: 560px; top: 214px; width: 190px; height: 216px; border-width: 5px; }
+    #pd16-s09-tile .sy { top: 44px; font-size: 118px; }
+    #pd16-s09-ttl { left: 820px; top: 250px; font-size: 124px; }
+    #pd16-s09-tag { left: 1250px; top: 520px; width: 420px; height: 250px; transform-origin: 30px 125px; }
+    #pd16-s09-usd { position: absolute; left: 120px; top: 62px; width: 280px; text-align: center; font-size: 110px; color: var(--copper-light); }
+    /* s10 */
+    .d16-c10 { position: absolute; width: 620px; height: 520px; background: #f6f6f1; box-shadow: 0 18px 36px rgba(22,26,36,0.25); }
+    .d16-l10 { position: absolute; left: 0; width: 620px; top: 540px; text-align: center; font-size: 28px; color: var(--ink); }
+    /* s11 */
+    #pd16-s11-ttl { left: 1010px; top: 392px; font-size: 80px; }
+    /* s12 */
+    #pd16-s12-b1 { left: 150px; top: 130px; width: 330px; height: 790px; background: var(--magenta); }
+    #pd16-s12-b2 { left: 560px; top: 660px; width: 300px; height: 300px; background: var(--ash); }
+    #pd16-s12-ph { left: 210px; top: 210px; width: 600px; height: 640px; overflow: hidden; box-shadow: 0 22px 44px rgba(22,26,36,0.35); }
+    #pd16-s12-ph img { position: absolute; left: -110px; top: -40px; width: 800px; height: 800px; filter: grayscale(1) contrast(1.1); }
+    #pd16-s12-name { left: 940px; top: 196px; font-size: 136px; color: var(--ink); }
+    #pd16-s12-role { left: 946px; top: 462px; font-size: 26px; color: var(--ink-soft); }
+    #pd16-s12-ic { left: 1260px; top: 560px; width: 320px; height: 320px; transform: rotate(3deg); }
+    #pd16-s12-ic img { filter: grayscale(1) contrast(1.1); }
+    #pd16-s12-icl { left: 946px; top: 760px; font-size: 26px; color: var(--ink); }
+    /* s13 */
+    .d16-col { position: absolute; top: 0; width: 760px; height: 1080px; }
+    .d16-col .hd { position: absolute; left: 0; width: 760px; top: 452px; text-align: center; font-size: 84px; }
+    .d16-col .sb { position: absolute; left: 0; width: 760px; top: 548px; text-align: center; font-size: 24px; color: var(--ash-light); }
+    .d16-row { position: absolute; left: 170px; width: 560px; font-size: 34px; color: var(--bone); white-space: nowrap; }
+    .d16-row i { display: inline-block; width: 30px; height: 30px; margin-right: 22px; vertical-align: -3px; }
+    #pd16-s13-div { left: 959px; top: 150px; width: 0; height: 780px; border-left: 3px dashed rgba(135,140,150,0.6); }
+    /* s14 */
+    .d16-wf { position: absolute; width: 150px; height: 150px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #d6d8dc 0%, var(--ash-light) 40%, var(--ash) 100%); box-shadow: 0 8px 14px rgba(22,26,36,0.28), inset 0 0 0 3px rgba(22,26,36,0.25); opacity: 0; }
+    .d16-ic14 { position: absolute; width: 96px; height: 96px; opacity: 0; overflow: visible; }
+    /* s15 */
+    .d16-chip { position: absolute; font-size: 26px; padding: 12px 18px 8px; white-space: nowrap; }
+    #pd16-s15-big { left: 0; width: 1920px; top: 440px; text-align: center; font-size: 156px; white-space: nowrap; }
+    #pd16-s15-big span { display: inline-block; }
+    /* s16 */
+    .d16-st { left: 460px; width: 1000px; top: 500px; text-align: center; font-size: 76px; color: var(--ink); }
+    #pd16-s16-lab { left: 660px; width: 600px; top: 150px; text-align: center; font-size: 26px; color: var(--ink); }
+    /* s17 */
+    .d16-dop { position: absolute; width: 56px; height: 56px; border-radius: 50%; background: var(--magenta); box-shadow: 0 0 0 4px var(--magenta-light), 0 0 26px rgba(209,48,122,0.7); opacity: 0; }
+    #pd16-s17-track { left: 810px; top: 912px; width: 300px; height: 44px; border-radius: 22px; background: var(--ash-dark); box-shadow: inset 0 0 0 2px var(--ash); }
+    #pd16-s17-knob { left: 814px; top: 916px; width: 36px; height: 36px; border-radius: 50%; background: var(--bone); }
+    .d16-sw { position: absolute; top: 918px; font-size: 28px; color: var(--ash-light); }
+    /* s18 */
+    .d16-blk { position: absolute; top: 380px; width: 300px; height: 210px; }
+    .d16-l18 { position: absolute; top: 640px; width: 420px; text-align: center; font-size: 60px; color: var(--ink); }
+    /* s19 */
+    #pd16-s19-img { position: absolute; left: -60px; top: -140px; width: 2040px; height: 1360px; object-fit: cover; filter: grayscale(1) contrast(1.15) brightness(0.5); }
+    #pd16-s19-tint { position: absolute; inset: 0; background: var(--ash-dark); mix-blend-mode: color; opacity: 0.6; }
+    #pd16-s19-scrim { position: absolute; inset: 0; background: radial-gradient(ellipse 62% 50% at 50% 50%, rgba(12,15,21,0.72) 0%, rgba(12,15,21,0.2) 100%); }
+    .d16-big { position: absolute; left: 0; width: 1920px; text-align: center; font-size: 240px; letter-spacing: 0; }
+  </style>
+
+  <div id="root" data-composition-id="pd16" data-vo-start="1925.6333" data-duration="117.1667" data-width="1920" data-height="1080">
+    <audio id="pd16-vo" class="temp-vo" src="vo_pd.mp3" data-start="0" data-duration="117.1667" data-media-start="1925.6333" data-volume="1"></audio>
+    <svg id="pd16-defs" width="0" height="0" style="position:absolute"></svg>
+
+    <!-- s01 · 1925.63–1931.45 · "Texas Instrument was one of the biggest technological companies at the time. And at Texas Instrument, this guy named" -->
+    <div class="d16-scene" id="pd16-s01"><div class="d16-shot" id="pd16-s01-shot">
+      <div class="d16-gridn"></div><div class="d16-glow"></div>
+      <div class="d16-cam" id="pd16-s01-cam">
+        <div class="d16-print" id="pd16-s01-ph" style="left:96px; top:150px; width:1040px; height:780px"><img src="assets/podcast/pd16/ti_engineers_dallas_kilby.jpg" alt=""><div class="ht"></div></div>
+        <div class="d16-print" id="pd16-s01-ad" style="left:1420px; top:560px; width:330px; height:330px; padding:10px"><img src="assets/podcast/pd16/ti_transistor_ad_1954_crop.jpg" alt=""></div>
+        <div class="d16-a t-display d16-hal d16-h" id="pd16-s01-ttl">TEXAS<br>INSTRUMENTS</div>
+        <div class="d16-a d16-h" id="pd16-s01-rule"></div>
+        <div class="d16-a t-label d16-h" id="pd16-s01-sub">Dallas, Texas</div>
+        <svg class="d16-svg" id="pd16-s01-svg" viewBox="0 0 1920 1080"></svg>
+      </div>
+      <div class="d16-credit t-label">Photos: Texas Instruments · Wikimedia Commons CC BY-SA 4.0 · Computer History Museum</div>
+    </div></div>
+
+    <!-- s02 · 1931.45–1936.70 · "Jack Kilby. He figures out how to take care of this hand wiring thing that you had to do." -->
+    <div class="d16-scene" id="pd16-s02"><div class="d16-shot" id="pd16-s02-shot">
+      <div class="d16-gridn"></div>
+      <div class="d16-cam" id="pd16-s02-cam">
+        <img class="d16-a" id="pd16-s02-ph" src="assets/podcast/pd16/kilby_notebook_ti.jpg" alt="">
+        <div class="d16-a" id="pd16-s02-bar"></div>
+        <div class="d16-a t-display d16-hal d16-h" id="pd16-s02-name">JACK KILBY</div>
+        <div class="d16-a t-label d16-h" id="pd16-s02-role">Texas Instruments</div>
+        <div class="d16-a" id="pd16-s02-disc"><div class="tx2"></div><svg id="pd16-s02-wsvg" viewBox="0 0 560 560" style="position:absolute; left:0; top:0; width:560px; height:560px"></svg></div>
+        <div class="d16-tag t-label d16-h" id="pd16-s02-tag">Hand wiring</div>
+      </div>
+      <div class="d16-credit t-label">Photo: Texas Instruments / Computer History Museum</div>
+    </div></div>
+
+    <!-- s03 · 1936.70–1942.30 · "He invents this thing where you can basically print all the wiring you need on like a wafer." -->
+    <div class="d16-scene" id="pd16-s03"><div class="d16-shot paper" id="pd16-s03-shot">
+      <div class="d16-p1" style="background-image:url('assets/textures/paper_graph_01_hires.jpg')"></div>
+      <div class="d16-cam" id="pd16-s03-cam">
+        <div class="d16-wback"></div>
+        <div class="d16-a" id="pd16-s03-rot" style="left:0; top:0; width:1920px; height:1080px; transform:rotate(-1deg)">
+          <div class="d16-wcard"><div class="d16-gridn"></div></div>
+          <div class="d16-a" id="pd16-s03-wf" style="left:0; top:0; width:1920px; height:1080px"><svg class="d16-svg" id="pd16-s03-wsvg" viewBox="0 0 1920 1080"></svg></div>
+          <div class="d16-bar" id="pd16-s03-bar" style="left:600px; top:226px; width:720px; height:10px"></div>
+        </div>
+        <svg class="d16-svg" id="pd16-s03-svg" viewBox="0 0 1920 1080"></svg>
+        <div class="d16-tag t-label d16-h" id="pd16-s03-tag">Wafer</div>
+      </div>
+    </div></div>
+
+    <!-- s04 · 1942.30–1947.50 · "And so that way you can connect all the transistors by just printing wires between them or something like that." -->
+    <div class="d16-scene" id="pd16-s04"><div class="d16-shot" id="pd16-s04-shot">
+      <div class="d16-cam" id="pd16-s04-cam">
+        <div class="d16-gridn"></div><div class="d16-glow"></div>
+        <svg class="d16-svg" id="pd16-s04-svg" viewBox="0 0 1920 1080"></svg>
+        <div class="d16-bar" id="pd16-s04-bar" style="left:200px; top:230px; width:10px; height:700px"></div>
+        <div class="d16-l4 t-label d16-h" id="pd16-s04-l1" style="left:96px; color:var(--ash-light)">Transistors</div>
+        <div class="d16-l4 t-label d16-h" id="pd16-s04-l2" style="right:96px; color:var(--magenta-light)">Printed wires</div>
+      </div>
+    </div></div>
+
+    <!-- s05 · 1947.50–1951.35 · "And this way you don't have to do it individually every time. it's just easier to repeat." -->
+    <div class="d16-scene" id="pd16-s05"><div class="d16-shot paper" id="pd16-s05-shot">
+      <div class="d16-p1" style="background-image:url('assets/textures/paper_graph_01_hires.jpg'); transform:scaleX(-1)"></div>
+      <div class="d16-cam" id="pd16-s05-cam">
+        <div class="d16-wback" style="transform:rotate(-2deg); left:300px"></div>
+        <div class="d16-wcard"><div class="d16-gridn"></div></div>
+        <svg class="d16-svg" id="pd16-s05-wsvg" viewBox="0 0 1920 1080"></svg>
+      </div>
+    </div></div>
+
+    <!-- s06 · 1951.35–1955.90 · "And this is something called, I think, integrated circuit. That's what it's called. IC." -->
+    <div class="d16-scene" id="pd16-s06"><div class="d16-shot" id="pd16-s06-shot">
+      <div class="d16-glow"></div>
+      <div class="d16-cam" id="pd16-s06-cam">
+        <div class="d16-print" id="pd16-s06-ph" style="left:96px; top:170px; width:1080px; height:734px; transform:rotate(-1.2deg)"><img src="assets/podcast/pd16/kilby_first_ic_1958_ti.jpg" alt="" style="filter:saturate(0.28) contrast(1.08)"><div class="ht"></div></div>
+        <div class="d16-a t-display d16-hal d16-h" id="pd16-s06-ttl">INTEGRATED<br>CIRCUIT</div>
+        <div class="d16-a t-display d16-h" id="pd16-s06-ic">IC</div>
+      </div>
+      <div class="d16-credit t-label">Photo: Texas Instruments / Computer History Museum</div>
+    </div></div>
+
+    <!-- s07 · 1955.90–1961.85 · "Very big deal. I think everything around us has IC. Anyone who has seen our videos, you would not be able to watch it if it wasn't" -->
+    <div class="d16-scene" id="pd16-s07"><div class="d16-shot paper" id="pd16-s07-shot">
+      <div class="d16-p1" style="background-image:url('assets/textures/paper_graph_01_hires.jpg'); opacity:0.6"></div>
+      <div class="d16-cam" id="pd16-s07-cam"></div>
+    </div></div>
+
+    <!-- s08 · 1961.85–1966.25 · "for this invention. And it happened in Texas. But one issue with this solution was he used" -->
+    <div class="d16-scene" id="pd16-s08"><div class="d16-shot" id="pd16-s08-shot" style="background:#10141b">
+      <div id="pd16-s08-cam">
+        <img id="pd16-s08-map" src="assets/podcast/pd16/us_night_texas_crop.jpg" alt="">
+        <svg id="pd16-s08-svg" viewBox="0 0 2400 1284"></svg>
+        <div class="d16-a t-display clean d16-h" id="pd16-s08-tx">TEXAS</div>
+        <div class="d16-a" id="pd16-s08-pin"></div>
+        <div class="d16-a t-label clean" id="pd16-s08-dl">Dallas</div>
+        <div class="d16-print" id="pd16-s08-card"><img src="assets/podcast/pd16/kilby_first_ic_1958_ti.jpg" alt="" style="filter:saturate(0.28) contrast(1.08)"></div>
+      </div>
+      <div class="d16-credit t-label">Map: Natural Earth · Photo: Texas Instruments</div>
+    </div></div>
+
+    <!-- s09 · 1966.25–1978.15 · "germanium, which wasn't the best solution because there were a lot of issues, one of them it also heated up very quickly,
+         and I think it was like kind of an expensive element, right? To do what chips ended up doing in the future." -->
+    <div class="d16-scene" id="pd16-s09"><div class="d16-shot" id="pd16-s09-shot">
+      <div class="d16-glow"></div>
+      <div class="d16-cam" id="pd16-s09-cam">
+        <div class="d16-a" id="pd16-s09-heat2"></div>
+        <div class="d16-med" id="pd16-s09-med"><img src="assets/podcast/pd16/germanium_crystals.jpg" alt=""><div id="pd16-s09-heat"></div><div class="d16-ring"></div></div>
+        <div class="d16-tile ge" id="pd16-s09-tile"><div class="sy t-display">Ge</div></div>
+        <div class="d16-a t-display d16-hal d16-h" id="pd16-s09-ttl">GERMANIUM</div>
+        <svg class="d16-svg" id="pd16-s09-svg" viewBox="0 0 1920 1080"></svg>
+        <div class="d16-a d16-h" id="pd16-s09-tag"><svg viewBox="0 0 420 250" style="position:absolute; left:0; top:0; width:420px; height:250px; overflow:visible">
+          <path d="M70 20 H400 V230 H70 L8 125 Z" fill="#161a24" stroke="#f6c98a" stroke-width="5" stroke-linejoin="round"/><circle cx="58" cy="125" r="13" fill="none" stroke="#f6c98a" stroke-width="5"/></svg>
+          <div class="t-display" id="pd16-s09-usd">$$$</div></div>
+      </div>
+      <div class="d16-credit t-label">Photo: Gibe, Wikimedia Commons CC BY 3.0</div>
+    </div></div>
+
+    <!-- s10 · 1978.15–1983.30 · "So even though he solved the problem of not having to wire everything, one of the solutions wasn't the best." -->
+    <div class="d16-scene" id="pd16-s10"><div class="d16-shot paper" id="pd16-s10-shot">
+      <div class="d16-p1" style="background-image:url('assets/textures/paper_stained_01_hires.jpg'); opacity:0.5"></div>
+      <div class="d16-cam" id="pd16-s10-cam">
+        <div class="d16-c10" id="pd16-s10-c1" style="left:240px; top:220px; transform:rotate(-2deg)"><svg id="pd16-s10-wsvg" viewBox="0 0 560 560" style="position:absolute; left:70px; top:20px; width:480px; height:480px"></svg><div class="d16-l10 t-label">Wiring</div></div>
+        <div class="d16-c10" id="pd16-s10-c2" style="left:1060px; top:220px; transform:rotate(2deg)">
+          <div class="d16-med" style="left:60px; top:90px; width:340px; height:340px; box-shadow:none"><img src="assets/podcast/pd16/germanium_crystals.jpg" alt=""><div class="d16-ring"></div></div>
+          <div class="d16-tile ge" style="left:360px; top:60px; width:190px; height:216px; border-width:5px"><div class="sy t-display" style="top:44px; font-size:118px">Ge</div></div>
+          <div class="d16-l10 t-label">Germanium</div></div>
+        <svg class="d16-svg" id="pd16-s10-svg" viewBox="0 0 1920 1080"></svg>
+      </div>
+      <div class="d16-credit ink t-label">Photo: Gibe, Wikimedia Commons CC BY 3.0</div>
+    </div></div>
+
+    <!-- s11 · 1983.30–1988.30 · "Then we come back to the Fairchild Semiconductor company that we talked about earlier. And at this company we have" -->
+    <div class="d16-scene" id="pd16-s11"><div class="d16-shot" id="pd16-s11-shot">
+      <div class="d16-gridn"></div><div class="d16-glow"></div>
+      <div class="d16-cam" id="pd16-s11-cam">
+        <div class="d16-print" id="pd16-s11-ph" style="left:96px; top:160px; width:860px; height:750px; transform:rotate(-1deg)"><img src="assets/podcast/pd16/fairchild_eight_1960_crop.jpg" alt=""><div class="ht"></div></div>
+        <div class="d16-a t-display d16-hal d16-h" id="pd16-s11-ttl">FAIRCHILD<br>SEMICONDUCTOR</div>
+        <svg class="d16-svg" id="pd16-s11-svg" viewBox="0 0 1920 1080"></svg>
+      </div>
+      <div class="d16-credit t-label">Photo: Wayne Miller / Magnum Photos</div>
+    </div></div>
+
+    <!-- s12 · 1988.30–1994.85 · "Robert Noyce, and he basically innovates a better way of doing the same thing, better way of creating integrated circuit." -->
+    <div class="d16-scene" id="pd16-s12"><div class="d16-shot paper" id="pd16-s12-shot">
+      <div class="d16-p1" style="background-image:url('assets/textures/paper_cream_01.jpg'); opacity:0.6"></div>
+      <div class="d16-cam" id="pd16-s12-cam">
+        <div class="d16-a" id="pd16-s12-b1"></div><div class="d16-a" id="pd16-s12-b2"></div>
+        <div class="d16-a" id="pd16-s12-ph"><img src="assets/c2/photos/chm_noyce_fairchild_gm_1962.jpg" alt=""></div>
+        <div class="d16-a t-display d16-h" id="pd16-s12-name">ROBERT<br>NOYCE</div>
+        <div class="d16-a t-label d16-h" id="pd16-s12-role">Fairchild Semiconductor</div>
+        <div class="d16-print onpaper" id="pd16-s12-ic"><img src="assets/c2/photos/chm_micrologic_dime_life_1961.jpg" alt=""></div>
+        <div class="d16-a t-label d16-h" id="pd16-s12-icl">Integrated circuit</div>
+        <svg class="d16-svg" id="pd16-s12-svg" viewBox="0 0 1920 1080"></svg>
+      </div>
+      <div class="d16-credit ink t-label">Photos: Computer History Museum · Fairchild / LIFE</div>
+    </div></div>
+
+    <!-- s13 · 1994.85–2002.50 · "And he uses silicon instead of germanium. And silicon is a better product, one reason being it's cheaper, it's easier to get than anything else." -->
+    <div class="d16-scene" id="pd16-s13"><div class="d16-shot" id="pd16-s13-shot">
+      <div class="d16-gridn"></div><div class="d16-glow"></div>
+      <div class="d16-cam" id="pd16-s13-cam">
+        <div class="d16-a" id="pd16-s13-div"></div>
+        <div class="d16-col" id="pd16-s13-ge" style="left:140px">
+          <div class="d16-med" style="left:240px; top:130px; width:280px; height:280px"><img src="assets/podcast/pd16/germanium_crystals.jpg" alt=""><div class="d16-ring"></div></div>
+          <div class="hd t-display d16-h" id="pd16-s13-geh" style="color:var(--copper-light)">GERMANIUM</div>
+          <div class="sb t-label d16-h" id="pd16-s13-ges">Kilby · Texas Instruments</div>
+          <div class="d16-row t-label d16-h" id="pd16-s13-ger1" style="top:650px"><i></i>Heated up quickly</div>
+          <div class="d16-row t-label d16-h" id="pd16-s13-ger2" style="top:730px"><i></i>Expensive</div>
+        </div>
+        <div class="d16-col" id="pd16-s13-si" style="left:1020px">
+          <div class="d16-med" id="pd16-s13-sim" style="left:240px; top:130px; width:280px; height:280px; background:var(--ash-dark)"><img src="assets/c2/objects/polysilicon_rod.jpg" alt=""><div class="d16-ring" style="border-color:var(--magenta)"></div></div>
+          <div class="hd t-display d16-h" id="pd16-s13-sih" style="color:var(--magenta-light)">SILICON</div>
+          <div class="sb t-label d16-h" id="pd16-s13-sis">Noyce · Fairchild</div>
+          <div class="d16-row t-label d16-h" id="pd16-s13-sir1" style="top:650px"><i></i>Cheaper</div>
+          <div class="d16-row t-label d16-h" id="pd16-s13-sir2" style="top:730px"><i></i>Easier to get</div>
+        </div>
+        <svg class="d16-svg" id="pd16-s13-svg" viewBox="0 0 1920 1080"></svg>
+      </div>
+      <div class="d16-credit t-label">Photos: Wikimedia Commons (Gibe CC BY 3.0 · Warut Roonguthai CC BY-SA 3.0)</div>
+    </div></div>
+
+    <!-- s14 · 2002.50–2008.10 · "So you can just get a lot of it if you want to build a lot of iPhones or computers or anything else you can imagine." -->
+    <div class="d16-scene" id="pd16-s14"><div class="d16-shot paper" id="pd16-s14-shot">
+      <div class="d16-p1" style="background-image:url('assets/textures/paper_graph_01_hires.jpg'); opacity:0.6; transform:scaleY(-1)"></div>
+      <div class="d16-cam" id="pd16-s14-cam">
+        <div class="d16-med" id="pd16-s14-med" style="left:110px; top:400px; width:280px; height:280px; background:var(--ash-dark); box-shadow:0 14px 28px rgba(22,26,36,0.3)"><img src="assets/c2/objects/polysilicon_rod.jpg" alt=""><div class="d16-ring" style="border-color:var(--magenta)"></div></div>
+        <svg class="d16-svg" id="pd16-s14-svg" viewBox="0 0 1920 1080"></svg>
+      </div>
+      <div class="d16-credit ink t-label">Photo: Warut Roonguthai, Wikimedia Commons CC BY-SA 3.0</div>
+    </div></div>
+
+    <!-- s15 · 2008.10–2017.65 · "On top of that, silicon is a semiconductor, but germanium, I think is a semiconductor too, but silicon is just a better
+         semiconductor, which I didn't know what semiconductor means, but basically it's in the name." -->
+    <div class="d16-scene" id="pd16-s15"><div class="d16-shot" id="pd16-s15-shot">
+      <div class="d16-gridn"></div><div class="d16-glow"></div>
+      <div class="d16-cam" id="pd16-s15-cam">
+        <div class="d16-a" id="pd16-s15-siw" style="left:500px; top:250px; width:300px; height:480px">
+          <div class="d16-tile" style="left:0; top:0"><div class="sy t-display">Si</div><div class="nm t-label">Silicon</div></div>
+          <div class="d16-chip t-label d16-h" id="pd16-s15-sic" style="left:8px; top:380px; background:var(--magenta); color:var(--bone)">Semiconductor</div>
+        </div>
+        <div class="d16-a" id="pd16-s15-gew" style="left:1120px; top:250px; width:300px; height:480px">
+          <div class="d16-tile ge" style="left:0; top:0"><div class="sy t-display">Ge</div><div class="nm t-label">Germanium</div></div>
+          <div class="d16-chip t-label d16-h" id="pd16-s15-gec" style="left:8px; top:380px; background:var(--copper-dark); color:var(--bone)">Semiconductor</div>
+        </div>
+        <div class="d16-a t-display d16-hal d16-h" id="pd16-s15-big"><span id="pd16-s15-b1">SEMI</span><span id="pd16-s15-b2">CONDUCTOR</span></div>
+        <svg class="d16-svg" id="pd16-s15-svg" viewBox="0 0 1920 1080"></svg>
+      </div>
+    </div></div>
+
+    <!-- s16 · 2017.65–2023.00 · "These semiconductors they can conduct electricity sometimes, and sometimes they don't conduct electricity." -->
+    <div class="d16-scene" id="pd16-s16"><div class="d16-shot paper" id="pd16-s16-shot">
+      <div class="d16-p1" style="background-image:url('assets/textures/paper_graph_01_hires.jpg'); opacity:0.7"></div>
+      <div class="d16-cam" id="pd16-s16-cam">
+        <svg class="d16-svg" id="pd16-s16-svg" viewBox="0 0 1920 1080"></svg>
+        <div class="d16-a" id="pd16-s16-dots" style="left:0; top:0"></div>
+        <svg class="d16-svg" id="pd16-s16-svg2" viewBox="0 0 1920 1080"></svg>
+        <div class="d16-tile onpaper" id="pd16-s16-tile" style="left:860px; top:226px; width:200px; height:208px; border-width:5px"><div class="sy t-display" style="top:40px; font-size:120px">Si</div></div>
+        <div class="d16-a t-label" id="pd16-s16-lab">Semiconductor</div>
+        <div class="d16-a t-display d16-h d16-st" id="pd16-s16-st">CONDUCTS</div>
+        <div class="d16-a t-display d16-h d16-st" id="pd16-s16-st2">DOESN’T CONDUCT</div>
+      </div>
+    </div></div>
+
+    <!-- s17 · 2023.00–2033.30 · "And you can kinda control when it conducts electricity when it doesn't, if you just play with like the chemical properties
+         of the product. So sometimes you can stop the electricity flow and sometimes you can turn it on by doing that." -->
+    <div class="d16-scene" id="pd16-s17"><div class="d16-shot" id="pd16-s17-shot">
+      <div class="d16-glow"></div>
+      <div class="d16-cam" id="pd16-s17-cam">
+        <svg class="d16-svg" id="pd16-s17-svg" viewBox="0 0 1920 1080"></svg>
+        <div class="d16-a" id="pd16-s17-dots" style="left:0; top:0"></div>
+        <div class="d16-a" id="pd16-s17-dops" style="left:0; top:0"></div>
+        <div class="d16-a" id="pd16-s17-track"></div><div class="d16-a" id="pd16-s17-knob"></div>
+        <div class="d16-sw t-label" style="left:716px">Off</div><div class="d16-sw t-label" style="left:1134px">On</div>
+      </div>
+    </div></div>
+
+    <!-- s18 · 2033.30–2038.80 · "So it performs like a metal and like a non-metal. So it's right in the middle. Like it's like the perfect middle spot." -->
+    <div class="d16-scene" id="pd16-s18"><div class="d16-shot paper" id="pd16-s18-shot">
+      <div class="d16-p1" style="background-image:url('assets/textures/paper_cream_01.jpg'); opacity:0.6"></div>
+      <div class="d16-cam" id="pd16-s18-cam">
+        <svg class="d16-svg" id="pd16-s18-svg" viewBox="0 0 1920 1080"></svg>
+        <div class="d16-a" id="pd16-s18-dots" style="left:0; top:0"></div>
+        <div class="d16-blk d16-h" id="pd16-s18-m" style="left:250px; background:linear-gradient(135deg, #c2c5ca 0%, #878c96 45%, #c2c5ca 60%, #6d727c 100%); box-shadow:0 14px 26px rgba(22,26,36,0.28), inset 0 0 0 4px var(--ink)"></div>
+        <div class="d16-blk d16-h" id="pd16-s18-n" style="left:1370px; background:repeating-linear-gradient(45deg, #f6f6f1 0 16px, var(--paper-2) 16px 32px); box-shadow:0 14px 26px rgba(22,26,36,0.2), inset 0 0 0 4px var(--ink)"></div>
+        <div class="d16-tile onpaper d16-h" id="pd16-s18-si" style="left:835px; top:360px; width:250px; height:250px; border-width:6px"><div class="sy t-display" style="top:48px; font-size:150px">Si</div></div>
+        <div class="d16-l18 t-display d16-h" id="pd16-s18-lm" style="left:190px">METAL</div>
+        <div class="d16-l18 t-display d16-h" id="pd16-s18-ln" style="left:1310px">NON-METAL</div>
+        <svg class="d16-svg" id="pd16-s18-svg2" viewBox="0 0 1920 1080"></svg>
+      </div>
+    </div></div>
+
+    <!-- s19 · 2038.80–2042.80 · "And that's why silicon becomes such a big deal, and that's why it's called Silicon Valley." -->
+    <div class="d16-scene" id="pd16-s19"><div class="d16-shot" id="pd16-s19-shot">
+      <div class="d16-cam" id="pd16-s19-cam"><img id="pd16-s19-img" src="assets/c1/places/silicon_valley_aerial_2013.jpg" alt=""><div id="pd16-s19-tint"></div></div>
+      <div id="pd16-s19-scrim"></div>
+      <div class="d16-big t-display d16-hal d16-h" id="pd16-s19-w1" style="top:300px">SILICON</div>
+      <div class="d16-big t-display d16-hal d16-h" id="pd16-s19-w2" style="top:530px">VALLEY</div>
+      <div class="d16-credit t-label">Photo: Patrick Nouhailler, CC BY-SA 2.0</div>
+    </div></div>
+
+    <div id="pd16-flash"></div>
+    <div id="pd16-grain" class="tx tx-grain" style="background-image:url('assets/textures/grain_01_norm.jpg')"></div>
+    <div id="pd16-dust" class="tx tx-dust" style="background-image:url('assets/textures/dust_02.jpg')"></div>
+    <div id="pd16-vig" class="vignette"></div>
+  </div>
+
+  <script>
+  (function () {
+    const SEG = "pd16", START = 1925.6333, SEG_END = 2042.8, DURATION = 117.1667;
+    const T = (s) => +(s - START).toFixed(3);   // TEXT cues (audited): literal master word start − 0.06
+    const S = T;                                 // STRUCTURAL cues (cuts, camera, objects)
+    const tl = gsap.timeline({ paused: true });
+    const $ = (id) => document.getElementById(SEG + "-" + id);
+    const NS = "http://www.w3.org/2000/svg";
+    const defs = $("defs");
+    const E = FX.ease;
+    const C = (e, d) => FX.choppy(e, d, 12);
+    // palette_podcast.css tokens (SVG attributes cannot read CSS variables)
+    const INK = "#161a24", BONE = "#eeeee8", MAG = "#d1307a", MAGL = "#f3a6c8", MAGD = "#7a1746", COP = "#e0882a", COPL = "#f6c98a", COPD = "#8a4f0f",
+      ASH = "#878c96", ASHL = "#c2c5ca", ASHD = "#343843", PAPER2 = "#d6d5cc";
+    const TX = {"paths":{"alabama":"M 1867 804 L 1878 802 L 1879 800 L 1881 803 L 1880 805 L 1878 804 L 1874 804 L 1870 805 L 1867 804 Z M 1874 464 L 1874 463 L 1905 464 L 1918 464 L 1951 465 L 1970 465 L 1977 465 L 2010 465 L 2023 465 L 2026 485 L 2030 512 L 2034 535 L 2037 553 L 2040 572 L 2047 616 L 2048 618 L 2048 620 L 2050 623 L 2051 632 L 2053 636 L 2057 641 L 2057 646 L 2059 648 L 2057 655 L 2061 657 L 2063 659 L 2061 662 L 2059 662 L 2059 664 L 2057 665 L 2054 668 L 2055 672 L 2054 677 L 2053 682 L 2050 687 L 2049 689 L 2050 697 L 2050 700 L 2054 705 L 2055 712 L 2053 716 L 2054 718 L 2052 723 L 2052 728 L 2051 729 L 2052 733 L 2051 736 L 2055 742 L 2057 745 L 2057 749 L 2043 749 L 2029 749 L 2006 750 L 1970 750 L 1943 749 L 1909 749 L 1909 752 L 1907 759 L 1907 760 L 1912 765 L 1912 768 L 1920 772 L 1920 777 L 1917 783 L 1918 786 L 1922 789 L 1918 792 L 1917 797 L 1915 797 L 1916 799 L 1913 801 L 1905 803 L 1897 804 L 1886 804 L 1889 802 L 1892 804 L 1899 802 L 1900 800 L 1897 797 L 1895 794 L 1891 791 L 1890 786 L 1892 781 L 1891 777 L 1889 774 L 1885 772 L 1882 775 L 1883 777 L 1881 780 L 1881 783 L 1880 785 L 1880 794 L 1878 798 L 1875 798 L 1875 796 L 1871 793 L 1868 794 L 1867 793 L 1863 794 L 1863 781 L 1862 759 L 1861 733 L 1859 685 L 1861 668 L 1865 625 L 1866 612 L 1873 543 L 1874 533 L 1878 494 L 1880 472 L 1877 469 L 1874 464 Z","arizona":"M 359 627 L 360 625 L 365 626 L 370 624 L 370 621 L 374 618 L 374 613 L 371 604 L 367 604 L 366 605 L 363 603 L 363 604 L 360 600 L 361 596 L 362 587 L 359 585 L 360 581 L 359 578 L 363 577 L 368 569 L 370 567 L 369 564 L 370 558 L 372 557 L 372 552 L 370 548 L 370 545 L 372 545 L 371 542 L 370 540 L 375 533 L 375 529 L 377 527 L 382 526 L 384 523 L 387 522 L 387 521 L 393 517 L 392 514 L 390 510 L 387 509 L 381 503 L 378 503 L 379 499 L 373 484 L 369 481 L 367 476 L 364 473 L 364 464 L 365 458 L 363 457 L 368 454 L 368 450 L 366 439 L 365 435 L 362 432 L 361 428 L 363 426 L 363 420 L 361 417 L 361 415 L 360 413 L 361 410 L 360 406 L 360 403 L 362 401 L 360 400 L 358 394 L 359 391 L 357 386 L 362 384 L 364 382 L 365 383 L 368 382 L 371 382 L 372 383 L 376 382 L 379 382 L 383 387 L 382 388 L 387 392 L 392 391 L 396 380 L 398 379 L 398 365 L 397 348 L 397 321 L 438 321 L 484 321 L 548 321 L 568 321 L 601 321 L 602 321 L 650 321 L 683 321 L 683 425 L 683 439 L 683 441 L 683 498 L 683 535 L 683 544 L 683 551 L 683 726 L 670 725 L 629 725 L 603 726 L 567 726 L 494 696 L 450 680 L 429 672 L 354 643 L 355 639 L 354 638 L 354 634 L 356 633 L 359 627 Z","colorado":"M 683 36 L 733 36 L 764 36 L 831 36 L 845 36 L 873 36 L 923 36 L 924 36 L 969 36 L 1027 36 L 1054 36 L 1083 36 L 1083 107 L 1083 130 L 1083 157 L 1083 169 L 1083 247 L 1084 255 L 1084 322 L 1046 322 L 1041 321 L 1029 321 L 987 321 L 952 322 L 915 322 L 908 322 L 846 322 L 808 322 L 807 321 L 776 321 L 729 321 L 683 321 L 683 286 L 684 283 L 684 238 L 683 230 L 683 199 L 683 185 L 683 72 L 683 69 L 683 36 Z","florida":"M 2300 1187 L 2303 1184 L 2304 1186 L 2301 1188 L 2300 1187 Z M 2294 1191 L 2296 1189 L 2298 1189 L 2297 1191 L 2294 1191 Z M 2279 1198 L 2289 1193 L 2291 1194 L 2281 1199 L 2279 1198 Z M 2239 1208 L 2243 1201 L 2247 1199 L 2252 1196 L 2253 1195 L 2260 1191 L 2268 1195 L 2269 1198 L 2272 1200 L 2271 1201 L 2263 1204 L 2262 1202 L 2257 1203 L 2256 1204 L 2247 1209 L 2239 1210 L 2239 1208 Z M 2228 1210 L 2236 1208 L 2234 1211 L 2230 1212 L 2228 1211 L 2228 1210 Z M 2219 1208 L 2220 1206 L 2223 1207 L 2222 1209 L 2219 1208 Z M 2213 1056 L 2214 1057 L 2218 1070 L 2220 1072 L 2223 1073 L 2225 1072 L 2228 1074 L 2225 1076 L 2223 1076 L 2219 1073 L 2217 1071 L 2215 1064 L 2213 1059 L 2213 1056 Z M 2175 1203 L 2178 1203 L 2179 1204 L 2175 1205 L 2175 1203 Z M 2076 835 L 2082 832 L 2082 834 L 2079 836 L 2076 837 L 2076 835 Z M 2057 749 L 2058 754 L 2061 757 L 2061 762 L 2062 767 L 2065 770 L 2093 771 L 2146 775 L 2189 778 L 2216 780 L 2215 781 L 2216 784 L 2217 786 L 2217 790 L 2219 795 L 2226 794 L 2226 790 L 2228 787 L 2228 779 L 2226 774 L 2227 770 L 2226 767 L 2228 766 L 2227 765 L 2230 765 L 2232 762 L 2235 762 L 2236 764 L 2240 764 L 2243 766 L 2245 767 L 2251 769 L 2255 770 L 2258 769 L 2260 770 L 2261 771 L 2260 778 L 2261 783 L 2260 785 L 2262 786 L 2263 792 L 2263 799 L 2268 823 L 2271 831 L 2271 834 L 2276 852 L 2283 870 L 2289 884 L 2302 909 L 2310 921 L 2311 925 L 2313 930 L 2309 934 L 2308 937 L 2308 943 L 2309 951 L 2310 956 L 2314 965 L 2321 982 L 2324 992 L 2325 997 L 2326 999 L 2328 1007 L 2332 1017 L 2334 1021 L 2335 1027 L 2338 1033 L 2341 1049 L 2341 1063 L 2339 1074 L 2338 1087 L 2338 1089 L 2336 1107 L 2336 1117 L 2335 1122 L 2334 1127 L 2334 1130 L 2333 1128 L 2333 1125 L 2332 1124 L 2329 1126 L 2327 1132 L 2326 1133 L 2326 1137 L 2324 1139 L 2324 1144 L 2325 1146 L 2324 1149 L 2325 1150 L 2324 1153 L 2322 1154 L 2322 1157 L 2326 1154 L 2331 1143 L 2333 1140 L 2333 1143 L 2331 1148 L 2324 1161 L 2322 1166 L 2317 1172 L 2310 1180 L 2305 1185 L 2305 1184 L 2312 1176 L 2315 1174 L 2316 1171 L 2317 1166 L 2318 1164 L 2316 1162 L 2315 1163 L 2313 1161 L 2312 1162 L 2305 1164 L 2302 1166 L 2300 1167 L 2297 1164 L 2293 1165 L 2291 1167 L 2286 1168 L 2281 1169 L 2278 1166 L 2276 1161 L 2276 1157 L 2278 1153 L 2279 1153 L 2278 1150 L 2276 1144 L 2274 1141 L 2274 1139 L 2273 1135 L 2270 1133 L 2269 1128 L 2268 1127 L 2266 1128 L 2264 1122 L 2259 1120 L 2259 1119 L 2254 1117 L 2250 1113 L 2248 1114 L 2246 1116 L 2243 1109 L 2240 1100 L 2239 1089 L 2237 1082 L 2236 1079 L 2230 1072 L 2228 1071 L 2228 1068 L 2225 1067 L 2225 1071 L 2222 1071 L 2222 1067 L 2221 1060 L 2218 1057 L 2219 1056 L 2221 1056 L 2223 1058 L 2226 1049 L 2225 1043 L 2223 1042 L 2223 1040 L 2225 1039 L 2224 1038 L 2222 1038 L 2221 1040 L 2219 1041 L 2220 1050 L 2218 1051 L 2214 1051 L 2213 1054 L 2213 1050 L 2212 1047 L 2209 1041 L 2203 1030 L 2201 1024 L 2197 1016 L 2192 1007 L 2189 1003 L 2188 1000 L 2186 996 L 2188 997 L 2188 999 L 2192 997 L 2194 993 L 2196 991 L 2199 985 L 2201 983 L 2201 982 L 2204 980 L 2206 975 L 2205 970 L 2201 969 L 2202 976 L 2197 974 L 2198 972 L 2198 968 L 2197 966 L 2189 961 L 2189 965 L 2187 967 L 2189 969 L 2193 970 L 2195 976 L 2193 979 L 2193 983 L 2192 984 L 2188 985 L 2187 987 L 2189 989 L 2187 991 L 2186 988 L 2186 983 L 2184 978 L 2182 977 L 2180 973 L 2181 962 L 2180 958 L 2179 948 L 2181 948 L 2181 953 L 2182 959 L 2184 959 L 2183 950 L 2185 948 L 2185 945 L 2187 942 L 2187 940 L 2188 937 L 2188 935 L 2190 932 L 2190 926 L 2191 921 L 2190 917 L 2191 914 L 2188 912 L 2189 909 L 2187 903 L 2189 899 L 2185 892 L 2186 890 L 2184 887 L 2182 886 L 2183 884 L 2183 881 L 2181 881 L 2172 879 L 2170 882 L 2168 883 L 2166 876 L 2167 874 L 2164 872 L 2162 871 L 2161 867 L 2160 864 L 2158 861 L 2155 861 L 2154 858 L 2149 855 L 2149 848 L 2148 844 L 2145 844 L 2143 841 L 2141 840 L 2138 837 L 2138 834 L 2136 832 L 2135 829 L 2132 826 L 2127 822 L 2118 818 L 2113 813 L 2111 813 L 2105 815 L 2099 814 L 2099 816 L 2093 820 L 2095 826 L 2095 828 L 2093 828 L 2090 827 L 2089 826 L 2084 827 L 2077 831 L 2064 840 L 2063 839 L 2064 837 L 2062 836 L 2061 838 L 2058 841 L 2050 841 L 2053 844 L 2053 846 L 2057 848 L 2063 844 L 2069 842 L 2074 837 L 2075 837 L 2070 842 L 2064 845 L 2057 849 L 2055 850 L 2052 848 L 2049 847 L 2044 844 L 2041 843 L 2037 845 L 2034 839 L 2033 832 L 2035 829 L 2035 836 L 2036 841 L 2038 843 L 2040 840 L 2040 834 L 2036 828 L 2033 824 L 2029 823 L 2026 821 L 2023 817 L 2017 814 L 2013 809 L 2005 804 L 1995 799 L 1983 795 L 1977 793 L 1964 792 L 1957 793 L 1948 794 L 1934 797 L 1928 798 L 1926 797 L 1913 801 L 1916 799 L 1915 797 L 1917 797 L 1918 792 L 1922 789 L 1918 786 L 1917 783 L 1920 777 L 1920 772 L 1912 768 L 1912 765 L 1907 760 L 1907 759 L 1909 752 L 1909 749 L 1943 749 L 1970 750 L 2006 750 L 2029 749 L 2043 749 L 2057 749 Z","georgia":"M 2023 465 L 2031 465 L 2058 465 L 2096 465 L 2136 465 L 2165 464 L 2165 468 L 2158 472 L 2153 479 L 2153 481 L 2152 483 L 2152 487 L 2158 492 L 2162 492 L 2166 498 L 2171 502 L 2177 501 L 2179 501 L 2180 505 L 2181 509 L 2183 511 L 2184 514 L 2186 517 L 2186 520 L 2188 525 L 2190 526 L 2192 530 L 2195 533 L 2197 539 L 2199 539 L 2203 544 L 2209 547 L 2214 553 L 2215 557 L 2217 559 L 2217 562 L 2220 564 L 2222 564 L 2226 566 L 2230 572 L 2233 574 L 2234 575 L 2232 578 L 2233 580 L 2232 582 L 2238 587 L 2237 589 L 2240 591 L 2242 591 L 2242 594 L 2243 596 L 2249 600 L 2251 600 L 2254 603 L 2258 606 L 2257 610 L 2259 614 L 2260 617 L 2261 618 L 2261 623 L 2262 625 L 2261 628 L 2262 628 L 2263 631 L 2262 634 L 2265 637 L 2270 638 L 2270 640 L 2275 645 L 2274 647 L 2277 653 L 2278 653 L 2279 658 L 2277 660 L 2279 664 L 2278 666 L 2279 670 L 2284 672 L 2286 671 L 2290 675 L 2292 675 L 2295 676 L 2294 680 L 2291 682 L 2289 681 L 2287 684 L 2290 684 L 2286 688 L 2282 687 L 2281 690 L 2284 691 L 2282 694 L 2278 698 L 2275 697 L 2274 698 L 2277 700 L 2278 700 L 2278 705 L 2277 709 L 2271 710 L 2271 711 L 2274 711 L 2276 712 L 2271 720 L 2270 726 L 2271 727 L 2270 729 L 2269 735 L 2266 736 L 2265 739 L 2263 740 L 2263 744 L 2261 748 L 2260 748 L 2258 751 L 2260 752 L 2262 751 L 2263 756 L 2259 766 L 2260 770 L 2258 769 L 2255 770 L 2251 769 L 2245 767 L 2243 766 L 2240 764 L 2236 764 L 2235 762 L 2232 762 L 2230 765 L 2227 765 L 2228 766 L 2226 767 L 2227 770 L 2226 774 L 2228 779 L 2228 787 L 2226 790 L 2226 794 L 2219 795 L 2217 790 L 2217 786 L 2216 784 L 2215 781 L 2216 780 L 2189 778 L 2146 775 L 2093 771 L 2065 770 L 2062 767 L 2061 762 L 2061 757 L 2058 754 L 2057 749 L 2057 745 L 2055 742 L 2051 736 L 2052 733 L 2051 729 L 2052 728 L 2052 723 L 2054 718 L 2053 716 L 2055 712 L 2054 705 L 2050 700 L 2050 697 L 2049 689 L 2050 687 L 2053 682 L 2054 677 L 2055 672 L 2054 668 L 2057 665 L 2059 664 L 2059 662 L 2061 662 L 2063 659 L 2061 657 L 2057 655 L 2059 648 L 2057 646 L 2057 641 L 2053 636 L 2051 632 L 2050 623 L 2048 620 L 2048 618 L 2047 616 L 2040 572 L 2037 553 L 2034 535 L 2030 512 L 2026 485 L 2023 465 Z","indiana":"M 1913 -15 L 1916 -12 L 1919 -13 L 1920 -12 L 1919 -10 L 1924 -9 L 1930 -9 L 1936 -10 L 1947 -15 L 1953 -18 L 1971 -18 L 2012 -18 L 2050 -18 L 2068 -18 L 2068 -14 L 2069 1 L 2069 86 L 2068 112 L 2068 139 L 2067 156 L 2067 171 L 2064 174 L 2063 175 L 2066 179 L 2067 181 L 2065 184 L 2065 186 L 2069 186 L 2070 188 L 2067 191 L 2068 193 L 2064 193 L 2060 195 L 2058 194 L 2051 198 L 2048 201 L 2044 200 L 2042 197 L 2037 198 L 2034 197 L 2031 199 L 2032 207 L 2033 211 L 2030 214 L 2029 217 L 2023 219 L 2019 228 L 2015 231 L 2012 229 L 2010 230 L 2009 234 L 2005 238 L 2006 244 L 2005 248 L 2003 250 L 1998 251 L 1997 253 L 1995 249 L 1990 249 L 1985 246 L 1985 240 L 1980 236 L 1979 236 L 1979 238 L 1982 239 L 1981 240 L 1979 241 L 1977 242 L 1975 241 L 1974 243 L 1975 244 L 1974 246 L 1970 247 L 1970 253 L 1971 255 L 1966 256 L 1966 259 L 1964 261 L 1962 260 L 1963 257 L 1961 256 L 1959 257 L 1957 256 L 1955 251 L 1951 251 L 1948 254 L 1942 256 L 1940 257 L 1939 263 L 1938 265 L 1936 265 L 1934 261 L 1930 261 L 1926 257 L 1921 254 L 1917 254 L 1914 256 L 1911 255 L 1910 252 L 1909 252 L 1907 256 L 1909 260 L 1907 262 L 1904 262 L 1905 259 L 1904 257 L 1895 259 L 1893 256 L 1891 255 L 1889 258 L 1891 263 L 1889 266 L 1884 264 L 1882 264 L 1881 262 L 1884 263 L 1880 257 L 1885 257 L 1882 256 L 1885 252 L 1885 248 L 1884 246 L 1888 245 L 1888 243 L 1886 244 L 1890 239 L 1887 236 L 1886 232 L 1888 233 L 1890 229 L 1891 231 L 1893 228 L 1894 230 L 1897 224 L 1898 223 L 1901 218 L 1901 216 L 1906 213 L 1906 209 L 1908 204 L 1909 202 L 1912 202 L 1915 197 L 1914 194 L 1911 189 L 1914 182 L 1910 179 L 1910 175 L 1907 171 L 1906 167 L 1910 163 L 1908 160 L 1909 156 L 1910 154 L 1913 154 L 1913 132 L 1912 108 L 1913 107 L 1913 89 L 1913 74 L 1913 1 L 1913 -15 Z","kansas":"M 1083 107 L 1136 107 L 1157 107 L 1211 107 L 1267 107 L 1300 107 L 1358 107 L 1411 107 L 1441 107 L 1468 107 L 1472 111 L 1474 112 L 1474 114 L 1477 114 L 1478 116 L 1483 117 L 1485 114 L 1490 115 L 1489 117 L 1491 119 L 1493 120 L 1492 122 L 1490 122 L 1491 124 L 1493 123 L 1493 126 L 1491 127 L 1488 125 L 1487 130 L 1484 131 L 1483 134 L 1483 136 L 1480 138 L 1480 141 L 1483 143 L 1483 145 L 1486 147 L 1489 150 L 1492 150 L 1493 152 L 1491 153 L 1492 158 L 1496 161 L 1495 163 L 1498 164 L 1499 166 L 1502 166 L 1504 165 L 1505 167 L 1509 168 L 1508 170 L 1508 197 L 1508 205 L 1508 247 L 1508 250 L 1508 298 L 1508 304 L 1508 321 L 1457 321 L 1416 321 L 1382 321 L 1337 321 L 1294 321 L 1241 321 L 1220 321 L 1189 321 L 1158 321 L 1115 322 L 1084 322 L 1084 255 L 1083 247 L 1083 169 L 1083 157 L 1083 130 L 1083 107 Z","north_carolina":"M 2587 397 L 2591 398 L 2593 403 L 2594 406 L 2590 405 L 2591 402 L 2587 397 Z M 2571 459 L 2572 455 L 2574 455 L 2584 450 L 2587 449 L 2590 447 L 2592 447 L 2595 445 L 2598 444 L 2599 440 L 2601 424 L 2601 421 L 2600 415 L 2598 409 L 2599 409 L 2601 416 L 2602 421 L 2602 430 L 2599 447 L 2594 448 L 2583 452 L 2575 456 L 2571 459 Z M 2247 351 L 2264 352 L 2276 352 L 2295 353 L 2303 352 L 2326 354 L 2336 354 L 2371 354 L 2428 354 L 2443 354 L 2497 354 L 2519 354 L 2519 353 L 2525 353 L 2550 353 L 2579 353 L 2580 357 L 2583 372 L 2586 382 L 2591 391 L 2598 408 L 2596 407 L 2593 398 L 2590 393 L 2587 392 L 2585 382 L 2582 372 L 2580 371 L 2581 368 L 2580 363 L 2578 361 L 2577 358 L 2572 357 L 2572 355 L 2569 356 L 2570 360 L 2574 363 L 2576 362 L 2576 366 L 2579 375 L 2581 378 L 2581 380 L 2583 385 L 2583 387 L 2579 383 L 2579 381 L 2576 377 L 2576 375 L 2573 374 L 2575 377 L 2574 378 L 2577 381 L 2570 379 L 2564 372 L 2561 371 L 2565 377 L 2567 378 L 2568 382 L 2566 383 L 2561 384 L 2557 379 L 2558 383 L 2560 385 L 2559 386 L 2553 383 L 2550 383 L 2549 381 L 2545 379 L 2550 384 L 2554 385 L 2553 387 L 2548 387 L 2545 391 L 2542 392 L 2539 392 L 2537 390 L 2533 389 L 2530 382 L 2530 378 L 2533 374 L 2532 373 L 2529 377 L 2528 382 L 2530 388 L 2532 393 L 2531 395 L 2533 397 L 2541 397 L 2549 394 L 2551 397 L 2553 396 L 2556 395 L 2561 393 L 2568 393 L 2571 396 L 2571 398 L 2568 403 L 2568 406 L 2569 416 L 2571 416 L 2572 409 L 2573 400 L 2576 397 L 2574 395 L 2577 394 L 2582 395 L 2586 401 L 2587 405 L 2586 408 L 2588 414 L 2586 416 L 2587 419 L 2584 423 L 2581 423 L 2580 422 L 2577 423 L 2576 426 L 2574 426 L 2574 429 L 2572 429 L 2571 434 L 2568 435 L 2567 437 L 2564 439 L 2563 440 L 2558 439 L 2552 439 L 2547 438 L 2546 437 L 2544 437 L 2541 435 L 2538 428 L 2544 427 L 2545 425 L 2540 426 L 2537 426 L 2535 428 L 2537 431 L 2538 436 L 2537 436 L 2531 433 L 2528 434 L 2524 432 L 2518 430 L 2513 427 L 2513 429 L 2516 433 L 2520 433 L 2533 439 L 2543 441 L 2544 443 L 2545 445 L 2543 449 L 2541 452 L 2541 454 L 2539 457 L 2536 460 L 2526 466 L 2515 460 L 2516 464 L 2520 467 L 2528 470 L 2535 465 L 2538 465 L 2543 463 L 2544 459 L 2547 460 L 2547 464 L 2549 466 L 2552 466 L 2551 461 L 2555 463 L 2555 468 L 2552 473 L 2548 474 L 2548 476 L 2546 477 L 2543 482 L 2541 487 L 2538 485 L 2538 480 L 2536 479 L 2536 484 L 2533 485 L 2542 489 L 2546 481 L 2553 474 L 2558 469 L 2568 458 L 2569 460 L 2564 465 L 2558 471 L 2554 474 L 2549 479 L 2546 484 L 2541 491 L 2541 493 L 2540 489 L 2533 486 L 2525 486 L 2512 488 L 2507 490 L 2502 492 L 2496 497 L 2488 502 L 2483 505 L 2475 512 L 2472 516 L 2467 524 L 2464 530 L 2462 537 L 2460 542 L 2459 546 L 2457 545 L 2456 543 L 2452 542 L 2447 541 L 2441 542 L 2435 542 L 2428 545 L 2426 546 L 2407 526 L 2386 503 L 2380 496 L 2362 478 L 2349 478 L 2334 477 L 2297 477 L 2298 468 L 2290 456 L 2283 461 L 2282 459 L 2284 457 L 2283 453 L 2272 452 L 2251 451 L 2212 450 L 2207 451 L 2206 449 L 2204 452 L 2202 451 L 2198 453 L 2197 453 L 2191 455 L 2185 459 L 2184 458 L 2165 464 L 2136 465 L 2096 465 L 2098 448 L 2102 445 L 2103 447 L 2109 446 L 2113 442 L 2112 439 L 2114 437 L 2113 435 L 2117 431 L 2119 430 L 2121 427 L 2124 427 L 2127 424 L 2144 423 L 2146 420 L 2151 418 L 2152 417 L 2154 417 L 2157 414 L 2158 412 L 2161 412 L 2163 409 L 2167 408 L 2172 409 L 2177 402 L 2177 398 L 2179 396 L 2182 398 L 2186 392 L 2193 388 L 2195 390 L 2194 395 L 2197 396 L 2202 392 L 2205 386 L 2209 384 L 2212 383 L 2214 383 L 2216 381 L 2220 382 L 2221 385 L 2224 385 L 2227 383 L 2234 371 L 2238 368 L 2240 367 L 2242 368 L 2245 368 L 2243 364 L 2245 360 L 2246 359 L 2245 354 L 2247 351 Z","oklahoma":"M 1029 321 L 1041 321 L 1046 322 L 1084 322 L 1115 322 L 1158 321 L 1189 321 L 1220 321 L 1241 321 L 1294 321 L 1337 321 L 1382 321 L 1416 321 L 1457 321 L 1508 321 L 1508 357 L 1509 365 L 1510 378 L 1511 385 L 1514 407 L 1515 412 L 1518 436 L 1518 455 L 1517 471 L 1517 486 L 1517 496 L 1516 522 L 1515 561 L 1513 563 L 1509 558 L 1506 559 L 1506 557 L 1502 558 L 1499 553 L 1496 554 L 1493 553 L 1489 549 L 1488 545 L 1483 545 L 1478 540 L 1473 538 L 1471 542 L 1469 544 L 1466 545 L 1459 544 L 1459 543 L 1455 544 L 1454 540 L 1452 540 L 1447 543 L 1443 543 L 1443 546 L 1440 545 L 1438 547 L 1432 543 L 1432 545 L 1426 547 L 1423 546 L 1423 547 L 1420 547 L 1419 552 L 1416 553 L 1412 552 L 1410 557 L 1408 557 L 1408 556 L 1404 551 L 1400 551 L 1398 548 L 1396 548 L 1393 546 L 1395 543 L 1390 542 L 1388 547 L 1385 548 L 1384 545 L 1381 544 L 1380 546 L 1378 545 L 1377 539 L 1376 538 L 1373 540 L 1372 539 L 1372 543 L 1369 547 L 1367 546 L 1369 548 L 1366 550 L 1367 554 L 1364 555 L 1362 555 L 1360 549 L 1362 547 L 1361 543 L 1360 541 L 1358 542 L 1357 545 L 1354 544 L 1353 544 L 1350 548 L 1346 548 L 1345 546 L 1345 542 L 1343 541 L 1340 543 L 1337 541 L 1338 539 L 1334 536 L 1332 536 L 1330 540 L 1324 545 L 1321 546 L 1318 544 L 1316 544 L 1317 540 L 1316 540 L 1318 536 L 1316 535 L 1313 536 L 1310 535 L 1307 529 L 1309 527 L 1308 524 L 1305 527 L 1301 526 L 1298 526 L 1294 524 L 1291 526 L 1291 529 L 1287 531 L 1282 525 L 1277 523 L 1275 526 L 1271 526 L 1268 524 L 1265 524 L 1262 522 L 1258 519 L 1255 521 L 1253 520 L 1250 521 L 1250 520 L 1246 520 L 1245 511 L 1242 508 L 1242 506 L 1239 506 L 1235 503 L 1235 508 L 1232 509 L 1228 506 L 1224 506 L 1223 509 L 1217 508 L 1212 503 L 1204 494 L 1200 495 L 1200 357 L 1175 357 L 1138 357 L 1107 357 L 1072 357 L 1029 357 L 1029 350 L 1029 321 Z","pennsylvania":"M 2313 -34 L 2323 -38 L 2332 -42 L 2334 -44 L 2336 -47 L 2339 -47 L 2339 -46 L 2347 -50 L 2356 -55 L 2356 -35 L 2407 -35 L 2423 -35 L 2457 -35 L 2507 -35 L 2529 -36 L 2551 -35 L 2586 -35 L 2608 -35 L 2611 -32 L 2612 -32 L 2614 -26 L 2617 -26 L 2622 -24 L 2624 -21 L 2623 -19 L 2625 -18 L 2626 -8 L 2624 -7 L 2629 -0 L 2630 2 L 2632 1 L 2635 3 L 2634 5 L 2640 4 L 2640 6 L 2644 5 L 2643 7 L 2646 10 L 2643 11 L 2638 15 L 2635 23 L 2633 26 L 2630 28 L 2630 30 L 2627 33 L 2623 35 L 2621 38 L 2626 45 L 2621 52 L 2619 52 L 2617 58 L 2618 59 L 2617 61 L 2617 66 L 2619 67 L 2623 67 L 2625 69 L 2624 75 L 2625 78 L 2630 79 L 2632 83 L 2636 86 L 2638 89 L 2642 92 L 2645 96 L 2641 99 L 2639 98 L 2637 101 L 2633 102 L 2626 107 L 2624 109 L 2621 110 L 2621 114 L 2616 117 L 2608 119 L 2605 121 L 2600 119 L 2596 119 L 2591 120 L 2588 122 L 2583 127 L 2539 127 L 2515 127 L 2484 127 L 2435 127 L 2373 127 L 2339 127 L 2313 127 L 2313 62 L 2313 -34 Z","texas":"M 1029 357 L 1072 357 L 1107 357 L 1138 357 L 1175 357 L 1200 357 L 1200 495 L 1204 494 L 1212 503 L 1217 508 L 1223 509 L 1224 506 L 1228 506 L 1232 509 L 1235 508 L 1235 503 L 1239 506 L 1242 506 L 1242 508 L 1245 511 L 1246 520 L 1250 520 L 1250 521 L 1253 520 L 1255 521 L 1258 519 L 1262 522 L 1265 524 L 1268 524 L 1271 526 L 1275 526 L 1277 523 L 1282 525 L 1287 531 L 1291 529 L 1291 526 L 1294 524 L 1298 526 L 1301 526 L 1305 527 L 1308 524 L 1309 527 L 1307 529 L 1310 535 L 1313 536 L 1316 535 L 1318 536 L 1316 540 L 1317 540 L 1316 544 L 1318 544 L 1321 546 L 1324 545 L 1330 540 L 1332 536 L 1334 536 L 1338 539 L 1337 541 L 1340 543 L 1343 541 L 1345 542 L 1345 546 L 1346 548 L 1350 548 L 1353 544 L 1354 544 L 1357 545 L 1358 542 L 1360 541 L 1361 543 L 1362 547 L 1360 549 L 1362 555 L 1364 555 L 1367 554 L 1366 550 L 1369 548 L 1367 546 L 1369 547 L 1372 543 L 1372 539 L 1373 540 L 1376 538 L 1377 539 L 1378 545 L 1380 546 L 1381 544 L 1384 545 L 1385 548 L 1388 547 L 1390 542 L 1395 543 L 1393 546 L 1396 548 L 1398 548 L 1400 551 L 1404 551 L 1408 556 L 1408 557 L 1410 557 L 1412 552 L 1416 553 L 1419 552 L 1420 547 L 1423 547 L 1423 546 L 1426 547 L 1432 545 L 1432 543 L 1438 547 L 1440 545 L 1443 546 L 1443 543 L 1447 543 L 1452 540 L 1454 540 L 1455 544 L 1459 543 L 1459 544 L 1466 545 L 1469 544 L 1471 542 L 1473 538 L 1478 540 L 1483 545 L 1488 545 L 1489 549 L 1493 553 L 1496 554 L 1499 553 L 1502 558 L 1506 557 L 1506 559 L 1509 558 L 1513 563 L 1515 561 L 1517 561 L 1517 564 L 1519 565 L 1521 565 L 1521 567 L 1523 568 L 1524 566 L 1525 567 L 1526 565 L 1530 567 L 1532 564 L 1535 565 L 1536 567 L 1537 566 L 1540 567 L 1541 568 L 1541 605 L 1541 678 L 1542 679 L 1545 684 L 1548 686 L 1550 691 L 1553 694 L 1553 696 L 1554 699 L 1553 702 L 1554 705 L 1552 707 L 1553 710 L 1555 712 L 1558 712 L 1558 714 L 1557 716 L 1560 718 L 1560 720 L 1562 721 L 1562 724 L 1561 727 L 1563 730 L 1565 730 L 1566 737 L 1570 736 L 1569 742 L 1570 744 L 1571 748 L 1568 749 L 1568 751 L 1570 754 L 1568 756 L 1568 758 L 1569 762 L 1567 764 L 1565 768 L 1564 772 L 1562 774 L 1561 778 L 1558 780 L 1558 782 L 1559 784 L 1560 789 L 1558 792 L 1556 797 L 1560 800 L 1560 803 L 1559 806 L 1561 810 L 1558 815 L 1560 816 L 1558 819 L 1555 821 L 1554 826 L 1551 831 L 1547 833 L 1547 835 L 1549 837 L 1552 843 L 1552 843 L 1543 843 L 1535 846 L 1509 858 L 1503 862 L 1501 866 L 1498 865 L 1503 861 L 1505 858 L 1507 858 L 1509 857 L 1511 854 L 1513 855 L 1515 854 L 1512 851 L 1501 854 L 1499 853 L 1502 847 L 1503 842 L 1503 838 L 1501 838 L 1500 836 L 1496 838 L 1494 840 L 1493 843 L 1490 845 L 1489 842 L 1485 845 L 1485 847 L 1487 849 L 1485 852 L 1487 855 L 1491 856 L 1490 860 L 1492 861 L 1492 866 L 1492 870 L 1490 872 L 1489 871 L 1485 876 L 1480 879 L 1480 878 L 1477 878 L 1476 884 L 1478 885 L 1480 883 L 1486 879 L 1486 878 L 1493 871 L 1496 870 L 1496 867 L 1501 868 L 1497 872 L 1484 881 L 1480 886 L 1479 887 L 1472 893 L 1464 901 L 1461 902 L 1447 911 L 1440 916 L 1429 921 L 1416 928 L 1409 933 L 1406 936 L 1403 941 L 1393 947 L 1388 952 L 1378 961 L 1371 970 L 1369 975 L 1366 978 L 1360 992 L 1355 1004 L 1352 1012 L 1350 1024 L 1350 1030 L 1350 1037 L 1352 1049 L 1355 1062 L 1357 1070 L 1360 1084 L 1363 1100 L 1361 1097 L 1360 1088 L 1358 1076 L 1355 1067 L 1351 1066 L 1354 1065 L 1352 1059 L 1351 1054 L 1349 1049 L 1349 1042 L 1349 1034 L 1349 1026 L 1351 1009 L 1354 998 L 1358 989 L 1361 985 L 1363 980 L 1365 978 L 1364 975 L 1367 969 L 1371 967 L 1372 964 L 1376 957 L 1382 953 L 1384 950 L 1387 950 L 1394 943 L 1399 940 L 1404 939 L 1403 936 L 1405 934 L 1403 933 L 1400 936 L 1395 938 L 1393 940 L 1390 941 L 1388 938 L 1388 935 L 1385 934 L 1384 936 L 1384 941 L 1383 943 L 1384 945 L 1383 947 L 1379 951 L 1375 954 L 1374 954 L 1370 953 L 1369 950 L 1363 954 L 1359 958 L 1364 959 L 1369 956 L 1370 960 L 1369 962 L 1361 975 L 1359 975 L 1357 972 L 1353 973 L 1352 972 L 1346 972 L 1343 971 L 1342 974 L 1345 976 L 1348 976 L 1350 975 L 1349 979 L 1351 982 L 1354 984 L 1357 985 L 1353 994 L 1351 1005 L 1348 1012 L 1344 1013 L 1342 1015 L 1340 1014 L 1343 1013 L 1344 1009 L 1342 1009 L 1341 1011 L 1335 1015 L 1336 1017 L 1341 1018 L 1346 1016 L 1347 1016 L 1346 1023 L 1347 1023 L 1346 1035 L 1345 1048 L 1344 1048 L 1346 1062 L 1348 1066 L 1348 1072 L 1350 1072 L 1355 1085 L 1356 1087 L 1354 1089 L 1355 1092 L 1354 1095 L 1356 1100 L 1360 1100 L 1360 1103 L 1363 1101 L 1363 1109 L 1359 1109 L 1356 1109 L 1356 1110 L 1352 1111 L 1350 1117 L 1346 1117 L 1345 1114 L 1342 1114 L 1340 1111 L 1338 1110 L 1335 1104 L 1328 1104 L 1326 1102 L 1322 1102 L 1321 1101 L 1316 1102 L 1315 1101 L 1313 1101 L 1312 1103 L 1310 1101 L 1306 1102 L 1304 1101 L 1303 1102 L 1300 1101 L 1299 1099 L 1299 1097 L 1296 1097 L 1295 1095 L 1292 1095 L 1288 1090 L 1286 1091 L 1281 1088 L 1277 1089 L 1274 1087 L 1271 1083 L 1269 1082 L 1269 1080 L 1267 1079 L 1264 1080 L 1259 1078 L 1257 1078 L 1255 1076 L 1253 1078 L 1251 1075 L 1252 1072 L 1250 1068 L 1248 1068 L 1247 1062 L 1246 1059 L 1245 1054 L 1244 1053 L 1243 1050 L 1242 1046 L 1239 1043 L 1239 1041 L 1236 1040 L 1235 1037 L 1236 1036 L 1234 1033 L 1232 1033 L 1232 1030 L 1233 1028 L 1232 1024 L 1233 1022 L 1232 1017 L 1229 1015 L 1229 1013 L 1227 1012 L 1228 1010 L 1230 1005 L 1229 1003 L 1230 1000 L 1227 999 L 1228 994 L 1226 991 L 1224 992 L 1223 989 L 1221 990 L 1219 987 L 1217 988 L 1213 982 L 1211 982 L 1211 979 L 1209 980 L 1207 978 L 1207 974 L 1206 973 L 1206 970 L 1204 967 L 1204 965 L 1201 964 L 1199 959 L 1197 957 L 1195 953 L 1188 950 L 1188 946 L 1186 947 L 1183 943 L 1184 941 L 1180 934 L 1181 932 L 1179 929 L 1181 927 L 1178 927 L 1177 924 L 1177 921 L 1175 920 L 1175 918 L 1172 916 L 1171 913 L 1171 910 L 1170 909 L 1169 904 L 1168 904 L 1166 899 L 1164 899 L 1163 896 L 1163 891 L 1162 885 L 1158 882 L 1156 879 L 1157 879 L 1155 874 L 1150 872 L 1150 870 L 1146 867 L 1142 866 L 1140 860 L 1140 859 L 1134 858 L 1133 855 L 1128 855 L 1129 851 L 1129 847 L 1128 847 L 1126 851 L 1125 849 L 1126 846 L 1122 845 L 1119 838 L 1118 838 L 1116 836 L 1113 838 L 1112 835 L 1110 837 L 1103 837 L 1099 836 L 1097 836 L 1094 835 L 1090 836 L 1087 834 L 1084 835 L 1083 836 L 1078 835 L 1076 832 L 1073 832 L 1069 829 L 1066 830 L 1064 837 L 1057 836 L 1055 838 L 1054 838 L 1049 840 L 1048 839 L 1046 842 L 1046 844 L 1044 846 L 1044 849 L 1042 849 L 1042 853 L 1040 855 L 1040 857 L 1038 860 L 1039 863 L 1038 866 L 1036 867 L 1035 871 L 1034 873 L 1036 875 L 1035 877 L 1031 879 L 1029 879 L 1028 883 L 1024 886 L 1023 888 L 1022 893 L 1019 893 L 1016 892 L 1013 893 L 1010 890 L 1004 889 L 999 882 L 994 880 L 992 881 L 987 878 L 984 873 L 981 872 L 973 871 L 969 869 L 966 865 L 963 865 L 959 860 L 959 858 L 957 855 L 952 855 L 950 853 L 949 851 L 943 846 L 941 844 L 939 837 L 937 833 L 935 830 L 933 826 L 933 822 L 931 819 L 933 814 L 932 811 L 932 808 L 931 804 L 929 802 L 928 799 L 925 797 L 925 795 L 923 793 L 923 791 L 920 780 L 919 777 L 916 777 L 914 772 L 911 772 L 908 768 L 906 767 L 905 765 L 902 763 L 900 764 L 898 762 L 892 760 L 892 757 L 883 750 L 880 743 L 878 741 L 874 739 L 872 737 L 870 737 L 870 735 L 865 729 L 861 726 L 860 723 L 857 721 L 853 721 L 846 716 L 843 711 L 841 709 L 840 705 L 837 700 L 836 697 L 832 695 L 829 696 L 827 693 L 826 692 L 823 690 L 823 689 L 821 687 L 820 685 L 822 684 L 822 678 L 890 678 L 941 678 L 988 678 L 1025 678 L 1025 604 L 1025 588 L 1025 579 L 1026 553 L 1026 539 L 1026 446 L 1027 420 L 1027 370 L 1026 357 L 1029 357 Z","wyoming":"M 968 -249 L 968 -240 L 968 -128 L 969 -128 L 969 -107 L 969 36 L 924 36 L 923 36 L 873 36 L 845 36 L 831 36 L 764 36 L 733 36 L 683 36 L 655 36 L 626 36 L 615 36 L 588 36 L 569 36 L 569 9 L 569 -4 L 569 -36 L 569 -77 L 569 -87 L 569 -154 L 569 -155 L 569 -187 L 569 -203 L 569 -212 L 569 -223 L 568 -240 L 569 -249 L 584 -250 L 588 -249 L 606 -249 L 608 -249 L 617 -249 L 622 -250 L 640 -249 L 680 -250 L 682 -249 L 728 -249 L 793 -249 L 795 -249 L 825 -249 L 861 -249 L 866 -249 L 893 -249 L 945 -249 L 968 -249 Z","missouri":"M 1442 66 L 1476 66 L 1509 67 L 1541 66 L 1568 66 L 1580 66 L 1621 65 L 1652 64 L 1673 63 L 1675 66 L 1675 68 L 1679 69 L 1679 71 L 1682 74 L 1684 74 L 1684 78 L 1687 80 L 1691 80 L 1689 81 L 1685 90 L 1685 95 L 1686 105 L 1689 111 L 1691 112 L 1689 116 L 1690 119 L 1693 121 L 1694 123 L 1693 126 L 1699 131 L 1702 135 L 1704 135 L 1706 140 L 1709 140 L 1711 145 L 1714 148 L 1726 156 L 1730 162 L 1731 168 L 1733 172 L 1731 175 L 1733 180 L 1734 184 L 1738 188 L 1740 187 L 1743 186 L 1744 181 L 1748 181 L 1754 184 L 1757 184 L 1765 189 L 1765 193 L 1762 195 L 1759 198 L 1761 204 L 1761 206 L 1757 212 L 1755 218 L 1752 222 L 1750 226 L 1750 230 L 1751 235 L 1755 238 L 1759 243 L 1764 245 L 1766 249 L 1768 249 L 1772 252 L 1775 252 L 1775 254 L 1773 255 L 1774 258 L 1778 259 L 1780 257 L 1783 258 L 1783 260 L 1786 261 L 1791 265 L 1791 268 L 1793 268 L 1795 270 L 1799 272 L 1799 275 L 1801 279 L 1799 280 L 1799 283 L 1805 293 L 1804 297 L 1801 297 L 1799 301 L 1802 304 L 1802 307 L 1805 312 L 1807 315 L 1807 318 L 1812 322 L 1814 320 L 1811 317 L 1814 317 L 1817 320 L 1819 323 L 1821 322 L 1823 324 L 1822 329 L 1821 332 L 1819 333 L 1818 335 L 1822 337 L 1821 339 L 1818 339 L 1817 342 L 1820 345 L 1818 347 L 1816 351 L 1814 352 L 1810 348 L 1807 348 L 1805 357 L 1803 359 L 1800 359 L 1801 357 L 1802 355 L 1801 352 L 1797 352 L 1796 353 L 1798 357 L 1799 358 L 1798 362 L 1800 366 L 1799 368 L 1794 368 L 1794 371 L 1798 373 L 1798 375 L 1795 376 L 1789 375 L 1788 376 L 1794 380 L 1794 384 L 1790 387 L 1789 391 L 1787 393 L 1750 393 L 1753 386 L 1758 383 L 1758 381 L 1761 378 L 1764 376 L 1765 374 L 1767 373 L 1768 365 L 1763 362 L 1764 361 L 1763 357 L 1691 357 L 1625 357 L 1596 357 L 1551 357 L 1508 357 L 1508 321 L 1508 304 L 1508 298 L 1508 250 L 1508 247 L 1508 205 L 1508 197 L 1508 170 L 1509 168 L 1505 167 L 1504 165 L 1502 166 L 1499 166 L 1498 164 L 1495 163 L 1496 161 L 1492 158 L 1491 153 L 1493 152 L 1492 150 L 1489 150 L 1486 147 L 1483 145 L 1483 143 L 1480 141 L 1480 138 L 1483 136 L 1483 134 L 1484 131 L 1487 130 L 1488 125 L 1491 127 L 1493 126 L 1493 123 L 1491 124 L 1490 122 L 1492 122 L 1493 120 L 1491 119 L 1489 117 L 1490 115 L 1485 114 L 1483 117 L 1478 116 L 1477 114 L 1474 114 L 1474 112 L 1472 111 L 1468 107 L 1462 104 L 1464 99 L 1459 94 L 1458 90 L 1454 88 L 1454 86 L 1451 85 L 1448 78 L 1448 76 L 1446 74 L 1446 71 L 1449 69 L 1446 68 L 1446 70 L 1442 69 L 1442 66 Z","west_virginia":"M 2195 220 L 2198 221 L 2205 219 L 2210 218 L 2211 215 L 2212 209 L 2214 207 L 2218 208 L 2219 206 L 2218 200 L 2216 193 L 2220 190 L 2220 186 L 2223 180 L 2226 179 L 2227 177 L 2230 179 L 2232 179 L 2234 184 L 2233 186 L 2235 188 L 2237 186 L 2237 184 L 2239 182 L 2241 184 L 2242 177 L 2240 175 L 2239 173 L 2243 172 L 2243 166 L 2244 163 L 2246 162 L 2247 159 L 2253 159 L 2254 154 L 2259 150 L 2262 151 L 2264 154 L 2266 154 L 2270 151 L 2274 151 L 2276 147 L 2278 147 L 2280 144 L 2283 140 L 2289 135 L 2293 134 L 2293 129 L 2296 128 L 2293 125 L 2296 122 L 2296 118 L 2298 117 L 2297 113 L 2300 114 L 2299 111 L 2301 109 L 2301 102 L 2302 100 L 2302 96 L 2305 94 L 2306 90 L 2308 88 L 2309 84 L 2308 79 L 2309 74 L 2307 69 L 2305 66 L 2307 63 L 2309 63 L 2313 62 L 2313 127 L 2339 127 L 2373 127 L 2372 164 L 2374 163 L 2381 157 L 2383 157 L 2386 153 L 2392 149 L 2395 145 L 2397 145 L 2403 147 L 2405 144 L 2413 134 L 2415 135 L 2413 136 L 2415 137 L 2416 138 L 2420 140 L 2423 140 L 2425 141 L 2430 142 L 2433 139 L 2432 136 L 2435 136 L 2432 135 L 2435 135 L 2437 133 L 2441 134 L 2447 129 L 2452 130 L 2455 133 L 2457 136 L 2460 134 L 2464 136 L 2467 136 L 2467 138 L 2463 139 L 2466 143 L 2470 146 L 2469 148 L 2471 148 L 2472 151 L 2471 155 L 2473 156 L 2471 158 L 2467 169 L 2451 156 L 2437 145 L 2437 149 L 2438 151 L 2436 153 L 2438 154 L 2433 160 L 2434 161 L 2432 164 L 2434 167 L 2431 170 L 2429 171 L 2425 176 L 2426 177 L 2423 181 L 2421 180 L 2418 184 L 2416 185 L 2416 183 L 2412 187 L 2407 195 L 2400 189 L 2398 194 L 2395 199 L 2395 203 L 2393 203 L 2391 206 L 2388 215 L 2382 221 L 2373 217 L 2369 211 L 2363 208 L 2360 215 L 2361 219 L 2358 223 L 2354 228 L 2355 231 L 2353 232 L 2347 237 L 2346 241 L 2347 242 L 2346 244 L 2344 248 L 2342 251 L 2339 254 L 2332 260 L 2328 267 L 2329 269 L 2326 272 L 2327 274 L 2330 276 L 2328 279 L 2324 281 L 2324 283 L 2327 283 L 2326 285 L 2316 291 L 2314 287 L 2311 287 L 2307 290 L 2299 295 L 2298 293 L 2294 291 L 2292 294 L 2294 297 L 2290 299 L 2287 300 L 2279 301 L 2273 304 L 2267 300 L 2265 297 L 2264 298 L 2262 302 L 2257 303 L 2257 305 L 2254 306 L 2247 307 L 2243 304 L 2243 302 L 2241 301 L 2237 301 L 2236 298 L 2233 296 L 2232 290 L 2229 289 L 2229 287 L 2233 285 L 2230 283 L 2228 283 L 2222 281 L 2221 279 L 2220 279 L 2218 277 L 2216 277 L 2215 274 L 2212 273 L 2209 265 L 2207 264 L 2204 260 L 2205 258 L 2202 257 L 2200 255 L 2202 251 L 2199 250 L 2197 245 L 2195 242 L 2192 240 L 2192 238 L 2194 238 L 2194 234 L 2194 233 L 2196 231 L 2196 228 L 2194 225 L 2195 220 Z","illinois":"M 1691 80 L 1693 79 L 1693 76 L 1693 71 L 1691 69 L 1694 64 L 1700 62 L 1704 62 L 1708 59 L 1708 56 L 1709 53 L 1709 48 L 1711 47 L 1714 43 L 1716 42 L 1718 35 L 1717 29 L 1715 24 L 1712 24 L 1708 19 L 1710 14 L 1711 10 L 1712 6 L 1716 5 L 1718 6 L 1723 3 L 1730 4 L 1734 3 L 1738 -1 L 1740 -1 L 1745 -1 L 1749 -5 L 1752 -6 L 1752 -10 L 1754 -14 L 1754 -17 L 1756 -19 L 1761 -22 L 1761 -24 L 1763 -29 L 1762 -32 L 1764 -36 L 1762 -38 L 1762 -44 L 1760 -46 L 1750 -51 L 1747 -55 L 1748 -59 L 1744 -63 L 1740 -65 L 1739 -67 L 1735 -69 L 1735 -72 L 1744 -72 L 1791 -71 L 1801 -71 L 1841 -70 L 1849 -71 L 1880 -71 L 1897 -70 L 1897 -63 L 1895 -57 L 1897 -50 L 1902 -43 L 1904 -41 L 1905 -37 L 1907 -29 L 1908 -24 L 1911 -19 L 1913 -17 L 1913 -15 L 1913 1 L 1913 74 L 1913 89 L 1913 107 L 1912 108 L 1912 132 L 1913 154 L 1910 154 L 1909 156 L 1908 160 L 1910 163 L 1906 167 L 1907 171 L 1910 175 L 1910 179 L 1914 182 L 1911 189 L 1914 194 L 1915 197 L 1912 202 L 1909 202 L 1908 204 L 1906 209 L 1906 213 L 1901 216 L 1901 218 L 1898 223 L 1897 224 L 1894 230 L 1893 228 L 1891 231 L 1890 229 L 1888 233 L 1886 232 L 1887 236 L 1890 239 L 1886 244 L 1888 243 L 1888 245 L 1884 246 L 1885 248 L 1885 252 L 1882 256 L 1885 257 L 1880 257 L 1884 263 L 1881 262 L 1882 264 L 1884 264 L 1882 268 L 1879 270 L 1877 274 L 1878 280 L 1882 284 L 1881 288 L 1871 289 L 1869 289 L 1865 293 L 1862 291 L 1858 294 L 1858 297 L 1856 301 L 1857 303 L 1860 307 L 1862 311 L 1860 316 L 1856 317 L 1854 316 L 1850 313 L 1843 310 L 1840 308 L 1833 305 L 1830 305 L 1827 306 L 1824 309 L 1822 313 L 1819 316 L 1818 319 L 1821 322 L 1819 323 L 1817 320 L 1814 317 L 1811 317 L 1814 320 L 1812 322 L 1807 318 L 1807 315 L 1805 312 L 1802 307 L 1802 304 L 1799 301 L 1801 297 L 1804 297 L 1805 293 L 1799 283 L 1799 280 L 1801 279 L 1799 275 L 1799 272 L 1795 270 L 1793 268 L 1791 268 L 1791 265 L 1786 261 L 1783 260 L 1783 258 L 1780 257 L 1778 259 L 1774 258 L 1773 255 L 1775 254 L 1775 252 L 1772 252 L 1768 249 L 1766 249 L 1764 245 L 1759 243 L 1755 238 L 1751 235 L 1750 230 L 1750 226 L 1752 222 L 1755 218 L 1757 212 L 1761 206 L 1761 204 L 1759 198 L 1762 195 L 1765 193 L 1765 189 L 1757 184 L 1754 184 L 1748 181 L 1744 181 L 1743 186 L 1740 187 L 1738 188 L 1734 184 L 1733 180 L 1731 175 L 1733 172 L 1731 168 L 1730 162 L 1726 156 L 1714 148 L 1711 145 L 1709 140 L 1706 140 L 1704 135 L 1702 135 L 1699 131 L 1693 126 L 1694 123 L 1693 121 L 1690 119 L 1689 116 L 1691 112 L 1689 111 L 1686 105 L 1685 95 L 1685 90 L 1689 81 L 1691 80 Z","new_mexico":"M 683 321 L 729 321 L 776 321 L 807 321 L 808 322 L 846 322 L 908 322 L 915 322 L 952 322 L 987 321 L 1029 321 L 1029 350 L 1029 357 L 1026 357 L 1027 370 L 1027 420 L 1026 446 L 1026 539 L 1026 553 L 1025 579 L 1025 588 L 1025 604 L 1025 678 L 988 678 L 941 678 L 890 678 L 822 678 L 822 684 L 820 685 L 821 687 L 823 689 L 823 690 L 826 692 L 827 693 L 783 693 L 731 693 L 731 725 L 683 726 L 683 551 L 683 544 L 683 535 L 683 498 L 683 441 L 683 439 L 683 425 L 683 321 Z","arkansas":"M 1508 357 L 1551 357 L 1596 357 L 1625 357 L 1691 357 L 1763 357 L 1764 361 L 1763 362 L 1768 365 L 1767 373 L 1765 374 L 1764 376 L 1761 378 L 1758 381 L 1758 383 L 1753 386 L 1750 393 L 1787 393 L 1788 395 L 1791 398 L 1791 401 L 1786 399 L 1784 402 L 1789 404 L 1786 406 L 1784 407 L 1782 410 L 1779 411 L 1777 410 L 1774 412 L 1775 416 L 1777 417 L 1779 416 L 1780 418 L 1775 421 L 1775 424 L 1777 425 L 1776 427 L 1772 424 L 1770 424 L 1769 428 L 1771 431 L 1768 435 L 1767 430 L 1762 434 L 1761 437 L 1764 437 L 1764 434 L 1767 437 L 1765 439 L 1765 442 L 1762 443 L 1763 446 L 1766 446 L 1767 448 L 1765 451 L 1768 454 L 1766 456 L 1763 454 L 1761 456 L 1760 462 L 1754 461 L 1754 464 L 1757 468 L 1757 470 L 1754 473 L 1747 476 L 1747 472 L 1744 472 L 1744 474 L 1745 477 L 1744 478 L 1746 482 L 1743 484 L 1742 482 L 1742 478 L 1740 480 L 1741 482 L 1739 483 L 1740 485 L 1744 485 L 1745 487 L 1742 490 L 1740 489 L 1740 486 L 1738 487 L 1738 491 L 1740 495 L 1741 497 L 1738 500 L 1739 505 L 1734 508 L 1734 512 L 1732 512 L 1733 509 L 1729 509 L 1728 511 L 1729 513 L 1728 515 L 1724 516 L 1723 520 L 1720 518 L 1718 520 L 1721 522 L 1725 522 L 1725 524 L 1723 525 L 1719 523 L 1717 525 L 1719 529 L 1721 528 L 1722 530 L 1720 534 L 1715 534 L 1717 537 L 1714 538 L 1713 535 L 1710 536 L 1709 538 L 1714 540 L 1710 545 L 1712 548 L 1715 550 L 1713 552 L 1711 551 L 1706 551 L 1706 555 L 1708 556 L 1711 555 L 1713 559 L 1710 560 L 1707 558 L 1705 556 L 1702 557 L 1701 559 L 1707 562 L 1707 564 L 1701 567 L 1704 570 L 1701 575 L 1705 574 L 1704 571 L 1707 573 L 1707 576 L 1703 577 L 1702 578 L 1704 579 L 1708 579 L 1710 574 L 1711 576 L 1706 582 L 1706 585 L 1709 590 L 1709 587 L 1711 586 L 1712 588 L 1709 591 L 1710 595 L 1709 597 L 1706 597 L 1704 596 L 1703 599 L 1708 603 L 1705 606 L 1660 606 L 1628 606 L 1596 605 L 1579 605 L 1541 605 L 1541 568 L 1540 567 L 1537 566 L 1536 567 L 1535 565 L 1532 564 L 1530 567 L 1526 565 L 1525 567 L 1524 566 L 1523 568 L 1521 567 L 1521 565 L 1519 565 L 1517 564 L 1517 561 L 1515 561 L 1516 522 L 1517 496 L 1517 486 L 1517 471 L 1518 455 L 1518 436 L 1515 412 L 1514 407 L 1511 385 L 1510 378 L 1509 365 L 1508 357 Z","california":"M 137 572 L 141 573 L 146 576 L 151 577 L 151 579 L 154 583 L 153 585 L 150 584 L 145 583 L 144 581 L 144 577 L 140 576 L 137 572 Z M 137 604 L 139 604 L 143 611 L 152 619 L 150 619 L 147 620 L 144 618 L 141 613 L 138 606 L 137 604 Z M 111 572 L 113 571 L 113 574 L 111 573 L 111 572 Z M 90 533 L 92 534 L 94 533 L 94 535 L 90 535 L 88 534 L 90 533 Z M 82 587 L 84 586 L 88 588 L 90 590 L 87 591 L 83 590 L 82 587 Z M 62 530 L 66 530 L 68 532 L 71 531 L 75 534 L 79 534 L 81 532 L 85 533 L 83 536 L 77 536 L 73 538 L 65 537 L 65 533 L 62 530 Z M 43 535 L 48 535 L 50 533 L 52 534 L 55 533 L 55 536 L 59 536 L 59 539 L 51 543 L 47 540 L 43 535 Z M 32 533 L 35 532 L 36 530 L 38 532 L 40 534 L 36 534 L 32 533 Z M -183 -35 L -151 -35 L -150 -35 L -134 -35 L -122 -36 L -117 -36 L -93 -36 L -85 -36 L -66 -36 L -57 -36 L -25 -35 L -2 -35 L 39 -35 L 58 -35 L 58 54 L 58 56 L 58 102 L 58 126 L 57 127 L 57 155 L 57 163 L 58 179 L 63 183 L 86 204 L 110 224 L 123 235 L 143 254 L 169 277 L 181 288 L 207 312 L 272 373 L 320 419 L 334 434 L 364 464 L 364 473 L 367 476 L 369 481 L 373 484 L 379 499 L 378 503 L 381 503 L 387 509 L 390 510 L 392 514 L 393 517 L 387 521 L 387 522 L 384 523 L 382 526 L 377 527 L 375 529 L 375 533 L 370 540 L 371 542 L 372 545 L 370 545 L 370 548 L 372 552 L 372 557 L 370 558 L 369 564 L 370 567 L 368 569 L 363 577 L 359 578 L 360 581 L 359 585 L 362 587 L 361 596 L 360 600 L 363 604 L 363 603 L 366 605 L 367 604 L 371 604 L 374 613 L 374 618 L 370 621 L 370 624 L 365 626 L 360 625 L 359 627 L 274 634 L 222 640 L 221 634 L 219 630 L 218 629 L 215 630 L 214 626 L 214 622 L 213 619 L 215 616 L 213 606 L 210 598 L 208 595 L 200 583 L 195 579 L 193 576 L 190 574 L 188 574 L 184 568 L 179 564 L 176 563 L 172 560 L 167 554 L 162 552 L 161 555 L 157 556 L 153 556 L 151 554 L 148 554 L 147 551 L 149 549 L 149 547 L 147 539 L 144 536 L 141 533 L 134 532 L 129 533 L 126 535 L 123 533 L 117 532 L 110 528 L 107 528 L 102 525 L 99 516 L 97 516 L 93 512 L 92 513 L 88 509 L 84 507 L 83 506 L 76 506 L 73 507 L 69 505 L 65 506 L 57 502 L 52 502 L 49 502 L 40 502 L 30 503 L 30 501 L 28 497 L 24 495 L 22 496 L 21 494 L 23 485 L 21 481 L 23 474 L 19 471 L 21 464 L 21 455 L 18 452 L 15 451 L 14 453 L 9 449 L 6 446 L 8 438 L 8 435 L 6 432 L 0 431 L -5 425 L -9 419 L -14 417 L -18 413 L -19 408 L -22 405 L -23 403 L -26 401 L -27 395 L -28 393 L -33 391 L -36 384 L -41 379 L -47 375 L -50 372 L -51 367 L -51 364 L -53 358 L -53 353 L -55 352 L -53 347 L -50 349 L -48 348 L -46 344 L -45 335 L -49 326 L -51 324 L -53 323 L -55 325 L -63 324 L -69 320 L -73 314 L -76 313 L -76 311 L -80 307 L -81 303 L -80 296 L -82 290 L -83 287 L -85 286 L -86 284 L -86 280 L -85 279 L -85 274 L -86 266 L -83 264 L -80 263 L -79 265 L -77 270 L -79 271 L -77 277 L -77 279 L -72 280 L -66 285 L -65 285 L -62 289 L -59 289 L -61 286 L -63 285 L -65 280 L -67 273 L -71 270 L -71 267 L -76 265 L -74 261 L -75 257 L -78 257 L -81 253 L -80 253 L -78 251 L -78 249 L -74 249 L -72 247 L -74 242 L -79 240 L -82 242 L -85 242 L -84 245 L -85 248 L -82 251 L -85 252 L -86 255 L -82 258 L -83 259 L -85 257 L -84 262 L -87 263 L -89 260 L -94 257 L -97 257 L -102 253 L -104 250 L -107 248 L -110 248 L -115 250 L -112 242 L -111 239 L -113 233 L -112 232 L -115 228 L -118 228 L -118 224 L -121 218 L -125 215 L -128 214 L -133 210 L -140 199 L -143 197 L -145 195 L -151 189 L -156 182 L -153 177 L -153 175 L -156 167 L -160 159 L -161 153 L -160 147 L -158 139 L -159 135 L -159 132 L -162 126 L -163 119 L -166 117 L -167 114 L -174 106 L -176 105 L -176 103 L -177 100 L -182 98 L -192 89 L -191 85 L -192 81 L -195 76 L -193 70 L -190 63 L -181 47 L -179 41 L -177 34 L -180 32 L -180 26 L -179 26 L -177 20 L -175 5 L -176 -3 L -179 -11 L -180 -17 L -182 -17 L -186 -20 L -184 -24 L -183 -31 L -183 -35 Z","iowa":"M 1403 -142 L 1444 -142 L 1508 -142 L 1545 -142 L 1590 -142 L 1614 -142 L 1660 -142 L 1702 -142 L 1701 -139 L 1703 -136 L 1703 -132 L 1708 -129 L 1711 -124 L 1707 -121 L 1706 -118 L 1704 -116 L 1704 -110 L 1706 -104 L 1706 -100 L 1709 -98 L 1711 -88 L 1718 -84 L 1728 -82 L 1731 -81 L 1735 -74 L 1735 -72 L 1735 -69 L 1739 -67 L 1740 -65 L 1744 -63 L 1748 -59 L 1747 -55 L 1750 -51 L 1760 -46 L 1762 -44 L 1762 -38 L 1764 -36 L 1762 -32 L 1763 -29 L 1761 -24 L 1761 -22 L 1756 -19 L 1754 -17 L 1754 -14 L 1752 -10 L 1752 -6 L 1749 -5 L 1745 -1 L 1740 -1 L 1738 -1 L 1734 3 L 1730 4 L 1723 3 L 1718 6 L 1716 5 L 1712 6 L 1711 10 L 1710 14 L 1708 19 L 1712 24 L 1715 24 L 1717 29 L 1718 35 L 1716 42 L 1714 43 L 1711 47 L 1709 48 L 1709 53 L 1708 56 L 1708 59 L 1704 62 L 1700 62 L 1694 64 L 1691 69 L 1693 71 L 1693 76 L 1693 79 L 1691 80 L 1687 80 L 1684 78 L 1684 74 L 1682 74 L 1679 71 L 1679 69 L 1675 68 L 1675 66 L 1673 63 L 1652 64 L 1621 65 L 1580 66 L 1568 66 L 1541 66 L 1509 67 L 1476 66 L 1442 66 L 1443 64 L 1441 60 L 1438 59 L 1435 56 L 1436 54 L 1438 51 L 1437 46 L 1440 43 L 1438 42 L 1438 37 L 1437 36 L 1437 34 L 1435 32 L 1436 30 L 1435 25 L 1438 23 L 1433 22 L 1434 20 L 1433 16 L 1435 13 L 1431 12 L 1433 10 L 1433 3 L 1428 2 L 1429 -3 L 1427 -3 L 1427 -0 L 1424 -2 L 1424 -5 L 1422 -8 L 1423 -10 L 1422 -13 L 1424 -14 L 1423 -17 L 1424 -18 L 1425 -21 L 1423 -23 L 1422 -25 L 1419 -29 L 1421 -29 L 1421 -33 L 1418 -34 L 1418 -36 L 1415 -36 L 1416 -37 L 1413 -39 L 1413 -44 L 1409 -47 L 1408 -50 L 1410 -52 L 1407 -58 L 1405 -60 L 1405 -65 L 1407 -67 L 1406 -70 L 1403 -70 L 1401 -72 L 1401 -75 L 1399 -80 L 1396 -84 L 1393 -86 L 1393 -90 L 1395 -92 L 1395 -95 L 1398 -96 L 1398 -101 L 1400 -104 L 1399 -105 L 1401 -107 L 1400 -110 L 1402 -111 L 1404 -115 L 1402 -117 L 1402 -123 L 1397 -123 L 1397 -125 L 1396 -128 L 1398 -128 L 1399 -135 L 1394 -139 L 1396 -141 L 1395 -142 L 1403 -142 Z","kentucky":"M 1821 322 L 1818 319 L 1819 316 L 1822 313 L 1824 309 L 1827 306 L 1830 305 L 1833 305 L 1840 308 L 1843 310 L 1850 313 L 1854 316 L 1856 317 L 1860 316 L 1862 311 L 1860 307 L 1857 303 L 1856 301 L 1858 297 L 1858 294 L 1862 291 L 1865 293 L 1869 289 L 1871 289 L 1881 288 L 1882 284 L 1878 280 L 1877 274 L 1879 270 L 1882 268 L 1884 264 L 1889 266 L 1891 263 L 1889 258 L 1891 255 L 1893 256 L 1895 259 L 1904 257 L 1905 259 L 1904 262 L 1907 262 L 1909 260 L 1907 256 L 1909 252 L 1910 252 L 1911 255 L 1914 256 L 1917 254 L 1921 254 L 1926 257 L 1930 261 L 1934 261 L 1936 265 L 1938 265 L 1939 263 L 1940 257 L 1942 256 L 1948 254 L 1951 251 L 1955 251 L 1957 256 L 1959 257 L 1961 256 L 1963 257 L 1962 260 L 1964 261 L 1966 259 L 1966 256 L 1971 255 L 1970 253 L 1970 247 L 1974 246 L 1975 244 L 1974 243 L 1975 241 L 1977 242 L 1979 241 L 1981 240 L 1982 239 L 1979 238 L 1979 236 L 1980 236 L 1985 240 L 1985 246 L 1990 249 L 1995 249 L 1997 253 L 1998 251 L 2003 250 L 2005 248 L 2006 244 L 2005 238 L 2009 234 L 2010 230 L 2012 229 L 2015 231 L 2019 228 L 2023 219 L 2029 217 L 2030 214 L 2033 211 L 2032 207 L 2031 199 L 2034 197 L 2037 198 L 2042 197 L 2044 200 L 2048 201 L 2051 198 L 2058 194 L 2060 195 L 2064 193 L 2068 193 L 2067 191 L 2070 188 L 2069 186 L 2065 186 L 2065 184 L 2067 181 L 2066 179 L 2063 175 L 2064 174 L 2067 171 L 2071 168 L 2073 168 L 2076 172 L 2080 173 L 2083 172 L 2086 172 L 2087 170 L 2089 170 L 2090 175 L 2096 177 L 2098 182 L 2101 187 L 2101 191 L 2102 192 L 2110 195 L 2117 194 L 2123 197 L 2124 199 L 2127 200 L 2128 203 L 2134 205 L 2136 201 L 2142 200 L 2145 202 L 2151 203 L 2153 204 L 2154 207 L 2156 206 L 2163 206 L 2165 202 L 2168 200 L 2170 198 L 2173 198 L 2178 196 L 2179 198 L 2178 201 L 2180 207 L 2183 210 L 2187 210 L 2192 215 L 2194 217 L 2195 220 L 2194 225 L 2196 228 L 2196 231 L 2194 233 L 2194 234 L 2194 238 L 2192 238 L 2192 240 L 2195 242 L 2197 245 L 2199 250 L 2202 251 L 2200 255 L 2202 257 L 2205 258 L 2204 260 L 2207 264 L 2209 265 L 2212 273 L 2215 274 L 2216 277 L 2218 277 L 2220 279 L 2221 279 L 2222 281 L 2228 283 L 2230 283 L 2208 302 L 2201 305 L 2196 307 L 2192 310 L 2187 313 L 2187 318 L 2184 321 L 2182 321 L 2179 323 L 2180 326 L 2178 329 L 2173 331 L 2167 332 L 2164 337 L 2164 340 L 2160 340 L 2154 342 L 2146 345 L 2141 345 L 2135 348 L 2133 350 L 2132 351 L 2115 350 L 2099 350 L 2083 350 L 2066 349 L 2056 348 L 2041 348 L 2029 349 L 2010 348 L 1998 348 L 1981 346 L 1971 346 L 1968 347 L 1966 346 L 1936 347 L 1918 347 L 1894 347 L 1894 345 L 1882 344 L 1884 353 L 1883 357 L 1855 357 L 1829 357 L 1812 356 L 1805 357 L 1807 348 L 1810 348 L 1814 352 L 1816 351 L 1818 347 L 1820 345 L 1817 342 L 1818 339 L 1821 339 L 1822 337 L 1818 335 L 1819 333 L 1821 332 L 1822 329 L 1823 324 L 1821 322 Z M 1801 357 L 1798 357 L 1796 353 L 1797 352 L 1801 352 L 1802 355 L 1801 357 Z","maryland":"M 2572 253 L 2569 253 L 2569 249 L 2570 247 L 2573 250 L 2572 253 Z M 2566 241 L 2566 236 L 2569 235 L 2570 237 L 2571 244 L 2568 243 L 2569 242 L 2566 241 Z M 2549 195 L 2550 194 L 2551 197 L 2549 195 Z M 2373 127 L 2435 127 L 2484 127 L 2515 127 L 2539 127 L 2583 127 L 2583 132 L 2589 213 L 2589 217 L 2604 218 L 2626 218 L 2625 220 L 2624 227 L 2623 228 L 2618 241 L 2615 248 L 2593 250 L 2592 254 L 2590 253 L 2588 252 L 2584 252 L 2579 256 L 2577 256 L 2577 252 L 2579 247 L 2582 246 L 2579 246 L 2579 243 L 2581 240 L 2577 240 L 2575 242 L 2574 240 L 2575 237 L 2580 235 L 2579 233 L 2577 233 L 2576 231 L 2579 224 L 2576 226 L 2575 229 L 2575 232 L 2573 232 L 2571 228 L 2573 227 L 2573 224 L 2571 223 L 2570 226 L 2569 228 L 2570 230 L 2568 234 L 2567 232 L 2564 233 L 2562 233 L 2559 228 L 2557 227 L 2557 224 L 2552 215 L 2556 214 L 2557 212 L 2556 212 L 2554 209 L 2556 206 L 2558 205 L 2559 207 L 2562 205 L 2562 207 L 2566 208 L 2569 210 L 2570 210 L 2567 205 L 2563 204 L 2561 202 L 2560 202 L 2557 197 L 2556 199 L 2553 198 L 2553 201 L 2552 201 L 2552 195 L 2556 189 L 2559 192 L 2560 191 L 2560 184 L 2558 183 L 2555 186 L 2552 185 L 2552 188 L 2550 189 L 2551 183 L 2554 177 L 2556 180 L 2560 181 L 2562 179 L 2561 175 L 2563 172 L 2560 172 L 2559 176 L 2560 178 L 2558 177 L 2558 173 L 2557 169 L 2556 168 L 2559 160 L 2561 157 L 2561 156 L 2564 154 L 2565 152 L 2571 152 L 2569 151 L 2573 147 L 2571 146 L 2573 139 L 2566 140 L 2565 143 L 2567 145 L 2568 147 L 2566 147 L 2559 153 L 2557 152 L 2559 148 L 2557 147 L 2557 149 L 2555 152 L 2557 154 L 2555 157 L 2554 151 L 2551 150 L 2552 157 L 2551 156 L 2549 159 L 2552 160 L 2548 163 L 2546 165 L 2543 164 L 2543 163 L 2539 160 L 2539 163 L 2541 163 L 2541 166 L 2547 169 L 2547 173 L 2546 175 L 2549 178 L 2544 181 L 2546 183 L 2545 185 L 2543 185 L 2542 188 L 2543 192 L 2540 195 L 2541 198 L 2541 202 L 2542 206 L 2542 211 L 2543 215 L 2548 220 L 2549 224 L 2548 227 L 2545 226 L 2547 229 L 2548 228 L 2550 229 L 2549 231 L 2549 234 L 2553 240 L 2552 241 L 2553 247 L 2551 246 L 2549 243 L 2547 242 L 2546 238 L 2545 239 L 2544 242 L 2543 240 L 2541 240 L 2540 237 L 2538 235 L 2533 233 L 2526 233 L 2524 225 L 2523 224 L 2522 226 L 2524 230 L 2523 232 L 2519 229 L 2518 227 L 2516 225 L 2513 218 L 2509 221 L 2502 224 L 2500 223 L 2499 216 L 2501 211 L 2504 207 L 2508 205 L 2507 205 L 2507 202 L 2508 200 L 2512 199 L 2512 193 L 2519 186 L 2512 179 L 2508 183 L 2506 181 L 2502 181 L 2500 180 L 2500 177 L 2495 174 L 2488 173 L 2487 171 L 2485 170 L 2485 166 L 2487 165 L 2488 162 L 2483 160 L 2482 157 L 2479 157 L 2476 155 L 2473 156 L 2471 155 L 2472 151 L 2471 148 L 2469 148 L 2470 146 L 2466 143 L 2463 139 L 2467 138 L 2467 136 L 2464 136 L 2460 134 L 2457 136 L 2455 133 L 2452 130 L 2447 129 L 2441 134 L 2437 133 L 2435 135 L 2432 135 L 2435 136 L 2432 136 L 2433 139 L 2430 142 L 2425 141 L 2423 140 L 2420 140 L 2416 138 L 2415 137 L 2413 136 L 2415 135 L 2413 134 L 2405 144 L 2403 147 L 2397 145 L 2395 145 L 2392 149 L 2386 153 L 2383 157 L 2381 157 L 2374 163 L 2372 164 L 2373 127 Z","michigan":"M 2077 -311 L 2079 -312 L 2081 -308 L 2094 -304 L 2090 -301 L 2086 -302 L 2083 -306 L 2077 -311 Z M 2035 -305 L 2036 -307 L 2037 -306 L 2035 -305 Z M 2027 -309 L 2032 -306 L 2031 -304 L 2027 -306 L 2027 -309 Z M 2021 -292 L 2023 -295 L 2023 -299 L 2025 -300 L 2025 -304 L 2028 -303 L 2028 -298 L 2029 -293 L 2025 -290 L 2021 -292 Z M 2017 -302 L 2020 -302 L 2019 -299 L 2017 -299 L 2017 -302 Z M 2007 -281 L 2009 -280 L 2010 -276 L 2007 -281 Z M 1996 -259 L 1998 -261 L 2001 -259 L 2000 -253 L 1997 -257 L 1996 -259 Z M 1991 -250 L 1993 -253 L 1995 -250 L 1991 -250 Z M 1961 -293 L 1965 -289 L 1963 -288 L 1962 -290 L 1959 -293 L 1961 -293 Z M 1953 -18 L 1959 -22 L 1965 -28 L 1972 -44 L 1979 -53 L 1983 -61 L 1985 -67 L 1987 -78 L 1987 -81 L 1988 -87 L 1988 -97 L 1987 -108 L 1985 -115 L 1977 -129 L 1975 -135 L 1973 -144 L 1969 -151 L 1969 -154 L 1974 -160 L 1975 -163 L 1975 -168 L 1974 -176 L 1971 -181 L 1971 -183 L 1976 -187 L 1980 -196 L 1985 -203 L 1986 -210 L 1987 -218 L 1985 -225 L 1985 -227 L 1991 -230 L 1995 -231 L 1996 -237 L 1996 -241 L 1998 -243 L 2001 -242 L 2004 -247 L 2008 -245 L 2011 -246 L 2013 -248 L 2015 -253 L 2017 -254 L 2020 -260 L 2022 -263 L 2024 -262 L 2026 -264 L 2027 -262 L 2023 -260 L 2022 -257 L 2025 -252 L 2020 -248 L 2023 -249 L 2023 -244 L 2022 -244 L 2020 -239 L 2021 -233 L 2023 -233 L 2027 -242 L 2027 -248 L 2030 -249 L 2028 -239 L 2025 -236 L 2024 -232 L 2027 -231 L 2029 -235 L 2030 -236 L 2035 -245 L 2036 -249 L 2035 -253 L 2036 -258 L 2035 -263 L 2036 -269 L 2040 -272 L 2042 -272 L 2045 -275 L 2049 -276 L 2054 -275 L 2059 -276 L 2062 -277 L 2062 -279 L 2055 -280 L 2052 -283 L 2050 -290 L 2054 -295 L 2056 -296 L 2061 -300 L 2060 -302 L 2056 -304 L 2069 -303 L 2070 -306 L 2083 -299 L 2088 -296 L 2091 -297 L 2093 -296 L 2096 -297 L 2102 -295 L 2107 -289 L 2108 -286 L 2111 -284 L 2118 -285 L 2120 -284 L 2126 -279 L 2130 -279 L 2137 -275 L 2143 -275 L 2147 -270 L 2150 -269 L 2148 -267 L 2151 -261 L 2153 -259 L 2156 -251 L 2152 -252 L 2149 -254 L 2146 -252 L 2146 -245 L 2149 -242 L 2153 -241 L 2154 -237 L 2154 -231 L 2156 -229 L 2155 -225 L 2153 -221 L 2154 -217 L 2153 -210 L 2153 -202 L 2150 -201 L 2147 -197 L 2142 -198 L 2141 -196 L 2139 -189 L 2138 -182 L 2134 -182 L 2133 -181 L 2133 -178 L 2124 -177 L 2121 -175 L 2120 -170 L 2119 -163 L 2117 -160 L 2120 -155 L 2123 -153 L 2125 -155 L 2126 -152 L 2130 -151 L 2132 -149 L 2135 -150 L 2140 -157 L 2143 -157 L 2145 -159 L 2143 -162 L 2145 -165 L 2147 -170 L 2148 -167 L 2152 -169 L 2153 -170 L 2148 -172 L 2153 -172 L 2155 -174 L 2156 -176 L 2161 -177 L 2168 -178 L 2170 -181 L 2176 -183 L 2179 -181 L 2183 -180 L 2186 -177 L 2190 -170 L 2192 -168 L 2193 -162 L 2194 -149 L 2198 -138 L 2199 -123 L 2201 -114 L 2204 -107 L 2205 -104 L 2203 -102 L 2201 -93 L 2202 -90 L 2200 -83 L 2199 -79 L 2195 -75 L 2192 -75 L 2189 -72 L 2190 -76 L 2188 -78 L 2190 -79 L 2193 -83 L 2190 -84 L 2187 -84 L 2183 -82 L 2182 -80 L 2184 -78 L 2184 -76 L 2181 -76 L 2179 -73 L 2179 -68 L 2177 -63 L 2174 -60 L 2168 -58 L 2164 -52 L 2164 -44 L 2164 -42 L 2161 -40 L 2161 -36 L 2157 -33 L 2156 -31 L 2153 -31 L 2152 -27 L 2150 -26 L 2146 -22 L 2147 -17 L 2146 -16 L 2128 -16 L 2094 -14 L 2068 -14 L 2068 -18 L 2050 -18 L 2012 -18 L 1971 -18 L 1953 -18 Z M 1814 -455 L 1818 -459 L 1838 -467 L 1839 -467 L 1848 -473 L 1855 -476 L 1856 -475 L 1862 -477 L 1861 -475 L 1859 -474 L 1853 -469 L 1853 -468 L 1848 -464 L 1837 -461 L 1829 -457 L 1829 -456 L 1834 -456 L 1822 -451 L 1818 -451 L 1814 -455 Z M 1748 -361 L 1752 -364 L 1754 -364 L 1762 -367 L 1770 -369 L 1776 -374 L 1780 -377 L 1783 -379 L 1790 -380 L 1793 -379 L 1799 -381 L 1804 -381 L 1814 -385 L 1821 -391 L 1825 -391 L 1831 -393 L 1833 -395 L 1834 -398 L 1839 -402 L 1842 -403 L 1848 -408 L 1853 -410 L 1857 -413 L 1860 -416 L 1864 -420 L 1875 -425 L 1887 -426 L 1897 -426 L 1902 -423 L 1902 -421 L 1900 -421 L 1896 -420 L 1893 -420 L 1888 -420 L 1889 -417 L 1883 -413 L 1877 -407 L 1873 -406 L 1872 -402 L 1870 -402 L 1869 -399 L 1866 -398 L 1865 -393 L 1862 -390 L 1861 -390 L 1858 -380 L 1859 -377 L 1857 -375 L 1860 -375 L 1864 -380 L 1864 -383 L 1866 -382 L 1872 -387 L 1878 -390 L 1875 -386 L 1873 -385 L 1870 -380 L 1876 -385 L 1881 -386 L 1884 -386 L 1892 -386 L 1895 -384 L 1896 -384 L 1900 -382 L 1901 -380 L 1904 -380 L 1909 -377 L 1910 -373 L 1913 -370 L 1914 -367 L 1917 -364 L 1921 -363 L 1921 -358 L 1923 -356 L 1928 -356 L 1937 -356 L 1942 -359 L 1944 -358 L 1947 -354 L 1950 -352 L 1953 -352 L 1955 -355 L 1958 -354 L 1960 -352 L 1961 -356 L 1960 -359 L 1963 -361 L 1964 -359 L 1963 -355 L 1967 -354 L 1972 -358 L 1980 -362 L 1992 -369 L 1994 -367 L 2007 -370 L 2016 -369 L 2024 -369 L 2030 -369 L 2042 -374 L 2047 -375 L 2054 -375 L 2060 -376 L 2056 -370 L 2055 -362 L 2056 -359 L 2054 -358 L 2056 -355 L 2059 -355 L 2061 -356 L 2062 -354 L 2065 -354 L 2069 -353 L 2076 -356 L 2078 -355 L 2081 -352 L 2080 -350 L 2086 -352 L 2087 -352 L 2089 -356 L 2093 -357 L 2098 -356 L 2100 -356 L 2101 -359 L 2107 -359 L 2108 -357 L 2106 -351 L 2107 -343 L 2108 -337 L 2102 -337 L 2100 -333 L 2103 -333 L 2104 -334 L 2107 -334 L 2109 -331 L 2113 -330 L 2110 -328 L 2115 -323 L 2118 -323 L 2122 -320 L 2123 -323 L 2126 -320 L 2128 -322 L 2124 -328 L 2127 -327 L 2136 -328 L 2138 -327 L 2141 -322 L 2144 -320 L 2142 -316 L 2139 -314 L 2134 -317 L 2128 -316 L 2121 -318 L 2119 -318 L 2113 -318 L 2108 -319 L 2096 -318 L 2093 -316 L 2085 -320 L 2082 -323 L 2080 -323 L 2077 -324 L 2075 -322 L 2075 -319 L 2072 -317 L 2072 -314 L 2074 -310 L 2072 -309 L 2067 -312 L 2066 -313 L 2062 -316 L 2061 -318 L 2056 -322 L 2049 -324 L 2046 -324 L 2039 -327 L 2035 -327 L 2033 -328 L 2032 -327 L 2028 -327 L 2023 -323 L 2019 -318 L 2017 -318 L 2011 -319 L 2006 -318 L 2005 -317 L 2005 -315 L 2000 -317 L 1996 -318 L 1991 -317 L 1989 -318 L 1984 -317 L 1982 -314 L 1981 -310 L 1979 -306 L 1976 -306 L 1975 -304 L 1970 -303 L 1969 -300 L 1967 -300 L 1967 -297 L 1964 -296 L 1965 -293 L 1961 -295 L 1959 -297 L 1961 -299 L 1962 -301 L 1964 -303 L 1964 -305 L 1967 -305 L 1970 -310 L 1969 -313 L 1967 -313 L 1963 -309 L 1955 -310 L 1956 -307 L 1953 -304 L 1952 -301 L 1946 -299 L 1945 -297 L 1944 -300 L 1944 -303 L 1944 -307 L 1942 -309 L 1940 -308 L 1939 -301 L 1940 -300 L 1933 -297 L 1928 -289 L 1924 -280 L 1920 -276 L 1916 -269 L 1908 -258 L 1909 -256 L 1905 -257 L 1904 -260 L 1901 -262 L 1901 -263 L 1904 -271 L 1906 -274 L 1905 -276 L 1903 -277 L 1900 -274 L 1894 -274 L 1893 -277 L 1894 -278 L 1894 -280 L 1896 -282 L 1898 -285 L 1897 -288 L 1899 -292 L 1896 -297 L 1898 -297 L 1897 -300 L 1894 -301 L 1893 -303 L 1888 -303 L 1886 -306 L 1882 -305 L 1878 -308 L 1881 -311 L 1880 -312 L 1880 -315 L 1872 -318 L 1869 -317 L 1864 -320 L 1862 -319 L 1857 -320 L 1857 -322 L 1851 -322 L 1851 -320 L 1848 -320 L 1847 -322 L 1844 -323 L 1841 -322 L 1823 -331 L 1765 -345 L 1765 -346 L 1759 -357 L 1753 -358 L 1751 -359 L 1749 -359 L 1748 -361 Z","mississippi":"M 1857 805 L 1863 806 L 1860 807 L 1857 807 L 1857 805 Z M 1842 803 L 1845 802 L 1851 804 L 1852 805 L 1847 805 L 1842 803 Z M 1829 805 L 1832 805 L 1836 803 L 1835 805 L 1830 806 L 1829 805 Z M 1820 804 L 1824 804 L 1825 803 L 1824 805 L 1822 806 L 1819 804 L 1820 804 Z M 1705 606 L 1708 603 L 1703 599 L 1704 596 L 1706 597 L 1709 597 L 1710 595 L 1709 591 L 1712 588 L 1711 586 L 1709 587 L 1709 590 L 1706 585 L 1706 582 L 1711 576 L 1710 574 L 1708 579 L 1704 579 L 1702 578 L 1703 577 L 1707 576 L 1707 573 L 1704 571 L 1705 574 L 1701 575 L 1704 570 L 1701 567 L 1707 564 L 1707 562 L 1701 559 L 1702 557 L 1705 556 L 1707 558 L 1710 560 L 1713 559 L 1711 555 L 1708 556 L 1706 555 L 1706 551 L 1711 551 L 1713 552 L 1715 550 L 1712 548 L 1710 545 L 1714 540 L 1709 538 L 1710 536 L 1713 535 L 1714 538 L 1717 537 L 1715 534 L 1720 534 L 1722 530 L 1721 528 L 1719 529 L 1717 525 L 1719 523 L 1723 525 L 1725 524 L 1725 522 L 1721 522 L 1718 520 L 1720 518 L 1723 520 L 1724 516 L 1728 515 L 1729 513 L 1728 511 L 1729 509 L 1733 509 L 1732 512 L 1734 512 L 1734 508 L 1739 505 L 1738 500 L 1741 497 L 1740 495 L 1738 491 L 1738 487 L 1740 486 L 1740 489 L 1742 490 L 1745 487 L 1744 485 L 1740 485 L 1739 483 L 1741 482 L 1740 480 L 1742 478 L 1742 482 L 1743 484 L 1746 482 L 1744 478 L 1745 477 L 1744 474 L 1744 472 L 1747 472 L 1747 476 L 1754 473 L 1757 470 L 1757 468 L 1754 464 L 1801 464 L 1833 464 L 1874 464 L 1877 469 L 1880 472 L 1878 494 L 1874 533 L 1873 543 L 1866 612 L 1865 625 L 1861 668 L 1859 685 L 1861 733 L 1862 759 L 1863 781 L 1863 794 L 1862 796 L 1861 795 L 1859 798 L 1855 796 L 1853 797 L 1852 795 L 1848 795 L 1844 796 L 1839 793 L 1839 795 L 1835 793 L 1830 793 L 1824 794 L 1818 797 L 1812 799 L 1813 796 L 1811 794 L 1808 795 L 1810 796 L 1810 799 L 1805 802 L 1803 807 L 1801 807 L 1799 808 L 1796 808 L 1793 805 L 1793 801 L 1793 796 L 1790 792 L 1790 788 L 1788 786 L 1785 785 L 1784 782 L 1782 780 L 1782 774 L 1780 773 L 1782 768 L 1781 766 L 1783 764 L 1784 757 L 1786 755 L 1786 753 L 1787 751 L 1786 749 L 1752 749 L 1724 749 L 1678 749 L 1681 748 L 1682 744 L 1679 741 L 1679 740 L 1681 737 L 1680 734 L 1678 732 L 1678 730 L 1682 731 L 1685 729 L 1685 727 L 1683 724 L 1683 722 L 1681 721 L 1683 718 L 1684 721 L 1686 723 L 1687 723 L 1687 721 L 1685 716 L 1685 712 L 1689 711 L 1691 709 L 1690 707 L 1687 707 L 1685 706 L 1686 703 L 1688 705 L 1692 705 L 1692 698 L 1694 696 L 1699 696 L 1700 695 L 1694 694 L 1695 689 L 1697 688 L 1698 690 L 1699 692 L 1700 690 L 1699 689 L 1704 684 L 1704 681 L 1705 679 L 1709 678 L 1709 675 L 1705 674 L 1706 672 L 1709 674 L 1710 672 L 1712 671 L 1714 667 L 1711 665 L 1711 669 L 1705 668 L 1705 664 L 1711 662 L 1712 661 L 1715 663 L 1716 660 L 1716 657 L 1718 657 L 1722 652 L 1721 651 L 1719 654 L 1715 653 L 1715 649 L 1716 648 L 1715 646 L 1713 647 L 1708 644 L 1709 640 L 1710 640 L 1713 643 L 1715 643 L 1714 641 L 1710 638 L 1713 636 L 1714 634 L 1713 632 L 1712 635 L 1708 636 L 1706 635 L 1706 632 L 1708 630 L 1711 628 L 1711 626 L 1705 624 L 1705 620 L 1706 618 L 1710 615 L 1711 612 L 1709 608 L 1707 608 L 1707 612 L 1704 614 L 1702 612 L 1703 609 L 1705 606 Z","new_york":"M 2798 18 L 2799 17 L 2804 15 L 2800 18 L 2798 18 Z M 2792 29 L 2793 28 L 2795 29 L 2795 32 L 2794 30 L 2792 29 Z M 2788 23 L 2791 22 L 2789 25 L 2788 23 Z M 2682 60 L 2683 64 L 2681 67 L 2673 71 L 2671 71 L 2671 68 L 2673 67 L 2674 62 L 2682 60 Z M 2550 -169 L 2553 -172 L 2552 -169 L 2550 -169 Z M 2546 -170 L 2548 -173 L 2550 -172 L 2546 -170 Z M 2356 -55 L 2363 -58 L 2374 -65 L 2380 -70 L 2386 -73 L 2391 -75 L 2394 -79 L 2396 -81 L 2397 -85 L 2405 -88 L 2409 -91 L 2408 -96 L 2405 -99 L 2405 -101 L 2404 -104 L 2399 -106 L 2399 -111 L 2396 -112 L 2398 -117 L 2397 -125 L 2396 -125 L 2402 -127 L 2410 -129 L 2421 -132 L 2429 -133 L 2436 -134 L 2444 -133 L 2451 -134 L 2469 -131 L 2474 -130 L 2477 -127 L 2481 -124 L 2484 -123 L 2492 -126 L 2499 -127 L 2508 -127 L 2512 -126 L 2517 -126 L 2520 -128 L 2526 -129 L 2530 -131 L 2532 -131 L 2535 -136 L 2542 -140 L 2544 -141 L 2548 -144 L 2550 -144 L 2555 -143 L 2558 -144 L 2560 -148 L 2560 -153 L 2558 -164 L 2554 -167 L 2557 -170 L 2559 -170 L 2560 -168 L 2564 -171 L 2564 -173 L 2560 -176 L 2555 -175 L 2556 -177 L 2553 -180 L 2550 -180 L 2550 -185 L 2553 -192 L 2557 -193 L 2562 -195 L 2562 -198 L 2566 -199 L 2571 -203 L 2573 -203 L 2576 -204 L 2582 -209 L 2582 -212 L 2585 -215 L 2593 -222 L 2600 -228 L 2611 -237 L 2611 -238 L 2625 -244 L 2630 -248 L 2634 -248 L 2638 -251 L 2644 -249 L 2648 -249 L 2666 -249 L 2677 -249 L 2699 -250 L 2704 -250 L 2723 -250 L 2724 -243 L 2722 -242 L 2721 -238 L 2724 -234 L 2722 -231 L 2721 -225 L 2721 -223 L 2721 -219 L 2725 -214 L 2726 -209 L 2724 -205 L 2725 -198 L 2724 -195 L 2720 -192 L 2719 -186 L 2718 -181 L 2720 -180 L 2719 -173 L 2721 -169 L 2720 -165 L 2723 -162 L 2720 -156 L 2718 -149 L 2720 -147 L 2722 -151 L 2726 -151 L 2726 -148 L 2729 -146 L 2728 -125 L 2727 -99 L 2727 -95 L 2726 -93 L 2728 -89 L 2721 -66 L 2714 -42 L 2715 -39 L 2713 -13 L 2712 5 L 2711 15 L 2715 21 L 2701 29 L 2705 35 L 2705 37 L 2704 40 L 2699 42 L 2699 47 L 2696 47 L 2698 51 L 2702 45 L 2704 46 L 2706 44 L 2711 42 L 2714 42 L 2715 40 L 2720 42 L 2720 39 L 2722 41 L 2726 41 L 2730 43 L 2734 41 L 2735 38 L 2738 38 L 2740 39 L 2756 38 L 2764 37 L 2767 36 L 2773 32 L 2775 30 L 2777 29 L 2780 26 L 2784 25 L 2786 25 L 2783 28 L 2781 28 L 2784 30 L 2785 33 L 2789 34 L 2791 32 L 2794 37 L 2797 36 L 2802 33 L 2802 31 L 2806 30 L 2808 31 L 2807 32 L 2793 38 L 2777 45 L 2767 49 L 2751 55 L 2740 60 L 2731 62 L 2725 63 L 2724 62 L 2711 66 L 2698 65 L 2689 68 L 2690 66 L 2685 66 L 2686 65 L 2683 62 L 2685 60 L 2683 58 L 2684 57 L 2685 53 L 2688 49 L 2692 37 L 2691 36 L 2664 21 L 2646 10 L 2643 7 L 2644 5 L 2640 6 L 2640 4 L 2634 5 L 2635 3 L 2632 1 L 2630 2 L 2629 -0 L 2624 -7 L 2626 -8 L 2625 -18 L 2623 -19 L 2624 -21 L 2622 -24 L 2617 -26 L 2614 -26 L 2612 -32 L 2611 -32 L 2608 -35 L 2586 -35 L 2551 -35 L 2529 -36 L 2507 -35 L 2457 -35 L 2423 -35 L 2407 -35 L 2357 -35 L 2356 -55 Z","ohio":"M 2187 -7 L 2190 -8 L 2189 -6 L 2187 -7 Z M 2180 -10 L 2182 -16 L 2184 -14 L 2183 -11 L 2180 -9 L 2180 -10 Z M 2068 -14 L 2094 -14 L 2128 -16 L 2146 -16 L 2146 -15 L 2150 -13 L 2153 -14 L 2160 -9 L 2165 -8 L 2168 -7 L 2171 -3 L 2175 -1 L 2179 -2 L 2179 -5 L 2181 -6 L 2184 -3 L 2188 -3 L 2187 -0 L 2193 5 L 2197 7 L 2201 9 L 2210 5 L 2214 5 L 2218 3 L 2228 -1 L 2236 2 L 2240 1 L 2244 1 L 2250 -3 L 2256 -8 L 2257 -9 L 2260 -12 L 2269 -18 L 2271 -18 L 2285 -25 L 2291 -26 L 2296 -28 L 2310 -32 L 2313 -34 L 2313 62 L 2309 63 L 2307 63 L 2305 66 L 2307 69 L 2309 74 L 2308 79 L 2309 84 L 2308 88 L 2306 90 L 2305 94 L 2302 96 L 2302 100 L 2301 102 L 2301 109 L 2299 111 L 2300 114 L 2297 113 L 2298 117 L 2296 118 L 2296 122 L 2293 125 L 2296 128 L 2293 129 L 2293 134 L 2289 135 L 2283 140 L 2280 144 L 2278 147 L 2276 147 L 2274 151 L 2270 151 L 2266 154 L 2264 154 L 2262 151 L 2259 150 L 2254 154 L 2253 159 L 2247 159 L 2246 162 L 2244 163 L 2243 166 L 2243 172 L 2239 173 L 2240 175 L 2242 177 L 2241 184 L 2239 182 L 2237 184 L 2237 186 L 2235 188 L 2233 186 L 2234 184 L 2232 179 L 2230 179 L 2227 177 L 2226 179 L 2223 180 L 2220 186 L 2220 190 L 2216 193 L 2218 200 L 2219 206 L 2218 208 L 2214 207 L 2212 209 L 2211 215 L 2210 218 L 2205 219 L 2198 221 L 2195 220 L 2194 217 L 2192 215 L 2187 210 L 2183 210 L 2180 207 L 2178 201 L 2179 198 L 2178 196 L 2173 198 L 2170 198 L 2168 200 L 2165 202 L 2163 206 L 2156 206 L 2154 207 L 2153 204 L 2151 203 L 2145 202 L 2142 200 L 2136 201 L 2134 205 L 2128 203 L 2127 200 L 2124 199 L 2123 197 L 2117 194 L 2110 195 L 2102 192 L 2101 191 L 2101 187 L 2098 182 L 2096 177 L 2090 175 L 2089 170 L 2087 170 L 2086 172 L 2083 172 L 2080 173 L 2076 172 L 2073 168 L 2071 168 L 2067 171 L 2067 156 L 2068 139 L 2068 112 L 2069 86 L 2069 1 L 2068 -14 Z","oregon":"M -145 -339 L -141 -340 L -138 -337 L -139 -334 L -135 -331 L -130 -331 L -123 -334 L -120 -334 L -108 -327 L -107 -323 L -103 -318 L -103 -314 L -102 -311 L -102 -307 L -100 -302 L -101 -299 L -100 -296 L -94 -293 L -84 -291 L -82 -290 L -78 -290 L -76 -288 L -72 -288 L -67 -291 L -63 -291 L -52 -296 L -49 -299 L -46 -300 L -42 -299 L -36 -300 L -30 -301 L -26 -299 L -23 -299 L -19 -300 L -12 -297 L -10 -293 L -7 -293 L -3 -296 L 4 -296 L 6 -295 L 9 -297 L 18 -300 L 21 -303 L 26 -302 L 30 -299 L 34 -299 L 41 -301 L 45 -301 L 48 -304 L 53 -305 L 59 -308 L 69 -310 L 76 -310 L 79 -314 L 82 -315 L 87 -314 L 100 -316 L 103 -316 L 107 -316 L 113 -319 L 115 -321 L 149 -321 L 200 -321 L 234 -320 L 237 -314 L 239 -312 L 243 -308 L 246 -308 L 248 -305 L 252 -305 L 255 -302 L 255 -299 L 258 -296 L 260 -292 L 255 -286 L 254 -282 L 252 -281 L 247 -272 L 248 -270 L 246 -266 L 244 -259 L 242 -257 L 240 -254 L 238 -251 L 237 -248 L 238 -244 L 237 -240 L 233 -235 L 233 -234 L 226 -231 L 223 -225 L 222 -220 L 220 -215 L 216 -213 L 217 -209 L 215 -206 L 218 -202 L 216 -199 L 219 -197 L 223 -198 L 226 -194 L 230 -195 L 231 -192 L 235 -191 L 235 -189 L 233 -185 L 230 -184 L 230 -182 L 233 -180 L 232 -177 L 230 -172 L 230 -169 L 228 -168 L 227 -164 L 227 -35 L 193 -35 L 137 -35 L 132 -35 L 103 -35 L 58 -35 L 39 -35 L -2 -35 L -25 -35 L -57 -36 L -66 -36 L -85 -36 L -93 -36 L -117 -36 L -122 -36 L -134 -35 L -150 -35 L -151 -35 L -183 -35 L -188 -39 L -191 -42 L -192 -46 L -192 -48 L -195 -53 L -194 -55 L -196 -59 L -196 -67 L -193 -76 L -195 -82 L -198 -88 L -200 -88 L -203 -95 L -200 -101 L -197 -107 L -196 -112 L -196 -115 L -194 -120 L -193 -126 L -194 -129 L -191 -132 L -189 -134 L -186 -142 L -183 -154 L -180 -172 L -178 -185 L -177 -197 L -178 -197 L -176 -210 L -176 -214 L -174 -225 L -174 -231 L -175 -233 L -174 -239 L -171 -253 L -170 -260 L -169 -269 L -169 -273 L -169 -280 L -170 -284 L -169 -286 L -168 -297 L -168 -301 L -170 -304 L -169 -309 L -169 -314 L -171 -317 L -167 -319 L -167 -326 L -171 -338 L -166 -333 L -163 -332 L -163 -334 L -159 -335 L -157 -336 L -155 -334 L -152 -336 L -149 -336 L -145 -339 Z","tennessee":"M 1787 393 L 1789 391 L 1790 387 L 1794 384 L 1794 380 L 1788 376 L 1789 375 L 1795 376 L 1798 375 L 1798 373 L 1794 371 L 1794 368 L 1799 368 L 1800 366 L 1798 362 L 1799 358 L 1798 357 L 1801 357 L 1800 359 L 1803 359 L 1805 357 L 1812 356 L 1829 357 L 1855 357 L 1883 357 L 1884 353 L 1882 344 L 1894 345 L 1894 347 L 1918 347 L 1936 347 L 1966 346 L 1968 347 L 1971 346 L 1981 346 L 1998 348 L 2010 348 L 2029 349 L 2041 348 L 2056 348 L 2066 349 L 2083 350 L 2099 350 L 2115 350 L 2132 351 L 2133 350 L 2140 350 L 2156 350 L 2157 350 L 2189 350 L 2201 350 L 2232 350 L 2233 349 L 2249 349 L 2247 351 L 2245 354 L 2246 359 L 2245 360 L 2243 364 L 2245 368 L 2242 368 L 2240 367 L 2238 368 L 2234 371 L 2227 383 L 2224 385 L 2221 385 L 2220 382 L 2216 381 L 2214 383 L 2212 383 L 2209 384 L 2205 386 L 2202 392 L 2197 396 L 2194 395 L 2195 390 L 2193 388 L 2186 392 L 2182 398 L 2179 396 L 2177 398 L 2177 402 L 2172 409 L 2167 408 L 2163 409 L 2161 412 L 2158 412 L 2157 414 L 2154 417 L 2152 417 L 2151 418 L 2146 420 L 2144 423 L 2127 424 L 2124 427 L 2121 427 L 2119 430 L 2117 431 L 2113 435 L 2114 437 L 2112 439 L 2113 442 L 2109 446 L 2103 447 L 2102 445 L 2098 448 L 2096 465 L 2058 465 L 2031 465 L 2023 465 L 2010 465 L 1977 465 L 1970 465 L 1951 465 L 1918 464 L 1905 464 L 1874 463 L 1874 464 L 1833 464 L 1801 464 L 1754 464 L 1754 461 L 1760 462 L 1761 456 L 1763 454 L 1766 456 L 1768 454 L 1765 451 L 1767 448 L 1766 446 L 1763 446 L 1762 443 L 1765 442 L 1765 439 L 1767 437 L 1764 434 L 1764 437 L 1761 437 L 1762 434 L 1767 430 L 1768 435 L 1771 431 L 1769 428 L 1770 424 L 1772 424 L 1776 427 L 1777 425 L 1775 424 L 1775 421 L 1780 418 L 1779 416 L 1777 417 L 1775 416 L 1774 412 L 1777 410 L 1779 411 L 1782 410 L 1784 407 L 1786 406 L 1789 404 L 1784 402 L 1786 399 L 1791 401 L 1791 398 L 1788 395 L 1787 393 Z","utah":"M 398 -35 L 410 -35 L 464 -35 L 504 -35 L 505 -35 L 545 -35 L 569 -36 L 569 -4 L 569 9 L 569 36 L 588 36 L 615 36 L 626 36 L 655 36 L 683 36 L 683 69 L 683 72 L 683 185 L 683 199 L 683 230 L 684 238 L 684 283 L 683 286 L 683 321 L 650 321 L 602 321 L 601 321 L 568 321 L 548 321 L 484 321 L 438 321 L 397 321 L 397 267 L 398 267 L 397 250 L 398 239 L 397 221 L 398 202 L 398 100 L 398 91 L 398 52 L 398 36 L 398 -35 Z","virginia":"M 2572 261 L 2573 262 L 2572 263 L 2572 261 Z M 2590 253 L 2592 254 L 2593 250 L 2615 248 L 2612 253 L 2608 259 L 2607 260 L 2606 259 L 2603 260 L 2599 264 L 2596 269 L 2594 276 L 2594 280 L 2590 288 L 2591 289 L 2587 295 L 2585 299 L 2583 300 L 2583 304 L 2581 309 L 2577 313 L 2574 313 L 2575 315 L 2573 315 L 2573 310 L 2571 307 L 2570 303 L 2570 299 L 2572 295 L 2573 290 L 2575 283 L 2576 278 L 2579 274 L 2583 267 L 2582 265 L 2586 264 L 2589 260 L 2589 258 L 2585 257 L 2590 253 Z M 2572 253 L 2569 256 L 2569 253 L 2572 253 Z M 2230 283 L 2233 285 L 2229 287 L 2229 289 L 2232 290 L 2233 296 L 2236 298 L 2237 301 L 2241 301 L 2243 302 L 2243 304 L 2247 307 L 2254 306 L 2257 305 L 2257 303 L 2262 302 L 2264 298 L 2265 297 L 2267 300 L 2273 304 L 2279 301 L 2287 300 L 2290 299 L 2294 297 L 2292 294 L 2294 291 L 2298 293 L 2299 295 L 2307 290 L 2311 287 L 2314 287 L 2316 291 L 2326 285 L 2327 283 L 2324 283 L 2324 281 L 2328 279 L 2330 276 L 2327 274 L 2326 272 L 2329 269 L 2328 267 L 2332 260 L 2339 254 L 2342 251 L 2344 248 L 2346 244 L 2347 242 L 2346 241 L 2347 237 L 2353 232 L 2355 231 L 2354 228 L 2358 223 L 2361 219 L 2360 215 L 2363 208 L 2369 211 L 2373 217 L 2382 221 L 2388 215 L 2391 206 L 2393 203 L 2395 203 L 2395 199 L 2398 194 L 2400 189 L 2407 195 L 2412 187 L 2416 183 L 2416 185 L 2418 184 L 2421 180 L 2423 181 L 2426 177 L 2425 176 L 2429 171 L 2431 170 L 2434 167 L 2432 164 L 2434 161 L 2433 160 L 2438 154 L 2436 153 L 2438 151 L 2437 149 L 2437 145 L 2451 156 L 2467 169 L 2471 158 L 2473 156 L 2476 155 L 2479 157 L 2482 157 L 2483 160 L 2488 162 L 2487 165 L 2485 166 L 2485 170 L 2487 171 L 2488 173 L 2495 174 L 2500 177 L 2500 180 L 2502 181 L 2506 181 L 2508 183 L 2512 188 L 2512 193 L 2512 199 L 2508 200 L 2507 202 L 2507 205 L 2503 206 L 2500 205 L 2500 208 L 2496 215 L 2496 218 L 2496 223 L 2499 226 L 2505 225 L 2506 224 L 2509 224 L 2512 221 L 2514 223 L 2512 228 L 2516 232 L 2516 235 L 2524 238 L 2529 238 L 2530 240 L 2531 239 L 2536 239 L 2537 242 L 2540 244 L 2542 248 L 2545 249 L 2548 252 L 2552 254 L 2558 258 L 2557 262 L 2554 263 L 2553 270 L 2554 272 L 2552 274 L 2555 276 L 2551 278 L 2544 274 L 2542 275 L 2541 274 L 2541 271 L 2538 266 L 2534 264 L 2533 262 L 2530 262 L 2526 255 L 2524 255 L 2523 252 L 2520 250 L 2520 252 L 2525 257 L 2530 264 L 2533 266 L 2533 267 L 2536 268 L 2538 274 L 2540 277 L 2547 278 L 2548 280 L 2554 281 L 2551 283 L 2551 285 L 2554 286 L 2555 284 L 2556 287 L 2557 294 L 2556 299 L 2552 295 L 2548 293 L 2546 295 L 2548 297 L 2550 301 L 2551 302 L 2547 303 L 2543 303 L 2544 306 L 2549 305 L 2549 310 L 2551 309 L 2552 311 L 2555 312 L 2556 315 L 2554 321 L 2553 320 L 2550 321 L 2547 323 L 2545 319 L 2539 316 L 2536 313 L 2537 310 L 2534 305 L 2530 306 L 2528 308 L 2526 305 L 2522 304 L 2521 303 L 2517 305 L 2519 307 L 2522 306 L 2526 307 L 2529 310 L 2531 311 L 2532 307 L 2534 314 L 2534 318 L 2539 320 L 2544 325 L 2544 329 L 2549 328 L 2551 327 L 2551 329 L 2553 329 L 2553 324 L 2556 324 L 2559 326 L 2566 328 L 2569 326 L 2572 327 L 2573 335 L 2576 343 L 2578 348 L 2579 353 L 2550 353 L 2525 353 L 2519 353 L 2519 354 L 2497 354 L 2443 354 L 2428 354 L 2371 354 L 2336 354 L 2326 354 L 2303 352 L 2295 353 L 2276 352 L 2264 352 L 2247 351 L 2249 349 L 2233 349 L 2232 350 L 2201 350 L 2189 350 L 2157 350 L 2156 350 L 2140 350 L 2133 350 L 2135 348 L 2141 345 L 2146 345 L 2154 342 L 2160 340 L 2164 340 L 2164 337 L 2167 332 L 2173 331 L 2178 329 L 2180 326 L 2179 323 L 2182 321 L 2184 321 L 2187 318 L 2187 313 L 2192 310 L 2196 307 L 2201 305 L 2208 302 L 2230 283 Z","nebraska":"M 969 -107 L 1029 -107 L 1058 -107 L 1095 -107 L 1107 -106 L 1150 -107 L 1193 -107 L 1225 -107 L 1263 -107 L 1286 -107 L 1288 -103 L 1300 -98 L 1307 -94 L 1313 -90 L 1317 -90 L 1320 -92 L 1322 -97 L 1323 -97 L 1327 -96 L 1332 -95 L 1336 -96 L 1339 -96 L 1343 -97 L 1346 -96 L 1348 -97 L 1351 -96 L 1354 -97 L 1359 -96 L 1359 -93 L 1363 -92 L 1364 -90 L 1373 -90 L 1375 -87 L 1377 -88 L 1383 -86 L 1383 -83 L 1387 -83 L 1389 -82 L 1388 -79 L 1392 -75 L 1394 -71 L 1399 -72 L 1400 -70 L 1403 -70 L 1406 -70 L 1407 -67 L 1405 -65 L 1405 -60 L 1407 -58 L 1410 -52 L 1408 -50 L 1409 -47 L 1413 -44 L 1413 -39 L 1416 -37 L 1415 -36 L 1418 -36 L 1418 -34 L 1421 -33 L 1421 -29 L 1419 -29 L 1422 -25 L 1423 -23 L 1425 -21 L 1424 -18 L 1423 -17 L 1424 -14 L 1422 -13 L 1423 -10 L 1422 -8 L 1424 -5 L 1424 -2 L 1427 -0 L 1427 -3 L 1429 -3 L 1428 2 L 1433 3 L 1433 10 L 1431 12 L 1435 13 L 1433 16 L 1434 20 L 1433 22 L 1438 23 L 1435 25 L 1436 30 L 1435 32 L 1437 34 L 1437 36 L 1438 37 L 1438 42 L 1440 43 L 1437 46 L 1438 51 L 1436 54 L 1435 56 L 1438 59 L 1441 60 L 1443 64 L 1442 66 L 1442 69 L 1446 70 L 1446 68 L 1449 69 L 1446 71 L 1446 74 L 1448 76 L 1448 78 L 1451 85 L 1454 86 L 1454 88 L 1458 90 L 1459 94 L 1464 99 L 1462 104 L 1468 107 L 1441 107 L 1411 107 L 1358 107 L 1300 107 L 1267 107 L 1211 107 L 1157 107 L 1136 107 L 1083 107 L 1083 36 L 1054 36 L 1027 36 L 969 36 L 969 -107 Z","south_carolina":"M 2165 464 L 2184 458 L 2185 459 L 2191 455 L 2197 453 L 2198 453 L 2202 451 L 2204 452 L 2206 449 L 2207 451 L 2212 450 L 2251 451 L 2272 452 L 2283 453 L 2284 457 L 2282 459 L 2283 461 L 2290 456 L 2298 468 L 2297 477 L 2334 477 L 2349 478 L 2362 478 L 2380 496 L 2386 503 L 2407 526 L 2426 546 L 2424 546 L 2416 549 L 2411 554 L 2404 561 L 2400 566 L 2398 569 L 2395 572 L 2392 578 L 2390 588 L 2390 592 L 2389 595 L 2386 598 L 2381 600 L 2379 606 L 2376 605 L 2372 606 L 2370 604 L 2367 606 L 2365 610 L 2365 612 L 2367 611 L 2367 613 L 2364 615 L 2360 617 L 2358 620 L 2351 624 L 2349 622 L 2347 622 L 2347 624 L 2350 625 L 2349 629 L 2344 632 L 2343 635 L 2341 634 L 2336 636 L 2332 639 L 2331 638 L 2324 644 L 2322 643 L 2319 644 L 2319 642 L 2316 642 L 2315 645 L 2318 650 L 2317 655 L 2310 658 L 2306 660 L 2306 657 L 2302 655 L 2300 656 L 2299 658 L 2302 659 L 2305 662 L 2302 666 L 2297 670 L 2295 670 L 2291 674 L 2292 675 L 2290 675 L 2286 671 L 2284 672 L 2279 670 L 2278 666 L 2279 664 L 2277 660 L 2279 658 L 2278 653 L 2277 653 L 2274 647 L 2275 645 L 2270 640 L 2270 638 L 2265 637 L 2262 634 L 2263 631 L 2262 628 L 2261 628 L 2262 625 L 2261 623 L 2261 618 L 2260 617 L 2259 614 L 2257 610 L 2258 606 L 2254 603 L 2251 600 L 2249 600 L 2243 596 L 2242 594 L 2242 591 L 2240 591 L 2237 589 L 2238 587 L 2232 582 L 2233 580 L 2232 578 L 2234 575 L 2233 574 L 2230 572 L 2226 566 L 2222 564 L 2220 564 L 2217 562 L 2217 559 L 2215 557 L 2214 553 L 2209 547 L 2203 544 L 2199 539 L 2197 539 L 2195 533 L 2192 530 L 2190 526 L 2188 525 L 2186 520 L 2186 517 L 2184 514 L 2183 511 L 2181 509 L 2180 505 L 2179 501 L 2177 501 L 2171 502 L 2166 498 L 2162 492 L 2158 492 L 2152 487 L 2152 483 L 2153 481 L 2153 479 L 2158 472 L 2165 468 L 2165 464 Z","idaho":"M 234 -320 L 231 -326 L 230 -327 L 233 -332 L 231 -335 L 231 -339 L 229 -342 L 225 -347 L 227 -350 L 227 -426 L 226 -429 L 226 -472 L 227 -490 L 227 -517 L 227 -535 L 262 -535 L 283 -535 L 283 -485 L 283 -479 L 283 -462 L 291 -452 L 294 -451 L 296 -446 L 298 -446 L 299 -443 L 302 -442 L 301 -438 L 304 -435 L 301 -433 L 301 -430 L 303 -430 L 304 -427 L 307 -426 L 307 -425 L 302 -424 L 300 -422 L 302 -422 L 312 -417 L 313 -414 L 320 -411 L 325 -410 L 326 -408 L 326 -405 L 328 -405 L 329 -403 L 332 -402 L 335 -399 L 339 -394 L 340 -390 L 343 -390 L 347 -386 L 346 -382 L 350 -378 L 357 -375 L 355 -371 L 357 -370 L 360 -372 L 360 -374 L 363 -373 L 365 -371 L 364 -369 L 365 -366 L 369 -367 L 374 -366 L 374 -367 L 380 -368 L 381 -368 L 382 -364 L 380 -357 L 377 -357 L 379 -352 L 376 -348 L 376 -341 L 373 -340 L 375 -338 L 375 -333 L 371 -333 L 370 -330 L 374 -328 L 372 -324 L 373 -321 L 377 -319 L 376 -316 L 378 -313 L 377 -310 L 372 -310 L 368 -305 L 372 -300 L 372 -297 L 368 -295 L 370 -293 L 369 -289 L 374 -289 L 377 -286 L 379 -284 L 381 -282 L 385 -285 L 386 -288 L 389 -288 L 393 -289 L 396 -294 L 400 -296 L 399 -299 L 401 -300 L 404 -298 L 406 -295 L 406 -294 L 408 -294 L 411 -292 L 410 -286 L 414 -286 L 414 -284 L 413 -282 L 414 -278 L 416 -277 L 415 -273 L 418 -270 L 418 -267 L 423 -263 L 425 -259 L 428 -258 L 428 -256 L 432 -254 L 432 -250 L 432 -246 L 429 -246 L 431 -240 L 437 -237 L 438 -234 L 443 -237 L 450 -233 L 454 -227 L 455 -223 L 453 -221 L 457 -216 L 456 -214 L 457 -210 L 460 -208 L 464 -206 L 466 -204 L 468 -205 L 467 -208 L 470 -213 L 473 -214 L 477 -213 L 484 -213 L 486 -211 L 488 -212 L 492 -210 L 494 -213 L 495 -217 L 496 -217 L 498 -219 L 502 -218 L 504 -216 L 507 -217 L 508 -215 L 513 -217 L 515 -216 L 517 -218 L 522 -218 L 525 -214 L 531 -217 L 531 -218 L 536 -217 L 538 -218 L 545 -217 L 542 -221 L 545 -227 L 544 -229 L 548 -229 L 550 -232 L 553 -230 L 559 -223 L 559 -220 L 563 -216 L 565 -213 L 569 -212 L 569 -203 L 569 -187 L 569 -155 L 569 -154 L 569 -87 L 569 -77 L 569 -36 L 545 -35 L 505 -35 L 504 -35 L 464 -35 L 410 -35 L 398 -35 L 374 -35 L 366 -35 L 354 -36 L 341 -35 L 325 -35 L 265 -35 L 227 -35 L 227 -164 L 228 -168 L 230 -169 L 230 -172 L 232 -177 L 233 -180 L 230 -182 L 230 -184 L 233 -185 L 235 -189 L 235 -191 L 231 -192 L 230 -195 L 226 -194 L 223 -198 L 219 -197 L 216 -199 L 218 -202 L 215 -206 L 217 -209 L 216 -213 L 220 -215 L 222 -220 L 223 -225 L 226 -231 L 233 -234 L 233 -235 L 237 -240 L 238 -244 L 237 -248 L 238 -251 L 240 -254 L 242 -257 L 244 -259 L 246 -266 L 248 -270 L 247 -272 L 252 -281 L 254 -282 L 255 -286 L 260 -292 L 258 -296 L 255 -299 L 255 -302 L 252 -305 L 248 -305 L 246 -308 L 243 -308 L 239 -312 L 237 -314 L 234 -320 Z","nevada":"M 58 -35 L 103 -35 L 132 -35 L 137 -35 L 193 -35 L 227 -35 L 265 -35 L 325 -35 L 341 -35 L 354 -36 L 366 -35 L 374 -35 L 398 -35 L 398 36 L 398 52 L 398 91 L 398 100 L 398 202 L 397 221 L 398 239 L 397 250 L 398 267 L 397 267 L 397 321 L 397 348 L 398 365 L 398 379 L 396 380 L 392 391 L 387 392 L 382 388 L 383 387 L 379 382 L 376 382 L 372 383 L 371 382 L 368 382 L 365 383 L 364 382 L 362 384 L 357 386 L 359 391 L 358 394 L 360 400 L 362 401 L 360 403 L 360 406 L 361 410 L 360 413 L 361 415 L 361 417 L 363 420 L 363 426 L 361 428 L 362 432 L 365 435 L 366 439 L 368 450 L 368 454 L 363 457 L 365 458 L 364 464 L 334 434 L 320 419 L 272 373 L 207 312 L 181 288 L 169 277 L 143 254 L 123 235 L 110 224 L 86 204 L 63 183 L 58 179 L 57 163 L 57 155 L 57 127 L 58 126 L 58 102 L 58 56 L 58 54 L 58 -35 Z","louisiana":"M 1836 817 L 1838 821 L 1839 825 L 1839 831 L 1837 838 L 1836 838 L 1837 832 L 1838 826 L 1838 823 L 1836 817 Z M 1809 816 L 1811 814 L 1818 809 L 1818 810 L 1816 814 L 1816 815 L 1819 818 L 1816 821 L 1815 818 L 1813 818 L 1809 818 L 1809 816 Z M 1793 854 L 1796 853 L 1795 856 L 1793 854 Z M 1750 884 L 1751 883 L 1754 886 L 1752 887 L 1750 884 Z M 1740 885 L 1748 887 L 1744 888 L 1740 885 Z M 1729 888 L 1734 887 L 1734 888 L 1729 889 L 1729 888 Z M 1656 850 L 1658 848 L 1661 848 L 1661 847 L 1666 847 L 1671 851 L 1672 850 L 1674 852 L 1671 854 L 1670 857 L 1668 858 L 1655 851 L 1656 850 Z M 1541 605 L 1579 605 L 1596 605 L 1628 606 L 1660 606 L 1705 606 L 1703 609 L 1702 612 L 1704 614 L 1707 612 L 1707 608 L 1709 608 L 1711 612 L 1710 615 L 1706 618 L 1705 620 L 1705 624 L 1711 626 L 1711 628 L 1708 630 L 1706 632 L 1706 635 L 1708 636 L 1712 635 L 1713 632 L 1714 634 L 1713 636 L 1710 638 L 1714 641 L 1715 643 L 1713 643 L 1710 640 L 1709 640 L 1708 644 L 1713 647 L 1715 646 L 1716 648 L 1715 649 L 1715 653 L 1719 654 L 1721 651 L 1722 652 L 1718 657 L 1716 657 L 1716 660 L 1715 663 L 1712 661 L 1711 662 L 1705 664 L 1705 668 L 1711 669 L 1711 665 L 1714 667 L 1712 671 L 1710 672 L 1709 674 L 1706 672 L 1705 674 L 1709 675 L 1709 678 L 1705 679 L 1704 681 L 1704 684 L 1699 689 L 1700 690 L 1699 692 L 1698 690 L 1697 688 L 1695 689 L 1694 694 L 1700 695 L 1699 696 L 1694 696 L 1692 698 L 1692 705 L 1688 705 L 1686 703 L 1685 706 L 1687 707 L 1690 707 L 1691 709 L 1689 711 L 1685 712 L 1685 716 L 1687 721 L 1687 723 L 1686 723 L 1684 721 L 1683 718 L 1681 721 L 1683 722 L 1683 724 L 1685 727 L 1685 729 L 1682 731 L 1678 730 L 1678 732 L 1680 734 L 1681 737 L 1679 740 L 1679 741 L 1682 744 L 1681 748 L 1678 749 L 1724 749 L 1752 749 L 1786 749 L 1787 751 L 1786 753 L 1786 755 L 1784 757 L 1783 764 L 1781 766 L 1782 768 L 1780 773 L 1782 774 L 1782 780 L 1784 782 L 1785 785 L 1788 786 L 1790 788 L 1790 792 L 1793 796 L 1793 801 L 1793 805 L 1796 808 L 1799 808 L 1795 810 L 1793 809 L 1790 813 L 1790 815 L 1787 816 L 1788 819 L 1782 818 L 1780 820 L 1781 824 L 1784 825 L 1787 824 L 1786 827 L 1788 829 L 1791 830 L 1794 830 L 1795 828 L 1796 822 L 1796 821 L 1800 818 L 1801 815 L 1805 817 L 1807 817 L 1807 818 L 1804 820 L 1804 822 L 1807 823 L 1808 827 L 1811 826 L 1813 821 L 1816 823 L 1815 826 L 1813 826 L 1810 829 L 1815 828 L 1814 830 L 1808 832 L 1810 836 L 1813 834 L 1811 838 L 1809 836 L 1807 836 L 1804 839 L 1804 845 L 1802 845 L 1801 840 L 1799 840 L 1798 844 L 1801 848 L 1798 846 L 1795 845 L 1794 846 L 1791 846 L 1794 848 L 1794 850 L 1790 847 L 1790 849 L 1792 851 L 1790 852 L 1790 854 L 1792 856 L 1796 857 L 1796 858 L 1798 859 L 1798 862 L 1800 864 L 1801 863 L 1802 864 L 1807 864 L 1810 866 L 1811 864 L 1815 870 L 1817 867 L 1822 874 L 1822 877 L 1823 878 L 1827 877 L 1829 879 L 1824 880 L 1823 882 L 1827 882 L 1825 885 L 1823 884 L 1820 890 L 1821 892 L 1816 890 L 1816 887 L 1814 886 L 1808 894 L 1805 897 L 1806 893 L 1808 891 L 1809 888 L 1811 887 L 1811 883 L 1813 882 L 1813 879 L 1810 877 L 1810 881 L 1806 883 L 1804 881 L 1801 877 L 1794 874 L 1792 871 L 1781 869 L 1778 870 L 1768 879 L 1759 886 L 1757 885 L 1758 883 L 1756 882 L 1755 879 L 1757 879 L 1754 873 L 1752 871 L 1750 871 L 1750 873 L 1749 875 L 1749 871 L 1747 867 L 1744 871 L 1741 870 L 1740 872 L 1739 870 L 1737 871 L 1739 875 L 1737 875 L 1735 877 L 1735 880 L 1733 879 L 1732 883 L 1730 882 L 1726 884 L 1725 889 L 1722 888 L 1723 887 L 1720 883 L 1717 879 L 1714 880 L 1709 879 L 1707 876 L 1702 876 L 1699 874 L 1695 871 L 1698 870 L 1699 866 L 1701 867 L 1703 870 L 1705 869 L 1704 873 L 1708 874 L 1707 868 L 1702 864 L 1702 861 L 1700 861 L 1698 863 L 1695 864 L 1696 861 L 1694 862 L 1694 859 L 1696 858 L 1694 855 L 1688 858 L 1686 853 L 1684 854 L 1683 847 L 1677 847 L 1679 845 L 1679 839 L 1672 838 L 1670 839 L 1666 841 L 1664 838 L 1666 835 L 1667 836 L 1667 833 L 1664 832 L 1661 834 L 1659 832 L 1659 835 L 1654 837 L 1651 839 L 1650 837 L 1646 838 L 1646 840 L 1648 842 L 1651 842 L 1650 844 L 1651 848 L 1655 847 L 1656 848 L 1654 849 L 1655 850 L 1648 850 L 1643 853 L 1639 854 L 1622 850 L 1615 848 L 1603 841 L 1598 839 L 1590 837 L 1583 837 L 1580 837 L 1573 837 L 1561 839 L 1558 839 L 1552 843 L 1549 837 L 1547 835 L 1547 833 L 1551 831 L 1554 826 L 1555 821 L 1558 819 L 1560 816 L 1558 815 L 1561 810 L 1559 806 L 1560 803 L 1560 800 L 1556 797 L 1558 792 L 1560 789 L 1559 784 L 1558 782 L 1558 780 L 1561 778 L 1562 774 L 1564 772 L 1565 768 L 1567 764 L 1569 762 L 1568 758 L 1568 756 L 1570 754 L 1568 751 L 1568 749 L 1571 748 L 1570 744 L 1569 742 L 1570 736 L 1566 737 L 1565 730 L 1563 730 L 1561 727 L 1562 724 L 1562 721 L 1560 720 L 1560 718 L 1557 716 L 1558 714 L 1558 712 L 1555 712 L 1553 710 L 1552 707 L 1554 705 L 1553 702 L 1554 699 L 1553 696 L 1553 694 L 1550 691 L 1548 686 L 1545 684 L 1542 679 L 1541 678 L 1541 605 Z"}};
+
+    // ---------- scenes ----------
+    const SC = [
+      ["s01", 1925.6333, 1931.45, "night"], ["s02", 1931.45, 1936.70, "night"], ["s03", 1936.70, 1942.30, "paper"], ["s04", 1942.30, 1947.50, "night"],
+      ["s05", 1947.50, 1951.35, "paper"], ["s06", 1951.35, 1955.90, "night"], ["s07", 1955.90, 1961.85, "paper"], ["s08", 1961.85, 1966.25, "night"],
+      ["s09", 1966.25, 1978.15, "night"], ["s10", 1978.15, 1983.30, "paper"], ["s11", 1983.30, 1988.30, "night"], ["s12", 1988.30, 1994.85, "paper"],
+      ["s13", 1994.85, 2002.50, "night"], ["s14", 2002.50, 2008.10, "paper"], ["s15", 2008.10, 2017.65, "night"], ["s16", 2017.65, 2023.00, "paper"],
+      ["s17", 2023.00, 2033.30, "night"], ["s18", 2033.30, 2038.80, "paper"], ["s19", 2038.80, 2042.80, "night"],
+    ];
+    const GROUND = { paper: [0.3, 0.14, 0.26], night: [1, 0.4, 0.36] };
+    const EARLY = { s07: 0.4, s10: 0.4, s14: 0.4, s16: 0.4 };   // paper slides: the incoming scene is visible during the slide
+    function ground(kind, t) { const v = GROUND[kind]; tl.set([$("vig"), $("dust"), $("grain")], { opacity: (i) => v[i] }, t); }
+    SC.forEach((s, i) => {
+      const el = $(s[0]), a = s[1] - (EARLY[s[0]] || 0);
+      if (i === 0) gsap.set(el, { autoAlpha: 1 });
+      else tl.fromTo(el, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.001, immediateRender: false }, S(a));
+      if (s[2] < SEG_END) tl.set(el, { autoAlpha: 0 }, S(s[2]) + 0.05);
+    });
+    SC.forEach((s, i) => { if (i) ground(s[3], S(s[1])); });
+    gsap.set([$("vig"), $("dust"), $("grain")], { opacity: (i) => GROUND.night[i] });
+
+    // ---------- helpers ----------
+    const rise = (el, t, o) => { o = o || {}; const d = o.dur || 0.6;
+      tl.fromTo(el, { opacity: 0, y: o.y == null ? 16 : o.y }, { opacity: 1, y: 0, duration: d, ease: C(E.out, d), immediateRender: true }, t); };
+    const pop = (el, t, o) => { o = o || {}; const d = o.dur || 0.8;
+      tl.fromTo(el, { opacity: 0, scale: o.from == null ? 0.6 : o.from }, { opacity: o.to == null ? 1 : o.to, scale: 1, duration: d, ease: C(E.out, d), immediateRender: true }, t); };
+    const out = (el, t, d) => tl.to(el, { opacity: 0, duration: d || 0.25, ease: "power1.in" }, t);
+    function el(parent, tag, attrs) { const n = document.createElementNS(NS, tag); for (const k in attrs) n.setAttribute(k, attrs[k]); parent.appendChild(n); return n; }
+    function div(parent, cls, css) { const n = document.createElement("div"); if (cls) n.className = cls; if (css) n.style.cssText = css; parent.appendChild(n); return n; }
+    function ink(parent, d, t, dur, o) {
+      o = o || {};
+      const p = el(parent, "path", { d: d, fill: "none", stroke: o.color || INK, "stroke-width": o.width || 5, "stroke-linecap": o.cap || "round", "stroke-linejoin": "round" });
+      if (o.filter) p.setAttribute("filter", o.filter);
+      const len = p.getTotalLength() || 1;
+      p.setAttribute("stroke-dasharray", len + " " + len); p.setAttribute("stroke-dashoffset", len);
+      gsap.set(p, { opacity: 0 }); tl.set(p, { opacity: 1 }, t);
+      tl.fromTo(p, { attr: { "stroke-dashoffset": len } }, { attr: { "stroke-dashoffset": 0 }, duration: dur, ease: o.ease || C(E.out, dur), immediateRender: false }, t);
+      return p;
+    }
+    const mark = (ps, t) => { [].concat(ps).forEach((p) => { gsap.set(p, { opacity: 0 }); tl.set(p, { opacity: 1 }, t); }); };
+    const whipN = { n: 0 };
+    function whip(a, b, t, o) {
+      o = Object.assign({ dir: 1, vertical: false, flash: false, dur: 0.32 }, o);
+      const k = ++whipN.n, ba = FX.whipDefs(defs, SEG + "-wa" + k), bb = FX.whipDefs(defs, SEG + "-wb" + k), h = o.dur / 2;
+      const A = $(a + "-shot"), B = $(b + "-shot");
+      tl.set(A, { filter: "url(#" + SEG + "-wa" + k + ")" }, t - h - 0.01); tl.set(A, { filter: "none" }, t + 0.06);
+      tl.set(B, { filter: "url(#" + SEG + "-wb" + k + ")" }, t - 0.001); tl.set(B, { filter: "none" }, t + h + 0.02);
+      FX.whip(tl, A, B, t, { dir: o.dir, vertical: o.vertical, dur: o.dur, blurA: ba, blurB: bb });
+      if (o.flash) tl.fromTo($("flash"), { opacity: 0 }, { opacity: 0.8, duration: 0.08, yoyo: true, repeat: 1, ease: "power2.in", immediateRender: false }, t - 0.08);
+    }
+    function slide(a, b, t, o) {
+      o = Object.assign({ from: 1, d: 0.4, vertical: false }, o);
+      const A = $(a + "-shot"), B = $(b + "-shot"), ax = o.vertical ? "y" : "x", dist = (o.vertical ? 1140 : 1980) * o.from;
+      tl.fromTo(B, { [ax]: dist, boxShadow: "0 0 80px rgba(0,0,0,0.5)" }, { [ax]: 0, duration: o.d, ease: C(E.inOut, o.d), immediateRender: false }, t - o.d);
+      tl.set(B, { boxShadow: "none" }, t);
+      tl.fromTo(A, { [ax]: 0 }, { [ax]: -dist * 0.12, duration: o.d, ease: E.in, immediateRender: false }, t - o.d);
+    }
+    // camera: slow drift a→b (linear) on a scene's cam
+    function drift(id, a, b, s0, s1, origin) {
+      const cam = $(id + "-cam"); if (origin) gsap.set(cam, { transformOrigin: origin });
+      gsap.set(cam, { scale: s0 });
+      tl.fromTo(cam, { scale: s0 }, { scale: s1, duration: b - a, ease: "none", immediateRender: false }, S(a));
+    }
+    // current dots along a polyline (HTML dots; positions computed from a build-time table)
+    function flow(parent, pts, n, color, size, open) {
+      const segs = []; let L = 0;
+      for (let i = 0; i < pts.length - 1; i++) { const d = Math.hypot(pts[i + 1][0] - pts[i][0], pts[i + 1][1] - pts[i][1]); segs.push([L, d]); L += d; }
+      const dots = []; for (let i = 0; i < n; i++) dots.push(div(parent, "d16-dot", "width:" + size + "px;height:" + size + "px;background:" + color));
+      const st = { p: 0, on: 0 };
+      const at = (u) => { const s = u * L; let i = 0; while (i < segs.length - 1 && s > segs[i][0] + segs[i][1]) i++;
+        const f = (s - segs[i][0]) / segs[i][1]; return [pts[i][0] + (pts[i + 1][0] - pts[i][0]) * f, pts[i][1] + (pts[i + 1][1] - pts[i][1]) * f]; };
+      st.upd = () => dots.forEach((d, i) => { const u = (((st.p + i / n) % 1) + 1) % 1, q = at(u);
+        d.style.transform = "translate(" + (q[0] - size / 2).toFixed(1) + "px," + (q[1] - size / 2).toFixed(1) + "px)";
+        d.style.opacity = (st.on * (open ? Math.min(1, u * 9, (1 - u) * 9) : 1)).toFixed(2); });
+      st.upd();
+      return st;
+    }
+    const run = (st, a, b, speed) => { const p0 = st._p || 0, p1 = p0 + (b - a) * speed; st._p = p1;
+      tl.fromTo(st, { p: p0 }, { p: p1, duration: b - a, ease: "none", immediateRender: false, onUpdate: st.upd }, a); };
+    const fade = (st, t, to, d) => tl.to(st, { on: to, duration: d || 0.3, ease: "none", onUpdate: st.upd }, t);
+
+    // transistor "can" with three legs (hand-wiring era), drawn at (x, y) = can centre
+    function can(svg, x, y, s) {
+      const g = el(svg, "g", { transform: "translate(" + x + " " + y + ") scale(" + (s || 1) + ")" });
+      g.innerHTML = '<path d="M-14 16 V46 M0 16 V52 M14 16 V46" fill="none" stroke="' + INK + '" stroke-width="4" stroke-linecap="round"/>' +
+        '<rect x="-26" y="-20" width="52" height="38" rx="8" fill="' + ASHL + '" stroke="' + INK + '" stroke-width="4"/><path d="M-26 8 H26" stroke="' + INK + '" stroke-width="3"/>';
+      return g;
+    }
+    const CANS = [[150, 170], [300, 120], [430, 200], [180, 350], [330, 300], [420, 400], [270, 440]];
+    const WIRES = ["M136 216 C90 300 120 330 166 396", "M164 222 C230 280 260 250 316 346", "M300 172 C290 230 220 300 194 400", "M314 166 C380 180 380 230 416 246",
+      "M444 250 C470 330 380 330 344 350", "M430 252 C500 320 470 400 434 446", "M330 352 C300 400 320 440 284 486", "M256 490 C170 520 110 440 180 402", "M150 222 C60 260 80 430 256 492"];
+    function handWiring(svg, t0, per, color) {
+      WIRES.forEach((d, i) => {
+        if (t0 == null) el(svg, "path", { d: d, fill: "none", stroke: color, "stroke-width": 4, "stroke-linecap": "round" });
+        else ink(svg, d, t0 + i * per, per * 1.6, { color: color, width: 4, ease: C("power1.inOut", per * 1.6) });
+      });
+      return CANS.map((c) => can(svg, c[0], c[1], 1.15));
+    }
+    // device line icons in a 100×100 box
+    const IC = {
+      phone: '<rect x="30" y="8" width="40" height="84" rx="7"/><path d="M44 17 H56 M46 83 H54"/>',
+      laptop: '<rect x="18" y="20" width="64" height="44" rx="4"/><path d="M6 80 H94 L86 66 H14 Z"/>',
+      tv: '<rect x="10" y="24" width="80" height="52" rx="6"/><path d="M36 24 L50 9 L64 24 M30 90 H70 M40 76 V90 M60 76 V90"/>',
+      car: '<path d="M8 66 V54 L20 50 L30 34 H66 L78 50 L92 54 V66 Z"/><circle cx="28" cy="68" r="9"/><circle cx="72" cy="68" r="9"/><path d="M36 50 H64"/>',
+      watch: '<circle cx="50" cy="50" r="24"/><path d="M38 28 L42 8 H58 L62 28 M38 72 L42 92 H58 L62 72 M50 36 V50 L60 56"/>',
+      camera: '<rect x="10" y="30" width="80" height="50" rx="6"/><circle cx="50" cy="55" r="15"/><path d="M34 30 L40 20 H60 L66 30"/>',
+      radio: '<rect x="10" y="30" width="80" height="52" rx="6"/><circle cx="34" cy="56" r="13"/><path d="M58 46 H80 M58 56 H80 M58 66 H80 M24 30 L62 10"/>',
+      calc: '<rect x="24" y="8" width="52" height="84" rx="6"/><rect x="32" y="16" width="36" height="18"/><path d="M34 48 H40 M47 48 H53 M60 48 H66 M34 62 H40 M47 62 H53 M60 62 H66 M34 76 H40 M47 76 H53 M60 76 H66"/>',
+    };
+    const icon = (k, color, w) => '<g fill="none" stroke="' + color + '" stroke-width="' + (w || 4) + '" stroke-linecap="round" stroke-linejoin="round">' + IC[k] + "</g>";
+    // wafer with a grid of dies; returns { dies: [pattern <g>…] sorted from the centre, rect: reveal clip rect }
+    function wafer(svg, id, cx, cy, R, cell) {
+      const d = el(svg, "defs", {});
+      const cp = el(d, "clipPath", { id: SEG + "-" + id + "-cp" }); el(cp, "circle", { cx: cx, cy: cy, r: R - 8 });
+      const rv = el(d, "clipPath", { id: SEG + "-" + id + "-rv" }); const rect = el(rv, "rect", { x: cx - R, y: cy - R, width: 2 * R, height: 2 * R });
+      const gr = el(d, "radialGradient", { id: SEG + "-" + id + "-gr", cx: "38%", cy: "32%", r: "80%" });
+      el(gr, "stop", { offset: "0", "stop-color": "#dfe1e4" }); el(gr, "stop", { offset: "0.55", "stop-color": ASHL }); el(gr, "stop", { offset: "1", "stop-color": ASH });
+      el(svg, "circle", { cx: cx, cy: cy, r: R, fill: "url(#" + SEG + "-" + id + "-gr)", stroke: BONE, "stroke-width": 3 });
+      el(svg, "path", { d: "M" + (cx - 26) + " " + (cy + R + 2) + " L" + cx + " " + (cy + R - 22) + " L" + (cx + 26) + " " + (cy + R + 2) + " Z", fill: "#0c0f15" });
+      const g1 = el(svg, "g", { "clip-path": "url(#" + SEG + "-" + id + "-cp)" }), g2 = el(g1, "g", { "clip-path": "url(#" + SEG + "-" + id + "-rv)" });
+      const dies = [], n = Math.ceil(R / cell) + 1, c = cell;
+      for (let gy = -n; gy < n; gy++) for (let gx = -n; gx < n; gx++) {
+        const x = cx + gx * c, y = cy + gy * c, mx = x + c / 2, my = y + c / 2;
+        if (Math.hypot(mx - cx, my - cy) > R - c * 0.45) continue;
+        el(g1, "rect", { x: x + 3, y: y + 3, width: c - 6, height: c - 6, fill: "none", stroke: ASH, "stroke-width": 1.5 });
+        const g = el(g2, "g", {}); const u = c / 66;
+        g.innerHTML = '<path d="M' + (x + 12 * u) + " " + (y + 16 * u) + " H" + (x + 50 * u) + " V" + (y + 30 * u) + " H" + (x + 22 * u) + " V" + (y + 50 * u) + " H" + (x + 54 * u) +
+          '" fill="none" stroke="' + MAGD + '" stroke-width="' + (3 * u) + '"/>' +
+          '<rect x="' + (x + 8 * u) + '" y="' + (y + 11 * u) + '" width="' + (10 * u) + '" height="' + (10 * u) + '" fill="' + INK + '"/>' +
+          '<rect x="' + (x + 45 * u) + '" y="' + (y + 25 * u) + '" width="' + (10 * u) + '" height="' + (10 * u) + '" fill="' + INK + '"/>' +
+          '<rect x="' + (x + 17 * u) + '" y="' + (y + 45 * u) + '" width="' + (10 * u) + '" height="' + (10 * u) + '" fill="' + INK + '"/>';
+        dies.push([Math.hypot(mx - cx, my - cy), g]);
+      }
+      dies.sort((a, b) => a[0] - b[0]);
+      return { dies: dies.map((q) => q[1]), rect: rect };
+    }
+
+    FX.grain($("grain"), 1601);
+    FX.dust($("dust"), 1602, 2);
+    const PEN = FX.markupDefs(defs, SEG + "-pen", { boil: 4 });
+    defs.setAttribute("viewBox", "0 0 1 1");
+
+    /* ===== s01 · Texas Instruments (period TI engineers photo + 1954 TI ad) → pen circle on "this guy" → push to Kilby ===== */
+    (function () {
+      const ph = $("s01-ph"), cam = $("s01-cam");
+      gsap.set(ph, { rotation: -1.4, scale: 1.1, transformOrigin: "50% 50%" });
+      tl.fromTo(ph, { scale: 1.1 }, { scale: 1, duration: 1.5, ease: C(E.out, 1.5), immediateRender: false }, 0);
+      rise($("s01-ttl"), T(1925.71), { dur: 0.7, y: 22 });
+      tl.fromTo($("s01-rule"), { opacity: 1, scaleX: 0 }, { scaleX: 1, duration: 0.6, ease: C(E.out, 0.6), immediateRender: false }, S(1926.3));
+      tl.set($("s01-rule"), { opacity: 1 }, S(1926.3));
+      rise($("s01-sub"), S(1926.5), { dur: 0.5 });
+      // the 1954 TI transistor ad steps in on "biggest … companies"
+      gsap.set($("s01-ad"), { opacity: 0, rotation: 4 });
+      tl.fromTo($("s01-ad"), { opacity: 0, y: 70, rotation: 9 }, { opacity: 1, y: 0, rotation: 4, duration: 0.9, ease: C(E.out, 0.9), immediateRender: false }, S(1927.25));
+      tl.fromTo(cam, { scale: 1 }, { scale: 1.03, duration: 4.6, ease: "none", immediateRender: false }, 0);
+      // "this guy": pen circle on Kilby (centre, seated)
+      const c = FX.markup.circle(tl, $("s01-svg"), S(1930.95), { cx: 690, cy: 528, rx: 96, ry: 118, rot: -6, dur: 0.45, color: MAGL, width: 7, filter: PEN, seed: 4 });
+      mark(c, S(1930.95));
+      gsap.set(cam, { transformOrigin: "690px 540px" });
+      tl.to(cam, { scale: 1.34, duration: 0.5, ease: E.in }, S(1930.95));
+    })();
+
+    /* ===== s02 · JACK KILBY name card (ref f3ea432e: portrait + circle panel) · hand wiring drawn in the circle ===== */
+    (function () {
+      const cam = $("s02-cam");
+      tl.fromTo($("s02-ph"), { scale: 1.12, x: -30 }, { scale: 1, x: 0, duration: 1.4, ease: C(E.out, 1.4), immediateRender: false }, S(1931.45));
+      tl.fromTo($("s02-bar"), { scaleY: 0 }, { scaleY: 1, duration: 0.5, ease: C(E.out, 0.5), immediateRender: false }, S(1931.45));
+      rise($("s02-name"), T(1931.47), { dur: 0.6, y: 24 });
+      rise($("s02-role"), S(1932.0), { dur: 0.5 });
+      const disc = $("s02-disc");
+      gsap.set(disc, { opacity: 0 });
+      pop(disc, S(1932.55), { dur: 0.9, from: 0.7 });
+      const cans = handWiring($("s02-wsvg"), S(1934.67), 0.14, MAGD);
+      cans.forEach((g, i) => { gsap.set(g, { opacity: 0 }); tl.set(g, { opacity: 1 }, S(1933.1) + i * 2 / 12); });
+      rise($("s02-tag"), T(1934.67), { dur: 0.45, y: 12 });
+      tl.fromTo(cam, { scale: 1 }, { scale: 1.03, duration: 4.6, ease: "none", immediateRender: false }, S(1931.45));
+      gsap.set(cam, { transformOrigin: "1290px 684px" });
+      tl.to(cam, { scale: 1.3, duration: 0.5, ease: E.in }, S(1936.2));
+    })();
+
+    /* ===== s03 · print all the wiring on a wafer (ref 3dbd4abf / b76c4b43: grid-paper desk, dark diagram card, note) ===== */
+    (function () {
+      const w = wafer($("s03-wsvg"), "w3", 960, 540, 330, 66), bar = $("s03-bar"), wf = $("s03-wf"), cam = $("s03-cam");
+      w.rect.setAttribute("height", 0);
+      tl.fromTo(wf, { x: 520, rotation: 40, transformOrigin: "960px 540px" }, { x: 0, rotation: 0, duration: 1.5, ease: C(E.out, 1.5), immediateRender: false }, S(1936.70));
+      gsap.set(wf, { x: 520, rotation: 40, transformOrigin: "960px 540px" });
+      // "print": the light bar sweeps down and leaves the wiring
+      const st = { h: 0 };
+      tl.set(bar, { opacity: 1 }, S(1939.31));
+      tl.fromTo(st, { h: 0 }, { h: 660, duration: 1.9, ease: C("power1.inOut", 1.9), immediateRender: false,
+        onUpdate: () => { w.rect.setAttribute("height", st.h.toFixed(1)); bar.style.transform = "translateY(" + (st.h - 16).toFixed(1) + "px)"; } }, S(1939.31));
+      tl.to(bar, { opacity: 0, duration: 0.2 }, S(1941.21));
+      rise($("s03-tag"), T(1941.71), { dur: 0.4, y: 12 });
+      const a = FX.markup.arrow(tl, $("s03-svg"), S(1941.75), { x1: 1440, y1: 262, x2: 1262, y2: 330, bend: 30, head: 22, dur: 0.3, color: MAG, width: 5, filter: PEN });
+      mark(a, S(1941.75));
+      tl.fromTo(cam, { scale: 1 }, { scale: 1.03, duration: 5.1, ease: "none", immediateRender: false }, S(1936.70));
+      tl.to(cam, { scale: 1.22, duration: 0.35, ease: E.in }, S(1941.95));
+    })();
+
+    /* ===== s04 · connect all the transistors by printing wires between them (punch-in on one die) ===== */
+    (function () {
+      const svg = $("s04-svg"), cam = $("s04-cam"), bar = $("s04-bar");
+      const P = [[480, 400], [960, 400], [1440, 400], [480, 740], [960, 740], [1440, 740]];
+      const d = el(svg, "defs", {}); const cp = el(d, "clipPath", { id: SEG + "-s04-cp" }); const rect = el(cp, "rect", { x: 0, y: 0, width: 0, height: 1080 });
+      const wires = el(svg, "g", { "clip-path": "url(#" + SEG + "-s04-cp)", fill: "none", stroke: MAGL, "stroke-width": 10, "stroke-linejoin": "miter" });
+      ["M530 372 H910", "M1010 372 H1390", "M530 428 H700 V712 H910", "M1010 428 H1200 V712 H1390", "M480 478 V662", "M1440 478 V662", "M530 768 H910", "M1010 768 H1390",
+        "M960 478 V560 H330 V900 H1590 V320 H1492"].forEach((p) => el(wires, "path", { d: p }));
+      P.forEach((p) => {
+        const g = el(svg, "g", {});
+        g.innerHTML = '<rect x="' + (p[0] - 78) + '" y="' + (p[1] - 78) + '" width="156" height="156" rx="10" fill="' + ASHD + '" stroke="' + ASHL + '" stroke-width="4"/>' +
+          '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="50" fill="none" stroke="' + ASHL + '" stroke-width="10"/><circle cx="' + p[0] + '" cy="' + p[1] + '" r="18" fill="' + ASHL + '"/>';
+      });
+      gsap.set(cam, { scale: 1.22 });
+      tl.fromTo(cam, { scale: 1.22 }, { scale: 1, duration: 1.4, ease: E.out, immediateRender: false }, S(1942.30));
+      rise($("s04-l1"), T(1944.11), { dur: 0.45, y: 12 });
+      // "printing wires between them": one sweep prints every wire
+      const st = { w: 0 };
+      tl.set(bar, { opacity: 1 }, S(1945.23));
+      tl.fromTo(st, { w: 200 }, { w: 1720, duration: 1.3, ease: C("power1.inOut", 1.3), immediateRender: false,
+        onUpdate: () => { rect.setAttribute("width", st.w.toFixed(1)); bar.style.transform = "translateX(" + (st.w - 200).toFixed(1) + "px)"; } }, S(1945.23));
+      tl.to(bar, { opacity: 0, duration: 0.2 }, S(1946.53));
+      rise($("s04-l2"), T(1945.23), { dur: 0.45, y: 12 });
+      // pull back into the cut (s05 continues the pull-back)
+      tl.to(cam, { scale: 0.86, duration: 0.4, ease: E.in }, S(1947.10));
+    })();
+
+    /* ===== s05 · not individually every time — the same die repeats across the wafer (12 fps) ===== */
+    (function () {
+      const w = wafer($("s05-wsvg"), "w5", 960, 540, 340, 62), cam = $("s05-cam");
+      gsap.set(cam, { transformOrigin: "991px 571px", scale: 4.2 });
+      tl.fromTo(cam, { scale: 4.2 }, { scale: 1, duration: 1.7, ease: E.cam, immediateRender: false }, S(1947.50));
+      const N = w.dies.length;
+      w.dies.forEach((g, i) => { if (!i) return; gsap.set(g, { opacity: 0 });
+        tl.set(g, { opacity: 1 }, S(1948.75) + Math.round(1.9 * Math.pow(i / N, 0.7) * 12) / 12); });
+      tl.to(cam, { scale: 1.035, duration: 1.2, ease: "none" }, S(1950.15));
+    })();
+
+    /* ===== s06 · the real first integrated circuit (TI, 1958) · INTEGRATED CIRCUIT · IC ===== */
+    whip("s05", "s06", S(1951.35), { dir: 1 });
+    (function () {
+      FX.focusHunt(tl, $("s06-ph"), S(1951.52), { dur: 0.7 });
+      drift("s06", 1951.35, 1955.90, 1.0, 1.045, "620px 540px");
+      rise($("s06-ttl"), T(1953.47), { dur: 0.6, y: 22 });
+      pop($("s06-ic"), T(1955.39), { dur: 0.4, from: 1.25 });
+    })();
+
+    /* ===== s07 · everything around us has IC · our videos would not play without it ===== */
+    slide("s06", "s07", S(1955.90), { vertical: true });
+    (function () {
+      const cam = $("s07-cam"), K = ["phone", "tv", "car", "camera", "watch", "laptop", "radio", "calc"], badges = [], tiles = [];
+      K.forEach((k, i) => {
+        const x = 270 + (i % 4) * 360, y = 190 + Math.floor(i / 4) * 360;
+        const t = div(cam, "d16-dev", "left:" + x + "px;top:" + y + "px");
+        t.innerHTML = '<svg viewBox="0 0 100 100">' + icon(k, INK, 4) + (k === "laptop" ? '<rect id="pd16-s07-scr" x="22" y="24" width="56" height="36" fill="' + INK + '" opacity="0"/><path id="pd16-s07-play" d="M44 32 L60 42 L44 52 Z" fill="' + MAG + '" stroke="none"/>' : "") + "</svg>";
+        const b = div(t, "d16-badge t-label"); b.textContent = "IC"; badges.push(b); tiles.push(t);
+        gsap.set(t, { rotation: [-1.5, 1, -0.6, 1.4, 0.8, -1.2, 1.6, -0.8][i] });
+      });
+      // "everything around us has IC": a chip badge lands in every device, 12 fps
+      [0, 5, 2, 7, 1, 4, 3, 6].forEach((k, j) => pop(badges[k], S(1956.95) + j * 2 / 12, { dur: 0.35, from: 1.8 }));
+      tl.fromTo(cam, { scale: 1.06 }, { scale: 1, duration: 1.6, ease: E.out, immediateRender: false }, S(1955.90));
+      gsap.set(cam, { scale: 1.06 });
+      // "our videos": push to the laptop (playing)
+      tl.to(cam, { scale: 2.3, x: 414, y: -437, duration: 1.3, ease: E.cam }, S(1959.20));
+      tl.fromTo($("s07-play"), { scale: 1, transformOrigin: "50% 50%" }, { scale: 1.25, duration: 0.25, yoyo: true, repeat: 3, ease: "sine.inOut", immediateRender: false }, S(1959.6));
+      // "would not be able to watch it": the chip drops out, the screen goes dark
+      tl.to(badges[5], { y: 90, rotation: 25, opacity: 0, duration: 0.45, ease: C("power2.in", 0.45) }, S(1960.57));
+      tl.set($("s07-play"), { opacity: 0 }, S(1960.82)); tl.set($("s07-scr"), { opacity: 1 }, S(1960.82));
+      tl.to(cam, { scale: 2.42, x: 437, y: -461, duration: 1.0, ease: "none" }, S(1960.85));
+    })();
+
+    /* ===== s08 · "this invention … happened in Texas" (night map, Texas filled magenta) ===== */
+    (function () {
+      const cam = $("s08-cam"), svg = $("s08-svg"), card = $("s08-card");
+      Object.keys(TX.paths).forEach((k) => { if (k !== "texas") el(svg, "path", { d: TX.paths[k], fill: "none", stroke: ASH, "stroke-width": 2, opacity: 0.5 }); });
+      const tx = el(svg, "path", { d: TX.paths.texas, fill: MAG, "fill-opacity": 0.8, stroke: MAGL, "stroke-width": 4, "stroke-linejoin": "round" });
+      const fr = (s) => ({ scale: s, x: 960 - 1260 * s, y: 540 - 700 * s });
+      gsap.set(cam, { scale: 0.9, x: -120, y: -38 });
+      tl.fromTo(cam, { scale: 0.9, x: -120, y: -38 }, Object.assign(fr(1.12), { duration: 1.5, ease: E.cam, immediateRender: false }), S(1961.85));
+      tl.to(cam, Object.assign(fr(1.16), { duration: 2.9, ease: "none" }), S(1963.35));
+      // the invention (first-IC print) flies to Dallas
+      gsap.set(card, { rotation: 3 });
+      tl.fromTo(card, { scale: 3.4, x: -520, y: 260, rotation: -5 }, { scale: 1, x: 0, y: 0, rotation: 3, duration: 1.3, ease: C(E.out, 1.3), immediateRender: false }, S(1961.85));
+      gsap.set(card, { scale: 3.4, x: -520, y: 260, rotation: -5 });
+      gsap.set([$("s08-pin"), $("s08-dl")], { opacity: 0 });
+      tl.set([$("s08-pin"), $("s08-dl")], { opacity: 1 }, S(1962.75));
+      const ld = ink(svg, "M1452 574 L1394 614", S(1962.75), 0.3, { color: BONE, width: 3 });
+      // "Texas"
+      gsap.set(tx, { opacity: 0 });
+      tl.fromTo(tx, { opacity: 0 }, { opacity: 1, duration: 0.4, ease: C("power1.out", 0.4), immediateRender: false }, T(1963.47));
+      rise($("s08-tx"), T(1963.47), { dur: 0.5, y: 20 });
+      // "one issue with this solution": pen circle on the invention
+      const c = FX.markup.circle(tl, svg, S(1964.45), { cx: 1565, cy: 482, rx: 168, ry: 124, rot: -4, dur: 0.5, color: COPL, width: 6, filter: PEN, seed: 7 });
+      mark(c, S(1964.45));
+    })();
+
+    /* ===== s09 · he used GERMANIUM · heated up very quickly · an expensive element ===== */
+    whip("s08", "s09", S(1966.25), { dir: -1, flash: true });
+    (function () {
+      const svg = $("s09-svg"), cam = $("s09-cam");
+      rise($("s09-ttl"), T(1966.27), { dur: 0.6, y: 24 });
+      gsap.set($("s09-tile"), { rotation: 4 });
+      tl.fromTo($("s09-tile"), { scale: 1.3, rotation: 10 }, { scale: 1, rotation: 4, duration: 0.9, ease: C(E.out, 0.9), immediateRender: false }, S(1966.25));
+      // thermometer
+      const g = el(svg, "g", {}); gsap.set(g, { opacity: 0 });
+      g.innerHTML = '<path d="M900 470 a34 34 0 0 1 68 0 V770 a62 62 0 1 1 -68 0 Z" fill="' + INK + '" stroke="' + ASHL + '" stroke-width="5"/>' +
+        '<path d="M990 520 H1016 M990 590 H1016 M990 660 H1016 M990 730 H1016" stroke="' + ASHL + '" stroke-width="4" stroke-linecap="round"/><circle cx="934" cy="822" r="42" fill="' + COP + '"/>';
+      const merc = el(g, "rect", { x: 918, y: 780, width: 32, height: 20, fill: COP });
+      tl.fromTo(g, { opacity: 0 }, { opacity: 1, duration: 0.4, ease: C("power1.out", 0.4), immediateRender: false }, S(1969.75));
+      const st = { h: 20 };
+      tl.fromTo(st, { h: 20 }, { h: 310, duration: 1.1, ease: C(E.out, 1.1), immediateRender: false,
+        onUpdate: () => { merc.setAttribute("y", (800 - st.h).toFixed(1)); merc.setAttribute("height", st.h.toFixed(1)); } }, S(1970.86));
+      tl.fromTo($("s09-heat"), { opacity: 0 }, { opacity: 1, duration: 1.1, ease: C(E.out, 1.1), immediateRender: false }, S(1970.86));
+      tl.fromTo($("s09-heat2"), { opacity: 0 }, { opacity: 0.8, duration: 1.1, ease: C(E.out, 1.1), immediateRender: false }, S(1970.86));
+      [["M300 250 C280 220 320 200 300 168", 0], ["M380 236 C360 206 400 186 380 150", 0.12], ["M460 250 C440 220 480 200 460 168", 0.24]].forEach((q) =>
+        ink(svg, q[0], S(1971.1) + q[1], 0.5, { color: COPL, width: 6, filter: PEN }));
+      tl.fromTo($("s09-heat2"), { scale: 1 }, { scale: 1.06, duration: 0.6, yoyo: true, repeat: 9, ease: "sine.inOut", immediateRender: false }, S(1972.0));
+      // price tag swings in
+      const tag = $("s09-tag");
+      tl.fromTo(tag, { opacity: 0, rotation: -38 }, { opacity: 1, rotation: 5, duration: 0.8, ease: C(E.out, 0.8), immediateRender: false }, S(1973.66));
+      drift("s09", 1966.25, 1978.15, 1.0, 1.05, "900px 560px");
+    })();
+
+    /* ===== s10 · he solved the wiring (tick) — but germanium wasn't the best (pen X) ===== */
+    slide("s09", "s10", S(1978.15), {});
+    (function () {
+      const svg = $("s10-svg");
+      handWiring($("s10-wsvg"), null, 0, ASH);
+      tl.fromTo($("s10-c1"), { y: 50 }, { y: 0, duration: 1.0, ease: C(E.out, 1.0), immediateRender: false }, S(1978.15));
+      tl.fromTo($("s10-c2"), { y: 90 }, { y: 0, duration: 1.1, ease: C(E.out, 1.1), immediateRender: false }, S(1978.15));
+      ink(svg, "M400 470 L500 590 L720 300", S(1978.95), 0.5, { color: MAG, width: 16, filter: PEN });
+      const x = FX.markup.cross(tl, svg, S(1982.50), { x: 1370, y: 470, s: 150, dur: 0.16, color: COPD, width: 14, filter: PEN });
+      mark(x[0], S(1982.50)); mark(x[1], S(1982.70));
+      drift("s10", 1978.15, 1983.30, 1.0, 1.03);
+    })();
+
+    /* ===== s11 · back to FAIRCHILD SEMICONDUCTOR (the eight, 1960) → focus on Noyce ===== */
+    whip("s10", "s11", S(1983.30), { dir: -1 });
+    (function () {
+      const cam = $("s11-cam");
+      rise($("s11-ttl"), T(1984.18), { dur: 0.6, y: 22 });
+      tl.fromTo(cam, { scale: 1 }, { scale: 1.03, duration: 4.0, ease: "none", immediateRender: false }, S(1983.30));
+      const c = FX.markup.circle(tl, $("s11-svg"), S(1987.42), { cx: 470, cy: 600, rx: 72, ry: 88, rot: -5, dur: 0.4, color: MAGL, width: 6, filter: PEN, seed: 9 });
+      mark(c, S(1987.42));
+      gsap.set(cam, { transformOrigin: "470px 610px" });
+      tl.to(cam, { scale: 1.4, duration: 0.5, ease: E.in }, S(1987.80));
+    })();
+
+    /* ===== s12 · ROBERT NOYCE name card (ref ccc84f71: B/W photo over colour blocks + small related photo) ===== */
+    (function () {
+      tl.fromTo($("s12-ph"), { scale: 1.14 }, { scale: 1, duration: 1.3, ease: C(E.out, 1.3), immediateRender: false }, S(1988.30));
+      tl.fromTo($("s12-b1"), { scaleY: 0.3, transformOrigin: "50% 100%" }, { scaleY: 1, duration: 0.9, ease: C(E.out, 0.9), immediateRender: false }, S(1988.30));
+      tl.fromTo($("s12-b2"), { x: -120 }, { x: 0, duration: 1.1, ease: C(E.out, 1.1), immediateRender: false }, S(1988.30));
+      rise($("s12-name"), T(1988.42), { dur: 0.6, y: 26 });
+      rise($("s12-role"), S(1989.2), { dur: 0.5 });
+      const ic = $("s12-ic");
+      gsap.set(ic, { opacity: 0 });
+      tl.fromTo(ic, { opacity: 0, x: 240, rotation: 12 }, { opacity: 1, x: 0, rotation: 3, duration: 1.0, ease: C(E.out, 1.0), immediateRender: false }, S(1991.30));
+      rise($("s12-icl"), T(1993.70), { dur: 0.45, y: 12 });
+      const a = FX.markup.arrow(tl, $("s12-svg"), S(1993.80), { x1: 1150, y1: 800, x2: 1244, y2: 760, bend: 22, head: 20, dur: 0.3, color: MAG, width: 5, filter: PEN });
+      mark(a, S(1993.80));
+      drift("s12", 1988.30, 1994.85, 1.0, 1.035);
+    })();
+
+    /* ===== s13 · silicon instead of germanium (two columns; idea of two facing medallions from ref ad12498d, no scale) ===== */
+    whip("s12", "s13", S(1994.85), { vertical: true, dir: 1 });
+    (function () {
+      const svg = $("s13-svg");
+      const mk = (row, ok, color) => { row.querySelector("i").innerHTML = '<svg viewBox="0 0 30 30" style="width:30px;height:30px;overflow:visible"><path d="' + (ok ? "M3 16 L12 26 L28 4" : "M4 4 L26 26 M26 4 L4 26") + '" fill="none" stroke="' + color + '" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg>'; };
+      mk($("s13-ger1"), false, COPL); mk($("s13-ger2"), false, COPL); mk($("s13-sir1"), true, MAGL); mk($("s13-sir2"), true, MAGL);
+      const ge = $("s13-ge"), gm = ge.querySelector(".d16-med"), sm = $("s13-sim");
+      gsap.set(gm, { opacity: 0 });
+      tl.fromTo(sm, { scale: 1.2 }, { scale: 1, duration: 1.0, ease: C(E.out, 1.0), immediateRender: false }, S(1994.85));
+      rise($("s13-sih"), T(1995.46), { dur: 0.5, y: 20 });
+      rise($("s13-sis"), S(1995.75), { dur: 0.45 });
+      pop(gm, S(1996.70), { dur: 0.6, from: 0.8 });
+      rise($("s13-geh"), T(1996.82), { dur: 0.5, y: 20 });
+      rise($("s13-ges"), S(1997.10), { dur: 0.45 });
+      rise($("s13-ger1"), S(1997.45), { dur: 0.4, y: 10 });
+      rise($("s13-ger2"), S(1997.70), { dur: 0.4, y: 10 });
+      // "silicon is a better product": germanium dims, pen underline under SILICON
+      tl.to(ge, { opacity: 0.4, duration: 0.5, ease: "power1.inOut" }, S(1998.50));
+      const u = FX.markup.underline(tl, svg, S(1998.50), { x1: 1230, x2: 1570, y: 540, dur: 0.4, color: MAG, width: 8, filter: PEN });
+      mark(u, S(1998.50));
+      rise($("s13-sir1"), T(2000.26), { dur: 0.4, y: 10 });
+      rise($("s13-sir2"), T(2000.90), { dur: 0.4, y: 10 });
+      drift("s13", 1994.85, 2002.50, 1.0, 1.035);
+    })();
+
+    /* ===== s14 · a lot of it → a lot of iPhones, computers, anything else ===== */
+    slide("s13", "s14", S(2002.50), {});
+    (function () {
+      const cam = $("s14-cam"), svg = $("s14-svg");
+      tl.fromTo($("s14-med"), { scale: 0.8 }, { scale: 1, duration: 0.9, ease: C(E.out, 0.9), immediateRender: false }, S(2002.50));
+      // wafers multiply (12 fps)
+      for (let i = 0; i < 12; i++) {
+        const w = div(cam, "d16-wf", "left:" + (450 + (i % 4) * 96) + "px;top:" + (330 + Math.floor(i / 4) * 140 + (i % 4) * 6) + "px");
+        tl.fromTo(w, { opacity: 0, scale: 0.5 }, { opacity: 1, scale: 1, duration: 0.3, ease: C(E.out, 0.3), immediateRender: false }, S(2003.20) + i / 12);
+      }
+      ink(svg, "M900 520 C940 500 980 500 1020 524", S(2004.45), 0.4, { color: INK, width: 6, filter: PEN });
+      ink(svg, "M996 500 L1022 525 L990 544", S(2004.75), 0.2, { color: INK, width: 6, filter: PEN });
+      // grid of products: phones (magenta) on "iPhones", laptops on "computers", then everything else
+      const cell = (i) => [1080 + (i % 6) * 124, 196 + Math.floor(i / 6) * 124];
+      const put = (k, i, color, t) => { const p = cell(i), s = document.createElementNS(NS, "svg"); s.setAttribute("viewBox", "0 0 100 100"); s.setAttribute("class", "d16-ic14");
+        s.style.left = p[0] + "px"; s.style.top = p[1] + "px"; s.innerHTML = icon(k, color, 5); cam.appendChild(s);
+        tl.fromTo(s, { opacity: 0, scale: 0.4 }, { opacity: 1, scale: 1, duration: 0.3, ease: C(E.out, 0.3), immediateRender: false }, t); };
+      for (let i = 0; i < 12; i++) put("phone", i, MAG, S(2005.30) + Math.floor(i / 2) / 12);
+      for (let i = 12; i < 24; i++) put("laptop", i, INK, S(2006.02) + Math.floor((i - 12) / 2) / 12);
+      const R = ["tv", "car", "watch", "camera", "radio", "calc"];
+      for (let i = 24; i < 36; i++) put(R[(i * 5) % 6], i, ASHD, S(2006.85) + Math.floor((i - 24) / 2) / 12);
+      drift("s14", 2002.50, 2008.10, 1.0, 1.04);
+    })();
+
+    /* ===== s15 · silicon is a semiconductor · germanium too · silicon a better one · it's in the name: SEMI | CONDUCTOR ===== */
+    (function () {
+      const siw = $("s15-siw"), gew = $("s15-gew");
+      gsap.set(siw, { x: 310, scale: 1.25, transformOrigin: "150px 170px" });
+      tl.fromTo(siw, { scale: 1.6 }, { scale: 1.25, duration: 1.2, ease: C(E.out, 1.2), immediateRender: false }, S(2008.10));
+      rise($("s15-sic"), T(2009.46), { dur: 0.45, y: 12 });
+      // germanium joins
+      gsap.set(gew, { opacity: 0, transformOrigin: "150px 170px" });
+      tl.to(siw, { x: 0, scale: 1, duration: 0.9, ease: C(E.inOut, 0.9) }, S(2010.20));
+      tl.fromTo(gew, { opacity: 0, x: 260 }, { opacity: 1, x: 0, duration: 0.9, ease: C(E.out, 0.9), immediateRender: false }, S(2010.42));
+      rise($("s15-gec"), T(2011.38), { dur: 0.45, y: 12 });
+      // "silicon is just a better semiconductor"
+      tl.to(siw, { scale: 1.22, x: 40, duration: 0.9, ease: C(E.inOut, 0.9) }, S(2012.34));
+      tl.to(gew, { scale: 0.8, opacity: 0.45, x: 40, duration: 0.9, ease: C(E.inOut, 0.9) }, S(2012.34));
+      // clear, then the word itself
+      tl.to(siw, { y: -70, opacity: 0, duration: 0.4, ease: E.in }, S(2014.25));
+      tl.to(gew, { y: -70, opacity: 0, duration: 0.4, ease: E.in }, S(2014.30));
+      rise($("s15-big"), T(2014.82), { dur: 0.6, y: 30 });
+      // "it's in the name": SEMI | CONDUCTOR
+      tl.to($("s15-b1"), { x: -46, color: MAGL, duration: 0.6, ease: C(E.out, 0.6) }, S(2016.50));
+      tl.to($("s15-b2"), { x: 46, duration: 0.6, ease: C(E.out, 0.6) }, S(2016.50));
+      const svg = $("s15-svg");
+      ink(svg, "M956 420 C962 480 954 560 960 630", S(2016.50), 0.4, { color: MAGL, width: 6, filter: PEN });
+      drift("s15", 2008.10, 2017.65, 1.0, 1.04);
+    })();
+
+    /* ===== s16 · conducts electricity sometimes — and sometimes doesn't (battery · Si · bulb) ===== */
+    slide("s15", "s16", S(2017.65), { vertical: true, from: -1 });
+    (function () {
+      const svg = $("s16-svg"), svg2 = $("s16-svg2"), cam = $("s16-cam");
+      el(svg, "path", { d: "M420 330 H1500 V800 H420 Z", fill: "none", stroke: INK, "stroke-width": 7, "stroke-linejoin": "round" });
+      // battery (left) and bulb (right) cover the wire
+      svg2.innerHTML = '<rect x="380" y="520" width="80" height="92" fill="#e7e6df"/><path d="M372 536 H468" stroke="' + INK + '" stroke-width="9" stroke-linecap="round"/><path d="M394 562 H446" stroke="' + INK + '" stroke-width="14" stroke-linecap="round"/>' +
+        '<path d="M372 586 H468" stroke="' + INK + '" stroke-width="9" stroke-linecap="round"/><path d="M394 610 H446" stroke="' + INK + '" stroke-width="14" stroke-linecap="round"/>' +
+        '<circle id="pd16-s16-glow" cx="1500" cy="560" r="128" fill="' + MAGL + '" opacity="0"/><circle id="pd16-s16-bulb" cx="1500" cy="560" r="70" fill="#f6f6f1" stroke="' + INK + '" stroke-width="7"/>' +
+        '<path d="M1470 590 L1486 540 L1500 574 L1514 540 L1530 590" fill="none" stroke="' + INK + '" stroke-width="5" stroke-linejoin="round"/>';
+      const st = flow($("s16-dots"), [[420, 330], [1500, 330], [1500, 800], [420, 800], [420, 330]], 26, MAG, 18, false);
+      // conducts
+      run(st, S(2019.14), S(2021.25), 0.11); fade(st, S(2019.14), 1, 0.2);
+      tl.to($("s16-bulb"), { attr: { fill: MAGL }, duration: 0.2 }, S(2019.3));
+      tl.fromTo($("s16-glow"), { opacity: 0 }, { opacity: 0.4, duration: 0.3, immediateRender: false }, S(2019.3));
+      rise($("s16-st"), T(2019.14), { dur: 0.45, y: 14 });
+      // doesn't
+      fade(st, S(2021.05), 0, 0.2);
+      tl.to($("s16-bulb"), { attr: { fill: "#f6f6f1" }, duration: 0.15 }, S(2021.12));
+      tl.to($("s16-glow"), { opacity: 0, duration: 0.15 }, S(2021.12));
+      tl.set($("s16-st"), { opacity: 0 }, S(2021.10));
+      rise($("s16-st2"), T(2021.62), { dur: 0.45, y: 14 });
+      tl.fromTo(cam, { scale: 1 }, { scale: 1.03, duration: 4.8, ease: "none", immediateRender: false }, S(2017.65));
+      // push into the silicon (cut on action → the lattice)
+      gsap.set(cam, { transformOrigin: "960px 330px" });
+      tl.to(cam, { scale: 2.3, duration: 0.5, ease: E.in }, S(2022.50));
+    })();
+
+    /* ===== s17 · you can control it — play with the chemical properties (dopant atoms) · stop the flow · turn it on ===== */
+    (function () {
+      const svg = $("s17-svg"), cam = $("s17-cam"), X0 = 375, DX = 130, Y0 = 220, DY = 140;
+      let s = "";
+      for (let r = 0; r < 5; r++) s += '<path d="M' + X0 + " " + (Y0 + r * DY) + " H" + (X0 + 9 * DX) + '" stroke="' + ASHD + '" stroke-width="6"/>';
+      for (let c = 0; c < 10; c++) s += '<path d="M' + (X0 + c * DX) + " " + Y0 + " V" + (Y0 + 4 * DY) + '" stroke="' + ASHD + '" stroke-width="6"/>';
+      for (let r = 0; r < 5; r++) for (let c = 0; c < 10; c++) s += '<circle cx="' + (X0 + c * DX) + '" cy="' + (Y0 + r * DY) + '" r="24" fill="' + ASHD + '" stroke="' + ASHL + '" stroke-width="4"/>';
+      s += '<rect x="236" y="180" width="44" height="640" rx="6" fill="' + ASH + '"/><rect x="1640" y="180" width="44" height="640" rx="6" fill="' + ASH + '"/>';
+      svg.innerHTML = s;
+      const rows = [0, 1, 2, 3].map((r) => flow($("s17-dots"), [[290, Y0 + r * DY + 70], [1630, Y0 + r * DY + 70]], 8, MAGL, 16, true));
+      rows.forEach((st, i) => { st._p = i * 0.37; });
+      const knob = $("s17-knob"), track = $("s17-track");
+      const sw = (t, on) => { tl.to(knob, { x: on ? 256 : 0, duration: 0.25, ease: C("power2.out", 0.25) }, t);
+        tl.to(track, { backgroundColor: on ? MAG : ASHD, duration: 0.25 }, t); rows.forEach((st) => fade(st, t + 0.05, on ? 1 : 0, 0.25)); };
+      const span = (a, b) => rows.forEach((st, i) => run(st, S(a), S(b), 0.2 + i * 0.03));
+      gsap.set(cam, { scale: 1.3 });
+      tl.fromTo(cam, { scale: 1.3 }, { scale: 1, duration: 1.4, ease: E.out, immediateRender: false }, S(2023.00));
+      // "control when it conducts … when it doesn't"
+      sw(S(2024.57), true); span(2024.57, 2026.30); sw(S(2025.85), false);
+      // "chemical properties": dopant atoms drop into the lattice
+      [[2, 1], [5, 3], [8, 2], [6, 0]].forEach((q, i) => {
+        const d = div($("s17-dops"), "d16-dop", "left:" + (X0 + q[0] * DX - 28) + "px;top:" + (Y0 + q[1] * DY - 28) + "px");
+        tl.fromTo(d, { opacity: 0, y: -260, scale: 1.5 }, { opacity: 1, y: 0, scale: 1, duration: 0.45, ease: C("power2.in", 0.45), immediateRender: false }, S(2027.53) + i * 0.16);
+      });
+      tl.to(cam, { scale: 1.05, duration: 3.6, ease: "none" }, S(2026.4));
+      // "stop the electricity flow" · "turn it on"
+      sw(S(2028.75), true); span(2028.75, 2030.50); sw(S(2030.17), false);
+      sw(S(2032.01), true); span(2032.01, 2033.60);
+    })();
+
+    /* ===== s18 · like a metal · like a non-metal · right in the middle ===== */
+    whip("s17", "s18", S(2033.30), { dir: 1 });
+    (function () {
+      const svg = $("s18-svg"), svg2 = $("s18-svg2"), cam = $("s18-cam"), Y = 485;
+      el(svg, "path", { d: "M120 " + Y + " H1800", stroke: INK, "stroke-width": 7, "stroke-linecap": "round", fill: "none" });
+      // metal: current always flows
+      const m = flow($("s18-dots"), [[130, Y], [680, Y]], 7, MAG, 18, true);
+      const mid = flow($("s18-dots"), [[690, Y], [1230, Y]], 7, MAG, 18, true);
+      pop($("s18-m"), S(2034.45), { dur: 0.5, from: 0.8 });
+      rise($("s18-lm"), T(2034.73), { dur: 0.45, y: 14 });
+      run(m, S(2034.50), S(2038.90), 0.3); fade(m, S(2034.60), 1, 0.25);
+      // non-metal: nothing passes
+      pop($("s18-n"), S(2035.30), { dur: 0.5, from: 0.8 });
+      rise($("s18-ln"), T(2035.53), { dur: 0.45, y: 14 });
+      const x = FX.markup.cross(tl, svg2, S(2035.85), { x: 1760, y: Y, s: 30, dur: 0.12, color: INK, width: 7, filter: PEN });
+      mark(x[0], S(2035.85)); mark(x[1], S(2036.01));
+      // silicon drops right in the middle; its current switches on and off
+      const si = $("s18-si");
+      tl.fromTo(si, { opacity: 0, y: -330 }, { opacity: 1, y: 0, duration: 0.45, ease: C("power2.in", 0.45), immediateRender: false }, S(2036.50));
+      tl.fromTo(cam, { y: 0 }, { y: 8, duration: 0.05, yoyo: true, repeat: 3, ease: "none", immediateRender: false }, S(2036.95));
+      run(mid, S(2037.00), S(2038.90), 0.3);
+      fade(mid, S(2037.05), 1, 0.12); fade(mid, S(2037.50), 0, 0.12); fade(mid, S(2037.90), 1, 0.12); fade(mid, S(2038.30), 0, 0.12);
+      const c = FX.markup.circle(tl, svg2, S(2037.80), { cx: 960, cy: 485, rx: 190, ry: 176, rot: -5, dur: 0.45, color: MAG, width: 8, filter: PEN, seed: 3 });
+      mark(c, S(2037.80));
+      gsap.set(cam, { transformOrigin: "960px 485px" });
+      tl.fromTo(cam, { scale: 1 }, { scale: 1.03, duration: 5.0, ease: "none", immediateRender: false }, S(2033.30));
+      tl.to(cam, { scale: 1.5, duration: 0.42, ease: E.in }, S(2038.38));
+    })();
+
+    /* ===== s19 · that's why SILICON becomes such a big deal — that's why it's called SILICON VALLEY ===== */
+    (function () {
+      const cam = $("s19-cam"), w1 = $("s19-w1"), w2 = $("s19-w2");
+      gsap.set(cam, { scale: 1.22 });
+      tl.fromTo(cam, { scale: 1.22 }, { scale: 1.08, duration: 1.6, ease: E.out, immediateRender: false }, S(2038.80));
+      tl.to(cam, { scale: 1.0, duration: 2.6, ease: "none" }, S(2040.40));
+      tl.fromTo(w1, { opacity: 0, y: 135, scale: 1.12 }, { opacity: 1, y: 115, scale: 1, duration: 0.6, ease: C(E.out, 0.6), immediateRender: true }, T(2039.21));
+      // the title completes on its first spoken word (MANUAL §4.4) and holds 1 s to the cut
+      tl.to(w1, { y: 0, duration: 0.45, ease: C(E.out, 0.45) }, T(2041.77));
+      tl.fromTo(w2, { opacity: 0, y: 60 }, { opacity: 1, y: 0, duration: 0.45, ease: C(E.out, 0.45), immediateRender: true }, T(2041.77));
+    })();
+
+    FX.mount(tl, DURATION);
+    window.__timelines = window.__timelines || {};
+    window.__timelines[SEG] = tl;
+  })();
+  </script>
+</template>
+</body>
+</html>

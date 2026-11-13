@@ -1,0 +1,428 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8" /></head>
+<body>
+<template>
+  <style>
+    #root { position: absolute; inset: 0; overflow: hidden; background: var(--night); }
+    .p7d-scene { position: absolute; inset: 0; overflow: hidden; visibility: hidden; opacity: 0; }
+    .p7d-shot { position: absolute; inset: 0; overflow: hidden; transform-origin: 50% 50%; background: var(--night); }
+    .p7d-paper { background: var(--paper); }
+    .p7d-p1, .p7d-p2 { position: absolute; inset: 0; background-size: cover; background-position: center; pointer-events: none; mix-blend-mode: multiply; filter: saturate(0.3); }
+    .p7d-grid { position: absolute; inset: -60px; pointer-events: none; opacity: 0.5;
+      background-image: repeating-linear-gradient(0deg, rgba(194,197,202,0.085) 0 2px, rgba(0,0,0,0) 2px 96px), repeating-linear-gradient(90deg, rgba(194,197,202,0.085) 0 2px, rgba(0,0,0,0) 2px 96px); }
+    .p7d-cam { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 960px 540px; }
+    .p7d-mapcam { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
+    .p7d-abs { position: absolute; }
+    .p7d-mk { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; pointer-events: none; }
+    .p7d-panel { position: absolute; overflow: hidden; box-shadow: 0 18px 36px rgba(22,26,36,0.28); background: var(--ash-dark); }
+    .p7d-panel img { position: absolute; left: 0; top: 0; width: 100%; height: 100%; object-fit: cover; }
+    .p7d-ht { position: absolute; inset: 0; background-image: url('assets/textures/halftone_01_norm.jpg'); background-size: 520px auto; mix-blend-mode: overlay; opacity: 0.3; pointer-events: none; }
+    .p7d-card { position: absolute; background: var(--bone); box-shadow: 0 16px 34px rgba(22,26,36,0.3); }
+    .p7d-card .in { position: absolute; left: 12px; top: 12px; right: 12px; bottom: 12px; overflow: hidden; background: var(--ash-dark); }
+    .p7d-card .in img { position: absolute; }
+    .p7d-cap { position: absolute; font-size: 22px; color: var(--ink-soft); white-space: nowrap; }
+    .p7d-tag { position: absolute; white-space: nowrap; opacity: 0; }
+    .p7d-role { position: absolute; font-size: 26px; color: var(--ink); white-space: nowrap; opacity: 0; }
+    .p7d-credit { position: absolute; right: 96px; bottom: 28px; font-size: 13px; letter-spacing: 0.08em; color: rgba(22,26,36,0.55); z-index: 5; }
+    .p7d-credit.lt { color: rgba(238,238,232,0.5); }
+    .p7d-block { position: absolute; background: var(--ash); }
+    .p7d-block::after { content: ""; position: absolute; inset: 0; background-image: url('assets/textures/paper_fiber_01_norm.jpg'); background-size: 600px auto; mix-blend-mode: overlay; opacity: 0.6; }
+    /* sc001 */
+    #pd07-s1-cut { position: absolute; left: 1196px; top: 148px; width: 520px; height: 736px; }
+    #pd07-s1-cut img { position: absolute; left: 0; top: 0; width: 100%; height: 100%; filter: grayscale(1) contrast(1.08); }
+    #pd07-s1-name { position: absolute; left: 1150px; top: 934px; font-size: 72px; color: var(--ink); white-space: nowrap; opacity: 0; }
+    /* sc002 */
+    #pd07-streaks { position: absolute; inset: 0; width: 100%; height: 100%; mix-blend-mode: screen; opacity: 0.42; filter: blur(2.5px); pointer-events: none; }
+    #pd07-s2-born { position: absolute; left: 748px; top: 300px; font-size: 34px; color: var(--ash-light); opacity: 0; }
+    #pd07-s2-year { position: absolute; left: 736px; top: 350px; font-size: 400px; white-space: nowrap; opacity: 0; }
+    /* sc003 */
+    #pd07-s3-plate { position: absolute; left: 0; top: -150px; width: 1920px; height: 1526px; }
+    #pd07-s3-plate img { position: absolute; left: 0; top: 0; width: 100%; height: 100%; filter: url(#pd07-tintn); }
+    .p7d-scrim-b { position: absolute; left: 0; right: 0; bottom: 0; height: 420px; pointer-events: none; background: linear-gradient(180deg, rgba(12,15,21,0), rgba(12,15,21,0.9)); }
+    /* sc005 */
+    .p7d-desk { position: absolute; inset: -40px; background: radial-gradient(ellipse 60% 70% at 40% 45%, #2a2e38 0%, #161a24 55%, #0c0f15 100%); }
+    .p7d-page { position: absolute; width: 560px; height: 908px; background: #e9e8e1; box-shadow: 0 34px 70px rgba(0,0,0,0.6); overflow: hidden; }
+    .p7d-page img { position: absolute; left: 0; top: 0; width: 100%; height: 100%; filter: grayscale(1) contrast(1.06); mix-blend-mode: multiply; }
+    .p7d-circ { position: absolute; border-radius: 50%; overflow: hidden; border: 6px solid var(--bone); box-sizing: border-box; background: var(--ash-dark); }
+    .p7d-circ img { position: absolute; left: 0; top: 0; width: 100%; height: 100%; object-fit: cover; }
+    .p7d-lt { color: var(--bone); }
+    /* maps */
+    .p7d-pin { position: absolute; left: 0; top: 0; width: 0; height: 0; }
+    .p7d-pin .dot { position: absolute; left: -11px; top: -11px; width: 22px; height: 22px; border-radius: 50%; background: var(--magenta); border: 3px solid var(--bone); box-sizing: border-box; box-shadow: 0 2px 6px rgba(0,0,0,0.5); opacity: 0; }
+    .p7d-pin .lab { position: absolute; white-space: nowrap; opacity: 0; }
+    .p7d-reg { position: absolute; left: 0; top: 0; width: 0; height: 0; }
+    .p7d-reg span { position: absolute; white-space: nowrap; transform: translate(-50%, -50%); font-size: 24px; color: rgba(194,197,202,0.75); text-shadow: 0 1px 6px rgba(0,0,0,0.8); }
+    #pd07-s6-year { position: absolute; left: 1010px; top: 392px; font-size: 300px; white-space: nowrap; opacity: 0; }
+    #pd07-s8-veil { position: absolute; inset: 0; background: rgba(231,230,223,0.42); pointer-events: none; }
+    .p7d-city { position: absolute; left: 0; top: 0; width: 0; height: 0; }
+    .p7d-city span { position: absolute; white-space: nowrap; font-size: 84px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--ink); opacity: 0;
+      text-shadow: 0 0 10px rgba(231,230,223,1), 0 0 22px rgba(231,230,223,1), 0 0 36px rgba(231,230,223,0.9); }
+    #pd07-grain, #pd07-dust, #pd07-vig { z-index: 8; }
+  </style>
+
+  <div id="root" data-composition-id="pd07" data-vo-start="879.6" data-duration="64" data-width="1920" data-height="1080">
+    <svg id="pd07-defs" width="0" height="0" style="position:absolute"></svg>
+
+    <!-- sc001 · 879.60–891.30 · "…one of the students who's at Stanford right now … the father of Silicon Valley, Frederick Terman" · paper collage (ref 566a46e7) -->
+    <div class="p7d-scene" id="pd07-sc001"><div class="p7d-shot p7d-paper" id="pd07-sc001-shot">
+      <div class="p7d-p1" style="background-image:url('assets/textures/paper_graph_01_hires.jpg'); opacity:0.5"></div>
+      <div class="p7d-p2" style="background-image:url('assets/textures/paper_fiber_01.jpg'); opacity:0.35"></div>
+      <div class="p7d-cam" id="pd07-sc001-cam">
+        <div class="p7d-panel" id="pd07-s1-quad" style="left:96px; top:112px; width:900px; height:620px">
+          <img id="pd07-s1-quadi" src="assets/c1/places/stanford_campus_aerial_c1920_quad1921.jpg" alt="" style="filter:url(#pd07-tint)"><div class="p7d-ht"></div></div>
+        <div class="p7d-cap t-label" id="pd07-s1-cap" style="left:104px; top:756px">Stanford University, c. 1920</div>
+        <div class="p7d-card" id="pd07-s1-grp" style="left:560px; top:470px; width:444px; height:496px; opacity:0"><div class="in">
+          <img src="assets/c1/people/theta_xi_stanford_1920_group_quad1921.jpg" alt="" style="left:-708px; top:-179px; width:1128px; height:897px; filter:url(#pd07-tint)"><div class="p7d-ht"></div></div></div>
+        <div class="p7d-block" id="pd07-s1-blk" style="left:1150px; top:300px; width:620px; height:584px"></div>
+        <div class="p7d-abs" id="pd07-s1-bar" style="left:1150px; top:300px; width:16px; height:584px; background:var(--magenta)"></div>
+        <div id="pd07-s1-cut"><img src="assets/c1/cutouts/terman_1940s_cutout.png" alt=""></div>
+        <div class="p7d-role t-label" id="pd07-s1-role" style="left:1154px; top:898px">the father of Silicon Valley</div>
+        <div id="pd07-s1-name" class="t-display">Frederick Terman</div>
+        <svg class="p7d-mk" id="pd07-s1-mk"></svg>
+      </div>
+      <div class="p7d-credit t-label">Photos: Stanford Quad 1921 · IEEE / ETHW</div>
+    </div></div>
+
+    <!-- sc002 · 891.30–894.25 · "Now he was born in nineteen hundred — a very good year to be born in" · night year title (ref 6af0421b) -->
+    <div class="p7d-scene" id="pd07-sc002"><div class="p7d-shot" id="pd07-sc002-shot">
+      <div class="p7d-grid"></div>
+      <canvas id="pd07-streaks"></canvas>
+      <div class="p7d-cam" id="pd07-sc002-cam">
+        <div class="p7d-card" id="pd07-s2-fred" style="left:236px; top:206px; width:380px; height:600px; box-shadow:0 26px 50px rgba(0,0,0,0.6)"><div class="in">
+          <img src="assets/c1/people/terman_frederick_1920_theta_xi_crop.jpg" alt="" style="left:-30px; top:-20px; width:416px; height:1248px; filter:url(#pd07-tintn)"><div class="p7d-ht"></div></div></div>
+        <div class="p7d-cap t-label p7d-lt" style="left:240px; top:826px; color:var(--ash-light)">Frederick Terman</div>
+        <div id="pd07-s2-born" class="t-label">born</div>
+        <div id="pd07-s2-year" class="t-display halate">1900</div>
+      </div>
+      <div class="p7d-credit lt t-label">Photo: Stanford Quad 1921</div>
+    </div></div>
+
+    <!-- sc003 · 894.25–899.20 · "He's a student at Stanford Undergraduate Program…" · the 1920 fraternity photo, push to Terman -->
+    <div class="p7d-scene" id="pd07-sc003"><div class="p7d-shot" id="pd07-sc003-shot">
+      <div class="p7d-cam" id="pd07-sc003-cam" style="transform-origin:1779px 460px">
+        <div id="pd07-s3-plate"><img src="assets/c1/people/theta_xi_stanford_1920_group_quad1921.jpg" alt=""></div>
+        <svg class="p7d-mk" id="pd07-s3-mk"></svg>
+      </div>
+      <div class="p7d-scrim-b"></div>
+      <div class="p7d-tag t-display clean" id="pd07-s3-name" style="left:96px; top:880px; font-size:60px">Frederick Terman</div>
+      <div class="p7d-role t-label" id="pd07-s3-role" style="left:98px; top:954px; color:var(--ash-light)">Stanford undergraduate</div>
+      <div class="p7d-credit lt t-label">Photo: Theta Xi, Stanford Quad 1921</div>
+    </div></div>
+
+    <!-- sc004 · 899.20–905.85 · "he comes from a very successful family … His dad was a Stanford psychologist" · paper, father and son -->
+    <div class="p7d-scene" id="pd07-sc004"><div class="p7d-shot p7d-paper" id="pd07-sc004-shot">
+      <div class="p7d-p1" style="background-image:url('assets/textures/paper_graph_01_hires.jpg'); opacity:0.5"></div>
+      <div class="p7d-p2" style="background-image:url('assets/textures/paper_fiber_01.jpg'); opacity:0.35"></div>
+      <div class="p7d-cam" id="pd07-sc004-cam">
+        <div class="p7d-abs" id="pd07-s4-bar" style="left:486px; top:150px; width:120px; height:420px; background:var(--magenta)"></div>
+        <div class="p7d-card" id="pd07-s4-dad" style="left:520px; top:190px; width:330px; height:412px"><div class="in">
+          <img src="assets/c1/people/lewis_terman_LOWRES_240.jpg" alt="" style="left:0; top:0; width:100%; height:100%; object-fit:cover; filter:url(#pd07-tint) blur(0.6px)"><div class="p7d-ht" style="opacity:0.55; background-size:380px auto"></div></div></div>
+        <div class="p7d-tag" id="pd07-s4-dadn" style="left:520px; top:640px; font-size:40px"><span class="label-box">Lewis Terman</span></div>
+        <div class="p7d-role t-label" id="pd07-s4-dadr1" style="left:524px; top:706px">his dad</div>
+        <div class="p7d-role t-label" id="pd07-s4-dadr2" style="left:524px; top:746px">Stanford psychologist</div>
+        <div class="p7d-card" id="pd07-s4-son" style="left:1070px; top:240px; width:300px; height:376px"><div class="in">
+          <img src="assets/c1/people/terman_frederick_1920_theta_xi_crop.jpg" alt="" style="left:-26px; top:-16px; width:330px; height:990px; filter:url(#pd07-tint)"><div class="p7d-ht"></div></div></div>
+        <div class="p7d-tag" id="pd07-s4-sonn" style="left:1070px; top:654px; font-size:34px"><span class="label-box">Frederick Terman</span></div>
+        <svg class="p7d-mk" id="pd07-s4-mk"></svg>
+      </div>
+      <div class="p7d-credit t-label">Photos: Wikimedia Commons · Stanford Quad 1921</div>
+    </div></div>
+
+    <!-- sc005 · 905.85–911.75 · "…who invented the IQ test … all these IQ tests we take, it's his dad who did it" · the 1916 book on a desk -->
+    <div class="p7d-scene" id="pd07-sc005"><div class="p7d-shot" id="pd07-sc005-shot">
+      <div class="p7d-desk"></div>
+      <div class="p7d-cam" id="pd07-sc005-cam">
+        <div class="p7d-page" id="pd07-s5-p2" style="left:760px; top:86px"><img src="assets/c1/documents/terman_1916_IQ_distribution_chart_HIRES_color.jpg" alt=""></div>
+        <div class="p7d-page" id="pd07-s5-p1" style="left:150px; top:86px"><img src="assets/c1/documents/terman_1916_title_page_HIRES_color.jpg" alt=""></div>
+        <svg class="p7d-mk" id="pd07-s5-mk"></svg>
+        <div class="p7d-circ" id="pd07-s5-dad" style="left:1440px; top:150px; width:210px; height:210px"><img src="assets/c1/people/lewis_terman_LOWRES_240.jpg" alt="" style="filter:url(#pd07-tintn) blur(0.5px)"></div>
+        <div class="p7d-cap t-label" style="left:1440px; top:384px; color:var(--bone); font-size:26px">Lewis Terman</div>
+        <div class="p7d-cap t-label" style="left:1440px; top:424px; color:var(--ash-light)">Stanford, 1916</div>
+        <div class="p7d-tag t-display clean" id="pd07-s5-iq" style="left:1436px; top:520px; font-size:112px">IQ test</div>
+      </div>
+      <div class="p7d-credit lt t-label">L. M. Terman, The Measurement of Intelligence (1916) · Cornell University Library</div>
+    </div></div>
+
+    <!-- sc006 · 911.75–923.50 · "…finishes his undergrad in 1924 … goes east to get a doctorate … he goes to MIT" · night US map, route (ref 73184e83) -->
+    <div class="p7d-scene" id="pd07-sc006"><div class="p7d-shot" id="pd07-sc006-shot" style="background:#0f141c">
+      <div class="p7d-mapcam" id="pd07-s6-cam" style="width:6392px; height:3524px">
+        <img src="assets/maps/kit/us_night.jpg" alt="" style="position:absolute; left:0; top:0; width:6392px; height:3524px; filter:brightness(1.5) contrast(1.05)">
+        <svg id="pd07-s6-svg" viewBox="0 0 6392 3524" style="position:absolute; left:0; top:0; width:6392px; height:3524px; overflow:visible"></svg>
+      </div>
+      <div class="p7d-reg" id="pd07-s6-r1"><span class="t-label">California</span></div>
+      <div class="p7d-reg" id="pd07-s6-r2"><span class="t-label">Massachusetts</span></div>
+      <div class="p7d-reg" id="pd07-s6-r3"><span class="t-display" style="font-size:52px; letter-spacing:0.04em; color:rgba(238,238,232,0.34)">UNITED STATES</span></div>
+      <div class="p7d-pin" id="pd07-s6-pa"><div class="dot"></div><div class="lab t-display clean" style="left:26px; top:-30px; font-size:50px">Stanford</div></div>
+      <div class="p7d-pin" id="pd07-s6-pb"><div class="dot"></div><div class="lab t-display clean" style="right:26px; top:12px; font-size:64px">MIT</div></div>
+      <div id="pd07-s6-year" class="t-display halate">1924</div>
+      <div class="p7d-credit lt t-label">Relief: AWS Terrain Tiles · Natural Earth</div>
+    </div></div>
+
+    <!-- sc007 · 923.50–933.95 · "he notices a lot of things at MIT that he implements at Stanford later on … Silicon Valley to be born" · paper, two campuses (port of s08-collage) -->
+    <div class="p7d-scene" id="pd07-sc007"><div class="p7d-shot p7d-paper" id="pd07-sc007-shot">
+      <div class="p7d-p1" style="background-image:url('assets/textures/paper_graph_01_hires.jpg'); opacity:0.5"></div>
+      <div class="p7d-p2" style="background-image:url('assets/textures/paper_fiber_01.jpg'); opacity:0.35"></div>
+      <div class="p7d-cam" id="pd07-sc007-cam">
+        <div class="p7d-card" id="pd07-s7-mit" style="left:1000px; top:150px; width:800px; height:590px"><div class="in">
+          <img src="assets/archival/collage/mit_aerial_1925.jpg" alt="" style="left:0; top:0; width:100%; height:100%; object-fit:cover; filter:url(#pd07-tint)"><div class="p7d-ht"></div></div></div>
+        <div class="p7d-tag" id="pd07-s7-mitn" style="left:1000px; top:772px; font-size:54px; opacity:1"><span class="label-box">MIT</span></div>
+        <div class="p7d-cap t-label" style="left:1126px; top:792px">Cambridge, 1925</div>
+        <div class="p7d-card" id="pd07-s7-stan" style="left:120px; top:300px; width:660px; height:490px; opacity:0"><div class="in">
+          <img src="assets/c1/places/stanford_campus_aerial_c1920_quad1921.jpg" alt="" style="left:0; top:0; width:100%; height:100%; object-fit:cover; filter:url(#pd07-tint)"><div class="p7d-ht"></div></div></div>
+        <div class="p7d-tag" id="pd07-s7-stann" style="left:120px; top:822px; font-size:54px"><span class="label-box">Stanford</span></div>
+        <div class="p7d-tag" id="pd07-s7-sv" style="left:120px; top:906px; font-size:54px"><span class="label-box" style="background:var(--magenta); color:var(--bone)">Silicon Valley</span></div>
+        <svg class="p7d-mk" id="pd07-s7-mk"></svg>
+      </div>
+      <div class="p7d-credit t-label">Photos: U.S. War Department 1925 · Stanford Quad 1921</div>
+    </div></div>
+
+    <!-- sc008 · 933.95–943.60 · "two very successful universities very close to each other in Boston … MIT … Harvard" · 1903 USGS map in silicon (ref 9b4c4611) -->
+    <div class="p7d-scene" id="pd07-sc008"><div class="p7d-shot p7d-paper" id="pd07-sc008-shot">
+      <div class="p7d-mapcam" id="pd07-s8-cam" style="width:2880px; height:1620px">
+        <img src="assets/podcast/pd07/boston_1903_topo_silicon_crop.jpg" alt="" style="position:absolute; left:0; top:0; width:2880px; height:1620px">
+        <div id="pd07-s8-veil"></div>
+        <svg id="pd07-s8-svg" viewBox="0 0 2880 1620" style="position:absolute; left:0; top:0; width:2880px; height:1620px; overflow:visible"></svg>
+      </div>
+      <div class="p7d-p2" style="background-image:url('assets/textures/paper_fiber_01.jpg'); opacity:0.4"></div>
+      <div class="p7d-city" id="pd07-s8-bos"><span class="t-display">Boston</span></div>
+      <div class="p7d-pin" id="pd07-s8-pm"><div class="dot" style="left:-15px; top:-15px; width:30px; height:30px"></div><div class="lab" style="left:30px; top:-10px; font-size:58px"><span class="label-box">MIT</span></div></div>
+      <div class="p7d-pin" id="pd07-s8-ph"><div class="dot" style="left:-15px; top:-15px; width:30px; height:30px"></div><div class="lab" style="right:30px; top:-72px; font-size:58px"><span class="label-box">Harvard</span></div></div>
+      <div class="p7d-credit t-label">Map: USGS Boston quadrangle, 1903</div>
+    </div></div>
+
+    <div id="pd07-grain" class="tx tx-grain" style="background-image:url('assets/textures/grain_01_norm.jpg')"></div>
+    <div id="pd07-dust" class="tx tx-dust" style="background-image:url('assets/textures/dust_02.jpg')"></div>
+    <div id="pd07-vig" class="vignette"></div>
+  </div>
+
+  <script>
+  (function () {
+    const SEG = "pd07", START = 879.6, END = 943.6, DUR = 64;
+    const T = (s) => +(s - START).toFixed(3);   // TEXT cues (audited): literal = word start − 0.06
+    const S = (s) => +(s - START).toFixed(3);   // structural cues
+    const tl = gsap.timeline({ paused: true });
+    const $ = (id) => document.getElementById(SEG + "-" + id);
+    const NS = "http://www.w3.org/2000/svg";
+    const defs = $("defs"), E = FX.ease, C = (e, d) => FX.choppy(e, d, 12);
+    const INK = "#161a24", BONE = "#eeeee8", MAG = "#d1307a", MAGL = "#f3a6c8";
+    FX.tintDefs(defs, SEG + "-tint", "#1c1f26", "#dcddd8");
+    FX.tintDefs(defs, SEG + "-tintn", "#0e1118", "#e6e7e2");
+
+    // ---------- scenes ----------
+    const SC = [["sc001", 879.6, 891.30, "paper"], ["sc002", 891.30, 894.25, "night"], ["sc003", 894.25, 899.20, "photo"], ["sc004", 899.20, 905.85, "paper"],
+      ["sc005", 905.85, 911.75, "night"], ["sc006", 911.75, 923.50, "map"], ["sc007", 923.50, 933.95, "paper"], ["sc008", 933.95, END, "paper"]];
+    const GROUND = { paper: [0.28, 0.14, 0.3], night: [0.9, 0.34, 0.36], photo: [0.8, 0.4, 0.38], map: [0.7, 0.2, 0.3] };   // vig, dust, grain
+    const EARLY = { sc004: 0.5, sc008: 0.5 };   // paper slides: the incoming scene is visible during the slide
+    const WHIP = { sc001: 1, sc005: 1 };          // whips hide the outgoing shot themselves
+    SC.forEach((s, i) => {
+      const el = $(s[0]);
+      if (i === 0) gsap.set(el, { autoAlpha: 1 });
+      else tl.fromTo(el, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.001, immediateRender: false }, S(s[1]) - (EARLY[s[0]] || 0) - (WHIP[SC[i - 1][0]] ? 0.02 : 0));
+      if (s[2] < END) tl.set(el, { autoAlpha: 0 }, S(s[2]) + (WHIP[s[0]] ? 0.07 : 0.02));
+    });
+    const OV = [$("vig"), $("dust"), $("grain")];
+    gsap.set(OV, { opacity: (i) => GROUND.paper[i] });
+    SC.forEach((s, k) => { if (k) tl.set(OV, { opacity: (i) => GROUND[s[3]][i] }, S(s[1])); });
+
+    // ---------- helpers ----------
+    const rise = (el, t, o) => { o = o || {}; const d = o.dur || 0.6;
+      tl.fromTo(el, { opacity: 0, y: o.y == null ? 16 : o.y }, { opacity: 1, y: 0, duration: d, ease: C(E.out, d), immediateRender: true }, t); };
+    const land = (el, t, o) => { o = Object.assign({ dur: 0.9, y: -70, rot: 0, dr: 6 }, o);
+      tl.fromTo(el, { opacity: 0, y: o.y, rotation: o.rot + o.dr }, { opacity: 1, y: 0, rotation: o.rot, duration: o.dur, ease: C(E.out, o.dur), immediateRender: true }, t); };
+    function mk(parent, tag, attrs) { const n = document.createElementNS(NS, tag); for (const k in attrs) n.setAttribute(k, attrs[k]); parent.appendChild(n); return n; }
+    const hideUntil = (nodes, t) => { [].concat(nodes).forEach((p) => { gsap.set(p, { opacity: 0 }); tl.set(p, { opacity: 1 }, t); }); };
+    let wn = 0;
+    function whip(a, b, t, o) {
+      o = Object.assign({ dir: 1, vertical: false, dur: 0.32 }, o);
+      const k = ++wn, ba = FX.whipDefs(defs, SEG + "-wa" + k), bb = FX.whipDefs(defs, SEG + "-wb" + k), h = o.dur / 2;
+      const A = $(a + "-shot"), B = $(b + "-shot");
+      tl.set(A, { filter: "url(#" + SEG + "-wa" + k + ")" }, t - h - 0.01); tl.set(A, { filter: "none" }, t + 0.06);
+      tl.set(B, { filter: "url(#" + SEG + "-wb" + k + ")" }, t - 0.001); tl.set(B, { filter: "none" }, t + h + 0.02);
+      FX.whip(tl, A, B, t, { dir: o.dir, vertical: o.vertical, dur: o.dur, blurA: ba, blurB: bb });
+    }
+    function slide(a, b, t, o) {     // paper slides over the previous shot
+      o = Object.assign({ from: 1, d: 0.5 }, o);
+      const A = $(a + "-shot"), B = $(b + "-shot"), dist = 1980 * o.from;
+      tl.fromTo(B, { x: dist, boxShadow: "0 0 80px rgba(0,0,0,0.5)" }, { x: 0, duration: o.d, ease: C(E.inOut, o.d), immediateRender: false }, t - o.d);
+      tl.set(B, { boxShadow: "none" }, t);
+      tl.fromTo(A, { x: 0 }, { x: -dist * 0.12, duration: o.d, ease: E.in, immediateRender: false }, t - o.d);
+    }
+    // map camera: p = {s, cx, cy} (map point shown at the frame centre); items stay in screen space at constant size
+    function mapCam(cam, items, p, extra) {
+      const apply = () => {
+        cam.style.transform = "translate(" + (960 - p.cx * p.s).toFixed(2) + "px," + (540 - p.cy * p.s).toFixed(2) + "px) scale(" + p.s.toFixed(5) + ")";
+        items.forEach((it) => { it.el.style.transform = "translate(" + ((it.x - p.cx) * p.s + 960).toFixed(1) + "px," + ((it.y - p.cy) * p.s + 540).toFixed(1) + "px)"; });
+        if (extra) extra(p);
+      };
+      apply();
+      return { apply: apply, to: (v, t, d, ease) => tl.to(p, Object.assign({ duration: d, ease: ease || E.cam, onUpdate: apply }, v), t) };
+    }
+
+    /* ===== sc001 · Stanford c.1920 → the student → "the father of Silicon Valley, Frederick Terman" ===== */
+    (function () {
+      const svg = $("s1-mk"), pf = FX.markupDefs(svg, SEG + "-pen1", { boil: 4 });
+      gsap.set($("s1-quad"), { rotation: -1.5 });
+      tl.fromTo($("s1-quad"), { x: -110 }, { x: 0, duration: 1.5, ease: C(E.out, 1.5), immediateRender: true }, 0);
+      tl.fromTo($("s1-quadi"), { scale: 1.16 }, { scale: 1.0, duration: 11.4, ease: "none", immediateRender: true }, 0);
+      gsap.set($("sc001-cam"), { transformOrigin: "546px 480px", scale: 1.2, x: 400 });
+      tl.fromTo($("sc001-cam"), { scale: 1.2, x: 400 }, { scale: 1.14, x: 380, duration: 7.5, ease: "none", immediateRender: false }, 0);
+      tl.to($("sc001-cam"), { scale: 1.0, x: 0, duration: 1.3, ease: C(E.inOut, 1.3) }, S(887.1));
+      // right column waits as an empty ash block + magenta bar (alive from frame 0: the bar grows)
+      gsap.set($("s1-bar"), { transformOrigin: "50% 0%", scaleY: 0 });
+      tl.fromTo($("s1-bar"), { scaleY: 0 }, { scaleY: 1, duration: 1.0, ease: C(E.out, 1.0), immediateRender: false }, S(887.2));
+      gsap.set($("s1-blk"), { transformOrigin: "0% 50%", scaleX: 0 });
+      tl.fromTo($("s1-blk"), { scaleX: 0 }, { scaleX: 1, duration: 1.0, ease: C(E.out, 1.0), immediateRender: false }, S(887.3));
+      // "one of the students who's at Stanford right now": the 1920 group card, ring on him at "the guy"
+      land($("s1-grp"), S(883.95), { rot: 2.5, dr: 6, y: 90 });
+      const ring = FX.markup.circle(tl, svg, S(886.72), { cx: 908, cy: 664, rx: 34, ry: 42, rot: -6, color: MAG, width: 5, dur: 0.5, filter: pf, seed: 4 });
+      hideUntil(ring, S(886.72));
+      // "the father of Silicon Valley, Frederick Terman"
+      gsap.set($("s1-cut"), { opacity: 0 });
+      tl.fromTo($("s1-cut"), { opacity: 0, y: 70 }, { opacity: 1, y: 0, duration: 0.9, ease: C(E.out, 0.9), immediateRender: false }, S(887.75));
+      rise($("s1-role"), T(887.84));               // the father of Silicon Valley
+      rise($("s1-name"), T(889.52), { dur: 0.5, y: 20 });   // Frederick Terman
+    })();
+
+    whip("sc001", "sc002", S(891.30), { dir: 1 });
+
+    /* ===== sc002 · born 1900 ===== */
+    (function () {
+      const a = S(891.30);
+      const on = FX.onFrame; FX.onFrame = (f) => on(FX.gate(a - 0.3, S(894.3), f));
+      FX.streaks($("streaks"), { seed: 31, speed: 0.5, xfreq: 0.1, lo: 0.46, hi: 0.96, gamma: 2.6, tint: [200, 205, 215], gain: 0.9 });
+      FX.onFrame = on;
+      gsap.set($("s2-fred"), { rotation: -3 });
+      tl.fromTo($("sc002-cam"), { scale: 1.0 }, { scale: 1.06, duration: 3.5, ease: "none", immediateRender: false }, a);
+      rise($("s2-born"), T(891.44), { dur: 0.4 });  // born
+      FX.text.odometer(tl, $("s2-year"), T(891.92), { dur: 0.5, stagger: 0.04, spins: 6, seed: 7 });   // nineteen hundred
+    })();
+
+    /* ===== sc003 · the undergraduate (hard cut on the push) ===== */
+    (function () {
+      const a = S(894.25), svg = $("s3-mk"), pf = FX.markupDefs(svg, SEG + "-pen3", { boil: 12 });
+      tl.fromTo($("sc003-cam"), { scale: 1.2, x: 0 }, { scale: 1.6, x: -30, duration: 5.2, ease: E.cam, immediateRender: false }, a);
+      const ring = FX.markup.circle(tl, svg, a + 1.5, { cx: 1779, cy: 462, rx: 44, ry: 54, rot: -6, color: MAGL, width: 4, dur: 0.6, filter: pf, seed: 9 });
+      hideUntil(ring, a + 1.5);
+      rise($("s3-name"), a + 1.5, { dur: 0.5 });   // name tag for the ringed man (not a narration cue)
+      rise($("s3-role"), T(895.83));               // Stanford undergraduate
+    })();
+
+    slide("sc003", "sc004", S(899.20));
+
+    /* ===== sc004 · father and son ===== */
+    (function () {
+      const a = S(899.20), svg = $("s4-mk"), pf = FX.markupDefs(svg, SEG + "-pen4", { boil: 4 });
+      gsap.set($("s4-son"), { rotation: 2.5 }); gsap.set($("s4-dad"), { rotation: -2 });
+      gsap.set($("s4-bar"), { transformOrigin: "50% 0%" });
+      tl.fromTo($("s4-son"), { y: -50, rotation: 7 }, { y: 0, rotation: 2.5, duration: 1.0, ease: C(E.out, 1.0), immediateRender: false }, a - 0.2);
+      tl.fromTo($("s4-dad"), { y: 60, rotation: -7 }, { y: 0, rotation: -2, duration: 1.1, ease: C(E.out, 1.1), immediateRender: false }, a - 0.1);
+      tl.fromTo($("s4-bar"), { scaleY: 0 }, { scaleY: 1, duration: 1.1, ease: C(E.out, 1.1), immediateRender: false }, a);
+      rise($("s4-sonn"), a + 0.3, { dur: 0.5 });   // tag for the known man (not a narration cue)
+      gsap.set($("sc004-cam"), { transformOrigin: "945px 470px", scale: 1.28, y: 44 });
+      tl.fromTo($("sc004-cam"), { scale: 1.28 }, { scale: 1.36, duration: 7, ease: "none", immediateRender: false }, a - 0.5);
+      // family link: pen bracket father → son, drawn on "successful family"
+      const br = FX.markup.pen(tl, svg, S(900.89), { points: [[866, 400], [930, 380], [1000, 402], [1058, 420]], width: 5, color: INK, dur: 0.8, filter: pf, seed: 8 });
+      hideUntil(br, S(900.89));
+      rise($("s4-dadr1"), T(903.79));              // His dad
+      rise($("s4-dadn"), T(903.95), { dur: 0.5 }); // dad (name tag)
+      rise($("s4-dadr2"), T(904.51));              // Stanford psychologist
+      tl.to($("sc004-cam"), { scale: 1.9, x: 330, duration: 0.45, ease: E.in }, S(905.85) - 0.45);
+    })();
+
+    /* ===== sc005 · the 1916 book (hard cut on the push) ===== */
+    (function () {
+      const a = S(905.85), svg = $("s5-mk"), pf = FX.markupDefs(svg, SEG + "-pen5", { boil: 4 });
+      gsap.set($("s5-p1"), { rotation: -2.2 }); gsap.set($("s5-p2"), { rotation: 1.6, opacity: 0 });
+      tl.fromTo($("sc005-cam"), { scale: 1.14 }, { scale: 1.0, duration: 1.5, ease: E.out, immediateRender: false }, a);
+      tl.fromTo($("sc005-cam"), { scale: 1.0 }, { scale: 1.04, duration: 4.4, ease: "none", immediateRender: false }, a + 1.5);
+      tl.fromTo($("s5-iq"), { opacity: 0, x: 30 }, { opacity: 1, x: 0, duration: 0.5, ease: C(E.out, 0.5), immediateRender: true }, T(906.35));   // IQ test
+      // "So all these IQ tests we take…": the distribution page slides out from under the title page, ring on the curve
+      tl.fromTo($("s5-p2"), { opacity: 0, x: -420, rotation: -2 }, { opacity: 1, x: 0, rotation: 1.6, duration: 1.0, ease: C(E.out, 1.0), immediateRender: false }, S(908.35));
+      const ring = FX.markup.circle(tl, svg, S(909.07), { cx: 1042, cy: 484, rx: 196, ry: 112, rot: -3, color: MAGL, width: 6, dur: 0.7, filter: pf, seed: 3 });
+      hideUntil(ring, S(909.07));
+    })();
+
+    whip("sc005", "sc006", S(911.75), { dir: -1 });
+
+    /* ===== sc006 · 1924: Stanford → east → MIT ===== */
+    (function () {
+      const a = S(911.75), svg = $("s6-svg");
+      const SA = [408, 1672], MB = [5849, 1016];
+      const route = mk(svg, "path", { d: "M" + SA[0] + " " + SA[1] + " Q3100 560 " + MB[0] + " " + MB[1], fill: "none", stroke: MAGL, "stroke-width": 8, "stroke-linecap": "round" });
+      const L = route.getTotalLength(); route.setAttribute("stroke-dasharray", L + " " + L); route.setAttribute("stroke-dashoffset", L);
+      const p = { s: 0.58, cx: 1680, cy: 1640 };
+      const items = [{ el: $("s6-pa"), x: SA[0], y: SA[1] }, { el: $("s6-pb"), x: MB[0], y: MB[1] }, { el: $("s6-r1"), x: 640, y: 1930 }, { el: $("s6-r2"), x: 5560, y: 890 }, { el: $("s6-r3"), x: 3150, y: 1500 }];
+      const cam = mapCam($("s6-cam"), items, p, (q) => route.setAttribute("stroke-width", (6 / q.s).toFixed(1)));
+      cam.to({ s: 0.62, cx: 1600 }, a - 0.2, 6.8, "none");
+      // Stanford pin + label with the map
+      const pa = $("s6-pa"), pb = $("s6-pb");
+      tl.fromTo(pa.querySelector(".dot"), { opacity: 0, scale: 2.4 }, { opacity: 1, scale: 1, duration: 0.5, ease: C(E.out, 0.5), immediateRender: false }, a + 0.2);
+      rise(pa.querySelector(".lab"), a + 0.3, { dur: 0.5 });   // place label (appears with the map)
+      // 1924 on the word
+      FX.text.odometer(tl, $("s6-year"), T(915.98), { dur: 0.5, stagger: 0.04, spins: 6, seed: 12 });   // 1924
+      tl.to($("s6-year"), { opacity: 0, duration: 0.35, ease: "power1.in" }, S(918.35));
+      // "he himself actually goes east": pull out, route draws, then push to Boston; MIT on the word
+      cam.to({ s: 0.31, cx: 3196, cy: 1762 }, S(918.5), 1.7, E.inOut);
+      hideUntil(route, S(918.9));
+      tl.fromTo(route, { attr: { "stroke-dashoffset": L } }, { attr: { "stroke-dashoffset": 0 }, duration: 2.6, ease: C(E.inOut, 2.6), immediateRender: false }, S(918.9));
+      cam.to({ s: 0.62, cx: 4844, cy: 1040 }, S(920.35), 2.2, E.inOut);
+      tl.fromTo(pb.querySelector(".dot"), { opacity: 0, scale: 2.4 }, { opacity: 1, scale: 1, duration: 0.4, ease: C(E.out, 0.4), immediateRender: false }, S(921.5));
+      rise(pb.querySelector(".lab"), T(922.70), { dur: 0.4 });   // MIT
+      // region labels fade with the framing
+      gsap.set([$("s6-r2"), $("s6-r3")], { opacity: 0 });
+      tl.to($("s6-r1"), { opacity: 0, duration: 0.4 }, S(918.5)); tl.to($("s6-r3"), { opacity: 1, duration: 0.5 }, S(919.3));
+      tl.to($("s6-r3"), { opacity: 0, duration: 0.4 }, S(920.6)); tl.to($("s6-r2"), { opacity: 1, duration: 0.5 }, S(921.9));
+      tl.to(pa.querySelector(".lab"), { opacity: 0, duration: 0.3 }, S(920.6));
+      cam.to({ s: 0.66, cy: 1030 }, S(922.55), 1.2, "none");
+    })();
+
+    /* ===== sc007 · MIT → what he brings back to Stanford (hard cut on the map push) ===== */
+    (function () {
+      const a = S(923.50), svg = $("s7-mk"), pf = FX.markupDefs(svg, SEG + "-pen7", { boil: 4 });
+      gsap.set($("s7-mit"), { rotation: 1.5 }); gsap.set($("s7-stan"), { rotation: -2 });
+      gsap.set($("sc007-cam"), { transformOrigin: "1400px 480px" });
+      tl.fromTo($("sc007-cam"), { scale: 1.32, x: -440, y: 40 }, { scale: 1.2, x: -440, y: 40, duration: 1.6, ease: E.out, immediateRender: false }, a);
+      tl.to($("sc007-cam"), { scale: 1.16, duration: 1.5, ease: "none" }, a + 1.6);
+      tl.to($("sc007-cam"), { scale: 1.0, x: 0, y: 40, duration: 1.3, ease: C(E.inOut, 1.3) }, S(926.6));
+      tl.to($("sc007-cam"), { scale: 1.03, duration: 6.0, ease: "none" }, S(927.95));
+      // "…that he implements at Stanford later on when he comes back"
+      const ar = FX.markup.arrow(tl, svg, S(926.9), { x1: 986, y1: 420, x2: 800, y2: 520, bend: 60, color: MAG, width: 7, head: 30, dur: 0.9, filter: pf });
+      hideUntil(ar[0], S(926.9)); hideUntil(ar[1], S(926.9) + 0.76);
+      land($("s7-stan"), S(927.3), { rot: -2, dr: -6, y: 80 });
+      rise($("s7-stann"), T(927.74), { dur: 0.5 });   // Stanford
+      rise($("s7-sv"), T(932.30), { dur: 0.5 });      // Silicon Valley
+    })();
+
+    slide("sc007", "sc008", S(933.95));
+
+    /* ===== sc008 · Boston: MIT and Harvard, very close to each other ===== */
+    (function () {
+      const a = S(933.95), svg = $("s8-svg");
+      const M = [1632, 966], H = [1248, 655];
+      const p = { s: 0.72, cx: 1500, cy: 800 };
+      const items = [{ el: $("s8-pm"), x: M[0], y: M[1] }, { el: $("s8-ph"), x: H[0], y: H[1] }, { el: $("s8-bos"), x: 2150, y: 900 }];
+      const cam = mapCam($("s8-cam"), items, p);
+      cam.to({ s: 0.9, cx: 1560, cy: 800 }, a - 0.5, 10.2, "sine.out");
+      // "two very successful universities": two dots on "two"
+      [$("s8-pm"), $("s8-ph")].forEach((pin, i) => tl.fromTo(pin.querySelector(".dot"), { opacity: 0, scale: 3 }, { opacity: 1, scale: 1, duration: 0.6, ease: C(E.out, 0.6), immediateRender: false }, S(935.74) + i * 0.22));
+      // "very close to each other": dashed link between them
+      const link = mk(svg, "path", { d: "M" + H[0] + " " + H[1] + " L" + M[0] + " " + M[1], fill: "none", stroke: MAG, "stroke-width": 7, "stroke-linecap": "round" });
+      const L = link.getTotalLength(); link.setAttribute("stroke-dasharray", L + " " + L); link.setAttribute("stroke-dashoffset", L);
+      hideUntil(link, S(937.6));
+      tl.fromTo(link, { attr: { "stroke-dashoffset": L } }, { attr: { "stroke-dashoffset": 0 }, duration: 0.8, ease: C(E.out, 0.8), immediateRender: false }, S(937.6));
+      gsap.set($("s8-bos").querySelector("span"), { xPercent: -50, yPercent: -50 });
+      rise($("s8-bos").querySelector("span"), T(938.62), { dur: 0.5, y: 0 });   // Boston
+      rise($("s8-pm").querySelector(".lab"), T(939.90), { dur: 0.4 });          // MIT
+      rise($("s8-ph").querySelector(".lab"), T(942.78), { dur: 0.4 });          // Harvard
+    })();
+
+    FX.grain($("grain"), 3); FX.dust($("dust"), 5, 2);
+    FX.mount(tl, DUR);
+    window.__timelines = window.__timelines || {};
+    window.__timelines[SEG] = tl;
+  })();
+  </script>
+</template>
+</body>
+</html>

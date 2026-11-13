@@ -9,16 +9,16 @@
     #root { position: absolute; inset: 0; overflow: hidden; background: var(--night); color: var(--bone); }
     #pd06-defs { position: absolute; width: 0; height: 0; }
     #pd06-weave { position: absolute; inset: -14px; }
-    #pd06-plate, #pd06-soft { position: absolute; left: -66px; top: -40px; width: 2080px; height: 1170px; transform-origin: 52% 56%; }
+    #pd06-plate, #pd06-soft { position: absolute; left: -290px; top: -210px; width: 2400px; height: 1350px; transform-origin: 52% 56%; }
     #pd06-plate img, #pd06-soft img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
     #pd06-plate img { filter: url(#pd06-tint) contrast(1.06); }
     #pd06-soft img { filter: url(#pd06-tintd) blur(9px); }
-    #pd06-soft { opacity: 0; }
+    #pd06-softw { position: absolute; inset: 0; opacity: 0; }
     #pd06-grid { position: absolute; inset: 0; opacity: 0;
       background-image: linear-gradient(rgba(194,197,202,0.085) 2px, transparent 2px), linear-gradient(90deg, rgba(194,197,202,0.085) 2px, transparent 2px);
       background-size: 72px 72px; background-position: 24px 0; }
     #pd06-ring { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; }
-    #pd06-shade { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(12,15,21,0) 52%, rgba(12,15,21,0.62) 76%, rgba(12,15,21,0.8)); opacity: 0; }
+    #pd06-shade { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(12,15,21,0) 62%, rgba(12,15,21,0.62) 80%, rgba(12,15,21,0.8)); opacity: 0; }
     #pd06-cutw { position: absolute; left: 84px; top: 150px; width: 668px; height: 930px; overflow: hidden; }
     #pd06-cut { position: absolute; left: 14px; top: 14px; width: 640px;
       filter: grayscale(1) contrast(1.1) brightness(0.98) drop-shadow(5px 0 0 #eeeee8) drop-shadow(-5px 0 0 #eeeee8) drop-shadow(0 -5px 0 #eeeee8) drop-shadow(0 26px 40px rgba(0,0,0,0.5)); }
@@ -34,7 +34,7 @@
     <svg id="pd06-defs"></svg>
     <div id="pd06-weave">
       <div id="pd06-plate"><img src="assets/podcast/pd06/stanford_quad_c1896_plate_2560.jpg" alt="" /></div>
-      <div id="pd06-soft"><img src="assets/podcast/pd06/stanford_quad_c1896_plate_2560.jpg" alt="" /></div>
+      <div id="pd06-softw"><div id="pd06-soft"><img src="assets/podcast/pd06/stanford_quad_c1896_plate_2560.jpg" alt="" /></div></div>
     </div>
     <div id="pd06-grid"></div>
     <div id="pd06-shade"></div>
@@ -64,7 +64,7 @@
     const E = FX.ease, C = (e, d) => FX.choppy(e, d, 12);
     FX.grain($("grain"), 601);
     FX.dust($("dust"), 603, 2);
-    FX.tintDefs($("defs"), "pd06-tint", "#12151c", "#dcdcd6");    // silicon duotone (sharp plate)
+    FX.tintDefs($("defs"), "pd06-tint", "#12151c", "#eeeee8");    // silicon duotone (sharp plate)
     FX.tintDefs($("defs"), "pd06-tintd", "#0a0c11", "#565b66");   // dimmed copy for the card
     FX.weave($("weave"), { amp: 1.4, rot: 0.05, flicker: 0.04, seed: 605 });
 
@@ -80,9 +80,11 @@
 
     // ---- 591.12 "Herbert Hoover" — focus pull: the plate goes soft and dark except one sharp circle; the cut-out rises; the name lands ----
     const hole = { r: 1500 };
-    const mask = () => { const m = "radial-gradient(circle at 1076px 660px, transparent " + hole.r.toFixed(0) + "px, #000 " + (hole.r + 3).toFixed(0) + "px)"; $("soft").style.webkitMaskImage = m; $("soft").style.maskImage = m; };
+    const mask = () => { const m = "radial-gradient(circle at 1024px 634px, transparent " + hole.r.toFixed(0) + "px, #000 " + (hole.r + 3).toFixed(0) + "px)"; $("softw").style.webkitMaskImage = m; $("softw").style.maskImage = m; };
     mask();
-    tl.to($("soft"), { opacity: 1, duration: 0.5, ease: "power1.out" }, S(590.95));
+    tl.to($("softw"), { opacity: 1, duration: 0.5, ease: "power1.out" }, S(590.95));
+    // the plate slides so the Quad's arch sits inside the sharp circle
+    tl.to([$("plate"), $("soft")], { x: 215, y: 185, duration: 1.2, ease: E.cam }, S(590.9));
     tl.to(hole, { r: 214, duration: 1.0, ease: C(E.out, 1.0), onUpdate: mask }, S(590.95));
     tl.to($("grid"), { opacity: 1, duration: 0.6 }, S(591.0));
     tl.to($("ringc"), { opacity: 1, duration: 0.001 }, S(591.6));

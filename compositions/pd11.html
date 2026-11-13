@@ -68,9 +68,9 @@
     #pd11-s6-grid { position: absolute; inset: 0; opacity: 0.5;
       background-image: linear-gradient(rgba(22,26,36,0.16) 2px, transparent 2px), linear-gradient(90deg, rgba(22,26,36,0.16) 2px, transparent 2px), linear-gradient(rgba(22,26,36,0.07) 1px, transparent 1px), linear-gradient(90deg, rgba(22,26,36,0.07) 1px, transparent 1px);
       background-size: 120px 120px, 120px 120px, 24px 24px, 24px 24px; background-position: 0 -20px, -24px 0, 0 -20px, -24px 0; }
-    .e6-dt { position: absolute; font-size: 66px; color: var(--ink); white-space: nowrap; }
-    .e6-dl { position: absolute; font-size: 28px; color: var(--ink); white-space: nowrap; }
-    #pd11-s6-state { position: absolute; left: 1170px; top: 408px; width: 160px; text-align: center; font-size: 40px; }
+    .e6-dt { position: absolute; font-size: 84px; color: var(--ink); white-space: nowrap; }
+    .e6-dl { position: absolute; font-size: 34px; color: var(--ink); white-space: nowrap; }
+    #pd11-s6-state { position: absolute; left: 1170px; top: 352px; width: 160px; text-align: center; font-size: 40px; }
     #pd11-s6-state span { position: absolute; left: 0; top: 0; width: 160px; padding: 10px 0 4px; opacity: 0; }
 
     #pd11-flash { position: absolute; inset: 0; background: var(--bone); opacity: 0; pointer-events: none; z-index: 7; }
@@ -150,10 +150,10 @@
       <div id="pd11-s6-grid"></div>
       <div class="e6-p2" style="background-image:url('assets/textures/paper_fiber_01.jpg')"></div>
       <svg id="pd11-s6-svg" class="e6-mk" viewBox="0 0 1920 1080"></svg>
-      <div class="e6-dt t-display" id="pd11-s6-sw" style="left:96px;top:226px"><span class="e6-w">A </span><span class="e6-w">switch</span></div>
-      <div class="e6-dt t-display" id="pd11-s6-tr" style="left:700px;top:226px;opacity:0">A transistor</div>
-      <div class="e6-dl t-label" id="pd11-s6-no" style="left:704px;top:318px;color:var(--magenta-dark)"><span class="e6-w">no </span><span class="e6-w">physical </span><span class="e6-w">movement</span></div>
-      <div class="e6-dl t-label" id="pd11-s6-big" style="left:1340px;top:434px;color:var(--copper-dark)"><span class="e6-w">big </span><span class="e6-w">electricity</span></div>
+      <div class="e6-dt t-display" id="pd11-s6-sw" style="left:96px;top:150px"><span class="e6-w">A </span><span class="e6-w">switch</span></div>
+      <div class="e6-dt t-display" id="pd11-s6-tr" style="left:700px;top:150px;opacity:0">A transistor</div>
+      <div class="e6-dl t-label" id="pd11-s6-no" style="left:704px;top:262px;color:var(--magenta-dark)"><span class="e6-w">no </span><span class="e6-w">physical </span><span class="e6-w">movement</span></div>
+      <div class="e6-dl t-label" id="pd11-s6-big" style="left:1350px;top:376px;color:var(--copper-dark)"><span class="e6-w">big </span><span class="e6-w">electricity</span></div>
       <div class="e6-dl t-label" id="pd11-s6-small" style="left:700px;top:936px;color:var(--magenta-dark)"><span class="e6-w">small </span><span class="e6-w">electricity</span></div>
       <div id="pd11-s6-state" class="t-display"><span id="pd11-s6-on" style="background:var(--magenta);color:var(--bone)">ON</span><span id="pd11-s6-off" style="background:var(--ink);color:var(--paper)">OFF</span></div>
     </div></div>
@@ -375,14 +375,14 @@
       const lever = el(sw, "path", { d: "M0 0 L" + LEN + " 0", stroke: INK, "stroke-width": 12, "stroke-linecap": "round" });
       el(sw, "circle", { cx: HX, cy: HY, r: 14, fill: PAPER, stroke: INK, "stroke-width": 7 });
       el(sw, "circle", { cx: HX + LEN, cy: HY, r: 14, fill: PAPER, stroke: INK, "stroke-width": 7 });
-      const arc = el(sw, "path", { d: "M" + (HX + 268) + " " + (HY - 34) + " A 270 270 0 0 0 " + (HX + 222) + " " + (HY - 150), stroke: ASH, "stroke-width": 4, "stroke-dasharray": "10 9", fill: "none" });
+      const arc = el(sw, "path", { d: "M" + (HX + 268) + " " + (HY - 34) + " A 270 270 0 0 0 " + (HX + 222) + " " + (HY - 150), stroke: ASH, "stroke-width": 5, "stroke-dasharray": "10 9", fill: "none" });
       const lv = { a: -32 }, setL = () => lever.setAttribute("transform", "translate(" + HX + " " + HY + ") rotate(" + lv.a.toFixed(2) + ")");
       setL();
       [[1420.80, 0], [1421.70, -32], [1422.50, 0], [1423.40, -32], [1424.10, 0]].forEach(([t, a]) =>
         tl.to(lv, { a: a, duration: 0.42, ease: C(E.out, 0.42), onUpdate: setL }, S(t)));
       tl.to([sw, $("s6-sw")], { opacity: 0.4, duration: 0.7, ease: C(E.out, 0.7) }, S(1424.70));
       /* ---- right: the transistor as a channel with a gate (nothing moves) ---- */
-      const G0 = 1200, G1 = 1300, XL = 700, XR = 1824, YT = 500, YB = 620;
+      const G0 = 1200, G1 = 1300, XL = 700, XR = 1824, YT = 450, YB = 670;
       ink(svg, "M" + XL + " " + YT + " L" + XR + " " + (YT + 1), S(1420.50), 1.1, { width: 7 });
       ink(svg, "M" + XL + " " + YB + " L" + XR + " " + (YB + 1), S(1420.62), 1.1, { width: 7 });
       const gate = el(svg, "rect", { x: G0, y: YT + 4, width: G1 - G0, height: YB - YT - 8, fill: ASHD, opacity: 0 });
@@ -396,8 +396,8 @@
       tl.to(term, { opacity: 1, duration: 0.2 }, S(1421.90));
       tl.fromTo($("s6-tr"), { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.6, ease: C(E.out, 0.6), immediateRender: true }, S(1421.20));
       // big electricity: copper dots queue left of the gate; they pass only while the gate is ON
-      const rows = [530, 560, 590], SPB = 38, big = [], F = { f: 0, g: 0, a: 0 };
-      rows.forEach((y, r) => { for (let i = 0; i < 48; i++) big.push({ y, base: G0 - 22 - i * SPB - (r % 2) * 19, n: el(svg, "circle", { r: 10, cy: y, fill: COP, opacity: 0 }) }); });
+      const rows = [490, 525, 560, 595, 630], SPB = 38, big = [], F = { f: 0, g: 0, a: 0 };
+      rows.forEach((y, r) => { for (let i = 0; i < 48; i++) big.push({ y, base: G0 - 22 - i * SPB - (r % 2) * 19, n: el(svg, "circle", { r: 11, cy: y, fill: COP, opacity: 0 }) }); });
       const placeB = () => big.forEach((d) => { let x = d.base + F.f; if (x > G0 - 12) x += F.g; d.n.setAttribute("cx", x.toFixed(1)); d.n.setAttribute("opacity", x > XL + 14 && x < XR - 14 ? F.a : 0); });
       placeB();
       tl.to(F, { a: 1, duration: 0.6, onUpdate: placeB }, S(1423.00));
@@ -406,9 +406,9 @@
       // small electricity: magenta pulses up the thin wire
       const WP = [[880, 902], [1250, 900], [1250, YB + 6]], L1 = 370, L2 = 900 - YB - 6, small = [], K = { f: 0, a: 0 };
       for (let i = 0; i < 14; i++) small.push(el(svg, "circle", { r: 7, fill: MAG, opacity: 0 }));
-      const placeS = () => small.forEach((n, i) => { const p = K.f - i * 46; let x, y;
+      const placeS = () => small.forEach((n, i) => { const p = (K.f + i * 46) % 644; let x, y;
         if (p < L1) { x = 880 + Math.max(p, 0); y = 902 - 2 * Math.max(p, 0) / L1; } else { x = 1250; y = 900 - (p - L1); }
-        n.setAttribute("cx", x.toFixed(1)); n.setAttribute("cy", y.toFixed(1)); n.setAttribute("opacity", p > 0 && p < L1 + L2 ? K.a : 0); });
+        n.setAttribute("cx", x.toFixed(1)); n.setAttribute("cy", y.toFixed(1)); n.setAttribute("opacity", p < K.f && p < L1 + L2 ? K.a : 0); });
       placeS();
       tl.set(K, { a: 1 }, S(1424.40));
       tl.to(K, { f: 3900, duration: 6.4, ease: "none", onUpdate: placeS }, S(1424.42));
