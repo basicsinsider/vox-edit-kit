@@ -2,14 +2,17 @@
 Owner: Krish. Written by the lead session, 2026-11-13, from the kickoff brief. Branch: `claude/podcast-aroll-edit`.
 Quality bar and process: the Paraguay, Ivan and Taiwan videos (`project/paraguay/`, `project/ivan/`, MANUAL.md all of it).
 
-## STATUS (2026-11-13) — BLOCKED on the footage
-`podcast.mp4` on Drive (id 1ARH0zZR-GByPgQLmmgBRpvxmQ2BawVIo, 12,578,749,203 B) is incomplete at the source: bytes 0–3,467,640,832
-(3.23 GB) hold data (ftyp isom + an mdat declaring 12,574,325,470 B, first NAL looks like HEVC), everything after is zeros, no `moov`
-index → nothing can open it. Local ranges were compared with Drive (identical), so it is not a download fault. Krish is checking the
-original and will re-upload. Local copy kept as `input/aroll_partial.mp4` (truncated to the 3.23 GB of data; delete once the good
-file is in). Nothing downstream (transcript, EDL, plan, palette) can start before the footage works.
-Done meanwhile: credentials (below), 57 inspo-frames asset references saved (`references/inspo-assets/`), music limits tightened in
-the tools + MANUAL §0/§10.8 and tested.
+## STATUS (2026-11-13)
+Footage: the first Drive file was incomplete (zeros after 3.23 GB); Krish re-uploaded — id **1CI45TQU4BGLyQFiQ4mgI_jflW9ZbM_br**,
+12,578,749,203 B, HEVC 3840×2160 30 fps + AAC 44.1 kHz dual-mono, 98:20. It is a two-person podcast (Sam + Sunkit), already switched
+(split / single shots) and already tight (21 pauses > 0.9 s). Topic: how Silicon Valley was made (Terman, HP, Shockley, Fairchild,
+Kilby, Moore) and how Taiwan set out to copy it (UN 1971, Chiang, the cabinet of engineers, Pan Wen-yuan), framed by the Tsao/UMC vs
+Chang/TSMC cold open. **The file ends mid-conversation** (Boston / Innovator's Dilemma; the TSMC-vs-UMC story itself is never reached)
+— flagged to Krish; the video ends on the last complete line.
+EDL: `project/podcast/EDL.json` (226 word-level cuts from 5 analysts + lead, cut points in the quietest spot hugging the kept word,
+30 fps grid, pauses > 0.9 s → 0.5 s) → master **5752.03 s = 95:52**. Plan: `SEGMENTS.md`, `sections.json` (pd01–03 intro 0–346 s;
+pd04–pd44 = 41 edited sections, 1597 s). Palette `lib/palette_podcast.css`. Krish asked (before going to bed) to continue without
+check-ins until the 720p gofile link.
 
 ## Credentials (never commit or print a key)
 - Epidemic Sound: proxy-injected for www.epidemicsound.com; `tools/epidemic_mcp.py` reads the placeholder `~/.secrets/epidemic_key`
