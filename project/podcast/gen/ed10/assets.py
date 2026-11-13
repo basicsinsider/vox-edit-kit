@@ -87,7 +87,7 @@ def dejump(d):
     for sub in d.split("M")[1:]:
         n = [float(v) for v in re.findall(r"-?\d+\.?\d*", sub)]
         xs = n[0::2]
-        if len(xs) > 1 and max(abs(a - b) for a, b in zip(xs, xs[1:])) > 400: continue
+        if len(xs) > 1 and max(abs(a - b) for a, b in zip(xs, xs[1:])) > 3000: continue
         out.append("M" + sub)
     return "".join(out)
 

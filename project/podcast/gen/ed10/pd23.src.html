@@ -44,7 +44,7 @@
       <circle id="pd23-ring" cx="0" cy="0" r="12" fill="none" stroke="#9bd8b0" stroke-width="3"/>
       <circle id="pd23-pin" cx="0" cy="0" r="7" fill="#2f9e5b" stroke="#eeeee8" stroke-width="2.5"/>
     </svg>
-    <div id="pd23-lus" class="pd23-lab pd23-c1 t-display" data-ll="-118,40.5">UNITED STATES</div>
+    <div id="pd23-lus" class="pd23-lab pd23-c1 t-display" data-ll="-107,40.5">UNITED STATES</div>
     <div id="pd23-ljp" class="pd23-lab pd23-c2 t-display" data-ll="149,26.5" data-a="r">JAPAN</div>
     <div id="pd23-lwest" class="pd23-lab pd23-c3 t-display" data-ll="-33,43" data-a="c">THE WEST</div>
     <div id="pd23-laf" class="pd23-lab pd23-c3 t-display" data-ll="19,9" data-a="c">AFRICA</div>
@@ -105,7 +105,7 @@
       "poland", "czechia", "slovakia", "hungary", "romania", "bulgaria", "mongolia", "north_korea", "china"].forEach((k) => addFill($("gbloc"), k, "bloc"));
 
     // ---- camera + screen-space labels ----
-    const cam = { s: 0.395, cx: mx(20), cy: my(10) };
+    const cam = { s: 0.395, cx: mx(19), cy: my(10) };
     const labs = Array.from(document.querySelectorAll(".pd23-lab")).map((el) => { const m = el.getAttribute("data-ll").split(","); return { el, x: mx(+m[0]), y: my(+m[1]), a: el.getAttribute("data-a") || "l" }; });
     const TW = [mx(121), my(23.7)];
     const place = () => {
@@ -133,14 +133,14 @@
       return { p, len };
     };
     const draw = (a, t, d) => { tl.set(a.p, { opacity: 1 }, t); tl.to(a.p, { attr: { "stroke-dashoffset": 0 }, duration: d, ease: C("power2.out", d) }, t); };
-    const aJP = arc(138, 36, 150, "#9bd8b0", 6), aW = arc(8, 47, 620, "#9bd8b0", 6), aAF = arc(20, 2, 1500, "#9bd8b0", 6), aSA = arc(-58, -12, 2150, "#9bd8b0", 6), aUS = arc(-98, 40, 900, "#eeeee8", 9);
+    const aJP = arc(138, 36, 150, "#9bd8b0", 6), aW = arc(8, 47, 380, "#9bd8b0", 6), aAF = arc(20, 2, 500, "#9bd8b0", 6), aSA = arc(-58, -12, 900, "#9bd8b0", 6), aUS = arc(-98, 40, 620, "#eeeee8", 9);
 
     // ---- initial states: frame 0 = the map up, the bloc hatched, the Taiwan pin pulsing, camera drifting ----
     const flat = (g) => [].concat.apply([], els[g]);
     ["japan", "asia", "west", "africa", "sam", "us"].forEach((g) => gsap.set(flat(g), { opacity: 0 }));
     gsap.set([$("lus"), $("ljp"), $("lwest"), $("laf"), $("lsa"), $("inset"), $("leader"), $("tw"), $("roc"), $("true"), $("lg1"), $("lg2"), $("sw")], { opacity: 0 });
     place();
-    tl.fromTo(cam, { s: 0.395, cx: mx(20) }, { s: 0.412, cx: mx(22.5), duration: DUR, ease: "none", immediateRender: false }, 0);
+    tl.fromTo(cam, { s: 0.395, cy: my(10) }, { s: 0.405, cy: my(9), duration: DUR, ease: "none", immediateRender: false }, 0);
     tl.fromTo($("ring"), { attr: { r: 8 }, opacity: 0.95 }, { attr: { r: 34 }, opacity: 0, duration: 1.0, ease: "power2.out", repeat: 2, repeatDelay: 0.25, immediateRender: true }, 0);
     const fillIn = (g, t, stag, kind) => els[g].forEach((ps, i) => ps.forEach((p, j) => tl.to(p, { opacity: j ? 1 : kind === "us" ? 0.62 : 0.66, duration: 0.25, ease: C("power1.out", 0.25) }, t + i * stag)));
     const land = (el, t, d) => tl.fromTo(el, { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: d || 0.5, ease: C(E.out, d || 0.5), immediateRender: false }, t);

@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8" /></head>
+<body>
+<template>
+  <style>
+    /* pd21 · 2582.0–2622.9 · not the CCP but the ROC fought alongside the US; the four policemen; UN Charter + permanent seat
+       GENERATED from project/podcast/gen/ed10/pd21.src.html (build.py inlines the map paths) — edit the source.
+       A 2582.00–2598.00  paper war map with pinned cards (inspo ccbe41e5)         — ported idea: c3s02 C3S063–064
+       B 2598.00–2615.90  world night map, the four built one by one (inspo e2d14822) — ported: c3s02 C3S067–068
+       D 2615.90–2622.90  UN Charter signing + the 1946 Security Council poster      — ported: c3s02 C3S069–070
+       The slip "against China" (2579–2581) is before this section and is never shown. */
+    #root { position: absolute; inset: 0; overflow: hidden; background: var(--night); color: var(--bone); }
+    #pd21-defs { position: absolute; width: 0; height: 0; }
+    .pd21-sc { position: absolute; inset: 0; overflow: hidden; }
+    /* ---- A ---- */
+    #pd21-a { background: #c9ccd0; }
+    #pd21-acam { position: absolute; left: 0; top: 0; width: 3199px; height: 2475px; transform-origin: 0 0; }
+    #pd21-acam img, #pd21-acam svg { position: absolute; left: 0; top: 0; width: 3199px; height: 2475px; }
+    .pd21-ml { position: absolute; left: 0; top: 0; white-space: nowrap; font-size: 46px; letter-spacing: 0.06em; color: var(--ink); opacity: 0.82; }
+    .pd21-card { position: absolute; width: 340px; background: #f1f0ea; box-shadow: 0 16px 34px rgba(22,26,36,0.38), 0 2px 5px rgba(22,26,36,0.3); padding: 12px 12px 0; }
+    .pd21-card .ph { width: 316px; height: 380px; overflow: hidden; background: var(--ash-dark); }
+    .pd21-card .ph img { width: 100%; height: 100%; object-fit: cover; display: block; filter: url(#pd21-tint) contrast(1.05); }
+    .pd21-card .ac { font-size: 66px; line-height: 1; color: var(--ink); margin-top: 14px; letter-spacing: 0.02em; }
+    .pd21-card .fn { font-size: 22px; letter-spacing: 0.07em; color: var(--ink); margin: 6px 0 14px; white-space: nowrap; }
+    #pd21-cccp { left: 110px; top: 96px; transform: rotate(-2.5deg); }
+    #pd21-croc { left: 560px; top: 250px; transform: rotate(1.5deg); }
+    #pd21-croc .ac { color: var(--board-dark); }
+    #pd21-rocblk { position: absolute; left: 540px; top: 236px; width: 364px; height: 520px; background: var(--board); transform: rotate(-1.5deg); background-image: radial-gradient(circle, rgba(23,96,58,0.55) 1.5px, transparent 2px); background-size: 7px 7px; }
+    #pd21-nat { position: absolute; left: 574px; top: 782px; font-size: 24px; background: var(--board-dark); color: var(--bone); padding: 10px 16px 6px; white-space: nowrap; transform: rotate(1.5deg); }
+    #pd21-cus { left: 990px; top: 640px; transform: rotate(-1.2deg); }
+    #pd21-cus .ph { height: 170px; }
+    #pd21-cus .ac { font-size: 40px; margin-top: 14px; margin-bottom: 14px; white-space: nowrap; }
+    #pd21-amk { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; }
+    /* ---- B ---- */
+    #pd21-b { background: #0d1016; }
+    #pd21-bcam { position: absolute; left: 0; top: 0; width: 6144px; height: 3072px; transform-origin: 0 0; }
+    #pd21-bcam img { position: absolute; left: 0; top: 0; width: 6144px; height: 3072px; filter: brightness(1.12) contrast(1.05); }
+    #pd21-bsvg { position: absolute; left: 0; top: 0; width: 6144px; height: 3072px; overflow: visible; }
+    #pd21-bscrim { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(12,15,21,0.5) 0%, rgba(12,15,21,0) 14%, rgba(12,15,21,0) 66%, rgba(12,15,21,0.94) 92%); }
+    .pd21-wl { position: absolute; left: 0; top: 0; white-space: nowrap; font-size: 40px; letter-spacing: 0.05em; color: var(--bone); text-shadow: 0 1px 3px rgba(8,10,14,0.95), 0 0 18px rgba(8,10,14,0.9); }
+    .pd21-wl .n { display: inline-block; width: 44px; height: 44px; line-height: 47px; text-align: center; border-radius: 50%; background: var(--bone); color: var(--ink); font-size: 28px; letter-spacing: 0; margin-right: 12px; text-shadow: none; vertical-align: 3px; }
+    #pd21-wroc .n { background: var(--board-light); }
+    .pd21-wl .s { display: block; font-size: 22px; letter-spacing: 0.16em; margin-top: 6px; }
+    #pd21-title { position: absolute; left: 96px; top: 880px; font-size: 104px; white-space: nowrap; letter-spacing: 0.01em; }
+    #pd21-title span { display: inline-block; }
+    #pd21-dots { position: absolute; left: 1290px; top: 912px; width: 400px; height: 60px; }
+    .pd21-dot { position: absolute; top: 0; width: 52px; height: 52px; border-radius: 50%; box-shadow: inset 0 0 0 3px var(--ash-light); }
+    .pd21-dot i { position: absolute; inset: 0; border-radius: 50%; background: var(--bone); }
+    /* ---- D ---- */
+    #pd21-d { background: #d9d8d0; }
+    #pd21-dst { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 0 0; }
+    #pd21-dpap { position: absolute; left: -200px; top: -200px; width: 3200px; height: 1700px; background: url('assets/textures/paper_cream_02.jpg') center / cover; filter: grayscale(1) brightness(1.02); opacity: 0.55; }
+    #pd21-vcard { position: absolute; left: 104px; top: 398px; width: 560px; height: 420px; padding: 14px; background: #f4f3ee; box-shadow: 0 18px 40px rgba(22,26,36,0.4); transform: rotate(-2deg); }
+    #pd21-vcard video { width: 560px; height: 420px; object-fit: cover; display: block; filter: grayscale(1) contrast(1.15) brightness(1.08); }
+    #pd21-dtxt { position: absolute; left: 104px; top: 150px; color: var(--ink); }
+    #pd21-droc { display: inline-block; font-size: 30px; background: var(--board); color: var(--bone); padding: 10px 16px 6px; }
+    #pd21-dfm { font-size: 28px; margin-top: 18px; white-space: nowrap; }
+    #pd21-dun { font-size: 84px; margin-top: 6px; white-space: nowrap; }
+    #pd21-poster { position: absolute; left: 760px; top: 110px; width: 1500px; height: 802px; box-shadow: 0 22px 50px rgba(22,26,36,0.45); transform: rotate(0.6deg); }
+    #pd21-poster img { width: 100%; height: 100%; display: block; filter: contrast(1.08); }
+    #pd21-dmk { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; }
+    #pd21-seat { position: absolute; left: 1330px; top: 430px; }
+    #pd21-seat1 { font-size: 62px; line-height: 0.98; color: var(--ink); white-space: nowrap; }
+    #pd21-seat2 { font-size: 26px; color: var(--ink); margin-top: 16px; white-space: nowrap; }
+    #pd21-cred { position: absolute; right: 96px; top: 1012px; font-size: 16px; letter-spacing: 0.1em; color: var(--ink); opacity: 0.7; }
+  </style>
+  <div id="root" data-composition-id="pd21" data-vo-start="2582.0" data-duration="40.9" data-width="1920" data-height="1080">
+    <svg id="pd21-defs"></svg>
+
+    <!-- A · paper war map with pinned cards -->
+    <div id="pd21-a" class="pd21-sc">
+      <div id="pd21-acam">
+        <img src="assets/podcast/pd24/ea_paper_3199.jpg" alt="" />
+        <svg id="pd21-asvg" viewBox="0 0 3199 2475">
+          <defs><pattern id="pd21-jh" width="10" height="10" patternUnits="userSpaceOnUse" patternTransform="rotate(40)"><rect width="3" height="10" fill="#343843" opacity="0.5"/></pattern></defs>
+          <g style="mix-blend-mode:multiply"><path id="pd21-acn" fill="#56b87c" opacity="0"/></g>
+          <path id="pd21-acnl" fill="none" stroke="#161a24" stroke-width="2.2" stroke-opacity="0.6" stroke-linejoin="round"/>
+          <path id="pd21-ajp" fill="url(#pd21-jh)" stroke="#161a24" stroke-width="2.6" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="paper-tex" style="background-image:url('assets/textures/paper_cream_02.jpg'); opacity:0.4; filter:grayscale(1)"></div>
+      <div id="pd21-mlcn" class="pd21-ml t-display" data-m="330,1560">CHINA</div>
+      <div id="pd21-mljp" class="pd21-ml t-display" data-m="2530,1230">JAPAN</div>
+      <div id="pd21-cccp" class="pd21-card"><div class="ph"><img src="assets/podcast/pd21/mao_card.jpg" alt="" /></div><div class="ac t-display">CCP</div><div class="fn t-label">Chinese Communist Party</div></div>
+      <div id="pd21-rocblk"></div>
+      <div id="pd21-croc" class="pd21-card"><div class="ph"><img src="assets/podcast/pd21/chiang_card.jpg" alt="" /></div><div class="ac t-display">ROC</div><div class="fn t-label">Republic of China</div></div>
+      <div id="pd21-nat" class="t-label">Nationalist government</div>
+      <div id="pd21-cus" class="pd21-card"><div class="ph"><img src="assets/podcast/pd21/us48_grey.jpg" alt="" /></div><div class="ac t-display">UNITED STATES</div></div>
+      <svg id="pd21-amk" viewBox="0 0 1920 1080"></svg>
+    </div>
+
+    <!-- B · the four policemen -->
+    <div id="pd21-b" class="pd21-sc">
+      <div id="pd21-bcam">
+        <img src="assets/c3/derived/c3s03/world_night_6144.jpg" alt="" />
+        <svg id="pd21-bsvg" viewBox="0 0 6144 3072">
+          <defs><pattern id="pd21-gd" width="16" height="16" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><circle cx="8" cy="8" r="3.4" fill="#9bd8b0" opacity="0.5"/></pattern></defs>
+          <g id="pd21-groc"></g><g id="pd21-gus"></g><g id="pd21-gsu"></g><g id="pd21-guk"></g>
+          <g id="pd21-arcs" fill="none" stroke="#eeeee8" stroke-width="7" stroke-linecap="round" stroke-dasharray="4 20" opacity="0.9"></g>
+        </svg>
+      </div>
+      <div id="pd21-bscrim"></div>
+      <div id="pd21-wus" class="pd21-wl t-display" data-ll="-114,40.5"><span class="n">1</span>UNITED STATES</div>
+      <div id="pd21-wsu" class="pd21-wl t-display" data-ll="88,61" data-a="c"><span class="n">2</span>SOVIET UNION</div>
+      <div id="pd21-wuk" class="pd21-wl t-display" data-ll="-7,55.5" data-a="r"><span class="n">3</span>UNITED KINGDOM</div>
+      <div id="pd21-wroc" class="pd21-wl t-display" data-ll="86,35.5"><span id="pd21-n4" class="n">4</span>ROC<span class="s t-label">Republic of China</span></div>
+      <div id="pd21-title" class="t-display halate"><span id="pd21-t1">THE FOUR&nbsp;</span><span id="pd21-t2">POLICEMEN</span></div>
+      <div id="pd21-dots"><div class="pd21-dot" style="left:0"><i></i></div><div class="pd21-dot" style="left:76px"><i></i></div><div class="pd21-dot" style="left:152px"><i></i></div><div class="pd21-dot" style="left:228px"><i style="background:var(--board-light)"></i></div></div>
+    </div>
+
+    <!-- D · UN Charter + permanent seat -->
+    <div id="pd21-d" class="pd21-sc">
+      <div id="pd21-dst">
+        <div id="pd21-dpap"></div>
+        <div id="pd21-poster"><img src="assets/podcast/pd21/sc_poster_top.jpg" alt="" /></div>
+        <div id="pd21-vcard"><video id="pd21-vid" muted playsinline src="assets/c3/footage/newsreel_1945_un_charter_signing_san_francisco.mp4" data-start="33.9" data-duration="7.0" data-media-start="5.2"></video></div>
+        <div id="pd21-dtxt"><div id="pd21-droc" class="t-label">ROC</div><div id="pd21-dfm" class="t-label">Founding member</div><div id="pd21-dun" class="t-display">UN CHARTER</div></div>
+      </div>
+      <svg id="pd21-dmk" viewBox="0 0 1920 1080"></svg>
+      <div id="pd21-seat"><div id="pd21-seat1" class="t-display">PERMANENT<br/>SEAT</div><div id="pd21-seat2" class="t-label">Security Council</div></div>
+      <div id="pd21-cred" class="t-label">UN Charter signing, 1945 · newsreel — Security Council poster, US Dept. of State, 1946</div>
+    </div>
+
+    <div id="pd21-grain" class="tx tx-grain" style="background-image:url('assets/textures/grain_01_norm.jpg'); opacity:0.3"></div>
+    <div id="pd21-dust" class="tx tx-dust" style="background-image:url('assets/textures/dust_01.jpg'); opacity:0.22"></div>
+    <div class="vignette" style="opacity:0.6"></div>
+    <audio id="pd21-vo" class="temp-vo" src="vo_pd.mp3" data-start="0" data-duration="40.9" data-media-start="2582.0" data-volume="1"></audio>
+  </div>
+  <script>
+  (function () {
+    const START = 2582.0, DUR = 40.9;
+    const T = (s) => +(s - START).toFixed(3);   // TEXT cues (audited): word start − 0.06
+    const S = T;                                 // structural cues
+    const tl = gsap.timeline({ paused: true });
+    const $ = (id) => document.getElementById("pd21-" + id);
+    const E = FX.ease, C = (e, d) => FX.choppy(e, d, 12);
+    const NS = "http://www.w3.org/2000/svg";
+    FX.grain($("grain"), 2101);
+    FX.dust($("dust"), 2103, 2);
+    FX.tintDefs($("defs"), "pd21-tint", "#1c1f26", "#e9e8e1");
+    const wa = FX.whipDefs($("defs"), "pd21-wa"), wb = FX.whipDefs($("defs"), "pd21-wb"), wd = FX.whipDefs($("defs"), "pd21-wd");
+    $("a").style.filter = "url(#pd21-wa)"; $("b").style.filter = "url(#pd21-wb)"; $("d").style.filter = "url(#pd21-wd)";
+    const EA = /*EA:china,japan*/;
+    const W = /*WORLD:united_states_of_america,russia,ukraine,belarus,kazakhstan,uzbekistan,turkmenistan,kyrgyzstan,tajikistan,georgia,armenia,azerbaijan,lithuania,latvia,estonia,moldova,united_kingdom,china,taiwan*/;
+    const tA = S(2598.0), tB = S(2615.9);
+    const land = (el, t, d, y) => tl.fromTo(el, { opacity: 0, y: y == null ? 16 : y }, { opacity: 1, y: 0, duration: d || 0.5, ease: C(E.out, d || 0.5), immediateRender: false }, t);
+    const pin = (el, t, rot) => tl.fromTo(el, { opacity: 0, scale: 1.22, rotation: rot - 5 }, { opacity: 1, scale: 1, rotation: rot, duration: 0.5, ease: C(E.out, 0.5), immediateRender: false }, t);
+
+    // =================== A · 2582.00–2598.00 ===================
+    $("acn").setAttribute("d", EA.china); $("acnl").setAttribute("d", EA.china); $("ajp").setAttribute("d", EA.japan);
+    const camA = { s: 0.64, cx: 1500, cy: 1180 };
+    const mlabs = Array.from(document.querySelectorAll(".pd21-ml")).map((el) => { const m = el.getAttribute("data-m").split(","); return { el, x: +m[0], y: +m[1] }; });
+    const placeA = () => {
+      const ox = 960 - camA.cx * camA.s, oy = 540 - camA.cy * camA.s;
+      $("acam").style.transform = "translate(" + ox.toFixed(2) + "px," + oy.toFixed(2) + "px) scale(" + camA.s.toFixed(4) + ")";
+      for (const l of mlabs) l.el.style.transform = "translate(" + (l.x * camA.s + ox).toFixed(1) + "px," + (l.y * camA.s + oy).toFixed(1) + "px) translate(-50%,-50%)";
+    };
+    gsap.set([$("cccp"), $("croc"), $("rocblk"), $("nat"), $("cus")], { opacity: 0 });
+    tl.fromTo(camA, { s: 0.64, cx: 1500 }, { s: 0.69, cx: 1540, duration: tA + 0.3, ease: "none", immediateRender: false }, 0);
+    // 2582.63 "the CCP actually wasn't the one fighting" — the CCP card is pinned on the north-west
+    pin($("cccp"), T(2582.57), -2.5);
+    // 2585.5 "purposefully stayed out of World War II to protect their forces" — the card is pushed to the edge and dims
+    tl.to($("cccp"), { x: -40, y: -34, scale: 0.72, rotation: -6, duration: 1.2, ease: C(E.inOut, 1.2), transformOrigin: "0 0" }, S(2586.0));
+    tl.to($("cccp").querySelector(".ph img"), { opacity: 0.45, duration: 1.0, ease: "power1.out" }, S(2586.0));
+    // 2589.83 "it was the ROC, the nationalist government of China, that was ruling China at the time"
+    tl.fromTo($("rocblk"), { opacity: 0, scale: 0.9 }, { opacity: 1, scale: 1, duration: 0.4, ease: C(E.out, 0.4), immediateRender: false }, S(2589.7));
+    pin($("croc"), T(2589.77), 1.5);
+    land($("nat"), T(2590.89), 0.5);
+    tl.to($("acn"), { opacity: 0.85, duration: 0.9, ease: C("power1.out", 0.9) }, S(2592.9));
+    // 2594.79 "fighting with the United States against Japan"
+    pin($("cus"), T(2595.37), -1.2);
+    const mkA = FX.markupDefs($("amk"), "pd21-mka", { boil: 4 });
+    const link = FX.markup.pen(tl, $("amk"), S(2595.75), { points: [[930, 700], [960, 716], [992, 730]], color: "#161a24", width: 6, dur: 0.3, filter: mkA, seed: 5, blend: "normal" });
+    const ar1 = FX.markup.arrow(tl, $("amk"), S(2596.45), { x1: 900, y1: 330, x2: 1250, y2: 300, bend: -60, color: "#161a24", width: 6, dur: 0.45, filter: mkA });
+    const ar2 = FX.markup.arrow(tl, $("amk"), S(2596.55), { x1: 1360, y1: 690, x2: 1470, y2: 560, bend: 40, color: "#161a24", width: 6, dur: 0.4, filter: mkA });
+    const circ = FX.markup.circle(tl, $("amk"), S(2596.6), { cx: 1560, cy: 400, rx: 290, ry: 250, rot: -28, color: "#d1307a", width: 8, dur: 0.6, filter: mkA, seed: 7 });
+    [link].concat(ar1, ar2, [circ]).forEach((p) => gsap.set(p, { opacity: 0 }));
+    tl.set(link, { opacity: 1 }, S(2595.75)); tl.set(ar1, { opacity: 1 }, S(2596.45)); tl.set(ar2, { opacity: 1 }, S(2596.55)); tl.set(circ, { opacity: 1 }, S(2596.6));
+    tl.fromTo($("mljp"), { scale: 1 }, { scale: 1.18, duration: 0.3, ease: C(E.out, 0.3), immediateRender: false }, T(2596.57));
+
+    // =================== B · 2598.00–2615.90 ===================
+    const K = 17.0667, mx = (lon) => (lon + 180) * K, my = (lat) => (90 - lat) * K;
+    const fill = (g, keys, col, op, dots) => keys.map((k) => { const out = []; [col].concat(dots ? ["url(#pd21-gd)"] : []).forEach((f, j) => { const p = document.createElementNS(NS, "path"); p.setAttribute("d", W[k]); p.setAttribute("fill", f); p.setAttribute("opacity", j ? 1 : op); g.appendChild(p); out.push(p); }); return out; }).reduce((a, b) => a.concat(b), []);
+    const fROC = fill($("groc"), ["china", "taiwan"], "#2f9e5b", 0.7, true);
+    const fUS = fill($("gus"), ["united_states_of_america"], "#c2c5ca", 0.66);
+    const fSU = fill($("gsu"), ["russia", "ukraine", "belarus", "kazakhstan", "uzbekistan", "turkmenistan", "kyrgyzstan", "tajikistan", "georgia", "armenia", "azerbaijan", "lithuania", "latvia", "estonia", "moldova"], "#878c96", 0.62);
+    const fUK = fill($("guk"), ["united_kingdom"], "#878c96", 0.95);
+    const camB = { s: 0.395, cx: mx(14), cy: my(8) };
+    const wlabs = Array.from(document.querySelectorAll(".pd21-wl")).map((el) => { const m = el.getAttribute("data-ll").split(","); return { el, x: mx(+m[0]), y: my(+m[1]), a: el.getAttribute("data-a") || "l" }; });
+    const placeB = () => {
+      const ox = 960 - camB.cx * camB.s, oy = 540 - camB.cy * camB.s;
+      $("bcam").style.transform = "translate(" + ox.toFixed(2) + "px," + oy.toFixed(2) + "px) scale(" + camB.s.toFixed(4) + ")";
+      for (const l of wlabs) l.el.style.transform = "translate(" + (l.x * camB.s + ox).toFixed(1) + "px," + (l.y * camB.s + oy).toFixed(1) + "px) " + (l.a === "c" ? "translate(-50%,-50%)" : l.a === "r" ? "translate(-100%,-50%)" : "translate(0,-50%)");
+    };
+    const dots = Array.from(document.querySelectorAll(".pd21-dot i")), slots = Array.from(document.querySelectorAll(".pd21-dot"));
+    gsap.set(fUS.concat(fSU, fUK, fROC, dots, slots, [$("wus"), $("wsu"), $("wuk"), $("wroc"), $("n4"), $("t1"), $("t2")]), { opacity: 0 });
+    tl.fromTo(camB, { s: 0.395 }, { s: 0.412, duration: tB - tA + 0.4, ease: "none", immediateRender: false }, tA - 0.2);
+    // 2598.79 "ROC is actually one of the big four countries in the world" — China under the ROC, green
+    tl.to(fROC, { opacity: (i) => (i % 2 ? 1 : 0.7), duration: 0.5, ease: C("power1.out", 0.5) }, S(2598.6));
+    land($("wroc"), T(2598.73), 0.5);
+    tl.to(slots, { opacity: 1, duration: 0.25, stagger: 0.08, ease: C(E.out, 0.25) }, T(2600.41));
+    // 2602.63 "the four policemen of the world" — hero title
+    land($("t1"), T(2602.57), 0.5, 22); land($("t2"), T(2602.97), 0.6, 22);
+    // 2605.66 US · 2606.62 Soviet Union · 2608.56 UK · 2610.56 ROC — built one by one as they are named
+    const name = (lab, fl, op, i, t) => { tl.to(fl, { opacity: op, duration: 0.35, ease: C("power1.out", 0.35) }, t); land(lab, t, 0.45, 12); tl.fromTo(dots[i], { opacity: 0, scale: 0.3 }, { opacity: 1, scale: 1, duration: 0.35, ease: C(E.out, 0.35), immediateRender: false }, t); };
+    name($("wus"), fUS, 0.66, 0, T(2605.60));
+    name($("wsu"), fSU, 0.62, 1, T(2606.56));
+    name($("wuk"), fUK, 0.95, 2, T(2608.50));
+    tl.fromTo($("n4"), { opacity: 0, scale: 0.3 }, { opacity: 1, scale: 1, duration: 0.35, ease: C(E.out, 0.35), immediateRender: false }, T(2610.50));
+    tl.fromTo(dots[3], { opacity: 0, scale: 0.3 }, { opacity: 1, scale: 1, duration: 0.35, ease: C(E.out, 0.35), immediateRender: false }, T(2610.50));
+    tl.fromTo(fROC.filter((p, i) => i % 2 === 0), { opacity: 0.7 }, { opacity: 1, duration: 0.25, yoyo: true, repeat: 1, ease: "power1.inOut", immediateRender: false }, T(2610.50));
+    // 2611.44 "these are the four countries that are considered the policemen of the world" — dashed beat links the four
+    const arcB = (a, b, lift) => { const p = document.createElementNS(NS, "path"); p.setAttribute("d", "M" + mx(a[0]).toFixed(0) + " " + my(a[1]).toFixed(0) + " Q" + ((mx(a[0]) + mx(b[0])) / 2).toFixed(0) + " " + (Math.min(my(a[1]), my(b[1])) - lift).toFixed(0) + " " + mx(b[0]).toFixed(0) + " " + my(b[1]).toFixed(0)); p.setAttribute("opacity", 0); $("arcs").appendChild(p); return p; };
+    const arcs = [arcB([-96, 41], [-2, 54], 330), arcB([-2, 54], [70, 60], 260), arcB([70, 60], [108, 34], 60), arcB([108, 34], [-96, 41], -1250)];
+    arcs.forEach((p, i) => tl.to(p, { opacity: 1, duration: 0.3, ease: C("power1.out", 0.3) }, S(2611.6) + i * 0.45));
+    tl.fromTo("#pd21-arcs", { attr: { "stroke-dashoffset": 0 } }, { attr: { "stroke-dashoffset": -96 }, duration: tB - S(2611.6) + 0.2, ease: "none", immediateRender: false }, S(2611.6));
+
+    // =================== D · 2615.90–2622.90 ===================
+    const camD = { s: 1, x: 0, y: 0 };
+    const placeD = () => { $("dst").style.transform = "translate(" + camD.x.toFixed(2) + "px," + camD.y.toFixed(2) + "px) scale(" + camD.s.toFixed(4) + ")"; };
+    gsap.set([$("droc"), $("dfm"), $("dun"), $("seat1"), $("seat2")], { opacity: 0 });
+    tl.fromTo(camD, { s: 1, x: 0 }, { s: 1.03, x: -40, duration: S(2620.2) - tB + 0.2, ease: "none", immediateRender: false }, tB - 0.2);
+    // 2616.24 "ROC is a founding member of the UN Charter when it's created"
+    land($("droc"), T(2616.18), 0.4, 10);
+    land($("dfm"), T(2617.38), 0.4, 10);
+    land($("dun"), T(2618.26), 0.5, 18);
+    // 2619.92 "and they get a permanent seat on the Security Council" — push to the five permanent members; China circled
+    tl.to(camD, { s: 1.5, x: -2121, y: -245, duration: 1.25, ease: E.cam }, S(2619.75));
+    const mkD = FX.markupDefs($("dmk"), "pd21-mkd", { boil: 4 });
+    const cD = FX.markup.circle(tl, $("dmk"), S(2621.0), { cx: 884, cy: 506, rx: 150, ry: 176, rot: -8, color: "#2f9e5b", width: 9, dur: 0.5, filter: mkD, seed: 11 });
+    gsap.set(cD, { opacity: 0 }); tl.set(cD, { opacity: 1 }, S(2621.0));
+    land($("seat1"), T(2620.66), 0.45, 16);
+    land($("seat2"), T(2621.86), 0.3, 10);
+
+    // ---- transitions (whips) + per-frame placement ----
+    gsap.set([$("b"), $("d")], { autoAlpha: 0 });
+    FX.whip(tl, $("a"), $("b"), tA, { dir: 1, blurA: wa, blurB: wb });
+    FX.whip(tl, $("b"), $("d"), tB, { dir: -1, blurA: wb, blurB: wd });
+    const place = () => { placeA(); placeB(); placeD(); };
+    tl.eventCallback("onUpdate", place);
+    place();
+
+    FX.mount(tl, DUR);
+    window.__timelines["pd21"] = tl;
+  })();
+  </script>
+</template>
+</body>
+</html>

@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8" /></head>
+<body>
+<template>
+  <style>
+    /* pd30 · 3640.1–3662.8333 · Decolonisation in Africa: every new country is a new vote in the UN General Assembly.
+       Paper map of Africa, new states pop in (real order of independence, no years/counts shown), each sends one vote tile to a grid;
+       then both camps pull at every tile (inspo 813e40ef filled territory on a relief map; a06c4bb3 grid of tiles).
+       Built from project/podcast/gen/ed12/pd30.template.html (build.py inlines assets/podcast/pd30/pd30_africa.json). */
+    #root { position: absolute; inset: 0; overflow: hidden; background: var(--paper); color: var(--ink); }
+    #pd30-p1, #pd30-p2 { position: absolute; inset: 0; background-size: cover; mix-blend-mode: multiply; filter: grayscale(1); pointer-events: none; }
+    #pd30-p1 { opacity: 0.5; } #pd30-p2 { opacity: 0.3; }
+    #pd30-map { position: absolute; left: 96px; top: 72px; width: 911px; height: 936px; transform-origin: 50% 50%; }
+    #pd30-map img { position: absolute; left: 0; top: 0; width: 911px; height: 936px; mix-blend-mode: multiply; opacity: 0.8; filter: contrast(1.15); }
+    #pd30-svg { position: absolute; left: 0; top: 0; width: 911px; height: 936px; overflow: visible; }
+    #pd30-africa { position: absolute; left: 60px; top: 690px; font-size: 76px; line-height: 1; color: var(--ink); }
+    #pd30-head { position: absolute; left: 1170px; top: 150px; font-size: 30px; line-height: 1; color: var(--ink); white-space: nowrap; }
+    #pd30-rule { position: absolute; left: 1170px; top: 198px; width: 584px; height: 4px; background: var(--ink); transform-origin: 0 50%; }
+    #pd30-grid { position: absolute; left: 1170px; top: 236px; width: 584px; height: 584px; }
+    .pd30-slot { position: absolute; width: 84px; height: 84px; box-sizing: border-box; border: 2px dashed rgba(22,26,36,0.22); }
+    .pd30-tile { position: absolute; width: 84px; height: 84px; box-sizing: border-box; border: 3px solid var(--ink); background: var(--paper-2); overflow: hidden; box-shadow: 5px 5px 0 rgba(22,26,36,0.14); }
+    .pd30-tile b { position: absolute; left: 0; top: 0; height: 100%; width: 0; background: var(--board); }
+    .pd30-tile u { position: absolute; right: 0; top: 0; height: 100%; width: 0; background: var(--ash-dark); }
+    .pd30-tile i { position: absolute; inset: 0; background-size: 300px auto; mix-blend-mode: multiply; opacity: 0.4; }
+    .pd30-tile svg { position: absolute; left: 20px; top: 20px; width: 44px; height: 44px; }
+    .pd30-chip { position: absolute; top: 862px; font-size: 26px; line-height: 1; padding: 13px 20px 9px; color: var(--paper); white-space: nowrap; }
+    #pd30-roc { left: 1170px; background: var(--board-dark); }
+    #pd30-ccp { right: 166px; background: var(--ash-dark); }
+  </style>
+  <div id="root" data-composition-id="pd30" data-vo-start="3640.1" data-duration="22.7333" data-width="1920" data-height="1080">
+    <div id="pd30-p1" style="background-image:url('assets/textures/paper_fiber_01.jpg')"></div>
+    <div id="pd30-p2" style="background-image:url('assets/textures/paper_cream_02.jpg')"></div>
+    <div id="pd30-map">
+      <img src="assets/podcast/pd30/africa_relief_grey.png" alt="" />
+      <svg id="pd30-svg" viewBox="0 0 1776 1824"></svg>
+      <div id="pd30-africa" class="t-display">AFRICA</div>
+    </div>
+    <div id="pd30-head" class="t-label">UN General Assembly</div>
+    <div id="pd30-rule"></div>
+    <div id="pd30-grid"></div>
+    <div id="pd30-ccp" class="pd30-chip t-label">CCP</div>
+    <div id="pd30-roc" class="pd30-chip t-label">Taiwan</div>
+    <div id="pd30-grain" class="tx tx-grain" style="background-image:url('assets/textures/grain_02_norm.jpg'); opacity:0.24"></div>
+    <div id="pd30-dust" class="tx tx-dust" style="background-image:url('assets/textures/dust_03.jpg'); opacity:0.12"></div>
+    <div class="vignette" style="opacity:0.3"></div>
+    <audio id="pd30-vo" class="temp-vo" src="vo_pd.mp3" data-start="0" data-duration="22.7333" data-media-start="3640.1" data-volume="1"></audio>
+  </div>
+  <script>
+  (function () {
+    const START = 3640.1, DUR = 22.7333;
+    const T = (s) => +(s - START).toFixed(3);   // TEXT cues (audited): word start − 0.06
+    const S = T;
+    const tl = gsap.timeline({ paused: true });
+    const $ = (id) => document.getElementById("pd30-" + id);
+    const E = FX.ease, C = (e, d) => FX.choppy(e, d, 12);
+    const NS = "http://www.w3.org/2000/svg", INK = "#161a24", ASH = "#878c96";
+    const AF = /*MAPJSON*/null;
+    FX.grain($("grain"), 3001);
+    FX.dust($("dust"), 3003, 2);
+    const svg = $("svg"), K = 911 / 1776;
+    const mk = (d, a) => { const e = document.createElementNS(NS, "path"); e.setAttribute("d", d); for (const k in a) e.setAttribute(k, a[k]); svg.appendChild(e); return e; };
+
+    // ---- frame 0 is alive: the continent's borders are fading in one by one and the map is pushing in ("this diplomatic war really has to do with Africa") ----
+    const faint = AF.old.concat(AF.rest).map((c) => mk(c.d, { fill: "none", stroke: INK, "stroke-width": 1.6, "stroke-opacity": 0.4, "stroke-linejoin": "round" }));
+    const news = AF.new.map((c) => mk(c.d, { fill: ASH, "fill-opacity": 0.62, stroke: INK, "stroke-width": 3.2, "stroke-linejoin": "round" }));
+    news.forEach((e) => { e.style.mixBlendMode = "multiply"; });
+    gsap.set(faint, { opacity: 0 }); gsap.set(faint.slice(0, 3), { opacity: 1 });
+    gsap.set(news, { opacity: 0 });
+    gsap.set([$("africa"), $("head"), $("ccp"), $("roc")], { opacity: 0 });
+    gsap.set($("rule"), { scaleX: 0 });
+    tl.to(faint.slice(3), { opacity: 1, duration: 0.001, stagger: 2 / 12 }, 0.08);
+    tl.fromTo($("map"), { scale: 1.07, x: 30 }, { scale: 1, x: 0, duration: 2.6, ease: E.cam, immediateRender: true }, 0);
+    tl.fromTo($("africa"), { opacity: 0, y: 22 }, { opacity: 1, y: 0, duration: 0.6, ease: C(E.out, 0.6), immediateRender: false }, T(3642.49));
+
+    // ---- the grid of empty seats ----
+    const grid = $("grid"), tiles = [], N = AF.new.length;
+    for (let i = 0; i < N; i++) {
+      const x = (i % 6) * 100, y = Math.floor(i / 6) * 100;
+      grid.insertAdjacentHTML("beforeend", '<div class="pd30-slot" style="left:' + x + 'px;top:' + y + 'px"></div>');
+    }
+    for (let i = 0; i < N; i++) {
+      const x = (i % 6) * 100, y = Math.floor(i / 6) * 100;
+      grid.insertAdjacentHTML("beforeend", '<div class="pd30-tile" style="left:' + x + 'px;top:' + y + 'px"><b></b><u></u><i style="background-image:url(\'assets/textures/halftone_01_norm.jpg\')"></i><svg viewBox="0 0 44 44"><path d="M7 23L18 34L38 10" fill="none" stroke="#161a24" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>');
+    }
+    const slots = Array.from(grid.querySelectorAll(".pd30-slot")), tls = Array.from(grid.querySelectorAll(".pd30-tile"));
+    gsap.set(slots, { opacity: 0 }); gsap.set(tls, { opacity: 0 });
+
+    // ---- "meaning new countries are being kind of created" — the new states pop in, in their real order ----
+    const t0 = S(3646.44), popT = [];
+    news.forEach((e, i) => {
+      const t = t0 + Math.round((i < 8 ? i * 0.25 : 2.0 + (i - 8) * 0.14) * 12) / 12; popT.push(t);
+      tl.to(e, { opacity: 1, duration: 0.001 }, t);
+      const merged = { sudan: "s_sudan", somalia: "somaliland" }[AF.new[i].id];   // borders of the time: Sudan incl. today's South Sudan, Somalia incl. Somaliland
+      if (merged) { const m = mk(AF.rest.find((c) => c.id === merged).d, { fill: ASH, "fill-opacity": 0.62, stroke: INK, "stroke-width": 1.2, "stroke-opacity": 0.35 }); m.style.mixBlendMode = "multiply"; gsap.set(m, { opacity: 0 }); tl.to(m, { opacity: 1, duration: 0.001 }, t); }
+      tl.fromTo(e, { attr: { "fill-opacity": 1 } }, { attr: { "fill-opacity": 0.62 }, duration: 0.5, ease: C("power1.out", 0.5), immediateRender: false }, t);
+    });
+    // ---- "every new country is a new vote in the general assembly of the UN" — one tile per country flies to its seat ----
+    tl.to(slots, { opacity: 1, duration: 0.001, stagger: 3.2 / N }, 0.1);
+    tl.to($("rule"), { scaleX: 1, duration: 0.8, ease: C(E.out, 0.8) }, S(3649.6));
+    tl.fromTo($("head"), { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.5, ease: C(E.out, 0.5), immediateRender: false }, T(3649.96));
+    const v0 = S(3649.16);
+    tls.forEach((e, i) => {
+      const t = Math.max(popT[i] + 0.25, v0 + i * (1 / 12));
+      const c = AF.new[i].c, sx = 96 + c[0] * K, sy = 72 + c[1] * K, gx = 1170 + (i % 6) * 100 + 42, gy = 236 + Math.floor(i / 6) * 100 + 42;
+      tl.fromTo(e, { opacity: 1, x: sx - gx, y: sy - gy, scale: 0.3, rotation: -18 }, { x: 0, y: 0, scale: 1, rotation: 0, duration: 0.7, ease: C(E.out, 0.7), immediateRender: false }, t);
+    });
+    // ---- "both CCP and Taiwan are very quick to diplomatically fight over each other" — two camps, every tile contested ----
+    const chip = (el, t) => tl.fromTo(el, { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.5, ease: C(E.out, 0.5), immediateRender: false }, t);
+    chip($("ccp"), T(3653.88)); chip($("roc"), T(3654.6));
+    const gs = tls.map((e) => e.children[0]), ds = tls.map((e) => e.children[1]), rr = FX.rng(31);
+    const ph = tls.map(() => [rr() * 6.283, 0.7 + rr() * 0.9, (rr() - 0.5) * 16]);
+    const st = { in: 0, f: 0 };
+    function upd() {
+      const q = Math.round(st.f * 12 * 6) / 12;     // 12 fps steps over the 6 s fight
+      for (let i = 0; i < tls.length; i++) {
+        const amp = st.f <= 0 ? 0 : 42 * (1 - 0.8 * Math.min(1, q / 4.4));
+        const sp = 50 + ph[i][2] * Math.min(1, st.f * 8) + amp * Math.sin(ph[i][0] + q * ph[i][1] * 3.1);
+        const a = Math.min(1, Math.max(0, st.in * 1.6 - (i % 6) * 0.1));
+        ds[i].style.width = ((100 - sp) * Math.min(1, a * 2)).toFixed(1) + "%";
+        gs[i].style.width = (sp * Math.max(0, a * 2 - 1)).toFixed(1) + "%";
+      }
+    }
+    tl.fromTo(st, { in: 0 }, { in: 1, duration: 1.9, ease: C("none", 1.9), immediateRender: false, onUpdate: upd }, S(3653.9));
+    tl.fromTo(st, { f: 0 }, { f: 1, duration: 6.0, ease: "none", immediateRender: false, onUpdate: upd }, S(3656.4));
+    tl.fromTo($("map"), { scale: 1 }, { scale: 1.03, duration: DUR - 2.6, ease: "none", immediateRender: false }, 2.6);
+
+    FX.mount(tl, DUR);
+    window.__timelines["pd30"] = tl;
+  })();
+  </script>
+</template>
+</body>
+</html>

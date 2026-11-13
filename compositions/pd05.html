@@ -235,8 +235,8 @@
         <div id="pd05-s5-gs"></div>
         <div id="pd05-s5-cge" class="p5-ecard" style="left:3990px; top:520px; width:760px; height:500px"><div class="ph"><img src="assets/c1/places/ge_schenectady_works_aerial_1896.jpg" style="left:-30px; top:-40px; width:820px" alt="" /></div></div>
         <div id="pd05-s5-tge" class="p5-etag t-display" style="left:3990px; top:1052px">GENERAL ELECTRIC</div>
-        <div id="pd05-s5-cbl" class="p5-ecard" style="left:4300px; top:1250px; width:470px; height:600px"><div class="ph"><img src="assets/archival/companies/bell_labs_west_street_building_historic.jpg" style="left:-10px; top:-10px; width:490px" alt="" /></div></div>
-        <div id="pd05-s5-tbl" class="p5-etag t-display" style="left:3924px; top:1700px">BELL LABS</div>
+        <div id="pd05-s5-cbl" class="p5-ecard" style="left:4300px; top:1180px; width:470px; height:600px"><div class="ph"><img src="assets/archival/companies/bell_labs_west_street_building_historic.jpg" style="left:-10px; top:-10px; width:490px" alt="" /></div></div>
+        <div id="pd05-s5-tbl" class="p5-etag t-display" style="left:3924px; top:1630px">BELL LABS</div>
       </div>
       <div id="pd05-s5-cr" class="p5-abs t-label">Bell Labs photo: Charlesbahr, CC BY-SA 4.0</div>
     </div></div>
@@ -501,7 +501,7 @@
     (function () {
       const c = $("s5-cam"), svg = $("s5-svg");
       // hard cut on action: the camera is already pulling back from the Bay ("but after finishing their undergrad")
-      camPath(c, [[550.95, 1500, 1650, 0.62, "none"], [553.0, 3196, 1762, 0.31, FX.bezier(0.2, 0.6, 0.2, 1)], [553.5, 3210, 1760, 0.312, "none"], [555.5, 4843, 1150, 0.62, E.inOut], [564.5, 4830, 1150, 0.645, "none"]]);
+      camPath(c, [[550.95, 1500, 1650, 0.62, "none"], [553.0, 3196, 1762, 0.31, FX.bezier(0.2, 0.6, 0.2, 1)], [553.5, 3210, 1760, 0.312, "none"], [555.5, 4843, 1150, 0.62, E.inOut], [564.36, 4830, 1150, 0.645, "none"]]);
       const BAY = [KX(-122.2), KY(37.6)];
       const DEST = [[KX(-74.0), KY(40.71)], [KX(-74.45), KY(40.2)], [KX(-71.3), KY(42.3)]];
       const pin = (p, r, col) => { const o = el($("s5-pins"), "circle", { cx: p[0].toFixed(1), cy: p[1].toFixed(1), r: r, fill: col, stroke: "#0c0f15", "stroke-width": 8 }); return o; };
@@ -516,9 +516,10 @@
         tl.to([glow, line], { attr: { "stroke-dashoffset": 0 }, duration: 2.1, ease: C(E.inOut, 2.1) }, S(553.13) + i * 0.12);
         return P;
       });
+      tl.to($("s5-arcs"), { opacity: 0.4, duration: 1.0 }, S(556.4));
       gsap.set([$("s5-lny"), $("s5-lnj"), $("s5-lma"), $("s5-cge"), $("s5-tge"), $("s5-cbl"), $("s5-tbl")], { opacity: 0 });
       // graduates: wait at the Bay, then ride the arcs (positions are a pure function of the tween's progress)
-      const gs = $("s5-gs"), land = [[[-70, 60], [40, 110], [150, 40]], [[-90, 110], [-10, 170], [80, 140]], [[-40, -90], [70, -80], [170, -60]]];
+      const gs = $("s5-gs"), land = [[[-70, 60], [40, 110], [150, 40]], [[-200, 40], [-170, 140], [-80, 200]], [[-40, -90], [70, -80], [170, -60]]];
       arcs.forEach((P, a) => { for (let k = 0; k < 3; k++) {
         const d = document.createElement("div"); d.className = "p5-g5"; d.innerHTML = GRAD; gs.appendChild(d);
         const home = [BAY[0] + 150 + (a * 3 + k) % 5 * 92, BAY[1] - 150 + Math.floor((a * 3 + k) / 5) * 96], st = { u: 0 }, off = land[a][k];
@@ -539,7 +540,7 @@
       // "major technological companies of the time like Bell Labs, General Electric"
       const leadL = (x1, y1, x2, y2) => el(svg, "path", { d: "M" + x1 + " " + y1 + " L" + x2 + " " + y2, fill: "none", stroke: BONE, "stroke-width": 5, "stroke-dasharray": "4 16", "stroke-linecap": "round", opacity: 0 });
       const SCH = [KX(-73.94), KY(42.81)];
-      const l1 = leadL(4802, 1540, DEST[0][0] - 30, DEST[0][1] + 6), l2 = leadL(4782, 800, SCH[0] - 30, SCH[1] - 6);
+      const l1 = leadL(4802, 1470, DEST[0][0] - 30, DEST[0][1] + 6), l2 = leadL(4782, 800, SCH[0] - 30, SCH[1] - 6);
       pin(SCH, 0, BONE); const psch = $("s5-pins").lastChild;
       tl.fromTo($("s5-cbl"), { opacity: 0, y: 70, rotation: 2 }, { opacity: 1, y: 0, rotation: -1.2, duration: 0.8, ease: C(E.out, 0.8), immediateRender: false }, S(560.55));
       tl.to(l1, { opacity: 0.85, duration: 0.3 }, S(561.0));

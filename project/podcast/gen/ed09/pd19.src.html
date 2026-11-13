@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8" /></head>
+<body>
+<template>
+  <style>
+    #root { position: absolute; inset: 0; overflow: hidden; background: var(--night); }
+    .p19-scene { position: absolute; inset: 0; overflow: hidden; visibility: hidden; opacity: 0; }
+    .p19-shot { position: absolute; inset: 0; overflow: hidden; transform-origin: 50% 50%; background: var(--night); }
+    .p19-paper { background: var(--paper); }
+    .p19-p1, .p19-p2 { position: absolute; inset: 0; background-size: cover; background-position: center; pointer-events: none; mix-blend-mode: multiply; filter: saturate(0.3); }
+    .p19-grid { position: absolute; inset: -60px; pointer-events: none; opacity: 0.5;
+      background-image: repeating-linear-gradient(0deg, rgba(194,197,202,0.085) 0 2px, rgba(0,0,0,0) 2px 96px), repeating-linear-gradient(90deg, rgba(194,197,202,0.085) 0 2px, rgba(0,0,0,0) 2px 96px); }
+    .p19-cam { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 960px 540px; }
+    .p19-svg { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; pointer-events: none; }
+    .p19-credit { position: absolute; right: 96px; bottom: 28px; font-size: 13px; letter-spacing: 0.08em; color: rgba(22,26,36,0.55); z-index: 5; }
+    .p19-credit.lt { color: rgba(238,238,232,0.5); }
+    /* sc001 */
+    #pd19-cover { position: absolute; left: 330px; top: 196px; width: 440px; height: 691px; box-shadow: 0 30px 60px rgba(0,0,0,0.7); overflow: hidden; background: var(--ash-dark); }
+    #pd19-cover img { position: absolute; left: 0; top: 0; width: 100%; height: 100%; object-fit: cover; filter: grayscale(0.85) contrast(1.05) brightness(0.9); }
+    #pd19-tp { position: absolute; left: 850px; top: 84px; width: 560px; height: 910px; background: #e9e6da; box-shadow: 0 34px 70px rgba(0,0,0,0.7); overflow: hidden; }
+    #pd19-tp img { position: absolute; left: 0; top: 0; width: 100%; height: 100%; mix-blend-mode: multiply; filter: grayscale(1); }
+    #pd19-tp svg { position: absolute; left: 0; top: 0; width: 560px; height: 910px; overflow: visible; }
+    /* sc002 map */
+    #pd19-mapcam { position: absolute; left: 0; top: 0; width: 3840px; height: 2117px; transform-origin: 0 0; }
+    #pd19-mapcam > img { position: absolute; left: 0; top: 0; width: 3840px; height: 2117px; filter: brightness(1.25) contrast(1.05); }
+    #pd19-mapsvg { position: absolute; left: 0; top: 0; width: 3840px; height: 2117px; overflow: visible; }
+    .p19-ml { position: absolute; white-space: nowrap; opacity: 0; }
+    #pd19-nyl { left: 2760px; top: 800px; width: 620px; text-align: right; font-size: 64px; }
+    #pd19-cal { left: 700px; top: 890px; font-size: 84px; }
+    #pd19-gr { left: 704px; top: 990px; font-size: 38px; color: var(--ash-light); }
+    #pd19-book { position: absolute; left: 0; top: 0; width: 66px; height: 86px; background: var(--bone); box-shadow: 0 0 34px rgba(243,166,200,0.75), 0 8px 16px rgba(0,0,0,0.5); opacity: 0; }
+    #pd19-book i { position: absolute; left: 10px; right: 10px; height: 5px; background: rgba(22,26,36,0.4); }
+    #pd19-sf { position: absolute; left: 1010px; top: 250px; width: 800px; height: 420px; opacity: 0; }
+    #pd19-sfc { position: absolute; left: 0; top: 0; width: 300px; height: 300px; border-radius: 50%; overflow: hidden; border: 7px solid var(--bone); box-sizing: border-box; background: var(--ash-dark); }
+    #pd19-sfc img { position: absolute; left: 0; top: 0; width: 100%; height: 100%; object-fit: cover; object-position: 46% 12%; }
+    #pd19-sfc::after { content: ""; position: absolute; inset: 0; background-image: url('assets/textures/halftone_01_norm.jpg'); background-size: 460px auto; mix-blend-mode: overlay; opacity: 0.35; }
+    #pd19-sfn { position: absolute; left: 336px; top: 96px; font-size: 76px; white-space: nowrap; opacity: 0; }
+    #pd19-sfr { position: absolute; left: 340px; top: 186px; font-size: 28px; color: var(--ash-light); white-space: nowrap; opacity: 0; }
+    /* sc003 */
+    .p19-st { position: absolute; overflow: visible; }
+    .p19-sl { position: absolute; font-size: 72px; color: var(--ink); white-space: nowrap; opacity: 0; }
+    .p19-stamp { position: absolute; font-size: 58px; padding: 0.12em 0.26em 0.02em; white-space: nowrap; opacity: 0; mix-blend-mode: multiply; }
+    #pd19-bk { position: absolute; left: 0; top: 0; width: 210px; height: 268px; background: var(--ash-dark); box-shadow: 0 16px 30px rgba(22,26,36,0.4); }
+    #pd19-bk::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 22px; background: rgba(0,0,0,0.3); }
+    #pd19-bk .fr { position: absolute; left: 38px; right: 16px; top: 18px; bottom: 18px; border: 2px solid var(--ash-light); opacity: 0.7; }
+    #pd19-bk .bt { position: absolute; left: 38px; right: 16px; top: 96px; text-align: center; font-size: 46px; color: var(--bone); letter-spacing: 0.08em; }
+    /* sc004 */
+    #pd19-pg { position: absolute; left: 96px; top: 96px; width: 1500px; height: 850px; background: #e9e6da; box-shadow: 0 22px 46px rgba(22,26,36,0.34); overflow: hidden; transform: rotate(-1deg); }
+    #pd19-pg img { position: absolute; left: 0; top: 0; width: 1500px; height: 850px; mix-blend-mode: multiply; }
+    .p19-hi { position: absolute; height: 40px; background: var(--yellow); mix-blend-mode: multiply; transform-origin: 0 50%; transform: scaleX(0); border-radius: 3px; }
+    #pd19-nc { position: absolute; left: 1090px; top: 566px; width: 700px; height: 400px; background: #f0efe9; box-shadow: 0 22px 46px rgba(22,26,36,0.4); opacity: 0; }
+    #pd19-nc::after { content: ""; position: absolute; inset: 0; background-image: url('assets/textures/paper_fiber_01.jpg'); background-size: cover; mix-blend-mode: multiply; opacity: 0.45; filter: saturate(0.3); pointer-events: none; }
+    #pd19-nc .k { position: absolute; left: 48px; top: 40px; font-size: 22px; color: var(--ink-soft); }
+    #pd19-nct { position: absolute; left: 46px; top: 78px; font-size: 56px; color: var(--ink); white-space: nowrap; opacity: 0; }
+    #pd19-nc .rl { position: absolute; left: 48px; top: 156px; width: 604px; height: 3px; background: var(--ink); opacity: 0.7; }
+    #pd19-ncb { position: absolute; left: 48px; top: 182px; width: 610px; font-size: 38px; line-height: 1.18; color: var(--ink); }
+    #pd19-ncb span { opacity: 0; }
+    #pd19-nc svg { position: absolute; left: 0; top: 0; width: 700px; height: 400px; overflow: visible; z-index: 2; }
+    #pd19-grain, #pd19-dust, #pd19-vig { z-index: 8; }
+  </style>
+
+  <div id="root" data-composition-id="pd19" data-vo-start="2279.9667" data-duration="44.2667" data-width="1920" data-height="1080">
+    <audio id="pd19-vo" class="temp-vo" src="vo_pd.mp3" data-start="0" data-duration="44.2667" data-media-start="2279.9667" data-volume="1"></audio>
+    <svg id="pd19-defs" width="0" height="0" style="position:absolute"></svg>
+
+    <!-- sc001 · 2279.97–2283.90 · "So New York does not actually end up codifying the code that he wrote for New York" · Field's real 1865 code, crossed out (ref f76a4410: document as object) -->
+    <div class="p19-scene" id="pd19-sc001"><div class="p19-shot" id="pd19-sc001-shot">
+      <div class="p19-grid"></div>
+      <div class="p19-cam" id="pd19-sc001-cam">
+        <div id="pd19-cover"><img src="assets/c3/documents/field_ny_civil_code_1865_cover_spine.jpg" alt=""></div>
+        <div id="pd19-tp"><img src="assets/c3/documents/field_ny_civil_code_1865_title_page.jpg" alt=""><svg id="pd19-tpsvg" viewBox="0 0 560 910"></svg></div>
+      </div>
+      <div class="p19-credit lt t-label">The Civil Code of the State of New York, 1865 · archive.org</div>
+    </div></div>
+
+    <!-- sc002 · 2283.90–2300.90 · "at this very same time, his brother is actually in California in the gold rush … Stephen Field … Supreme Court Justice … he just copies all the work his brother has done in New York" · route over dark relief (ref 73184e83) + person on a map (ref b57b4e0e) -->
+    <div class="p19-scene" id="pd19-sc002"><div class="p19-shot" id="pd19-sc002-shot" style="background:#10141b">
+      <div id="pd19-mapcam">
+        <img src="assets/podcast/pd19/us_night_3840.jpg" alt="">
+        <svg id="pd19-mapsvg" viewBox="0 0 3840 2117"></svg>
+        <div class="p19-ml t-display clean" id="pd19-nyl">NEW YORK</div>
+        <div class="p19-ml t-display clean" id="pd19-cal">CALIFORNIA</div>
+        <div class="p19-ml t-label" id="pd19-gr">Gold Rush</div>
+        <div id="pd19-book"><i style="top:16px"></i><i style="top:30px"></i><i style="top:44px"></i><i style="top:58px; right:26px"></i></div>
+      </div>
+      <div id="pd19-sf">
+        <div id="pd19-sfc"><img src="assets/podcast/pd19/field_stephen_johnson_1875.jpg" alt="" style="filter:url(#pd19-tint)"></div>
+        <div id="pd19-sfn" class="t-display clean">Stephen Field</div>
+        <div id="pd19-sfr" class="t-label">Supreme Court Justice</div>
+      </div>
+      <div class="p19-credit lt t-label">Relief: AWS Terrain Tiles · Natural Earth · photo: Library of Congress</div>
+    </div></div>
+
+    <!-- sc003 · 2300.90–2306.70 · "a code that was written … in New York was never actually adopted, but it was adopted in California" · two states, one book -->
+    <div class="p19-scene" id="pd19-sc003"><div class="p19-shot p19-paper" id="pd19-sc003-shot">
+      <div class="p19-p1" style="background-image:url('assets/textures/paper_graph_01_hires.jpg'); opacity:0.5"></div>
+      <div class="p19-p2" style="background-image:url('assets/textures/paper_fiber_01.jpg'); opacity:0.35"></div>
+      <div class="p19-cam" id="pd19-sc003-cam">
+        <svg class="p19-st" id="pd19-s3ny" viewBox="2939 378 546 398" style="left:150px; top:380px; width:600px; height:437px"></svg>
+        <svg class="p19-st" id="pd19-s3ca" viewBox="82 619 697 797" style="left:1290px; top:300px; width:480px; height:549px"></svg>
+        <div class="p19-sl t-display" id="pd19-s3nyl" style="left:150px; top:210px">NEW YORK</div>
+        <div class="p19-sl t-display" id="pd19-s3cal" style="left:1290px; top:150px">CALIFORNIA</div>
+        <svg class="p19-svg" id="pd19-s3mk"></svg>
+        <div id="pd19-bk"><div class="fr"></div><div class="bt t-serif">CODE</div></div>
+        <div class="p19-stamp t-display" id="pd19-s3n" style="left:170px; top:690px; color:var(--ink); border:7px solid var(--ink); transform:rotate(-6deg)">NEVER ADOPTED</div>
+        <div class="p19-stamp t-display" id="pd19-s3a" style="left:1380px; top:810px; color:var(--magenta-dark); border:7px solid var(--magenta-dark); transform:rotate(-5deg)">ADOPTED</div>
+      </div>
+    </div></div>
+
+    <!-- sc004 · 2306.70–2324.23 · "in this thing that he wrote … any contract that legally bans anyone from working in a profession that's lawful is an illegal contract. Aka you cannot have a non compete …" · the real § 833 with highlighter (ref a7bd471a) + agreement card -->
+    <div class="p19-scene" id="pd19-sc004"><div class="p19-shot p19-paper" id="pd19-sc004-shot">
+      <div class="p19-p1" style="background-image:url('assets/textures/paper_stained_01_hires.jpg'); opacity:0.4"></div>
+      <div class="p19-p2" style="background-image:url('assets/textures/paper_fiber_01.jpg'); opacity:0.35"></div>
+      <div class="p19-cam" id="pd19-sc004-cam">
+        <div id="pd19-pg"><img src="assets/podcast/pd19/field_code_1865_s833_crop.jpg" alt="">
+          <div class="p19-hi" id="pd19-h1" style="left:296px; top:336px; width:314px"></div>
+          <div class="p19-hi" id="pd19-h2" style="left:632px; top:336px; width:512px"></div>
+          <div class="p19-hi" id="pd19-h3" style="left:114px; top:389px; width:486px"></div>
+          <div class="p19-hi" id="pd19-h4" style="left:606px; top:389px; width:394px"></div>
+          <div class="p19-hi" id="pd19-h5" style="left:558px; top:491px; width:442px"></div>
+        </div>
+        <div id="pd19-nc">
+          <div class="k t-label">Employment contract</div>
+          <div id="pd19-nct" class="t-display">Non-compete agreement</div>
+          <div class="rl"></div>
+          <div id="pd19-ncb" class="t-serif"><span>The employee shall not </span><span>do this job </span><span>after leaving the company.</span></div>
+          <svg id="pd19-ncsvg" viewBox="0 0 700 400"></svg>
+        </div>
+      </div>
+      <div class="p19-credit t-label">The Civil Code of the State of New York, 1865, § 833 · archive.org · agreement: typeset recreation</div>
+    </div></div>
+
+    <div id="pd19-grain" class="tx tx-grain" style="background-image:url('assets/textures/grain_01_norm.jpg')"></div>
+    <div id="pd19-dust" class="tx tx-dust" style="background-image:url('assets/textures/dust_02.jpg')"></div>
+    <div id="pd19-vig" class="vignette"></div>
+  </div>
+
+  <script>
+  (function () {
+    const SEG = "pd19", START = 2279.9667, END = 2324.2333, DUR = 44.2667;
+    const T = (s) => +(s - START).toFixed(3);   // TEXT cues (audited): literal = word start − 0.06
+    const S = (s) => +(s - START).toFixed(3);   // structural cues
+    const tl = gsap.timeline({ paused: true });
+    const $ = (id) => document.getElementById(SEG + "-" + id);
+    const NS = "http://www.w3.org/2000/svg";
+    const defs = $("defs"), E = FX.ease, C = (e, d) => FX.choppy(e, d, 12);
+    const INK = "#161a24", BONE = "#eeeee8", MAG = "#d1307a", MAGD = "#7a1746", MAGL = "#f3a6c8", ASHD = "#343843", ASHL = "#c2c5ca";
+    FX.tintDefs(defs, SEG + "-tint", "#14171e", "#ecece6");
+    function mk(parent, tag, attrs) { const n = document.createElementNS(NS, tag); for (const k in attrs) n.setAttribute(k, attrs[k]); parent.appendChild(n); return n; }
+    const CA = /*CA*/, NY = /*NY*/, USALL = /*US_ALL*/;
+
+    // ---------- scenes ----------
+    const C1 = 2283.90, C2 = 2300.90, C3 = 2306.70;
+    const SC = [["sc001", START, C1, "night"], ["sc002", C1, C2, "night"], ["sc003", C2, C3, "paper"], ["sc004", C3, END, "paper"]];
+    const GROUND = { paper: [0.28, 0.14, 0.3], night: [0.9, 0.34, 0.36] };   // vig, dust, grain
+    SC.forEach((s, i) => {
+      const el = $(s[0]);
+      if (i === 0) gsap.set(el, { autoAlpha: 1 });
+      else tl.fromTo(el, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.001, immediateRender: false }, S(s[1]) - 0.02);
+      if (s[2] < END) tl.set(el, { autoAlpha: 0 }, S(s[2]) + 0.06);
+    });
+    const OV = [$("vig"), $("dust"), $("grain")];
+    gsap.set(OV, { opacity: (i) => GROUND.night[i] });
+    SC.forEach((s, k) => { if (k) tl.set(OV, { opacity: (i) => GROUND[s[3]][i] }, S(s[1])); });
+    function whip(a, b, t, o) {
+      const A = $(a + "-shot"), B = $(b + "-shot"), h = 0.16, id = SEG + "-w" + a.slice(-1);
+      const ba = FX.whipDefs(defs, id + "a"), bb = FX.whipDefs(defs, id + "b");
+      tl.set(A, { filter: "url(#" + id + "a)" }, t - h - 0.01); tl.set(A, { filter: "none" }, t + 0.06);
+      tl.set(B, { filter: "url(#" + id + "b)" }, t - 0.001); tl.set(B, { filter: "none" }, t + h + 0.02);
+      FX.whip(tl, A, B, t, Object.assign({ dir: 1, dur: 0.32, blurA: ba, blurB: bb }, o));
+    }
+    const rise = (el, t, o) => { o = o || {}; const d = o.dur || 0.5;
+      tl.fromTo(el, { opacity: 0, y: o.y == null ? 16 : o.y }, { opacity: 1, y: 0, duration: d, ease: C(E.out, d), immediateRender: true }, t); };
+    const stamp = (el, t, rot) => tl.fromTo(el, { opacity: 0, scale: 1.7, rotation: rot }, { opacity: 1, scale: 1, rotation: rot, duration: 0.25, ease: C(E.out, 0.25), immediateRender: true }, t);
+
+    /* ===== sc001 · the code he wrote, not adopted ===== */
+    (function () {
+      const cam = $("sc001-cam"), svg = $("tpsvg");
+      gsap.set($("cover"), { rotation: -5 }); gsap.set($("tp"), { rotation: 2.5 });
+      tl.fromTo($("cover"), { x: -120, rotation: -11 }, { x: 0, rotation: -5, duration: 1.1, ease: C(E.out, 1.1), immediateRender: true }, 0);
+      tl.fromTo($("tp"), { x: 160, rotation: 8 }, { x: 0, rotation: 2.5, duration: 1.2, ease: C(E.out, 1.2), immediateRender: true }, 0);
+      gsap.set(cam, { scale: 1.0 });
+      tl.fromTo(cam, { scale: 1.0, transformOrigin: "1100px 520px" }, { scale: 1.1, duration: S(C1) + 0.2, ease: "sine.out", immediateRender: false }, 0);
+      // "does NOT actually end up codifying": magenta pen cross over the title page
+      const pf = FX.markupDefs(svg, SEG + "-pen1", { boil: 4 }); svg.setAttribute("viewBox", "0 0 560 910");
+      const x = FX.markup.cross(tl, svg, S(2280.84), { x: 280, y: 440, s: 200, color: MAG, width: 12, dur: 0.4, filter: pf });
+      x.forEach((p, i) => { p.style.mixBlendMode = "multiply"; gsap.set(p, { opacity: 0 }); tl.set(p, { opacity: 1 }, S(2280.84) + i * 0.44); });
+    })();
+
+    whip("sc001", "sc002", S(C1), { dir: 1 });
+
+    /* ===== sc002 · the brother in California; the code travels west ===== */
+    (function () {
+      const a = S(C1), b = S(C2), cam = $("mapcam"), svg = $("mapsvg");
+      mk(svg, "path", { d: USALL, fill: "none", stroke: ASHL, "stroke-opacity": 0.22, "stroke-width": 3, "stroke-linejoin": "round" });
+      mk(svg, "path", { d: NY, fill: ASHL, "fill-opacity": 0.22, stroke: BONE, "stroke-width": 5, "stroke-linejoin": "round" });
+      const caf = mk(svg, "path", { d: CA, fill: MAG, "fill-opacity": 0.55, stroke: MAGL, "stroke-width": 6, "stroke-linejoin": "round" });
+      const NYP = [3328, 742], SAC = [288, 912];
+      const pin = (p, col) => { const g = mk(svg, "g", {}); mk(g, "circle", { cx: p[0], cy: p[1], r: 30, fill: col, "fill-opacity": 0.3 }); mk(g, "circle", { cx: p[0], cy: p[1], r: 13, fill: BONE, stroke: col, "stroke-width": 6 }); return g; };
+      const pNY = pin(NYP, ASHL), pCA = pin(SAC, MAGL);
+      gsap.set([caf, pCA], { opacity: 0 });
+      // camera: New York → pan west to California → pull back for the route
+      gsap.set(cam, { scale: 0.8, x: -1152, y: -124 });
+      tl.fromTo(cam, { scale: 0.8, x: -1152, y: -124 }, { scale: 0.8, x: -1100, y: -140, duration: S(2285.2) - a, ease: "none", immediateRender: false }, a);
+      tl.to(cam, { x: 0, y: -294, duration: 1.9, ease: E.cam }, S(2285.2));
+      tl.to(cam, { scale: 0.52, x: -38, y: -10, duration: 1.7, ease: E.cam }, S(2293.9));
+      tl.to(cam, { scale: 0.54, x: -66, y: -26, duration: b - S(2295.6) + 0.2, ease: "sine.inOut" }, S(2295.6));
+      gsap.set($("nyl"), { opacity: 1 });                               // the place we cut from (named in the line before)
+      tl.to(caf, { opacity: 1, duration: 0.6, ease: C(E.out, 0.6) }, S(2286.2));
+      tl.set(pCA, { opacity: 1 }, S(2286.3));
+      rise($("cal"), T(2286.36), { y: 26 });                           // California
+      rise($("gr"), T(2287.16), { y: 16, dur: 0.4 });                  // gold rush
+      // Stephen Field: photo on "he gets involved", name on the name, role on "Supreme"
+      tl.fromTo($("sf"), { opacity: 0, x: 80 }, { opacity: 1, x: 0, duration: 0.7, ease: C(E.out, 0.7), immediateRender: true }, S(2288.0));
+      rise($("sfn"), T(2289.96), { dur: 0.4 });                        // Stephen Field
+      rise($("sfr"), T(2291.80), { dur: 0.4, y: 10 });                 // Supreme Court Justice
+      tl.to($("sf"), { opacity: 0, x: 60, duration: 0.4, ease: C(E.in, 0.4) }, S(2293.7));
+      tl.to($("gr"), { opacity: 0, duration: 0.3 }, S(2293.8));
+      // "he just copies all the work his brother has done in New York": the book rides the route west
+      const d = "M" + NYP[0] + " " + NYP[1] + " Q1800 180 " + SAC[0] + " " + SAC[1];
+      const glow = mk(svg, "path", { d: d, fill: "none", stroke: MAG, "stroke-opacity": 0.45, "stroke-width": 26, "stroke-linecap": "round" });
+      const line = mk(svg, "path", { d: d, fill: "none", stroke: MAGL, "stroke-width": 9, "stroke-linecap": "round" });
+      const L = line.getTotalLength(), pts = []; for (let i = 0; i <= 120; i++) { const p = line.getPointAtLength(L * i / 120); pts.push([p.x, p.y]); }
+      [glow, line].forEach((p) => { p.setAttribute("stroke-dasharray", L + " " + L); gsap.set(p, { attr: { "stroke-dashoffset": L }, opacity: 0 }); tl.set(p, { opacity: 1 }, S(2298.36)); });
+      const bk = $("book"), pr = { k: 0 };
+      function place() { const f = Math.min(120, Math.max(0, pr.k * 120)), i = Math.floor(f), q = pts[i], r = pts[Math.min(120, i + 1)], u = f - i;
+        bk.style.transform = "translate(" + (q[0] + (r[0] - q[0]) * u - 33).toFixed(1) + "px," + (q[1] + (r[1] - q[1]) * u - 43).toFixed(1) + "px) scale(1.9) rotate(-6deg)";
+        const off = (L * (1 - pr.k)).toFixed(1); glow.setAttribute("stroke-dashoffset", off); line.setAttribute("stroke-dashoffset", off); }
+      place();
+      tl.fromTo(bk, { opacity: 0 }, { opacity: 1, duration: 0.3, immediateRender: false }, S(2297.2));
+      tl.fromTo(pr, { k: 0 }, { k: 1, duration: 1.8, ease: C(E.inOut, 1.8), immediateRender: false, onUpdate: place }, S(2298.36));
+    })();
+
+    whip("sc002", "sc003", S(C2), { dir: -1 });
+
+    /* ===== sc003 · never adopted in New York — adopted in California ===== */
+    (function () {
+      const a = S(C2), b = S(C3), mkv = $("s3mk"), pf = FX.markupDefs(mkv, SEG + "-pen3", { boil: 4 });
+      const ny = $("s3ny"), ca = $("s3ca");
+      mk(ny, "path", { d: NY, fill: ASHD, "fill-opacity": 0.9, stroke: INK, "stroke-width": 3, "stroke-linejoin": "round" });
+      mk(ca, "path", { d: CA, fill: MAG, "fill-opacity": 0.9, stroke: MAGD, "stroke-width": 5, "stroke-linejoin": "round" });
+      tl.fromTo($("sc003-cam"), { scale: 1.05 }, { scale: 1.0, duration: b - a + 0.2, ease: "sine.out", immediateRender: false }, a);
+      const bk = $("bk"); gsap.set(bk, { x: 520, y: 450, rotation: -4 });
+      tl.fromTo(bk, { x: 520, y: 380, rotation: -10 }, { x: 520, y: 450, rotation: -4, duration: 0.8, ease: C(E.out, 0.8), immediateRender: false }, a);
+      rise($("s3nyl"), T(2303.00), { dur: 0.35 });                     // New York
+      stamp($("s3n"), T(2303.56), -6);                                 // never (actually adopted)
+      // the book crosses over to California
+      const ar = FX.markup.arrow(tl, mkv, S(2304.5), { x1: 780, y1: 420, x2: 1240, y2: 440, bend: -60, color: INK, width: 6, head: 26, dur: 0.6, filter: pf });
+      ar.forEach((p, i) => { gsap.set(p, { opacity: 0 }); tl.set(p, { opacity: 1 }, S(2304.5) + (i ? 0.5 : 0)); });
+      tl.to(bk, { x: 1150, y: 520, rotation: 4, duration: 0.7, ease: C(E.inOut, 0.7) }, S(2304.6));
+      stamp($("s3a"), T(2305.32), -5);                                 // adopted
+      rise($("s3cal"), T(2305.96), { dur: 0.3 });                      // California
+    })();
+
+    whip("sc003", "sc004", S(C3), { dir: -1, vertical: true });
+
+    /* ===== sc004 · the clause, then the non-compete it kills ===== */
+    (function () {
+      const a = S(C3), cam = $("sc004-cam");
+      tl.fromTo(cam, { scale: 1.0, transformOrigin: "560px 470px" }, { scale: 1.1, duration: 8.5, ease: "sine.inOut", immediateRender: false }, a);
+      tl.to(cam, { scale: 1.0, duration: 1.4, ease: E.cam }, S(2316.2));
+      const hi = (id, t, d) => tl.to($(id), { scaleX: 1, duration: d, ease: "power1.inOut" }, t);
+      hi("h1", S(2310.28), 0.45);          // any contract        → "Every contract"
+      hi("h2", S(2311.10), 0.6);           // that legally bans   → "by which any one is re-"
+      hi("h3", S(2311.76), 0.6);           // anyone from working → "strained from exercising"
+      hi("h4", S(2313.50), 0.6);           // profession that's lawful → "a lawful profession,"
+      hi("h5", S(2315.22), 0.6);           // is an illegal contract   → "is to that extent void."
+      // "Aka you cannot have a non compete that tells people …"
+      tl.fromTo($("nc"), { opacity: 0, y: 120, rotation: 8 }, { opacity: 1, y: 0, rotation: 3, duration: 0.8, ease: C(E.out, 0.8), immediateRender: true }, S(2316.45));
+      rise($("nct"), T(2317.43), { dur: 0.35 });                       // non compete
+      const sp = $("ncb").children;
+      tl.to(sp[0], { opacity: 1, duration: 0.2 }, T(2318.31));          // tells people
+      tl.to(sp[1], { opacity: 1, duration: 0.2 }, T(2319.51));          // do this job
+      tl.to(sp[2], { opacity: 1, duration: 0.2 }, T(2320.15));          // after (not working here)
+      const svg = $("ncsvg"), pf = FX.markupDefs(svg, SEG + "-pen4", { boil: 4 }); svg.setAttribute("viewBox", "0 0 700 400");
+      const x = FX.markup.cross(tl, svg, S(2321.57), { x: 350, y: 210, s: 150, color: MAG, width: 12, dur: 0.35, filter: pf });
+      x.forEach((p, i) => { p.style.mixBlendMode = "multiply"; gsap.set(p, { opacity: 0 }); tl.set(p, { opacity: 1 }, S(2321.57) + i * 0.39); });
+    })();
+
+    FX.grain($("grain"), 3); FX.dust($("dust"), 5, 2);
+    FX.mount(tl, DUR);
+    window.__timelines = window.__timelines || {};
+    window.__timelines[SEG] = tl;
+  })();
+  </script>
+</template>
+</body>
+</html>
