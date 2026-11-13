@@ -1,0 +1,437 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8" /></head>
+<body>
+<template>
+  <style>
+    #root { position: absolute; inset: 0; overflow: hidden; background: var(--night); }
+    .e6-scene { position: absolute; inset: 0; overflow: hidden; visibility: hidden; opacity: 0; }
+    .e6-shot { position: absolute; inset: 0; overflow: hidden; transform-origin: 50% 50%; }
+    .e6-night { background: var(--night); }
+    .e6-paper { background: var(--paper); }
+    .e6-abs { position: absolute; }
+    .e6-p1, .e6-p2 { position: absolute; inset: 0; background-size: cover; background-position: center; pointer-events: none; filter: grayscale(0.9) brightness(1.03); }
+    .e6-p1 { mix-blend-mode: multiply; opacity: 0.55; }
+    .e6-p2 { mix-blend-mode: multiply; opacity: 0.45; }
+    .e6-cam { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
+    .e6-mk { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; pointer-events: none; }
+    .e6-w { display: inline-block; white-space: pre; opacity: 0; }
+    .e6-ink { color: var(--ink); }
+    .e6-credit { position: absolute; right: 96px; bottom: 30px; font-size: 13px; letter-spacing: 0.08em; color: rgba(238,238,232,0.6); z-index: 6; }
+    .e6-credit.ink { color: rgba(22,26,36,0.6); }
+    .e6-ht { position: absolute; inset: 0; background: url('assets/textures/halftone_01_norm.jpg') 0 0 / 300px auto; mix-blend-mode: overlay; opacity: 0.45; pointer-events: none; }
+
+    /* sc1 steeples */
+    .e6-bar { position: absolute; width: 44px; background: var(--ash); transform-origin: 50% 100%; overflow: hidden; }
+    .e6-stp { position: absolute; width: 72px; height: 500px; background: var(--ink); transform-origin: 50% 100%; overflow: hidden;
+      clip-path: polygon(50% 0, 100% 15%, 100% 100%, 0 100%, 0 15%); }
+    #pd11-s1-base { position: absolute; left: 150px; top: 820px; width: 1620px; height: 5px; background: var(--ink); }
+    #pd11-s1-thr { position: absolute; left: 150px; top: 404px; width: 1620px; border-top: 4px dashed var(--ink); transform-origin: 0 50%; }
+    #pd11-s1-title { position: absolute; left: 150px; top: 92px; font-size: 104px; line-height: 1; color: var(--ink); }
+    #pd11-s1-best { position: absolute; right: 150px; top: 322px; font-size: 26px; line-height: 1.3; text-align: right; color: var(--ink); }
+    .e6-fl { position: absolute; top: 850px; width: 360px; text-align: center; font-size: 28px; line-height: 1.3; color: var(--ink); }
+    /* sc2 lattice */
+    #pd11-s2-cam { width: 1920px; height: 1080px; transform-origin: 960px 540px; }
+    #pd11-s2-lat { position: absolute; left: -540px; top: -360px; width: 3000px; height: 1800px; overflow: visible; }
+    #pd11-s2-si { position: absolute; left: 560px; top: 150px; width: 800px; opacity: 0; transform-origin: 50% 50%;
+      filter: grayscale(0.8) brightness(0.95) contrast(1.1) drop-shadow(0 30px 40px rgba(0,0,0,0.7)); }
+    #pd11-s2-streaks { opacity: 0.2; filter: blur(2.5px); }
+    #pd11-s2-shade { position: absolute; inset: 0; background: radial-gradient(ellipse 60% 60% at 50% 50%, rgba(12,15,21,0.78), rgba(12,15,21,0.25) 80%); opacity: 0; }
+    #pd11-s2-k { position: absolute; left: 96px; top: 84px; font-size: 26px; }
+    #pd11-s2-t { position: absolute; left: 0; top: 760px; width: 1920px; text-align: center; font-size: 190px; }
+    /* sc3 map */
+    #pd11-s3-cam { width: 3600px; height: 3548px; }
+    #pd11-s3-cam > img { position: absolute; left: 0; top: 0; width: 3600px; height: 3548px; filter: grayscale(0.75) brightness(0.95) contrast(1.08); }
+    #pd11-s3-svg { position: absolute; left: 0; top: 0; width: 3600px; height: 3548px; overflow: visible; }
+    #pd11-s3-scrim { position: absolute; left: 0; top: 0; width: 1000px; height: 1080px; background: linear-gradient(90deg, rgba(12,15,21,0.82), rgba(12,15,21,0)); opacity: 0; }
+    #pd11-s3-year { position: absolute; left: 96px; top: 380px; font-size: 300px; }
+    .e6-ml { position: absolute; white-space: nowrap; }
+    /* sc4 trio */
+    #pd11-s4-cam { position: absolute; inset: 0; transform-origin: 880px 470px; }
+    #pd11-s4-print { position: absolute; left: 268px; top: 72px; width: 1384px; height: 936px; background: var(--bone); box-shadow: 0 30px 70px rgba(22,26,36,0.4); transform: rotate(-1deg); }
+    #pd11-s4-win { position: absolute; left: 20px; top: 20px; width: 1344px; height: 896px; overflow: hidden; background: var(--ash-dark); }
+    #pd11-s4-win img { position: absolute; left: 0; top: -24px; width: 1344px; height: 1071px; filter: grayscale(1) contrast(1.06) brightness(0.98); }
+    #pd11-s4-dim { position: absolute; inset: 0; opacity: 0; background: radial-gradient(ellipse 210px 250px at 592px 398px, rgba(22,26,36,0) 60%, rgba(22,26,36,0.62) 100%); }
+    .e6-strip { position: absolute; background: var(--paper); color: var(--ink); font-size: 30px; padding: 12px 22px 8px; white-space: nowrap; box-shadow: 0 10px 22px rgba(22,26,36,0.35); opacity: 0; }
+    .e6-strip i { position: absolute; left: 50%; top: -9px; width: 16px; height: 16px; margin-left: -8px; border-radius: 50%; background: var(--ash-dark); box-shadow: 0 2px 3px rgba(0,0,0,0.4); }
+    /* sc5 transistor */
+    #pd11-s5-streaks { opacity: 0.22; filter: blur(2.5px); }
+    #pd11-s5-card { position: absolute; left: 1010px; top: 150px; width: 700px; height: 760px; background: var(--bone); box-shadow: 0 40px 80px rgba(0,0,0,0.7); transform-origin: 50% 50%; }
+    #pd11-s5-card .in { position: absolute; left: 30px; top: 30px; width: 640px; height: 640px; overflow: hidden; }
+    #pd11-s5-card img { position: absolute; inset: 0; width: 640px; height: 640px; filter: grayscale(1) contrast(1.12) brightness(0.96); }
+    #pd11-s5-card .cap { position: absolute; left: 30px; top: 692px; font-size: 22px; color: var(--ink); }
+    #pd11-s5-t { position: absolute; left: 96px; top: 400px; font-size: 150px; }
+    #pd11-s5-k { position: absolute; left: 102px; top: 580px; font-size: 28px; }
+    /* sc6 diagram */
+    #pd11-sc6 { z-index: 3; background: transparent; }
+    #pd11-sc6-shot { background: var(--paper); }
+    #pd11-s6-grid { position: absolute; inset: 0; opacity: 0.5;
+      background-image: linear-gradient(rgba(22,26,36,0.16) 2px, transparent 2px), linear-gradient(90deg, rgba(22,26,36,0.16) 2px, transparent 2px), linear-gradient(rgba(22,26,36,0.07) 1px, transparent 1px), linear-gradient(90deg, rgba(22,26,36,0.07) 1px, transparent 1px);
+      background-size: 120px 120px, 120px 120px, 24px 24px, 24px 24px; background-position: 0 -20px, -24px 0, 0 -20px, -24px 0; }
+    .e6-dt { position: absolute; font-size: 66px; color: var(--ink); white-space: nowrap; }
+    .e6-dl { position: absolute; font-size: 28px; color: var(--ink); white-space: nowrap; }
+    #pd11-s6-state { position: absolute; left: 1170px; top: 408px; width: 160px; text-align: center; font-size: 40px; }
+    #pd11-s6-state span { position: absolute; left: 0; top: 0; width: 160px; padding: 10px 0 4px; opacity: 0; }
+
+    #pd11-flash { position: absolute; inset: 0; background: var(--bone); opacity: 0; pointer-events: none; z-index: 7; }
+    #pd11-grain, #pd11-dust, #pd11-vig { z-index: 8; }
+  </style>
+  <div id="root" data-composition-id="pd11" data-vo-start="1365.6" data-duration="68.7333" data-width="1920" data-height="1080">
+    <svg id="pd11-defs" width="0" height="0" style="position:absolute"></svg>
+
+    <!-- SC1 · 1365.60–1390.30 · steeples of excellence: focus on few things, best in the world; the four fields; "this last part is important" -->
+    <div class="e6-scene e6-paper" id="pd11-sc1"><div class="e6-shot" id="pd11-sc1-shot">
+      <div class="e6-p1" style="background-image:url('assets/textures/paper_graph_01_hires.jpg')"></div>
+      <div class="e6-p2" style="background-image:url('assets/textures/paper_fiber_01.jpg')"></div>
+      <div id="pd11-s1-bars"></div>
+      <div id="pd11-s1-thr"></div>
+      <div id="pd11-s1-base"></div>
+      <div id="pd11-s1-title" class="t-serif"><span class="e6-w">Steeples </span><span class="e6-w">of </span><span class="e6-w"><i>excellence</i></span></div>
+      <div id="pd11-s1-best" class="t-label"><span class="e6-w">best </span><span class="e6-w">in </span><br/><span class="e6-w">the world</span></div>
+      <div class="e6-fl t-label" id="pd11-s1-f0"><span class="e6-w">Electronics</span></div>
+      <div class="e6-fl t-label" id="pd11-s1-f1"><span class="e6-w">Radio </span><span class="e6-w">science</span></div>
+      <div class="e6-fl t-label" id="pd11-s1-f2"><span class="e6-w">Material </span><br/><span class="e6-w">research</span></div>
+      <div class="e6-fl t-label" id="pd11-s1-f3"><span class="e6-w">Solid </span><span class="e6-w">state </span><br/><span class="e6-w">physics</span></div>
+      <svg id="pd11-s1-mk" class="e6-mk"></svg>
+    </div></div>
+
+    <!-- SC2 · 1390.30–1398.60 · how electricity moves through solid materials. Aka silicon. -->
+    <div class="e6-scene e6-night" id="pd11-sc2"><div class="e6-shot" id="pd11-sc2-shot">
+      <canvas id="pd11-s2-streaks" class="streaks"></canvas>
+      <div class="e6-cam" id="pd11-s2-cam"><svg id="pd11-s2-lat" viewBox="0 0 3000 1800"></svg></div>
+      <div id="pd11-s2-shade"></div>
+      <img id="pd11-s2-si" src="assets/c2/cutouts/polysilicon_rod_cut.png" alt="" />
+      <div id="pd11-s2-k" class="t-label clean">Solid state physics</div>
+      <div id="pd11-s2-t" class="t-display halate"><span class="e6-w">silicon</span></div>
+      <div class="e6-credit t-label" id="pd11-s2-cr" style="opacity:0">Polysilicon: Wikimedia Commons</div>
+    </div></div>
+
+    <!-- SC3 · 1398.60–1404.90 · in 1947 at Bell Labs in New Jersey -->
+    <div class="e6-scene e6-night" id="pd11-sc3"><div class="e6-shot" id="pd11-sc3-shot">
+      <div class="e6-cam" id="pd11-s3-cam">
+        <img src="assets/c2/derived/c2s01/nj_satdesat_composite.jpg" alt="" />
+        <svg id="pd11-s3-svg" viewBox="0 0 3600 3548"></svg>
+        <div id="pd11-s3-bl" class="e6-ml t-label clean" style="left:1752px;top:1700px;font-size:40px"><span class="e6-w">Bell </span><span class="e6-w">Labs</span></div>
+        <div id="pd11-s3-nj" class="e6-ml t-label clean" style="left:1300px;top:2050px;font-size:46px;color:var(--ash-light)"><span class="e6-w">New </span><span class="e6-w">Jersey</span></div>
+        <div class="e6-ml t-label clean" style="left:1830px;top:1560px;font-size:26px;color:var(--ash-light);opacity:0.75">New York</div>
+      </div>
+      <div id="pd11-s3-scrim"></div>
+      <div id="pd11-s3-year" class="t-display halate"><span class="e6-w">1947</span></div>
+      <div class="e6-credit t-label">Imagery: Esri, Maxar, Earthstar Geographics</div>
+    </div></div>
+
+    <!-- SC4 · 1404.90–1413.50 · William Shockley, John Bardeen, Walter Brattain. Shockley is the important name. These three … invent -->
+    <div class="e6-scene e6-paper" id="pd11-sc4"><div class="e6-shot" id="pd11-sc4-shot">
+      <div class="e6-p1" style="background-image:url('assets/textures/paper_cream_02.jpg')"></div>
+      <div class="e6-p2" style="background-image:url('assets/textures/paper_stained_01_hires.jpg')"></div>
+      <div id="pd11-s4-cam">
+        <div id="pd11-s4-print"><div id="pd11-s4-win"><img src="assets/c2/photos/bardeen_shockley_brattain_1948.jpg" alt="" /><div class="e6-ht" style="opacity:0.2"></div><div id="pd11-s4-dim"></div></div></div>
+        <svg id="pd11-s4-mk" class="e6-mk"></svg>
+        <div class="e6-strip t-label" id="pd11-s4-t1" style="left:700px;top:900px;transform:rotate(-2deg)"><i></i><span class="e6-w">William </span><span class="e6-w">Shockley</span></div>
+        <div class="e6-strip t-label" id="pd11-s4-t2" style="left:150px;top:420px;transform:rotate(2deg)"><i></i><span class="e6-w">John </span><span class="e6-w">Bardeen</span></div>
+        <div class="e6-strip t-label" id="pd11-s4-t3" style="left:1400px;top:380px;transform:rotate(-3deg)"><i></i><span class="e6-w">Walter </span><span class="e6-w">Brattain</span></div>
+      </div>
+      <div class="e6-credit ink t-label">Photo: AT&amp;T / Nokia Bell Labs, 1948</div>
+    </div></div>
+
+    <!-- SC5 · 1413.50–1420.50 · transistor. … a thing that can send or stop electricity -->
+    <div class="e6-scene e6-night" id="pd11-sc5"><div class="e6-shot" id="pd11-sc5-shot">
+      <canvas id="pd11-s5-streaks" class="streaks"></canvas>
+      <svg id="pd11-s5-svg" class="e6-mk" viewBox="0 0 1920 1080"></svg>
+      <div id="pd11-s5-card"><div class="in"><img src="assets/c2/photos/chm_point_contact_transistor_1947.jpg" alt="" /><div class="e6-ht" style="opacity:0.25"></div></div>
+        <div class="cap t-label">The first transistor · Bell Labs</div></div>
+      <div id="pd11-s5-t" class="t-display halate"><span class="e6-w">transistor</span></div>
+      <div class="e6-credit t-label">Photo: AT&amp;T / Nokia Bell Labs · Computer History Museum</div>
+    </div></div>
+
+    <!-- SC6 · 1420.10–1434.33 · like a switch without any physical movement; small electricity turns a big flow on and off -->
+    <div class="e6-scene" id="pd11-sc6"><div class="e6-shot" id="pd11-sc6-shot">
+      <div class="e6-p1" style="background-image:url('assets/textures/paper_cream_01.jpg')"></div>
+      <div id="pd11-s6-grid"></div>
+      <div class="e6-p2" style="background-image:url('assets/textures/paper_fiber_01.jpg')"></div>
+      <svg id="pd11-s6-svg" class="e6-mk" viewBox="0 0 1920 1080"></svg>
+      <div class="e6-dt t-display" id="pd11-s6-sw" style="left:96px;top:226px"><span class="e6-w">A </span><span class="e6-w">switch</span></div>
+      <div class="e6-dt t-display" id="pd11-s6-tr" style="left:700px;top:226px;opacity:0">A transistor</div>
+      <div class="e6-dl t-label" id="pd11-s6-no" style="left:704px;top:318px;color:var(--magenta-dark)"><span class="e6-w">no </span><span class="e6-w">physical </span><span class="e6-w">movement</span></div>
+      <div class="e6-dl t-label" id="pd11-s6-big" style="left:1340px;top:434px;color:var(--copper-dark)"><span class="e6-w">big </span><span class="e6-w">electricity</span></div>
+      <div class="e6-dl t-label" id="pd11-s6-small" style="left:700px;top:936px;color:var(--magenta-dark)"><span class="e6-w">small </span><span class="e6-w">electricity</span></div>
+      <div id="pd11-s6-state" class="t-display"><span id="pd11-s6-on" style="background:var(--magenta);color:var(--bone)">ON</span><span id="pd11-s6-off" style="background:var(--ink);color:var(--paper)">OFF</span></div>
+    </div></div>
+
+    <div id="pd11-flash"></div>
+    <div id="pd11-grain" class="tx tx-grain" style="background-image:url('assets/textures/grain_01_norm.jpg')"></div>
+    <div id="pd11-dust" class="tx tx-dust" style="background-image:url('assets/textures/dust_02.jpg')"></div>
+    <div id="pd11-vig" class="vignette"></div>
+    <audio id="pd11-vo" class="temp-vo" src="vo_pd.mp3" data-start="0" data-duration="68.7333" data-media-start="1365.6" data-volume="1"></audio>
+  </div>
+  <script>
+  (function () {
+    const SEG = "pd11", START = 1365.6, DURATION = 68.7333, END = START + DURATION;
+    const T = s => +(s - 1365.6).toFixed(3);   // TEXT cues (audited): literal master word start − 0.06
+    const S = s => +(s - 1365.6).toFixed(3);   // STRUCTURAL cues
+    const tl = gsap.timeline({ paused: true });
+    const $ = (id) => document.getElementById(SEG + "-" + id);
+    const NS = "http://www.w3.org/2000/svg";
+    const defs = $("defs"), E = FX.ease, C = (e, d) => FX.choppy(e, d, 12);
+    const cs = getComputedStyle(document.documentElement), V = (n, f) => (cs.getPropertyValue(n) || "").trim() || f;
+    const BONE = V("--bone", "#eeeee8"), INK = V("--ink", "#161a24"), MAG = V("--magenta", "#d1307a"), MAGL = V("--magenta-light", "#f3a6c8"),
+      COP = V("--copper", "#e0882a"), ASH = V("--ash", "#878c96"), ASHL = V("--ash-light", "#c2c5ca"), ASHD = V("--ash-dark", "#343843"), PAPER = V("--paper", "#e7e6df");
+    const W = (id) => $(id).querySelectorAll(".e6-w");
+    const el = (p, tag, at) => { const n = document.createElementNS(NS, tag); for (const k in at) n.setAttribute(k, at[k]); p.appendChild(n); return n; };
+    function gated(a, b, fn) { const on = FX.onFrame; FX.onFrame = (f) => on(FX.gate(S(a) - 0.1, S(b) + 0.1, f)); try { return fn(); } finally { FX.onFrame = on; } }
+    function scene(id, a, b) {
+      if (a <= START) gsap.set($(id), { autoAlpha: 1 });
+      else tl.fromTo($(id), { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.001, immediateRender: false }, S(a));
+      if (b < END) tl.set($(id), { autoAlpha: 0 }, S(b));
+    }
+    function ground(kind, t) {
+      const v = kind === "paper" ? [0.3, 0.12, 0.24] : [1, 0.4, 0.34], els = [$("vig"), $("dust"), $("grain")];
+      if (t <= 0) gsap.set(els, { opacity: (i) => v[i] }); else tl.set(els, { opacity: (i) => v[i] }, t);
+    }
+    const show = (e, t) => tl.fromTo(e, { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, t);
+    const pop = (e, t, o) => { o = o || {}; const d = o.dur || 0.5;
+      tl.fromTo(e, { opacity: 0, y: o.y == null ? 12 : o.y }, { opacity: 1, y: 0, duration: d, ease: C(E.out, d), immediateRender: true }, t); };
+    const at = (cx, cy, k) => ({ x: 960 - cx * k, y: 540 - cy * k, scale: k });
+    let whipN = 0;
+    function whip(a, b, t, o) {
+      o = Object.assign({ dir: 1, vertical: false, flash: false, dur: 0.32 }, o);
+      const k = ++whipN, ba = FX.whipDefs(defs, SEG + "-wa" + k), bb = FX.whipDefs(defs, SEG + "-wb" + k), h = o.dur / 2;
+      tl.set(a, { filter: "url(#" + SEG + "-wa" + k + ")" }, t - h - 0.01); tl.set(a, { filter: "none" }, t + 0.06);
+      tl.set(b, { filter: "url(#" + SEG + "-wb" + k + ")" }, t - 0.001); tl.set(b, { filter: "none" }, t + h + 0.02);
+      FX.whip(tl, a, b, t, { dir: o.dir, vertical: o.vertical, dur: o.dur, blurA: ba, blurB: bb });
+      if (o.flash) tl.fromTo($("flash"), { opacity: 0 }, { opacity: 0.8, duration: 0.08, yoyo: true, repeat: 1, ease: "power2.in", immediateRender: false }, t - 0.08);
+    }
+    function ink(parent, d, t, dur, o) {
+      o = o || {};
+      const p = el(parent, "path", { d: d, fill: "none", stroke: o.color || INK, "stroke-width": o.width || 6, "stroke-linecap": o.cap || "round", "stroke-linejoin": "round" });
+      if (o.filter) p.setAttribute("filter", o.filter);
+      const len = p.getTotalLength() || 1;
+      p.setAttribute("stroke-dasharray", len + " " + len); p.setAttribute("stroke-dashoffset", len);
+      gsap.set(p, { opacity: 0 }); tl.set(p, { opacity: o.opacity == null ? 1 : o.opacity }, t);
+      tl.fromTo(p, { attr: { "stroke-dashoffset": len } }, { attr: { "stroke-dashoffset": 0 }, duration: dur, ease: o.ease || C(E.out, dur), immediateRender: true }, t);
+      return p;
+    }
+    FX.grain($("grain"), 611);
+    FX.dust($("dust"), 612, 2);
+
+    /* =================== SC1 · 1365.60–1390.30 · steeples of excellence =================== */
+    scene("sc1", 1365.6, 1390.30);
+    ground("paper", 0);
+    (function () {
+      const host = $("s1-bars"), rnd = FX.rng(61), bars = [], stp = [], SX = [2, 8, 14, 20], X0 = 196, P = 63;
+      for (let i = 0; i < 25; i++) {
+        const h = 60 + Math.round(rnd() * 90), b = document.createElement("div");
+        b.className = "e6-bar"; b.style.left = (X0 + i * P) + "px"; b.style.top = (820 - h) + "px"; b.style.height = h + "px";
+        b.innerHTML = '<div class="e6-ht"></div>'; host.appendChild(b); bars.push(b);
+      }
+      SX.forEach((i, k) => {
+        const s = document.createElement("div"); s.className = "e6-stp"; s.id = SEG + "-s1-stp" + k;
+        s.style.left = (X0 + i * P - 14) + "px"; s.style.top = "320px"; s.innerHTML = '<div class="e6-ht" style="opacity:0.3"></div>';
+        host.appendChild(s); stp.push(s);
+        $("s1-f" + k).style.left = (X0 + i * P + 22 - 180) + "px";
+      });
+      // frame 0: the field of low bars is already growing
+      gsap.set(bars, { scaleY: (i) => (i < 8 ? 0.7 : 0.25) });
+      tl.to(bars, { scaleY: 1, duration: 1.3, stagger: 0.05, ease: C(E.out, 1.3) }, 0);
+      tl.fromTo($("sc1-shot"), { scale: 1.06 }, { scale: 1, duration: 3.4, ease: E.cam, immediateRender: true }, 0);
+      // "focus on few things" — four steeples rise
+      gsap.set(stp, { scaleY: 0, opacity: 0 });
+      stp.forEach((s, k) => { tl.set(s, { opacity: 1 }, S(1372.97) + k * 0.14);
+        tl.fromTo(s, { scaleY: 0 }, { scaleY: 1, duration: 1.5, ease: C(E.out, 1.5), immediateRender: false }, S(1372.97) + k * 0.14); });
+      SX.forEach((i) => tl.to(bars[i], { opacity: 0, duration: 0.2 }, S(1373.0)));
+      // "best in the world" threshold
+      tl.fromTo($("s1-thr"), { scaleX: 0 }, { scaleX: 1, duration: 0.9, ease: C(E.out, 0.9), immediateRender: true }, S(1374.60));
+      // "instead of … jack of all trades" — the rest shrinks away
+      const rest = bars.filter((b, i) => SX.indexOf(i) < 0);
+      tl.to(rest, { scaleY: 0.3, opacity: 0.45, duration: 1.2, stagger: 0.02, ease: C(E.inOut, 1.2) }, S(1377.03));
+      tl.to($("sc1-shot"), { scale: 1.035, duration: 9.6, ease: "none" }, S(1379.3));
+      // "this last part is important" — the fourth steeple becomes the accent
+      tl.to(stp[3], { backgroundColor: MAG, duration: 0.5, ease: C(E.out, 0.5) }, S(1386.2));
+      tl.to([stp[0], stp[1], stp[2], $("s1-f0"), $("s1-f1"), $("s1-f2")], { opacity: 0.4, duration: 0.6, ease: C(E.out, 0.6) }, S(1386.3));
+      const mk = $("s1-mk"), f = gated(1386, 1390.4, () => FX.markupDefs(mk, SEG + "-mk1", { boil: 4 }));
+      const cx = X0 + 20 * P + 22;
+      const c = FX.markup.circle(tl, mk, S(1386.75), { cx: cx, cy: 892, rx: 196, ry: 70, rot: -3, dur: 0.8, color: MAG, width: 6, filter: f, seed: 7 });
+      gsap.set(c, { opacity: 0 }); tl.set(c, { opacity: 1 }, S(1386.75));
+      // push through the magenta steeple → cut on action into the lattice
+      tl.set($("sc1-shot"), { transformOrigin: cx + "px 560px" }, S(1389.78));
+      tl.fromTo($("sc1-shot"), { scale: 1.0 }, { scale: 7, duration: 0.5, ease: E.in, immediateRender: false }, S(1389.80));
+    })();
+    [T(1369.37), T(1369.93), T(1370.09)].forEach((c, i) => pop(W("s1-title")[i], c, { dur: 0.6 }));
+    [T(1374.89), T(1375.13), T(1375.37)].forEach((c, i) => show(W("s1-best")[i], c));
+    pop(W("s1-f0")[0], T(1381.21));
+    [T(1382.42), T(1382.74)].forEach((c, i) => pop(W("s1-f1")[i], c));
+    [T(1383.22), T(1383.78)].forEach((c, i) => pop(W("s1-f2")[i], c));
+    [T(1384.66), T(1385.22), T(1385.54)].forEach((c, i) => pop(W("s1-f3")[i], c));
+
+    /* =================== SC2 · 1390.30–1398.60 · how electricity moves through solid materials — silicon =================== */
+    scene("sc2", 1390.30, 1398.60);
+    ground("night", S(1390.30));
+    (function () {
+      const svg = $("s2-lat"), s = 150, ox = 0, oy = 0, cols = 20, rows = 12, g = el(svg, "g", { opacity: 0.8 });
+      for (let i = 0; i <= cols; i++) for (let j = 0; j <= rows; j++) {
+        if ((i + j) % 2) continue;
+        [[1, 1], [1, -1]].forEach(([di, dj]) => { const i2 = i + di, j2 = j + dj; if (i2 > cols || j2 < 0 || j2 > rows) return;
+          el(g, "line", { x1: ox + i * s, y1: oy + j * s, x2: ox + i2 * s, y2: oy + j2 * s, stroke: ASHL, "stroke-width": 2.5, "stroke-linecap": "round" }); });
+        el(g, "circle", { cx: ox + i * s, cy: oy + j * s, r: 13, fill: ASHL });
+      }
+      // electrons ride the bonds left → right (zig-zag between two rows)
+      const eg = el(svg, "g", {}), dots = [], rnd = FX.rng(23);
+      for (let k = 0; k < 26; k++) {
+        const j = 1 + Math.floor(rnd() * 10), ph = rnd() * cols, sp = 2.2 + rnd() * 1.6;
+        const halo = el(eg, "circle", { r: 26, fill: MAG, opacity: 0.28 }), c = el(eg, "circle", { r: 11, fill: MAGL });
+        dots.push({ j, ph, sp, halo, c });
+      }
+      const pr = { t: 0 };
+      const place = () => dots.forEach((d) => { const u = (d.ph + pr.t * d.sp) % cols, w = (u + d.j) % 2, y = d.j + (w < 1 ? w : 2 - w);
+        d.c.setAttribute("cx", u * s); d.c.setAttribute("cy", y * s); d.halo.setAttribute("cx", u * s); d.halo.setAttribute("cy", y * s); });
+      place();
+      tl.fromTo(pr, { t: 0 }, { t: 8.4, duration: 8.4, ease: "none", immediateRender: false, onUpdate: place }, S(1390.25));
+      const cam = $("s2-cam");
+      tl.fromTo(cam, { scale: 2.1 }, { scale: 1.12, duration: 1.5, ease: E.cam, immediateRender: false }, S(1390.30));
+      tl.to(cam, { scale: 1.0, duration: 6.8, ease: "none" }, S(1391.80));
+      gated(1390.3, 1398.6, () => FX.streaks($("s2-streaks"), { seed: 5, speed: 0.12, tint: [194, 197, 202], gain: 0.9 }));
+      // "aka silicon"
+      tl.to($("s2-shade"), { opacity: 1, duration: 0.8, ease: C(E.out, 0.8) }, S(1395.20));
+      tl.fromTo($("s2-si"), { opacity: 0, scale: 0.86, y: 30 }, { opacity: 1, scale: 1, y: 0, duration: 1.1, ease: C(E.out, 1.1), immediateRender: true }, S(1395.22));
+      tl.to($("s2-si"), { scale: 1.05, duration: 2.3, ease: "none" }, S(1396.32));
+      tl.to($("s2-k"), { opacity: 0, duration: 0.4 }, S(1395.2));
+      tl.fromTo($("s2-cr"), { opacity: 0 }, { opacity: 1, duration: 0.3, immediateRender: true }, S(1395.6));
+    })();
+    pop(W("s2-t")[0], T(1395.94), { dur: 0.7, y: 20 });
+    whip($("sc2-shot"), $("sc3-shot"), S(1398.60), { dir: 1 });
+
+    /* =================== SC3 · 1398.60–1404.90 · in 1947 at Bell Labs in New Jersey =================== */
+    scene("sc3", 1398.60, 1404.90);
+    (function () {
+      const cam = $("s3-cam"), svg = $("s3-svg"), MX = 1692, MY = 1726, NJ = "M5373.5,1379.2L5378.8,1371.8L5382.3,1368.1L5384.2,1361.1L5388.8,1356.4L5395.3,1351.3L5409.8,1348.5L5419.4,1343.3L5419.4,1335.4L5425.5,1332.6L5428.2,1328.8L5441.2,1320.6L5448.1,1318.9L5452.6,1313.0L5456.5,1314.0L5463.0,1309.5L5457.6,1301.4L5450.0,1296.7L5447.3,1290.8L5439.3,1284.6L5436.6,1276.8L5427.0,1274.7L5425.5,1269.5L5426.3,1258.7L5422.4,1254.4L5415.9,1255.0L5412.5,1253.4L5411.7,1243.9L5414.4,1240.5L5411.3,1238.0L5414.8,1226.6L5419.0,1227.1L5427.8,1214.2L5418.6,1200.5L5423.6,1195.0L5430.5,1191.7L5436.6,1185.3L5435.1,1182.6L5441.6,1178.6L5445.8,1173.0L5451.1,1158.8L5459.5,1150.9L5465.6,1149.4L5499.3,1169.2L5549.8,1197.3L5550.9,1199.5L5543.3,1220.8L5538.7,1228.3L5537.1,1235.7L5534.9,1238.2L5532.2,1242.1L5518.0,1246.1L5516.5,1255.7L5513.1,1257.5L5511.9,1263.2L5511.9,1268.1L5519.2,1271.3L5525.3,1269.3L5534.5,1274.3L5539.8,1275.3L5541.4,1270.3L5542.9,1280.6L5541.7,1292.8L5536.4,1313.6L5531.4,1341.8L5529.5,1361.6L5514.2,1389.1L5510.0,1394.6L5506.6,1395.7L5507.7,1399.3L5503.9,1405.6L5496.2,1412.8L5495.9,1415.0L5484.0,1421.2L5471.8,1433.6L5463.7,1447.1L5455.3,1464.1L5447.7,1470.9L5440.4,1472.5L5436.2,1470.9L5438.5,1460.9L5444.2,1449.8L5445.4,1441.9L5437.3,1437.7L5430.5,1437.2L5428.2,1434.4L5421.3,1434.7L5418.6,1438.8L5415.2,1436.1L5414.4,1430.7L5407.5,1426.5L5406.4,1423.1L5402.6,1424.4L5396.8,1416.7L5394.1,1417.6L5387.3,1411.0L5383.4,1404.6L5376.2,1401.7L5378.5,1385.7L5373.9,1382.4L5373.5,1379.2Z", M = "matrix(9.93822 0 0 10.6707 -52937.5 -11495.5)";
+      const fill = el(svg, "path", { d: NJ, transform: M, fill: ASHL, "fill-opacity": 0.22, opacity: 0 });
+      const out = el(svg, "path", { d: NJ, transform: M, fill: "none", stroke: ASHL, "stroke-width": 0.42, "stroke-linejoin": "round", opacity: 0 });
+      const ring = el(svg, "circle", { cx: MX, cy: MY, r: 34, fill: "none", stroke: MAGL, "stroke-width": 7, opacity: 0 });
+      const dot = el(svg, "circle", { cx: MX, cy: MY, r: 15, fill: MAG, opacity: 0 });
+      tl.fromTo(cam, at(1790, 1700, 0.60), Object.assign(at(MX - 230, MY + 60, 1.1), { duration: 3.1, ease: E.cam, immediateRender: false }), S(1398.60));
+      tl.to(cam, Object.assign(at(MX - 222, MY + 66, 1.13), { duration: 2.8, ease: "none" }), S(1401.70));
+      tl.to(cam, Object.assign(at(MX - 180, MY + 60, 1.5), { duration: 0.42, ease: E.in }), S(1404.48));   // push → hard cut on action
+      tl.fromTo($("s3-scrim"), { opacity: 0 }, { opacity: 1, duration: 0.5, immediateRender: true }, S(1400.9));
+      tl.fromTo(dot, { attr: { opacity: 0, r: 0 } }, { attr: { opacity: 1, r: 15 }, duration: 0.35, ease: C(E.out, 0.35), immediateRender: true }, S(1402.24));
+      tl.fromTo(ring, { attr: { opacity: 0, r: 10 } }, { attr: { opacity: 1, r: 34 }, duration: 0.5, ease: C(E.out, 0.5), immediateRender: true }, S(1402.26));
+      tl.fromTo(out, { attr: { opacity: 0 } }, { attr: { opacity: 1 }, duration: 0.3, ease: "none", immediateRender: true }, S(1403.40));
+      tl.fromTo(fill, { attr: { opacity: 0 } }, { attr: { opacity: 1 }, duration: 0.4, ease: C(E.out, 0.4), immediateRender: true }, S(1403.44));
+      FX.focusHunt(tl, cam.querySelector("img"), S(1401.7), { dur: 0.7, base: "grayscale(0.75) brightness(0.95) contrast(1.08)" });
+    })();
+    pop(W("s3-year")[0], T(1401.14), { dur: 0.6, y: 24 });
+    [T(1402.26), T(1402.74)].forEach((c, i) => show(W("s3-bl")[i], c));
+    [T(1403.46), T(1403.70)].forEach((c, i) => show(W("s3-nj")[i], c));
+
+    /* =================== SC4 · 1404.90–1413.50 · Shockley, Bardeen, Brattain — Shockley is the important name =================== */
+    scene("sc4", 1404.90, 1413.60);
+    ground("paper", S(1404.90));
+    (function () {
+      const cam = $("s4-cam");
+      tl.fromTo(cam, { scale: 1.1 }, { scale: 1.0, duration: 1.3, ease: E.cam, immediateRender: false }, S(1404.90));
+      tl.to(cam, { scale: 1.07, duration: 4.4, ease: "none" }, S(1408.60));
+      tl.to($("s4-dim"), { opacity: 1, duration: 0.5, ease: C(E.out, 0.5) }, S(1408.70));
+      tl.to($("s4-dim"), { opacity: 0, duration: 0.8, ease: C(E.inOut, 0.8) }, S(1410.40));
+      tl.to([$("s4-t2"), $("s4-t3")], { opacity: 0.45, duration: 0.5 }, S(1408.70));
+      tl.to([$("s4-t2"), $("s4-t3")], { opacity: 1, duration: 0.8 }, S(1410.40));
+      tl.to($("s4-t1"), { backgroundColor: MAG, color: BONE, duration: 0.3, ease: C(E.out, 0.3) }, S(1408.66));
+      const mk = $("s4-mk"), f = gated(1404.9, 1413.6, () => FX.markupDefs(mk, SEG + "-mk4", { boil: 4 }));
+      const c = FX.markup.circle(tl, mk, S(1408.72), { cx: 876, cy: 486, rx: 150, ry: 176, rot: -8, dur: 0.8, color: MAG, width: 7, filter: f, seed: 4 });
+      gsap.set(c, { opacity: 0 }); tl.set(c, { opacity: 1 }, S(1408.72));
+    })();
+    [["s4-t1", T(1405.46), T(1405.86)], ["s4-t2", T(1406.74), T(1406.98)], ["s4-t3", T(1407.78), T(1408.10)]].forEach(([id, a, b]) => {
+      pop($(id), a, { dur: 0.4, y: 14 }); const w = W(id); show(w[0], a); show(w[1], b);
+    });
+    whip($("sc4-shot"), $("sc5-shot"), S(1413.50), { dir: -1, flash: true });
+
+    /* =================== SC5 · 1413.50–1420.50 · transistor — a thing that can send or stop electricity =================== */
+    scene("sc5", 1413.50, 1420.62);
+    ground("night", S(1413.50));
+    (function () {
+      gated(1413.5, 1420.6, () => FX.streaks($("s5-streaks"), { seed: 9, speed: 0.1, tint: [194, 197, 202], gain: 0.9 }));
+      const card = $("s5-card"), svg = $("s5-svg");
+      tl.fromTo(card, { rotation: 2.5, scale: 1.0 }, { rotation: 1.2, scale: 1.05, duration: 7.0, ease: "none", immediateRender: false }, S(1413.50));
+      // a current runs "through" the device: send … stop
+      el(svg, "path", { d: "M-20 962 L1940 958", stroke: ASH, "stroke-width": 3, fill: "none", opacity: 0.7 });
+      const N = 34, sp = 64, dots = [], pr = { f: 0, a: 0 };
+      for (let i = 0; i < N; i++) dots.push(el(svg, "circle", { r: 9, cy: 960, fill: MAGL, opacity: 0 }));
+      const place = () => dots.forEach((d, i) => { const x = -40 - i * sp + pr.f; d.setAttribute("cx", x); d.setAttribute("opacity", x > -20 && x < 1940 ? pr.a : 0); });
+      tl.fromTo(pr, { f: 0 }, { f: 1500, duration: 1.0, ease: "power1.in", immediateRender: false, onUpdate: place }, S(1418.20));
+      tl.fromTo(pr, { a: 0 }, { a: 1, duration: 0.1, immediateRender: false, onUpdate: place }, S(1418.20));
+      tl.to(pr, { f: 1900, duration: 0.5, ease: C("power2.out", 0.5), onUpdate: place }, S(1419.20));   // "stop": the stream freezes
+      tl.to(pr, { a: 0.35, duration: 0.3, onUpdate: place }, S(1419.55));
+    })();
+    pop(W("s5-t")[0], T(1413.54), { dur: 0.6, y: 22 });
+
+    /* =================== SC6 · 1420.10–1434.33 · a switch without physical movement; small electricity → big flow on / off =================== */
+    scene("sc6", 1420.10, END + 1);
+    tl.fromTo($("sc6-shot"), { y: 1080 }, { y: 0, duration: 0.5, ease: C(E.out, 0.5), immediateRender: false }, S(1420.10));   // paper slides up over the night shot
+    ground("paper", S(1420.36));
+    (function () {
+      const svg = $("s6-svg");
+      /* ---- left: a mechanical knife switch (it MOVES) ---- */
+      const sw = el(svg, "g", {}), HX = 196, HY = 560, LEN = 300;
+      el(sw, "path", { d: "M96 560 L" + HX + " 560", stroke: INK, "stroke-width": 7, "stroke-linecap": "round" });
+      el(sw, "path", { d: "M" + (HX + LEN) + " 560 L600 560", stroke: INK, "stroke-width": 7, "stroke-linecap": "round" });
+      const lever = el(sw, "path", { d: "M0 0 L" + LEN + " 0", stroke: INK, "stroke-width": 12, "stroke-linecap": "round" });
+      el(sw, "circle", { cx: HX, cy: HY, r: 14, fill: PAPER, stroke: INK, "stroke-width": 7 });
+      el(sw, "circle", { cx: HX + LEN, cy: HY, r: 14, fill: PAPER, stroke: INK, "stroke-width": 7 });
+      const arc = el(sw, "path", { d: "M" + (HX + 268) + " " + (HY - 34) + " A 270 270 0 0 0 " + (HX + 222) + " " + (HY - 150), stroke: ASH, "stroke-width": 4, "stroke-dasharray": "10 9", fill: "none" });
+      const lv = { a: -32 }, setL = () => lever.setAttribute("transform", "translate(" + HX + " " + HY + ") rotate(" + lv.a.toFixed(2) + ")");
+      setL();
+      [[1420.80, 0], [1421.70, -32], [1422.50, 0], [1423.40, -32], [1424.10, 0]].forEach(([t, a]) =>
+        tl.to(lv, { a: a, duration: 0.42, ease: C(E.out, 0.42), onUpdate: setL }, S(t)));
+      tl.to([sw, $("s6-sw")], { opacity: 0.4, duration: 0.7, ease: C(E.out, 0.7) }, S(1424.70));
+      /* ---- right: the transistor as a channel with a gate (nothing moves) ---- */
+      const G0 = 1200, G1 = 1300, XL = 700, XR = 1824, YT = 500, YB = 620;
+      ink(svg, "M" + XL + " " + YT + " L" + XR + " " + (YT + 1), S(1420.50), 1.1, { width: 7 });
+      ink(svg, "M" + XL + " " + YB + " L" + XR + " " + (YB + 1), S(1420.62), 1.1, { width: 7 });
+      const gate = el(svg, "rect", { x: G0, y: YT + 4, width: G1 - G0, height: YB - YT - 8, fill: ASHD, opacity: 0 });
+      const hatch = el(svg, "g", { opacity: 0 });
+      for (let k = 0; k < 6; k++) el(hatch, "path", { d: "M" + (G0 + 6 + k * 17) + " " + (YB - 10) + " L" + (G0 + 24 + k * 17 - 10) + " " + (YT + 10), stroke: PAPER, "stroke-width": 3, opacity: 0.5 });
+      tl.to([gate, hatch], { opacity: 1, duration: 0.4, ease: C(E.out, 0.4) }, S(1421.50));
+      // control wire (thin) into the gate from below
+      const WD = "M880 902 L1250 900 L1251 " + (YB + 6);
+      ink(svg, WD, S(1421.90), 0.9, { width: 4 });
+      const term = el(svg, "circle", { cx: 868, cy: 902, r: 12, fill: PAPER, stroke: INK, "stroke-width": 5, opacity: 0 });
+      tl.to(term, { opacity: 1, duration: 0.2 }, S(1421.90));
+      tl.fromTo($("s6-tr"), { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.6, ease: C(E.out, 0.6), immediateRender: true }, S(1421.20));
+      // big electricity: copper dots queue left of the gate; they pass only while the gate is ON
+      const rows = [530, 560, 590], SPB = 38, big = [], F = { f: 0, g: 0, a: 0 };
+      rows.forEach((y, r) => { for (let i = 0; i < 48; i++) big.push({ y, base: G0 - 22 - i * SPB - (r % 2) * 19, n: el(svg, "circle", { r: 10, cy: y, fill: COP, opacity: 0 }) }); });
+      const placeB = () => big.forEach((d) => { let x = d.base + F.f; if (x > G0 - 12) x += F.g; d.n.setAttribute("cx", x.toFixed(1)); d.n.setAttribute("opacity", x > XL + 14 && x < XR - 14 ? F.a : 0); });
+      placeB();
+      tl.to(F, { a: 1, duration: 0.6, onUpdate: placeB }, S(1423.00));
+      tl.to(F, { f: 1330, duration: 3.1, ease: "none", onUpdate: placeB }, S(1427.90));          // ON: the big flow runs through
+      tl.to(F, { g: 760, duration: 2.3, ease: "power1.out", onUpdate: placeB }, S(1431.00));      // OFF: what already passed drains away, the rest stops at the gate
+      // small electricity: magenta pulses up the thin wire
+      const WP = [[880, 902], [1250, 900], [1250, YB + 6]], L1 = 370, L2 = 900 - YB - 6, small = [], K = { f: 0, a: 0 };
+      for (let i = 0; i < 14; i++) small.push(el(svg, "circle", { r: 7, fill: MAG, opacity: 0 }));
+      const placeS = () => small.forEach((n, i) => { const p = K.f - i * 46; let x, y;
+        if (p < L1) { x = 880 + Math.max(p, 0); y = 902 - 2 * Math.max(p, 0) / L1; } else { x = 1250; y = 900 - (p - L1); }
+        n.setAttribute("cx", x.toFixed(1)); n.setAttribute("cy", y.toFixed(1)); n.setAttribute("opacity", p > 0 && p < L1 + L2 ? K.a : 0); });
+      placeS();
+      tl.set(K, { a: 1 }, S(1424.40));
+      tl.to(K, { f: 3900, duration: 6.4, ease: "none", onUpdate: placeS }, S(1424.42));
+      tl.to(K, { a: 0, duration: 0.4, onUpdate: placeS }, S(1430.86));
+      // gate state
+      tl.to(gate, { attr: { fill: MAGL }, duration: 0.3, ease: C(E.out, 0.3) }, S(1425.20));
+      tl.to(hatch, { opacity: 0, duration: 0.3 }, S(1425.20));
+      tl.to(gate, { attr: { fill: ASHD }, duration: 0.3, ease: C(E.out, 0.3) }, S(1430.84));
+      tl.to(hatch, { opacity: 1, duration: 0.3 }, S(1430.84));
+      tl.fromTo($("sc6-shot"), { scale: 1 }, { scale: 1.03, duration: 9.5, ease: "none", immediateRender: false, transformOrigin: "1250px 600px" }, S(1424.8));
+    })();
+    [T(1420.66), T(1420.82)].forEach((c, i) => pop(W("s6-sw")[i], c, { dur: 0.4 }));
+    [T(1422.58), T(1422.90), T(1423.54)].forEach((c, i) => show(W("s6-no")[i], c));
+    show($("s6-on"), T(1425.22));
+    [T(1425.86), T(1426.18)].forEach((c, i) => show(W("s6-small")[i], c));
+    [T(1428.10), T(1428.74)].forEach((c, i) => show(W("s6-big")[i], c));
+    tl.set($("s6-on"), { opacity: 0 }, T(1430.82));
+    show($("s6-off"), T(1430.82));
+
+    FX.mount(tl, DURATION);
+    window.__timelines = window.__timelines || {}; window.__timelines[SEG] = tl;
+  })();
+  </script>
+</template>
+</body>
+</html>

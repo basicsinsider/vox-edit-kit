@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8" /></head>
+<body>
+<template>
+  <style>
+    #root { position: absolute; inset: 0; overflow: hidden; background: var(--night); }
+    .p9-scene { position: absolute; inset: 0; overflow: hidden; }
+    .p9-shot { position: absolute; inset: 0; overflow: hidden; background: var(--night); }
+    .p9-grid { position: absolute; inset: -60px; pointer-events: none; opacity: 0.5;
+      background-image: repeating-linear-gradient(0deg, rgba(194,197,202,0.085) 0 2px, rgba(0,0,0,0) 2px 96px), repeating-linear-gradient(90deg, rgba(194,197,202,0.085) 0 2px, rgba(0,0,0,0) 2px 96px); }
+    .p9-pool { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(ellipse 46% 60% at 22% 62%, rgba(135,140,150,0.34) 0%, rgba(135,140,150,0.10) 55%, rgba(12,15,21,0) 100%); }
+    .p9-cam { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 960px 540px; }
+    .p9-abs { position: absolute; }
+    #pd09-streaks { position: absolute; inset: 0; width: 100%; height: 100%; mix-blend-mode: screen; opacity: 0.42; filter: blur(2.5px); pointer-events: none; }
+    #pd09-fred { position: absolute; left: 70px; top: 190px; width: 640px; height: 906px; }
+    #pd09-fred img { position: absolute; left: 0; top: 0; width: 100%; height: 100%; object-fit: cover; filter: grayscale(1) contrast(1.08) brightness(0.96); }
+    #pd09-fredscrim { position: absolute; left: 0; bottom: 0; width: 900px; height: 330px; background: linear-gradient(180deg, rgba(12,15,21,0), rgba(12,15,21,0.9)); pointer-events: none; }
+    #pd09-fredtag { position: absolute; left: 96px; top: 908px; font-size: 44px; white-space: nowrap; opacity: 0; }
+    #pd09-fredrole { position: absolute; left: 98px; top: 968px; font-size: 22px; color: var(--ash-light); white-space: nowrap; opacity: 0; }
+    #pd09-year { position: absolute; left: 800px; top: 330px; font-size: 330px; white-space: nowrap; transform-origin: 0% 0%; opacity: 0; }
+    .p9-card { position: absolute; width: 400px; height: 500px; background: var(--bone); box-shadow: 0 26px 50px rgba(0,0,0,0.6); opacity: 0; }
+    .p9-card .in { position: absolute; left: 14px; top: 14px; right: 14px; bottom: 14px; overflow: hidden; background: var(--ash-dark); }
+    .p9-card .in::after { content: ""; position: absolute; inset: 0; background-image: url('assets/textures/halftone_01_norm.jpg'); background-size: 520px auto; mix-blend-mode: overlay; opacity: 0.34; }
+    .p9-card img { position: absolute; left: 0; top: 0; width: 100%; height: 100%; object-fit: cover; }
+    .p9-q { position: absolute; left: 0; top: 150px; width: 100%; text-align: center; font-size: 150px; color: rgba(194,197,202,0.28); }
+    .p9-name { position: absolute; font-size: 52px; white-space: nowrap; opacity: 0; }
+    .p9-name b { font-weight: inherit; }
+    .p9-w { display: inline-block; white-space: pre; opacity: 0; }
+    #pd09-hp { position: absolute; left: 1098px; top: 520px; width: 294px; height: 232px; background: var(--magenta); opacity: 0; box-shadow: 0 18px 40px rgba(0,0,0,0.55); transform: rotate(-3deg); }
+    #pd09-hp::after { content: ""; position: absolute; inset: 0; background-image: url('assets/textures/paper_fiber_01_norm.jpg'); background-size: 600px auto; mix-blend-mode: overlay; opacity: 0.6; }
+    #pd09-hp span { position: absolute; left: 0; top: 22px; width: 100%; text-align: center; font-size: 160px; color: var(--bone); z-index: 1; }
+    #pd09-founders { position: absolute; left: 0; top: 176px; width: 100%; text-align: center; font-size: 26px; color: var(--bone); white-space: nowrap; opacity: 0; z-index: 1; }
+    #pd09-rule { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; pointer-events: none; }
+    .p9-credit { position: absolute; right: 96px; bottom: 28px; font-size: 13px; letter-spacing: 0.08em; color: rgba(238,238,232,0.5); z-index: 5; }
+    #pd09-grain, #pd09-dust, #pd09-vig { z-index: 8; }
+  </style>
+
+  <div id="root" data-composition-id="pd09" data-vo-start="1107.5" data-duration="22.4667" data-width="1920" data-height="1080">
+    <svg id="pd09-defs" width="0" height="0" style="position:absolute"></svg>
+
+    <!-- sc001 · 1107.50–1129.97 · 1938 … two of his favourite students … Bill Hewlett and David Packard … "HP founders" · night year card (ref f3ea432e) -->
+    <div class="p9-scene" id="pd09-sc001"><div class="p9-shot" id="pd09-sc001-shot">
+      <div class="p9-grid"></div>
+      <div class="p9-pool"></div>
+      <canvas id="pd09-streaks"></canvas>
+      <div class="p9-cam" id="pd09-cam">
+        <div id="pd09-fred"><img src="assets/c1/cutouts/terman_1940s_cutout.png" alt=""></div>
+        <div id="pd09-fredscrim"></div>
+        <div id="pd09-fredtag" class="t-display clean">Frederick Terman</div>
+        <div id="pd09-fredrole" class="t-label">Professor · Stanford</div>
+        <div id="pd09-year" class="t-display halate">1938</div>
+        <div class="p9-card" id="pd09-c1" style="left:800px; top:270px"><div class="in"><div class="p9-q t-display">?</div>
+          <img id="pd09-c1i" src="assets/archival/hp/hewlett_william_c1962.jpg" alt="" style="object-position:50% 4%; filter:url(#pd09-tint)"></div></div>
+        <div class="p9-card" id="pd09-c2" style="left:1290px; top:270px"><div class="in"><div class="p9-q t-display">?</div>
+          <img id="pd09-c2i" src="assets/archival/hp/packard_david_1933.jpg" alt="" style="object-position:38% 20%; filter:url(#pd09-tint)"></div></div>
+        <div class="p9-name t-display clean" style="left:806px; top:808px; opacity:1"><span class="p9-w" id="pd09-n1a">Bill </span><span class="p9-w" id="pd09-n1"><b id="pd09-h">H</b>ewlett</span></div>
+        <div class="p9-name t-display clean" style="left:1296px; top:808px; opacity:1"><span class="p9-w" id="pd09-n2a">David </span><span class="p9-w" id="pd09-n2"><b id="pd09-p">P</b>ackard</span></div>
+        <div id="pd09-hp"><span class="t-display">HP</span><div id="pd09-founders" class="t-label">founders</div></div>
+        <svg id="pd09-rule" viewBox="0 0 1920 1080"></svg>
+      </div>
+      <div class="p9-credit t-label">Photos: IEEE / ETHW · Redwood City Tribune · Palo Alto Times</div>
+    </div></div>
+
+    <div id="pd09-grain" class="tx tx-grain" style="background-image:url('assets/textures/grain_01_norm.jpg'); opacity:0.36"></div>
+    <div id="pd09-dust" class="tx tx-dust" style="background-image:url('assets/textures/dust_02.jpg'); opacity:0.34"></div>
+    <div id="pd09-vig" class="vignette" style="opacity:0.9"></div>
+  </div>
+
+  <script>
+  (function () {
+    const SEG = "pd09", START = 1107.5, DUR = 22.4667;
+    const T = (s) => +(s - START).toFixed(3);   // TEXT cues (audited): literal = word start − 0.06
+    const S = (s) => +(s - START).toFixed(3);   // structural cues
+    const tl = gsap.timeline({ paused: true });
+    const $ = (id) => document.getElementById(SEG + "-" + id);
+    const defs = $("defs"), E = FX.ease, C = (e, d) => FX.choppy(e, d, 12);
+    FX.tintDefs(defs, SEG + "-tint", "#12151c", "#e6e7e2");
+    const rise = (el, t, o) => { o = o || {}; const d = o.dur || 0.6;
+      tl.fromTo(el, { opacity: 0, y: o.y == null ? 16 : o.y }, { opacity: 1, y: 0, duration: d, ease: C(E.out, d), immediateRender: true }, t); };
+
+    FX.streaks($("streaks"), { seed: 23, speed: 0.5, xfreq: 0.1, lo: 0.46, hi: 0.96, gamma: 2.6, tint: [200, 205, 215], gain: 0.9 });
+
+    // ---- beat 1 · 1107.50–1115.7 · "So in nineteen thirty eight, roughly a decade after he starts teaching…"
+    gsap.set($("fred"), { x: -70, opacity: 1 });
+    tl.fromTo($("fred"), { x: -70 }, { x: 0, duration: 1.6, ease: C(E.out, 1.6), immediateRender: false }, 0);
+    tl.fromTo($("cam"), { scale: 1.05 }, { scale: 1.0, duration: 8.2, ease: "sine.out", immediateRender: true }, 0);
+    rise($("fredtag"), S(1107.62), { dur: 0.5 });       // name tag for the man on screen (not a narration cue)
+    rise($("fredrole"), S(1107.86), { dur: 0.5 });
+    FX.text.odometer(tl, $("year"), T(1107.96), { dur: 0.55, stagger: 0.04, spins: 6, seed: 4 });   // nineteen thirty eight
+
+    // decade ruler: alive from frame 0; the magenta dot runs ten ticks on "roughly a decade after he starts teaching"
+    (function () {
+      const NS = "http://www.w3.org/2000/svg", g = document.createElementNS(NS, "g"); $("rule").appendChild(g);
+      const mk = (tag, a) => { const n = document.createElementNS(NS, tag); for (const k in a) n.setAttribute(k, a[k]); g.appendChild(n); return n; };
+      const X0 = 812, X1 = 1772, Y = 742;
+      const base = mk("line", { x1: X0, y1: Y, x2: X1, y2: Y, stroke: "#c2c5ca", "stroke-width": 3, "stroke-opacity": 0.7 });
+      gsap.set(base, { attr: { x2: X0 + 120 } });
+      tl.fromTo(base, { attr: { x2: X0 + 120 } }, { attr: { x2: X1 }, duration: 1.3, ease: C(E.out, 1.3), immediateRender: false }, 0);
+      for (let i = 0; i <= 10; i++) {
+        const x = X0 + (X1 - X0) * i / 10, tk = mk("line", { x1: x, y1: Y - (i % 10 === 0 ? 22 : 12), x2: x, y2: Y + (i % 10 === 0 ? 22 : 12), stroke: "#c2c5ca", "stroke-width": 3, "stroke-opacity": 0.7 });
+        if (i > 1) { gsap.set(tk, { opacity: 0 }); tl.set(tk, { opacity: 1 }, 0.1 + i * 0.1); }
+      }
+      const span = mk("line", { x1: X0, y1: Y, x2: X0, y2: Y, stroke: "#d1307a", "stroke-width": 7, "stroke-linecap": "round" });
+      const dot = mk("circle", { cx: X0, cy: Y, r: 13, fill: "#d1307a" });
+      gsap.set([span, dot], { opacity: 0 });
+      tl.set([span, dot], { opacity: 1 }, S(1108.98));
+      const pr = { v: 0 };
+      tl.fromTo(pr, { v: 0 }, { v: 1, duration: 1.6, ease: C(E.inOut, 1.6), immediateRender: false,
+        onUpdate: () => { const x = X0 + (X1 - X0) * pr.v; span.setAttribute("x2", x); dot.setAttribute("cx", x); } }, S(1108.98));
+      tl.to(g, { opacity: 0, duration: 0.5, ease: "power1.in" }, S(1115.5));
+    })();
+
+    // ---- beat 2 · 1115.78–1123.9 · "two of his favorite students … keep them in the West"
+    tl.to($("year"), { scale: 0.36, x: 0, y: -234, duration: 1.3, ease: C(E.inOut, 1.3) }, S(1115.7));
+    tl.to($("fred"), { x: -40, duration: 1.3, ease: C(E.inOut, 1.3) }, S(1115.7));
+    [["c1", -3, 1117.88, -1], ["c2", 2.5, 1118.2, 1]].forEach((c) => {
+      gsap.set($(c[0]), { rotation: c[1] });
+      tl.fromTo($(c[0]), { opacity: 0, y: -90, rotation: c[1] + c[3] * 7 }, { opacity: 1, y: 0, rotation: c[1], duration: 0.9, ease: C(E.out, 0.9), immediateRender: false }, S(c[2]));
+    });
+    gsap.set([$("c1i"), $("c2i")], { clipPath: "inset(0% 0% 100% 0%)", webkitClipPath: "inset(0% 0% 100% 0%)" });
+    tl.fromTo($("cam"), { scale: 1.0 }, { scale: 1.035, duration: 8.2, ease: "sine.inOut", immediateRender: false }, S(1115.7));
+
+    // ---- beat 3 · 1124.02–1129.97 · "Bill Hewlett and David Packard. — HP founders."
+    const reveal = (img, t) => tl.fromTo(img, { clipPath: "inset(0% 0% 100% 0%)", webkitClipPath: "inset(0% 0% 100% 0%)" },
+      { clipPath: "inset(0% 0% 0% 0%)", webkitClipPath: "inset(0% 0% 0% 0%)", duration: 0.5, ease: C(E.out, 0.5), immediateRender: false }, t);
+    reveal($("c1i"), S(1125.9));
+    reveal($("c2i"), S(1126.96));
+    rise($("n1a"), T(1125.96), { dur: 0.4, y: 14 });   // Bill
+    rise($("n1"), T(1126.28), { dur: 0.4, y: 14 });    // Hewlett
+    rise($("n2a"), T(1127.00), { dur: 0.4, y: 14 });   // David
+    rise($("n2"), T(1127.32), { dur: 0.4, y: 14 });    // Packard
+    // HP — only on Sunkit's answer
+    tl.to([$("h"), $("p")], { color: "#f3a6c8", duration: 0.001 }, T(1129.00));
+    tl.fromTo($("hp"), { opacity: 0, scale: 1.5, rotation: -9 }, { opacity: 1, scale: 1, rotation: -3, duration: 0.3, ease: C(E.out, 0.3), immediateRender: true }, T(1129.00));   // HP
+    rise($("founders"), T(1129.48), { dur: 0.2, y: 6 });   // founders
+
+    FX.grain($("grain"), 3); FX.dust($("dust"), 5, 2);
+    FX.mount(tl, DUR);
+    window.__timelines = window.__timelines || {};
+    window.__timelines[SEG] = tl;
+  })();
+  </script>
+</template>
+</body>
+</html>

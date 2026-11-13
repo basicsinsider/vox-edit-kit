@@ -1,0 +1,971 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8" /></head>
+<body>
+<template>
+  <style>
+    #root { position: absolute; inset: 0; overflow: hidden; background: var(--night); }
+    .pd3-scene { position: absolute; inset: 0; overflow: hidden; visibility: hidden; opacity: 0; }
+    .pd3-shot { position: absolute; inset: 0; overflow: hidden; transform-origin: 50% 50%; background: var(--night); }
+    .pd3-paper { background: var(--paper); }
+    .pd3-sea { background: #131a22; }
+    .pd3-abs { position: absolute; }
+    .pd3-full { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; object-fit: cover; }
+    .pd3-fcw { position: absolute; inset: 0; transform-origin: 1170px 120px; }
+    .pd3-vw { position: absolute; inset: 0; transform-origin: 50% 50%; }
+    .pd3-p1, .pd3-p2 { position: absolute; inset: 0; background-size: cover; background-position: center; pointer-events: none; }
+    .pd3-p1 { opacity: 0.6; mix-blend-mode: multiply; filter: saturate(0.25); }
+    .pd3-p2 { opacity: 0.9; mix-blend-mode: multiply; filter: saturate(0.2) contrast(1.2) brightness(1.08); }
+    .pd3-mk { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; pointer-events: none; }
+    .pd3-w { display: inline-block; white-space: pre; opacity: 0; }
+    .pd3-ink { color: var(--ink); }
+    .pd3-credit { position: absolute; right: 96px; bottom: 30px; font-size: 13px; letter-spacing: 0.08em; color: rgba(238,238,232,0.62); z-index: 5; }
+    .pd3-credit.ink { color: rgba(22,26,36,0.6); }
+    .pd3-lamp { position: absolute; inset: 0; background: radial-gradient(ellipse 62% 70% at 50% 46%, #232a38 0%, #141922 55%, #0c0f15 100%); }
+    .pd3-mapl { position: absolute; white-space: nowrap; letter-spacing: 0.06em; text-shadow: 0 2px 4px rgba(0,0,0,0.6), 0 0 22px rgba(0,0,0,0.6); }
+    .pd3-trk { position: absolute; left: 0; top: 0; width: 0; height: 0; }
+    .pd3-dot { position: absolute; width: 64px; height: 64px; border-radius: 50%; background: var(--ash); box-shadow: inset 0 -4px 0 rgba(0,0,0,0.14), 0 6px 10px rgba(22,26,36,0.18); }
+    .pd3-chip { position: absolute; border-radius: 50%; overflow: hidden; border: 8px solid var(--ash); background: #cfd0cb; box-shadow: 0 16px 34px rgba(0,0,0,0.4); }
+    .pd3-chip img { position: absolute; }
+    .pd3-tag { display: inline-block; padding: 9px 16px 6px; font-size: 24px; white-space: nowrap; }
+    .pd3-tag.cop { background: var(--copper); color: var(--ink); }
+    .pd3-tag.ash { background: var(--ash-dark); color: var(--bone); }
+    .pd3-tag.mag { background: var(--magenta); color: var(--bone); }
+    .pd3-tag.inkb { background: var(--ink); color: var(--paper); }
+    .pd3-logo-umc { position: absolute; background: var(--copper); -webkit-mask: url('assets/podcast/pd03/umc_logo_alpha.png') center / contain no-repeat; mask: url('assets/podcast/pd03/umc_logo_alpha.png') center / contain no-repeat; }
+    .pd3-logo-tsmc { position: absolute; background: var(--magenta); -webkit-mask: url('assets/intro/logos/TSMC_wordmark.svg') center / contain no-repeat; mask: url('assets/intro/logos/TSMC_wordmark.svg') center / contain no-repeat; }
+    /* the idea card (motif of the old intro: factory -> any product), intrinsic 780x500 */
+    .pd3-card { position: absolute; width: 780px; height: 500px; background: #ecebe3; box-shadow: 0 26px 50px rgba(0,0,0,0.35); overflow: hidden; transform-origin: 0 0; }
+    .pd3-card .bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; mix-blend-mode: multiply; opacity: 0.8; filter: saturate(0.15) contrast(0.6) brightness(1.15); }
+    .pd3-card svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+    .pd3-card .stamp { position: absolute; right: 34px; top: 26px; font-size: 54px; padding: 6px 14px 0; transform: rotate(6deg); border: 5px solid var(--copper-dark); color: var(--copper-dark); }
+    .pd3-card.doc .stamp { border-color: var(--ink-soft); color: var(--ink-soft); }
+    .pd3-halmag { color: var(--bone); filter: blur(0.45px);
+      text-shadow: 0 0 1px rgba(255,236,246,0.9), 0 0 7px rgba(209,48,122,0.65), 0 0 20px rgba(209,48,122,0.45), 0 0 46px rgba(209,48,122,0.25); }
+    #pd03-flash { position: absolute; inset: 0; background: #f2f2ee; opacity: 0; pointer-events: none; z-index: 7; }
+    #pd03-grain, #pd03-dust, #pd03-vig { z-index: 8; }
+
+    /* Taiwan night map (sc01, sc06): 2480x3040 px space, x=(lon-119.2)*800, y=(25.5-lat)*800 */
+    .pd3-tw { position: absolute; width: 2480px; height: 3040px; transform-origin: 0 0; }
+    .pd3-tw img.base { position: absolute; left: 0; top: 0; width: 2480px; height: 3040px; filter: brightness(1.5) contrast(1.05);
+      -webkit-mask-image: radial-gradient(ellipse 50% 50% at 50% 50%, #000 62%, transparent 100%); mask-image: radial-gradient(ellipse 50% 50% at 50% 50%, #000 62%, transparent 100%); }
+    .pd3-tw .fill { position: absolute; left: 0; top: 0; width: 2480px; height: 3040px; background: var(--board); opacity: 0.5;
+      -webkit-mask: url('assets/intro/derived/intro03/taiwan_mask_alpha.png') 0 0 / 100% 100% no-repeat; mask: url('assets/intro/derived/intro03/taiwan_mask_alpha.png') 0 0 / 100% 100% no-repeat; }
+    .pd3-tw .ht { position: absolute; left: 0; top: 0; width: 2480px; height: 3040px; background: url('assets/textures/halftone_01.png') 0 0 / 900px auto; mix-blend-mode: multiply; opacity: 0.35;
+      -webkit-mask: url('assets/intro/derived/intro03/taiwan_mask_alpha.png') 0 0 / 100% 100% no-repeat; mask: url('assets/intro/derived/intro03/taiwan_mask_alpha.png') 0 0 / 100% 100% no-repeat; }
+    .pd3-tw svg { position: absolute; left: 0; top: 0; width: 2480px; height: 3040px; overflow: visible; }
+
+    /* sc03 stonewall */
+    #pd03-sc003-bg { position: absolute; inset: 0; background: radial-gradient(ellipse 60% 70% at 50% 40%, #2a2218, #0c0f15 75%); }
+    #pd03-sc003-tsao { position: absolute; left: 640px; top: 150px; width: 640px; }
+    .pd3-course { position: absolute; left: -20px; width: 1960px; height: 290px; overflow: hidden; box-shadow: 0 -18px 30px rgba(0,0,0,0.55); }
+    .pd3-course img { position: absolute; left: 0; width: 1960px; height: 1306px; filter: brightness(0.6) contrast(1.15); }
+    .pd3-course i { position: absolute; inset: 0; background: #1b2330; mix-blend-mode: color; opacity: 0.55; }
+
+    /* sc04 badge */
+    #pd03-sc004-strap { position: absolute; left: 498px; top: -40px; width: 44px; height: 260px; background: linear-gradient(90deg, #6d3f0c, var(--copper-dark) 50%, #6d3f0c); transform-origin: 50% 0; }
+    #pd03-sc004-badge { position: absolute; left: 290px; top: 196px; width: 460px; height: 660px; background: #ecebe3; border-radius: 18px; box-shadow: 0 30px 60px rgba(0,0,0,0.5); overflow: hidden; transform-origin: 50% -200px; }
+    #pd03-sc004-badge .tex { position: absolute; inset: 0; background: url('assets/textures/paper_cream_01.jpg') center / cover; mix-blend-mode: multiply; opacity: 0.5; filter: saturate(0.2); }
+    #pd03-sc004-badge .band { position: absolute; left: 0; top: 0; right: 0; height: 120px; background: var(--copper); }
+    #pd03-sc004-badge .slot { position: absolute; left: 190px; top: 18px; width: 80px; height: 16px; border-radius: 8px; background: #141922; }
+    #pd03-sc004-badge .ph { position: absolute; left: 130px; top: 150px; width: 200px; height: 230px; background: var(--paper-2); border: 3px solid rgba(22,26,36,0.35); overflow: hidden; }
+    #pd03-sc004-badge .nm { position: absolute; left: 0; right: 0; top: 404px; text-align: center; font-size: 50px; color: var(--ink); }
+    #pd03-sc004-badge .role { position: absolute; left: 0; right: 0; top: 468px; text-align: center; font-size: 34px; color: var(--copper-dark); }
+    #pd03-sc004-badge .tags { position: absolute; left: 0; right: 0; top: 536px; text-align: center; }
+    #pd03-sc004-badge .tags span { display: inline-block; margin: 0 0 10px; padding: 8px 14px 5px; border: 3px solid var(--ink); color: var(--ink); font-size: 22px; opacity: 0; }
+
+    /* sc05 memo */
+    #pd03-sc005-card { position: absolute; left: 330px; top: 130px; width: 1260px; height: 820px; background: #efeee6; transform: rotate(-1.2deg); box-shadow: 0 30px 60px rgba(22,26,36,0.32); overflow: hidden; }
+    #pd03-sc005-card .tex { position: absolute; inset: 0; background: url('assets/textures/paper_cream_02.jpg') center / cover; mix-blend-mode: multiply; opacity: 0.6; filter: saturate(0.2); }
+    #pd03-sc005-card .head { position: absolute; left: 80px; top: 56px; font-size: 76px; color: var(--ink); letter-spacing: 0.1em; }
+    #pd03-sc005-card .rule { position: absolute; left: 80px; right: 80px; top: 160px; height: 9px; border-top: 4px solid var(--ink); border-bottom: 2px solid var(--ink); }
+    .pd3-fld { position: absolute; left: 80px; font-size: 30px; color: var(--ink-soft); }
+    .pd3-fld b { font-weight: 600; color: var(--ink); margin-left: 26px; opacity: 0; display: inline-block; }
+    .pd3-ty { position: absolute; left: 80px; font-size: 76px; color: var(--ink); letter-spacing: 0.1em; white-space: pre; }
+
+    /* sc07 two years */
+    #pd03-sc007-bar { position: absolute; left: 96px; top: 330px; height: 250px; width: 1210px; background: var(--ink); transform-origin: 0 50%; }
+    #pd03-sc007-t { position: absolute; left: 150px; top: 362px; font-size: 220px; color: var(--paper); white-space: nowrap; }
+    #pd03-sc007-k { position: absolute; left: 100px; top: 236px; font-size: 44px; color: var(--ink); }
+
+    /* aerial (sc08, sc14): crop 3000x2000 of the z18 mosaic (offset 700,500) */
+    .pd3-aer { position: absolute; left: 0; top: 0; width: 3000px; height: 2000px; transform-origin: 0 0; }
+    .pd3-aer img { position: absolute; left: 0; top: 0; width: 3000px; height: 2000px; filter: grayscale(0.9) brightness(0.6) contrast(1.15); }
+    .pd3-aer .tint { position: absolute; inset: 0; background: #1a2536; mix-blend-mode: color; opacity: 0.5; }
+    .pd3-aer svg { position: absolute; left: 0; top: 0; width: 3000px; height: 2000px; overflow: visible; }
+    .pd3-scrim-tl { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(ellipse 46% 40% at 0% 0%, rgba(8,10,14,0.85) 0%, rgba(8,10,14,0.5) 50%, rgba(8,10,14,0) 100%); }
+
+    /* sc09 diagram */
+    .pd3-dbox { position: absolute; border: 4px dashed rgba(22,26,36,0.7); }
+    .pd3-dbox svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+    .pd3-dlab { position: absolute; font-size: 30px; color: var(--ink); white-space: nowrap; }
+
+    /* sc12 door plate */
+    #pd03-sc012-glass { position: absolute; left: 390px; top: 250px; width: 1140px; height: 560px; background: linear-gradient(135deg, rgba(196,202,210,0.2), rgba(150,158,170,0.1)); border: 3px solid rgba(238,238,232,0.4); border-radius: 8px; box-shadow: 0 30px 70px rgba(0,0,0,0.6), inset 0 0 80px rgba(238,238,232,0.05); }
+    #pd03-sc012-line { position: absolute; left: 800px; top: 520px; width: 640px; height: 5px; background: rgba(238,238,232,0.75); }
+    /* sc13 New York */
+    #pd03-sc013-ph { position: absolute; inset: -30px; }
+    #pd03-sc013-ph img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: url(#pd03-tint-night) brightness(0.8); }
+    #pd03-sc013-shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(12,15,21,0.75) 0%, rgba(12,15,21,0.25) 35%, rgba(12,15,21,0.55) 100%); }
+
+    /* sc15 / sc17 reveal */
+    .pd3-plate { position: absolute; left: 700px; top: 0; width: 1200px; height: 1080px; -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 22%, #000 92%, transparent 100%); mask-image: linear-gradient(90deg, transparent 0%, #000 22%, #000 92%, transparent 100%); }
+    .pd3-plate .photo { position: absolute; inset: 0; width: 100%; height: 100%; filter: url(#pd03-tint-mag); }
+    .pd3-plate .col { position: absolute; inset: 0; background: var(--magenta); mix-blend-mode: color; opacity: 0.5; }
+    .pd3-plate .ht { position: absolute; inset: 0; background: url('assets/textures/halftone_01_norm.jpg') 0 0 / 380px auto; mix-blend-mode: overlay; opacity: 0.5; }
+    .pd3-plate svg { position: absolute; inset: 0; width: 1200px; height: 1080px; overflow: visible; }
+    .pd3-rscrim { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(12,15,21,0.97) 0%, rgba(12,15,21,0.88) 36%, rgba(12,15,21,0.12) 60%, rgba(12,15,21,0) 72%), linear-gradient(0deg, rgba(12,15,21,0.6), rgba(12,15,21,0) 30%); }
+    .pd3-pcard { position: absolute; background: #ecebe3; padding: 10px; box-shadow: 0 20px 40px rgba(0,0,0,0.55); }
+    .pd3-pcard img { display: block; width: 100%; height: 100%; object-fit: cover; filter: url(#pd03-tint-mag); }
+
+    /* sc18 betrayal */
+    #pd03-sc018-l { position: absolute; left: 0; top: 0; width: 900px; height: 1080px; background: linear-gradient(180deg, #3a2208, #1a1006); overflow: hidden; }
+    #pd03-sc018-tsao { position: absolute; left: 60px; top: 60px; width: 800px; filter: url(#pd03-tint-cop); transform-origin: 50% 28%; }
+    #pd03-sc018-face { position: absolute; left: 980px; top: -40px; width: 1040px; height: 1160px; opacity: 0; overflow: hidden; -webkit-mask-image: radial-gradient(ellipse 55% 55% at 50% 45%, #000 40%, transparent 100%); mask-image: radial-gradient(ellipse 55% 55% at 50% 45%, #000 40%, transparent 100%); }
+    #pd03-sc018-face img { position: absolute; left: -330px; top: -60px; width: 1560px; filter: url(#pd03-tint-mag) contrast(1.3); }
+    #pd03-sc018-face i { position: absolute; inset: 0; background: url('assets/textures/halftone_01_norm.jpg') 0 0 / 300px auto; mix-blend-mode: overlay; opacity: 0.7; }
+
+    /* sc19 chart */
+    #pd03-sc019-isl { position: absolute; left: 1010px; top: 40px; width: 816px; height: 1000px; background: var(--board); opacity: 0;
+      -webkit-mask: url('assets/intro/derived/intro03/taiwan_mask_alpha.png') 0 0 / 100% 100% no-repeat; mask: url('assets/intro/derived/intro03/taiwan_mask_alpha.png') 0 0 / 100% 100% no-repeat; }
+
+    /* sc20 final poster */
+    .pd3-half { position: absolute; top: 0; width: 990px; height: 1080px; overflow: hidden; }
+    .pd3-half .blk { position: absolute; inset: 0; }
+    .pd3-half .ht { position: absolute; inset: 0; background: url('assets/textures/halftone_02.png') 0 0 / 700px auto; mix-blend-mode: multiply; opacity: 0.28; }
+    .pd3-half .tex { position: absolute; inset: 0; background: url('assets/textures/paper_fiber_01.jpg') center / cover; mix-blend-mode: overlay; opacity: 0.5; }
+    #pd03-sc020-seam { position: absolute; left: 944px; top: -20px; width: 32px; height: 1120px; background: var(--bone); filter: url(#pd03-rough-seam); box-shadow: 0 0 30px rgba(0,0,0,0.5); }
+  </style>
+  <div id="root" data-composition-id="pd03" data-vo-start="227.3667" data-duration="118.6333" data-width="1920" data-height="1080">
+    <svg id="pd03-defs" width="0" height="0" style="position:absolute"></svg>
+
+    <!-- sc001 · 227.37–233.15 · "Tsao comes back to Taiwan feeling on top of the world, but to his surprise, when he gets back home" · night map, route home -->
+    <div class="pd3-scene" id="pd03-sc001"><div class="pd3-shot pd3-sea" id="pd03-sc001-shot">
+      <div class="pd3-vw" id="pd03-sc001-vw">
+        <div class="pd3-tw" id="pd03-sc001-map" style="transform:translate(250px,-10px) scale(0.36)">
+          <img class="base" src="assets/intro/derived/maps/taiwan_night_2480.jpg" alt=""><div class="fill"></div><div class="ht"></div>
+        </div>
+        <svg class="pd3-mk" id="pd03-sc001-svg" viewBox="0 0 1920 1080"></svg>
+        <div class="pd3-mapl t-display" id="pd03-sc001-tw" style="left:1110px; top:650px; font-size:120px; color:var(--board-light); opacity:0">TAIWAN</div>
+        <div class="pd3-mapl t-label" id="pd03-sc001-hs" style="left:584px; top:178px; font-size:24px; color:var(--bone); opacity:0">Hsinchu</div>
+        <div class="pd3-chip" id="pd03-sc001-chip" style="left:1150px; top:210px; width:250px; height:250px; border-color:var(--copper); opacity:0"><img src="assets/intro/derived/intro03/tsao_poster.jpg" alt="" style="left:-58px; top:-40px; width:366px; filter:url(#pd03-tint-cop)"></div>
+        <div class="pd3-abs" id="pd03-sc001-tag" style="left:1430px; top:300px; opacity:0"><span class="pd3-tag cop t-label">Robert Tsao</span></div>
+      </div>
+    </div></div>
+
+    <!-- sc002 · 233.15–241.30 · "the board is now not really feeling this idea anymore … excited before, and now … don't want to try it at all" · seats drain (paper) -->
+    <div class="pd3-scene" id="pd03-sc002"><div class="pd3-shot pd3-paper" id="pd03-sc002-shot">
+      <div class="pd3-p1" style="background-image:url('assets/textures/paper_cream_01.jpg')"></div>
+      <div class="pd3-p2" style="background-image:url('assets/textures/paper_fiber_01.jpg'); opacity:0.5"></div>
+      <div class="pd3-abs t-label pd3-ink" id="pd03-sc002-h" style="left:0; width:1920px; top:110px; text-align:center; font-size:40px; opacity:0">The board</div>
+      <div class="pd3-abs" id="pd03-sc002-before" style="inset:0"></div>
+      <div class="pd3-abs" id="pd03-sc002-now" style="inset:0; transform-origin:960px 660px"></div>
+      <div class="pd3-abs t-label pd3-ink" id="pd03-sc002-lb" style="left:300px; width:400px; top:742px; text-align:center; font-size:34px; opacity:0">Before</div>
+      <div class="pd3-abs t-label pd3-ink" id="pd03-sc002-ln" style="left:1200px; width:400px; top:742px; text-align:center; font-size:34px; opacity:0">Now</div>
+      <svg class="pd3-mk" id="pd03-sc002-svg" viewBox="0 0 1920 1080"></svg>
+      <div class="folds"></div>
+    </div></div>
+
+    <!-- sc003 · 241.30–248.90 · "He tries to find out what had happened, but he's getting stonewalled. No one is telling him exactly why …" · the wall -->
+    <div class="pd3-scene" id="pd03-sc003"><div class="pd3-shot" id="pd03-sc003-shot">
+      <div id="pd03-sc003-bg"></div>
+      <div class="pd3-vw" id="pd03-sc003-vw">
+        <img id="pd03-sc003-tsao" src="assets/intro/cutouts/tsao_cutout.png" alt="" style="filter:url(#pd03-tint-cop)">
+        <div class="pd3-course" id="pd03-sc003-k1" style="top:810px"><img src="assets/intro/photos/stone_wall_texture_cc0.jpg" alt="" style="top:-1000px"><i></i></div>
+        <div class="pd3-course" id="pd03-sc003-k2" style="top:540px"><img src="assets/intro/photos/stone_wall_texture_cc0.jpg" alt="" style="top:-700px"><i></i></div>
+        <div class="pd3-course" id="pd03-sc003-k3" style="top:270px"><img src="assets/intro/photos/stone_wall_texture_cc0.jpg" alt="" style="top:-400px"><i></i></div>
+        <div class="pd3-course" id="pd03-sc003-k4" style="top:-10px"><img src="assets/intro/photos/stone_wall_texture_cc0.jpg" alt="" style="top:-80px"><i></i></div>
+        <svg class="pd3-mk" id="pd03-sc003-svg" viewBox="0 0 1920 1080"></svg>
+      </div>
+    </div></div>
+
+    <!-- sc004 · 248.90–257.70 · "he's just a CEO, recently hired, very young … doesn't have ownership in the company" · ID badge + ownership ring (dark desk) -->
+    <div class="pd3-scene" id="pd03-sc004"><div class="pd3-shot" id="pd03-sc004-shot">
+      <div class="pd3-lamp"></div>
+      <div class="pd3-vw" id="pd03-sc004-vw">
+        <div id="pd03-sc004-swing" class="pd3-abs" style="inset:0; transform-origin:520px -200px">
+          <div id="pd03-sc004-strap"></div>
+          <div id="pd03-sc004-badge">
+            <div class="tex"></div><div class="band"></div><div class="slot"></div>
+            <div class="pd3-logo-umc" style="left:150px; top:50px; width:160px; height:44px; background:var(--ink)"></div>
+            <div class="ph"><svg viewBox="0 0 400 460" style="position:absolute; left:10px; top:22px; width:180px"><path fill="#878c96" d="M200 40c-52 0-86 40-86 96 0 40 18 74 44 92-4 14-10 24-22 30-58 22-96 52-108 104-6 26-8 58-8 118h360c0-60-2-92-8-118-12-52-50-82-108-104-12-6-18-16-22-30 26-18 44-52 44-92 0-56-34-96-86-96z"/></svg></div>
+            <div class="nm t-display">ROBERT TSAO</div>
+            <div class="role t-label" id="pd03-sc004-role" style="opacity:0">CEO</div>
+            <div class="tags t-label"><span id="pd03-sc004-t1">Recently hired</span><br><span id="pd03-sc004-t2">Very young</span></div>
+          </div>
+        </div>
+        <svg class="pd3-mk" id="pd03-sc004-svg" viewBox="0 0 1920 1080"></svg>
+        <div class="pd3-abs t-label clean" id="pd03-sc004-ot" style="left:1030px; width:660px; top:196px; text-align:center; font-size:34px; opacity:0">UMC ownership</div>
+        <div class="pd3-abs t-label clean" id="pd03-sc004-oc1" style="left:1160px; width:400px; top:486px; text-align:center; font-size:26px; color:var(--copper-light); opacity:0">Tsao's share</div>
+        <div class="pd3-abs t-display" id="pd03-sc004-oc2" style="left:1160px; width:400px; top:530px; text-align:center; font-size:96px; color:var(--copper-light); opacity:0">NONE</div>
+      </div>
+    </div></div>
+
+    <!-- sc005 · 257.70–263.55 · "the board is telling him to basically drop this whole thing … and focus on the business" · typed memo (paper) -->
+    <div class="pd3-scene" id="pd03-sc005"><div class="pd3-shot pd3-paper" id="pd03-sc005-shot">
+      <div class="pd3-p1" style="background-image:url('assets/textures/paper_lined_01_hires.jpg'); opacity:0.75"></div>
+      <div class="pd3-p2" style="background-image:url('assets/textures/paper_cream_01.jpg'); opacity:0.5"></div>
+      <div class="pd3-vw" id="pd03-sc005-vw">
+        <div id="pd03-sc005-card">
+          <div class="tex"></div>
+          <div class="head t-display">MEMO</div><div class="rule"></div>
+          <div class="pd3-fld t-label" style="top:206px">From<b id="pd03-sc005-f1">The board</b></div>
+          <div class="pd3-fld t-label" style="top:262px">To<b id="pd03-sc005-f2" style="margin-left:66px">Robert Tsao, CEO</b></div>
+          <div class="pd3-ty t-label" id="pd03-sc005-l1" style="top:410px"></div>
+          <div class="pd3-ty t-label" id="pd03-sc005-l2" style="top:560px"></div>
+        </div>
+      </div>
+      <div class="folds"></div>
+    </div></div>
+
+    <!-- sc006 · 263.55–272.35 · "in Taiwan in 1983, you cannot really do anything without board's permission, so he drops the idea, focuses on running his company UMC" -->
+    <div class="pd3-scene" id="pd03-sc006"><div class="pd3-shot pd3-sea" id="pd03-sc006-shot">
+      <div class="pd3-vw" id="pd03-sc006-vw">
+        <div class="pd3-tw" id="pd03-sc006-map" style="transform:translate(60px,-40px) scale(0.38)">
+          <img class="base" src="assets/intro/derived/maps/taiwan_night_2480.jpg" alt="">
+          <svg id="pd03-sc006-msvg" viewBox="0 0 1240 1520"></svg>
+          <div class="ht" id="pd03-sc006-ht" style="opacity:0"></div>
+        </div>
+        <div class="pd3-mapl t-display" id="pd03-sc006-tw" style="left:700px; top:900px; font-size:84px; color:var(--board-light); opacity:0">TAIWAN</div>
+        <div class="pd3-abs t-display halate" id="pd03-sc006-yr" style="left:1010px; top:150px; font-size:300px; opacity:0">1983</div>
+        <div class="pd3-abs" id="pd03-sc006-seats" style="inset:0"></div>
+        <div class="pd3-abs t-label clean" id="pd03-sc006-perm" style="left:1010px; width:600px; top:700px; font-size:30px; opacity:0">Board's permission</div>
+        <div class="pd3-abs" id="pd03-sc006-cw" style="left:1420px; top:520px; transform-origin:50% 0"><div class="pd3-card" id="pd03-sc006-card" style="transform:scale(0.5)"></div></div>
+        <svg class="pd3-mk" id="pd03-sc006-svg" viewBox="0 0 1920 1080"></svg>
+        <div class="pd3-abs" id="pd03-sc006-umc" style="left:650px; top:128px; opacity:0"><div class="pd3-logo-umc" style="left:0; top:0; width:190px; height:52px; background:var(--copper-light)"></div></div>
+      </div>
+    </div></div>
+
+    <!-- sc007 · 272.35–276.95 · "we fast forward two years, and something very interesting happens" · torn-bar date title (paper) -->
+    <div class="pd3-scene" id="pd03-sc007"><div class="pd3-shot pd3-paper" id="pd03-sc007-shot">
+      <div class="pd3-p1" style="background-image:url('assets/textures/paper_cream_02.jpg')"></div>
+      <div class="pd3-p2" style="background-image:url('assets/textures/paper_graph_01_hires.jpg'); opacity:0.7"></div>
+      <div class="pd3-vw" id="pd03-sc007-vw">
+        <div class="pd3-abs t-label" id="pd03-sc007-k"><span class="pd3-w">Fast </span><span class="pd3-w">forward</span></div>
+        <div id="pd03-sc007-bar" style="filter:url(#pd03-rough-bar)"></div>
+        <div class="t-display" id="pd03-sc007-t"><span class="pd3-w">TWO </span><span class="pd3-w">YEARS</span></div>
+        <svg class="pd3-mk" id="pd03-sc007-svg" viewBox="0 0 1920 1080"></svg>
+      </div>
+      <div class="folds"></div>
+    </div></div>
+
+    <!-- sc008 · 276.95–281.00 · "Just across the street from UMC, a new Taiwanese company goes up" · Hsinchu Science Park aerial -->
+    <div class="pd3-scene" id="pd03-sc008"><div class="pd3-shot" id="pd03-sc008-shot">
+      <div class="pd3-aer" id="pd03-sc008-cam"><img src="assets/podcast/pd03/hsinchu_z18_crop_3000.jpg" alt=""><div class="tint"></div><svg id="pd03-sc008-svg" viewBox="0 0 3000 2000"></svg></div>
+      <div class="pd3-scrim-tl"></div>
+      <div class="pd3-trk" id="pd03-sc008-lu"><div class="pd3-abs" id="pd03-sc008-lui" style="left:-95px; top:-26px; opacity:0"><div class="pd3-logo-umc" style="left:0; top:0; width:190px; height:52px; background:var(--copper-light); filter:drop-shadow(0 2px 6px rgba(0,0,0,0.8))"></div></div></div>
+      <div class="pd3-trk" id="pd03-sc008-lq"><div class="pd3-abs t-display clean" id="pd03-sc008-lqi" style="left:-60px; top:-80px; width:120px; text-align:center; font-size:150px; opacity:0">?</div></div>
+      <div class="pd3-abs t-label clean" id="pd03-sc008-pl" style="left:96px; top:76px; font-size:26px">Hsinchu Science Park · Taiwan</div>
+      <div class="pd3-credit t-label">Imagery: Esri, Maxar, Earthstar Geographics</div>
+    </div></div>
+
+    <!-- sc009 · 281.00–293.55 · "a chips company that's just gonna make chips for anyone … no products of their own … not gonna design … just gonna manufacture" · diagram (grid paper) -->
+    <div class="pd3-scene" id="pd03-sc009"><div class="pd3-shot pd3-paper" id="pd03-sc009-shot">
+      <div class="pd3-p1" style="background-image:url('assets/textures/paper_cream_01.jpg')"></div>
+      <div class="pd3-p2" style="background-image:url('assets/textures/paper_graph_01_hires.jpg'); opacity:0.8; transform:scale(1.4)"></div>
+      <div class="pd3-vw" id="pd03-sc009-vw">
+        <svg class="pd3-mk" id="pd03-sc009-svg" viewBox="0 0 1920 1080"></svg>
+        <div class="pd3-abs t-display" id="pd03-sc009-q" style="left:770px; top:300px; width:320px; text-align:center; font-size:150px; color:var(--paper); opacity:0">?</div>
+        <div class="pd3-dlab t-label" id="pd03-sc009-any" style="left:150px; top:120px; opacity:0">Anyone</div>
+        <div class="pd3-dbox" id="pd03-sc009-b1" style="left:1290px; top:210px; width:470px; height:250px; opacity:0"><svg viewBox="0 0 470 250" id="pd03-sc009-b1s"></svg></div>
+        <div class="pd3-dlab t-label" id="pd03-sc009-l1" style="left:1290px; top:476px; opacity:0">Own products</div>
+        <div class="pd3-dbox" id="pd03-sc009-b2" style="left:1290px; top:590px; width:470px; height:250px; opacity:0"><svg viewBox="0 0 470 250" id="pd03-sc009-b2s"></svg></div>
+        <div class="pd3-dlab t-label" id="pd03-sc009-l2" style="left:1290px; top:856px; opacity:0">Own designs</div>
+        <div class="pd3-abs t-label" id="pd03-sc009-man" style="left:680px; width:500px; top:800px; text-align:center; font-size:30px"><span class="pd3-w pd3-tag inkb">Just </span><span class="pd3-w pd3-tag inkb">manufacture</span></div>
+        <svg class="pd3-mk" id="pd03-sc009-mk" viewBox="0 0 1920 1080"></svg>
+      </div>
+      <div class="folds"></div>
+    </div></div>
+
+    <!-- sc010 · 293.55–298.05 · "This sounds like the plan that Robert Tsao had roughly two years ago" · the two plans, one over the other (dark desk) -->
+    <div class="pd3-scene" id="pd03-sc010"><div class="pd3-shot" id="pd03-sc010-shot">
+      <div class="pd3-lamp"></div>
+      <div class="pd3-vw" id="pd03-sc010-vw">
+        <div class="pd3-abs" id="pd03-sc010-dw" style="left:1000px; top:300px"><div class="pd3-card doc" id="pd03-sc010-doc" style="transform:scale(0.92)"></div></div>
+        <div class="pd3-abs" id="pd03-sc010-cw" style="left:200px; top:300px"><div class="pd3-card" id="pd03-sc010-card" style="transform:scale(0.92)"></div></div>
+        <div class="pd3-abs" id="pd03-sc010-hl" style="left:1000px; top:300px; width:718px; height:460px"></div>
+        <div class="pd3-abs" id="pd03-sc010-tag" style="left:200px; top:230px; opacity:0"><span class="pd3-tag cop t-label">Robert Tsao's plan</span></div>
+      </div>
+    </div></div>
+
+    <!-- sc011 · 298.05–300.30 · FACE (Sam) · "guess who the founder and the CEO of this new company" -->
+    <div class="pd3-scene" id="pd03-sc011"><div class="pd3-shot" id="pd03-sc011-shot">
+      <div class="pd3-fcw" id="pd03-sc011-fw"><video id="pd03-fc1" class="clip pd3-full" muted playsinline src="assets/facecam/pd_facecam_intro.mp4" data-start="70.6833" data-duration="2.25" data-media-start="298.05"></video></div>
+    </div></div>
+
+    <!-- sc012 · 300.30–303.40 · "is? The guy is no other than the same executive" · office-door plate FOUNDER & CEO, neutral silhouette -->
+    <div class="pd3-scene" id="pd03-sc012"><div class="pd3-shot" id="pd03-sc012-shot">
+      <div class="pd3-lamp"></div>
+      <div class="pd3-vw" id="pd03-sc012-vw">
+        <div id="pd03-sc012-glass"></div>
+        <div class="pd3-chip" style="left:470px; top:370px; width:290px; height:290px"><img src="assets/intro/cutouts/silhouette_exec.png" alt="" style="left:-16px; bottom:-8px; width:310px"></div>
+        <div id="pd03-sc012-line"></div>
+        <div class="pd3-abs t-display clean" id="pd03-sc012-q" style="left:820px; top:392px; font-size:130px; opacity:0">?</div>
+        <div class="pd3-abs t-label clean" id="pd03-sc012-fc" style="left:800px; top:560px; font-size:54px">Founder &amp; CEO</div>
+      </div>
+    </div></div>
+
+    <!-- sc013 · 303.40–309.30 · "that Robert Tsao met with in New York. The same guy who he shared the whole plan with in detail to get his permission" -->
+    <div class="pd3-scene" id="pd03-sc013"><div class="pd3-shot" id="pd03-sc013-shot">
+      <div id="pd03-sc013-ph"><img src="assets/intro/photos/nyc_skyline_1980s_cc0.jpg" alt=""></div>
+      <div id="pd03-sc013-shade"></div>
+      <div class="pd3-vw" id="pd03-sc013-vw">
+        <div class="pd3-abs t-display halate cool" id="pd03-sc013-ny" style="left:96px; top:84px; font-size:150px"><span class="pd3-w">NEW </span><span class="pd3-w">YORK</span></div>
+        <div class="pd3-chip" id="pd03-sc013-c1" style="left:330px; top:340px; width:320px; height:320px; border-color:var(--copper)"><img src="assets/intro/derived/intro03/tsao_poster.jpg" alt="" style="left:-74px; top:-52px; width:468px; filter:url(#pd03-tint-cop)"></div>
+        <div class="pd3-chip" id="pd03-sc013-c2" style="left:1270px; top:340px; width:320px; height:320px"><img src="assets/intro/cutouts/silhouette_exec.png" alt="" style="left:-18px; bottom:-8px; width:344px"></div>
+        <div class="pd3-abs" id="pd03-sc013-t1" style="left:330px; width:336px; top:690px; text-align:center; opacity:0"><span class="pd3-tag cop t-label">Robert Tsao</span></div>
+        <div class="pd3-abs" id="pd03-sc013-t2" style="left:1270px; width:336px; top:690px; text-align:center"><span class="pd3-tag ash t-label">The executive</span></div>
+        <svg class="pd3-mk" id="pd03-sc013-svg" viewBox="0 0 1920 1080"></svg>
+        <div class="pd3-abs" id="pd03-sc013-cw" style="left:350px; top:790px; opacity:0"><div class="pd3-card" id="pd03-sc013-card" style="transform:scale(0.36)"></div></div>
+      </div>
+      <div class="pd3-credit t-label">Photo: Wikimedia Commons, CC0</div>
+    </div></div>
+
+    <!-- sc014 · 309.30–313.75 · "And now the same guy is launching the same business plan right across the street" · aerial callback, push into the silhouette -->
+    <div class="pd3-scene" id="pd03-sc014"><div class="pd3-shot" id="pd03-sc014-shot">
+      <div class="pd3-vw" id="pd03-sc014-vw">
+        <div class="pd3-aer" id="pd03-sc014-cam"><img src="assets/podcast/pd03/hsinchu_z18_crop_3000.jpg" alt=""><div class="tint"></div><svg id="pd03-sc014-svg" viewBox="0 0 3000 2000"></svg></div>
+        <div class="pd3-trk" id="pd03-sc014-lu"><div class="pd3-abs" style="left:-80px; top:-22px"><div class="pd3-logo-umc" style="left:0; top:0; width:160px; height:44px; background:var(--copper-light); filter:drop-shadow(0 2px 6px rgba(0,0,0,0.8))"></div></div></div>
+        <div class="pd3-trk" id="pd03-sc014-lc"><div class="pd3-chip" id="pd03-sc014-chip" style="left:-120px; top:-120px; width:240px; height:240px; opacity:0"><img src="assets/intro/cutouts/silhouette_exec.png" alt="" style="left:-14px; bottom:-6px; width:258px"></div></div>
+        <div class="pd3-trk" id="pd03-sc014-lp"><div class="pd3-abs" id="pd03-sc014-pw" style="left:-320px; top:120px; opacity:0"><div class="pd3-card doc" id="pd03-sc014-card" style="transform:scale(0.3)"></div></div></div>
+      </div>
+      <div class="pd3-credit t-label">Imagery: Esri, Maxar, Earthstar Geographics</div>
+    </div></div>
+
+    <!-- sc015 · 313.75–316.12 · "And the guy we're talking about is Morris Chang." · THE REVEAL (magenta arrives) -->
+    <div class="pd3-scene" id="pd03-sc015"><div class="pd3-shot" id="pd03-sc015-shot">
+      <div class="pd3-abs" id="pd03-sc015-cam" style="inset:0; transform-origin:1240px 330px">
+        <div class="pd3-plate" id="pd03-sc015-plate">
+          <img class="photo" src="assets/intro/cutouts/chang_2018_crop.jpg" alt=""><div class="col"></div><div class="ht"></div>
+          <svg id="pd03-sc015-svg" viewBox="0 0 1200 1080"></svg>
+        </div>
+        <div class="pd3-rscrim"></div>
+      </div>
+      <div class="pd3-abs t-display pd3-halmag" id="pd03-sc015-name" style="left:96px; top:300px; font-size:210px; line-height:0.95"><span class="pd3-w">MORRIS</span><br><span class="pd3-w">CHANG</span></div>
+      <div class="pd3-credit t-label" id="pd03-sc015-cr" style="opacity:0">Photo: Office of the President (ROC), CC BY 2.0</div>
+    </div></div>
+
+    <!-- sc016 · 316.12–318.10 · FACE (Sam, then Sunkit reacts) · "I'm sure you've heard of him, right?" -->
+    <div class="pd3-scene" id="pd03-sc016"><div class="pd3-shot" id="pd03-sc016-shot">
+      <div class="pd3-fcw" id="pd03-sc016-fw" style="transform-origin:1100px 120px"><video id="pd03-fc2" class="clip pd3-full" muted playsinline src="assets/facecam/pd_facecam_intro.mp4" data-start="88.7533" data-duration="1.98" data-media-start="316.12"></video></div>
+    </div></div>
+
+    <!-- sc017 · 318.10–324.80 · "most people … have heard of him too. And more importantly … the company. The company is TSMC." -->
+    <div class="pd3-scene" id="pd03-sc017"><div class="pd3-shot" id="pd03-sc017-shot">
+      <div class="pd3-abs" id="pd03-sc017-cam" style="inset:0; transform-origin:1240px 330px">
+        <div class="pd3-plate" id="pd03-sc017-plate"><img class="photo" src="assets/intro/cutouts/chang_2018_crop.jpg" alt=""><div class="col"></div><div class="ht"></div></div>
+        <div class="pd3-rscrim"></div>
+      </div>
+      <div class="pd3-abs t-display" id="pd03-sc017-name" style="left:96px; top:120px; font-size:130px; line-height:0.95; color:var(--bone)">MORRIS<br>CHANG</div>
+      <div class="pd3-abs" id="pd03-sc017-role" style="left:100px; top:390px"><span class="pd3-tag mag t-label">Founder &amp; CEO</span></div>
+      <div class="pd3-pcard" id="pd03-sc017-p1" style="left:96px; top:520px; width:470px; height:310px; transform:rotate(-2deg); opacity:0"><img src="assets/intro/photos/tsmc_fab5.jpg" alt=""></div>
+      <div class="pd3-logo-tsmc" id="pd03-sc017-logo" style="left:470px; top:770px; width:620px; height:156px; opacity:0; filter:drop-shadow(0 0 16px rgba(209,48,122,0.55))"></div>
+      <div class="pd3-credit t-label">Photos: Office of the President (ROC), CC BY 2.0 · Peellden, CC BY-SA 3.0</div>
+    </div></div>
+
+    <!-- sc018 · 324.80–329.70 · "In Robert Tsao's eye, this was just a betrayal that he could not comprehend" -->
+    <div class="pd3-scene" id="pd03-sc018"><div class="pd3-shot" id="pd03-sc018-shot">
+      <div class="pd3-lamp" style="background:radial-gradient(ellipse 60% 70% at 72% 46%, #2a1220 0%, #140a12 60%, #0c0f15 100%)"></div>
+      <div id="pd03-sc018-face"><img src="assets/intro/cutouts/chang_2018_crop.jpg" alt=""><i></i></div>
+      <div id="pd03-sc018-l"><img id="pd03-sc018-tsao" src="assets/intro/cutouts/tsao_cutout.png" alt=""></div>
+      <div class="pd3-abs" id="pd03-sc018-cw" style="left:1060px; top:330px; transform-origin:359px 230px"><div class="pd3-card" id="pd03-sc018-card" style="transform:scale(0.92)"></div>
+        <div class="pd3-logo-tsmc" id="pd03-sc018-stamp" style="left:60px; top:140px; width:600px; height:151px; opacity:0; transform:rotate(-9deg)"></div></div>
+      <div class="pd3-abs" id="pd03-sc018-tag" style="left:96px; top:930px; opacity:0"><span class="pd3-tag cop t-label">Robert Tsao</span></div>
+      <div class="pd3-credit t-label">Photos: Office of the President (ROC)</div>
+    </div></div>
+
+    <!-- sc019 · 329.70–340.90 · "for the next two decades, UMC and TSMC in Taiwan go on this war … trying to beat each other in this new business model" · duelling lines -->
+    <div class="pd3-scene" id="pd03-sc019"><div class="pd3-shot" id="pd03-sc019-shot">
+      <div class="pd3-lamp" style="background:radial-gradient(ellipse 70% 70% at 60% 50%, #161c27 0%, #0c0f15 80%)"></div>
+      <div id="pd03-sc019-isl"></div>
+      <div class="pd3-vw" id="pd03-sc019-vw">
+        <div class="pd3-abs t-display clean" id="pd03-sc019-h" style="left:96px; top:84px; font-size:96px"><span class="pd3-w">TWO </span><span class="pd3-w">DECADES</span></div>
+        <div class="pd3-abs" id="pd03-sc019-lu" style="left:100px; top:236px; opacity:0"><i style="position:absolute; left:0; top:14px; width:56px; height:10px; background:var(--copper)"></i><div class="pd3-logo-umc" style="left:76px; top:0; width:140px; height:38px; background:var(--copper-light)"></div></div>
+        <div class="pd3-abs" id="pd03-sc019-lt" style="left:100px; top:306px; opacity:0"><i style="position:absolute; left:0; top:14px; width:56px; height:10px; background:var(--magenta)"></i><div class="pd3-logo-tsmc" style="left:76px; top:-2px; width:160px; height:42px; background:var(--magenta-light)"></div></div>
+        <div class="pd3-mapl t-display" id="pd03-sc019-tw" style="left:1500px; top:150px; font-size:60px; color:var(--board-light); opacity:0">TAIWAN</div>
+        <svg class="pd3-mk" id="pd03-sc019-svg" viewBox="0 0 1920 1080"></svg>
+      </div>
+    </div></div>
+
+    <!-- sc020 · 340.90–346.00 · "This betrayal gives rise to a rivalry that has not died down … to this very day." · the held rivalry image: UMC | TSMC -->
+    <div class="pd3-scene" id="pd03-sc020"><div class="pd3-shot" id="pd03-sc020-shot">
+      <div class="pd3-vw" id="pd03-sc020-vw">
+        <div class="pd3-half" id="pd03-sc020-hl" style="left:-30px">
+          <div class="blk" style="background:linear-gradient(180deg, var(--copper) 0%, #b96a16 100%)"></div><div class="ht"></div><div class="tex"></div>
+          <img id="pd03-sc020-tsao" src="assets/intro/cutouts/tsao_cutout.png" alt="" style="position:absolute; left:160px; top:250px; width:700px; filter:url(#pd03-tint-copd)">
+        </div>
+        <div class="pd3-half" id="pd03-sc020-hr" style="left:960px">
+          <div class="blk" style="background:linear-gradient(180deg, var(--magenta) 0%, #a81f5e 100%)"></div><div class="ht"></div><div class="tex"></div>
+          <img id="pd03-sc020-chang" src="assets/intro/cutouts/chang_2017_cutout.png" alt="" style="position:absolute; left:90px; top:330px; width:810px; filter:url(#pd03-tint-magd)">
+        </div>
+        <div id="pd03-sc020-seam"></div>
+        <div class="pd3-logo-umc" id="pd03-sc020-lu" style="left:240px; top:84px; width:440px; height:120px; background:var(--ink); opacity:0"></div>
+        <div class="pd3-logo-tsmc" id="pd03-sc020-lt" style="left:1210px; top:78px; width:500px; height:126px; background:var(--bone); opacity:0"></div>
+        <div class="pd3-abs" id="pd03-sc020-t1" style="left:96px; top:940px; opacity:0"><span class="pd3-tag inkb t-label">Robert Tsao</span></div>
+        <div class="pd3-abs" id="pd03-sc020-t2" style="left:1580px; top:940px; width:244px; text-align:right; opacity:0"><span class="pd3-tag inkb t-label">Morris Chang</span></div>
+      </div>
+      <div class="pd3-credit t-label" style="right:auto; left:96px; bottom:24px; color:rgba(22,26,36,0.7)">Photos: Office of the President (ROC)</div>
+    </div></div>
+
+    <div id="pd03-flash"></div>
+    <div id="pd03-grain" class="tx tx-grain" style="background-image:url('assets/textures/grain_01_norm.jpg')"></div>
+    <div id="pd03-dust" class="tx tx-dust" style="background-image:url('assets/textures/dust_02.jpg')"></div>
+    <div id="pd03-vig" class="vignette"></div>
+    <audio id="pd03-vo" class="temp-vo" src="vo_pd.mp3" data-start="0" data-duration="118.6333" data-media-start="227.3667" data-volume="1"></audio>
+  </div>
+  <script>
+  (function () {
+    const SEG = "pd03", SEG_START = 227.3667, SEG_END = 346.0, DURATION = 118.6333;
+    const T = (s) => +(s - SEG_START).toFixed(3);   // TEXT cues (audited): literal master word start − 0.06
+    const S = (s) => +(s - SEG_START).toFixed(3);   // STRUCTURAL cues
+    const tl = gsap.timeline({ paused: true });
+    const $ = (id) => document.getElementById(SEG + "-" + id);
+    const NS = "http://www.w3.org/2000/svg";
+    const defs = $("defs");
+    const E = FX.ease;
+    const C = (e, d) => FX.choppy(e, d, 12);
+    const INK = "#161a24", INKS = "#4b5160", BONE = "#eeeee8", PAPER = "#e7e6df", MAG = "#d1307a", MAGL = "#f3a6c8", COP = "#e0882a", COPD = "#8a4f0f", COPL = "#f6c98a",
+      BRD = "#2f9e5b", BRDL = "#9bd8b0", ASH = "#878c96", ASHL = "#c2c5ca", ASHD = "#343843", LEMON = "#f2e24a";
+
+    // ---------- scenes ----------
+    const SC = [
+      ["sc001", 227.3667, 233.15, "night"], ["sc002", 233.15, 241.30, "paper"], ["sc003", 241.30, 248.90, "night"], ["sc004", 248.90, 257.70, "night"],
+      ["sc005", 257.70, 263.55, "paper"], ["sc006", 263.55, 272.35, "night"], ["sc007", 272.35, 276.95, "paper"], ["sc008", 276.95, 281.00, "night"],
+      ["sc009", 281.00, 293.55, "paper"], ["sc010", 293.55, 298.05, "night"], ["sc011", 298.05, 300.30, "face"], ["sc012", 300.30, 303.40, "night"],
+      ["sc013", 303.40, 309.30, "night"], ["sc014", 309.30, 313.75, "night"], ["sc015", 313.75, 316.12, "night"], ["sc016", 316.12, 318.10, "face"],
+      ["sc017", 318.10, 324.80, "night"], ["sc018", 324.80, 329.70, "night"], ["sc019", 329.70, 340.90, "night"], ["sc020", 340.90, 346.00, "poster"],
+    ];
+    const GROUND = { paper: [0.3, 0.14, 0.26], night: [1, 0.4, 0.36], face: [0, 0, 0], poster: [0.5, 0.2, 0.3] };
+    const EARLY = { sc005: 0.45, sc006: 0.1, sc009: 0.45 };   // slides: the incoming / underlying shot is visible during the move
+    const LATE = { sc005: 0.4 };                               // the memo keeps sliding off over sc006
+    SC.forEach((s, i) => {
+      const el = $(s[0]), a = s[1] - (EARLY[s[0]] || 0);
+      if (i === 0) gsap.set(el, { autoAlpha: 1 });
+      else tl.fromTo(el, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.001, immediateRender: false }, S(a));
+      if (s[2] < SEG_END) tl.set(el, { autoAlpha: 0 }, S(s[2]) + 0.05 + (LATE[s[0]] || 0));
+    });
+    $("sc005").style.zIndex = 2;   // the memo slides off ABOVE the map of sc006
+    gsap.set([$("vig"), $("dust"), $("grain")], { opacity: (i) => GROUND.night[i] });
+    SC.forEach((s) => { const v = GROUND[s[3]]; if (s[1] > SEG_START) tl.set([$("vig"), $("dust"), $("grain")], { opacity: (i) => v[i] }, S(s[1])); });
+
+    // ---------- helpers ----------
+    const rise = (el, t, o) => { o = o || {}; const d = o.dur || 0.6;
+      tl.fromTo(el, { opacity: 0, y: o.y == null ? 16 : o.y }, { opacity: o.to == null ? 1 : o.to, y: 0, duration: d, ease: C(E.out, d), immediateRender: true }, t); };
+    const pop = (el, t, o) => { o = o || {}; const d = o.dur || 0.8;
+      tl.fromTo(el, { opacity: 0, scale: o.from == null ? 0.6 : o.from }, { opacity: 1, scale: 1, duration: d, ease: C(E.out, d), immediateRender: true }, t); };
+    const W = (id) => Array.from($(id).querySelectorAll(".pd3-w"));
+    function el(parent, tag, attrs) { const n = document.createElementNS(NS, tag); for (const k in attrs) n.setAttribute(k, attrs[k]); parent.appendChild(n); return n; }
+    function ink(parent, d, t, dur, o) {
+      o = o || {};
+      const p = el(parent, "path", { d: d, fill: "none", stroke: o.color || INK, "stroke-width": o.width || 5, "stroke-linecap": o.cap || "round", "stroke-linejoin": "round" });
+      if (o.filter) p.setAttribute("filter", o.filter);
+      if (o.opacity != null) p.setAttribute("opacity", o.opacity);
+      const L = p.getTotalLength() || 2000;
+      p.setAttribute("stroke-dasharray", L + " " + L); p.setAttribute("stroke-dashoffset", L);
+      gsap.set(p, { visibility: "hidden" }); tl.set(p, { visibility: "visible" }, t);
+      tl.fromTo(p, { attr: { "stroke-dashoffset": L } }, { attr: { "stroke-dashoffset": 0 }, duration: dur, ease: o.ease || C(E.out, dur), immediateRender: true }, t);
+      return p;
+    }
+    // FX.markup paths can show a stray dot before they are drawn: hide until their start
+    const late = (p, t) => { [].concat(p).forEach((q) => { gsap.set(q, { opacity: 0 }); tl.set(q, { opacity: 1 }, t); }); return p; };
+    const whipN = { n: 0 };
+    function whip(a, b, t, o) {
+      o = Object.assign({ dir: 1, vertical: false, flash: false, dur: 0.32 }, o);
+      const k = ++whipN.n, ba = FX.whipDefs(defs, SEG + "-wa" + k), bb = FX.whipDefs(defs, SEG + "-wb" + k), h = o.dur / 2;
+      const A = $(a + "-shot"), B = $(b + "-shot");
+      tl.set(A, { filter: "url(#" + SEG + "-wa" + k + ")" }, t - h - 0.01); tl.set(A, { filter: "none" }, t + 0.06);
+      tl.set(B, { filter: "url(#" + SEG + "-wb" + k + ")" }, t - 0.001); tl.set(B, { filter: "none" }, t + h + 0.02);
+      FX.whip(tl, A, B, t, { dir: o.dir, vertical: o.vertical, dur: o.dur, blurA: ba, blurB: bb });
+      if (o.flash) tl.fromTo($("flash"), { opacity: 0 }, { opacity: 0.85, duration: 0.08, yoyo: true, repeat: 1, ease: "power2.in", immediateRender: false }, t - 0.08);
+    }
+    function slide(a, b, t, o) {
+      o = Object.assign({ from: 1, d: 0.45 }, o);
+      const A = $(a + "-shot"), B = $(b + "-shot"), dist = 1980 * o.from;
+      tl.fromTo(B, { x: dist, boxShadow: "0 0 80px rgba(0,0,0,0.5)" }, { x: 0, duration: o.d, ease: C(E.inOut, o.d), immediateRender: false }, t - o.d);
+      tl.set(B, { boxShadow: "none" }, t);
+      tl.fromTo(A, { x: 0 }, { x: -dist * 0.12, duration: o.d, ease: E.in, immediateRender: false }, t - o.d);
+    }
+    function push(id, a, b, s0, s1, o) {
+      o = o || {};
+      const vw = $(id + "-vw");
+      if (o.origin) gsap.set(vw, { transformOrigin: o.origin });
+      gsap.set(vw, { scale: s0 });
+      tl.fromTo(vw, { scale: s0 }, { scale: s1, duration: b - a, ease: o.ease || "none", immediateRender: false }, S(a));
+    }
+    const gated = (a, b, fn) => { const on = FX.onFrame; FX.onFrame = (f) => on(FX.gate(S(a), S(b), f)); fn(); FX.onFrame = on; };
+    // D06 seat geometry: 12 seats (7 outer + 5 inner), sorted clockwise from the left
+    function seats(cx, cy, k) {
+      const s = [];
+      for (let i = 0; i < 7; i++) { const a = Math.PI - (i / 6) * Math.PI; s.push({ a, x: cx + Math.cos(a) * 300 * k, y: cy - Math.sin(a) * 300 * k }); }
+      for (let i = 0; i < 5; i++) { const a = Math.PI - (i / 4) * Math.PI; s.push({ a, x: cx + Math.cos(a) * 186 * k, y: cy - Math.sin(a) * 186 * k }); }
+      return s.sort((p, q) => q.a - p.a || p.y - q.y);
+    }
+    function dots(box, cx, cy, k, color, size) {
+      size = size || 64;
+      return seats(cx, cy, k).map((p) => { const d = document.createElement("div"); d.className = "pd3-dot"; d.style.width = d.style.height = size + "px"; d.style.left = (p.x - size / 2) + "px"; d.style.top = (p.y - size / 2) + "px"; d.style.background = color; box.appendChild(d); return d; });
+    }
+    // outline pictograms (our own drawings, 64 px boxes)
+    const ICON = {
+      phone: '<rect x="10" y="22" width="44" height="30" rx="6"/><path d="M8 22 Q32 6 56 22"/><circle cx="24" cy="34" r="2.5"/><circle cx="32" cy="34" r="2.5"/><circle cx="40" cy="34" r="2.5"/><circle cx="24" cy="43" r="2.5"/><circle cx="32" cy="43" r="2.5"/><circle cx="40" cy="43" r="2.5"/>',
+      tv: '<rect x="8" y="14" width="48" height="36" rx="6"/><rect x="14" y="20" width="30" height="24" rx="4"/><circle cx="50" cy="24" r="2.5"/><path d="M22 14 L16 4 M42 14 L48 4 M18 50 L14 58 M46 50 L50 58"/>',
+      calc: '<rect x="14" y="6" width="36" height="52" rx="4"/><rect x="19" y="12" width="26" height="10"/><path d="M20 30h6M29 30h6M38 30h6M20 38h6M29 38h6M38 38h6M20 46h6M29 46h6M38 46h6"/>',
+      pc: '<rect x="10" y="8" width="44" height="32" rx="3"/><rect x="15" y="13" width="34" height="22"/><path d="M26 40 L24 48 M38 40 L40 48"/><rect x="8" y="48" width="48" height="8" rx="2"/>',
+      watch: '<rect x="20" y="4" width="24" height="12"/><rect x="20" y="48" width="24" height="12"/><circle cx="32" cy="32" r="17"/><path d="M32 22 V32 L40 36"/>',
+      factory: '<path d="M6 58 V30 L22 40 V30 L38 40 V30 L54 40 V14 H62 V58Z"/><path d="M14 50h6M28 50h6M42 50h6"/>',
+      chip: '<rect x="16" y="16" width="32" height="32" rx="3"/><path d="M24 16V6M32 16V6M40 16V6M24 58V48M32 58V48M40 58V48M16 24H6M16 32H6M16 40H6M58 24H48M58 32H48M58 40H48"/><rect x="25" y="25" width="14" height="14"/>',
+      plan: '<rect x="8" y="8" width="48" height="48"/><path d="M8 24h48M8 40h30M24 8v16M38 24v32M38 48h18"/>',
+    };
+    function icon(parent, name, x, y, s, color, w) {
+      const g = el(parent, "g", { transform: "translate(" + x + " " + y + ") scale(" + s + ")", fill: "none", stroke: color, "stroke-width": w || 3, "stroke-linecap": "round", "stroke-linejoin": "round" });
+      g.innerHTML = ICON[name]; return g;
+    }
+    // the idea card: one factory -> chips for any product (Tsao's copper original / the new company's neutral copy)
+    const ROWS = [118, 214, 310, 406];
+    function card(box, doc) {
+      box.innerHTML = '<img class="bg" src="assets/intro/papers/ke1960_cross_section_green_hires.jpg" alt="">' + '<div class="stamp t-display">' + (doc ? "?" : "1983") + "</div>";
+      const svg = el(box, "svg", { viewBox: "0 0 780 500" });
+      const col = doc ? INKS : COPD;
+      icon(svg, "factory", 60, 200, 1.9, col, 3.2);
+      ["phone", "tv", "calc", "pc"].forEach((n, i) => {
+        const y = ROWS[i];
+        el(svg, "path", { d: "M200 262 C 300 262 300 " + y + " 400 " + y, fill: "none", stroke: col, "stroke-width": 3.2, "stroke-linecap": "round" });
+        el(svg, "path", { d: "M392 " + (y - 7) + " L404 " + y + " L392 " + (y + 7), fill: "none", stroke: col, "stroke-width": 3.2 });
+        icon(svg, n, 420, y - 30, 0.95, col, 3.2);
+        el(svg, "path", { d: "M500 " + y + " L" + (700 - i * 18) + " " + (y + 1), fill: "none", stroke: col, "stroke-width": 3, opacity: 0.8 });
+      });
+      return svg;
+    }
+    // map camera with labels that keep a constant screen size (Ivan FIXES §1): cam = 3000x2000 plane, origin 0 0
+    function mapCam(cam, labels, s0, cx0, cy0) {
+      const st = { s: s0, cx: cx0, cy: cy0 };
+      const apply = () => {
+        const x = 960 - st.cx * st.s, y = 540 - st.cy * st.s;
+        cam.style.transform = "translate(" + x.toFixed(2) + "px," + y.toFixed(2) + "px) scale(" + st.s.toFixed(4) + ")";
+        labels.forEach((l) => { l[0].style.transform = "translate(" + (l[1] * st.s + x).toFixed(1) + "px," + (l[2] * st.s + y).toFixed(1) + "px)"; });
+      };
+      apply();
+      return { to: (a, b, s1, cx1, cy1, ease, from) => tl.fromTo(st, from, { s: s1, cx: cx1, cy: cy1, duration: b - a, ease: ease || "none", immediateRender: false, onUpdate: apply }, S(a)) };
+    }
+
+    FX.grain($("grain"), 431);
+    FX.dust($("dust"), 432, 2);
+    FX.tintDefs(defs, SEG + "-tint-cop", "#1c1105", "#f6c98a");
+    FX.tintDefs(defs, SEG + "-tint-copd", "#2a1603", "#ffe9c4");
+    FX.tintDefs(defs, SEG + "-tint-mag", "#1a0610", "#f8d3e3");
+    FX.tintDefs(defs, SEG + "-tint-magd", "#3a0a22", "#ffe3ee");
+    FX.tintDefs(defs, SEG + "-tint-night", "#0c0f15", "#c2c5ca");
+    const PEN = FX.markupDefs(defs, SEG + "-pen", { boil: 4 });
+    const CHALK = FX.markupDefs(defs, SEG + "-chalk", { boil: 12 });
+    FX.roughDefs(defs, SEG + "-rough-bar", { freq: 0.03, scale: 9 });
+    FX.roughDefs(defs, SEG + "-rough-seam", { freq: 0.02, scale: 14 });
+    FX.roughDefs(defs, SEG + "-rough-hl", { freq: 0.05, scale: 7 });
+    defs.setAttribute("viewBox", "0 0 1 1");
+
+    /* ===== sc001 · 227.37 · fresh shot: the route home lands in Taiwan ===== */
+    (function () {
+      const s = $("sc001-svg");
+      push("sc001", 227.3667, 233.15, 1.0, 1.06, { origin: "40% 30%" });
+      // route from the east (the Pacific) to Hsinchu (759,188); the plane rides it
+      const P0 = [1990, 470], P1 = [1500, 520], P2 = [1100, 130], P3 = [763, 190];
+      const bz = (u) => { const v = 1 - u; return [v * v * v * P0[0] + 3 * v * v * u * P1[0] + 3 * v * u * u * P2[0] + u * u * u * P3[0], v * v * v * P0[1] + 3 * v * v * u * P1[1] + 3 * v * u * u * P2[1] + u * u * u * P3[1]]; };
+      const route = el(s, "path", { d: "M1990 470 C1500 520 1100 130 763 190", fill: "none", stroke: COPL, "stroke-width": 5, "stroke-dasharray": "4 16", "stroke-linecap": "round", opacity: 0.95 });
+      const mask = el(s, "mask", { id: SEG + "-rm", maskUnits: "userSpaceOnUse", x: 0, y: 0, width: 1920, height: 1080 });
+      const mp = el(mask, "path", { d: "M1990 470 C1500 520 1100 130 763 190", fill: "none", stroke: "#fff", "stroke-width": 20 });
+      const ML = 1420; mp.setAttribute("stroke-dasharray", ML + " " + ML);
+      route.setAttribute("mask", "url(#" + SEG + "-rm)");
+      const plane = el(s, "g", {}); plane.innerHTML = '<path d="M26 0 L-14 -13 L-6 0 L-14 13 Z" fill="' + BONE + '"/>';
+      const st = { u: 0.12 };
+      const upd = () => { const p = bz(st.u), q = bz(Math.min(1, st.u + 0.01)), a = Math.atan2(q[1] - p[1], q[0] - p[0]) * 180 / Math.PI;
+        plane.setAttribute("transform", "translate(" + p[0].toFixed(1) + " " + p[1].toFixed(1) + ") rotate(" + (st.u > 0.985 ? -170 : a).toFixed(1) + ")"); mp.setAttribute("stroke-dashoffset", (ML * (1 - st.u)).toFixed(1)); };
+      upd();
+      tl.fromTo(st, { u: 0.12 }, { u: 1, duration: 1.3, ease: C(E.out, 1.3), immediateRender: false, onUpdate: upd }, S(227.3667));
+      tl.to(plane, { opacity: 0, duration: 0.3 }, S(229.0));
+      // Hsinchu pin
+      const pin = el(s, "g", {}); pin.innerHTML = '<circle cx="763" cy="190" r="22" fill="none" stroke="' + COPL + '" stroke-width="3" opacity="0.7"/><circle cx="763" cy="190" r="10" fill="' + COP + '" stroke="' + BONE + '" stroke-width="3"/>';
+      tl.fromTo(pin, { opacity: 0 }, { opacity: 1, duration: 0.25, ease: "steps(3)", immediateRender: true }, S(228.6));
+      rise($("sc001-hs"), S(228.7), { y: 8, dur: 0.4 });
+      rise($("sc001-tw"), T(228.66), { dur: 0.9 });
+      // Tsao: chip + leader to the pin
+      const lead = ink(s, "M790 196 Q 960 190 1146 318", S(229.15), 0.6, { color: COPL, width: 3, opacity: 0.9 });
+      pop($("sc001-chip"), S(229.2), { dur: 0.8, from: 0.7 });
+      rise($("sc001-tag"), S(229.55), { y: 10, dur: 0.5 });
+    })();
+
+    /* ===== sc002 · 233.15 · the board: copper seats drain to ash; BEFORE / NOW ===== */
+    whip("sc001", "sc002", S(233.15), { dir: 1 });
+    (function () {
+      const now = $("sc002-now"), bef = $("sc002-before");
+      const dn = dots(now, 960, 690, 1.25, COP, 76);
+      const mk = (box, x, y, sc, id) => { const w = document.createElement("div"); w.style.cssText = "position:absolute; left:" + x + "px; top:" + y + "px"; const c = document.createElement("div"); c.className = "pd3-card"; c.style.transform = "scale(" + sc + ")"; w.appendChild(c); box.appendChild(w); card(c, false); return w; };
+      mk(now, 960 - 97, 690 - 150, 0.25);
+      const db = dots(bef, 500, 690, 0.9, COP, 55);
+      const cb = mk(bef, 500 - 70, 690 - 108, 0.18);
+      gsap.set(db.concat([cb]), { opacity: 0 });
+      rise($("sc002-h"), T(233.62), { dur: 0.5, y: 8 });
+      // seats go cold one by one ("now not really feeling this idea anymore" 234.32–236.7)
+      dn.forEach((d, i) => tl.to(d, { backgroundColor: ASH, scale: 0.86, duration: 0.25, ease: "steps(3)" }, S(234.3) + i * 0.16));
+      // "It seemed like they were excited before" -> NOW moves right, BEFORE (still copper) appears left
+      tl.to(now, { x: 440, y: 0, scale: 0.72, duration: 0.9, ease: C(E.inOut, 0.9) }, S(236.75));
+      db.forEach((d, i) => tl.fromTo(d, { opacity: 0, scale: 0.3 }, { opacity: 1, scale: 1, duration: 0.3, ease: C(E.out, 0.3), immediateRender: true }, S(237.45) + Math.floor(i / 2) / 12));
+      tl.fromTo(cb, { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "steps(3)", immediateRender: true }, S(237.6));
+      rise($("sc002-lb"), T(238.10), { dur: 0.45, y: 8 });
+      rise($("sc002-ln"), T(238.74), { dur: 0.45, y: 8 });
+      // "they just don't want to try it at all": the idea is crossed out on the NOW side
+      late(FX.markup.cross(tl, $("sc002-svg"), S(240.05), { x: 1400, y: 618, s: 62, dur: 0.16, color: INK, width: 9, filter: PEN }), S(240.05));
+    })();
+
+    /* ===== sc003 · 241.30 · stonewalled ===== */
+    whip("sc002", "sc003", S(241.30), { dir: -1, vertical: true });
+    (function () {
+      tl.fromTo($("sc003-tsao"), { scale: 1.0, transformOrigin: "50% 30%" }, { scale: 1.05, duration: 3.4, ease: "none", immediateRender: true }, S(241.3));
+      [["k1", 243.05], ["k2", 243.5], ["k3", 243.9], ["k4", 244.3]].forEach((k) => {
+        const c = $("sc003-" + k[0]);
+        tl.fromTo(c, { y: -1300 }, { y: 0, duration: 0.25, ease: C("power2.in", 0.25), immediateRender: true }, S(k[1]) - 0.25);
+        tl.fromTo(c, { y: 0 }, { y: -10, duration: 1 / 12, yoyo: true, repeat: 1, ease: "none", immediateRender: false }, S(k[1]));
+      });
+      // "No one is telling him exactly why": a chalk question mark on the wall
+      const sv = $("sc003-svg");
+      late(FX.markup.pen(tl, sv, S(246.7), { points: [[850, 400], [880, 300], [980, 270], [1070, 330], [1060, 430], [980, 500], [962, 610]], jitter: 6, seed: 31, dur: 0.6, width: 26, color: BONE, filter: CHALK, blend: "normal" }), S(246.7));
+      late(FX.markup.pen(tl, sv, S(247.35), { points: [[958, 720], [966, 735], [960, 748]], jitter: 2, seed: 32, dur: 0.12, width: 34, color: BONE, filter: CHALK, blend: "normal" }), S(247.35));
+      tl.fromTo($("sc003-vw"), { scale: 1.0 }, { scale: 1.09, duration: 4.5, ease: "power1.in", immediateRender: false }, S(244.4));
+    })();
+
+    /* ===== sc004 · 248.90 · hard cut on the push: just a CEO — badge + ownership ring ===== */
+    (function () {
+      const sw = $("sc004-swing"), s = $("sc004-svg");
+      gsap.set(sw, { rotation: 7 });
+      tl.fromTo(sw, { rotation: 7 }, { rotation: -3.2, duration: 0.9, ease: C("sine.inOut", 0.9), immediateRender: false }, S(248.9));
+      tl.to(sw, { rotation: 1.8, duration: 1.0, ease: C("sine.inOut", 1.0) }, S(249.8));
+      tl.to(sw, { rotation: -1.2, duration: 1.2, ease: C("sine.inOut", 1.2) }, S(250.8));
+      tl.to(sw, { rotation: 0, duration: 1.4, ease: C("sine.inOut", 1.4) }, S(252.0));
+      rise($("sc004-role"), T(250.45), { y: 8, dur: 0.4 });
+      pop($("sc004-t1"), T(251.17), { from: 1.5, dur: 0.35 });
+      pop($("sc004-t2"), T(252.21), { from: 1.5, dur: 0.35 });
+      // ownership ring: all of it is someone else's
+      const R = 230, CX = 1360, CY = 560, L = 2 * Math.PI * R;
+      const ring = el(s, "circle", { cx: CX, cy: CY, r: R, fill: "none", stroke: ASHL, "stroke-width": 64, "stroke-dasharray": L + " " + L, "stroke-dashoffset": L, transform: "rotate(-90 " + CX + " " + CY + ")", opacity: 0.85 });
+      tl.fromTo(ring, { attr: { "stroke-dashoffset": L } }, { attr: { "stroke-dashoffset": 0 }, duration: 1.2, ease: C(E.out, 1.2), immediateRender: true }, S(253.85));
+      for (let i = 0; i < 12; i++) { const a = (i / 12) * Math.PI * 2 - Math.PI / 2; const tk = el(s, "path", { d: "M" + (CX + Math.cos(a) * (R - 32)) + " " + (CY + Math.sin(a) * (R - 32)) + " L" + (CX + Math.cos(a) * (R + 32.5)) + " " + (CY + Math.sin(a) * (R + 33)), stroke: "#141922", "stroke-width": 5, opacity: 0 });
+        tl.to(tk, { opacity: 1, duration: 0.001 }, S(254.2) + i * 0.06); }
+      rise($("sc004-ot"), T(253.89), { y: 8, dur: 0.5 });
+      rise($("sc004-oc1"), S(254.75), { y: 8, dur: 0.4 });
+      rise($("sc004-oc2"), S(254.95), { dur: 0.6 });
+      push("sc004", 248.90, 257.70, 1.0, 1.045, { origin: "55% 50%" });
+    })();
+
+    /* ===== sc005 · 257.70 · paper slide: the board's memo ===== */
+    slide("sc004", "sc005", S(257.70));
+    (function () {
+      rise($("sc005-f1"), T(258.05), { y: 0, dur: 0.25 });
+      rise($("sc005-f2"), S(258.75), { y: 0, dur: 0.25 });
+      const typ = (line, word, t) => { const sp = document.createElement("span"); sp.textContent = word + " "; sp.style.whiteSpace = "pre"; $(line).appendChild(sp);
+        FX.split(sp, "chars").forEach((c, i) => tl.fromTo(c, { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, t + Math.floor(i / 2) / 24)); };
+      typ("sc005-l1", "DROP", T(259.49)); typ("sc005-l1", "THIS", T(259.81)); typ("sc005-l1", "WHOLE", T(259.97)); typ("sc005-l1", "THING.", T(260.13));
+      typ("sc005-l2", "FOCUS", T(261.25)); typ("sc005-l2", "ON", T(261.65)); typ("sc005-l2", "THE", T(261.81)); typ("sc005-l2", "BUSINESS.", T(261.89));
+      push("sc005", 257.70, 263.55, 1.06, 1.0, { origin: "50% 55%" });
+      // the memo page drops away and uncovers Taiwan (sc006 is already underneath)
+      tl.fromTo($("sc005-shot"), { y: 0 }, { y: 1160, duration: 0.42, ease: E.in, immediateRender: false }, S(263.5));
+    })();
+
+    /* ===== sc006 · 263.55 · Taiwan, 1983: the board's permission; the idea is dropped; back to running UMC ===== */
+    (function () {
+      const ms = $("sc006-msvg");
+      ms.innerHTML = '<defs>' +
+        '<filter id="pd03-b6" filterUnits="userSpaceOnUse" x="0" y="0" width="1240" height="1520" color-interpolation-filters="sRGB">' +
+        '<feImage href="assets/maps/burn_a.png" x="0" y="0" width="1240" height="1520" preserveAspectRatio="none" result="n"/>' +
+        '<feColorMatrix id="pd03-b6m" in="n" type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  12 0 0 0 -15" result="t"/>' +
+        '<feFlood flood-color="' + BRD + '" result="fl"/><feComposite in="fl" in2="SourceAlpha" operator="in" result="g"/><feComposite in="g" in2="t" operator="in"/></filter>' +
+        '<filter id="pd03-c6" filterUnits="userSpaceOnUse" x="0" y="0" width="1240" height="1520" color-interpolation-filters="sRGB">' +
+        '<feImage href="assets/maps/burn_a.png" x="0" y="0" width="1240" height="1520" preserveAspectRatio="none" result="n"/>' +
+        '<feColorMatrix id="pd03-c6a" in="n" type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  12 0 0 0 -12.8" result="e"/>' +
+        '<feColorMatrix id="pd03-c6b" in="n" type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  12 0 0 0 -15" result="l"/>' +
+        '<feComposite in="e" in2="l" operator="arithmetic" k1="0" k2="1" k3="-1" k4="0" result="ring"/>' +
+        '<feFlood flood-color="' + BRDL + '" result="fl"/><feComposite in="fl" in2="ring" operator="in" result="r2"/><feComposite in="r2" in2="SourceAlpha" operator="in"/></filter></defs>' +
+        '<image href="assets/intro/derived/intro03/taiwan_mask_alpha.png" x="0" y="0" width="1240" height="1520" opacity="0.55" filter="url(#pd03-b6)"/>' +
+        '<image href="assets/intro/derived/intro03/taiwan_mask_alpha.png" x="0" y="0" width="1240" height="1520" filter="url(#pd03-c6)"/>';
+      const M = (o) => "0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  12 0 0 0 " + o.toFixed(3);
+      const b = { v: -15 };
+      tl.fromTo(b, { v: -15 }, { v: 1.2, duration: 1.3, ease: C("power1.inOut", 1.3), immediateRender: false, onUpdate: () => { $("b6m").setAttribute("values", M(b.v)); $("c6a").setAttribute("values", M(b.v + 2.2)); $("c6b").setAttribute("values", M(b.v)); } }, S(263.75));
+      tl.fromTo($("sc006-ht"), { opacity: 0 }, { opacity: 0.35, duration: 0.6, immediateRender: true }, S(264.7));
+      rise($("sc006-tw"), T(264.05), { dur: 0.7 });
+      rise($("sc006-yr"), T(264.93), { dur: 1.1 });
+      // the board: 12 neutral seats under the year
+      const dd = dots($("sc006-seats"), 1190, 660, 0.52, ASH, 34);
+      dd.forEach((d, i) => tl.fromTo(d, { opacity: 0, scale: 0.3 }, { opacity: 1, scale: 1, duration: 0.3, ease: C(E.out, 0.3), immediateRender: true }, S(266.9) + Math.floor(i / 2) / 12));
+      rise($("sc006-perm"), T(267.73), { y: 8, dur: 0.5 });
+      // "so he drops the idea": the 1983 idea card appears, then falls out of frame
+      const cw = $("sc006-cw");
+      card($("sc006-card"), false);
+      tl.fromTo(cw, { opacity: 0, y: -30, rotation: -4 }, { opacity: 1, y: 0, rotation: 3, duration: 0.5, ease: C(E.out, 0.5), immediateRender: true }, S(268.45));
+      tl.to(cw, { y: 900, rotation: 26, duration: 0.75, ease: C("power2.in", 0.75) }, T(269.17));
+      // "running his company UMC": copper pin on Hsinchu (map px 1414,549 -> screen 597,169) + the logo
+      const s = $("sc006-svg");
+      const pin = el(s, "g", {}); pin.innerHTML = '<circle cx="597" cy="169" r="24" fill="none" stroke="' + COPL + '" stroke-width="3" opacity="0.7"/><circle cx="597" cy="169" r="11" fill="' + COP + '" stroke="' + BONE + '" stroke-width="3"/>';
+      tl.fromTo(pin, { opacity: 0 }, { opacity: 1, duration: 0.25, ease: "steps(3)", immediateRender: true }, S(271.45));
+      rise($("sc006-umc"), T(271.65), { y: 10, dur: 0.5 });
+      push("sc006", 263.45, 272.35, 1.05, 1.0, { origin: "35% 45%", ease: E.cam });
+    })();
+
+    /* ===== sc007 · 272.35 · flash whip: FAST FORWARD — TWO YEARS ===== */
+    whip("sc006", "sc007", S(272.35), { dir: 1, flash: true });
+    (function () {
+      const ws = W("sc007-k"), wt = W("sc007-t"), s = $("sc007-svg");
+      rise(ws[0], T(273.49), { y: 8, dur: 0.3 }); rise(ws[1], T(273.81), { y: 8, dur: 0.3 });
+      // fast-forward chevrons
+      [0, 1].forEach((i) => { const p = el(s, "path", { d: "M" + (470 + i * 46) + " 238 L" + (504 + i * 46) + " 259 L" + (470 + i * 46) + " 281 Z", fill: INK, opacity: 0 }); tl.to(p, { opacity: 1, duration: 0.001 }, S(273.86) + i * 0.09); });
+      gsap.set($("sc007-bar"), { scaleX: 0 });
+      tl.fromTo($("sc007-bar"), { scaleX: 0 }, { scaleX: 1, duration: 0.5, ease: C(E.out, 0.5), immediateRender: false }, S(274.05));
+      rise(wt[0], T(274.29), { dur: 0.4, y: 24 }); rise(wt[1], T(274.61), { dur: 0.4, y: 24 });
+      // time axis: 1983 -> two ticks on; the dot runs ahead and a new mark appears
+      const X0 = 150, X1 = 1770, Y = 800;
+      ink(s, "M" + X0 + " " + Y + " L" + X1 + " " + (Y + 1), S(272.6), 0.8, { width: 5 });
+      for (let i = 0; i <= 24; i++) { const x = X0 + i * (X1 - X0) / 24, big = i % 12 === 0; const tk = el(s, "path", { d: "M" + x + " " + (Y - (big ? 30 : 14)) + " L" + x + " " + (Y + (big ? 30 : 14)), stroke: INK, "stroke-width": big ? 6 : 3, opacity: 0 }); tl.to(tk, { opacity: 1, duration: 0.001 }, S(272.75) + i * 0.025); }
+      const dot = el(s, "circle", { cx: X0, cy: Y, r: 20, fill: COP, stroke: INK, "stroke-width": 5 });
+      tl.fromTo(dot, { attr: { cx: X0 } }, { attr: { cx: X1 }, duration: 1.5, ease: C(E.inOut, 1.5), immediateRender: true }, S(273.5));
+      const y83 = document.createElement("div"); y83.className = "pd3-abs t-display pd3-ink"; y83.style.cssText = "left:" + (X0 - 4) + "px; top:" + (Y + 48) + "px; font-size:54px"; y83.textContent = "1983"; $("sc007-vw").appendChild(y83);
+      const nw = el(s, "g", { opacity: 0 }); nw.innerHTML = '<circle cx="' + X1 + '" cy="' + Y + '" r="46" fill="none" stroke="' + INK + '" stroke-width="6" stroke-dasharray="14 10"/>';
+      tl.to(nw, { opacity: 1, duration: 0.25, ease: "steps(3)" }, S(275.3));
+      push("sc007", 272.35, 276.95, 1.0, 1.04, { origin: "30% 50%" });
+    })();
+
+    /* ===== aerial geometry (crop px) ===== */
+    const UMC_P = "M1410 1070 L1490 1060 L1590 1150 L1570 1230 L1480 1300 L1340 1260 L1330 1200 Z";
+    const NEW_P = "M810 900 L1060 895 L1210 1000 L1290 1110 L1260 1220 L1150 1280 L910 1160 L800 1060 Z";
+    const ROAD = [[1120, 1318], [1210, 1240], [1296, 1166], [1380, 1076], [1450, 1016], [1540, 950]];
+
+    /* ===== sc008 · 276.95 · whip: across the street from UMC, a new company goes up ===== */
+    whip("sc007", "sc008", S(276.95), { dir: 1 });
+    (function () {
+      const s = $("sc008-svg");
+      s.innerHTML = '<defs><pattern id="pd03-hatch8" width="26" height="26" patternUnits="userSpaceOnUse" patternTransform="rotate(40)"><rect width="10" height="26" fill="' + BONE + '" opacity="0.5"/></pattern></defs>';
+      const cam = mapCam($("sc008-cam"), [[$("sc008-lu"), 1462, 1178], [$("sc008-lq"), 1040, 1090]], 0.86, 1330, 1130);
+      cam.to(276.6, 281.5, 1.12, 1250, 1130, "none", { s: 0.86, cx: 1330, cy: 1130 });
+      // UMC block (copper)
+      const u = el(s, "path", { d: UMC_P, fill: COP, "fill-opacity": 0.5, stroke: COPL, "stroke-width": 7, "stroke-linejoin": "round", opacity: 0 });
+      tl.to(u, { opacity: 1, duration: 0.3, ease: "steps(3)" }, S(278.1));
+      rise($("sc008-lui"), T(278.29), { y: 10, dur: 0.4 });
+      // "across the street": lemon marker along the road between them
+      late(FX.markup.pen(tl, s, T(277.25), { points: ROAD, jitter: 8, seed: 81, dur: 0.75, width: 34, color: LEMON, filter: null, blend: "normal" }), T(277.25)).setAttribute("stroke-opacity", 0.8);
+      // the new site goes up: dashed neutral outline + hatch, "?"
+      const n = el(s, "path", { d: NEW_P, fill: "url(#pd03-hatch8)", stroke: BONE, "stroke-width": 7, "stroke-dasharray": "26 16", "stroke-linejoin": "round", opacity: 0 });
+      tl.to(n, { opacity: 1, duration: 0.35, ease: "steps(4)" }, S(279.1));
+      pop($("sc008-lqi"), S(279.75), { dur: 0.6, from: 0.5 });
+    })();
+
+    /* ===== sc009 · 281.00 · paper slide: what the new company does ===== */
+    slide("sc008", "sc009", S(281.00));
+    (function () {
+      const s = $("sc009-svg"), mk = $("sc009-mk");
+      // the fab (neutral: the company is still unnamed)
+      const blk = el(s, "rect", { x: 770, y: 290, width: 320, height: 470, fill: INK });
+      tl.fromTo(blk, { scaleY: 0, svgOrigin: "930 760" }, { scaleY: 1, svgOrigin: "930 760", duration: 0.9, ease: C(E.out, 0.9), immediateRender: true }, S(281.05));
+      const fi = icon(s, "factory", 834, 520, 3.0, PAPER, 2.4); gsap.set(fi, { opacity: 0 }); tl.to(fi, { opacity: 1, duration: 0.3, ease: "steps(3)" }, S(281.6));
+      pop($("sc009-q"), S(281.5), { dur: 0.7 });
+      // anyone: five customers, ribbons out of the fab, chips flowing to them
+      const names = ["phone", "tv", "calc", "pc", "watch"], paths = [];
+      names.forEach((n, i) => {
+        const y = 240 + i * 150, ty = 380 + i * 72;
+        const g = icon(s, n, 170, y - 44, 1.4, INK, 2.6); gsap.set(g, { opacity: 0 });
+        tl.to(g, { opacity: 1, duration: 0.001 }, S(284.75) + i * (1 / 12));
+        const p = ink(s, "M770 " + ty + " C 560 " + ty + " 520 " + y + " 290 " + y, S(283.95) + i * 0.07, 0.8, { width: 26, color: "rgba(22,26,36,0.16)", cap: "butt" });
+        const L = p.getTotalLength() || 520, pts = []; for (let k = 0; k <= 40; k++) { const q = p.getPointAtLength((k / 40) * L); pts.push([q.x, q.y]); }
+        paths.push(pts);
+      });
+      rise($("sc009-any"), T(284.93), { y: 8, dur: 0.4 });
+      const chips = [];
+      for (let k = 0; k < 15; k++) { const r = el(s, "rect", { width: 16, height: 16, fill: INK, opacity: 0 }); chips.push({ r, p: paths[k % 5], t0: S(284.2) + ((k * 0.41) % 2.0) }); }
+      gated(284.1, 293.6, () => FX.onFrame((t) => {
+        const tt = Math.floor(t * 12) / 12;
+        chips.forEach((c) => { let u = (tt - c.t0) / 1.2; if (u < 0) { c.r.setAttribute("opacity", 0); return; } u = u % 1.7; if (u > 1) { c.r.setAttribute("opacity", 0); return; }
+          const f = u * 40, i0 = Math.min(39, Math.floor(f)), a = c.p[i0], b = c.p[i0 + 1], m = f - i0;
+          c.r.setAttribute("x", (a[0] + (b[0] - a[0]) * m - 8).toFixed(1)); c.r.setAttribute("y", (a[1] + (b[1] - a[1]) * m - 8).toFixed(1)); c.r.setAttribute("opacity", 0.9); });
+      }));
+      // no products of their own / no designs of their own: two dashed boxes, crossed out
+      const b1 = $("sc009-b1s"), b2 = $("sc009-b2s");
+      icon(b1, "phone", 60, 70, 1.7, INKS, 2.2); icon(b1, "tv", 190, 70, 1.7, INKS, 2.2); icon(b1, "pc", 320, 70, 1.7, INKS, 2.2);
+      icon(b2, "plan", 80, 60, 2.0, INKS, 2); icon(b2, "chip", 260, 60, 2.0, INKS, 2);
+      tl.to($("sc009-b1"), { opacity: 1, duration: 0.3, ease: "steps(3)" }, S(286.9));
+      rise($("sc009-l1"), T(288.05), { y: 8, dur: 0.4 });
+      late(FX.markup.cross(tl, mk, S(288.55), { x: 1525, y: 335, s: 105, dur: 0.16, color: INK, width: 10, filter: PEN }), S(288.55));
+      tl.to($("sc009-b2"), { opacity: 1, duration: 0.3, ease: "steps(3)" }, S(289.1));
+      rise($("sc009-l2"), T(289.49), { y: 8, dur: 0.4 });
+      late(FX.markup.cross(tl, mk, S(291.0), { x: 1525, y: 715, s: 105, dur: 0.16, color: INK, width: 10, filter: PEN }), S(291.0));
+      const wm = W("sc009-man"); rise(wm[0], T(291.97), { y: 8, dur: 0.3 }); rise(wm[1], T(292.37), { y: 8, dur: 0.3 });
+      push("sc009", 281.00, 293.55, 1.0, 1.04);
+    })();
+
+    /* ===== sc010 · 293.55 · whip: Tsao's plan of two years ago, laid over the new one ===== */
+    whip("sc009", "sc010", S(293.55), { dir: -1 });
+    (function () {
+      card($("sc010-doc"), true); card($("sc010-card"), false);
+      const cw = $("sc010-cw");
+      tl.fromTo(cw, { x: -900, rotation: -8 }, { x: 0, rotation: -2, duration: 0.8, ease: C(E.out, 0.8), immediateRender: true }, S(294.2));
+      rise($("sc010-tag"), T(295.25), { y: 10, dur: 0.4 });
+      gsap.set($("sc010-dw"), { rotation: 1.5 });
+      // the copper original slides over the neutral copy: line for line the same
+      tl.to($("sc010-tag"), { opacity: 0, duration: 0.2 }, S(296.15));
+      tl.to(cw, { x: 800, rotation: 1.5, duration: 0.8, ease: C(E.inOut, 0.8) }, S(296.2));
+      tl.to($("sc010-card"), { opacity: 0.55, duration: 0.3 }, S(296.7));
+      gsap.set($("sc010-hl"), { rotation: 1.5, transformOrigin: "0 0" });
+      ROWS.forEach((y, i) => { const h = document.createElement("div"); h.style.cssText = "position:absolute; left:" + (360) + "px; top:" + (y * 0.92 - 17) + "px; width:" + (300 - i * 16) + "px; height:34px; background:var(--yellow); mix-blend-mode:multiply; opacity:0.85; transform-origin:0 50%; filter:url(#pd03-rough-hl)"; $("sc010-hl").appendChild(h);
+        gsap.set(h, { scaleX: 0 }); tl.fromTo(h, { scaleX: 0 }, { scaleX: 1, duration: 0.28, ease: C("power1.inOut", 0.28), immediateRender: false }, S(296.95) + i * 0.13); });
+      push("sc010", 293.55, 298.05, 1.0, 1.05, { origin: "60% 50%" });
+    })();
+
+    /* ===== sc011 · 298.05 · FACE: "guess who the founder and the CEO…" (hard cut in, hard cut out) ===== */
+    gsap.set($("sc011-fw"), { scale: 1.0 });
+    tl.fromTo($("sc011-fw"), { scale: 1.0 }, { scale: 1.035, duration: 2.25, ease: "none", immediateRender: false }, S(298.05));
+
+    /* ===== sc012 · 300.30 · the door plate: FOUNDER & CEO, name still blank ===== */
+    (function () {
+      pop($("sc012-q"), S(300.55), { dur: 0.6 });
+      push("sc012", 300.30, 303.40, 1.08, 1.0, { ease: E.cam });
+    })();
+
+    /* ===== sc013 · 303.40 · whip: New York — the plan changes hands ===== */
+    whip("sc012", "sc013", S(303.40), { dir: 1 });
+    (function () {
+      card($("sc013-card"), false);
+      tl.fromTo($("sc013-ph"), { scale: 1.0 }, { scale: 1.07, duration: 6.0, ease: "none", immediateRender: false }, S(303.4));
+      rise($("sc013-t1"), T(303.57), { y: 8, dur: 0.4 });
+      const ny = W("sc013-ny"); rise(ny[0], T(304.93), { dur: 0.6 }); rise(ny[1], T(305.09), { dur: 0.6 });
+      // "shared the whole plan with in detail": the 1983 card travels from Tsao to the executive
+      const cw = $("sc013-cw");
+      tl.fromTo(cw, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.3, ease: "steps(4)", immediateRender: true }, S(306.3));
+      ink($("sc013-svg"), "M660 884 L1280 880", S(306.75), 0.9, { color: COPL, width: 4, opacity: 0.8 }).setAttribute("stroke-dasharray", "2 14");
+      tl.to(cw, { x: 940, rotation: 2, duration: 1.1, ease: C(E.inOut, 1.1) }, S(306.75));
+    })();
+
+    /* ===== sc014 · 309.30 · whip: the same guy, the same plan, right across the street ===== */
+    whip("sc013", "sc014", S(309.30), { dir: -1 });
+    (function () {
+      const s = $("sc014-svg");
+      s.innerHTML = '<defs><pattern id="pd03-hatch14" width="26" height="26" patternUnits="userSpaceOnUse" patternTransform="rotate(40)"><rect width="10" height="26" fill="' + BONE + '" opacity="0.5"/></pattern></defs>';
+      el(s, "path", { d: UMC_P, fill: COP, "fill-opacity": 0.5, stroke: COPL, "stroke-width": 7, "stroke-linejoin": "round" });
+      el(s, "path", { d: NEW_P, fill: "url(#pd03-hatch14)", stroke: BONE, "stroke-width": 7, "stroke-dasharray": "26 16", "stroke-linejoin": "round" });
+      card($("sc014-card"), true);
+      const cam = mapCam($("sc014-cam"), [[$("sc014-lu"), 1462, 1178], [$("sc014-lc"), 1040, 1070], [$("sc014-lp"), 1040, 1070]], 1.0, 1200, 1130);
+      cam.to(309.0, 312.95, 1.1, 1160, 1120, "none", { s: 1.0, cx: 1200, cy: 1130 });
+      pop($("sc014-chip"), S(310.0), { dur: 0.6, from: 0.5 });
+      tl.fromTo($("sc014-pw"), { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.35, ease: "steps(4)", immediateRender: true }, S(311.36));
+      late(FX.markup.pen(tl, s, S(312.5), { points: ROAD, jitter: 8, seed: 141, dur: 0.6, width: 34, color: LEMON, filter: null, blend: "normal" }), S(312.5)).setAttribute("stroke-opacity", 0.8);
+      // push through the silhouette into the reveal (cut on the push)
+      gsap.set($("sc014-vw"), { transformOrigin: "828px 485px" });
+      tl.fromTo($("sc014-vw"), { scale: 1 }, { scale: 3.4, duration: 0.6, ease: "power3.in", immediateRender: false }, S(313.15));
+    })();
+
+    /* ===== sc015 · 313.75 · THE REVEAL: the silhouette burns away — Morris Chang ===== */
+    (function () {
+      const s = $("sc015-svg");
+      s.innerHTML = '<defs>' +
+        '<filter id="pd03-b15" filterUnits="userSpaceOnUse" x="0" y="0" width="1200" height="1080" color-interpolation-filters="sRGB">' +
+        '<feImage href="assets/maps/burn_b.png" x="0" y="0" width="1200" height="1080" preserveAspectRatio="none" result="n"/>' +
+        '<feColorMatrix id="pd03-b15m" in="n" type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  -12 0 0 0 13" result="t"/>' +
+        '<feComposite in="SourceGraphic" in2="t" operator="in"/></filter>' +
+        '<filter id="pd03-c15" filterUnits="userSpaceOnUse" x="0" y="0" width="1200" height="1080" color-interpolation-filters="sRGB">' +
+        '<feImage href="assets/maps/burn_b.png" x="0" y="0" width="1200" height="1080" preserveAspectRatio="none" result="n"/>' +
+        '<feColorMatrix id="pd03-c15a" in="n" type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  -12 0 0 0 13" result="e"/>' +
+        '<feColorMatrix id="pd03-c15b" in="n" type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  -12 0 0 0 15.2" result="l"/>' +
+        '<feComposite in="l" in2="e" operator="arithmetic" k1="0" k2="1" k3="-1" k4="0" result="ring"/>' +
+        '<feFlood flood-color="#ff5fa8" result="fl"/><feComposite in="fl" in2="ring" operator="in" result="r2"/>' +
+        '<feGaussianBlur in="r2" stdDeviation="3" result="gl"/><feMerge><feMergeNode in="gl"/><feMergeNode in="r2"/></feMerge></filter></defs>' +
+        '<rect x="0" y="0" width="1200" height="1080" fill="#0c0f15" filter="url(#pd03-b15)"/>' +
+        '<image href="assets/intro/cutouts/silhouette_exec_night.png" x="0" y="0" width="1200" height="1080" filter="url(#pd03-b15)"/>' +
+        '<rect x="0" y="0" width="1200" height="1080" fill="#fff" filter="url(#pd03-c15)"/>';
+      const M = (o) => "0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  -12 0 0 0 " + o.toFixed(3);
+      const b = { v: 13 };
+      tl.fromTo(b, { v: 13 }, { v: -2.4, duration: 0.85, ease: C("power1.inOut", 0.85), immediateRender: true, onUpdate: () => { $("b15m").setAttribute("values", M(b.v)); $("c15a").setAttribute("values", M(b.v)); $("c15b").setAttribute("values", M(b.v + 2.2)); } }, S(314.92));
+      // arrive from the push-through: silhouette large -> settles
+      gsap.set($("sc015-cam"), { scale: 1.9 });
+      tl.fromTo($("sc015-cam"), { scale: 1.9 }, { scale: 1.0, duration: 0.7, ease: E.cam, immediateRender: false }, S(313.75));
+      tl.to($("sc015-cam"), { scale: 1.03, duration: 1.3, ease: "none" }, S(314.9));
+      const w = W("sc015-name");
+      rise(w[0], T(314.96), { dur: 0.7 }); rise(w[1], T(315.44), { dur: 0.6 });
+      tl.fromTo($("sc015-cr"), { opacity: 0 }, { opacity: 1, duration: 0.3, immediateRender: true }, S(315.3));
+    })();
+
+    /* ===== sc016 · 316.12 · FACE: "I'm sure you've heard of him, right?" (Sam; the programme cuts to Sunkit at 317.23) ===== */
+    gsap.set($("sc016-fw"), { scale: 1.0 });
+    tl.fromTo($("sc016-fw"), { scale: 1.0 }, { scale: 1.03, duration: 1.98, ease: "none", immediateRender: false }, S(316.12));
+
+    /* ===== sc017 · 318.10 · Morris Chang name card -> the company: TSMC ===== */
+    (function () {
+      gsap.set($("sc017-cam"), { scale: 1.03 });
+      tl.fromTo($("sc017-cam"), { scale: 1.03 }, { scale: 1.1, duration: 6.7, ease: "none", immediateRender: false }, S(318.10));
+      const p1 = $("sc017-p1");
+      tl.fromTo(p1, { opacity: 0, x: -520, rotation: -9 }, { opacity: 1, x: 0, rotation: -2, duration: 0.8, ease: C(E.out, 0.8), immediateRender: true }, S(321.75));
+      const lg = $("sc017-logo");
+      tl.fromTo(lg, { opacity: 0, scale: 1.6 }, { opacity: 1, scale: 1, duration: 0.25, ease: C("power3.in", 0.25), immediateRender: true }, T(323.68) - 0.19);
+      tl.fromTo($("sc017-shot"), { x: 0 }, { x: 9, duration: 1 / 12, yoyo: true, repeat: 1, ease: "none", immediateRender: false }, S(323.76));
+    })();
+
+    /* ===== sc018 · 324.80 · whip: in Tsao's eyes — a betrayal ===== */
+    whip("sc017", "sc018", S(324.80), { dir: -1 });
+    (function () {
+      card($("sc018-card"), false);
+      rise($("sc018-tag"), T(325.12), { y: 10, dur: 0.4 });
+      tl.fromTo($("sc018-tsao"), { scale: 1.0 }, { scale: 1.14, duration: 4.9, ease: "none", immediateRender: false }, S(324.8));
+      const cw = $("sc018-cw");
+      gsap.set(cw, { rotation: -3 });
+      tl.fromTo(cw, { x: 900 }, { x: 0, duration: 0.8, ease: C(E.out, 0.8), immediateRender: false }, S(325.3));
+      // "betrayal": his own plan comes back with TSMC's name on it; Chang's face looms behind
+      tl.fromTo($("sc018-face"), { opacity: 0 }, { opacity: 0.42, duration: 1.2, ease: C(E.out, 1.2), immediateRender: true }, S(326.9));
+      const stp = $("sc018-stamp");
+      tl.fromTo(stp, { opacity: 0, scale: 1.7 }, { opacity: 0.95, scale: 1, duration: 0.22, ease: C("power3.in", 0.22), immediateRender: true }, T(327.36) - 0.16);
+      tl.fromTo(cw, { rotation: -3 }, { rotation: 4, duration: 0.5, ease: C(E.out, 0.5), immediateRender: false }, S(327.42));
+      tl.fromTo($("sc018-shot"), { y: 0 }, { y: 8, duration: 1 / 12, yoyo: true, repeat: 1, ease: "none", immediateRender: false }, S(327.42));
+    })();
+
+    /* ===== sc019 · 329.70 · vertical whip: two decades of UMC vs TSMC, neck and neck ===== */
+    whip("sc018", "sc019", S(329.70), { dir: 1, vertical: true });
+    (function () {
+      const s = $("sc019-svg");
+      const h = W("sc019-h"); rise(h[0], T(330.56), { dur: 0.5 }); rise(h[1], T(330.72), { dur: 0.5 });
+      rise($("sc019-lu"), T(331.36), { y: 8, dur: 0.4 });
+      rise($("sc019-lt"), T(332.16), { y: 8, dur: 0.4 });
+      tl.fromTo($("sc019-isl"), { opacity: 0 }, { opacity: 0.16, duration: 0.8, immediateRender: true }, S(332.7));
+      rise($("sc019-tw"), T(332.96), { y: 8, dur: 0.5 });
+      // axis: twenty ticks = two decades
+      const X0 = 150, X1 = 1790, Y = 930;
+      ink(s, "M" + X0 + " " + Y + " L" + X1 + " " + (Y + 1), S(330.1), 0.9, { color: ASHL, width: 4 });
+      for (let i = 0; i <= 20; i++) { const x = X0 + i * (X1 - X0) / 20, big = i % 10 === 0; const tk = el(s, "path", { d: "M" + x + " " + (Y - (big ? 26 : 12)) + " L" + x + " " + (Y + (big ? 26 : 12)), stroke: ASHL, "stroke-width": big ? 5 : 3, opacity: 0 }); tl.to(tk, { opacity: 1, duration: 0.001 }, S(330.6) + i * (1 / 24)); }
+      // two rival lines that keep overtaking each other
+      const N = 20, A = [], B = [];
+      const r = FX.rng(1987);
+      for (let i = 0; i <= N; i++) { const x = X0 + i * (X1 - X0) / N, base = 840 - i * 26, sw = Math.sin(i * 0.95) * 46 + (r() - 0.5) * 20; A.push([x, base - sw]); B.push([x, base + sw + (i > 15 ? -16 : 0)]); }
+      A[0][1] = B[0][1] = 840;
+      const D = (p) => "M" + p.map((q) => q[0].toFixed(1) + " " + q[1].toFixed(1)).join(" L");
+      const la = ink(s, D(A), S(333.7), 6.3, { color: COP, width: 9, ease: C("power1.inOut", 6.3) });
+      const lb = ink(s, D(B), S(333.7), 6.3, { color: MAG, width: 9, ease: C("power1.inOut", 6.3) });
+      // heads
+      const ha = el(s, "circle", { r: 15, fill: COPL, opacity: 0 }), hb = el(s, "circle", { r: 15, fill: MAGL, opacity: 0 });
+      const st = { u: 0 }, at = (p, u) => { const f = u * N, i = Math.min(N - 1, Math.floor(f)), m = f - i; return [p[i][0] + (p[i + 1][0] - p[i][0]) * m, p[i][1] + (p[i + 1][1] - p[i][1]) * m]; };
+      // approximate arc-length parameter with x (segments are near-uniform)
+      const upd = () => { const a = at(A, st.u), b2 = at(B, st.u); ha.setAttribute("cx", a[0].toFixed(1)); ha.setAttribute("cy", a[1].toFixed(1)); hb.setAttribute("cx", b2[0].toFixed(1)); hb.setAttribute("cy", b2[1].toFixed(1)); };
+      upd();
+      tl.set([ha, hb], { opacity: 1 }, S(333.7));
+      tl.fromTo(st, { u: 0 }, { u: 1, duration: 6.3, ease: C("power1.inOut", 6.3), immediateRender: false, onUpdate: upd }, S(333.7));
+      push("sc019", 329.70, 340.90, 1.0, 1.035, { origin: "60% 50%" });
+    })();
+
+    /* ===== sc020 · 340.90 · flash whip: the rivalry, held — UMC | TSMC ===== */
+    whip("sc019", "sc020", S(340.90), { dir: 1, flash: true });
+    (function () {
+      tl.fromTo($("sc020-tsao"), { y: 140 }, { y: 0, duration: 1.0, ease: C(E.out, 1.0), immediateRender: false }, S(340.95));
+      tl.fromTo($("sc020-chang"), { y: 140 }, { y: 0, duration: 1.0, ease: C(E.out, 1.0), immediateRender: false }, S(341.05));
+      tl.fromTo($("sc020-lu"), { opacity: 0, scale: 1.5 }, { opacity: 1, scale: 1, duration: 0.25, ease: C("power3.in", 0.25), immediateRender: true }, S(341.75));
+      tl.fromTo($("sc020-lt"), { opacity: 0, scale: 1.5 }, { opacity: 1, scale: 1, duration: 0.25, ease: C("power3.in", 0.25), immediateRender: true }, S(342.15));
+      rise($("sc020-t1"), S(342.6), { y: 10, dur: 0.4 });
+      rise($("sc020-t2"), S(342.75), { y: 10, dur: 0.4 });
+      // slow drift that runs through the hard cut back to Sam (complete picture from 343.2)
+      push("sc020", 340.90, 346.00, 1.0, 1.04);
+    })();
+
+    FX.mount(tl, DURATION);
+    window.__timelines = window.__timelines || {};
+    window.__timelines[SEG] = tl;
+  })();
+  </script>
+</template>
+</body>
+</html>

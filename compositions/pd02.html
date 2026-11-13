@@ -1,0 +1,953 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8" /></head>
+<body>
+<template>
+  <style>
+    #root { position: absolute; inset: 0; overflow: hidden; background: var(--night); }
+    .d2-scene { position: absolute; inset: 0; overflow: hidden; visibility: hidden; opacity: 0; }
+    .d2-shot { position: absolute; inset: 0; overflow: hidden; transform-origin: 50% 50%; }
+    .d2-night { background: var(--night); }
+    .d2-paper { background: var(--paper); }
+    .d2-abs { position: absolute; }
+    .d2-w { display: inline-block; opacity: 0; white-space: pre; }
+    .d2-svg { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; pointer-events: none; }
+    .d2-vid { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; object-fit: cover; }
+    .d2-fcw { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: hidden; }
+    .d2-credit { position: absolute; right: 30px; bottom: 20px; font-size: 13px; letter-spacing: 0.08em; color: rgba(238,238,232,0.6); z-index: 6; }
+    .d2-credit.ink { color: rgba(22,26,36,0.6); }
+    /* two paper layers (MANUAL 10.6.1), desaturated so the silicon paper stays cool */
+    .d2-pg { position: absolute; inset: 0; background: var(--paper); }
+    .d2-pg img { position: absolute; left: 0; top: 0; width: 100%; height: 100%; object-fit: cover; mix-blend-mode: multiply; }
+    .d2-pg .p1 { opacity: 0.6; filter: saturate(0.12) brightness(1.04); }
+    .d2-pg .p2 { opacity: 0.9; filter: saturate(0.1) contrast(0.6) brightness(1.1); }
+    .d2-pg .gr { opacity: 0.9; filter: saturate(0.2) contrast(1.4) brightness(1.06); transform: scale(1.5); }
+    .d2-pg .ln { opacity: 0.55; filter: saturate(0.25) brightness(1.3); }
+    .d2-ink { color: var(--ink); }
+    .d2-tag { position: absolute; display: inline-block; padding: 11px 18px 7px; font-size: 26px; line-height: 1; white-space: nowrap; background: var(--ink); color: var(--paper); }
+    .d2-tag.cu { background: var(--copper); color: var(--ink); }
+    .d2-tag.gn { background: var(--board-dark); color: var(--bone); }
+    .d2-tag.ash { background: var(--ash-dark); color: var(--bone); }
+    .d2-tag.pap { background: var(--paper-2); color: var(--ink); box-shadow: 0 6px 14px rgba(22,26,36,0.22); }
+    .d2-circ { position: absolute; width: 260px; height: 260px; border-radius: 50%; overflow: hidden; border: 8px solid var(--ash); background: var(--ash-light); box-shadow: 0 16px 34px rgba(22,26,36,0.28); }
+    .d2-circ img.sil { position: absolute; left: -12px; bottom: -6px; width: 270px; }
+    .d2-seat { position: absolute; width: 60px; height: 60px; margin: -30px 0 0 -30px; border-radius: 50%; background: var(--ash-light); box-shadow: inset 0 -4px 0 rgba(22,26,36,0.14), 0 5px 10px rgba(22,26,36,0.18); }
+    .d2-seat i { position: absolute; inset: 0; border-radius: 50%; background: var(--copper); opacity: 0; box-shadow: inset 0 -4px 0 rgba(22,26,36,0.16); }
+    #pd02-flash { position: absolute; inset: 0; background: #f4f3ec; opacity: 0; pointer-events: none; z-index: 7; }
+    #pd02-grain, #pd02-dust, #pd02-vig { z-index: 8; }
+
+    /* ===== sc01 board says yes + one condition ===== */
+    #pd02-sc01-page { position: absolute; left: 0; top: 0; width: 1920px; height: 1500px; }
+    #pd02-sc01-lab { left: 96px; top: 96px; font-size: 30px; color: var(--ink); opacity: 0; }
+    #pd02-sc01-rule { position: absolute; left: 96px; top: 142px; width: 430px; height: 5px; background: var(--copper); transform-origin: 0 50%; }
+    #pd02-sc01-base { position: absolute; left: 430px; top: 838px; width: 1060px; height: 4px; background: var(--ink); opacity: 0.55; transform-origin: 50% 50%; }
+    #pd02-sc01-tsao { left: 890px; top: 700px; width: 140px; height: 140px; border-width: 6px; border-color: var(--copper); background: #efe2cf; }
+    #pd02-sc01-tsao img { position: absolute; left: 4px; top: -6px; width: 128px; filter: url(#pd02-tint-cu); }
+    #pd02-sc01-yesw { position: absolute; left: 740px; top: 470px; width: 440px; height: 210px; opacity: 0; }
+    #pd02-sc01-yes { position: absolute; inset: 0; border: 12px solid var(--ink); border-radius: 10px; background: rgba(231,230,223,0.9); color: var(--ink); font-size: 150px; line-height: 200px; text-align: center; letter-spacing: 0.02em; box-shadow: 0 22px 40px rgba(22,26,36,0.26); }
+    #pd02-sc01-ast { position: absolute; left: 1150px; top: 395px; font-size: 150px; color: var(--ink); opacity: 0; }
+    #pd02-sc01-note { position: absolute; left: 520px; top: 1030px; width: 880px; height: 290px; background: var(--paper-2); box-shadow: 0 24px 46px rgba(22,26,36,0.3); overflow: hidden; }
+    #pd02-sc01-note img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; mix-blend-mode: multiply; opacity: 0.6; filter: saturate(0.2) brightness(1.25); }
+    #pd02-sc01-clip { position: absolute; left: 600px; top: 990px; width: 44px; height: 110px; border: 7px solid var(--ash); border-radius: 22px; box-shadow: 0 4px 6px rgba(22,26,36,0.25); }
+    #pd02-sc01-fn { left: 70px; top: 80px; font-size: 104px; line-height: 1; color: var(--ink); }
+    #pd02-sc01-hl { position: absolute; left: 404px; top: 150px; width: 400px; height: 40px; background: var(--yellow); mix-blend-mode: multiply; transform-origin: 0 50%; filter: url(#pd02-rough-hl); opacity: 0.9; }
+
+    /* ===== sc02 advice map ===== */
+    #pd02-sc02-cam, #pd02-sc06-cam { position: absolute; left: 0; top: 0; width: 2850px; height: 720px; transform-origin: 0 0; }
+    #pd02-sc02-map { position: absolute; left: 0; top: 0; width: 2850px; height: 720px; filter: grayscale(1) contrast(1.12) brightness(1.04); mix-blend-mode: multiply; opacity: 0.92; }
+    #pd02-sc02-svg, #pd02-sc06-svg { position: absolute; left: 0; top: 0; width: 2850px; height: 720px; overflow: visible; }
+    #pd02-sc02-card { position: absolute; left: 2205px; top: 150px; width: 170px; height: 206px; background: #f1f0ea; box-shadow: 0 10px 22px rgba(22,26,36,0.4); transform: rotate(3deg); }
+    #pd02-sc02-card .ph { position: absolute; left: 10px; top: 10px; width: 150px; height: 150px; background: var(--ash-light); overflow: hidden; }
+    #pd02-sc02-card .ph img { position: absolute; left: -8px; bottom: -4px; width: 166px; }
+    #pd02-sc02-card .cap { position: absolute; left: 0; right: 0; top: 171px; text-align: center; font-size: 14.5px; letter-spacing: 0.12em; color: var(--ink); }
+    #pd02-sc02-pin { position: absolute; left: 2278px; top: 138px; width: 24px; height: 24px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #d7d9dd, #5d626d 70%); box-shadow: 3px 5px 5px rgba(22,26,36,0.4); }
+    #pd02-sc02-us { position: absolute; left: 1900px; top: 395px; width: 800px; text-align: center; font-size: 44px; letter-spacing: 0.3em; color: var(--ink); opacity: 0; }
+    #pd02-sc02-tw { position: absolute; left: 196px; top: 452px; font-size: 21px; letter-spacing: 0.1em; color: var(--board-dark); }
+    #pd02-sc02-brd { left: 196px; top: 484px; font-size: 16px; padding: 7px 11px 4px; }
+
+    /* ===== sc03 the unnamed executive ===== */
+    #pd02-sc03-map { position: absolute; left: -200px; top: -100px; width: 2560px; height: 1280px; opacity: 0.07; filter: grayscale(1) blur(1px) contrast(1.2); }
+    #pd02-sc03-streaks { opacity: 0.16; }
+    #pd02-sc03-blk { position: absolute; left: 150px; top: 250px; width: 560px; height: 760px; background: var(--ash-dark); }
+    #pd02-sc03-blk i { position: absolute; inset: 0; background: url('assets/textures/halftone_01_norm.jpg') 0 0 / 560px auto; mix-blend-mode: overlay; opacity: 0.5; }
+    #pd02-sc03-spot { position: absolute; inset: 0; background: radial-gradient(ellipse 28% 70% at 24% 6%, rgba(226,232,244,0.22), rgba(226,232,244,0.05) 55%, rgba(0,0,0,0) 75%); mix-blend-mode: screen; }
+    #pd02-sc03-sil { position: absolute; left: 96px; top: 330px; width: 830px; filter: drop-shadow(0 -2px 2px rgba(238,238,232,0.5)) drop-shadow(0 0 26px rgba(238,238,232,0.12)); }
+    #pd02-sc03-yr { left: 990px; top: 196px; font-size: 250px; line-height: 1; letter-spacing: 0; opacity: 0; }
+    #pd02-sc03-bar { position: absolute; left: 1000px; top: 478px; width: 610px; height: 64px; background: var(--ash); transform-origin: 0 50%; }
+    #pd02-sc03-bar i { position: absolute; inset: 0; background: url('assets/textures/halftone_01_norm.jpg') 0 0 / 420px auto; mix-blend-mode: overlay; opacity: 0.55; }
+    #pd02-sc03-rule { position: absolute; left: 1000px; top: 574px; width: 96px; height: 5px; background: var(--bone); transform-origin: 0 50%; }
+    #pd02-sc03-sub { left: 1000px; top: 606px; width: 800px; font-size: 68px; line-height: 1.12; }
+
+    /* ===== sc04 25,000 people ===== */
+    #pd02-sc04-num { left: 96px; top: 96px; opacity: 0; }
+    #pd02-sc04-num .k { display: inline-block; background: var(--yellow); color: var(--ink); font-size: 150px; padding: 20px 26px 4px; line-height: 1; }
+    #pd02-sc04-ppl { left: 100px; top: 296px; font-size: 34px; color: var(--ink); opacity: 0; }
+    #pd02-sc04-key { left: 1010px; top: 850px; font-size: 22px; color: var(--ink-soft); opacity: 0; }
+    #pd02-sc04-mapw { position: absolute; left: 660px; top: 300px; width: 1200px; height: 600px; opacity: 0; }
+    #pd02-sc04-mapw img { position: absolute; inset: 0; width: 100%; height: 100%; filter: grayscale(1) contrast(1.15) brightness(1.05); mix-blend-mode: multiply; }
+    .d2-ico { position: absolute; width: 46px; height: 52px; margin: -26px 0 0 -23px; opacity: 0; }
+    #pd02-sc04-lead { left: 1245px; top: 72px; width: 110px; height: 110px; border-width: 5px; }
+    #pd02-sc04-lead img { position: absolute; left: -5px; bottom: -3px; width: 114px; }
+    #pd02-sc04-bw { position: absolute; left: 130px; top: 420px; width: 240px; height: 590px; overflow: hidden; }
+    #pd02-sc04-bld { position: absolute; left: 0; top: 0; width: 240px; height: 590px; }
+
+    /* ===== sc05 approval chain ===== */
+    #pd02-sc05-strip { position: absolute; left: 0; top: 0; width: 3400px; height: 1080px; }
+    #pd02-sc05-mk { position: absolute; left: 0; top: 0; width: 3400px; height: 1080px; overflow: visible; }
+    .d2-chl { position: absolute; width: 520px; text-align: center; }
+    .d2-chl .d2-tag { position: relative; font-size: 30px; }
+    #pd02-sc05-folder { position: absolute; left: 530px; top: 458px; width: 170px; height: 124px; background: var(--copper-light); border: 3px solid var(--copper-dark); border-radius: 4px 14px 4px 4px; box-shadow: 0 12px 20px rgba(22,26,36,0.25); opacity: 0; }
+    #pd02-sc05-folder .t { position: absolute; left: 0; right: 0; top: 46px; text-align: center; font-size: 30px; color: var(--ink); opacity: 0; }
+    #pd02-sc05-stamp { position: absolute; left: -46px; top: 28px; width: 250px; border: 6px solid var(--ink); border-radius: 8px; padding: 9px 0 4px; text-align: center; font-size: 36px; letter-spacing: 0.06em; color: var(--ink); background: rgba(231,230,223,0.82); transform: rotate(-9deg); opacity: 0; }
+    #pd02-sc05-twn { position: absolute; left: 1150px; top: 262px; width: 96px; height: 96px; border-radius: 50%; background: var(--board); border: 5px solid var(--board-dark); box-shadow: 0 10px 20px rgba(22,26,36,0.25); overflow: hidden; }
+    #pd02-sc05-twn i { position: absolute; inset: 0; background: url('assets/textures/halftone_01_norm.jpg') 0 0 / 300px auto; mix-blend-mode: overlay; opacity: 0.6; }
+    #pd02-sc05-twn svg { position: absolute; left: 0; top: 0; width: 86px; height: 86px; }
+    #pd02-sc05-comp { position: absolute; left: 2250px; top: 405px; width: 230px; height: 230px; opacity: 0; }
+
+    /* ===== sc06 flight ===== */
+    #pd02-sc06-tilt { position: absolute; inset: 0; perspective: 1700px; perspective-origin: 960px 400px; }
+    #pd02-sc06-plane { position: absolute; inset: 0; transform: rotateX(26deg) rotateZ(-7deg) scale(1.15); transform-origin: 960px 560px; }
+    #pd02-sc06-map { position: absolute; left: 0; top: 0; width: 2850px; height: 720px; filter: saturate(0.45) brightness(1.06); mix-blend-mode: multiply; }
+    #pd02-sc06-tw { position: absolute; left: 196px; top: 478px; font-size: 20px; letter-spacing: 0.1em; color: var(--board-dark); }
+    #pd02-sc06-ny { position: absolute; left: 2240px; top: 252px; width: 800px; text-align: center; font-size: 64px; letter-spacing: 0.04em; color: var(--ink); opacity: 0; }
+
+    /* ===== sc07 New York ===== */
+    #pd02-sc07-cam { position: absolute; inset: 0; transform-origin: 50% 60%; }
+    #pd02-sc07-cam .plate .img, #pd02-sc07-cam .plate .fringe { object-position: 50% 68%; filter: saturate(0.18) brightness(0.6) contrast(1.1); }
+    #pd02-sc07-cam .plate .fringe { filter: saturate(0.18) brightness(0.6) contrast(1.1) blur(7px); }
+    #pd02-sc07-shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(12,15,21,0.78) 0%, rgba(12,15,21,0.1) 45%, rgba(12,15,21,0.55) 100%); }
+    #pd02-sc07-ny { left: 0; width: 1920px; top: 96px; text-align: center; font-size: 220px; }
+    #pd02-sc07-sil { position: absolute; left: 1150px; top: 400px; width: 760px; filter: drop-shadow(0 -2px 2px rgba(238,238,232,0.5)) drop-shadow(0 0 30px rgba(0,0,0,0.6)); opacity: 0; }
+
+    /* ===== sc08 dinner ===== */
+    #pd02-sc08-cam { position: absolute; inset: 0; transform-origin: 50% 50%; }
+    .d2-table { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; }
+    .d2-table .top { position: absolute; left: 110px; top: 110px; width: 1700px; height: 860px; background: #262a34; border-radius: 30px; box-shadow: 0 30px 70px rgba(0,0,0,0.6), inset 0 0 0 3px rgba(238,238,232,0.08); overflow: hidden; }
+    .d2-table .top img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; mix-blend-mode: overlay; opacity: 0.5; filter: grayscale(1); }
+    .d2-table .lamp { position: absolute; inset: 0; background: radial-gradient(ellipse 46% 52% at 50% 46%, rgba(238,232,214,0.2), rgba(0,0,0,0) 72%); }
+    .d2-table .itm { position: absolute; opacity: 0; }
+    .d2-table .menu { left: 820px; top: 150px; width: 280px; height: 200px; background: #e9e8e1; box-shadow: 0 10px 22px rgba(0,0,0,0.45); padding: 22px 26px; box-sizing: border-box; }
+    .d2-table .menu .h { font-size: 30px; color: var(--ink); text-align: center; border-bottom: 2px solid var(--ink); padding-bottom: 6px; }
+    .d2-table .menu i { display: block; height: 7px; margin: 15px 10px 0; background: rgba(22,26,36,0.32); border-radius: 3px; }
+    .d2-table .place { left: 455px; top: 800px; width: 290px; height: 92px; background: var(--copper); box-shadow: 0 10px 20px rgba(0,0,0,0.45); text-align: center; }
+    .d2-table .place .t { font-size: 46px; color: var(--ink); line-height: 100px; opacity: 0; }
+    .d2-table .folder { left: 840px; top: 470px; width: 240px; height: 176px; background: var(--copper-light); border: 3px solid var(--copper-dark); border-radius: 4px 16px 4px 4px; box-shadow: 0 14px 26px rgba(0,0,0,0.5); text-align: center; box-sizing: border-box; }
+    .d2-table .folder .t { font-size: 30px; color: var(--ink); margin-top: 70px; opacity: 0; }
+    .d2-table .exec { left: 1195px; top: 772px; width: 250px; height: 150px; border-radius: 0; border-width: 0; background: var(--ash-dark); box-shadow: 0 10px 20px rgba(0,0,0,0.45); }
+    .d2-table .exec img { position: absolute; left: 62px; top: 14px; width: 136px; opacity: 0.9; }
+    .d2-table svg { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; }
+
+    /* ===== sc09 jet + clouds ===== */
+    #pd02-sc09-weave { position: absolute; inset: -16px; }
+    #pd02-sc09-vid { position: absolute; left: -40px; top: -60px; width: 2000px; height: 1500px; object-fit: cover; filter: saturate(0.25) contrast(1.08) brightness(0.92); }
+    #pd02-sc09-sky { position: absolute; inset: 0; opacity: 0; background: linear-gradient(180deg, #0c0f15 0%, #1d222d 42%, #565c69 78%, #b9bcc2 100%); }
+    #pd02-sc09-sea { position: absolute; left: -300px; top: 600px; width: 2520px; opacity: 0; filter: grayscale(0.8) brightness(1.05); }
+    .d2-cloud { position: absolute; opacity: 0; }
+    #pd02-sc09-streaks { opacity: 0; }
+    #pd02-sc09-jet { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; opacity: 0; }
+
+    /* ===== sc10 the plan ===== */
+    #pd02-sc10-cam { position: absolute; inset: 0; transform-origin: 50% 52%; }
+    #pd02-sc10-card { position: absolute; left: 480px; top: 200px; width: 960px; height: 640px; background: #efeee8; box-shadow: 0 30px 60px rgba(22,26,36,0.32); transform: rotate(-2deg); overflow: hidden; }
+    #pd02-sc10-card img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; mix-blend-mode: multiply; opacity: 0.8; filter: saturate(0.2) contrast(1.5); }
+    #pd02-sc10-card svg { position: absolute; left: 0; top: 0; width: 960px; height: 640px; }
+    #pd02-sc10-tab { position: absolute; left: 430px; top: 150px; width: 330px; height: 110px; background: var(--copper-light); border: 3px solid var(--copper-dark); border-radius: 6px 20px 0 0; transform: rotate(-2deg); }
+    #pd02-sc10-back { position: absolute; left: 440px; top: 190px; width: 1040px; height: 700px; background: var(--copper-light); border: 3px solid var(--copper-dark); border-radius: 6px; transform: rotate(-2deg); box-shadow: 0 30px 60px rgba(22,26,36,0.3); }
+    #pd02-sc10-back i, #pd02-sc10-tab i { position: absolute; inset: 0; background: url('assets/textures/paper_cream_01.jpg') center / cover; mix-blend-mode: multiply; opacity: 0.5; filter: saturate(0.2); }
+
+    /* ===== sc11 diagram ===== */
+    #pd02-sc11-cam { position: absolute; inset: 0; transform-origin: 50% 50%; }
+    .d2-card { position: absolute; width: 380px; height: 300px; background: #efeee8; box-shadow: 0 20px 40px rgba(22,26,36,0.3); }
+    .d2-card .in { position: absolute; left: 16px; top: 16px; right: 16px; bottom: 16px; overflow: hidden; }
+    .d2-card .tx2 { position: absolute; inset: 0; background: url('assets/textures/paper_cream_01.jpg') center / cover; mix-blend-mode: multiply; opacity: 0.55; filter: saturate(0.15); pointer-events: none; }
+    .d2-tape { position: absolute; width: 150px; height: 40px; background: rgba(214,213,204,0.85); box-shadow: 0 2px 6px rgba(22,26,36,0.18); }
+    #pd02-sc11-c1 { left: 250px; top: 300px; transform: rotate(-2deg); }
+    #pd02-sc11-c1 .in { background: var(--copper); }
+    #pd02-sc11-c2 { left: 1290px; top: 300px; transform: rotate(1.6deg); }
+    #pd02-sc11-c2 .in { background: var(--ash-light); }
+    #pd02-sc11-c2 .in img { position: absolute; left: 30px; bottom: -6px; width: 300px; }
+    #pd02-sc11-ttl { left: 560px; top: 110px; width: 800px; text-align: center; opacity: 0; }
+    #pd02-sc11-track { position: absolute; left: 0; top: 0; }
+    .d2-mark { position: absolute; top: 826px; width: 68px; height: 68px; margin-left: -34px; border-radius: 50%; border: 5px solid var(--ink); box-shadow: 0 8px 14px rgba(22,26,36,0.25); overflow: hidden; opacity: 0; }
+
+    /* ===== sc12 cutting edge vs the old stuff ===== */
+    #pd02-sc12-cam { position: absolute; inset: 0; transform-origin: 50% 50%; }
+    #pd02-sc12-grid { position: absolute; inset: -40px; opacity: 0.12; background-image: linear-gradient(rgba(194,197,202,0.9) 1px, transparent 1px), linear-gradient(90deg, rgba(194,197,202,0.9) 1px, transparent 1px); background-size: 48px 48px; }
+    .d2-pan { position: absolute; top: 200px; width: 620px; height: 620px; background: #151922; box-shadow: 0 30px 60px rgba(0,0,0,0.55), inset 0 0 0 2px rgba(194,197,202,0.35); opacity: 0; }
+    .d2-pan svg { position: absolute; left: 0; top: 0; width: 620px; height: 620px; overflow: visible; }
+    #pd02-sc12-pl { left: 170px; }
+    #pd02-sc12-pr { left: 1130px; }
+    #pd02-sc12-ex { left: 96px; top: 96px; width: 170px; height: 170px; border-width: 5px; z-index: 2; }
+    #pd02-sc12-ex img { position: absolute; left: -8px; bottom: -4px; width: 176px; }
+    #pd02-sc12-ce { left: 170px; top: 846px; width: 620px; text-align: center; font-size: 76px; opacity: 0; }
+    #pd02-sc12-us { left: 170px; top: 940px; width: 620px; text-align: center; font-size: 28px; opacity: 0; }
+    #pd02-sc12-old { left: 1130px; top: 846px; width: 620px; text-align: center; font-size: 76px; color: var(--board-light); opacity: 0; }
+    #pd02-sc12-tw { left: 1130px; top: 940px; width: 620px; text-align: center; font-size: 28px; color: var(--board-light); opacity: 0; }
+    #pd02-sc12-mini { position: absolute; left: 826px; top: 252px; width: 150px; height: 150px; background: #151922; box-shadow: inset 0 0 0 2px rgba(194,197,202,0.4); opacity: 0; }
+    #pd02-sc12-mini svg { position: absolute; left: 0; top: 0; width: 150px; height: 150px; }
+
+    /* ===== sc13 not on the board ===== */
+    #pd02-sc13-lab { left: 96px; top: 96px; font-size: 30px; color: var(--ink); }
+    #pd02-sc13-rule { position: absolute; left: 96px; top: 142px; width: 230px; height: 5px; background: var(--copper); }
+    #pd02-sc13-ex { left: 1450px; top: 470px; width: 220px; height: 220px; }
+    #pd02-sc13-ex img.sil { width: 230px; left: -10px; }
+    #pd02-sc13-adv { left: 1437px; top: 720px; opacity: 0; }
+  </style>
+  <div id="root" data-composition-id="pd02" data-vo-start="113.7667" data-duration="113.6" data-width="1920" data-height="1080">
+    <svg id="pd02-defs" width="0" height="0" style="position:absolute"></svg>
+
+    <!-- sc01 · 113.77–124.46 · the board says yes … one condition (PAPER) -->
+    <div class="d2-scene d2-paper" id="pd02-sc01"><div class="d2-shot" id="pd02-sc01-shot">
+      <div class="d2-pg"><img class="p1" src="assets/textures/paper_cream_01.jpg" alt="" /><img class="p2" src="assets/textures/paper_cream_02.jpg" alt="" /></div>
+      <div id="pd02-sc01-page">
+        <div id="pd02-sc01-lab" class="d2-abs t-label">UMC · Board of directors</div>
+        <div id="pd02-sc01-rule"></div>
+        <div id="pd02-sc01-base"></div>
+        <div id="pd02-sc01-seats"></div>
+        <div class="d2-circ" id="pd02-sc01-tsao"><img src="assets/intro/cutouts/tsao_cutout.png" alt="" /></div>
+        <div id="pd02-sc01-yesw"><div id="pd02-sc01-yes" class="t-display">YES</div></div>
+        <div id="pd02-sc01-ast" class="t-display">*</div>
+        <div id="pd02-sc01-note"><img src="assets/textures/paper_lined_01.jpg" alt="" />
+          <div id="pd02-sc01-hl"></div>
+          <div id="pd02-sc01-fn" class="d2-abs t-serif-i"><span id="pd02-sc01-w0" class="d2-w">* </span><span id="pd02-sc01-w1" class="d2-w">one </span><span id="pd02-sc01-w2" class="d2-w">condition</span></div>
+        </div>
+        <div id="pd02-sc01-clip"></div>
+      </div>
+      <div class="folds"></div>
+      <div class="d2-credit ink t-label">Photo: Office of the President (ROC)</div>
+    </div></div>
+
+    <!-- fc1 · 124.46–126.10 · Sam: "You see, some of the board members had been" -->
+    <div class="d2-scene" id="pd02-fc1"><div class="d2-fcw" id="pd02-fc1-fw"><video id="pd02-fc1-v" class="clip d2-vid" muted playsinline src="assets/facecam/pd_facecam_intro.mp4" data-start="10.6933" data-duration="1.64" data-media-start="124.46"></video></div></div>
+
+    <!-- sc02 · 126.10–130.00 · advice from a chip executive in the United States (PAPER map) -->
+    <div class="d2-scene d2-paper" id="pd02-sc02"><div class="d2-shot" id="pd02-sc02-shot">
+      <div class="d2-pg"><img class="p1" src="assets/textures/paper_cream_01.jpg" alt="" /><img class="p2" src="assets/textures/paper_fiber_01.jpg" alt="" /></div>
+      <div id="pd02-sc02-cam">
+        <img id="pd02-sc02-map" src="assets/intro/derived/maps/pacific_atlas_8550.jpg" alt="" />
+        <svg id="pd02-sc02-svg" viewBox="0 0 2850 720"></svg>
+        <div id="pd02-sc02-tw" class="t-display">TAIWAN</div>
+        <div id="pd02-sc02-brd" class="d2-tag cu t-label">UMC board</div>
+        <div id="pd02-sc02-us" class="t-display">UNITED STATES</div>
+        <div id="pd02-sc02-cardw" style="opacity:0">
+          <div id="pd02-sc02-card"><div class="ph"><img src="assets/intro/cutouts/silhouette_exec.png" alt="" /></div><div class="cap t-label">Chip executive</div></div>
+          <div id="pd02-sc02-pin"></div>
+        </div>
+      </div>
+      <div class="folds"></div>
+    </div></div>
+
+    <!-- sc03 · 130.00–137.00 · 1983, the most respected Chinese American in the chip business (NIGHT) -->
+    <div class="d2-scene d2-night" id="pd02-sc03"><div class="d2-shot" id="pd02-sc03-shot">
+      <img id="pd02-sc03-map" src="assets/intro/maps/world_basemap_desat_2560.jpg" alt="" />
+      <canvas id="pd02-sc03-streaks" class="streaks"></canvas>
+      <div id="pd02-sc03-cam" class="d2-abs" style="inset:0">
+        <div id="pd02-sc03-blk"><i></i></div>
+        <div id="pd02-sc03-spot"></div>
+        <img id="pd02-sc03-sil" src="assets/intro/cutouts/silhouette_exec_night.png" alt="" />
+      </div>
+      <div id="pd02-sc03-yr" class="d2-abs t-display halate">1983</div>
+      <div id="pd02-sc03-bar"><i></i></div>
+      <div id="pd02-sc03-rule"></div>
+      <div id="pd02-sc03-sub" class="d2-abs t-serif-i clean"><span id="pd02-sc03-w1" class="d2-w">the </span><span id="pd02-sc03-w2" class="d2-w">most </span><span id="pd02-sc03-w3" class="d2-w">respected</span><br /><span id="pd02-sc03-w4" class="d2-w">Chinese </span><span id="pd02-sc03-w5" class="d2-w">American</span><br /><span id="pd02-sc03-w6" class="d2-w">in </span><span id="pd02-sc03-w7" class="d2-w">the </span><span id="pd02-sc03-w8" class="d2-w">chip </span><span id="pd02-sc03-w9" class="d2-w">business</span></div>
+    </div></div>
+
+    <!-- sc04 · 137.00–147.70 · 25,000 people across the world, one of the biggest companies (PAPER grid) -->
+    <div class="d2-scene d2-paper" id="pd02-sc04"><div class="d2-shot" id="pd02-sc04-shot">
+      <div class="d2-pg"><img class="p1" src="assets/textures/paper_cream_01.jpg" alt="" /><img class="gr" src="assets/textures/paper_graph_01_hires.jpg" alt="" /></div>
+      <div id="pd02-sc04-mapw"><img src="assets/intro/derived/maps/world_atlas_6480.jpg" alt="" /></div>
+      <svg id="pd02-sc04-svg" class="d2-svg" viewBox="0 0 1920 1080"></svg>
+      <div id="pd02-sc04-bw"><svg id="pd02-sc04-bld" viewBox="0 0 240 590"></svg></div>
+      <div id="pd02-sc04-icons"></div>
+      <div class="d2-circ" id="pd02-sc04-lead"><img src="assets/intro/cutouts/silhouette_exec.png" alt="" /></div>
+      <div id="pd02-sc04-num" class="d2-abs t-display"><span class="k" id="pd02-sc04-n">0</span></div>
+      <div id="pd02-sc04-ppl" class="d2-abs t-label">people</div>
+      <div id="pd02-sc04-key" class="d2-abs t-label">1 figure = 250 people</div>
+      <div class="folds"></div>
+    </div></div>
+
+    <!-- sc05 · 147.70–160.90 · share the plan with the adviser; if he approves, the board gives permission (PAPER lined) -->
+    <div class="d2-scene d2-paper" id="pd02-sc05"><div class="d2-shot" id="pd02-sc05-shot">
+      <div class="d2-pg"><img class="ln" src="assets/textures/paper_lined_01.jpg" alt="" /><img class="p2" src="assets/textures/paper_cream_02.jpg" alt="" /></div>
+      <div id="pd02-sc05-strip">
+        <svg id="pd02-sc05-mk"></svg>
+        <div class="d2-circ" id="pd02-sc05-c1" style="left:230px;top:390px;border-color:var(--copper);background:#efe2cf"><img src="assets/intro/cutouts/tsao_cutout.png" alt="" style="position:absolute;left:10px;top:-8px;width:240px;filter:url(#pd02-tint-cu)" /></div>
+        <div class="d2-circ" id="pd02-sc05-c2" style="left:870px;top:390px"><img class="sil" src="assets/intro/cutouts/silhouette_exec.png" alt="" /></div>
+        <div class="d2-circ" id="pd02-sc05-c3" style="left:1510px;top:390px;border-color:var(--copper);background:#efeee8"></div>
+        <div id="pd02-sc05-twn"><i></i></div>
+        <div id="pd02-sc05-twl" class="d2-abs t-display" style="left:1262px;top:296px;font-size:30px;letter-spacing:0.08em;color:var(--board-dark);opacity:0">TAIWAN</div>
+        <div id="pd02-sc05-folder"><div class="t t-label" id="pd02-sc05-plan">Plan</div><div id="pd02-sc05-stamp" class="t-display">APPROVED</div></div>
+        <div class="d2-chl" style="left:100px;top:690px"><span id="pd02-sc05-tsao" class="d2-w d2-tag cu t-label">Robert Tsao</span></div>
+        <div class="d2-chl" style="left:740px;top:690px"><span id="pd02-sc05-adv" class="d2-w d2-tag ash t-label">The adviser</span></div>
+        <div class="d2-chl" style="left:1380px;top:690px"><span id="pd02-sc05-brd" class="d2-w d2-tag cu t-label">UMC board</span></div>
+        <svg id="pd02-sc05-comp" viewBox="0 0 230 230"></svg>
+      </div>
+      <div class="folds"></div>
+      <div class="d2-credit ink t-label">Photo: Office of the President (ROC)</div>
+    </div></div>
+
+    <!-- sc06 · 160.90–164.25 · the first flight to New York (PAPER, tilted atlas) -->
+    <div class="d2-scene d2-paper" id="pd02-sc06"><div class="d2-shot" id="pd02-sc06-shot">
+      <div class="d2-pg"><img class="p1" src="assets/textures/paper_cream_01.jpg" alt="" /><img class="p2" src="assets/textures/paper_fiber_01.jpg" alt="" /></div>
+      <div id="pd02-sc06-tilt"><div id="pd02-sc06-plane"><div id="pd02-sc06-cam">
+        <img id="pd02-sc06-map" src="assets/intro/derived/maps/pacific_atlas_8550.jpg" alt="" />
+        <svg id="pd02-sc06-svg" viewBox="0 0 2850 720"></svg>
+        <div id="pd02-sc06-tw" class="t-display">TAIWAN</div>
+        <div id="pd02-sc06-ny" class="t-display">NEW YORK</div>
+      </div></div></div>
+      <div class="folds"></div>
+    </div></div>
+
+    <!-- sc07 · 164.25–166.74 · New York, the executive who's staying there (NIGHT poster) -->
+    <div class="d2-scene d2-night" id="pd02-sc07"><div class="d2-shot" id="pd02-sc07-shot">
+      <div id="pd02-sc07-cam"><div class="plate"><img class="img" src="assets/intro/paintings/twa_new_york_1958_klein.jpg" alt="" /><img class="fringe" src="assets/intro/paintings/twa_new_york_1958_klein.jpg" alt="" /></div></div>
+      <div id="pd02-sc07-shade"></div>
+      <img id="pd02-sc07-sil" src="assets/intro/cutouts/silhouette_exec_night.png" alt="" />
+      <div id="pd02-sc07-ny" class="d2-abs t-display halate">NEW YORK</div>
+      <div class="d2-credit t-label">Poster: David Klein, 1958 (public domain)</div>
+    </div></div>
+
+    <!-- fc2 · 166.74–168.70 · Sam: "And the meeting actually goes really well," -->
+    <div class="d2-scene" id="pd02-fc2"><div class="d2-fcw" id="pd02-fc2-fw"><video id="pd02-fc2-v" class="clip d2-vid" muted playsinline src="assets/facecam/pd_facecam_intro.mp4" data-start="52.9733" data-duration="1.96" data-media-start="166.74"></video></div></div>
+
+    <!-- sc08 · 168.70–174.20 · according to Tsao; dinner, the proposal in detail (NIGHT table) -->
+    <div class="d2-scene d2-night" id="pd02-sc08"><div class="d2-shot" id="pd02-sc08-shot">
+      <div id="pd02-sc08-cam"><div class="d2-table" id="pd02-sc08-tbl"></div></div>
+    </div></div>
+
+    <!-- sc09 · 174.20–178.00 · he flies back feeling on top of the world (NIGHT footage → clouds) -->
+    <div class="d2-scene d2-night" id="pd02-sc09"><div class="d2-shot" id="pd02-sc09-shot">
+      <div id="pd02-sc09-weave">
+        <video id="pd02-sc09-vid" class="clip" src="assets/intro/footage/jet_707_takeoff_hongkong.mp4" muted playsinline data-start="60.4333" data-duration="2.4" data-media-start="4.2"></video>
+      </div>
+      <div id="pd02-sc09-sky"></div>
+      <canvas id="pd02-sc09-streaks" class="streaks"></canvas>
+      <svg id="pd02-sc09-jet" viewBox="0 0 1920 1080"></svg>
+      <img id="pd02-sc09-sea" src="assets/maps/clouds/cloud_06_puffy.png" alt="" />
+      <img class="d2-cloud" id="pd02-sc09-c1" src="assets/maps/clouds/cloud_05_puffy.png" alt="" style="left:-500px;width:2400px" />
+      <img class="d2-cloud" id="pd02-sc09-c2" src="assets/maps/clouds/cloud_07_puffy.png" alt="" style="left:900px;width:1500px" />
+    </div></div>
+
+    <!-- fc3 · 178.00–180.40 · Sam: "he feels like he's gonna be ahead of everyone else," -->
+    <div class="d2-scene" id="pd02-fc3"><div class="d2-fcw" id="pd02-fc3-fw"><video id="pd02-fc3-v" class="clip d2-vid" muted playsinline src="assets/facecam/pd_facecam_intro.mp4" data-start="64.2333" data-duration="2.4" data-media-start="178"></video></div></div>
+
+    <!-- sc10 · 180.40–183.00 · changing the whole game in the chip business — Tsao's plan (PAPER grid) -->
+    <div class="d2-scene d2-paper" id="pd02-sc10"><div class="d2-shot" id="pd02-sc10-shot">
+      <div class="d2-pg"><img class="p1" src="assets/textures/paper_cream_02.jpg" alt="" /><img class="p2" src="assets/textures/paper_fiber_01.jpg" alt="" /></div>
+      <div id="pd02-sc10-cam">
+        <div id="pd02-sc10-tab"><i></i></div>
+        <div id="pd02-sc10-back"><i></i></div>
+        <div id="pd02-sc10-card"><img src="assets/textures/paper_graph_01_hires.jpg" alt="" /><svg id="pd02-sc10-svg" viewBox="0 0 780 520"></svg></div>
+      </div>
+      <div class="folds"></div>
+    </div></div>
+
+    <!-- fc4 · 183.00–185.50 · Sunkit: "UMC is asking this guy who's also in the same business." -->
+    <div class="d2-scene" id="pd02-fc4"><div class="d2-fcw" id="pd02-fc4-fw"><video id="pd02-fc4-v" class="clip d2-vid" muted playsinline src="assets/facecam/pd_facecam_intro.mp4" data-start="69.2333" data-duration="2.5" data-media-start="183"></video></div></div>
+
+    <!-- sc11 · 185.50–188.42 / 190.00–202.60 / 205.10–212.00 · the aside diagram (PAPER grid desk) -->
+    <div class="d2-scene d2-paper" id="pd02-sc11"><div class="d2-shot" id="pd02-sc11-shot">
+      <div class="d2-pg"><img class="p1" src="assets/textures/paper_cream_01.jpg" alt="" /><img class="gr" src="assets/textures/paper_graph_01_hires.jpg" alt="" style="transform:scale(1.8);object-position:40% 55%" /></div>
+      <div id="pd02-sc11-cam">
+        <svg id="pd02-sc11-mk" class="d2-svg"></svg>
+        <div class="d2-card" id="pd02-sc11-c1"><div class="in"><svg id="pd02-sc11-fac" viewBox="0 0 348 268" style="position:absolute;left:0;top:0;width:348px;height:268px"></svg></div><div class="tx2"></div><div class="d2-tape" style="left:115px;top:-20px;transform:rotate(-3deg)"></div></div>
+        <div class="d2-card" id="pd02-sc11-c2"><div class="in"><img src="assets/intro/cutouts/silhouette_exec.png" alt="" /></div><div class="tx2"></div><div class="d2-tape" style="left:115px;top:-20px;transform:rotate(2deg)"></div></div>
+        <div id="pd02-sc11-n1" class="d2-tag cu t-label" style="left:250px;top:630px;font-size:30px">UMC</div>
+        <div id="pd02-sc11-n2" class="d2-tag ash t-label" style="left:1290px;top:630px;font-size:30px">The executive</div>
+        <div id="pd02-sc11-tw" class="d2-tag gn t-label" style="left:250px;top:690px;opacity:0">Taiwan</div>
+        <div id="pd02-sc11-us" class="d2-tag pap t-label" style="left:1290px;top:690px;opacity:0">United States</div>
+        <div id="pd02-sc11-ca" class="d2-tag pap t-label" style="left:1290px;top:746px;opacity:0">Chinese American</div>
+        <div id="pd02-sc11-ttl" class="d2-abs"><span class="d2-tag t-label" style="position:relative;font-size:34px;padding:15px 24px 10px">The chip business</span></div>
+        <div id="pd02-sc11-adv" class="d2-abs t-label" style="left:660px;top:372px;width:600px;text-align:center;font-size:30px;color:var(--ink);opacity:0">Advice</div>
+        <div class="d2-mark" id="pd02-sc11-m1" style="left:300px;background:var(--copper)"></div>
+        <div class="d2-mark" id="pd02-sc11-m2" style="left:384px;background:var(--ash-light)"><img src="assets/intro/cutouts/silhouette_exec.png" alt="" style="position:absolute;left:-3px;bottom:-2px;width:64px" /></div>
+        <div id="pd02-sc11-new" class="d2-tag gn t-label" style="left:250px;top:770px;opacity:0">New to chips</div>
+        <div id="pd02-sc11-oldw" class="d2-abs" style="left:250px;top:918px;opacity:0"><div id="pd02-sc11-oldh" style="position:absolute;left:-8px;top:2px;width:306px;height:40px;background:var(--yellow);mix-blend-mode:multiply;transform-origin:0 50%;filter:url(#pd02-rough-hl)"></div><div class="t-label d2-ink" style="position:relative;font-size:30px;white-space:nowrap;padding-top:8px">The old stuff</div></div>
+      </div>
+      <div class="folds"></div>
+    </div></div>
+
+    <!-- fc5 · 188.42–190.00 · Sunkit: "But UMC is only in Taiwan?" -->
+    <div class="d2-scene" id="pd02-fc5"><div class="d2-fcw" id="pd02-fc5-fw"><video id="pd02-fc5-v" class="clip d2-vid" muted playsinline src="assets/facecam/pd_facecam_intro.mp4" data-start="74.6533" data-duration="1.58" data-media-start="188.42"></video></div></div>
+
+    <!-- fc6 · 202.60–205.10 · Sunkit: "So is this not like a competitor? Why is he advising" -->
+    <div class="d2-scene" id="pd02-fc6"><div class="d2-fcw" id="pd02-fc6-fw"><video id="pd02-fc6-v" class="clip d2-vid" muted playsinline src="assets/facecam/pd_facecam_intro.mp4" data-start="88.8333" data-duration="2.5" data-media-start="202.6"></video></div></div>
+
+    <!-- fc7 · 212.00–214.35 · Sam: "if you think about the geopolitics that we'll talk about later." -->
+    <div class="d2-scene" id="pd02-fc7"><div class="d2-fcw" id="pd02-fc7-fw"><video id="pd02-fc7-v" class="clip d2-vid" muted playsinline src="assets/facecam/pd_facecam_intro.mp4" data-start="98.2333" data-duration="2.35" data-media-start="212"></video></div></div>
+
+    <!-- sc12 · 214.35–224.25 · cutting edge in the United States vs the old stuff for Taiwan (NIGHT) -->
+    <div class="d2-scene d2-night" id="pd02-sc12"><div class="d2-shot" id="pd02-sc12-shot">
+      <div id="pd02-sc12-grid"></div>
+      <div id="pd02-sc12-cam">
+        <div class="d2-pan" id="pd02-sc12-pl"><svg id="pd02-sc12-dense" viewBox="0 0 620 620"></svg></div>
+        <div class="d2-pan" id="pd02-sc12-pr"><svg id="pd02-sc12-coarse" viewBox="0 0 620 620"></svg></div>
+        <div id="pd02-sc12-mini"><svg id="pd02-sc12-minis" viewBox="0 0 150 150"></svg></div>
+        <svg id="pd02-sc12-mk" class="d2-svg"></svg>
+        <div class="d2-circ" id="pd02-sc12-ex"><img src="assets/intro/cutouts/silhouette_exec.png" alt="" /></div>
+        <div id="pd02-sc12-ce" class="d2-abs t-display halate">CUTTING EDGE</div>
+        <div id="pd02-sc12-us" class="d2-abs t-label clean">United States</div>
+        <div id="pd02-sc12-old" class="d2-abs t-display">THE OLD STUFF</div>
+        <div id="pd02-sc12-tw" class="d2-abs t-label">Taiwan</div>
+      </div>
+    </div></div>
+
+    <!-- fc8 · 224.25–225.55 · Sunkit: "yeah. But he's not on the" -->
+    <div class="d2-scene" id="pd02-fc8"><div class="d2-fcw" id="pd02-fc8-fw"><video id="pd02-fc8-v" class="clip d2-vid" muted playsinline src="assets/facecam/pd_facecam_intro.mp4" data-start="110.4833" data-duration="1.3" data-media-start="224.25"></video></div></div>
+
+    <!-- sc13 · 225.55–227.37 · not on the board, just advising (PAPER) → whip out to pd03 -->
+    <div class="d2-scene d2-paper" id="pd02-sc13"><div class="d2-shot" id="pd02-sc13-shot">
+      <div class="d2-pg"><img class="p1" src="assets/textures/paper_cream_01.jpg" alt="" /><img class="p2" src="assets/textures/paper_cream_02.jpg" alt="" /></div>
+      <div id="pd02-sc13-cam" class="d2-abs" style="inset:0">
+        <div id="pd02-sc13-lab" class="d2-abs t-label">UMC board</div>
+        <div id="pd02-sc13-rule"></div>
+        <svg id="pd02-sc13-svg" class="d2-svg" viewBox="0 0 1920 1080"></svg>
+        <div id="pd02-sc13-seats"></div>
+        <div class="d2-circ" id="pd02-sc13-ex"><img class="sil" src="assets/intro/cutouts/silhouette_exec.png" alt="" /></div>
+        <div id="pd02-sc13-adv" class="d2-tag ash t-label" style="font-size:34px">Adviser</div>
+      </div>
+      <div class="folds"></div>
+    </div></div>
+
+    <!-- global overlays -->
+    <div id="pd02-flash"></div>
+    <div id="pd02-grain" class="tx tx-grain" style="background-image:url('assets/textures/grain_01_norm.jpg')"></div>
+    <div id="pd02-dust" class="tx tx-dust" style="background-image:url('assets/textures/dust_01.jpg')"></div>
+    <div id="pd02-vig" class="vignette"></div>
+    <audio id="pd02-vo" class="temp-vo" src="vo_pd.mp3" data-start="0" data-duration="113.6" data-media-start="113.7667" data-volume="1"></audio>
+  </div>
+  <script>
+  (function () {
+    const SEG = "pd02", SEG_START = 113.7667, DURATION = 113.6, SEG_END = SEG_START + DURATION;
+    const T = (s) => +(s - SEG_START).toFixed(4);   // TEXT cues (audited): literal master word starts, minus L
+    const S = (s) => +(s - SEG_START).toFixed(4);   // STRUCTURAL cues (cuts, camera, objects)
+    const L = 0.06;
+    const tl = gsap.timeline({ paused: true });
+    const $ = (id) => document.getElementById(SEG + "-" + id);
+    const NS = "http://www.w3.org/2000/svg";
+    const defs = $("defs");
+    const E = FX.ease;
+    const C = (e, d) => FX.choppy(e, d, 12);
+    const INK = "#161a24", BONE = "#eeeee8", PAPER = "#e7e6df", COPPER = "#e0882a", COPPER_D = "#8a4f0f", COPPER_L = "#f6c98a",
+      BOARD = "#2f9e5b", BOARD_D = "#17603a", BOARD_L = "#9bd8b0", ASH = "#878c96", ASH_L = "#c2c5ca", ASH_D = "#343843";
+
+    // ---------- shared filters ----------
+    FX.tintDefs(defs, "pd02-tint-cu", "#3a2106", "#fbe9cf");
+    FX.roughDefs(defs, "pd02-rough-hl", { freq: 0.05, scale: 7 });
+
+    // ---------- helpers ----------
+    function gated(a, b, fn) { const on = FX.onFrame; FX.onFrame = (f) => on(FX.gate(S(a) - 0.1, S(b) + 0.1, f)); try { return fn(); } finally { FX.onFrame = on; } }
+    function scene(id, a, b) {
+      const n = $(id);
+      if (S(a) <= 0) gsap.set(n, { autoAlpha: 1 });
+      else tl.fromTo(n, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.001, immediateRender: false }, S(a));
+      if (b < SEG_END - 0.01) tl.set(n, { autoAlpha: 0 }, S(b));
+    }
+    function ground(kind, t) {
+      const v = kind === "paper" ? [0.3, 0.14, 0.24] : kind === "face" ? [0, 0, 0] : [0.9, 0.38, 0.34];
+      if (t <= 0) gsap.set([$("vig"), $("dust"), $("grain")], { opacity: (i) => v[i] });
+      else tl.set([$("vig"), $("dust"), $("grain")], { opacity: (i) => v[i] }, t);
+    }
+    const node = (x) => (typeof x === "string" ? $(x) : x);
+    const rise = (x, t, o) => { o = o || {}; const d = o.dur || 0.9;
+      tl.fromTo(node(x), { opacity: 0, y: o.y == null ? 18 : o.y }, { opacity: 1, y: 0, duration: d, ease: C(E.out, d), immediateRender: true }, t); };
+    const pop = (x, t, o) => { o = o || {}; const d = o.dur || 0.9;
+      tl.fromTo(node(x), { opacity: 0, scale: o.from == null ? 0.6 : o.from }, { opacity: 1, scale: 1, duration: d, ease: C(E.out, d), immediateRender: true }, t); };
+    const out = (x, t, d) => tl.to(node(x), { opacity: 0, duration: d || 0.3, ease: E.in }, t);
+    function el(parent, tag, attrs) { const n = document.createElementNS(NS, tag); for (const k in attrs) n.setAttribute(k, attrs[k]); parent.appendChild(n); return n; }
+    function ink(parent, d, t, dur, o) {
+      o = o || {};
+      const p = el(parent, "path", { d: d, fill: "none", stroke: o.color || INK, "stroke-width": o.width || 6, "stroke-linecap": "round", "stroke-linejoin": "round" });
+      if (o.filter) p.setAttribute("filter", o.filter);
+      if (o.opacity != null) p.setAttribute("opacity", o.opacity);
+      const len = (p.getTotalLength && p.getTotalLength()) || 1000;
+      p.setAttribute("stroke-dasharray", len + " " + len); p.setAttribute("stroke-dashoffset", len);
+      gsap.set(p, { visibility: "hidden" });
+      tl.set(p, { visibility: "visible" }, t);
+      tl.fromTo(p, { attr: { "stroke-dashoffset": len } }, { attr: { "stroke-dashoffset": 0 }, duration: dur, ease: o.ease || C(E.inOut, dur), immediateRender: true }, t);
+      p._len = len; return p;
+    }
+    // dashed line drawn on through a mask (the dashes never show before the line reaches them)
+    const dashN = { n: 0 };
+    function dashDraw(svg, d, t, dur, o) {
+      o = o || {};
+      const id = SEG + "-dm" + (++dashN.n);
+      const m = el(svg, "mask", { id: id, maskUnits: "userSpaceOnUse", x: -200, y: -400, width: 3400, height: 1600 });
+      const mp = el(m, "path", { d: d, fill: "none", stroke: "#fff", "stroke-width": (o.width || 6) + 8, "stroke-linecap": "round" });
+      const len = mp.getTotalLength() || 1000;
+      mp.setAttribute("stroke-dasharray", len + " " + len); mp.setAttribute("stroke-dashoffset", len);
+      const p = el(svg, "path", { d: d, fill: "none", stroke: o.color || INK, "stroke-width": o.width || 6, "stroke-linecap": "round", "stroke-dasharray": o.dash || "16 14", mask: "url(#" + id + ")" });
+      tl.fromTo(mp, { attr: { "stroke-dashoffset": len } }, { attr: { "stroke-dashoffset": 0 }, duration: dur, ease: o.ease || E.cam, immediateRender: true }, t);
+      p._len = len; p._mp = mp; return p;
+    }
+    const whipN = { n: 0 };
+    function whip(a, b, t, o) {
+      o = Object.assign({ dir: 1, vertical: false, flash: false, dur: 0.32 }, o);
+      const A = $(a + "-shot"), B = $(b + "-shot");
+      const k = ++whipN.n, ba = FX.whipDefs(defs, SEG + "-wa" + k), bb = FX.whipDefs(defs, SEG + "-wb" + k), h = o.dur / 2;
+      tl.set(A, { filter: "url(#" + SEG + "-wa" + k + ")" }, t - h - 0.01); tl.set(A, { filter: "none" }, t + 0.06);
+      tl.set(B, { filter: "url(#" + SEG + "-wb" + k + ")" }, t - 0.001); tl.set(B, { filter: "none" }, t + h + 0.02);
+      FX.whip(tl, A, B, t, { dir: o.dir, vertical: o.vertical, dur: o.dur, blurA: ba, blurB: bb });
+      if (o.flash) tl.fromTo($("flash"), { opacity: 0 }, { opacity: 0.85, duration: 0.08, yoyo: true, repeat: 1, ease: "power2.in", immediateRender: false }, t - 0.08);
+    }
+    // face-cam pop-in: clean picture, slow punch-in about a point above the face
+    function face(id, a, b, s0, s1, ox, oy) {
+      scene(id, a, b); ground("face", S(a));
+      const w = $(id + "-fw");
+      gsap.set(w, { transformOrigin: ox + "px " + oy + "px", scale: s0 });
+      tl.fromTo(w, { scale: s0 }, { scale: s1, duration: b - a, ease: "none", immediateRender: false }, S(a));
+    }
+    // board seats (12: 5 inner + 7 outer), ordered left → right
+    function seats(box, cx, cy) {
+      const s = [];
+      [[300, 5], [420, 7]].forEach(([r, n]) => { for (let k = 0; k < n; k++) { const a = Math.PI - (k / (n - 1)) * Math.PI; s.push({ a: a, x: cx + Math.cos(a) * r, y: cy - Math.sin(a) * r }); } });
+      s.sort((p, q) => q.a - p.a || p.y - q.y);
+      return s.map((p) => { const d = document.createElement("div"); d.className = "d2-seat"; d.style.left = p.x.toFixed(1) + "px"; d.style.top = p.y.toFixed(1) + "px"; d.innerHTML = "<i></i>"; box.appendChild(d); return d; });
+    }
+    const ICON = {
+      phone: '<rect x="10" y="22" width="44" height="30" rx="6"/><path d="M8 22 Q32 6 56 22"/><circle cx="24" cy="34" r="2.5"/><circle cx="32" cy="34" r="2.5"/><circle cx="40" cy="34" r="2.5"/><circle cx="24" cy="43" r="2.5"/><circle cx="32" cy="43" r="2.5"/><circle cx="40" cy="43" r="2.5"/>',
+      tv: '<rect x="8" y="14" width="48" height="36" rx="6"/><rect x="14" y="20" width="30" height="24" rx="4"/><circle cx="50" cy="24" r="2.5"/><path d="M22 14 L16 4 M42 14 L48 4 M18 50 L14 58 M46 50 L50 58"/>',
+      calc: '<rect x="14" y="6" width="36" height="52" rx="4"/><rect x="19" y="12" width="26" height="10"/><path d="M20 30h6M29 30h6M38 30h6M20 38h6M29 38h6M38 38h6M20 46h6M29 46h6M38 46h6"/>',
+      pc: '<rect x="10" y="8" width="44" height="32" rx="3"/><rect x="15" y="13" width="34" height="22"/><path d="M26 40 L24 48 M38 40 L40 48"/><rect x="8" y="48" width="48" height="8" rx="2"/>',
+      factory: '<path d="M6 58 V30 L22 40 V30 L38 40 V30 L54 40 V14 H62 V58Z"/><path d="M14 50h6M28 50h6M42 50h6"/>',
+    };
+    function icon(parent, name, x, y, s, color, w) {
+      const g = el(parent, "g", { transform: "translate(" + x + " " + y + ") scale(" + s + ")", fill: "none", stroke: color, "stroke-width": w || 3, "stroke-linecap": "round", "stroke-linejoin": "round" });
+      g.innerHTML = ICON[name]; return g;
+    }
+
+    // ---------- global textures ----------
+    FX.grain($("grain"), 211);
+    FX.dust($("dust"), 212, 2);
+    ground("paper", 0);
+
+    /* ============ sc01 · 113.77–124.46 · the board says yes … one condition ============ */
+    scene("sc01", 113.7667, 124.46);
+    (function () {
+      const st = seats($("sc01-seats"), 960, 780);
+      // fresh shot, already moving on frame 0: the seats land one after another, the table line draws, slow push
+      gsap.set("#pd02-sc01-page", { transformOrigin: "960px 620px", scale: 1.06 });
+      tl.fromTo("#pd02-sc01-page", { scale: 1.06 }, { scale: 1.0, duration: 7.2, ease: "none", immediateRender: false }, 0);
+      st.forEach((d, i) => { gsap.set(d, { opacity: i < 4 ? 1 : 0, scale: i < 4 ? 1 : 0.4 });
+        if (i >= 4) tl.to(d, { opacity: 1, scale: 1, duration: 0.5, ease: C(E.out, 0.5) }, 0.02 + (i - 4) * 0.085); });
+      tl.fromTo("#pd02-sc01-base", { scaleX: 0.3 }, { scaleX: 1, duration: 1.1, ease: C(E.out, 1.1), immediateRender: true }, 0);
+      tl.fromTo("#pd02-sc01-rule", { scaleX: 0 }, { scaleX: 1, duration: 0.7, ease: C(E.out, 0.7), immediateRender: true }, S(115.3));
+      rise("sc01-lab", T(115.41) - L, { y: 10, dur: 0.5 });
+      // "when he goes to the board": Tsao's token walks up to the table
+      tl.fromTo("#pd02-sc01-tsao", { y: 420, opacity: 0 }, { y: 0, opacity: 1, duration: 1.0, ease: C(E.out, 1.0), immediateRender: true }, S(114.62));
+      // "pretty excited": the seats turn copper one by one (12 fps)
+      st.forEach((d, i) => tl.to(d.firstChild, { opacity: 1, duration: 0.001 }, S(115.81) + i / 12));
+      st.forEach((d, i) => tl.fromTo(d, { y: 0 }, { y: -12, duration: 0.14, yoyo: true, repeat: 1, ease: "sine.out", immediateRender: false }, S(115.81) + i / 12));
+      // YES stamp on "yes"
+      tl.fromTo("#pd02-sc01-yesw", { opacity: 0, scale: 2.1, rotation: -15 }, { opacity: 1, scale: 1, rotation: -7, duration: 0.25, ease: C("power3.in", 0.25), immediateRender: true }, T(119.01) - L);
+      tl.fromTo("#pd02-sc01-page", { x: 0 }, { x: 7, duration: 0.05, yoyo: true, repeat: 3, ease: "none", immediateRender: false }, S(119.21));
+      // "But …": asterisk on the YES, then the camera tilts down to the clipped note
+      pop("sc01-ast", S(121.05), { from: 1.7, dur: 0.5 });
+      tl.to("#pd02-sc01-page", { y: -380, duration: 1.5, ease: E.cam }, S(121.7));
+      tl.fromTo("#pd02-sc01-note", { y: 380, rotation: 5 }, { y: 0, rotation: -1.5, duration: 1.0, ease: C(E.out, 1.0), immediateRender: true }, S(122.0));
+      tl.fromTo("#pd02-sc01-clip", { y: -160, opacity: 0 }, { y: 0, opacity: 1, duration: 0.4, ease: C(E.out, 0.4), immediateRender: true }, S(122.85));
+      pop("sc01-w0", S(123.2), { from: 1.5, dur: 0.4 });
+      rise("sc01-w1", T(123.62) - L, { dur: 0.4, y: 10 });
+      rise("sc01-w2", T(123.86) - L, { dur: 0.4, y: 10 });
+      tl.fromTo("#pd02-sc01-hl", { scaleX: 0 }, { scaleX: 1, duration: 0.3, ease: C("sine.inOut", 0.3), immediateRender: true }, S(123.95));
+      tl.to("#pd02-sc01-page", { y: -392, duration: 1.3, ease: "none" }, S(123.2));
+    })();
+
+    /* ============ fc1 · 124.46–126.10 · Sam ============ */
+    face("fc1", 124.46, 126.10, 1.05, 1.085, 1040, 300);
+
+    /* ============ sc02 · 126.10–130.00 · advice from a chip executive in the United States ============ */
+    scene("sc02", 126.10, 130.0);
+    ground("paper", S(126.10));
+    (function () {
+      const s = $("sc02-svg"), Z = 1.6;
+      const cam = (cx, cy) => ({ x: 960 - cx * Z, y: 540 - cy * Z, scale: Z });
+      const tp = [173.5, 464.5], us = [2290, 262];
+      // Taiwan pin (board green) + ring
+      el(s, "circle", { cx: tp[0], cy: tp[1], r: 11, fill: BOARD, stroke: INK, "stroke-width": 2.5 });
+      const ring = el(s, "circle", { cx: tp[0], cy: tp[1], r: 11, fill: "none", stroke: BOARD_D, "stroke-width": 3 });
+      tl.fromTo(ring, { attr: { r: 11 }, opacity: 1 }, { attr: { r: 52 }, opacity: 0, duration: 1.1, ease: C(E.out, 1.1), immediateRender: true }, S(126.10));
+      // the advice line: dashed, travelling east while the camera follows it to its source
+      const d = "M" + (tp[0] + 20) + " " + (tp[1] - 12) + " Q1200 60 " + (us[0] - 90) + " " + (us[1] + 20);
+      dashDraw(s, d, S(126.85), 1.7, { width: 4.5, dash: "12 10", ease: E.cam });
+      const head = el(s, "path", { d: "M" + (tp[0] + 44) + " " + (tp[1] - 44) + " L" + (tp[0] + 17) + " " + (tp[1] - 15) + " L" + (tp[0] + 56) + " " + (tp[1] - 12), fill: "none", stroke: INK, "stroke-width": 4.5, "stroke-linecap": "round", "stroke-linejoin": "round", opacity: 0 });
+      tl.set(head, { opacity: 1 }, S(126.8));
+      gsap.set("#pd02-sc02-cam", cam(610, 372));
+      tl.fromTo("#pd02-sc02-cam", cam(610, 372), Object.assign(cam(640, 368), { duration: 0.75, ease: "none", immediateRender: false }), S(126.10));
+      tl.to("#pd02-sc02-cam", Object.assign(cam(2110, 342), { duration: 1.75, ease: E.cam }), S(126.85));
+      tl.to("#pd02-sc02-cam", Object.assign(cam(2135, 340), { duration: 1.4, ease: "none" }), S(128.6));
+      // pinned card of the unnamed executive (silhouette, neutral)
+      tl.fromTo("#pd02-sc02-cardw", { opacity: 0, y: -46, rotation: -6, transformOrigin: "2290px 150px" }, { opacity: 1, y: 0, rotation: 0, duration: 0.5, ease: C(E.out, 0.5), immediateRender: true }, T(128.10) - L);
+      rise("sc02-us", T(129.14) - L, { y: 8, dur: 0.5 });
+    })();
+    whip("sc02", "sc03", S(130.0), { dir: 1 });
+
+    /* ============ sc03 · 130.00–137.00 · the unnamed executive, 1983 ============ */
+    scene("sc03", 130.0, 137.0);
+    ground("night", S(130.0));
+    (function () {
+      gated(129.9, 137.1, () => FX.streaks($("sc03-streaks"), { seed: 2501, speed: 0.35, gain: 0.7 }));
+      tl.fromTo("#pd02-sc03-cam", { scale: 1.08, transformOrigin: "30% 60%" }, { scale: 1.0, duration: 7.0, ease: "none", immediateRender: true }, S(130.0));
+      tl.fromTo("#pd02-sc03-blk", { scaleY: 0, transformOrigin: "50% 100%" }, { scaleY: 1, duration: 0.9, ease: C(E.out, 0.9), immediateRender: true }, S(130.02));
+      tl.fromTo("#pd02-sc03-sil", { y: 60 }, { y: 0, duration: 1.2, ease: C(E.out, 1.2), immediateRender: true }, S(130.02));
+      tl.fromTo("#pd02-sc03-bar", { scaleX: 0 }, { scaleX: 1, duration: 0.8, ease: C(E.out, 0.8), immediateRender: true }, S(130.3));
+      pop("sc03-yr", T(131.38) - L, { from: 0.86, dur: 0.9 });
+      tl.fromTo("#pd02-sc03-rule", { scaleX: 0 }, { scaleX: 1, duration: 0.5, ease: C(E.out, 0.5), immediateRender: true }, S(132.7));
+      [T(132.90) - L, T(133.06) - L, T(133.30) - L, T(133.94) - L, T(134.42) - L, T(134.82) - L, T(134.98) - L, T(135.06) - L, T(135.54) - L]
+        .forEach((c, i) => rise("sc03-w" + (i + 1), c, { y: 10, dur: 0.45 }));
+      // "in the whole world": the ghost world map behind him comes up and drifts
+      tl.fromTo("#pd02-sc03-map", { x: 0 }, { x: -70, duration: 7.0, ease: "none", immediateRender: true }, S(130.0));
+      tl.to("#pd02-sc03-map", { opacity: 0.24, duration: 0.8, ease: C(E.out, 0.8) }, S(135.9));
+    })();
+    whip("sc03", "sc04", S(137.0), { dir: -1, vertical: true });
+
+    /* ============ sc04 · 137.00–147.70 · 25,000 people, across the world, for one of the biggest companies ============ */
+    scene("sc04", 137.0, 147.72);
+    ground("paper", S(137.0));
+    (function () {
+      const box = $("sc04-icons"), svg = $("sc04-svg");
+      const P = '<svg viewBox="0 0 46 52" width="46" height="52"><circle cx="23" cy="11" r="9" fill="' + ASH_D + '"/><path d="M5 52 V36 Q5 23 23 23 Q41 23 41 36 V52Z" fill="' + ASH_D + '"/></svg>';
+      const ic = [];
+      for (let r = 0; r < 10; r++) for (let c = 0; c < 10; c++) { const d = document.createElement("div"); d.className = "d2-ico"; d.style.left = (1033 + c * 60) + "px"; d.style.top = (236 + r * 60) + "px"; d.innerHTML = P; box.appendChild(d); ic.push(d); }
+      // "He was managing a team": the silhouette leads the grid
+      pop("sc04-lead", S(137.12), { dur: 0.7 });
+      ink(svg, "M1300 190 L1300 200", S(137.5), 0.2, { width: 3 });
+      ink(svg, "M1012 222 L1012 204 L1588 200 L1588 222", S(137.6), 0.5, { width: 3 });
+      ic.forEach((d, i) => tl.set(d, { opacity: 1 }, S(137.62) + Math.floor(i / 6) / 12));   // full by 139.0
+      tl.set("#pd02-sc04-num", { opacity: 1 }, T(138.42) - L);
+      FX.text.count(tl, $("sc04-n"), T(138.42) - L, 0, 25000, 0.9, (v) => Math.round(v).toLocaleString("en-US"));
+      rise("sc04-ppl", T(139.46) - L, { dur: 0.5, y: 8 });
+      rise("sc04-key", S(138.9), { dur: 0.5, y: 6 });
+      // "spread across the whole world": the figures leave the grid for the map
+      const MP = (lon, lat) => [660 + (lon + 180) / 360 * 1200, 300 + (90 - lat) / 180 * 600];
+      const CL = [[-97, 33, 14], [-75, 41, 8], [-120, 37, 6], [-101, 22, 5], [-89, 14, 4], [-47, -20, 5], [-62, -33, 4], [-2, 53, 6], [2, 46, 6], [10, 50, 6], [12, 42, 5], [-8, 39, 3],
+        [138, 36, 8], [121, 24, 4], [122, 13, 5], [102, 4, 4], [104, 1, 3], [77, 20, 2], [147, -33, 2]];
+      const rnd = FX.rng(404), dest = [], hubs = [];
+      CL.forEach((c) => { const p = MP(c[0], c[1]); hubs.push(p); for (let k = 0; k < c[2]; k++) { const a = rnd() * 6.283, r = Math.sqrt(rnd()) * (9 + c[2] * 2.2); dest.push([p[0] + Math.cos(a) * r * 1.3, p[1] + Math.sin(a) * r]); } });
+      tl.to("#pd02-sc04-mapw", { opacity: 0.9, duration: 0.7, ease: C(E.out, 0.7) }, S(139.95));
+      out("sc04-lead", S(140.0), 0.3); out("sc04-key", S(140.0), 0.3);
+      tl.to(svg.querySelectorAll("path"), { opacity: 0, duration: 0.3 }, S(140.0));
+      ic.forEach((d, i) => { const q = dest[(i * 37) % 100], x0 = 1033 + (i % 10) * 60, y0 = 236 + Math.floor(i / 10) * 60;
+        tl.to(d, { x: q[0] - x0, y: q[1] - y0, scale: 0.4, duration: 1.1, ease: C(E.inOut, 1.1) }, S(140.12) + ((i * 7) % 10) * 0.035); });   // landed by 141.6
+      // "making chips for his company": thin lines run from every site to one building; "biggest": it keeps rising
+      const b = $("sc04-bld");
+      el(b, "path", { d: "M20 590 V70 H80 V30 H160 V70 H220 V590Z", fill: "rgba(214,213,204,0.92)", stroke: INK, "stroke-width": 4 });
+      el(b, "path", { d: "M120 30 V2", stroke: INK, "stroke-width": 4 });
+      for (let r = 0; r < 12; r++) for (let c = 0; c < 4; c++) el(b, "rect", { x: 40 + c * 44, y: 96 + r * 40, width: 28, height: 22, fill: "none", stroke: "rgba(22,26,36,0.5)", "stroke-width": 2 });
+      gsap.set(b, { y: 600 });
+      tl.to(b, { y: 300, duration: 0.9, ease: C(E.out, 0.9) }, S(142.3));
+      hubs.forEach((p, i) => ink(svg, "M" + p[0].toFixed(0) + " " + p[1].toFixed(0) + " Q" + ((p[0] + 372) / 2).toFixed(0) + " " + (p[1] - 90 - (i % 4) * 22).toFixed(0) + " 372 " + (760 + (i % 5) * 9), S(142.55) + i * 0.05, 0.9, { width: 2.2, opacity: 0.55 }));   // drawn by 144.4
+      tl.to(b, { y: 0, duration: 1.2, ease: C(E.out, 1.2) }, S(145.16));   // full height 146.36, holds
+      // slow push; paper slide out into the chain
+      tl.fromTo("#pd02-sc04-shot", { scale: 1.0 }, { scale: 1.03, duration: 10.3, ease: "none", immediateRender: false }, S(137.2));
+      tl.to("#pd02-sc04", { x: -1920, duration: 0.4, ease: E.in }, S(147.32));
+    })();
+
+    /* ============ sc05 · 147.70–160.90 · share the plan with the adviser → approval → the board's permission ============ */
+    scene("sc05", 147.32, 160.92);
+    tl.fromTo("#pd02-sc05", { x: 1920 }, { x: 0, duration: 0.4, ease: E.in, immediateRender: false }, S(147.32));
+    (function () {
+      const mk = $("sc05-mk");
+      const f = gated(147.3, 161.0, () => FX.markupDefs(mk, "pd02-mk05", { boil: 4 })); mk.setAttribute("viewBox", "0 0 3400 1080");
+      // board circle = three copper seats
+      [[66, 70], [134, 62], [100, 130]].forEach(([x, y]) => { const d = document.createElement("div"); d.className = "d2-seat"; d.style.cssText = "left:" + (x + 30) + "px;top:" + (y + 30) + "px;background:" + COPPER; $("sc05-c3").appendChild(d); });
+      // Taiwan token: a simple island glyph on board green
+      const tw = el($("sc05-twn"), "svg", { viewBox: "0 0 86 86" });
+      el(tw, "path", { d: "M50 12 C58 18 60 30 56 44 C53 56 48 68 42 76 C38 70 34 60 34 48 C34 34 40 20 50 12Z", fill: "#eeeee8", opacity: 0.92 });
+      gsap.set("#pd02-sc05-twn", { opacity: 0, scale: 0.5 });
+      gsap.set("#pd02-sc05-strip", { x: 300 });
+      tl.fromTo("#pd02-sc05-strip", { x: 300 }, { x: 250, duration: 5.9, ease: "none", immediateRender: false }, S(147.7));
+      tl.to("#pd02-sc05-strip", { x: -360, duration: 1.5, ease: E.cam }, S(153.55));
+      tl.to("#pd02-sc05-strip", { x: -390, duration: 1.6, ease: "none" }, S(155.05));
+      tl.to("#pd02-sc05-strip", { x: -1085, duration: 1.4, ease: E.cam }, S(157.75));
+      tl.to("#pd02-sc05-strip", { x: -1110, duration: 1.6, ease: "none" }, S(159.15));
+      pop("sc05-c1", S(147.75), { dur: 0.8 });
+      rise("sc05-tsao", T(148.90) - L, { dur: 0.5, y: 10 });
+      // the plan travels to the adviser
+      ink(mk, "M505 530 Q680 486 852 526", S(149.8), 0.9, { width: 6, filter: f });
+      ink(mk, "M826 498 L856 527 L820 548", S(150.6), 0.2, { width: 6, filter: f });
+      tl.fromTo("#pd02-sc05-folder", { x: -70, opacity: 0, rotation: -8 }, { x: 0, opacity: 1, rotation: 0, duration: 0.4, ease: C(E.out, 0.4), immediateRender: true }, S(150.0));
+      rise("sc05-plan", T(150.42) - L, { y: 6, dur: 0.4 });
+      tl.to("#pd02-sc05-folder", { x: 80, y: -34, rotation: 3, duration: 0.8, ease: C(E.inOut, 0.8) }, S(150.45));
+      pop("sc05-c2", S(150.85), { dur: 0.7 });
+      rise("sc05-adv", T(151.14) - L, { dur: 0.5, y: 10 });
+      // "who's been advising Taiwan all this time"
+      ink(mk, "M1108 432 Q1130 392 1152 350", S(152.0), 0.4, { width: 4, filter: f });
+      pop("sc05-twn", S(152.2), { dur: 0.6, from: 0.5 });
+      rise("sc05-twl", T(152.42) - L, { dur: 0.45, y: 8 });
+      // "if this guy approves": stamp on the plan
+      tl.fromTo("#pd02-sc05-stamp", { opacity: 0, scale: 2.2 }, { opacity: 1, scale: 1, duration: 0.2, ease: C("power3.in", 0.2), immediateRender: true }, T(154.58) - L);
+      tl.fromTo("#pd02-sc05-folder", { rotation: 3 }, { rotation: 5.5, duration: 0.06, yoyo: true, repeat: 1, immediateRender: false }, S(154.74));
+      // → the board
+      ink(mk, "M1150 530 Q1330 486 1492 526", S(155.9), 0.8, { width: 6, filter: f });
+      ink(mk, "M1466 498 L1496 527 L1460 548", S(156.6), 0.2, { width: 6, filter: f });
+      tl.to("#pd02-sc05-folder", { x: 725, y: -34, rotation: -2, duration: 1.0, ease: C(E.inOut, 1.0) }, S(155.9));
+      pop("sc05-c3", S(156.5), { dur: 0.6 });
+      rise("sc05-brd", T(156.98) - L, { dur: 0.5, y: 10 });
+      ink(mk, "M1712 410 L1745 452 L1808 360", T(157.62) - L, 0.35, { width: 10, filter: f, color: COPPER_D });   // permission = the board's tick
+      // "change the business however he sees fit": the factory turns on its compass
+      ink(mk, "M1790 530 Q2010 486 2232 522", S(158.2), 0.7, { width: 6, filter: f });
+      ink(mk, "M2206 494 L2236 523 L2200 544", S(158.8), 0.2, { width: 6, filter: f });
+      const cp = $("sc05-comp");
+      el(cp, "circle", { cx: 115, cy: 115, r: 104, fill: "rgba(239,238,232,0.8)", stroke: INK, "stroke-width": 3 });
+      el(cp, "path", { d: "M115 14 L128 115 L115 216 L102 115Z", fill: "none", stroke: INK, "stroke-width": 3 });
+      el(cp, "path", { d: "M14 115 L115 102 L216 115 L115 128Z", fill: "none", stroke: "rgba(22,26,36,0.5)", "stroke-width": 2 });
+      const bgO = el(cp, "g", {}); icon(bgO, "factory", 83, 80, 1.0, COPPER_D, 3.6);
+      pop(cp, S(158.45), { dur: 0.7 });
+      const rot = { a: 0 };
+      tl.to(rot, { a: 90, duration: 1.0, ease: C(E.inOut, 1.0), onUpdate: () => bgO.setAttribute("transform", "rotate(" + rot.a.toFixed(1) + " 115 115)") }, S(158.9));   // turned by 159.9, holds
+      // cut on action: the plan flies off → the plane
+      tl.to("#pd02-sc05-folder", { x: 2700, y: -300, rotation: 12, duration: 0.5, ease: E.in }, S(160.42));
+    })();
+
+    /* ============ sc06 · 160.90–164.25 · the first flight to New York ============ */
+    scene("sc06", 160.92, 164.25);
+    (function () {
+      const s = $("sc06-svg");
+      const tp = [173.5, 464.5], ny = [2640, 229.5];
+      el(s, "circle", { cx: tp[0], cy: tp[1], r: 15, fill: BOARD, stroke: INK, "stroke-width": 3 });
+      const ring = el(s, "circle", { cx: tp[0], cy: tp[1], r: 15, fill: "none", stroke: COPPER, "stroke-width": 4 });
+      tl.fromTo(ring, { attr: { r: 15 }, opacity: 1 }, { attr: { r: 70 }, opacity: 0, duration: 1.2, ease: C(E.out, 1.2), immediateRender: true }, S(161.3));
+      const nyd = el(s, "circle", { cx: ny[0], cy: ny[1], r: 14, fill: INK, opacity: 0 });
+      const dd = "M" + tp[0] + " " + tp[1] + " Q1400 -160 " + ny[0] + " " + ny[1];
+      const route = dashDraw(s, dd, S(162.35), 1.2, { width: 7, dash: "22 16", ease: "sine.inOut" });   // lands 163.55
+      tl.set(nyd, { opacity: 1 }, S(163.5));
+      const plane = el(s, "g", { opacity: 0 });
+      el(plane, "path", { d: "M-44 0 L30 -6 Q46 0 30 6 Z M-6 -4 L-22 -38 L-10 -38 L14 -4Z M-6 4 L-22 38 L-10 38 L14 4Z M-40 -2 L-50 -16 L-42 -16 L-30 -2Z M-40 2 L-50 16 L-42 16 L-30 2Z", fill: INK });
+      const RL = route._len, PTS = [];
+      for (let i = 0; i <= 120; i++) { const p = route.getPointAtLength(RL * i / 120); PTS.push([p.x, p.y]); }
+      const st = { u: 0 };
+      const place = () => { const k = Math.min(119, Math.floor(st.u * 120)), p = PTS[k], q = PTS[k + 1], fr = st.u * 120 - k, x = p[0] + (q[0] - p[0]) * fr, y = p[1] + (q[1] - p[1]) * fr;
+        plane.setAttribute("transform", "translate(" + x.toFixed(1) + " " + y.toFixed(1) + ") rotate(" + (Math.atan2(q[1] - p[1], q[0] - p[0]) * 180 / Math.PI).toFixed(1) + ") scale(1.6)"); };
+      place();
+      tl.set(plane, { attr: { opacity: 1 } }, S(162.35));
+      tl.fromTo(st, { u: 0 }, { u: 1, duration: 1.2, ease: "sine.inOut", onUpdate: place, immediateRender: false }, S(162.35));
+      const cam = (cx, cy, z) => ({ x: 960 - cx * z, y: 560 - cy * z, scale: z });
+      gsap.set("#pd02-sc06-cam", cam(430, 420, 1.55));
+      tl.fromTo("#pd02-sc06-cam", cam(430, 420, 1.55), Object.assign(cam(340, 440, 1.45), { duration: 1.3, ease: E.cam, immediateRender: false }), S(160.92));
+      FX.focusHunt(tl, $("sc06-plane"), S(160.98), { dur: 0.7, a: 3, b: 5 });
+      tl.to("#pd02-sc06-cam", Object.assign(cam(1560, 330, 0.62), { duration: 1.4, ease: E.cam }), S(162.25));
+      rise("sc06-ny", T(163.78) - L, { y: 10, dur: 0.4 });
+    })();
+    whip("sc06", "sc07", S(164.25), { dir: 1, flash: true });
+
+    /* ============ sc07 · 164.25–166.74 · New York, where the executive is staying ============ */
+    scene("sc07", 164.25, 166.74);
+    ground("night", S(164.26));
+    (function () {
+      tl.fromTo("#pd02-sc07-cam", { scale: 1.06 }, { scale: 1.13, duration: 2.5, ease: "none", immediateRender: true }, S(164.25));
+      tl.fromTo("#pd02-sc07-sil", { x: 520, opacity: 0 }, { x: 0, opacity: 1, duration: 0.7, ease: C(E.out, 0.7), immediateRender: true }, S(165.16));
+    })();
+
+    /* ============ fc2 · 166.74–168.70 · Sam ============ */
+    face("fc2", 166.74, 168.70, 1.05, 1.09, 1040, 300);
+
+    /* ============ sc08 · 168.70–174.20 · according to Tsao; dinner; the proposal ============ */
+    scene("sc08", 168.70, 174.2);
+    ground("night", S(168.70));
+    (function () {
+      const box = $("sc08-tbl");
+      box.innerHTML = '<div class="top"><img src="assets/textures/paper_fiber_01.jpg" alt="" /><div class="lamp"></div></div><svg viewBox="0 0 1920 1080"></svg>' +
+        '<div class="itm menu"><div class="h t-label">Menu</div><i></i><i style="margin-right:60px"></i><i></i><i style="margin-right:90px"></i></div>' +
+        '<div class="itm place"><div class="t t-label">Tsao</div></div>' +
+        '<div class="itm d2-circ exec"><img src="assets/intro/cutouts/silhouette_exec_night.png" alt="" /></div>' +
+        '<div class="itm folder"><div class="t t-label">Proposal</div></div>';
+      const svg = box.querySelector("svg");
+      const plate = (cx, cy, rim) => { const g = el(svg, "g", { opacity: 0 });
+        el(g, "ellipse", { cx: cx + 10, cy: cy + 16, rx: 178, ry: 178, fill: "rgba(0,0,0,0.35)" });
+        el(g, "circle", { cx: cx, cy: cy, r: 175, fill: "#e9e8e1", stroke: rim, "stroke-width": 7 });
+        el(g, "circle", { cx: cx, cy: cy, r: 118, fill: "none", stroke: "rgba(22,26,36,0.18)", "stroke-width": 3 });
+        el(g, "rect", { x: cx - 250, y: cy - 90, width: 16, height: 180, rx: 8, fill: ASH });
+        el(g, "rect", { x: cx + 234, y: cy - 90, width: 16, height: 180, rx: 8, fill: ASH }); return g; };
+      const glass = (cx, cy) => { const g = el(svg, "g", { opacity: 0 }); el(g, "circle", { cx: cx, cy: cy, r: 46, fill: "rgba(238,238,232,0.16)", stroke: "rgba(238,238,232,0.55)", "stroke-width": 3 }); el(g, "circle", { cx: cx, cy: cy, r: 30, fill: "rgba(238,238,232,0.14)" }); return g; };
+      const p1 = plate(600, 560, COPPER), p2 = plate(1320, 560, ASH), g1 = glass(780, 400), g2 = glass(1140, 400);
+      const q = (c) => box.querySelector(c);
+      const lay = (e, at, r) => tl.fromTo(e, { opacity: 0, y: -40, rotation: r || -4 }, { opacity: 1, y: 0, rotation: 0, duration: 0.5, ease: C(E.out, 0.5), immediateRender: true }, at);
+      // frame 0 of the scene: the table is there, the two plates are landing
+      tl.fromTo(p1, { opacity: 1, y: -30 }, { opacity: 1, y: 0, duration: 0.4, ease: C(E.out, 0.4), immediateRender: true }, S(168.70));
+      tl.fromTo(p2, { opacity: 1, y: -46 }, { opacity: 1, y: 0, duration: 0.5, ease: C(E.out, 0.5), immediateRender: true }, S(168.72));
+      lay(q(".exec"), S(169.0), 4);
+      lay(q(".place"), S(169.5), 5);
+      rise(q(".place .t"), T(169.94) - L, { y: 6, dur: 0.4 });
+      lay(g1, S(170.6)); lay(g2, S(170.72));
+      tl.fromTo(q(".menu"), { opacity: 0, y: -50, rotation: 10 }, { opacity: 1, y: 0, rotation: 3, duration: 0.5, ease: C(E.out, 0.5), immediateRender: true }, T(170.98) - L);
+      tl.fromTo(q(".folder"), { opacity: 0, x: -520, y: 260, rotation: -12 }, { opacity: 1, x: 0, y: 0, rotation: -2, duration: 0.9, ease: C(E.out, 0.9), immediateRender: true }, S(172.0));
+      rise(q(".folder .t"), T(172.90) - L, { y: 6, dur: 0.4 });
+      tl.fromTo("#pd02-sc08-cam", { scale: 1.0 }, { scale: 1.06, duration: 5.2, ease: "none", immediateRender: true }, S(168.70));
+      // cut on action: the camera rises off the table into the sky
+      tl.to("#pd02-sc08-cam", { scale: 1.5, y: 620, duration: 0.32, ease: E.in }, S(173.88));
+    })();
+
+    /* ============ sc09 · 174.20–178.00 · he flies back, on top of the world ============ */
+    scene("sc09", 174.2, 178.0);
+    (function () {
+      gated(174.1, 176.9, () => FX.weave($("sc09-weave"), { amp: 0.9, flicker: 0.03, seed: 3101, from: S(174.1), to: S(176.8) }));
+      tl.fromTo("#pd02-sc09-vid", { scale: 1.0 }, { scale: 1.08, duration: 2.4, ease: "none", immediateRender: true }, S(174.2));
+      // fly up through the clouds ("flies back … on top of the world")
+      tl.fromTo("#pd02-sc09-c1", { y: 1200, opacity: 1, scale: 1 }, { y: -1700, scale: 1.4, duration: 0.75, ease: "power1.inOut", immediateRender: true }, S(175.85));
+      tl.fromTo("#pd02-sc09-c2", { y: 1300, opacity: 1 }, { y: -2400, duration: 0.8, ease: "power1.inOut", immediateRender: true }, S(175.9));
+      tl.fromTo("#pd02-sc09-sky", { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, S(176.22));
+      tl.fromTo("#pd02-sc09-sea", { opacity: 0, y: 240 }, { opacity: 0.92, y: 0, duration: 1.2, ease: E.cam, immediateRender: true }, S(176.22));
+      tl.to("#pd02-sc09-sea", { x: 60, duration: 1.8, ease: "none" }, S(176.22));
+      tl.fromTo("#pd02-sc09-streaks", { opacity: 0 }, { opacity: 0.35, duration: 0.8, immediateRender: true }, S(176.3));
+      gated(176.2, 178.1, () => FX.streaks($("sc09-streaks"), { seed: 3102, speed: 0.6, gain: 1.0 }));
+      // the jet, small, heading home above the cloud sea
+      const j = $("sc09-jet"), g = el(j, "g", {});
+      el(g, "path", { d: "M-70 0 Q-60 -9 40 -9 Q66 -7 78 0 Q66 6 40 7 L-60 6Z M-58 -6 L-80 -34 L-66 -34 L-40 -7Z M-6 2 L-30 30 L-12 30 L22 3Z", fill: "#0c0f15" });
+      el(g, "path", { d: "M-70 2 L-230 6", stroke: "rgba(238,238,232,0.5)", "stroke-width": 3, "stroke-linecap": "round" });
+      const jp = { x: 1500, y: 470 };
+      const put = () => g.setAttribute("transform", "translate(" + jp.x.toFixed(1) + " " + jp.y.toFixed(1) + ") scale(-1.25 1.25) rotate(4)");
+      put();
+      tl.set(j, { opacity: 1 }, S(176.22));
+      tl.fromTo(jp, { x: 1500, y: 470 }, { x: 1040, y: 404, duration: 1.8, ease: "none", onUpdate: put, immediateRender: false }, S(176.22));
+    })();
+
+    /* ============ fc3 · 178.00–180.40 · Sam ============ */
+    face("fc3", 178.0, 180.40, 1.06, 1.11, 1040, 300);
+
+    /* ============ sc10 · 180.40–183.00 · changing the whole game in the chip business: the plan ============ */
+    scene("sc10", 180.40, 183.0);
+    ground("paper", S(180.40));
+    (function () {
+      const svg = $("sc10-svg"), col = COPPER_D;
+      const fac = icon(svg, "factory", 60, 200, 1.9, col, 3.2);
+      const prods = ["phone", "tv", "calc", "pc"], ROWS = [118, 214, 310, 406];
+      ROWS.forEach((y, i) => {
+        ink(svg, "M200 262 C 300 262 300 " + y + " 400 " + y, S(180.42) + i * 0.16, 0.6, { color: col, width: 3.4, ease: C(E.out, 0.6) });
+        ink(svg, "M392 " + (y - 7) + " L404 " + y + " L392 " + (y + 7), S(180.9) + i * 0.16, 0.15, { color: col, width: 3.4 });
+        const g = icon(svg, prods[i], 420, y - 30, 0.95, col, 3.2);
+        tl.fromTo(g, { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, S(180.98) + i * 0.16);
+        ink(svg, "M500 " + y + " L" + (700 - i * 18) + " " + (y + 1), S(181.1) + i * 0.16, 0.5, { color: col, width: 3, opacity: 0.8 });
+      });
+      tl.fromTo("#pd02-sc10-cam", { scale: 1.12, rotation: 1.2 }, { scale: 1.0, rotation: 0, duration: 1.5, ease: E.cam, immediateRender: true }, S(180.40));
+      tl.to("#pd02-sc10-cam", { scale: 1.03, duration: 0.8, ease: "none" }, S(181.9));
+      tl.to("#pd02-sc10-cam", { scale: 1.6, duration: 0.3, ease: E.in }, S(182.70));   // cut on action into Sunkit's question
+    })();
+
+    /* ============ fc4 · 183.00–185.50 · Sunkit asks ============ */
+    face("fc4", 183.0, 185.50, 1.04, 1.085, 1080, 320);
+
+    /* ============ sc11 · the aside diagram (three visits) ============ */
+    scene("sc11", 185.50, 188.42); scene("sc11", 190.0, 202.6); scene("sc11", 205.10, 212.0);
+    ground("paper", S(185.50)); ground("paper", S(190.0)); ground("paper", S(205.10));
+    (function () {
+      const mk = $("sc11-mk");
+      const f = gated(185.4, 212.1, () => FX.markupDefs(mk, "pd02-mk11", { boil: 4 }));
+      const fs = $("sc11-fac"); icon(fs, "factory", 78, 44, 3.0, INK, 3);
+      // visit 1 (185.50): both cards are pinned; they settle while the camera drifts
+      tl.fromTo("#pd02-sc11-c1", { x: -90, rotation: -7 }, { x: 0, rotation: -2, duration: 0.9, ease: C(E.out, 0.9), immediateRender: true }, S(185.50));
+      tl.fromTo("#pd02-sc11-c2", { x: 90, rotation: 7 }, { x: 0, rotation: 1.6, duration: 0.9, ease: C(E.out, 0.9), immediateRender: true }, S(185.50));
+      tl.fromTo(["#pd02-sc11-n1", "#pd02-sc11-n2"], { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.5, ease: C(E.out, 0.5), immediateRender: true }, S(185.62));
+      tl.fromTo("#pd02-sc11-cam", { scale: 1.05 }, { scale: 1.0, duration: 2.92, ease: "none", immediateRender: true }, S(185.50));
+      // "He is in the chip business": one heading over both
+      ink(mk, "M800 140 L440 144 L442 282", S(187.0), 0.5, { width: 4, filter: f });
+      ink(mk, "M1120 140 L1480 144 L1478 282", S(187.0), 0.5, { width: 4, filter: f });
+      rise("sc11-ttl", T(187.12) - L, { dur: 0.45, y: 10 });
+      // "But he's in the US."
+      rise("sc11-us", T(188.16) - L, { dur: 0.3, y: 8 });
+      // visit 2 (190.00): "UMC is only in Taiwan."
+      tl.fromTo("#pd02-sc11-cam", { scale: 1.0 }, { scale: 1.035, duration: 12.6, ease: "none", immediateRender: false }, S(190.0));
+      tl.fromTo("#pd02-sc11-c1", { rotation: -2 }, { rotation: -3.4, duration: 0.5, yoyo: true, repeat: 1, ease: "sine.inOut", immediateRender: false }, S(190.0));
+      rise("sc11-tw", T(191.20) - L, { dur: 0.45, y: 8 });
+      // the track: how far along each one is
+      const track = ink(mk, "M300 862 L1640 858", S(192.3), 1.1, { width: 5, filter: f });
+      ink(mk, "M1612 836 L1644 858 L1610 882", S(193.3), 0.2, { width: 5, filter: f });
+      for (let i = 0; i < 12; i++) ink(mk, "M" + (300 + i * 112) + " 850 L" + (301 + i * 112) + " 872", S(192.4) + i * 0.07, 0.15, { width: 3 });
+      pop("sc11-m1", S(193.0), { dur: 0.5 }); pop("sc11-m2", S(193.2), { dur: 0.5 });
+      tl.to("#pd02-sc11-m2", { x: 1150, duration: 1.3, ease: C(E.inOut, 1.3) }, S(194.3));   // "so far ahead" — arrives 195.6
+      rise("sc11-new", T(197.20) - L, { dur: 0.45, y: 8 });
+      // "He had been advising Taiwan": advice runs from the executive to UMC
+      ink(mk, "M1270 452 Q960 420 668 450", S(199.5), 0.9, { width: 6, filter: f });
+      ink(mk, "M704 424 L664 450 L706 474", S(200.3), 0.2, { width: 6, filter: f });
+      rise("sc11-adv", T(199.92) - L, { dur: 0.45, y: 8 });
+      // visit 3 (205.10): Sunkit's "competitor?" → a question mark on the advice line, then Sam's answer
+      tl.fromTo("#pd02-sc11-cam", { scale: 1.035 }, { scale: 1.07, duration: 6.9, ease: "none", immediateRender: false }, S(205.10));
+      const q1 = ink(mk, "M1070 352 Q1074 318 1104 318 Q1136 320 1134 350 Q1130 372 1104 382 L1103 402", S(205.14), 0.5, { width: 7, filter: f });
+      const q2 = ink(mk, "M1102 424 L1104 428", S(205.66), 0.1, { width: 9, filter: f });
+      tl.to([q1, q2], { opacity: 0, duration: 0.3 }, S(206.7));
+      // "He's advising them on like the old stuff": the near end of the track
+      ink(mk, "M668 478 Q650 760 584 934", S(206.75), 0.9, { width: 4, filter: f, opacity: 0.8 });
+      tl.fromTo("#pd02-sc11-oldw", { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, T(207.92) - L);
+      tl.fromTo("#pd02-sc11-oldh", { scaleX: 0 }, { scaleX: 1, duration: 0.45, ease: C("sine.inOut", 0.45), immediateRender: true }, S(207.9));
+      // "And again, he's Chinese …"
+      rise("sc11-ca", T(209.20) - L, { dur: 0.45, y: 8 });
+    })();
+
+    /* ============ fc5 / fc6 · Sunkit; fc7 · Sam ============ */
+    face("fc5", 188.42, 190.0, 1.06, 1.09, 1080, 320);
+    face("fc6", 202.6, 205.10, 1.04, 1.085, 1080, 320);
+    face("fc7", 212.0, 214.35, 1.05, 1.095, 1040, 300);
+
+    /* ============ sc12 · 214.35–224.25 · cutting edge (United States) vs the old stuff (Taiwan) ============ */
+    scene("sc12", 214.35, 224.25);
+    ground("night", S(214.35));
+    (function () {
+      const mk = $("sc12-mk");
+      const f = gated(214.3, 224.3, () => FX.markupDefs(mk, "pd02-mk12", { boil: 4 }));
+      // dense die (cutting edge): 16 × 16 cells with bus lines; coarse die (old): 4 × 4
+      const die = (svg, n, col, t0, per) => {
+        const pad = 50, w = 620 - pad * 2, c = w / n, rr = FX.rng(n * 17 + 3);
+        el(svg, "rect", { x: pad - 14, y: pad - 14, width: w + 28, height: w + 28, fill: "none", stroke: col, "stroke-width": 3 });
+        for (let k = 0; k < 14; k++) { el(svg, "rect", { x: pad - 34, y: pad + 12 + k * (w - 24) / 13 - 5, width: 16, height: 10, fill: col, opacity: 0.7 }); el(svg, "rect", { x: pad + w + 18, y: pad + 12 + k * (w - 24) / 13 - 5, width: 16, height: 10, fill: col, opacity: 0.7 }); }
+        const cells = [];
+        for (let y = 0; y < n; y++) for (let x = 0; x < n; x++) { const v = rr();
+          const r = el(svg, "rect", { x: (pad + x * c + c * 0.12).toFixed(1), y: (pad + y * c + c * 0.12).toFixed(1), width: (c * 0.76).toFixed(1), height: (c * 0.76).toFixed(1), fill: v > 0.62 ? col : "none", "fill-opacity": 0.5, stroke: col, "stroke-width": n > 8 ? 1.4 : 4, opacity: 0 });
+          cells.push(r); }
+        cells.forEach((r, i) => tl.set(r, { opacity: 1 }, t0 + Math.floor(i / per) / 12));
+      };
+      // frame 0: the left panel is sliding in
+      tl.fromTo("#pd02-sc12-pl", { opacity: 1, x: -120 }, { opacity: 1, x: 0, duration: 0.9, ease: C(E.out, 0.9), immediateRender: true }, S(214.35));
+      pop("sc12-ex", S(214.5), { dur: 0.6 });
+      die($("sc12-dense"), 16, ASH_L, S(214.6), 12);   // 256 cells / 12 per step → done 216.4 ("the exact thing he's doing")
+      tl.fromTo("#pd02-sc12-cam", { scale: 1.04 }, { scale: 1.0, duration: 9.9, ease: "none", immediateRender: true }, S(214.35));
+      tl.fromTo("#pd02-sc12-ce", { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.6, ease: C(E.out, 0.6), immediateRender: true }, T(217.60) - L);
+      rise("sc12-us", T(218.72) - L, { dur: 0.45, y: 8 });
+      // "He's advising them on the stuff that's like old."
+      tl.fromTo("#pd02-sc12-pr", { opacity: 0, x: 120 }, { opacity: 1, x: 0, duration: 0.8, ease: C(E.out, 0.8), immediateRender: true }, S(219.62));
+      ink(mk, "M806 500 Q960 462 1104 500", S(219.9), 0.7, { width: 6, filter: f, color: BONE });
+      ink(mk, "M1076 470 L1108 500 L1070 524", S(220.5), 0.2, { width: 6, filter: f, color: BONE });
+      rise("sc12-tw", T(220.40) - L, { dur: 0.45, y: 8 });
+      die($("sc12-coarse"), 4, BOARD_L, S(220.3), 2);   // 16 cells → done 220.9
+      tl.fromTo("#pd02-sc12-old", { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.5, ease: C(E.out, 0.5), immediateRender: true }, T(220.72) - L);
+      // "His company is not really that interested in doing that": the old die, small, on his side — crossed out
+      const ms = $("sc12-minis");
+      el(ms, "rect", { x: 14, y: 14, width: 122, height: 122, fill: "none", stroke: ASH_L, "stroke-width": 2 });
+      for (let y = 0; y < 4; y++) for (let x = 0; x < 4; x++) el(ms, "rect", { x: 24 + x * 27, y: 24 + y * 27, width: 21, height: 21, fill: "none", stroke: ASH_L, "stroke-width": 2 });
+      pop("sc12-mini", S(221.9), { dur: 0.5, from: 0.7 });
+      const X = FX.markup.cross(tl, mk, S(222.62), { x: 901, y: 327, s: 62, dur: 0.18, color: BONE, width: 9, filter: f });
+      gsap.set(X, { visibility: "hidden" }); tl.set(X, { visibility: "visible" }, S(222.62));
+      tl.to("#pd02-sc12-mini", { opacity: 0.45, duration: 0.3 }, S(223.0));
+    })();
+
+    /* ============ fc8 · 224.25–225.55 · Sunkit ============ */
+    face("fc8", 224.25, 225.55, 1.06, 1.09, 1080, 320);
+
+    /* ============ sc13 · 225.55–227.37 · not on the board, just advising → whip out ============ */
+    scene("sc13", 225.55, SEG_END + 1);
+    ground("paper", S(225.55));
+    (function () {
+      const st = seats($("sc13-seats"), 830, 800), svg = $("sc13-svg");
+      st.forEach((d) => { d.firstChild.style.opacity = 1; });
+      el(svg, "path", { d: "M350 858 L1310 858", stroke: INK, "stroke-width": 4, opacity: 0.55 });
+      // the board's own space: a dashed outline round the seats
+      el(svg, "path", { d: "M330 880 L330 800 A500 500 0 0 1 1330 800 L1330 880 Z", fill: "none", stroke: INK, "stroke-width": 3, "stroke-dasharray": "5 12", opacity: 0.55 });
+      tl.fromTo("#pd02-sc13-cam", { scale: 1.07, transformOrigin: "50% 60%" }, { scale: 1.0, duration: 1.5, ease: E.cam, immediateRender: true }, S(225.55));
+      // the executive stops outside it
+      tl.fromTo("#pd02-sc13-ex", { x: 420, opacity: 1 }, { x: 0, opacity: 1, duration: 0.8, ease: C(E.out, 0.8), immediateRender: true }, S(225.55));
+      const ln = ink(svg, "M1436 590 Q1390 596 1344 612", S(226.3), 0.3, { width: 4 });
+      ln.setAttribute("opacity", 0.8);
+      rise("sc13-adv", T(226.64) - L, { dur: 0.35, y: 8 });
+      // hand-off: outgoing half of a whip (smear to the left), pd03 opens on a fresh shot
+      const wb = FX.whipDefs(defs, "pd02-wout"), sh = $("sc13-shot"), bl = { v: 0 };
+      tl.set(sh, { filter: "url(#pd02-wout)" }, S(227.19));
+      tl.fromTo(sh, { x: 0, scale: 1 }, { x: -700, scale: 1.18, duration: 0.167, ease: "power3.in", immediateRender: false }, S(227.2));
+      tl.fromTo(bl, { v: 0 }, { v: 90, duration: 0.167, ease: "power2.in", immediateRender: false, onUpdate: () => wb.setAttribute("stdDeviation", bl.v.toFixed(1) + " 0") }, S(227.2));
+    })();
+
+    FX.mount(tl, DURATION);
+    window.__timelines = window.__timelines || {}; window.__timelines[SEG] = tl;
+  })();
+  </script>
+</template>
+</body>
+</html>

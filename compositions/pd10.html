@@ -1,0 +1,335 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8" /></head>
+<body>
+<template>
+  <style>
+    #root { position: absolute; inset: 0; overflow: hidden; background: var(--night); }
+    .p10-scene { position: absolute; inset: 0; overflow: hidden; visibility: hidden; opacity: 0; }
+    .p10-shot { position: absolute; inset: 0; overflow: hidden; transform-origin: 50% 50%; background: var(--night); }
+    .p10-paper { background: var(--paper); }
+    .p10-p1, .p10-p2 { position: absolute; inset: 0; background-size: cover; background-position: center; pointer-events: none; mix-blend-mode: multiply; filter: saturate(0.3); }
+    .p10-grid { position: absolute; inset: -60px; pointer-events: none; opacity: 0.5;
+      background-image: repeating-linear-gradient(0deg, rgba(194,197,202,0.085) 0 2px, rgba(0,0,0,0) 2px 96px), repeating-linear-gradient(90deg, rgba(194,197,202,0.085) 0 2px, rgba(0,0,0,0) 2px 96px); }
+    .p10-cam { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 960px 540px; }
+    .p10-abs { position: absolute; }
+    .p10-mk { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; pointer-events: none; }
+    .p10-card { position: absolute; background: var(--bone); box-shadow: 0 16px 34px rgba(22,26,36,0.3); }
+    .p10-card .in { position: absolute; left: 10px; top: 10px; right: 10px; bottom: 10px; overflow: hidden; background: var(--ash-dark); }
+    .p10-card img { position: absolute; left: 0; top: 0; width: 100%; height: 100%; object-fit: cover; }
+    .p10-ht::after { content: ""; position: absolute; inset: 0; background-image: url('assets/textures/halftone_01_norm.jpg'); background-size: 520px auto; mix-blend-mode: overlay; opacity: 0.3; pointer-events: none; }
+    .p10-circ { position: absolute; border-radius: 50%; overflow: hidden; border: 7px solid var(--ink); box-sizing: border-box; background: var(--ash-dark); }
+    .p10-circ img { position: absolute; left: 0; top: 0; width: 100%; height: 100%; object-fit: cover; }
+    .p10-lab { position: absolute; font-size: 22px; color: var(--ink); white-space: nowrap; }
+    .p10-credit { position: absolute; right: 96px; bottom: 28px; font-size: 13px; letter-spacing: 0.08em; color: rgba(22,26,36,0.55); z-index: 5; }
+    .p10-credit.lt { color: rgba(238,238,232,0.5); }
+    /* sc001 */
+    #pd10-thesis { position: absolute; left: 150px; top: 392px; width: 440px; height: 596px; background: #ecebe5; box-shadow: 0 18px 36px rgba(22,26,36,0.3); }
+    #pd10-thesis::after { content: ""; position: absolute; inset: 0; background-image: url('assets/textures/paper_fiber_01.jpg'); background-size: cover; mix-blend-mode: multiply; opacity: 0.45; filter: saturate(0.3); }
+    #pd10-thesis .ti { position: absolute; left: 40px; right: 40px; top: 96px; text-align: center; font-size: 37px; line-height: 1.12; color: var(--ink); text-transform: uppercase; letter-spacing: 0.03em; }
+    #pd10-thesis .sm { position: absolute; left: 40px; right: 40px; text-align: center; font-size: 20px; color: var(--ink-soft); }
+    #pd10-thesis .by { position: absolute; left: 40px; right: 40px; top: 372px; text-align: center; font-size: 30px; color: var(--ink); }
+    #pd10-thesis .rl { position: absolute; left: 170px; width: 100px; height: 3px; background: var(--ink); opacity: 0.6; }
+    #pd10-patent { position: absolute; left: 372px; top: 404px; width: 400px; height: 588px; background: #f1f0ea; box-shadow: 0 14px 30px rgba(22,26,36,0.26); overflow: hidden; }
+    #pd10-patent img { position: absolute; left: 0; top: 0; width: 100%; height: 100%; object-fit: cover; object-position: 30% 0%; mix-blend-mode: multiply; }
+    #pd10-osc { left: 900px; top: 236px; width: 900px; height: 640px; }
+    #pd10-osctag { position: absolute; left: 872px; top: 196px; font-size: 54px; white-space: nowrap; opacity: 0; transform: rotate(-2.5deg); z-index: 3; }
+    /* sc002 */
+    #pd10-osc2 { left: 96px; top: 300px; width: 600px; height: 450px; box-shadow: 0 26px 50px rgba(0,0,0,0.6); }
+    .p10-lab2 { position: absolute; font-size: 26px; color: var(--bone); white-space: nowrap; opacity: 0; }
+    .p10-lab3 { position: absolute; font-size: 22px; color: var(--ash-light); white-space: nowrap; opacity: 0; }
+    /* sc003 */
+    .p10-item { position: absolute; top: 392px; width: 390px; height: 470px; background: #ecebe5; box-shadow: 0 16px 34px rgba(22,26,36,0.28); opacity: 0; }
+    .p10-item::after { content: ""; position: absolute; inset: 0; background-image: url('assets/textures/paper_fiber_01.jpg'); background-size: cover; mix-blend-mode: multiply; opacity: 0.45; filter: saturate(0.3); pointer-events: none; }
+    .p10-item .no { position: absolute; left: 26px; top: 22px; font-size: 24px; color: var(--ash); }
+    .p10-item .pic { position: absolute; left: 26px; right: 26px; top: 70px; height: 250px; }
+    .p10-item .tx1 { position: absolute; left: 26px; right: 20px; top: 346px; font-size: 40px; line-height: 1.05; color: var(--ink); opacity: 0; }
+    .p10-item .tx2 { position: absolute; left: 28px; right: 20px; top: 402px; font-size: 21px; color: var(--ink-soft); opacity: 0; }
+    .p10-note { position: absolute; width: 300px; height: 127px; box-shadow: 0 6px 12px rgba(22,26,36,0.3); background-size: cover; }
+    .p10-sheet { position: absolute; left: 60px; top: 0; width: 210px; height: 250px; background: var(--bone); box-shadow: 0 6px 14px rgba(22,26,36,0.25); transform: rotate(-3deg); }
+    .p10-sheet i { position: absolute; left: 24px; height: 6px; background: rgba(22,26,36,0.22); }
+    .p10-seal { position: absolute; right: 22px; bottom: 22px; width: 54px; height: 54px; border-radius: 50%; border: 5px solid var(--magenta); box-sizing: border-box; }
+    .p10-seal::after { content: ""; position: absolute; left: 11px; top: 11px; width: 22px; height: 22px; border-radius: 50%; background: var(--magenta); }
+    #pd10-n25 { position: absolute; left: 0; top: 18px; font-size: 210px; color: var(--ink); isolation: isolate; }
+    #pd10-n25hl { position: absolute; left: -12px; right: -14px; top: 30%; bottom: 10%; background: var(--yellow); mix-blend-mode: multiply; transform-origin: 0 50%; transform: scaleX(0); z-index: -1; }
+    .p10-rows { position: absolute; left: 266px; top: 40px; width: 72px; }
+    .p10-rows i { display: block; height: 7px; margin-bottom: 15px; background: rgba(22,26,36,0.24); transform-origin: 0 50%; }
+    #pd10-q { position: absolute; left: 0; right: 0; top: 10px; text-align: center; font-size: 210px; color: rgba(22,26,36,0.2); }
+    /* sc004 */
+    #pd10-dbg { position: absolute; inset: -80px; background-size: cover; background-position: center; filter: blur(34px) brightness(0.34) grayscale(1); }
+    #pd10-dprint { position: absolute; left: 96px; top: 92px; width: 1120px; height: 896px; background: var(--bone); box-shadow: 0 34px 70px rgba(0,0,0,0.65); }
+    #pd10-dprint .in { position: absolute; left: 14px; top: 14px; right: 14px; bottom: 14px; overflow: hidden; }
+    #pd10-dprint img { position: absolute; left: 0; top: 0; width: 100%; height: 100%; object-fit: cover; }
+    #pd10-drole { position: absolute; left: 1276px; top: 420px; font-size: 28px; color: var(--ash-light); white-space: nowrap; }
+    #pd10-dname { position: absolute; left: 1268px; top: 462px; font-size: 168px; white-space: nowrap; opacity: 0; }
+    #pd10-dcap { position: absolute; left: 1276px; top: 650px; font-size: 22px; line-height: 1.5; color: var(--ash-light); white-space: nowrap; }
+    #pd10-grain, #pd10-dust, #pd10-vig { z-index: 8; }
+  </style>
+
+  <div id="root" data-composition-id="pd10" data-vo-start="1155.0333" data-duration="41.6333" data-width="1920" data-height="1080">
+    <svg id="pd10-defs" width="0" height="0" style="position:absolute"></svg>
+
+    <!-- sc001 · 1155.03–1164.70 · "what business they could do … something Bill Hewlett worked on for his PhD thesis … audio oscillator" · grid-paper desk (ref b76c4b43 / 3dbd4abf) -->
+    <div class="p10-scene" id="pd10-sc001"><div class="p10-shot p10-paper" id="pd10-sc001-shot">
+      <div class="p10-p1" style="background-image:url('assets/textures/paper_graph_01_hires.jpg'); opacity:0.5"></div>
+      <div class="p10-p2" style="background-image:url('assets/textures/paper_fiber_01.jpg'); opacity:0.35"></div>
+      <div class="p10-cam" id="pd10-sc001-cam">
+        <div class="p10-circ" id="pd10-s1-ter" style="left:110px; top:104px; width:176px; height:176px"><img src="assets/c1/people/terman_frederick_portrait_c1940s_ieee.jpg" alt="" style="object-position:50% 14%; filter:url(#pd10-tint)"></div>
+        <div class="p10-lab t-label" id="pd10-s1-terl" style="left:110px; top:296px; width:176px; text-align:center">Terman</div>
+        <div class="p10-card p10-ht" id="pd10-s1-h" style="left:430px; top:92px; width:176px; height:216px"><div class="in"><img src="assets/archival/hp/hewlett_william_c1962.jpg" alt="" style="object-position:50% 4%; filter:url(#pd10-tint)"></div></div>
+        <div class="p10-lab t-label" id="pd10-s1-hl" style="left:430px; top:324px; width:176px; text-align:center">Hewlett</div>
+        <div class="p10-card p10-ht" id="pd10-s1-p" style="left:640px; top:100px; width:176px; height:216px"><div class="in"><img src="assets/archival/hp/packard_david_1933.jpg" alt="" style="object-position:38% 20%; filter:url(#pd10-tint)"></div></div>
+        <div class="p10-lab t-label" id="pd10-s1-pl" style="left:640px; top:332px; width:176px; text-align:center">Packard</div>
+        <div id="pd10-patent"><img src="assets/c1/documents/patent_US2268872_hewlett_drawing_sheet_googleclean.png" alt=""></div>
+        <div id="pd10-thesis">
+          <div class="sm t-label" style="top:44px">A thesis</div>
+          <div class="ti t-serif">A new type<br>resistance-capacity<br>oscillator</div>
+          <div class="rl" style="top:268px"></div>
+          <div class="sm t-serif-i" style="top:330px; font-size:24px">by</div>
+          <div class="by t-serif">William R. Hewlett</div>
+          <div class="rl" style="top:452px"></div>
+          <div class="sm t-label" style="top:500px">Stanford University</div>
+        </div>
+        <div class="p10-card" id="pd10-osc"><div class="in"><img id="pd10-osci" src="assets/c1/objects/hp_200A_audio_oscillator_front_panel.jpg" alt="" style="filter:url(#pd10-tintc)"></div></div>
+        <div id="pd10-osctag"><span class="label-box">Audio oscillator</span></div>
+        <svg class="p10-mk" id="pd10-s1-mk"></svg>
+      </div>
+      <div class="p10-credit t-label">HP 200A photo: Colin, CC BY-SA 2.0 · thesis page: typeset recreation · U.S. patent 2,268,872</div>
+    </div></div>
+
+    <!-- sc002 · 1164.70–1174.30 · "a device you would make to test audio equipment … test different frequencies on your speaker" · night explainer diagram -->
+    <div class="p10-scene" id="pd10-sc002"><div class="p10-shot" id="pd10-sc002-shot">
+      <div class="p10-grid"></div>
+      <div class="p10-cam" id="pd10-sc002-cam">
+        <div class="p10-card" id="pd10-osc2"><div class="in"><img src="assets/c1/objects/hp_200A_audio_oscillator_front_panel.jpg" alt="" style="filter:url(#pd10-tintc)"></div></div>
+        <div class="p10-lab2 t-label" id="pd10-s2-l1" style="left:98px; top:782px">Audio oscillator</div>
+        <svg class="p10-mk" id="pd10-s2-svg" viewBox="0 0 1920 1080"></svg>
+        <div class="p10-lab2 t-label" id="pd10-s2-l2" style="left:1332px; top:822px">Audio equipment</div>
+        <div class="p10-lab2 t-label" id="pd10-s2-l3" style="left:760px; top:742px; width:500px; text-align:center">Frequency</div>
+        <div class="p10-lab3 t-label" id="pd10-s2-lo" style="left:760px; top:842px">low</div>
+        <div class="p10-lab3 t-label" id="pd10-s2-hi" style="left:1160px; top:842px; width:100px; text-align:right">high</div>
+      </div>
+      <div class="p10-credit lt t-label">HP 200A photo: Colin, CC BY-SA 2.0</div>
+    </div></div>
+
+    <!-- sc003 · 1174.30–1193.32 · what Terman gave them: personal money · a fellowship · a list of 25 companies · first client · paper index cards -->
+    <div class="p10-scene" id="pd10-sc003"><div class="p10-shot p10-paper" id="pd10-sc003-shot">
+      <div class="p10-p1" style="background-image:url('assets/textures/paper_graph_01_hires.jpg'); opacity:0.5"></div>
+      <div class="p10-p2" style="background-image:url('assets/textures/paper_fiber_01.jpg'); opacity:0.35"></div>
+      <div class="p10-cam" id="pd10-sc003-cam">
+        <div class="p10-circ" id="pd10-s3-ter" style="left:126px; top:112px; width:190px; height:190px"><img src="assets/c1/people/terman_frederick_portrait_c1940s_ieee.jpg" alt="" style="object-position:50% 14%; filter:url(#pd10-tint)"></div>
+        <div class="p10-lab t-label" id="pd10-s3-terl" style="left:340px; top:150px">Frederick Terman</div>
+        <div class="p10-card p10-ht" id="pd10-s3-hp" style="left:1010px; top:104px; width:330px; height:212px"><div class="in"><img src="assets/archival/hp/hewlett_and_packard_together_1960.jpg" alt="" style="object-position:50% 30%; filter:url(#pd10-tint)"></div></div>
+        <div class="p10-lab t-label" id="pd10-s3-hpl" style="left:1364px; top:150px">Hewlett &amp; Packard</div>
+        <div class="p10-item" id="pd10-it1" style="left:126px"><div class="no t-label">1</div>
+          <div class="pic"><div class="p10-note" style="left:26px; top:36px; transform:rotate(-7deg); background-image:url('assets/podcast/pd10/us_1_dollar_1935_obverse_silicon.jpg')"></div><div class="p10-note" style="left:34px; top:96px; transform:rotate(4deg); background-image:url('assets/podcast/pd10/us_1_dollar_1935_obverse_silicon.jpg')"></div></div>
+          <div class="tx1 t-serif" id="pd10-it1a">his personal money</div></div>
+        <div class="p10-item" id="pd10-it2" style="left:552px"><div class="no t-label">2</div>
+          <div class="pic"><div class="p10-sheet"><i style="top:34px; width:110px; height:9px; background:rgba(22,26,36,0.5)"></i><i style="top:74px; width:160px"></i><i style="top:96px; width:150px"></i><i style="top:118px; width:162px"></i><i style="top:140px; width:120px"></i><i style="top:176px; width:90px"></i><div class="p10-seal"></div></div></div>
+          <div class="tx1 t-serif" id="pd10-it2a">a fellowship</div></div>
+        <div class="p10-item" id="pd10-it3" style="left:978px"><div class="no t-label">3</div>
+          <div class="pic"><div id="pd10-n25" class="t-display"><div id="pd10-n25hl"></div><span id="pd10-n25t">25</span></div>
+            <div class="p10-rows" id="pd10-rows"><i></i><i style="width:80%"></i><i></i><i style="width:70%"></i><i style="width:90%"></i><i></i><i style="width:75%"></i><i style="width:85%"></i></div></div>
+          <div class="tx1 t-serif" id="pd10-it3a">companies</div><div class="tx2 t-label" id="pd10-it3b">that would buy</div></div>
+        <div class="p10-item" id="pd10-it4" style="left:1404px"><div class="no t-label">4</div>
+          <div class="pic"><div id="pd10-q" class="t-display">?</div></div>
+          <div class="tx1 t-serif" id="pd10-it4a">their first client</div></div>
+        <svg class="p10-mk" id="pd10-s3-mk"></svg>
+      </div>
+      <div class="p10-credit t-label">Photos: IEEE / ETHW · HP</div>
+    </div></div>
+
+    <!-- sc004 · 1193.32–1196.67 · "…which is Disney. Disney ends up buying an audio—" (garbled: hold the Disney image) -->
+    <div class="p10-scene" id="pd10-sc004"><div class="p10-shot" id="pd10-sc004-shot">
+      <div id="pd10-dbg" style="background-image:url('assets/c1/places/walt_disney_studios_hyperion_1929.jpg')"></div>
+      <div class="p10-cam" id="pd10-sc004-cam">
+        <div id="pd10-dprint"><div class="in"><img id="pd10-dimg" src="assets/c1/places/walt_disney_studios_hyperion_1929.jpg" alt="" style="filter:url(#pd10-tintc)"></div></div>
+        <div id="pd10-drole" class="t-label">Their first client</div>
+        <div id="pd10-dname" class="t-display halate">Disney</div>
+        <div id="pd10-dcap" class="t-label">Walt Disney Studios<br>Hyperion Avenue, Los Angeles</div>
+      </div>
+      <div class="p10-credit lt t-label">Photo: Walt Disney Studios, 1929 · Wikimedia Commons</div>
+    </div></div>
+
+    <div id="pd10-grain" class="tx tx-grain" style="background-image:url('assets/textures/grain_01_norm.jpg')"></div>
+    <div id="pd10-dust" class="tx tx-dust" style="background-image:url('assets/textures/dust_02.jpg')"></div>
+    <div id="pd10-vig" class="vignette"></div>
+  </div>
+
+  <script>
+  (function () {
+    const SEG = "pd10", START = 1155.0333, END = 1196.6667, DUR = 41.6333;
+    const T = (s) => +(s - START).toFixed(3);   // TEXT cues (audited): literal = word start − 0.06
+    const S = (s) => +(s - START).toFixed(3);   // structural cues
+    const tl = gsap.timeline({ paused: true });
+    const $ = (id) => document.getElementById(SEG + "-" + id);
+    const NS = "http://www.w3.org/2000/svg";
+    const defs = $("defs"), E = FX.ease, C = (e, d) => FX.choppy(e, d, 12);
+    const INK = "#161a24", BONE = "#eeeee8", MAG = "#d1307a", MAGL = "#f3a6c8", ASHL = "#c2c5ca";
+    FX.tintDefs(defs, SEG + "-tint", "#1c1f26", "#e2e3de");
+    FX.tintDefs(defs, SEG + "-tintc", "#14171e", "#eceCe6".toLowerCase());
+
+    // ---------- scenes ----------
+    const SC = [["sc001", 1155.0333, 1164.70, "paper"], ["sc002", 1164.70, 1174.30, "night"], ["sc003", 1174.30, 1193.32, "paper"], ["sc004", 1193.32, END, "night"]];
+    const GROUND = { paper: [0.28, 0.14, 0.3], night: [0.9, 0.34, 0.36] };   // vig, dust, grain
+    SC.forEach((s, i) => {
+      const el = $(s[0]);
+      if (i === 0) gsap.set(el, { autoAlpha: 1 });
+      else tl.fromTo(el, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.001, immediateRender: false }, S(s[1]) - (i === 1 ? 0.02 : 0));
+      if (s[2] < END) tl.set(el, { autoAlpha: 0 }, S(s[2]) + (i === 0 ? 0.06 : 0));
+    });
+    const OV = [$("vig"), $("dust"), $("grain")];
+    gsap.set(OV, { opacity: (i) => GROUND.paper[i] });
+    SC.forEach((s, k) => { if (k) tl.set(OV, { opacity: (i) => GROUND[s[3]][i] }, S(s[1])); });
+
+    // ---------- helpers ----------
+    const rise = (el, t, o) => { o = o || {}; const d = o.dur || 0.6;
+      tl.fromTo(el, { opacity: 0, y: o.y == null ? 16 : o.y }, { opacity: 1, y: 0, duration: d, ease: C(E.out, d), immediateRender: true }, t); };
+    const land = (el, t, o) => { o = Object.assign({ dur: 0.9, y: -70, rot: 0, dr: 6 }, o);
+      tl.fromTo(el, { opacity: 0, y: o.y, rotation: o.rot + o.dr }, { opacity: 1, y: 0, rotation: o.rot, duration: o.dur, ease: C(E.out, o.dur), immediateRender: true }, t); };
+    function mk(parent, tag, attrs) { const n = document.createElementNS(NS, tag); for (const k in attrs) n.setAttribute(k, attrs[k]); parent.appendChild(n); return n; }
+    function penArrow(svg, t, o, filter) {
+      const parts = FX.markup.arrow(tl, svg, t, Object.assign({ color: INK, width: 5, head: 22, dur: 0.6, filter: filter }, o));
+      parts.forEach((p, i) => { gsap.set(p, { opacity: 0 }); tl.set(p, { opacity: 1 }, t + (i ? (o.dur || 0.6) * 0.85 : 0)); });
+      return parts;
+    }
+
+    /* ===== sc001 · desk: Terman → the two students → Hewlett's thesis → the audio oscillator ===== */
+    (function () {
+      const svg = $("s1-mk"), pf = FX.markupDefs(svg, SEG + "-pen1", { boil: 4 });
+      // frame 0: cluster already settling, arrow drawing ("He's telling them what business they could do")
+      gsap.set($("s1-h"), { rotation: -3 }); gsap.set($("s1-p"), { rotation: 2.5 });
+      tl.fromTo($("s1-h"), { y: -46, rotation: -9 }, { y: 0, rotation: -3, duration: 1.0, ease: C(E.out, 1.0), immediateRender: true }, 0);
+      tl.fromTo($("s1-p"), { y: -70, rotation: 9 }, { y: 0, rotation: 2.5, duration: 1.1, ease: C(E.out, 1.1), immediateRender: true }, 0.04);
+      tl.fromTo($("sc001-cam"), { scale: 1.04 }, { scale: 1.0, duration: 9.6, ease: "sine.out", immediateRender: true }, 0);
+      const ar = FX.markup.arrow(tl, svg, 0.02, { x1: 300, y1: 190, x2: 414, y2: 196, bend: -16, color: INK, width: 5, head: 22, dur: 0.7, filter: pf });
+      // "…something Bill Hewlett actually worked on…": magenta pen ring on Hewlett
+      const ring = FX.markup.circle(tl, svg, S(1159.44), { cx: 518, cy: 200, rx: 118, ry: 136, rot: -4, color: MAG, width: 6, dur: 0.6, filter: pf, seed: 6 });
+      gsap.set(ring, { opacity: 0 }); tl.set(ring, { opacity: 1 }, S(1159.44));
+      // "…for his PhD thesis": the patent drawing, then the thesis page on top
+      gsap.set($("patent"), { rotation: 5, opacity: 0 }); gsap.set($("thesis"), { rotation: -2, opacity: 0 });
+      land($("patent"), S(1161.2), { rot: 5, dr: 5, y: 80 });
+      land($("thesis"), T(1162.24), { rot: -2, dr: -5, y: 90, dur: 0.8 });   // thesis
+      // "…which was just audio oscillator": the HP 200A lands, tag on the word
+      gsap.set($("osc"), { rotation: 1.2, opacity: 0 });
+      tl.fromTo($("osc"), { opacity: 0, x: 240, rotation: 5 }, { opacity: 1, x: 0, rotation: 1.2, duration: 0.9, ease: C(E.out, 0.9), immediateRender: false }, S(1163.1));
+      tl.fromTo($("osctag"), { opacity: 0, scale: 1.25, transformOrigin: "0% 50%" }, { opacity: 1, scale: 1, duration: 0.4, ease: C(E.out, 0.4), immediateRender: true }, T(1163.52));   // audio oscillator
+      tl.fromTo($("osci"), { scale: 1.0 }, { scale: 1.06, duration: 1.8, ease: "none", immediateRender: false }, S(1163.1));
+    })();
+
+    /* whip sc001 → sc002 */
+    (function () {
+      const A = $("sc001-shot"), B = $("sc002-shot"), t = S(1164.70), h = 0.16;
+      const ba = FX.whipDefs(defs, SEG + "-wa"), bb = FX.whipDefs(defs, SEG + "-wb");
+      tl.set(A, { filter: "url(#" + SEG + "-wa)" }, t - h - 0.01); tl.set(A, { filter: "none" }, t + 0.06);
+      tl.set(B, { filter: "url(#" + SEG + "-wb)" }, t - 0.001); tl.set(B, { filter: "none" }, t + h + 0.02);
+      FX.whip(tl, A, B, t, { dir: 1, dur: 0.32, blurA: ba, blurB: bb });
+    })();
+
+    /* ===== sc002 · explainer: oscillator → test tone → audio equipment; frequency low → high ===== */
+    (function () {
+      const svg = $("s2-svg"), a = S(1164.70), b = S(1174.30);
+      tl.fromTo($("sc002-cam"), { scale: 1.0 }, { scale: 1.05, duration: b - a + 0.2, ease: "none", immediateRender: false }, a);
+      rise($("s2-l1"), a + 0.3, { dur: 0.5 });     // object label (named in the line before)
+      // speaker (audio equipment) drawn in bone
+      const g = mk(svg, "g", {});
+      const sty = { fill: "none", stroke: BONE, "stroke-width": 5, "stroke-linejoin": "round", "stroke-linecap": "round" };
+      const cab = mk(g, "path", Object.assign({ d: "M1350 270 L1710 270 Q1730 270 1730 290 L1730 770 Q1730 790 1710 790 L1350 790 Q1330 790 1330 770 L1330 290 Q1330 270 1350 270 Z" }, sty));
+      const tw = mk(g, "circle", Object.assign({ cx: 1530, cy: 372, r: 44 }, sty));
+      const wo = mk(g, "circle", Object.assign({ cx: 1530, cy: 600, r: 130 }, sty));
+      const cone = mk(g, "circle", { cx: 1530, cy: 600, r: 52, fill: BONE, "fill-opacity": 0.9 });
+      const rings = [mk(g, "circle", { cx: 1530, cy: 600, r: 92, fill: "none", stroke: ASHL, "stroke-width": 3, "stroke-opacity": 0.7 })];
+      [cab, tw, wo].forEach((p, i) => { const L = p.getTotalLength(); p.setAttribute("stroke-dasharray", L + " " + L);
+        gsap.set(p, { attr: { "stroke-dashoffset": L }, opacity: 0 }); tl.set(p, { opacity: 1 }, a + 1.3 + i * 0.25);
+        tl.fromTo(p, { attr: { "stroke-dashoffset": L } }, { attr: { "stroke-dashoffset": 0 }, duration: 1.0, ease: C(E.out, 1.0), immediateRender: false }, a + 1.3 + i * 0.25); });
+      gsap.set([cone, rings[0]], { opacity: 0 }); tl.to([cone, rings[0]], { opacity: 1, duration: 0.3 }, a + 2.3);
+      // wire stubs
+      const w1 = mk(svg, "path", { d: "M700 524 L742 526", fill: "none", stroke: ASHL, "stroke-width": 4, "stroke-linecap": "round" });
+      const w2 = mk(svg, "path", { d: "M1284 526 L1326 524", fill: "none", stroke: ASHL, "stroke-width": 4, "stroke-linecap": "round" });
+      gsap.set([w1, w2], { opacity: 0 }); tl.to([w1, w2], { opacity: 1, duration: 0.3 }, a + 1.0);
+      rise($("s2-l2"), T(1167.68));                // audio equipment
+      // the test tone: magenta sine, flows from "test" (1167.42); frequency sweeps on "different frequencies"
+      const X0 = 748, X1 = 1278, CY = 525, N = 133;
+      const wave = mk(svg, "path", { d: "M" + X0 + " " + CY, fill: "none", stroke: MAG, "stroke-width": 6, "stroke-linecap": "round", "stroke-linejoin": "round" });
+      const t0 = S(1167.36), tS = S(1171.30), tE = S(1173.30);
+      const smooth = (x) => x <= 0 ? 0 : x >= 1 ? 1 : x * x * (3 - 2 * x);
+      const pr = { t: t0 };
+      function drawWave() {
+        const t = Math.round(pr.t * 12) / 12;                       // 12 fps
+        const k = smooth((t - tS) / (tE - tS)), cyc = 2.5 + 9.5 * k; // cycles across the span
+        const grow = Math.min(1, (t - t0) / 0.8), xe = X0 + (X1 - X0) * grow, ph = t * 7.0;
+        let d = "";
+        for (let i = 0; i <= N; i++) { const x = X0 + (X1 - X0) * i / N; if (x > xe) break;
+          const env = Math.min(1, (x - X0) / 40, (X1 - x) / 40 + 0.15);
+          const y = CY + Math.sin((x - X0) / (X1 - X0) * cyc * Math.PI * 2 - ph) * 92 * env;
+          d += (i ? " L" : "M") + x.toFixed(1) + " " + y.toFixed(1); }
+        wave.setAttribute("d", d || ("M" + X0 + " " + CY));
+        const pulse = grow > 0.95 ? 1 + 0.07 * Math.sin(ph * (1 + 2 * k)) : 1;
+        cone.setAttribute("r", (52 * pulse).toFixed(1)); rings[0].setAttribute("r", (92 * (2 - pulse)).toFixed(1));
+        knob.setAttribute("cx", (790 + 440 * k).toFixed(1)); fill.setAttribute("x2", (790 + 440 * k).toFixed(1));
+      }
+      // frequency gauge
+      const gg = mk(svg, "g", {});
+      mk(gg, "line", { x1: 790, y1: 812, x2: 1230, y2: 812, stroke: ASHL, "stroke-width": 4, "stroke-linecap": "round", "stroke-opacity": 0.7 });
+      for (let i = 0; i <= 8; i++) mk(gg, "line", { x1: 790 + i * 55, y1: 800, x2: 790 + i * 55, y2: 824, stroke: ASHL, "stroke-width": 3, "stroke-opacity": 0.7 });
+      const fill = mk(gg, "line", { x1: 790, y1: 812, x2: 790, y2: 812, stroke: MAG, "stroke-width": 7, "stroke-linecap": "round" });
+      const knob = mk(gg, "circle", { cx: 790, cy: 812, r: 15, fill: MAG, stroke: BONE, "stroke-width": 3 });
+      gsap.set(gg, { opacity: 0 }); gsap.set(wave, { opacity: 0 });
+      tl.set(wave, { opacity: 1 }, t0);
+      tl.fromTo(pr, { t: t0 }, { t: b, duration: b - t0, ease: "none", immediateRender: false, onUpdate: drawWave }, t0);
+      tl.to(gg, { opacity: 1, duration: 0.3 }, T(1171.28));
+      rise($("s2-l3"), T(1171.28), { dur: 0.4 });  // frequencies
+      rise($("s2-lo"), T(1171.28) + 0.1, { dur: 0.4, y: 8 }); rise($("s2-hi"), T(1171.28) + 0.2, { dur: 0.4, y: 8 });
+    })();
+
+    /* ===== sc003 · what Terman gave them (hard cut on the camera move) ===== */
+    (function () {
+      const svg = $("s3-mk"), pf = FX.markupDefs(svg, SEG + "-pen3", { boil: 4 }), a = S(1174.30), b = S(1193.32);
+      tl.fromTo($("sc003-cam"), { scale: 1.06 }, { scale: 1.0, duration: 6, ease: "sine.out", immediateRender: false }, a);
+      tl.fromTo($("s3-ter"), { x: -60 }, { x: 0, duration: 1.2, ease: C(E.out, 1.2), immediateRender: false }, a);
+      tl.fromTo($("s3-hp"), { x: 80, rotation: 5 }, { x: 0, rotation: 2, duration: 1.2, ease: C(E.out, 1.2), immediateRender: false }, a);
+      gsap.set($("s3-hp"), { rotation: 2 });
+      // "So he convinces these two students to do this company": long pen arrow Terman → the two
+      penArrow(svg, a + 0.25, { x1: 640, y1: 206, x2: 986, y2: 208, bend: -26, dur: 1.0 }, pf);
+      // 1 · his personal money
+      land($("it1"), S(1177.95), { rot: -1.5, dr: -5 });
+      rise($("it1a"), T(1178.47));                 // his (personal money)
+      // 2 · a fellowship
+      land($("it2"), S(1180.75), { rot: 1, dr: 5 });
+      rise($("it2a"), T(1181.43));                 // fellowship
+      // 3 · a list of 25 companies that would buy
+      land($("it3"), S(1186.1), { rot: -1, dr: -5 });
+      gsap.set($("n25t"), { opacity: 0 });
+      tl.fromTo($("n25t"), { opacity: 0, scale: 1.3 }, { opacity: 1, scale: 1, duration: 0.4, ease: C(E.out, 0.4), immediateRender: false }, T(1186.95));   // twenty five
+      tl.fromTo($("n25hl"), { scaleX: 0 }, { scaleX: 1, duration: 0.45, ease: C(E.out, 0.45), immediateRender: false }, S(1187.3));
+      const rows = Array.from($("rows").children);
+      gsap.set(rows, { scaleX: 0 }); rows.forEach((r, i) => tl.to(r, { scaleX: 1, duration: 0.25, ease: C(E.out, 0.25) }, S(1186.5) + i * 0.09));
+      rise($("it3a"), T(1187.51));                 // companies
+      rise($("it3b"), T(1187.99));                 // that would buy
+      // 4 · connections → their first client
+      const ar2 = penArrow(svg, S(1190.6), { x1: 330, y1: 318, x2: 1560, y2: 372, bend: 96, color: MAG, width: 6, head: 26, dur: 1.2 }, pf);
+      land($("it4"), S(1191.6), { rot: 1.5, dr: 5, dur: 0.7 });
+      rise($("it4a"), T(1192.04), { dur: 0.4 });   // their first client
+      tl.fromTo($("sc003-cam"), { scale: 1.0 }, { scale: 1.04, duration: 13.2, ease: "sine.inOut", immediateRender: false }, a + 6);
+      // push toward card 4 into the cut on "Disney"
+      tl.to($("sc003-cam"), { scale: 1.5, x: -420, y: -60, duration: 0.5, ease: E.in }, b - 0.5);
+    })();
+
+    /* ===== sc004 · Disney (cut on the word; hold through the garbled half-sentence) ===== */
+    (function () {
+      const a = S(1193.32);
+      tl.fromTo($("sc004-cam"), { scale: 1.12 }, { scale: 1.0, duration: 1.4, ease: E.out, immediateRender: false }, a);
+      tl.fromTo($("dimg"), { scale: 1.0 }, { scale: 1.08, duration: 3.4, ease: "none", immediateRender: false }, a);
+      tl.fromTo($("dname"), { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, T(1193.32));   // Disney
+      tl.fromTo($("dname"), { scale: 1.1, transformOrigin: "0% 60%" }, { scale: 1, duration: 0.7, ease: C(E.out, 0.7), immediateRender: false }, T(1193.32));
+    })();
+
+    FX.grain($("grain"), 3); FX.dust($("dust"), 5, 2);
+    FX.mount(tl, DUR);
+    window.__timelines = window.__timelines || {};
+    window.__timelines[SEG] = tl;
+  })();
+  </script>
+</template>
+</body>
+</html>

@@ -1,0 +1,449 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8" /></head>
+<body>
+<template>
+  <style>
+    #root { position: absolute; inset: 0; overflow: hidden; background: var(--paper); }
+    .d14-scene { position: absolute; inset: 0; overflow: hidden; visibility: hidden; opacity: 0; }
+    .d14-shot { position: absolute; inset: 0; overflow: hidden; transform-origin: 50% 50%; background: var(--paper); }
+    .d14-night { background: var(--night); }
+    .d14-abs { position: absolute; }
+    .d14-cam { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 960px 540px; }
+    .d14-p1 { position: absolute; inset: -40px; background-size: cover; background-position: center; pointer-events: none; mix-blend-mode: multiply; filter: grayscale(1) contrast(1.05); }
+    .d14-mk { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; pointer-events: none; }
+    .d14-ink { color: var(--ink); }
+    .d14-tape { position: absolute; padding: 12px 22px 6px; background: var(--bone); color: var(--ink); font-size: 44px; line-height: 1; white-space: nowrap;
+      box-shadow: 0 6px 14px rgba(22,26,36,0.28); opacity: 0; }
+    .d14-tape::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(22,26,36,0.07), rgba(22,26,36,0) 12%, rgba(22,26,36,0) 88%, rgba(22,26,36,0.07)); }
+    .d14-card { position: absolute; background: var(--night); border: 14px solid var(--bone); box-sizing: border-box; box-shadow: 0 26px 50px rgba(22,26,36,0.34); overflow: hidden; }
+    .d14-card::after { content: ""; position: absolute; inset: 0; background: radial-gradient(ellipse 80% 80% at 50% 45%, rgba(194,197,202,0.10), rgba(0,0,0,0) 70%); pointer-events: none; }
+    .d14-print { position: absolute; background: var(--bone); padding: 12px 12px 12px; box-sizing: border-box; box-shadow: 0 22px 40px rgba(22,26,36,0.34); }
+    .d14-print img { display: block; width: 100%; height: 100%; object-fit: cover; filter: grayscale(1) contrast(1.12) brightness(0.98); }
+    .d14-print .ht { position: absolute; inset: 12px; background: url('assets/textures/halftone_01_norm.jpg') center / 520px auto; mix-blend-mode: overlay; opacity: 0.28; }
+    .d14-cap { position: absolute; padding: 8px 14px 3px; background: var(--ink); color: var(--bone); font-size: 22px; line-height: 1; white-space: nowrap; letter-spacing: 0.14em; }
+    .d14-credit { position: absolute; right: 96px; bottom: 30px; font-size: 13px; letter-spacing: 0.08em; color: rgba(22,26,36,0.6); z-index: 5; }
+    #pd14-flash { position: absolute; inset: 0; background: var(--bone); opacity: 0; pointer-events: none; z-index: 7; }
+    #pd14-grain, #pd14-dust, #pd14-vig { z-index: 8; }
+
+    /* A · one transistor = a switch → tens of thousands */
+    #pd14-a-cw { position: absolute; left: 500px; top: 170px; width: 920px; height: 700px; transform-origin: 0 0; }
+    #pd14-a-card { left: 0; top: 0; width: 920px; height: 620px; transform: rotate(-1.2deg); }
+    #pd14-a-svg { position: absolute; left: 0; top: 0; width: 892px; height: 592px; }
+    #pd14-a-t1 { left: 76px; top: 578px; transform: rotate(-2.5deg); }
+    #pd14-a-t2 { left: 520px; top: 566px; transform: rotate(1.5deg); }
+    #pd14-a-board { position: absolute; left: 588px; top: 156px; width: 1236px; height: 768px; background: var(--bone); border: 5px solid var(--ink); border-radius: 20px; box-sizing: border-box;
+      box-shadow: 0 26px 50px rgba(22,26,36,0.28); overflow: hidden; opacity: 0; }
+    #pd14-a-dense { position: absolute; left: 19px; top: 19px; width: 1188px; height: 720px; background-repeat: repeat; background-size: 14.08px 11.52px; background-position: 403.92px 244.8px; }
+    #pd14-a-rows { position: absolute; left: 19px; top: 19px; width: 1188px; height: 720px; background: var(--bone); transform-origin: 50% 50%; }
+    .d14-row { position: absolute; left: 0; width: 0; height: 36px; background-repeat: repeat-x; background-size: 44px 36px; }
+    #pd14-a-num { position: absolute; left: 96px; top: 640px; width: 470px; font-size: 76px; line-height: 0.98; }
+    .d14-mark { position: relative; display: inline-block; opacity: 0; white-space: nowrap; }
+    .d14-mark i { position: absolute; left: -10px; right: -10px; top: 14%; bottom: 8%; background: var(--yellow); mix-blend-mode: multiply; transform-origin: 0 50%; transform: scaleX(0); z-index: -1; }
+
+    /* B · every machine, by hand, again and again */
+    #pd14-b-belt { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; }
+    #pd14-b-rail { position: absolute; left: -200px; top: 838px; width: 2320px; height: 10px; background: var(--ink); opacity: 0.85; }
+    #pd14-b-rail2 { position: absolute; left: -200px; top: 858px; width: 2320px; height: 3px; background: var(--ink); opacity: 0.4; }
+    .d14-dev { position: absolute; top: 196px; width: 380px; height: 640px; }
+    .d14-dev svg { position: absolute; left: 0; top: 0; width: 380px; height: 640px; overflow: visible; }
+    .d14-no { position: absolute; top: 884px; width: 380px; text-align: center; font-size: 44px; color: var(--ink); opacity: 0; }
+    #pd14-b-iron { position: absolute; left: 0; top: 0; width: 10px; height: 10px; z-index: 4; }
+    #pd14-b-iron svg { position: absolute; left: 0; top: -420px; width: 420px; height: 420px; overflow: visible; filter: drop-shadow(0 16px 14px rgba(22,26,36,0.3)); }
+
+    /* C · one bad wire */
+    #pd14-c-grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(194,197,202,0.05) 2px, transparent 2px), linear-gradient(90deg, rgba(194,197,202,0.05) 2px, transparent 2px); background-size: 60px 60px; }
+    #pd14-c-svg { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; }
+    #pd14-c-tag { position: absolute; left: 1130px; top: 372px; font-size: 30px; color: var(--magenta-light); opacity: 0; white-space: nowrap; text-shadow: 0 0 14px rgba(12,15,21,0.9), 0 0 4px rgba(12,15,21,0.9); }
+
+    /* D · the desk: people working on it */
+    #pd14-d-prob { left: 650px; top: 262px; width: 600px; height: 430px; transform: rotate(-1.5deg); }
+    #pd14-d-psvg { position: absolute; left: 0; top: 0; width: 572px; height: 402px; }
+    #pd14-d-ph1 { left: 110px; top: 118px; width: 430px; height: 430px; transform: rotate(-3deg); }
+    #pd14-d-ph2 { left: 170px; top: 580px; width: 372px; height: 398px; transform: rotate(3.5deg); }
+    #pd14-d-c1 { left: 96px; top: 520px; transform: rotate(-3deg); }
+    #pd14-d-c2 { left: 150px; top: 950px; transform: rotate(3.5deg); }
+    .d14-tpl { position: absolute; left: 1360px; top: 300px; width: 400px; height: 290px; background: var(--bone); border: 4px solid var(--ink); box-sizing: border-box; border-radius: 10px; box-shadow: 0 12px 22px rgba(22,26,36,0.26); }
+    .d14-tpl svg { position: absolute; left: 0; top: 0; width: 392px; height: 282px; }
+  </style>
+
+  <div id="root" data-composition-id="pd14" data-vo-start="1801.7" data-duration="39.5" data-width="1920" data-height="1080">
+    <svg id="pd14-defs" width="0" height="0" style="position:absolute"></svg>
+
+    <!-- A · 1801.70–1810.40 · "as we talked about before, transistors are kinda like a switch. But to build a machine, you kinda have to glue
+         together like tens of thousands of these transistors." -->
+    <div class="d14-scene" id="pd14-a"><div class="d14-shot" id="pd14-a-shot">
+      <div class="d14-p1" style="background-image:url('assets/textures/paper_graph_01_hires.jpg');opacity:0.85"></div>
+      <div class="d14-cam" id="pd14-a-cam">
+        <div id="pd14-a-board"><div id="pd14-a-dense"></div><div id="pd14-a-rows"></div></div>
+        <svg id="pd14-a-mk" class="d14-mk" viewBox="0 0 1920 1080"></svg>
+        <div id="pd14-a-cw">
+          <div class="d14-card" id="pd14-a-card"><svg id="pd14-a-svg" viewBox="0 0 892 592"></svg></div>
+          <div class="d14-tape t-display" id="pd14-a-t1">TRANSISTOR</div>
+          <div class="d14-tape t-display" id="pd14-a-t2">A SWITCH</div>
+        </div>
+        <div id="pd14-a-num" class="t-display d14-ink"><span class="d14-mark" id="pd14-a-n1"><i></i>TENS OF</span><br /><span class="d14-mark" id="pd14-a-n2"><i></i>THOUSANDS</span></div>
+      </div>
+    </div></div>
+
+    <!-- B · 1810.40–1819.95 · "that's like an individual process you have to do for every machine. Not just for the first model of an
+         iPhone … You would have to do that for every single iPhone." -->
+    <div class="d14-scene" id="pd14-b"><div class="d14-shot" id="pd14-b-shot">
+      <div class="d14-p1" style="background-image:url('assets/textures/paper_stained_01_hires.jpg');opacity:0.6"></div>
+      <div class="d14-cam" id="pd14-b-cam" style="transform-origin:960px 500px">
+        <div id="pd14-b-rail"></div><div id="pd14-b-rail2"></div>
+        <div id="pd14-b-belt"></div>
+        <div id="pd14-b-iron"><svg viewBox="0 0 420 420"></svg></div>
+      </div>
+    </div></div>
+
+    <!-- C · 1819.95–1828.40 · "that's a big problem because even if one wire is messed up, the whole thing doesn't work. And imagine
+         having that kind of risk and problems if you're building missiles or something." -->
+    <div class="d14-scene" id="pd14-c"><div class="d14-shot d14-night" id="pd14-c-shot">
+      <div id="pd14-c-grid"></div>
+      <div class="d14-cam" id="pd14-c-cam">
+        <svg id="pd14-c-svg" viewBox="0 0 1920 1080"></svg>
+        <svg id="pd14-c-mk" class="d14-mk" viewBox="0 0 1920 1080"></svg>
+        <div id="pd14-c-tag" class="t-label">one wire</div>
+      </div>
+    </div></div>
+
+    <!-- D · 1828.40–1841.20 · "So there are people who are working on solving this issue. How can we standardize this process that can
+         be easily, you know, replicated without having to do it by hand individually. So a lot of smart people are working on this problem already." -->
+    <div class="d14-scene" id="pd14-d"><div class="d14-shot" id="pd14-d-shot">
+      <div class="d14-p1" style="background-image:url('assets/textures/paper_graph_01_hires.jpg');opacity:0.85;transform:scaleX(-1)"></div>
+      <div class="d14-cam" id="pd14-d-cam">
+        <div class="d14-print" id="pd14-d-ph1"><img src="assets/c2/photos/chm_bell_labs_tradic_felker_harris.jpg" alt="" /><div class="ht"></div></div>
+        <div class="d14-cap t-label" id="pd14-d-c1">Bell Labs · 1954</div>
+        <div class="d14-print" id="pd14-d-ph2"><img src="assets/c2/photos/hp_1958_subassembly_line_wiring.jpg" alt="" /><div class="ht"></div></div>
+        <div class="d14-cap t-label" id="pd14-d-c2">Hewlett-Packard · 1958</div>
+        <div class="d14-card" id="pd14-d-prob"><svg id="pd14-d-psvg" viewBox="0 0 572 402"></svg></div>
+        <div id="pd14-d-tpls"></div>
+        <svg id="pd14-d-mk" class="d14-mk" viewBox="0 0 1920 1080" style="z-index:3"></svg>
+      </div>
+      <div class="d14-credit t-label">Photos: AT&amp;T / Nokia Bell Labs · Hewlett-Packard, via Computer History Museum / HP Memory Project</div>
+    </div></div>
+
+    <div id="pd14-flash"></div>
+    <div id="pd14-grain" class="tx tx-grain" style="background-image:url('assets/textures/grain_01_norm.jpg')"></div>
+    <div id="pd14-dust" class="tx tx-dust" style="background-image:url('assets/textures/dust_02.jpg')"></div>
+    <div id="pd14-vig" class="vignette"></div>
+    <audio id="pd14-vo" class="temp-vo" src="vo_pd.mp3" data-start="0" data-duration="39.5" data-media-start="1801.7" data-volume="1"></audio>
+  </div>
+
+  <script>
+  (function () {
+    const SEG = "pd14", START = 1801.7, END = 1841.2, DURATION = 39.5;
+    const T = (s) => +(s - START).toFixed(3);   // TEXT cues (audited): literal master word start − 0.06
+    const S = (s) => +(s - START).toFixed(3);   // STRUCTURAL cues (cuts, camera, objects)
+    const tl = gsap.timeline({ paused: true });
+    const $ = (id) => document.getElementById(SEG + "-" + id);
+    const NS = "http://www.w3.org/2000/svg";
+    const defs = $("defs");
+    const E = FX.ease;
+    const C = (e, d) => FX.choppy(e, d, 12);
+    // palette_podcast.css values (SVG attributes / data URIs cannot read CSS variables)
+    const INK = "#161a24", BONE = "#eeeee8", ASH = "#878c96", ASHL = "#c2c5ca", ASHD = "#343843", MAG = "#d1307a", MAGL = "#f3a6c8", MAGD = "#7a1746", NIGHT = "#0c0f15";
+
+    // ---------- scenes ----------
+    const SC = [["a", 1801.70, 1810.40, "paper"], ["b", 1810.40, 1819.95, "paper"], ["c", 1819.95, 1828.40, "night"], ["d", 1828.40, 1841.20, "paper"]];
+    const GROUND = { paper: [0.3, 0.14, 0.26], night: [1, 0.4, 0.36] };
+    SC.forEach((s, i) => {
+      const el = $(s[0]);
+      if (i === 0) gsap.set(el, { autoAlpha: 1 });
+      else tl.fromTo(el, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.001, immediateRender: false }, S(s[1]));
+      if (s[2] < END) tl.set(el, { autoAlpha: 0 }, S(s[2]) + 0.06);
+    });
+    const TEX = [$("vig"), $("dust"), $("grain")];
+    gsap.set(TEX, { opacity: (i) => GROUND.paper[i] });
+    SC.forEach((s) => { const v = GROUND[s[3]]; tl.set(TEX, { opacity: (i) => v[i] }, S(s[1])); });
+
+    // ---------- helpers ----------
+    const show = (el, t) => tl.fromTo(el, { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, t);
+    const hide = (el, t) => tl.set(el, { opacity: 0 }, t);
+    const rise = (el, t, o) => { o = o || {}; const d = o.dur || 0.6;
+      tl.fromTo(el, { opacity: 0, y: o.y == null ? 16 : o.y }, { opacity: 1, y: 0, duration: d, ease: C(E.out, d), immediateRender: true }, t); };
+    function el(parent, tag, attrs) { const n = document.createElementNS(NS, tag); for (const k in attrs) n.setAttribute(k, attrs[k]); parent.appendChild(n); return n; }
+    function ink(parent, d, t, dur, o) {
+      o = o || {};
+      const p = el(parent, "path", { d: d, fill: "none", stroke: o.color || INK, "stroke-width": o.width || 5, "stroke-linecap": "round", "stroke-linejoin": "round" });
+      if (o.filter) p.setAttribute("filter", o.filter);
+      const len = p.getTotalLength() || 1;
+      p.setAttribute("stroke-dasharray", len + " " + len); p.setAttribute("stroke-dashoffset", len);
+      gsap.set(p, { opacity: 0 }); tl.set(p, { opacity: o.opacity == null ? 1 : o.opacity }, t);
+      tl.fromTo(p, { attr: { "stroke-dashoffset": len } }, { attr: { "stroke-dashoffset": 0 }, duration: dur, ease: o.ease || C(E.out, dur), immediateRender: true }, t);
+      return p;
+    }
+    let whipN = 0;
+    function whip(a, b, t, o) {
+      o = Object.assign({ dir: 1, vertical: false, flash: false, dur: 0.32 }, o);
+      const k = ++whipN, ba = FX.whipDefs(defs, SEG + "-wa" + k), bb = FX.whipDefs(defs, SEG + "-wb" + k), h = o.dur / 2;
+      const A = $(a + "-shot"), B = $(b + "-shot");
+      tl.set(A, { filter: "url(#" + SEG + "-wa" + k + ")" }, t - h - 0.01); tl.set(A, { filter: "none" }, t + 0.06);
+      tl.set(B, { filter: "url(#" + SEG + "-wb" + k + ")" }, t - 0.001); tl.set(B, { filter: "none" }, t + h + 0.02);
+      FX.whip(tl, A, B, t, { dir: o.dir, vertical: o.vertical, dur: o.dur, blurA: ba, blurB: bb });
+      if (o.flash) tl.fromTo($("flash"), { opacity: 0 }, { opacity: 0.8, duration: 0.08, yoyo: true, repeat: 1, ease: "power2.in", immediateRender: false }, t - 0.08);
+    }
+    // hand-wired board: pads on a grid + sagging wires between random pads (deterministic)
+    function wires(seed, cols, rows, n, x0, y0, dx, dy) {
+      const r = FX.rng(seed), out = [];
+      for (let i = 0; i < n; i++) {
+        const c1 = Math.floor(r() * cols), r1 = Math.floor(r() * rows);
+        let c2 = c1 + Math.round((r() - 0.5) * 7), r2 = r1 + Math.round((r() - 0.5) * 5);
+        c2 = Math.max(0, Math.min(cols - 1, c2)); r2 = Math.max(0, Math.min(rows - 1, r2));
+        if (c1 === c2 && r1 === r2) { c2 = (c1 + 2) % cols; }
+        const ax = x0 + c1 * dx, ay = y0 + r1 * dy, bx = x0 + c2 * dx, by = y0 + r2 * dy;
+        const L = Math.hypot(bx - ax, by - ay) || 1, bend = (r() - 0.5) * 0.7 * L, mx = (ax + bx) / 2 - ((by - ay) / L) * bend, my = (ay + by) / 2 + ((bx - ax) / L) * bend + L * 0.08;
+        out.push({ ax, ay, bx, by, d: "M" + ax.toFixed(1) + " " + ay.toFixed(1) + " Q" + mx.toFixed(1) + " " + my.toFixed(1) + " " + bx.toFixed(1) + " " + by.toFixed(1) });
+      }
+      return out;
+    }
+    const whipAB = S(1810.40), whipCD = S(1828.40);
+    whip("a", "b", whipAB, { dir: 1 });
+    whip("c", "d", whipCD, { dir: 1, vertical: true, flash: true });
+
+    // ================= A · transistor = switch → tens of thousands =================
+    (function () {
+      const svg = $("a-svg");
+      // the transistor (metal can, three legs)
+      let h = "";
+      h += '<g stroke="' + BONE + '" stroke-width="5" stroke-linecap="round" fill="none">';
+      h += '<path d="M148 300 V452 M196 300 V470 M244 300 V452"/>';
+      h += '<path d="M112 286 H280" stroke-width="7"/>';
+      h += '<rect x="126" y="128" width="140" height="158" rx="26" fill="' + ASHD + '"/>';
+      h += '<path d="M150 150 V262" stroke="' + ASHL + '" stroke-width="4" opacity="0.6"/>';
+      h += "</g>";
+      // equals (Haskoy has no "=" glyph): two bars
+      h += '<rect x="338" y="282" width="50" height="9" fill="' + ASHL + '"/><rect x="338" y="304" width="50" height="9" fill="' + ASHL + '"/>';
+      // the circuit: battery · switch · lamp
+      h += '<g stroke="' + BONE + '" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" fill="none">';
+      h += '<path d="M700 250 H770 V440 H470 V330"/><path d="M470 290 V250 H560"/>';
+      h += '<path d="M448 330 H492" stroke-width="7"/><path d="M458 302 H482 M458 316 H482" stroke-width="4" opacity="0"/><path d="M440 290 H500" stroke-width="5"/>';
+      h += '<circle cx="560" cy="250" r="9" fill="' + BONE + '"/><circle cx="668" cy="250" r="9" fill="' + BONE + '"/>';
+      h += "</g>";
+      h += '<circle id="pd14-a-glow" cx="770" cy="345" r="74" fill="' + MAGL + '" opacity="0"/>';
+      h += '<circle cx="770" cy="345" r="40" fill="' + NIGHT + '" stroke="' + BONE + '" stroke-width="5"/><path d="M742 317 L798 373 M798 317 L742 373" stroke="' + BONE + '" stroke-width="4"/>';
+      h += '<circle id="pd14-a-lamp" cx="770" cy="345" r="38" fill="' + MAGL + '" opacity="0"/>';
+      h += '<path id="pd14-a-cur" d="M560 250 H770 V440 H470 V250 H560" fill="none" stroke="' + MAGL + '" stroke-width="5" stroke-dasharray="14 34" stroke-linecap="round" opacity="0"/>';
+      h += '<g stroke="' + BONE + '" stroke-width="7" stroke-linecap="round">';
+      h += '<path id="pd14-a-l0" d="M560 250 L653 192"/><path id="pd14-a-l1" d="M560 250 L664 220" opacity="0"/><path id="pd14-a-l2" d="M560 250 L668 250" opacity="0"/></g>';
+      h += '<text id="pd14-a-off" class="t-label" x="614" y="150" text-anchor="middle" font-size="26" fill="' + ASHL + '">off</text>';
+      h += '<text id="pd14-a-on" class="t-label" x="614" y="150" text-anchor="middle" font-size="26" fill="' + MAGL + '" opacity="0">on</text>';
+      svg.innerHTML = h;
+      const L0 = $("a-l0"), L1 = $("a-l1"), L2 = $("a-l2"), cur = $("a-cur"), lamp = $("a-lamp"), glow = $("a-glow"), tOn = $("a-on"), tOff = $("a-off");
+      function sw(t, on) {   // 12 fps stop-motion flip through the middle position
+        tl.set([L0, L2], { opacity: 0 }, t); tl.set(L1, { opacity: 1 }, t);
+        tl.set(L1, { opacity: 0 }, t + 1 / 12); tl.set(on ? L2 : L0, { opacity: 1 }, t + 1 / 12);
+        tl.set([cur, lamp], { opacity: on ? 1 : 0 }, t + 1 / 12); tl.set(glow, { opacity: on ? 0.22 : 0 }, t + 1 / 12);
+        tl.set(tOn, { opacity: on ? 1 : 0 }, t + 1 / 12); tl.set(tOff, { opacity: on ? 0 : 1 }, t + 1 / 12);
+      }
+      // the first frame is already moving: the lever is mid-flip and the camera is settling
+      gsap.set(L0, { opacity: 0 }); gsap.set(L1, { opacity: 1 });
+      sw(0.0, true); sw(S(1802.55), false); sw(S(1803.25), true); sw(S(1803.95), false); sw(S(1804.46), true);   // lands ON on "switch"
+      const dm = { o: 0 };
+      tl.fromTo(dm, { o: 0 }, { o: -960, duration: 8.7, ease: C("none", 8.7), immediateRender: false, onUpdate: () => cur.setAttribute("stroke-dashoffset", dm.o.toFixed(1)) }, 0);
+      const cam = $("a-cam"), cw = $("a-cw");
+      tl.fromTo(cam, { scale: 1.12 }, { scale: 1.03, duration: 3.3, ease: E.cam, immediateRender: true }, 0);
+      tl.to(cam, { scale: 1.0, duration: 5.4, ease: "none" }, 3.3);
+      // tape labels on their words
+      rise($("a-t1"), T(1803.13), { dur: 0.5, y: 14 });   // "transistors"
+      rise($("a-t2"), T(1804.41), { dur: 0.4, y: 14 });   // "a switch"
+      // "But to build a machine": the card shrinks to the corner, the machine's board arrives
+      tl.to([$("a-t1"), $("a-t2"), tOn], { opacity: 0, duration: 0.25 }, S(1805.05));   // one text idea at a time (and 44 px would shrink below 22 px)
+      tl.to(cw, { x: -404, y: -22, scale: 0.44, duration: 1.3, ease: C(E.inOut, 1.3) }, S(1805.05));
+      const board = $("a-board");
+      tl.fromTo(board, { opacity: 0, x: 420 }, { opacity: 1, x: 0, duration: 1.2, ease: C(E.out, 1.2), immediateRender: true }, S(1805.45));
+      // pen arrow: the transistor goes INTO the machine
+      const mk = $("a-mk");
+      const pen = FX.markupDefs(mk, SEG + "-apen", { boil: 4 });
+      FX.markup.arrow(tl, mk, S(1806.9), { x1: 300, y1: 456, x2: 576, y2: 520, bend: -44, head: 30, dur: 0.6, color: INK, width: 6, filter: pen }).forEach((p) => { gsap.set(p, { opacity: 0 }); tl.set(p, { opacity: 1 }, S(1806.9)); });
+      // rows of transistors glued in, 12 fps, accelerating
+      const glyph = (c) => "url(\"data:image/svg+xml;utf8," + encodeURIComponent("<svg xmlns='http://www.w3.org/2000/svg' width='44' height='36' viewBox='0 0 44 36'><circle cx='22' cy='13' r='7.5' fill='" + c + "'/><path d='M17 19 V31 M22 19 V33 M27 19 V31' stroke='" + c + "' stroke-width='1.8' fill='none'/></svg>") + "\")";
+      const rows = $("a-rows");
+      $("a-dense").style.backgroundImage = glyph(INK);
+      let t = S(1807.37), gap = 0.26;
+      for (let i = 0; i < 20; i++) {
+        const r = document.createElement("div"); r.className = "d14-row"; r.style.top = i * 36 + "px"; r.style.backgroundImage = glyph(INK); rows.appendChild(r);
+        const d = Math.max(0.16, gap * 1.6);
+        tl.fromTo(r, { width: 0 }, { width: 1188, duration: d, ease: FX.choppy("none", d, 24), immediateRender: true }, t);
+        t += gap; gap = Math.max(0.035, gap * 0.78);
+      }
+      // "tens of thousands": the board pulls back — the rows were one small corner of it
+      tl.fromTo(rows, { scale: 1 }, { scale: 0.32, duration: 1.2, ease: C(E.inOut, 1.2), immediateRender: false }, S(1808.50));
+      rise($("a-n1"), T(1808.41), { dur: 0.4, y: 14 });   // "tens (of)"
+      rise($("a-n2"), T(1808.89), { dur: 0.4, y: 14 });   // "thousands"
+      tl.to("#pd14-a-n1 i", { scaleX: 1, duration: 0.3, ease: C("power1.inOut", 0.3) }, S(1809.15));
+      tl.to("#pd14-a-n2 i", { scaleX: 1, duration: 0.35, ease: C("power1.inOut", 0.35) }, S(1809.40));
+    })();
+
+    // ================= B · the same hand-wiring for every machine =================
+    (function () {
+      const belt = $("b-belt"), iron = $("b-iron"), PITCH = 640, N = 6;
+      // soldering iron (tip at the div's origin)
+      iron.querySelector("svg").innerHTML =
+        '<g transform="translate(0,420) rotate(-38)">' +
+        '<path d="M0 0 L26 -9 L26 9 Z" fill="' + INK + '"/><rect x="24" y="-7" width="120" height="14" fill="' + ASH + '"/><rect x="140" y="-12" width="26" height="24" fill="' + INK + '"/>' +
+        '<rect x="164" y="-22" width="250" height="44" rx="20" fill="' + INK + '"/><rect x="190" y="-22" width="26" height="44" fill="' + MAG + '"/></g>';
+      const W = wires(41, 6, 9, 9, 65, 110, 50, 50);
+      const devs = [];
+      for (let k = 0; k < N; k++) {
+        const d = document.createElement("div"); d.className = "d14-dev"; d.style.left = (770 + k * PITCH) + "px";
+        let h = '<svg viewBox="0 0 380 640"><rect x="4" y="4" width="372" height="632" rx="46" fill="' + BONE + '" stroke="' + INK + '" stroke-width="6"/>';
+        h += '<rect x="36" y="82" width="308" height="456" rx="8" fill="none" stroke="' + INK + '" stroke-width="3" opacity="0.55"/>';
+        for (let c = 0; c < 6; c++) for (let r = 0; r < 9; r++) h += '<circle cx="' + (65 + c * 50) + '" cy="' + (110 + r * 50) + '" r="5" fill="' + ASH + '"/>';
+        h += '<g class="wr"></g><g class="ph" fill="none" stroke="' + INK + '" stroke-width="5" stroke-linecap="round"><circle cx="190" cy="588" r="24"/><path d="M150 44 H230"/></g></svg>';
+        d.innerHTML = h; belt.appendChild(d);
+        const no = document.createElement("div"); no.className = "d14-no t-display"; no.style.left = (770 + k * PITCH) + "px"; no.textContent = "No. " + (k + 1); belt.appendChild(no);
+        const g = d.querySelector(".wr"), ph = d.querySelector(".ph");
+        const paths = W.map((w) => { const p = el(g, "path", { d: w.d, fill: "none", stroke: INK, "stroke-width": 4, "stroke-linecap": "round" });
+          const len = p.getTotalLength() || 1; p.setAttribute("stroke-dasharray", len + " " + len); p.setAttribute("stroke-dashoffset", len); p._len = len;
+          const a = el(g, "circle", { cx: w.ax, cy: w.ay, r: 8, fill: INK }), b = el(g, "circle", { cx: w.bx, cy: w.by, r: 8, fill: INK }); gsap.set([a, b], { opacity: 0 }); return { p, a, b, w }; });
+        gsap.set(ph, { opacity: 0 });
+        devs.push({ d, no, paths, ph });
+      }
+      // iron position on screen = device origin (770, 196) + pad point (the current device always sits in the centre)
+      const IX = (x) => 770 + x, IY = (y) => 196 + y;
+      function wire(k, t0, t1, from) {
+        const D = devs[k], n = D.paths.length, slot = (t1 - t0) / (n - from);
+        D.paths.forEach((q, j) => {
+          if (j < from) { q.p.setAttribute("stroke-dashoffset", 0); gsap.set([q.a, q.b], { opacity: 1 }); return; }
+          const t = t0 + (j - from) * slot, d = slot * 0.78;
+          tl.to(iron, { x: IX(q.w.ax), y: IY(q.w.ay), duration: slot * 0.22, ease: "power1.inOut" }, t - slot * 0.22);
+          tl.set(q.a, { opacity: 1 }, t);
+          tl.fromTo(q.p, { attr: { "stroke-dashoffset": q.p._len } }, { attr: { "stroke-dashoffset": 0 }, duration: d, ease: C("none", d), immediateRender: false }, t);
+          tl.to(iron, { x: IX(q.w.bx), y: IY(q.w.by), duration: d, ease: C("none", d) }, t);
+          tl.set(q.b, { opacity: 1 }, t + d);
+        });
+      }
+      function shift(k, t, d) {   // device k comes to the centre
+        tl.to(belt, { x: -k * PITCH, duration: d, ease: C(E.inOut, d) }, t);
+        tl.to(iron, { x: IX(300), y: IY(-40), duration: d * 0.5, ease: "power1.out" }, t);
+        show(devs[k].no, t + d * 0.6);
+      }
+      gsap.set(iron, { x: IX(W[3].ax), y: IY(W[3].ay) });
+      gsap.set(devs[0].no, { opacity: 1 });
+      wire(0, S(1810.45), S(1813.10), 3);
+      shift(1, S(1813.15), 0.75); wire(1, S(1813.95), S(1815.60), 0);
+      shift(2, S(1815.65), 0.65); wire(2, S(1816.35), S(1817.70), 0);
+      shift(3, S(1817.75), 0.5); wire(3, S(1818.30), S(1819.00), 0);
+      shift(4, S(1819.00), 0.4); wire(4, S(1819.42), S(1820.10), 0);
+      // "an iPhone": the pen gives every machine a home button and a speaker slot
+      devs.forEach((D, k) => tl.fromTo(D.ph, { opacity: 0 }, { opacity: 1, duration: 0.25, ease: C("none", 0.25), immediateRender: true }, S(1815.83) + 0.04 * k));
+      const cam = $("b-cam");
+      tl.fromTo(cam, { scale: 1.04 }, { scale: 1.0, duration: 8.9, ease: "none", immediateRender: false }, S(1810.40));
+      tl.to(cam, { scale: 2.3, duration: 0.5, ease: "power2.in" }, S(1819.47));   // push into the board → cut on action
+    })();
+
+    // ================= C · one bad wire — the whole thing is dead =================
+    (function () {
+      const svg = $("c-svg"), cam = $("c-cam");
+      const X0 = 135, Y0 = 100, D = 110, COLS = 16, ROWS = 9;
+      const W = wires(77, COLS, ROWS, 84, X0, Y0, D, D);
+      let h = '<rect x="-40" y="-40" width="2000" height="1160" rx="30" fill="' + ASHD + '" opacity="0.38" stroke="' + ASH + '" stroke-width="6"/>';
+      h += '<g id="pd14-c-wr" fill="none" stroke="' + ASHL + '" stroke-width="4" stroke-linecap="round" opacity="0.7">' + W.map((w) => '<path d="' + w.d + '"/>').join("") + "</g>";
+      h += '<g id="pd14-c-pl" fill="none" stroke="' + BONE + '" stroke-width="6" stroke-linecap="round" stroke-dasharray="12 170">' + W.map((w) => '<path d="' + w.d + '"/>').join("") + "</g>";
+      h += '<g id="pd14-c-pd" fill="' + BONE + '" stroke="' + ASHD + '" stroke-width="4">';
+      for (let c = 0; c < COLS; c++) for (let r = 0; r < ROWS; r++) h += '<circle cx="' + (X0 + c * D) + '" cy="' + (Y0 + r * D) + '" r="9"/>';
+      h += "</g>";
+      // the hero wire (centre) + its two broken halves
+      h += '<path id="pd14-c-hero" d="M905 430 Q1050 470 1125 650" fill="none" stroke="' + ASHL + '" stroke-width="7" stroke-linecap="round"/>';
+      h += '<g id="pd14-c-brk" fill="none" stroke="' + MAGL + '" stroke-width="7" stroke-linecap="round" opacity="0"><path d="M905 430 Q975 440 1010 468 Q1030 452 1022 430"/><path d="M1125 650 Q1108 580 1066 536 Q1082 520 1104 524"/></g>';
+      h += '<g id="pd14-c-spk" stroke="' + BONE + '" stroke-width="5" stroke-linecap="round" opacity="0"><path d="M1040 500 L1040 452 M1040 500 L1088 478 M1040 500 L996 520 M1040 500 L1066 546 M1040 500 L1006 462"/></g>';
+      // the missile round the board (cam space; seen when the camera pulls back)
+      h += '<g id="pd14-c-ms" fill="none" stroke="' + BONE + '" stroke-width="15" stroke-linejoin="round" stroke-linecap="round"></g>';
+      svg.innerHTML = h;
+      const wr = $("c-wr"), pl = $("c-pl"), pd = $("c-pd"), hero = $("c-hero"), brk = $("c-brk"), spk = $("c-spk"), ms = $("c-ms");
+      const t0 = S(1819.95);
+      // current pulses run along every wire until the break
+      const dm = { o: 0 };
+      tl.fromTo(dm, { o: 0 }, { o: -760, duration: 3.6, ease: C("none", 3.6), immediateRender: false, onUpdate: () => pl.setAttribute("stroke-dashoffset", dm.o.toFixed(1)) }, t0);
+      // camera: continues the push from B, settles on the centre
+      tl.fromTo(cam, { scale: 1.7 }, { scale: 1.22, duration: 1.5, ease: E.out, immediateRender: false }, t0);
+      tl.to(cam, { scale: 1.3, duration: 3.0, ease: "none" }, t0 + 1.5);
+      // "one wire": it turns magenta, pen circle + tag
+      const mk = $("c-mk"), pen = FX.markupDefs(mk, SEG + "-cpen", { boil: 12 });
+      tl.set(hero, { attr: { stroke: MAGL } }, S(1822.09));
+      const circ = FX.markup.circle(tl, mk, S(1822.09), { cx: 1022, cy: 532, rx: 190, ry: 168, rot: -8, dur: 0.6, color: MAG, width: 9, filter: pen, seed: 5 });
+      gsap.set(circ, { opacity: 0 }); tl.set(circ, { opacity: 1 }, S(1822.09));
+      show($("c-tag"), T(1822.09));   // "one (wire)"
+      // "messed up": it snaps
+      tl.set(hero, { opacity: 0 }, S(1822.93)); tl.set(brk, { opacity: 1 }, S(1822.93));
+      tl.set(spk, { opacity: 1 }, S(1822.93)); tl.set(spk, { opacity: 0 }, S(1822.93) + 2 / 12);
+      tl.fromTo(cam, { x: 0 }, { x: 10, duration: 1 / 12, yoyo: true, repeat: 3, ease: "none", immediateRender: false }, S(1822.93));
+      // "the whole thing doesn't work": the pulses die, the board goes dark in three steps
+      tl.set(pl, { opacity: 0.5 }, S(1823.51)); tl.set(pl, { opacity: 0 }, S(1823.75));
+      [[1823.51, 0.55, 0.8], [1823.83, 0.4, 0.6], [1824.15, 0.24, 0.4]].forEach((k) => { tl.set(wr, { opacity: k[1] }, S(k[0])); tl.set(pd, { opacity: k[2] }, S(k[0])); });
+      // "imagine … if you're building missiles": pull back — the board sits inside a missile
+      const SCL = 0.34;
+      tl.to($("c-tag"), { opacity: 0, duration: 0.2 }, S(1824.47));
+      tl.to(cam, { scale: SCL, x: -90, duration: 2.3, ease: E.cam }, S(1824.47));
+      ink(ms, "M-700 -300 L2620 -300 Q3320 -270 3700 540 Q3320 1350 2620 1380 L-700 1380 Z", S(1825.55), 1.6, { color: BONE, width: 15, ease: C("power1.inOut", 1.6) });
+      ink(ms, "M-700 -300 L-1250 -620 L-1250 -120 L-700 150", S(1826.3), 0.7, { color: BONE, width: 15, ease: C("power1.out", 0.7) });
+      ink(ms, "M-700 1380 L-1250 1700 L-1250 1200 L-700 930", S(1826.3), 0.7, { color: BONE, width: 15, ease: C("power1.out", 0.7) });
+      ink(ms, "M-700 330 L-920 250 L-920 830 L-700 750", S(1826.6), 0.5, { color: BONE, width: 15, ease: C("power1.out", 0.5) });
+      ink(ms, "M2200 -290 L2204 1370", S(1826.9), 0.35, { color: BONE, width: 9, opacity: 0.55, ease: C("none", 0.35) });
+      ink(ms, "M-250 -290 L-246 1370", S(1826.9), 0.35, { color: BONE, width: 9, opacity: 0.55, ease: C("none", 0.35) });
+      // the break keeps blinking inside the missile (12 fps), camera keeps drifting
+      const big = el(mk, "circle", { cx: 1022, cy: 532, r: 330, fill: "none", stroke: MAGL, "stroke-width": 26, opacity: 0 });
+      for (let i = 0; i < 4; i++) { tl.set(big, { opacity: 0.9 }, S(1827.0) + i * 0.34); tl.set(big, { opacity: 0.25 }, S(1827.0) + i * 0.34 + 0.17); }
+      tl.to(cam, { scale: SCL * 1.04, duration: 1.7, ease: "none" }, S(1826.77));
+    })();
+
+    // ================= D · the desk: who is working on it, and the wish =================
+    (function () {
+      const t0 = S(1828.40), cam = $("d-cam"), mk = $("d-mk");
+      const pen = FX.markupDefs(mk, SEG + "-dpen", { boil: 4 });
+      // the problem card: the tangled board, the broken wire circled
+      const W = wires(77, 16, 9, 84, 46, 41, 32, 40);
+      let h = '<g fill="none" stroke="' + ASHL + '" stroke-width="2.4" stroke-linecap="round" opacity="0.75">' + W.map((w) => '<path d="' + w.d + '"/>').join("") + "</g><g fill=\"" + BONE + '">';
+      for (let c = 0; c < 16; c++) for (let r = 0; r < 9; r++) h += '<circle cx="' + (46 + c * 32) + '" cy="' + (41 + r * 40) + '" r="3.4"/>';
+      h += '</g><path d="M268 150 Q290 160 300 172 M336 240 Q328 214 314 198" fill="none" stroke="' + MAGL + '" stroke-width="5" stroke-linecap="round"/>';
+      h += '<circle cx="302" cy="194" r="58" fill="none" stroke="' + MAGL + '" stroke-width="5"/>';
+      $("d-psvg").innerHTML = h;
+      const ph1 = $("d-ph1"), ph2 = $("d-ph2"), c1 = $("d-c1"), c2 = $("d-c2");
+      // "people who are working on solving this issue": Bell Labs engineers at the hand-wired TRADIC
+      tl.fromTo(ph1, { x: -640, rotation: -12 }, { x: 0, rotation: -3, duration: 1.1, ease: C(E.out, 1.1), immediateRender: false }, t0 - 0.1);
+      show(c1, t0 + 1.0);
+      // "How can we standardize this process": a clean, printed-looking template …
+      const box = $("d-tpls"), tp = [];
+      for (let k = 3; k >= 0; k--) {
+        const d = document.createElement("div"); d.className = "d14-tpl";
+        let s = '<svg viewBox="0 0 392 282"><g fill="none" stroke="' + INK + '" stroke-width="5" stroke-linecap="square" stroke-linejoin="miter">';
+        s += '<path class="tr" d="M60 60 H200 V110 H332"/><path class="tr" d="M60 110 H150 V172 H332"/><path class="tr" d="M60 172 H110 V222 H260"/><path class="tr" d="M260 60 H332"/><path class="tr" d="M190 222 V172"/></g><g fill="' + INK + '">';
+        [[60, 60], [60, 110], [60, 172], [332, 110], [332, 172], [260, 222], [260, 60], [332, 60], [190, 222]].forEach((p) => { s += '<rect x="' + (p[0] - 9) + '" y="' + (p[1] - 9) + '" width="18" height="18"/>'; });
+        s += "</g></svg>"; d.innerHTML = s; box.appendChild(d); tp[k] = d;
+        if (k) gsap.set(d, { opacity: 0 });
+      }
+      tl.fromTo(tp[0], { x: 760, rotation: 8 }, { x: 0, rotation: 1.5, duration: 1.0, ease: C(E.out, 1.0), immediateRender: true }, S(1831.45));
+      Array.from(tp[0].querySelectorAll(".tr")).forEach((p, i) => { const len = p.getTotalLength() || 1; p.setAttribute("stroke-dasharray", len + " " + len);
+        tl.fromTo(p, { attr: { "stroke-dashoffset": len } }, { attr: { "stroke-dashoffset": 0 }, duration: 0.5, ease: C("none", 0.5), immediateRender: true }, S(1832.39) + i * 0.16); });
+      // … with a pen question mark (it is still only a question)
+      const q1 = FX.markup.pen(tl, mk, S(1833.61), { points: [[1500, 196], [1530, 150], [1590, 150], [1612, 190], [1570, 226], [1560, 252]], jitter: 5, seed: 8, dur: 0.6, width: 8, color: MAG, filter: pen });
+      const q2 = FX.markup.pen(tl, mk, S(1834.25), { points: [[1557, 276], [1562, 282]], jitter: 1, seed: 9, dur: 0.12, width: 11, color: MAG, filter: pen });
+      [[q1, 1833.61], [q2, 1834.25]].forEach((q) => { gsap.set(q[0], { opacity: 0 }); tl.set(q[0], { opacity: 1 }, S(q[1])); });
+      // "replicated": identical copies deal out, 12 fps
+      [1, 2, 3].forEach((k) => {
+        const t = S(1835.72) + (k - 1) * 0.25;
+        tl.set(tp[k], { opacity: 1, rotation: 1.5 }, t);
+        tl.fromTo(tp[k], { x: 0, y: 0 }, { x: -34 * k, y: 96 * k, duration: 0.5, ease: C(E.out, 0.5), immediateRender: false }, t);
+      });
+      // "without having to do it by hand individually": the HP wiring line, crossed out by the pen
+      tl.fromTo(ph2, { x: -700, rotation: 14 }, { x: 0, rotation: 3.5, duration: 1.0, ease: C(E.out, 1.0), immediateRender: true }, S(1836.30));
+      show(c2, S(1837.25));
+      const x1 = FX.markup.pen(tl, mk, S(1837.40), { points: [[196, 610], [520, 950]], jitter: 10, seed: 3, dur: 0.3, width: 10, color: MAG, filter: pen });
+      const x2 = FX.markup.pen(tl, mk, S(1837.76), { points: [[516, 604], [204, 956]], jitter: 10, seed: 4, dur: 0.3, width: 10, color: MAG, filter: pen });
+      [[x1, 1837.40], [x2, 1837.76]].forEach((q) => { gsap.set(q[0], { opacity: 0 }); tl.set(q[0], { opacity: 1 }, S(q[1])); });
+      // "a lot of smart people are working on this problem": the pen circles the problem; the desk settles
+      const cc = FX.markup.circle(tl, mk, S(1839.45), { cx: 950, cy: 476, rx: 350, ry: 262, rot: -3, dur: 0.8, color: MAG, width: 9, filter: pen, seed: 11 });
+      gsap.set(cc, { opacity: 0 }); tl.set(cc, { opacity: 1 }, S(1839.45));
+      tl.fromTo(cam, { scale: 1.1, x: 40 }, { scale: 1.0, x: 0, duration: 12.8, ease: "none", immediateRender: false }, t0);
+    })();
+
+    FX.mount(tl, DURATION);
+    window.__timelines = window.__timelines || {};
+    window.__timelines[SEG] = tl;
+  })();
+  </script>
+</template>
+</body>
+</html>

@@ -1,0 +1,1084 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8" /></head>
+<body>
+<template>
+  <style>
+    #root { position: absolute; inset: 0; overflow: hidden; background: var(--night); }
+    .d1-scene { position: absolute; inset: 0; overflow: hidden; visibility: hidden; opacity: 0; }
+    .d1-shot { position: absolute; inset: 0; overflow: hidden; transform-origin: 50% 50%; }
+    .d1-night { background: var(--night); }
+    .d1-paperbg { background: var(--paper); }
+    .d1-abs { position: absolute; }
+    .d1-p1, .d1-p2 { position: absolute; inset: 0; background-size: cover; background-position: center; pointer-events: none; }
+    .d1-p1 { filter: saturate(0.12) brightness(1.02); }
+    .d1-p2 { opacity: 0.5; mix-blend-mode: multiply; filter: saturate(0.1); }
+    .d1-credit { position: absolute; right: 30px; bottom: 20px; font-size: 13px; letter-spacing: 0.08em; color: rgba(238,238,232,0.62); z-index: 5; }
+    .d1-credit.ink { color: rgba(22,26,36,0.6); }
+    .d1-mk { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; pointer-events: none; }
+    .d1-w { display: inline-block; white-space: pre; opacity: 0; }
+    .d1-ink { color: var(--ink); }
+    .d1-box { display: inline-block; background: var(--copper); color: var(--ink); padding: 0.08em 0.22em 0.02em; line-height: 1; }
+    .d1-fc { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; object-fit: cover; }
+    .d1-fcw { position: absolute; inset: 0; transform-origin: 1140px 100px; }
+    .d1-weave { position: absolute; inset: -14px; }
+    .d1-foot { position: absolute; left: 0; top: -180px; width: 1920px; height: 1440px; object-fit: cover; }
+    .d1-card { position: absolute; background: var(--sepia-light); box-shadow: 0 26px 60px rgba(12,15,21,0.34); overflow: hidden; }
+    .d1-card .g1 { position: absolute; inset: 0; background: url('assets/textures/paper_cream_02.jpg') center / cover; mix-blend-mode: multiply; opacity: 0.6; filter: saturate(0.1); }
+    .d1-card .g2 { position: absolute; inset: 0; background: url('assets/textures/paper_graph_01_hires.jpg') 0 0 / 1500px auto; mix-blend-mode: multiply; opacity: 0.42; filter: saturate(0) contrast(1.1) brightness(1.08); }
+    .d1-tag { position: absolute; background: var(--sepia-light); color: var(--ink); font-size: 34px; padding: 6px 20px 8px; box-shadow: 0 6px 16px rgba(12,15,21,0.28); opacity: 0; white-space: nowrap; }
+    .d1-ln { height: 10px; background: rgba(22,26,36,0.26); margin: 0 0 16px; border-radius: 2px; }
+    .d1-print { position: absolute; background: var(--sepia-light); padding: 14px; box-shadow: 0 22px 50px rgba(12,15,21,0.36); }
+    .d1-print .in { position: relative; width: 100%; height: 100%; overflow: hidden; background: var(--ash-dark); }
+    .d1-print img, .d1-print video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    .d1-ht { position: absolute; inset: 0; background: url('assets/textures/halftone_01_norm.jpg') 0 0 / 320px auto; mix-blend-mode: overlay; opacity: 0.5; pointer-events: none; }
+    #pd01-flash { position: absolute; inset: 0; background: var(--bone); opacity: 0; pointer-events: none; z-index: 7; }
+    #pd01-grain, #pd01-dust, #pd01-vig { z-index: 8; }
+
+    /* sc01 — 1983 */
+    #pd01-sc01-cam { position: absolute; inset: 0; transform-origin: 50% 50%; }
+    #pd01-sc01-vid { position: absolute; left: 0; top: -180px; width: 1920px; height: 1440px; object-fit: cover; }
+    #pd01-sc01-streaks { opacity: 0.5; filter: blur(2.5px); }
+    #pd01-sc01-cover { position: absolute; inset: -300px; background: #000; mix-blend-mode: multiply; opacity: 0; transform-origin: 50% 50%; }
+    #pd01-sc01-yr { position: absolute; left: 300px; top: 560px; width: 1920px; text-align: center; font-size: 600px; color: #fff; line-height: 1; }
+    #pd01-sc01-lift { position: absolute; inset: 0; background: var(--night); mix-blend-mode: lighten; }
+
+    /* sc02 — name card */
+    #pd01-sc02-cam { position: absolute; inset: 0; transform-origin: 1560px 760px; }
+    #pd01-sc02-blk { position: absolute; left: 150px; top: 200px; width: 600px; height: 880px; background: var(--copper); }
+    #pd01-sc02-ts { position: absolute; left: 60px; top: 120px; width: 820px; height: 960px; overflow: hidden; }
+    #pd01-sc02-ts img { position: absolute; left: -160px; top: -150px; width: 1000px; height: 1501px; filter: url(#pd01-tint-si) contrast(1.2) brightness(0.98); }
+    #pd01-sc02-ts .d1-ht { -webkit-mask: url('assets/intro/made/tsao_layers/tsao.png') -160px -150px / 1000px 1501px no-repeat; mask: url('assets/intro/made/tsao_layers/tsao.png') -160px -150px / 1000px 1501px no-repeat; }
+    #pd01-sc02-yr { left: 900px; top: 84px; font-size: 176px; color: var(--copper-dark); }
+    #pd01-sc02-name { position: absolute; left: 900px; top: 300px; }
+    #pd01-sc02-name .d1-box { font-size: 112px; display: table; margin-bottom: 14px; opacity: 0; }
+    #pd01-sc02-ceo { left: 906px; top: 590px; font-size: 44px; opacity: 0; }
+    .d1-panel { position: absolute; overflow: hidden; box-shadow: 0 22px 50px rgba(12,15,21,0.35); background: var(--paper-2); }
+    #pd01-sc02-tw { left: 1440px; top: 96px; width: 360px; height: 440px; transform: rotate(3deg); opacity: 0; }
+    #pd01-sc02-tw .rel, #pd01-sc02-tw .fill { position: absolute; left: -44px; top: -10px; width: 375px; height: 460px; }
+    #pd01-sc02-tw .rel { background: url('assets/intro/derived/maps/taiwan_atlas_2480.jpg') 0 0 / 100% 100%; filter: grayscale(1) brightness(1.08) contrast(0.95); }
+    #pd01-sc02-tw .fill { background: var(--board); -webkit-mask: url('assets/intro/derived/intro03/taiwan_mask_alpha.png') 0 0 / 100% 100%; mask: url('assets/intro/derived/intro03/taiwan_mask_alpha.png') 0 0 / 100% 100%; mix-blend-mode: multiply; opacity: 0.9; }
+    #pd01-sc02-twl { position: absolute; left: 22px; top: 18px; font-size: 26px; color: var(--ink); }
+    #pd01-sc02-chip { left: 1452px; top: 590px; width: 372px; height: 280px; transform: rotate(-3deg); background: var(--night); opacity: 0; }
+    #pd01-sc02-chip video { position: absolute; left: -40px; top: -40px; width: 480px; height: 360px; object-fit: cover; }
+    #pd01-sc02-umc { position: absolute; left: 900px; top: 716px; width: 500px; height: 196px; background: var(--bone); transform: rotate(-2deg); box-shadow: 0 18px 40px rgba(12,15,21,0.3); opacity: 0; }
+    #pd01-sc02-umc img { position: absolute; left: 40px; top: 32px; width: 420px; }
+    #pd01-sc02-umc div { position: absolute; left: 0; top: 146px; width: 500px; text-align: center; font-size: 22px; letter-spacing: 0.1em; color: var(--ink); }
+
+    /* sc03 / sc04 */
+    .d1-fab { position: absolute; left: 0; top: -40px; width: 1920px; height: 1440px; object-fit: cover; }
+    #pd01-sc03-cam, #pd01-sc04-cam { position: absolute; inset: 0; transform-origin: 60% 30%; }
+    #pd01-sc04-streaks { opacity: 0; filter: blur(2.5px);
+      -webkit-mask-image: radial-gradient(ellipse 34% 52% at 74% 30%, #000 30%, transparent 100%); mask-image: radial-gradient(ellipse 34% 52% at 74% 30%, #000 30%, transparent 100%); }
+
+    /* sc05 */
+    #pd01-sc05-wrap { position: absolute; inset: 0; transform-origin: 960px 540px; }
+    #pd01-sc05-a, #pd01-sc05-b { position: absolute; inset: 0; }
+    #pd01-sc05-wafer { position: absolute; left: 240px; top: -80px; width: 1440px; height: 1080px; object-fit: cover; }
+    #pd01-sc05-glow { position: absolute; left: 430px; top: 10px; width: 1060px; height: 1060px; border-radius: 50%; background: radial-gradient(circle, rgba(194,197,202,0) 50%, rgba(194,197,202,0.22) 58%, rgba(194,197,202,0) 70%); }
+    #pd01-sc05-globe { position: absolute; left: 510px; top: 90px; width: 900px; height: 900px; }
+    #pd01-sc05-streaks { opacity: 0.35; filter: blur(2.5px); }
+
+    /* sc06 map */
+    #pd01-sc06-stage { position: absolute; inset: 0; perspective: 1700px; perspective-origin: 50% 40%; }
+    #pd01-sc06-plane { position: absolute; left: -400px; top: -300px; width: 2720px; height: 1680px; transform: rotateX(28deg) rotateZ(-8deg); transform-origin: 50% 50%; overflow: hidden; background: var(--paper-2); }
+    #pd01-sc06-cam { position: absolute; left: 400px; top: 300px; width: 5700px; height: 1440px; transform-origin: 0 0; }
+    #pd01-sc06-base { position: absolute; left: 0; top: 0; width: 5700px; height: 1440px; filter: saturate(0.45); }
+    #pd01-sc06-inset { position: absolute; left: 180px; top: 810px; width: 330px; height: 300px; filter: saturate(0.45);
+      -webkit-mask-image: radial-gradient(ellipse 50% 50% at 50% 50%, #000 62%, transparent 100%); mask-image: radial-gradient(ellipse 50% 50% at 50% 50%, #000 62%, transparent 100%); }
+    #pd01-sc06-fill { position: absolute; left: 276px; top: 915px; width: 93px; height: 114px; opacity: 0; }
+    #pd01-sc06-svg { position: absolute; left: 0; top: 0; width: 5700px; height: 1440px; overflow: visible; }
+    #pd01-sc06-phone { position: absolute; left: 356px; top: 790px; width: 210px; transform-origin: 30% 100%; opacity: 0; }
+    .d1-maplab { position: absolute; font-size: 44px; letter-spacing: 0.06em; color: var(--ink); white-space: nowrap; opacity: 0; text-shadow: 0 0 10px rgba(231,230,223,0.9); }
+    #pd01-sc06-ltw { left: 196px; top: 1052px; }
+    #pd01-sc06-lus { left: 4010px; top: 520px; font-size: 54px; }
+    #pd01-sc06-lsf { left: 3856px; top: 572px; font-size: 26px; letter-spacing: 0.14em; }
+    #pd01-sc06-tex { position: absolute; inset: 0; background: url('assets/textures/paper_cream_02.jpg') center / cover; mix-blend-mode: multiply; opacity: 0.5; filter: saturate(0.1); }
+    #pd01-sc06-far { position: absolute; left: 0; right: 0; top: 0; height: 420px; backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px);
+      -webkit-mask-image: linear-gradient(180deg, #000 20%, transparent 100%); mask-image: linear-gradient(180deg, #000 20%, transparent 100%); }
+    #pd01-sc06-tw { left: 1330px; top: 410px; font-size: 76px; opacity: 0; color: var(--ink); letter-spacing: 0.04em; text-shadow: 0 0 14px rgba(231,230,223,0.95); }
+    #pd01-sc06-twu { position: absolute; left: 0; right: 0; bottom: -14px; height: 10px; background: var(--board); transform-origin: 0 50%; }
+
+    /* sc07 chart */
+    #pd01-sc07-cam { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 0 0; }
+    #pd01-sc07-title { left: 96px; top: 74px; font-size: 58px; color: var(--ink); opacity: 0; }
+    #pd01-sc07-title i { color: var(--board-dark); }
+    #pd01-sc07-sub { left: 100px; top: 152px; font-size: 24px; color: var(--ink-soft); opacity: 0; }
+    #pd01-sc07-svg { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; }
+    #pd01-sc07-t4 { left: 226px; top: 676px; font-size: 62px; white-space: nowrap; }
+    #pd01-sc07-t4u { left: 232px; top: 756px; font-size: 24px; color: var(--ink); opacity: 0; background: var(--paper); padding: 2px 8px; }
+    #pd01-sc07-t24 { left: 940px; top: 210px; font-size: 84px; white-space: nowrap; }
+    #pd01-sc07-t24 .label-box { color: var(--yellow); }
+    #pd01-sc07-t24u { left: 1330px; top: 252px; font-size: 26px; color: var(--ink); opacity: 0; }
+    #pd01-sc07-m12 { left: 420px; top: 934px; width: 960px; text-align: center; font-size: 26px; color: var(--ink); opacity: 0; }
+    #pd01-sc07-m12 span { position: relative; display: inline-block; padding: 2px 10px; }
+    #pd01-sc07-hl { position: absolute; left: 0; right: 0; top: 2px; bottom: 2px; background: var(--yellow); mix-blend-mode: multiply; transform-origin: 0 50%; }
+    #pd01-sc07-x6 { left: 1490px; top: 480px; font-size: 150px; white-space: nowrap; }
+    #pd01-sc07-x6 .label-box { color: var(--yellow); padding: 0.06em 0.2em 0; }
+
+    /* sc09 desk */
+    #pd01-sc09 { z-index: 3; }
+    #pd01-sc09-cam { position: absolute; inset: 0; transform-origin: 1100px 520px; }
+    #pd01-sc09-film { left: 150px; top: 220px; width: 780px; height: 600px; padding: 22px 22px 70px; transform: rotate(-3deg); }
+    #pd01-sc09-film img, #pd01-sc09-film video { filter: saturate(0.25) contrast(1.05); }
+    #pd01-sc09-ds { left: 1010px; top: 96px; width: 760px; height: 890px; transform: rotate(2.5deg); padding: 50px 56px; overflow: visible; }
+    #pd01-sc09-ds .logo { width: 300px; display: block; position: relative; }
+    #pd01-sc09-ds .rule { height: 4px; background: var(--ink); margin: 26px 0 30px; position: relative; }
+    #pd01-sc09-chip { position: absolute; left: 160px; top: 300px; width: 440px; height: 360px; overflow: visible; }
+    #pd01-sc09-mini { position: absolute; left: 1290px; top: 470px; width: 200px; height: 164px; opacity: 0; }
+    #pd01-sc09-tchip { left: 1500px; top: 800px; transform: rotate(-2deg); }
+    #pd01-sc09-tphone { left: 250px; top: 850px; transform: rotate(-4deg); }
+
+    /* sc10 night chart */
+    #pd01-sc10-cam { position: absolute; left: 0; top: 0; width: 3000px; height: 1400px; transform-origin: 0 0; }
+    #pd01-sc10-band { position: absolute; left: 820px; top: 120px; width: 400px; height: 790px; background: rgba(194,197,202,0.10); border-left: 2px dashed rgba(194,197,202,0.4); border-right: 2px dashed rgba(194,197,202,0.4); transform-origin: 50% 100%; opacity: 0; }
+    #pd01-sc10-axis { position: absolute; left: 100px; top: 910px; width: 2800px; height: 3px; background: rgba(194,197,202,0.7); }
+    .d1-gl { position: absolute; left: 100px; width: 2800px; height: 1px; background: rgba(194,197,202,0.14); }
+    #pd01-sc10-svg { position: absolute; left: 0; top: 0; width: 3000px; height: 1400px; overflow: visible; }
+    #pd01-sc10-ffy { left: 820px; top: 930px; width: 400px; text-align: center; font-size: 28px; color: var(--ash-light); }
+    #pd01-sc10-rec { left: 1226px; top: 150px; font-size: 40px; color: var(--night); background: var(--copper-light); padding: 8px 18px 4px; opacity: 0; white-space: nowrap; }
+    #pd01-sc10-pb { left: 1330px; top: 96px; font-size: 34px; color: var(--ash-light); white-space: nowrap; }
+    #pd01-sc10-us { left: 1700px; top: 330px; font-size: 34px; color: var(--copper-light); white-space: nowrap; }
+
+    /* sc12 CEO card */
+    #pd01-sc12-b1 { position: absolute; left: 560px; top: 150px; width: 520px; height: 930px; background: var(--copper); }
+    #pd01-sc12-b2 { position: absolute; left: 1080px; top: 620px; width: 130px; height: 230px; background: var(--copper-dark); }
+    #pd01-sc12-ts { position: absolute; left: 500px; top: 190px; width: 640px; height: 902px; }
+    #pd01-sc12-ts img { position: absolute; left: 0; top: 0; width: 640px; height: 902px; filter: url(#pd01-tint-si) contrast(1.15); }
+    #pd01-sc12-ph1 { left: 110px; top: 560px; width: 420px; height: 250px; transform: rotate(-3deg); }
+    #pd01-sc12-ph2 { left: 1250px; top: 130px; width: 400px; height: 310px; transform: rotate(2.5deg); }
+    #pd01-sc12-ph1 img, #pd01-sc12-ph2 img { filter: url(#pd01-tint-si); }
+    #pd01-sc12-name { position: absolute; left: 1250px; top: 520px; }
+    #pd01-sc12-name .d1-box { font-size: 96px; display: table; margin-bottom: 12px; background: var(--ink); color: var(--bone); }
+    #pd01-sc12-ceo { left: 1256px; top: 760px; font-size: 40px; opacity: 0; }
+
+    /* sc13 footage + markups */
+    #pd01-sc13-cam { position: absolute; inset: 0; transform-origin: 70% 60%; }
+    #pd01-sc13-dim { position: absolute; inset: 0; background: rgba(12,15,21,0.34); }
+    #pd01-sc13-icon { position: absolute; left: 1430px; top: 610px; width: 190px; height: 190px; opacity: 0; transform-origin: 50% 50%; }
+
+    /* sc14 desk cards */
+    #pd01-sc14-cam { position: absolute; left: 0; top: 0; width: 3700px; height: 1080px; transform-origin: 0 0; }
+    #pd01-sc14-bg { position: absolute; left: 0; top: 0; width: 3700px; height: 1080px; background: url('assets/textures/paper_graph_01_hires.jpg') 0 0 / 2400px auto; filter: saturate(0) contrast(1.08) brightness(0.93); }
+    #pd01-sc14-ca { left: 360px; top: 130px; width: 1200px; height: 820px; transform: rotate(-1.2deg); }
+    #pd01-sc14-cb { left: 2060px; top: 130px; width: 1200px; height: 820px; transform: rotate(1.2deg); }
+    .d1-sk { position: absolute; left: 0; top: 0; width: 1200px; height: 820px; overflow: visible; }
+    .d1-tape { position: absolute; width: 150px; height: 44px; background: rgba(242,226,74,0.55); box-shadow: 0 2px 6px rgba(12,15,21,0.2); }
+
+    /* sc15 years */
+    #pd01-sc15-streaks { opacity: 0; filter: blur(2.5px); }
+    #pd01-sc15-ruler { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; }
+    #pd01-sc15-yr { left: 120px; top: 236px; width: 1000px; font-size: 330px; line-height: 1; white-space: nowrap; }
+    #pd01-sc15-idea { left: 1190px; top: 176px; width: 560px; height: 380px; transform: rotate(3deg); opacity: 0; }
+    #pd01-sc15-idea svg { position: absolute; left: 0; top: 0; width: 560px; height: 380px; }
+
+    /* sc16 dictionary */
+    #pd01-sc16-stage { position: absolute; inset: 0; perspective: 2200px; }
+    #pd01-sc16-cam { position: absolute; left: 0; top: 0; width: 1400px; height: 1800px; transform-origin: 0 0; }
+    #pd01-sc16-page { position: absolute; left: 0; top: 0; width: 1400px; height: 1800px; background: var(--sepia-light); padding: 70px 80px; color: var(--sepia-dark); transform: rotateY(-10deg) rotateX(6deg) rotate(-2deg); transform-origin: 50% 40%; box-shadow: 0 40px 90px rgba(12,15,21,0.35); }
+    #pd01-sc16-page .gw { display: flex; justify-content: space-between; font-size: 26px; border-bottom: 2px solid var(--sepia-dark); padding-bottom: 10px; margin-bottom: 26px; }
+    #pd01-sc16-page .cols { display: flex; gap: 56px; }
+    #pd01-sc16-page .col { flex: 1; font-size: 31px; line-height: 1.32; text-align: justify; }
+    #pd01-sc16-page p { margin: 0 0 18px; }
+    #pd01-sc16-page b { font-weight: 700; }
+    #pd01-sc16-page .nw { position: absolute; inset: 0; background: url('assets/textures/newsprint_01.jpg') center / cover; mix-blend-mode: multiply; opacity: 0.4; filter: saturate(0.2); }
+    #pd01-sc16-ht { opacity: 0.25; background-size: 400px auto; }
+    #pd01-sc16-hlw { position: relative; display: inline-block; }
+    #pd01-sc16-hl { position: absolute; left: -6px; right: -6px; top: 8px; bottom: 2px; background: var(--yellow); mix-blend-mode: multiply; transform-origin: 0 50%; opacity: 0.9; }
+    #pd01-sc16-card { position: absolute; left: 110px; top: 320px; width: 760px; padding: 40px 46px 46px; background: var(--bone); box-shadow: 0 24px 60px rgba(12,15,21,0.35); transform: rotate(-1.5deg); opacity: 0; }
+    #pd01-sc16-pp { font-size: 62px; line-height: 1.05; color: var(--ink); }
+    #pd01-sc16-fd { font-size: 170px; color: var(--ink); line-height: 0.95; opacity: 0; filter: url(#pd01-ch16); }
+
+    /* sc17 2.5D */
+    #pd01-sc17-stage { position: absolute; inset: 0; perspective: 1200px; perspective-origin: 50% 50%; background: var(--night); }
+    #pd01-sc17-cam { position: absolute; inset: 0; transform-style: preserve-3d; transform-origin: 50% 50%; }
+    .d1-L { position: absolute; inset: 0; transform-origin: 50% 50%; }
+    .d1-L img { position: absolute; }
+    #pd01-sc17-bdb { left: -260px; top: -500px; width: 2440px; filter: blur(22px) brightness(0.45) saturate(0.25); }
+    #pd01-sc17-bd { left: 563px; top: -100px; width: 794px; filter: brightness(0.6) saturate(0.3);
+      -webkit-mask-image: linear-gradient(90deg, transparent, #000 18%, #000 82%, transparent); mask-image: linear-gradient(90deg, transparent, #000 18%, #000 82%, transparent); }
+    #pd01-sc17-glow { position: absolute; left: 900px; top: 60px; width: 900px; height: 900px; border-radius: 50%; background: radial-gradient(circle, rgba(246,201,138,0.5) 0%, rgba(246,201,138,0.16) 38%, rgba(246,201,138,0) 68%); opacity: 0; }
+    #pd01-sc17-ts { left: 563px; top: -100px; width: 794px; filter: saturate(0.35) contrast(1.06); }
+    #pd01-sc17-vs { left: 563px; top: -100px; width: 794px; filter: saturate(0.3) brightness(0.9) blur(1.5px); }
+    #pd01-sc17-shade { position: absolute; inset: 0; background: linear-gradient(0deg, rgba(12,15,21,0.72) 0%, rgba(12,15,21,0) 32%); }
+    #pd01-sc17-name { left: 120px; top: 760px; opacity: 0; }
+    #pd01-sc17-name .d1-box { font-size: 88px; }
+    #pd01-sc17-role { left: 126px; top: 880px; font-size: 30px; opacity: 0; }
+
+    /* sc18 compass */
+    #pd01-sc18-svg { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; }
+    #pd01-sc18-card { position: absolute; left: 650px; top: 308px; width: 620px; height: 465px; background: var(--sepia-light); padding: 14px; box-shadow: 0 30px 80px rgba(0,0,0,0.65); transform-origin: 50% 50%; opacity: 0; }
+    #pd01-sc18-card .ph { position: relative; width: 100%; height: 100%; overflow: hidden; }
+    #pd01-sc18-card img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 45%; filter: url(#pd01-tint-cu) contrast(1.05); }
+    #pd01-sc18-lab { left: 96px; top: 900px; font-size: 30px; opacity: 0; }
+
+    /* sc19 boardroom */
+    #pd01-sc19-cam { position: absolute; inset: 0; transform-origin: 55% 45%; }
+
+    /* sc20 timeline */
+    #pd01-sc20-cam { position: absolute; inset: 0; transform-origin: 50% 55%; }
+    #pd01-sc20-svg { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; }
+    #pd01-sc20-logo { position: absolute; left: 230px; top: 440px; width: 300px; opacity: 0; }
+    #pd01-sc20-dot { position: absolute; left: 352px; top: 622px; width: 36px; height: 36px; border-radius: 50%; background: var(--copper); box-shadow: 0 0 0 8px rgba(224,136,42,0.2); }
+    #pd01-sc20-now { left: 1400px; top: 500px; width: 200px; text-align: center; font-size: 76px; color: var(--ink); opacity: 0; }
+    #pd01-sc20-old { left: 372px; top: 790px; width: 1128px; text-align: center; font-size: 72px; color: var(--ink); }
+    #pd01-sc20-lau { left: 232px; top: 330px; font-size: 30px; color: var(--ink); white-space: nowrap; }
+
+    /* sc21 badge + ownership */
+    #pd01-sc21-badge { left: 230px; top: 140px; width: 560px; height: 800px; transform: rotate(-3deg); border-radius: 18px; }
+    #pd01-sc21-strip { position: absolute; left: 0; top: 0; width: 560px; height: 92px; background: var(--copper); }
+    #pd01-sc21-strip img { position: absolute; left: 30px; top: 22px; height: 48px; filter: brightness(0) invert(0.08); }
+    #pd01-sc21-ph { position: absolute; left: 60px; top: 124px; width: 440px; height: 380px; overflow: hidden; background: var(--ash-light); }
+    #pd01-sc21-ph img { position: absolute; left: -70px; top: -10px; width: 580px; filter: url(#pd01-tint-si) contrast(1.15); }
+    #pd01-sc21-nm { position: absolute; left: 60px; top: 530px; font-size: 62px; color: var(--ink); opacity: 0; white-space: nowrap; }
+    .d1-row { position: absolute; left: 62px; font-size: 44px; color: var(--ink); opacity: 0; }
+    #pd01-sc21-bmk { position: absolute; left: 0; top: 0; width: 560px; height: 800px; overflow: visible; }
+    #pd01-sc21-ot { left: 1040px; top: 150px; font-size: 32px; opacity: 0; }
+    #pd01-sc21-grid { position: absolute; left: 1040px; top: 220px; width: 640px; height: 640px; }
+    .d1-tile { position: absolute; width: 54px; height: 54px; background: var(--ash-dark); opacity: 0; }
+    #pd01-sc21-tl { left: 1040px; top: 880px; font-size: 30px; color: var(--copper-light); opacity: 0; }
+
+    /* sc22 approval */
+    #pd01-sc22-cam { position: absolute; left: 0; top: 0; width: 2600px; height: 1080px; transform-origin: 0 0; }
+    #pd01-sc22-bg { position: absolute; left: 0; top: 0; width: 2600px; height: 1080px; background: url('assets/textures/paper_lined_01_hires.jpg') 0 0 / 2600px auto; filter: saturate(0.05) brightness(0.9); }
+    #pd01-sc22-form { left: 700px; top: 96px; width: 820px; height: 890px; transform: rotate(1.5deg); padding: 54px 60px; }
+    #pd01-sc22-form .hd { position: relative; font-size: 30px; color: var(--ink); }
+    #pd01-sc22-form .rule { position: relative; height: 4px; background: var(--ink); margin: 20px 0 34px; }
+    #pd01-sc22-form .d1-ln { position: relative; }
+    #pd01-sc22-st { position: absolute; left: 400px; top: 620px; width: 340px; height: 170px; transform: rotate(-6deg); }
+    #pd01-sc22-st svg { position: absolute; left: 0; top: 0; width: 340px; height: 170px; overflow: visible; }
+    #pd01-sc22-stl { position: absolute; left: 0; top: 60px; width: 340px; text-align: center; font-size: 30px; color: rgba(22,26,36,0.5); opacity: 0; }
+    #pd01-sc22-sig { position: absolute; left: 60px; top: 760px; width: 300px; font-size: 20px; color: var(--ink-soft); border-top: 3px solid var(--ink); padding-top: 8px; }
+    #pd01-sc22-idea { left: 250px; top: 330px; width: 560px; height: 380px; transform: rotate(-5deg); }
+    #pd01-sc22-idea svg { position: absolute; left: 0; top: 0; width: 560px; height: 380px; }
+  </style>
+  <div id="root" data-composition-id="pd01" data-vo-start="0" data-duration="113.7667" data-width="1920" data-height="1080">
+    <svg id="pd01-defs" width="0" height="0" style="position:absolute"></svg>
+
+    <!-- sc01 · 0.00–2.34 · "Our story starts in 1983" -->
+    <div class="d1-scene d1-night" id="pd01-sc01"><div class="d1-shot" id="pd01-sc01-shot">
+      <div id="pd01-sc01-cam">
+        <video id="pd01-sc01-vid" src="assets/intro/footage/wafer_die_pattern_macro.mp4" muted playsinline data-start="0" data-duration="2.6" data-media-start="1.0"
+          data-color-grading='{"adjust":{"saturation":-0.7,"contrast":0.12},"effects":{"chromaticAberration":0.12,"chromaticAngle":0}}'></video>
+        <canvas id="pd01-sc01-streaks" class="streaks"></canvas>
+      </div>
+      <div id="pd01-sc01-cover"><div id="pd01-sc01-yr" class="t-display">1983</div></div>
+      <div id="pd01-sc01-lift"></div>
+    </div></div>
+
+    <!-- sc02 · 2.34–8.02 · Robert Tsao, CEO of a Taiwanese company … UMC -->
+    <div class="d1-scene d1-paperbg" id="pd01-sc02"><div class="d1-shot" id="pd01-sc02-shot">
+      <div class="d1-p1" style="background-image:url('assets/textures/paper_cream_01.jpg')"></div>
+      <div class="d1-p2" style="background-image:url('assets/textures/paper_fiber_01.jpg')"></div>
+      <div id="pd01-sc02-cam">
+        <div id="pd01-sc02-blk"><div class="d1-ht" style="mix-blend-mode:multiply;opacity:0.3"></div></div>
+        <div id="pd01-sc02-ts"><img src="assets/intro/made/tsao_layers/tsao.png" alt="" /><div class="d1-ht"></div></div>
+        <div id="pd01-sc02-yr" class="d1-abs t-display">1983</div>
+        <div id="pd01-sc02-name"><div class="d1-box t-display" id="pd01-sc02-rob">ROBERT</div><div class="d1-box t-display" id="pd01-sc02-tsao">TSAO</div></div>
+        <div id="pd01-sc02-ceo" class="d1-abs t-label d1-ink">CEO</div>
+        <div class="d1-panel" id="pd01-sc02-tw"><div class="rel"></div><div class="fill"></div><div id="pd01-sc02-twl" class="t-label">Taiwan</div></div>
+        <div class="d1-panel" id="pd01-sc02-chip"><video id="pd01-sc02-vid" src="assets/intro/footage/wafer_probe_needles.mp4" muted playsinline data-start="2.34" data-duration="5.9" data-media-start="2.0"
+          data-color-grading='{"adjust":{"saturation":-0.8,"contrast":0.1}}'></video></div>
+        <div id="pd01-sc02-umc"><img src="assets/intro/logos/UMC-Logo.png" alt="" /><div class="t-label">United Microelectronics Corporation</div></div>
+      </div>
+      <div class="d1-credit ink t-label">Photo: NYCU Secretariat / Wikimedia Commons</div>
+    </div></div>
+
+    <!-- sc03 · 8.02–10.30 · he's walking around his factory floor -->
+    <div class="d1-scene d1-night" id="pd01-sc03"><div class="d1-shot" id="pd01-sc03-shot">
+      <div class="d1-weave" id="pd01-sc03-weave"><div id="pd01-sc03-cam">
+        <video id="pd01-sc03-vid" class="d1-fab" src="assets/intro/footage/fab_floor_manager_walks_rows.mp4" muted playsinline data-start="8.02" data-duration="2.28" data-media-start="0.62"
+          data-color-grading='{"adjust":{"saturation":-0.45,"contrast":0.06},"effects":{"chromaticAberration":0.12,"chromaticAngle":0}}'></video>
+      </div></div>
+    </div></div>
+
+    <!-- sc04 · 10.30–12.62 · this is when he has a unique insight -->
+    <div class="d1-scene d1-night" id="pd01-sc04"><div class="d1-shot" id="pd01-sc04-shot">
+      <div class="d1-weave" id="pd01-sc04-weave"><div id="pd01-sc04-cam">
+        <img id="pd01-sc04-still" class="d1-fab" src="assets/intro/made/fab_walk_freeze_2p9.jpg" alt="" />
+        <canvas id="pd01-sc04-streaks" class="streaks"></canvas>
+        <img id="pd01-sc04-man" class="d1-fab" src="assets/intro/cutouts/fab_walker_cutout.png" alt="" style="filter:saturate(0.55)" />
+        <svg id="pd01-sc04-mk" class="d1-mk"></svg>
+      </div></div>
+    </div></div>
+
+    <!-- sc05 · 12.62–16.74 · change the future of the world and his industry -->
+    <div class="d1-scene d1-night" id="pd01-sc05"><div class="d1-shot" id="pd01-sc05-shot">
+      <div id="pd01-sc05-wrap">
+        <div id="pd01-sc05-a"><canvas id="pd01-sc05-streaks" class="streaks"></canvas><div id="pd01-sc05-glow"></div><img id="pd01-sc05-globe" src="assets/intro/made/globe_blue_marble_desat.png" alt="" /></div>
+        <div id="pd01-sc05-b"><video id="pd01-sc05-wafer" src="assets/intro/footage/wafer_closeup_purple.mp4" muted playsinline data-start="15.7" data-duration="1.2" data-media-start="1.0"
+          data-color-grading='{"adjust":{"saturation":-0.8,"contrast":0.1},"effects":{"chromaticAberration":0.12,"chromaticAngle":0}}'></video></div>
+      </div>
+      <div class="d1-credit t-label">Globe: NASA Blue Marble</div>
+    </div></div>
+
+    <!-- fc1 · 16.74–18.62 · "You see, just a year earlier," -->
+    <div class="d1-scene" id="pd01-fc1"><div class="d1-fcw" id="pd01-fc1-w">
+      <video id="pd01-fc1-v" class="d1-fc" src="assets/facecam/pd_facecam_intro.mp4" muted playsinline data-start="16.74" data-duration="1.88" data-media-start="16.74"></video>
+    </div></div>
+
+    <!-- sc06 · 18.62–23.15 · Taiwan's exports of telephones to the United States went up drastically -->
+    <div class="d1-scene d1-paperbg" id="pd01-sc06"><div class="d1-shot" id="pd01-sc06-shot">
+      <div id="pd01-sc06-stage"><div id="pd01-sc06-plane"><div id="pd01-sc06-cam">
+        <img id="pd01-sc06-base" src="assets/intro/derived/maps/pacific_atlas_8550.jpg" alt="" />
+        <img id="pd01-sc06-inset" src="assets/intro/derived/maps/pacific_inset_taiwan_116_127E_19_29N.jpg" alt="" />
+        <img id="pd01-sc06-fill" src="assets/podcast/pd01/taiwan_board_wash.png" alt="" />
+        <svg id="pd01-sc06-svg" viewBox="0 0 5700 1440"></svg>
+        <div id="pd01-sc06-ltw" class="d1-maplab t-display">TAIWAN</div>
+        <div id="pd01-sc06-lus" class="d1-maplab t-display">UNITED STATES</div>
+        <div id="pd01-sc06-lsf" class="d1-maplab t-label">San Francisco</div>
+        <img id="pd01-sc06-phone" src="assets/intro/cutouts/phone_pushbutton_halftone.png" alt="" />
+      </div><div id="pd01-sc06-tex"></div></div></div>
+      <div id="pd01-sc06-far"></div>
+      <div id="pd01-sc06-tw" class="d1-abs t-display">TAIWAN<div id="pd01-sc06-twu"></div></div>
+      <div class="d1-credit ink t-label">Relief: AWS Terrain Tiles · Natural Earth</div>
+    </div></div>
+
+    <!-- sc07 · 23.15–32.44 · 4 million → 24 million units in 12 months · 6× -->
+    <div class="d1-scene d1-paperbg" id="pd01-sc07"><div class="d1-shot" id="pd01-sc07-shot">
+      <div class="d1-p1" style="background-image:url('assets/textures/paper_cream_01.jpg')"></div>
+      <div class="d1-p2" style="background-image:url('assets/textures/paper_graph_01_hires.jpg'); filter:saturate(0) contrast(1.1) brightness(1.08); opacity:0.45"></div>
+      <div id="pd01-sc07-cam">
+        <div id="pd01-sc07-title" class="d1-abs t-serif">Taiwan's telephone exports to the <i>United States</i></div>
+        <div id="pd01-sc07-sub" class="d1-abs t-label">Units per year</div>
+        <svg id="pd01-sc07-svg" viewBox="0 0 1920 1080"></svg>
+        <div id="pd01-sc07-t4" class="d1-abs"><span class="label-box" id="pd01-sc07-b4" style="opacity:0"><span class="d1-w">4 </span><span class="d1-w">million</span></span></div>
+        <div id="pd01-sc07-t4u" class="d1-abs t-label">units a year</div>
+        <div id="pd01-sc07-t24" class="d1-abs"><span class="label-box" id="pd01-sc07-b24" style="opacity:0"><span id="pd01-sc07-n24">4</span><span class="d1-w"> million</span></span></div>
+        <div id="pd01-sc07-t24u" class="d1-abs t-label">units</div>
+        <div id="pd01-sc07-m12" class="d1-abs t-label"><span><span id="pd01-sc07-hl"></span><span style="position:relative">12 months</span></span></div>
+        <div id="pd01-sc07-x6" class="d1-abs"><span class="label-box" id="pd01-sc07-b6" style="opacity:0"><span id="pd01-sc07-n6">1</span>×</span></div>
+        <svg id="pd01-sc07-mk" class="d1-mk"></svg>
+      </div>
+    </div></div>
+
+    <!-- fc2 · 32.44–34.36 · "technically speaking. That's insane." -->
+    <div class="d1-scene" id="pd01-fc2"><div class="d1-fcw" id="pd01-fc2-w">
+      <video id="pd01-fc2-v" class="d1-fc" src="assets/facecam/pd_facecam_intro.mp4" muted playsinline data-start="32.44" data-duration="1.92" data-media-start="32.44"></video>
+    </div></div>
+
+    <!-- sc09 · 34.36–41.35 · UMC was the chip company making the chips inside those telephones -->
+    <div class="d1-scene d1-paperbg" id="pd01-sc09"><div class="d1-shot d1-paperbg" id="pd01-sc09-shot">
+      <div class="d1-p1" style="background-image:url('assets/textures/paper_graph_01_hires.jpg'); filter:saturate(0) contrast(1.08) brightness(0.93)"></div>
+      <div id="pd01-sc09-cam">
+        <div class="d1-print" id="pd01-sc09-film"><div class="in">
+          <img src="assets/intro/made/pushbutton_phone_1970_hand_f3p3.jpg" alt="" />
+          <video id="pd01-sc09-vid" src="assets/intro/footage/pushbutton_phone_1970_hand.mp4" muted playsinline data-start="34.36" data-duration="3.0" data-media-start="0.3"></video>
+        </div></div>
+        <div class="d1-tape" style="left:460px;top:196px;transform:rotate(-5deg)"></div>
+        <div class="d1-card" id="pd01-sc09-ds"><div class="g1"></div>
+          <img class="logo" src="assets/intro/logos/UMC-Logo.png" alt="" />
+          <div class="rule"></div>
+          <div class="d1-ln" style="width:92%;position:relative"></div><div class="d1-ln" style="width:84%;position:relative"></div><div class="d1-ln" style="width:88%;position:relative"></div><div class="d1-ln" style="width:60%;position:relative"></div>
+          <svg id="pd01-sc09-chip" viewBox="0 0 440 360"></svg>
+          <div style="position:absolute; left:56px; right:56px; top:720px"><div class="d1-ln" style="width:90%"></div><div class="d1-ln" style="width:94%"></div><div class="d1-ln" style="width:72%"></div></div>
+        </div>
+        <svg id="pd01-sc09-mk" class="d1-mk"></svg>
+        <svg id="pd01-sc09-mini" viewBox="0 0 440 360"></svg>
+        <div id="pd01-sc09-tchip" class="d1-tag t-serif-i">chip</div>
+        <div id="pd01-sc09-tphone" class="d1-tag t-serif-i">telephone</div>
+      </div>
+    </div></div>
+
+    <!-- sc10 · 41.0–52.90 · record profits in its first full year / the phone boom died, UMC's sales died -->
+    <div class="d1-scene d1-night" id="pd01-sc10"><div class="d1-shot" id="pd01-sc10-shot">
+      <div id="pd01-sc10-cam">
+        <div class="d1-gl" style="top:310px"></div><div class="d1-gl" style="top:510px"></div><div class="d1-gl" style="top:710px"></div>
+        <div id="pd01-sc10-band"></div>
+        <div id="pd01-sc10-axis"></div>
+        <svg id="pd01-sc10-svg" viewBox="0 0 3000 1400"></svg>
+        <div id="pd01-sc10-ffy" class="d1-abs t-label"><span class="d1-w">first </span><span class="d1-w">full </span><span class="d1-w">year</span></div>
+        <div id="pd01-sc10-rec" class="d1-abs t-label"><span class="d1-w" style="opacity:1">record </span><span class="d1-w">profits</span></div>
+        <div id="pd01-sc10-pb" class="d1-abs t-label"><span class="d1-w">US phone </span><span class="d1-w">boom</span></div>
+        <div id="pd01-sc10-us" class="d1-abs t-label"><span class="d1-w">UMC's </span><span class="d1-w">sales</span></div>
+      </div>
+    </div></div>
+
+    <!-- sc12 · 52.90–55.35 · "This is when the CEO realized" -->
+    <div class="d1-scene d1-paperbg" id="pd01-sc12"><div class="d1-shot" id="pd01-sc12-shot">
+      <div class="d1-p1" style="background-image:url('assets/textures/paper_cream_02.jpg')"></div>
+      <div class="d1-p2" style="background-image:url('assets/textures/paper_stained_01_hires.jpg'); filter:saturate(0.1); opacity:0.45"></div>
+      <div id="pd01-sc12-b1"><div class="d1-ht" style="mix-blend-mode:multiply;opacity:0.3"></div></div>
+      <div id="pd01-sc12-b2"></div>
+      <div class="d1-print" id="pd01-sc12-ph1"><div class="in"><img src="assets/intro/photos/umc_hsinchu.jpg" alt="" /><div class="d1-ht"></div></div></div>
+      <div class="d1-print" id="pd01-sc12-ph2"><div class="in"><img src="assets/intro/made/fab_walk_freeze_2p9.jpg" alt="" /><div class="d1-ht"></div></div></div>
+      <div id="pd01-sc12-ts"><img src="assets/intro/cutouts/tsao_cutout.png" alt="" /></div>
+      <div id="pd01-sc12-name"><div class="d1-box t-display">ROBERT</div><div class="d1-box t-display">TSAO</div></div>
+      <div id="pd01-sc12-ceo" class="d1-abs t-label d1-ink">CEO · UMC</div>
+      <div class="d1-credit ink t-label">Photos: Office of the President (Taiwan) · 創造未來，迎接康莊, CC BY-SA 3.0</div>
+    </div></div>
+
+    <!-- sc13 · 55.35–60.79 · as a chip factory, it made no sense to create chips for just one product -->
+    <div class="d1-scene d1-night" id="pd01-sc13"><div class="d1-shot" id="pd01-sc13-shot">
+      <div class="d1-weave" id="pd01-sc13-weave"><div id="pd01-sc13-cam">
+        <video id="pd01-sc13-vid" class="d1-foot" src="assets/intro/footage/fab_hk_workers_microscope_rows_a.mp4" muted playsinline data-start="55.35" data-duration="5.5" data-media-start="0.2"
+          data-color-grading='{"adjust":{"saturation":-0.5,"contrast":0.08},"effects":{"chromaticAberration":0.12,"chromaticAngle":0}}'></video>
+      </div></div>
+      <div id="pd01-sc13-dim"></div>
+      <svg id="pd01-sc13-mk" class="d1-mk"></svg>
+      <svg id="pd01-sc13-icon" viewBox="0 0 100 100"></svg>
+    </div></div>
+
+    <!-- fc3 · 60.79–62.41 · "Because you're betting too much" -->
+    <div class="d1-scene" id="pd01-fc3"><div class="d1-fcw" id="pd01-fc3-w">
+      <video id="pd01-fc3-v" class="d1-fc" src="assets/facecam/pd_facecam_intro.mp4" muted playsinline data-start="60.79" data-duration="1.62" data-media-start="60.79"></video>
+    </div></div>
+
+    <!-- sc14 · 62.41–72.87 · one product (wobbling) → chips for any product in demand -->
+    <div class="d1-scene d1-paperbg" id="pd01-sc14"><div class="d1-shot" id="pd01-sc14-shot">
+      <div id="pd01-sc14-cam">
+        <div id="pd01-sc14-bg"></div>
+        <div class="d1-card" id="pd01-sc14-ca"><div class="g1"></div><div class="g2"></div><svg class="d1-sk" id="pd01-sc14-ska" viewBox="0 0 1200 820"></svg></div>
+        <div class="d1-tape" style="left:880px;top:104px;transform:rotate(4deg)"></div>
+        <div class="d1-card" id="pd01-sc14-cb"><div class="g1"></div><div class="g2"></div><svg class="d1-sk" id="pd01-sc14-skb" viewBox="0 0 1200 820"></svg></div>
+        <div class="d1-tape" style="left:2560px;top:108px;transform:rotate(-4deg)"></div>
+      </div>
+    </div></div>
+
+    <!-- sc15 · 72.87–79.10 · right now … but back in 1983 this was a novel concept -->
+    <div class="d1-scene d1-night" id="pd01-sc15"><div class="d1-shot" id="pd01-sc15-shot">
+      <canvas id="pd01-sc15-streaks" class="streaks"></canvas>
+      <svg id="pd01-sc15-ruler" viewBox="0 0 1920 1080"></svg>
+      <div id="pd01-sc15-yr" class="d1-abs t-display clean">2026</div>
+      <div class="d1-card" id="pd01-sc15-idea"><div class="g1"></div><div class="g2"></div><svg id="pd01-sc15-isk" viewBox="0 0 560 380"></svg></div>
+    </div></div>
+
+    <!-- sc16 · 79.10–83.70 · no such thing as a pure-play chip factory or a foundry -->
+    <div class="d1-scene d1-paperbg" id="pd01-sc16"><div class="d1-shot" id="pd01-sc16-shot">
+      <div class="d1-p1" style="background-image:url('assets/textures/paper_cream_01.jpg'); filter:saturate(0.1) brightness(0.8)"></div>
+      <div id="pd01-sc16-stage"><div id="pd01-sc16-cam"><div id="pd01-sc16-page">
+        <div class="gw t-label"><span>Foundation</span><span>587</span><span>Fountain</span></div>
+        <div class="cols">
+          <div class="col t-serif">
+            <p><b>Foun·da·tion</b>, <i>n.</i> The act of founding, fixing, establishing, or beginning to erect. That upon which anything is founded; that on which anything stands, and by which it is supported.</p>
+            <p><b>Found·er</b>, <i>n.</i> One who founds, establishes, and erects; one who lays a foundation; an author; one from whom anything originates. — One who founds; one who casts metals in various forms; a caster.</p>
+            <p><b>Found·er·y</b>, <i>n.</i> Same as Foundry.</p>
+            <p><b>Found·ling</b>, <i>n.</i> A deserted or exposed infant; a child found without a parent or owner.</p>
+          </div>
+          <div class="col t-serif">
+            <p><span id="pd01-sc16-hlw"><span id="pd01-sc16-hl"></span><b style="position:relative">Found·ry</b></span>, <i>n.</i> 1. The act, art, or business of casting metals. 2. The buildings and works occupied for casting metals.</p>
+            <p><b>Fount</b>, <i>n.</i> A fountain; a spring. — A complete set of printing type of one size and style.</p>
+            <p><b>Foun·tain</b>, <i>n.</i> A spring of water issuing from the earth. The source from which anything proceeds, or from which anything is supplied continuously; origin; source.</p>
+            <p><b>Foun·tain·head</b>, <i>n.</i> A spring from which a stream flows; the head or source of a stream.</p>
+          </div>
+        </div>
+        <div class="nw"></div><div class="d1-ht" id="pd01-sc16-ht"></div>
+      </div></div></div>
+      <div id="pd01-sc16-card">
+        <div id="pd01-sc16-pp" class="t-serif"><span class="d1-w">pure-</span><span class="d1-w">play </span><span class="d1-w">chip </span><span class="d1-w">factory</span></div>
+        <div id="pd01-sc16-fd" class="t-display">foundry</div>
+      </div>
+    </div></div>
+
+    <!-- sc17 · 83.70–87.50 · Tsao could see the future · 2.5D -->
+    <div class="d1-scene d1-night" id="pd01-sc17"><div class="d1-shot" id="pd01-sc17-shot">
+      <div id="pd01-sc17-stage"><div id="pd01-sc17-cam">
+        <div class="d1-L" id="pd01-sc17-L0"><img id="pd01-sc17-bdb" src="assets/intro/made/tsao_layers/backdrop.jpg" alt="" /><img id="pd01-sc17-bd" src="assets/intro/made/tsao_layers/backdrop.jpg" alt="" /></div>
+        <div class="d1-L" id="pd01-sc17-L1"><div id="pd01-sc17-glow"></div></div>
+        <div class="d1-L" id="pd01-sc17-L2"><img id="pd01-sc17-ts" src="assets/intro/made/tsao_layers/tsao.png" alt="" /></div>
+        <div class="d1-L" id="pd01-sc17-L3"><img id="pd01-sc17-vs" src="assets/intro/made/tsao_layers/vase.png" alt="" /></div>
+      </div></div>
+      <div id="pd01-sc17-shade"></div>
+      <div id="pd01-sc17-name" class="d1-abs t-display"><span class="d1-box">ROBERT TSAO</span></div>
+      <div id="pd01-sc17-role" class="d1-abs t-label clean">CEO · UMC</div>
+      <div class="d1-credit t-label">Photo: NYCU Secretariat / Wikimedia Commons</div>
+    </div></div>
+
+    <!-- sc18 · 87.50–93.05 · reorient the whole company -->
+    <div class="d1-scene d1-night" id="pd01-sc18"><div class="d1-shot" id="pd01-sc18-shot">
+      <svg id="pd01-sc18-svg" viewBox="0 0 1920 1080"><g id="pd01-sc18-rose"></g></svg>
+      <div id="pd01-sc18-card"><div class="ph"><img src="assets/intro/photos/umc_fab8ab.jpg" alt="" /><div class="d1-ht"></div></div></div>
+      <div id="pd01-sc18-lab" class="d1-abs t-label clean">UMC · Hsinchu</div>
+      <div class="d1-credit t-label">Photo: ABOVE THE SKY, CC BY-SA 4.0</div>
+    </div></div>
+
+    <!-- sc19 · 93.05–96.95 · he had to ask permission from his board of directors -->
+    <div class="d1-scene d1-night" id="pd01-sc19"><div class="d1-shot" id="pd01-sc19-shot">
+      <div class="d1-weave" id="pd01-sc19-weave"><div id="pd01-sc19-cam">
+        <video id="pd01-sc19-vid" class="d1-foot" src="assets/intro/footage/boardroom_blackboard_meeting_a.mp4" muted playsinline data-start="93.05" data-duration="3.95" data-media-start="7.2"
+          data-color-grading='{"adjust":{"saturation":-0.5,"contrast":0.06},"effects":{"chromaticAberration":0.12,"chromaticAngle":0}}'></video>
+      </div></div>
+    </div></div>
+
+    <!-- sc20 · 96.95–103.85 · a pretty new business · one year old · launched as a private company a year ago -->
+    <div class="d1-scene d1-paperbg" id="pd01-sc20"><div class="d1-shot" id="pd01-sc20-shot">
+      <div class="d1-p1" style="background-image:url('assets/textures/paper_cream_02.jpg')"></div>
+      <div class="d1-p2" style="background-image:url('assets/textures/paper_lined_01_hires.jpg'); filter:saturate(0.1); opacity:0.45; background-position:50% 30%"></div>
+      <div id="pd01-sc20-cam">
+        <svg id="pd01-sc20-svg" viewBox="0 0 1920 1080"></svg>
+        <img id="pd01-sc20-logo" src="assets/intro/logos/UMC-Logo.png" alt="" />
+        <div id="pd01-sc20-dot"></div>
+        <div id="pd01-sc20-now" class="d1-abs t-display">1983</div>
+        <div id="pd01-sc20-lau" class="d1-abs t-label"><span class="d1-w">launched </span><span class="d1-w">as </span><span class="d1-w">a </span><span class="d1-w">private </span><span class="d1-w">company</span></div>
+        <div id="pd01-sc20-old" class="d1-abs t-serif-i"><span class="d1-w">one </span><span class="d1-w">year </span><span class="d1-w">old</span></div>
+      </div>
+    </div></div>
+
+    <!-- sc21 · 103.85–109.60 · just a CEO, not a founder, no big ownership -->
+    <div class="d1-scene d1-night" id="pd01-sc21"><div class="d1-shot" id="pd01-sc21-shot">
+      <div class="d1-card" id="pd01-sc21-badge"><div class="g1"></div>
+        <div id="pd01-sc21-strip"><img src="assets/intro/logos/UMC-Logo.png" alt="" /></div>
+        <div id="pd01-sc21-ph"><img src="assets/intro/cutouts/tsao_cutout.png" alt="" /><div class="d1-ht"></div></div>
+        <div id="pd01-sc21-nm" class="t-display">ROBERT TSAO</div>
+        <div id="pd01-sc21-r1" class="d1-row t-label" style="top:624px">CEO</div>
+        <div id="pd01-sc21-r2" class="d1-row t-label" style="top:700px">Founder</div>
+        <svg id="pd01-sc21-bmk" viewBox="0 0 560 800"></svg>
+      </div>
+      <div id="pd01-sc21-ot" class="d1-abs t-label clean">Ownership of UMC</div>
+      <div id="pd01-sc21-grid"></div>
+      <div id="pd01-sc21-tl" class="d1-abs t-label">Tsao</div>
+      <div class="d1-credit t-label">Photo: Office of the President (Taiwan)</div>
+    </div></div>
+
+    <!-- sc22 · 109.60–113.77 · no big decisions without permission from the board -->
+    <div class="d1-scene d1-paperbg" id="pd01-sc22"><div class="d1-shot d1-paperbg" id="pd01-sc22-shot">
+      <div id="pd01-sc22-cam">
+        <div id="pd01-sc22-bg"></div>
+        <div class="d1-card" id="pd01-sc22-form"><div class="g1"></div>
+          <div class="hd t-label">UMC · Board of Directors</div>
+          <div class="rule"></div>
+          <div class="d1-ln" style="width:92%"></div><div class="d1-ln" style="width:86%"></div><div class="d1-ln" style="width:90%"></div><div class="d1-ln" style="width:58%"></div>
+          <div style="height:30px"></div>
+          <div class="d1-ln" style="width:88%"></div><div class="d1-ln" style="width:93%"></div><div class="d1-ln" style="width:70%"></div>
+          <div id="pd01-sc22-st"><svg id="pd01-sc22-stsvg" viewBox="0 0 340 170"></svg><div id="pd01-sc22-stl" class="t-label">Board approval</div></div>
+          <div id="pd01-sc22-sig" class="t-label">Signature</div>
+        </div>
+        <div class="d1-card" id="pd01-sc22-idea"><div class="g1"></div><div class="g2"></div><svg id="pd01-sc22-isk" viewBox="0 0 560 380"></svg></div>
+        <svg id="pd01-sc22-mk" class="d1-mk"></svg>
+      </div>
+    </div></div>
+
+    <!-- global overlays -->
+    <div id="pd01-flash"></div>
+    <div id="pd01-grain" class="tx tx-grain" style="background-image:url('assets/textures/grain_01_norm.jpg')"></div>
+    <div id="pd01-dust" class="tx tx-dust" style="background-image:url('assets/textures/dust_01.jpg')"></div>
+    <div id="pd01-vig" class="vignette"></div>
+    <audio id="pd01-vo" class="temp-vo" src="vo_pd.mp3" data-start="0" data-duration="113.7667" data-media-start="0" data-volume="1"></audio>
+  </div>
+  <script>
+  (function () {
+    const SEG = "pd01", SEG_START = 0, SEG_END = 113.7667, DURATION = 113.7667;
+    const T = (s) => +(s - SEG_START).toFixed(3);   // TEXT cues (audited): literal master word start − 0.06
+    const S = T;                                     // STRUCTURAL cues
+    const tl = gsap.timeline({ paused: true });
+    const $ = (id) => document.getElementById(SEG + "-" + id);
+    const NS = "http://www.w3.org/2000/svg";
+    const defs = $("defs");
+    const E = FX.ease;
+    const C = (e, d) => FX.choppy(e, d, 12);
+    // palette_podcast.css values (SVG attributes cannot read CSS variables reliably)
+    const BONE = "#eeeee8", INK = "#161a24", INKS = "#4b5160", COP = "#e0882a", COPL = "#f6c98a", COPD = "#8a4f0f",
+      BRD = "#2f9e5b", BRDD = "#17603a", ASH = "#878c96", ASHL = "#c2c5ca", ASHD = "#343843", YEL = "#f2e24a", PAPER = "#e7e6df";
+    const ALL = [];
+
+    function gated(a, b, fn) { const on = FX.onFrame; FX.onFrame = (f) => on(FX.gate(S(a) - 0.1, S(b) + 0.1, f)); try { return fn(); } finally { FX.onFrame = on; } }
+    function scene(id, a, b) {
+      ALL.push($(id));
+      tl.fromTo($(id), { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.001, immediateRender: false }, S(a));
+      if (b < SEG_END) tl.set($(id), { autoAlpha: 0 }, S(b));
+    }
+    function ground(kind, t) {
+      const v = { paper: [0.32, 0.16, 0.26], night: [1, 0.42, 0.36], foot: [0.8, 0.3, 0.3], cam: [0, 0, 0] }[kind];
+      tl.set([$("vig"), $("dust"), $("grain")], { opacity: (i) => v[i] }, t);
+    }
+    const show = (el, t) => tl.fromTo(el, { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, t);
+    const rise = (el, t, o) => { o = o || {}; const d = o.dur || 0.8;
+      tl.fromTo(el, { opacity: 0, y: o.y == null ? 18 : o.y }, { opacity: 1, y: 0, duration: d, ease: C(E.out, d), immediateRender: true }, t); };
+    const pop = (el, t, o) => { o = o || {}; const d = o.dur || 0.7;
+      tl.fromTo(el, { opacity: 0, scale: o.from == null ? 0.5 : o.from }, { opacity: 1, scale: 1, duration: d, ease: C(E.out, d), immediateRender: true }, t); };
+    const slideIn = (el, t, dx, dy, r0, r1, d) => { d = d || 1.0; tl.fromTo(el, { x: dx, y: dy, rotation: r0, opacity: 0 }, { x: 0, y: 0, rotation: r1, opacity: 1, duration: d, ease: C(E.out, d), immediateRender: true }, t); };
+    const whipN = { n: 0 };
+    function whip(a, b, t, o) {
+      o = Object.assign({ dir: 1, vertical: false, flash: false, dur: 0.32 }, o);
+      const k = ++whipN.n, ba = FX.whipDefs(defs, SEG + "-wa" + k), bb = FX.whipDefs(defs, SEG + "-wb" + k), h = o.dur / 2;
+      tl.set(a, { filter: "url(#" + SEG + "-wa" + k + ")" }, t - h - 0.01); tl.set(a, { filter: "none" }, t + 0.06);
+      tl.set(b, { filter: "url(#" + SEG + "-wb" + k + ")" }, t - 0.001); tl.set(b, { filter: "none" }, t + h + 0.02);
+      FX.whip(tl, a, b, t, { dir: o.dir, vertical: o.vertical, dur: o.dur, blurA: ba, blurB: bb });
+      if (o.flash) tl.fromTo($("flash"), { opacity: 0 }, { opacity: 0.85, duration: 0.08, yoyo: true, repeat: 1, ease: "power2.in", immediateRender: false }, t - 0.08);
+    }
+    function el(parent, tag, attrs) { const n = document.createElementNS(NS, tag); for (const k in attrs) n.setAttribute(k, attrs[k]); parent.appendChild(n); return n; }
+    // stroke drawn on (trim paths), no filter (safe on straight lines)
+    function ink(parent, d, t, dur, o) {
+      o = o || {};
+      const p = el(parent, "path", { d: d, fill: "none", stroke: o.color || INK, "stroke-width": o.width || 6, "stroke-linecap": "round", "stroke-linejoin": "round" });
+      const len = p.getTotalLength() || 1;
+      p.setAttribute("stroke-dasharray", len + " " + len); p.setAttribute("stroke-dashoffset", len);
+      gsap.set(p, { opacity: 0 }); tl.set(p, { opacity: o.opacity || 1 }, t);
+      tl.fromTo(p, { attr: { "stroke-dashoffset": len } }, { attr: { "stroke-dashoffset": 0 }, duration: dur, ease: o.ease || C(E.out, dur), immediateRender: true }, t);
+      return p;
+    }
+    const pen = (svg, pts, t, d, o) => { o = o || {}; const p = FX.markup.pen(tl, svg, t, { points: pts, dur: d, width: o.width || 5, color: o.color || INKS, seed: o.seed || 3, jitter: o.jitter == null ? 4 : o.jitter, blend: o.blend || "multiply" });
+      gsap.set(p, { opacity: 0 }); tl.set(p, { opacity: 1 }, t); return p; };
+    const PICTO = {
+      phone: '<path d="M18 40 Q18 22 50 22 Q82 22 82 40 L72 44 L66 34 L34 34 L28 44 Z"/><path d="M24 50 L76 50 L84 82 L16 82 Z"/><circle cx="40" cy="62" r="2.6"/><circle cx="50" cy="62" r="2.6"/><circle cx="60" cy="62" r="2.6"/><circle cx="40" cy="72" r="2.6"/><circle cx="50" cy="72" r="2.6"/><circle cx="60" cy="72" r="2.6"/>',
+      tv: '<rect x="14" y="26" width="72" height="52" rx="8"/><path d="M38 12 L50 26 L62 12"/><path d="M30 86 L70 86"/>',
+      calc: '<rect x="24" y="12" width="52" height="76" rx="6"/><rect x="32" y="20" width="36" height="16"/><path d="M34 48 h6 M47 48 h6 M60 48 h6 M34 60 h6 M47 60 h6 M60 60 h6 M34 72 h6 M47 72 h6 M60 72 h6"/>',
+      pc: '<rect x="16" y="14" width="68" height="48" rx="4"/><rect x="24" y="22" width="52" height="32"/><path d="M40 62 L36 74 L64 74 L60 62"/><rect x="18" y="78" width="64" height="10" rx="2"/>',
+      watch: '<circle cx="50" cy="50" r="22"/><path d="M38 31 L40 12 L60 12 L62 31 M38 69 L40 88 L60 88 L62 69 M50 38 L50 50 L58 56"/>',
+      game: '<path d="M22 38 Q50 30 78 38 Q90 42 88 66 Q86 80 74 76 Q66 66 50 66 Q34 66 26 76 Q14 80 12 66 Q10 42 22 38 Z"/><path d="M30 48 v12 M24 54 h12"/><circle cx="66" cy="50" r="3"/><circle cx="74" cy="58" r="3"/>',
+      factory: '<path d="M10 86 L10 46 L30 34 L30 46 L50 34 L50 46 L70 34 L70 18 L82 18 L82 86 Z"/><path d="M22 66 h10 M42 66 h10 M62 66 h10"/>',
+    };
+    const picto = (k, color, w) => '<g fill="none" stroke="' + color + '" stroke-width="' + (w || 5) + '" stroke-linecap="round" stroke-linejoin="round">' + PICTO[k] + "</g>";
+    // DIP chip drawing in a 440×360 box
+    const chipSVG = () => { let g = '<rect x="110" y="40" width="220" height="280" rx="10" fill="' + INK + '"/><circle cx="150" cy="70" r="9" fill="' + ASHD + '"/>';
+      for (let k = 0; k < 9; k++) { const y = 62 + k * 28; g += '<rect x="84" y="' + y + '" width="26" height="12" fill="' + ASH + '"/><rect x="330" y="' + y + '" width="26" height="12" fill="' + ASH + '"/>'; } return g; };
+    // small idea sketch (factory → three products) in a 560×380 card
+    const ideaSVG = () => '<g transform="translate(50 110) scale(1.7)">' + picto("factory", COPD, 4) + "</g>" +
+      '<g fill="none" stroke="' + INKS + '" stroke-width="5" stroke-linecap="round"><path d="M225 170 Q300 110 372 82 M352 74 L374 81 L362 100"/><path d="M228 195 L372 195 M356 183 L374 195 L356 207"/><path d="M225 220 Q300 280 372 308 M362 290 L374 309 L352 316"/></g>' +
+      '<g transform="translate(395 30) scale(1.05)">' + picto("phone", INKS, 4.5) + '</g><g transform="translate(395 143) scale(1.05)">' + picto("pc", INKS, 4.5) + '</g><g transform="translate(395 256) scale(1.05)">' + picto("tv", INKS, 4.5) + "</g>";
+    // face-cam pop: framing scale s, slow push
+    function face(id, a, b, s) {
+      scene(id, a, b); ground("cam", S(a));
+      tl.fromTo($(id + "-w"), { scale: s }, { scale: s * 1.022, duration: S(b) - S(a), ease: "none", immediateRender: false }, S(a));
+    }
+
+    FX.tintDefs(defs, SEG + "-tint-si", "#1c1f26", "#e4e3da");
+    FX.tintDefs(defs, SEG + "-tint-cu", "#2a1a08", "#f6dcb8");
+    FX.grain($("grain"), 131);
+    FX.dust($("dust"), 132, 2);
+
+    /* ============ sc01 · 0.00–2.34 · "Our story starts in 1983" ============ */
+    scene("sc01", 0, 2.34); ground("night", 0);
+    gsap.set($("sc01"), { autoAlpha: 1 });
+    gated(0, 2.5, () => FX.streaks($("sc01-streaks"), { seed: 31, speed: 0.5, tint: [246, 201, 138], lo: 0.4, gain: 1.05 }));
+    tl.fromTo($("sc01-cam"), { scale: 1.16 }, { scale: 1.0, duration: 2.5, ease: E.cam, immediateRender: true }, 0);
+    gsap.set($("sc01-lift"), { opacity: 0 });
+    tl.set([$("sc01-cover"), $("sc01-lift")], { opacity: 1 }, T(1.30));
+    tl.fromTo($("sc01-cover"), { scale: 1.6 }, { scale: 1.0, duration: 0.5, ease: C(E.out, 0.5), immediateRender: false }, T(1.30));
+    whip($("sc01-shot"), $("sc02-shot"), S(2.34), { dir: 1, flash: true, dur: 0.28 });
+
+    /* ============ sc02 · 2.34–8.02 · Robert Tsao · CEO · Taiwan · UMC ============ */
+    scene("sc02", 2.34, 8.02); ground("paper", S(2.34));
+    tl.fromTo($("sc02-cam"), { x: 0, scale: 1 }, { x: -24, duration: 5.4, ease: "none", immediateRender: true }, S(2.34));
+    tl.fromTo($("sc02-blk"), { scaleY: 0, transformOrigin: "50% 100%" }, { scaleY: 1, duration: 0.8, ease: C(E.out, 0.8), immediateRender: true }, S(2.36));
+    tl.fromTo($("sc02-ts"), { x: -60, opacity: 0 }, { x: 0, opacity: 1, duration: 1.1, ease: C(E.out, 1.1), immediateRender: true }, S(2.36));
+    rise($("sc02-rob"), T(2.34), { dur: 0.7, y: 18 });
+    rise($("sc02-tsao"), T(2.82), { dur: 0.7, y: 18 });
+    rise($("sc02-ceo"), T(3.78), { dur: 0.7, y: 12 });
+    slideIn($("sc02-tw"), T(4.34), 240, -60, 9, 3, 0.9);
+    slideIn($("sc02-chip"), S(5.16), 260, 100, -10, -3, 0.9);
+    slideIn($("sc02-umc"), T(7.22), -160, 50, -8, -2, 0.55);
+    tl.to($("sc02-cam"), { scale: 1.5, duration: 0.24, ease: E.in }, S(7.80));   // push into the chip panel → cut on action
+
+    /* ============ sc03 · 8.02–10.30 · walking around his factory floor ============ */
+    scene("sc03", 8.02, 10.30); ground("foot", S(8.02));
+    gated(8.0, 10.4, () => FX.weave($("sc03-weave"), { amp: 0.6, flicker: 0.025, seed: 301 }));
+    tl.fromTo($("sc03-cam"), { scale: 1.12 }, { scale: 1.06, duration: 2.28, ease: E.cam, immediateRender: true }, S(8.02));
+
+    /* ============ sc04 · 10.30–12.62 · this is when he has a unique insight (freeze) ============ */
+    scene("sc04", 10.30, 12.62);
+    gated(10.2, 12.8, () => FX.weave($("sc04-weave"), { amp: 0.6, flicker: 0.02, seed: 302 }));
+    tl.fromTo($("sc04-cam"), { scale: 1.06 }, { scale: 1.1, duration: 2.4, ease: "none", immediateRender: true }, S(10.30));
+    tl.fromTo($("sc04-still"), { filter: "saturate(0.55) brightness(1)" }, { filter: "saturate(0) brightness(0.36)", duration: 0.9, ease: C(E.out, 0.9), immediateRender: true }, S(10.34));
+    gated(10.9, 12.8, () => FX.streaks($("sc04-streaks"), { seed: 47, speed: 0.6, tint: [246, 201, 138], lo: 0.3, gain: 1.7 }));
+    tl.fromTo($("sc04-streaks"), { opacity: 0 }, { opacity: 1, duration: 0.9, ease: C(E.out, 0.9), immediateRender: true }, S(11.0));
+    (function () {
+      const mk = $("sc04-mk"), f = FX.markupDefs(mk, SEG + "-mk4", { boil: 4 });
+      const c = FX.markup.circle(tl, mk, S(11.74), { cx: 1436, cy: 300, rx: 150, ry: 170, rot: -5, dur: 0.5, color: COPL, width: 9, filter: f, seed: 4 });
+      gsap.set(c, { opacity: 0 }); tl.set(c, { opacity: 1 }, S(11.74));
+    })();
+    whip($("sc04-shot"), $("sc05-shot"), S(12.62), { dir: 1, vertical: true });
+
+    /* ============ sc05 · 12.62–16.74 · change the future of the world and his industry ============ */
+    scene("sc05", 12.62, 16.74);
+    gated(12.5, 16.0, () => FX.streaks($("sc05-streaks"), { seed: 53, speed: 0.35, tint: [194, 197, 202], lo: 0.45, gain: 0.9 }));
+    gsap.set($("sc05-b"), { opacity: 0 });
+    tl.fromTo($("sc05-globe"), { rotation: 8, scale: 0.86 }, { rotation: -4, scale: 1.0, duration: 2.9, ease: E.cam, immediateRender: true }, S(12.62));
+    tl.fromTo($("sc05-glow"), { scale: 0.86 }, { scale: 1.0, duration: 2.9, ease: E.cam, immediateRender: true }, S(12.62));
+    FX.focusHunt(tl, $("sc05-globe"), S(14.2), { dur: 0.7 });
+    FX.curveCut(tl, $("sc05-wrap"), $("sc05-a"), $("sc05-b"), S(15.42), 0.84, { from: 1, to: 1.6, ease: "expo.inOut" });   // cut at 15.84 = "his industry"
+    tl.to($("sc05-wrap"), { scale: 1.7, duration: 0.6, ease: "none" }, S(16.26));
+
+    /* ============ fc1 · 16.74–18.62 · "You see, just a year earlier," ============ */
+    face("fc1", 16.74, 18.62, 1.0);
+
+    /* ============ sc06 · 18.62–23.15 · Taiwan's exports of telephones to the United States ============ */
+    scene("sc06", 18.62, 23.15); ground("paper", S(18.62));
+    (function () {
+      const cam = $("sc06-cam");
+      const at = (cx, cy, z) => ({ x: 1360 - 400 - cx * z, y: 840 - 300 - cy * z, scale: z });
+      gsap.set(cam, at(318, 985, 7.0));
+      tl.fromTo(cam, at(318, 985, 7.0), Object.assign(at(330, 975, 6.3), { duration: 0.75, ease: E.cam, immediateRender: false }), S(18.62));
+      tl.to(cam, Object.assign(at(720, 900, 1.25), { duration: 1.5, ease: E.cam }), S(19.30));
+      tl.to(cam, Object.assign(at(820, 880, 1.18), { duration: 0.20, ease: "none" }), S(20.80));
+      tl.fromTo($("sc06-fill"), { opacity: 0 }, { opacity: 0.9, duration: 0.5, ease: C(E.out, 0.5), immediateRender: true }, T(18.66));
+      rise($("sc06-tw"), T(18.66), { dur: 0.5, y: 14 });
+      tl.fromTo($("sc06-twu"), { scaleX: 0 }, { scaleX: 1, duration: 0.5, ease: C(E.out, 0.5), immediateRender: true }, S(18.80));
+      tl.to($("sc06-tw"), { opacity: 0, duration: 0.2 }, S(19.34));
+      tl.fromTo($("sc06-ltw"), { opacity: 0 }, { opacity: 1, duration: 0.3, immediateRender: true }, S(19.9));
+      tl.fromTo($("sc06-phone"), { opacity: 0, scale: 0.4, y: 30 }, { opacity: 1, scale: 1, y: 0, duration: 0.6, ease: C(E.out, 0.6), immediateRender: true }, S(20.10));
+      const svg = $("sc06-svg"), ph = $("sc06-phone");
+      const d = "M352 935 Q2050 120 3828 546";
+      svg.innerHTML = '<defs><mask id="pd01-rm" maskUnits="userSpaceOnUse" x="0" y="0" width="5700" height="1440"><path id="pd01-rmp" d="' + d + '" fill="none" stroke="#fff" stroke-width="40"/></mask></defs>' +
+        '<path d="' + d + '" fill="none" stroke="' + INK + '" stroke-width="9" stroke-dasharray="28 22" stroke-linecap="round" mask="url(#pd01-rm)"/>' +
+        '<circle cx="3828" cy="546" r="15" fill="' + INK + '" opacity="0" id="pd01-sc06-sf"/>';
+      const mp = document.getElementById("pd01-rmp"), L = mp.getTotalLength();
+      mp.setAttribute("stroke-dasharray", L + " " + L);
+      const PTS = []; for (let k = 0; k <= 200; k++) { const q = mp.getPointAtLength(L * k / 200); PTS.push([q.x, q.y]); }
+      const st = { p: 0 };
+      const draw = (follow) => { const e = st.p; mp.setAttribute("stroke-dashoffset", (L * (1 - e)).toFixed(1));
+        const f = e * 200, i0 = Math.min(199, Math.floor(f)), u = f - i0, qx = PTS[i0][0] + (PTS[i0 + 1][0] - PTS[i0][0]) * u, qy = PTS[i0][1] + (PTS[i0 + 1][1] - PTS[i0][1]) * u;
+        ph.style.left = (356 + qx - 352 - 105 * e).toFixed(1) + "px"; ph.style.top = (790 + qy - 935 - 40 * e).toFixed(1) + "px";
+        if (follow) gsap.set(cam, at(820 + 2600 * e, 880 - 220 * e - 0.6 * (935 - 389 * e - qy), 1.18 - 0.23 * e - 0.15 * Math.sin(Math.PI * e))); };
+      draw(false);
+      tl.fromTo(st, { p: 0 }, { p: 1, duration: 1.0, ease: E.inOut, onUpdate: () => draw(true), immediateRender: false }, S(21.0));   // lands 22.0, holds
+      tl.fromTo($("sc06-lus"), { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, T(20.98));
+      tl.fromTo(document.getElementById("pd01-sc06-sf"), { attr: { opacity: 0 } }, { attr: { opacity: 1 }, duration: 0.001, immediateRender: true }, S(21.95));
+      tl.fromTo($("sc06-lsf"), { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, S(21.95));
+      tl.fromTo(cam, at(3420, 660, 0.95), Object.assign(at(3480, 668, 0.99), { duration: 0.82, ease: "none", immediateRender: false }), S(22.0));
+      tl.to(cam, Object.assign(at(3870, 690, 1.0), { duration: 0.33, ease: E.in }), S(22.82));
+    })();
+    whip($("sc06-shot"), $("sc07-shot"), S(23.15), { dir: 1 });
+
+    /* ============ sc07 · 23.15–32.44 · 4 million → 24 million in 12 months · 6× ============ */
+    scene("sc07", 23.15, 32.44);
+    (function () {
+      const svg = $("sc07-svg"), cam = $("sc07-cam"), mk = $("sc07-mk");
+      const at = (px, py, s) => ({ x: 960 - px * s, y: 540 - py * s, scale: s });
+      const X0 = 220, X1 = 420, XE = 1380, YB = 900, Y4 = 805, Y24 = 330;
+      // grid + axis
+      for (let v = 4; v <= 24; v += 4) { const y = YB - (YB - Y4) / 4 * v; el(svg, "line", { x1: X0, y1: y, x2: XE + 60, y2: y, stroke: INK, "stroke-width": 1.5, opacity: 0.16, "stroke-dasharray": "4 8" }); }
+      el(svg, "line", { x1: X0 - 20, y1: YB, x2: XE + 80, y2: YB, stroke: INK, "stroke-width": 4 });
+      // curve
+      const pts = [[X0, Y4], [X1, Y4]];
+      for (let i = 1; i <= 24; i++) { const u = i / 24; pts.push([X1 + (XE - X1) * u, Y4 - (Y4 - Y24) * Math.pow(u, 1.7)]); }
+      const line = "M" + pts.map((p) => p[0].toFixed(1) + " " + p[1].toFixed(1)).join(" L");
+      const d0 = el(svg, "defs", {}), cp = el(d0, "clipPath", { id: "pd01-sc07-clip" }), cr = el(cp, "rect", { x: X0 - 10, y: 0, width: 0, height: 1080 });
+      const pat = el(d0, "pattern", { id: "pd01-sc07-dots", width: 12, height: 12, patternUnits: "userSpaceOnUse", patternTransform: "rotate(45)" });
+      el(pat, "circle", { cx: 6, cy: 6, r: 2.6, fill: BRDD, opacity: 0.55 });
+      const g = el(svg, "g", { "clip-path": "url(#pd01-sc07-clip)" });
+      el(g, "path", { d: line + " L" + XE + " " + YB + " L" + X0 + " " + YB + " Z", fill: BRD, opacity: 0.5 });
+      el(g, "path", { d: line + " L" + XE + " " + YB + " L" + X0 + " " + YB + " Z", fill: "url(#pd01-sc07-dots)" });
+      el(g, "path", { d: line, fill: "none", stroke: BRDD, "stroke-width": 8, "stroke-linejoin": "round", "stroke-linecap": "round" });
+      tl.fromTo(cr, { attr: { width: 0 } }, { attr: { width: X1 - X0 + 10 }, duration: 0.85, ease: C(E.out, 0.85), immediateRender: true }, S(23.30));
+      tl.to(cr, { attr: { width: XE - X0 + 24 }, duration: 1.15, ease: C(E.inOut, 1.15) }, S(27.20));
+      const dot = (x, y, t) => { const c = el(svg, "circle", { cx: x, cy: y, r: 13, fill: PAPER, stroke: BRDD, "stroke-width": 7, opacity: 0 }); tl.set(c, { attr: { opacity: 1 } }, t); return c; };
+      dot(X1, Y4, S(24.18)); dot(XE, Y24, S(28.34));
+      rise($("sc07-title"), S(23.30), { dur: 0.6, y: 12 });
+      rise($("sc07-sub"), S(23.45), { dur: 0.6, y: 8 });
+      // "4 million units a year"
+      show($("sc07-b4"), T(24.18));
+      [T(24.18), T(24.42)].forEach((c, i) => show($("sc07-b4").children[i], c));
+      show($("sc07-t4u"), T(24.74));
+      // 12 monthly ticks
+      for (let k = 0; k <= 12; k++) { const x = X1 + k * 80; const r = el(svg, "rect", { x: x - 3, y: YB + 4, width: 6, height: k % 12 === 0 ? 22 : 14, fill: INK, opacity: 0 }); tl.set(r, { attr: { opacity: 1 } }, S(26.10) + k / 24); }
+      show($("sc07-m12"), T(26.10));
+      gsap.set($("sc07-hl"), { scaleX: 0 });
+      // "24 million units"
+      show($("sc07-b24"), T(28.34));
+      FX.text.count(tl, $("sc07-n24"), T(28.34), 4, 24, 0.42);
+      show($("sc07-b24").children[1], T(28.90));
+      show($("sc07-t24u"), T(29.14));
+      // camera: slow drift, then punch in on action for the 6×
+      tl.fromTo(cam, at(960, 540, 1.0), Object.assign(at(970, 536, 1.03), { duration: 6.3, ease: "none", immediateRender: true }), S(23.15));
+      tl.to(cam, Object.assign(at(1060, 560, 1.2), { duration: 0.22, ease: E.in }), S(29.50));
+      tl.set(cam, at(1150, 588, 1.36), S(29.72));
+      tl.to(cam, Object.assign(at(1140, 585, 1.4), { duration: 0.5, ease: E.out }), S(29.72));
+      tl.to(cam, Object.assign(at(1140, 585, 1.43), { duration: 2.2, ease: "none" }), S(30.22));
+      pen(mk, [[1432, 800], [1440, 600], [1436, 336]], S(29.74), 0.4, { color: INK, width: 6, seed: 71 });
+      pen(mk, [[1412, 802], [1456, 806]], S(29.74), 0.15, { color: INK, width: 6, seed: 72, jitter: 2 });
+      pen(mk, [[1414, 332], [1458, 336]], S(30.05), 0.15, { color: INK, width: 6, seed: 73, jitter: 2 });
+      show($("sc07-b6"), T(29.78));
+      FX.text.count(tl, $("sc07-n6"), T(29.78), 1, 6, 0.4);
+      tl.fromTo($("sc07-x6"), { scale: 1.25, transformOrigin: "20% 50%" }, { scale: 1, duration: 0.6, ease: C(E.out, 0.6), immediateRender: false }, T(29.78));
+      tl.fromTo($("sc07-hl"), { scaleX: 0 }, { scaleX: 1, duration: 0.4, ease: "sine.inOut", immediateRender: false }, S(31.40));   // "less than 12 months"
+    })();
+
+    /* ============ fc2 · 32.44–34.36 · "technically speaking. That's insane." ============ */
+    face("fc2", 32.44, 34.36, 1.1);
+
+    /* ============ sc09 · 34.36–41.35 · UMC: the chip company whose chips went inside those telephones ============ */
+    scene("sc09", 34.36, 41.36); ground("paper", S(34.36));
+    $("sc09-chip").innerHTML = chipSVG(); $("sc09-mini").innerHTML = chipSVG();
+    gsap.set($("sc09-chip"), { opacity: 0 });
+    tl.fromTo($("sc09-cam"), { scale: 1.07 }, { scale: 1.0, duration: 6.7, ease: E.cam, immediateRender: true }, S(34.36));
+    tl.fromTo($("sc09-film"), { rotation: -6, y: 30 }, { rotation: -3, y: 0, duration: 1.0, ease: C(E.out, 1.0), immediateRender: true }, S(34.36));
+    tl.fromTo($("sc09-ds"), { x: 1000, rotation: 9 }, { x: 0, rotation: 2.5, duration: 0.9, ease: C(E.out, 0.9), immediateRender: true }, T(35.30));
+    FX.focusHunt(tl, $("sc09-ds"), S(36.2), { dur: 0.6 });
+    pop($("sc09-chip"), T(37.14), { dur: 0.6, from: 0.7 });
+    rise($("sc09-tchip"), T(37.14), { dur: 0.5, y: 10 });
+    (function () {
+      const mk = $("sc09-mk"), f = FX.markupDefs(mk, SEG + "-mk9", { boil: 4 });
+      const a = FX.markup.arrow(tl, mk, S(38.50), { x1: 1150, y1: 600, x2: 800, y2: 540, bend: -70, dur: 0.7, color: COPD, width: 8, filter: f });
+      gsap.set(a, { opacity: 0 }); tl.set(a, { opacity: 1 }, S(38.50));
+      // a chip travels from the datasheet into the telephone
+      const m = $("sc09-mini");
+      tl.fromTo(m, { opacity: 0, x: 0, y: 0, scale: 1, rotation: 2.5 }, { opacity: 1, duration: 0.001, immediateRender: false }, S(39.30));
+      tl.to(m, { x: -820, y: -40, scale: 0.42, rotation: -12, duration: 0.9, ease: C(E.inOut, 0.9) }, S(39.30));
+      tl.to(m, { opacity: 0, scale: 0.2, duration: 0.2, ease: "power1.in" }, S(40.18));
+      const c = FX.markup.circle(tl, mk, S(40.20), { cx: 560, cy: 520, rx: 300, ry: 250, rot: -4, dur: 0.5, color: COPD, width: 8, filter: f, seed: 9 });
+      gsap.set(c, { opacity: 0 }); tl.set(c, { opacity: 1 }, S(40.20));
+    })();
+    rise($("sc09-tphone"), T(40.34), { dur: 0.3, y: 8 });
+    tl.to($("sc09-shot"), { y: -1120, duration: 0.32, ease: E.in }, S(41.04));   // paper slides up; the night chart is under it
+
+    /* ============ sc10 · 41.0–52.90 · record profits in its first full year → the boom dies, UMC's sales die ============ */
+    scene("sc10", 41.0, 52.90); ground("night", S(41.2));
+    (function () {
+      const svg = $("sc10-svg"), cam = $("sc10-cam");
+      // UMC (copper): steep rise to a record in its first full year
+      ink(svg, "M120 860 L280 852 L440 846 L600 820 L720 760 L820 640 L900 500 L980 380 L1080 290 L1180 250", S(41.45), 0.85, { color: COP, width: 9, ease: E.inOut });
+      const pk = el(svg, "circle", { cx: 1180, cy: 250, r: 0, fill: COP, stroke: BONE, "stroke-width": 5 });
+      tl.to(pk, { attr: { r: 17 }, duration: 0.4, ease: C(E.out, 0.4) }, S(42.26));
+      const vl = el(svg, "line", { x1: 1180, y1: 268, x2: 1181, y2: 908, stroke: COPL, "stroke-width": 2, "stroke-dasharray": "5 9", opacity: 0 });
+      tl.set(vl, { attr: { opacity: 0.7 } }, S(42.4));
+      show($("sc10-rec"), T(42.26));
+      show($("sc10-rec").children[1], T(42.90));
+      tl.fromTo($("sc10-band"), { opacity: 0, scaleY: 0 }, { opacity: 1, scaleY: 1, duration: 0.7, ease: C(E.out, 0.7), immediateRender: true }, S(43.5));
+      [T(44.10), T(44.42), T(44.90)].forEach((c, i) => show($("sc10-ffy").children[i], c));
+      // camera slides right; the US phone boom (ash) plateaus over the band and dies; UMC follows
+      tl.fromTo(cam, { x: 0, y: 0 }, { x: -620, duration: 1.5, ease: E.cam, immediateRender: true }, S(45.50));
+      ink(svg, "M120 880 L300 875 L480 860 L640 800 L760 660 L860 470 L960 300 L1080 200 L1200 172 L1400 166 L1600 172 L1700 176", S(45.85), 1.1, { color: ASHL, width: 7, ease: E.inOut });
+      [T(47.06), T(47.46)].forEach((c, i) => show($("sc10-pb").children[i], c));
+      ink(svg, "M1700 176 L1760 360 L1810 620 L1850 900 L1880 1300", S(48.84), 0.45, { color: ASHL, width: 7, ease: E.in });
+      tl.to(cam, { x: -1080, duration: 1.3, ease: E.cam }, S(49.20));
+      tl.to($("sc10-rec"), { opacity: 0, duration: 0.3 }, S(49.2));
+      ink(svg, "M1180 250 L1400 250 L1600 254 L1800 262 L2000 268", S(49.35), 0.9, { color: COP, width: 9, ease: E.inOut });
+      [T(50.26), T(51.06)].forEach((c, i) => show($("sc10-us").children[i], c));
+      ink(svg, "M2000 268 L2050 420 L2100 660 L2140 940 L2170 1340", S(51.96), 0.45, { color: COP, width: 9, ease: E.in });
+      tl.to(cam, { y: -380, duration: 0.42, ease: E.in }, S(52.50));   // follow the fall → cut on action
+    })();
+
+    /* ============ sc12 · 52.90–55.35 · "This is when the CEO realized" ============ */
+    scene("sc12", 52.90, 55.35); ground("paper", S(52.90));
+    [["sc12-b1", 500, 0.0], ["sc12-b2", 420, 0.1], ["sc12-ts", 380, 0.04], ["sc12-ph1", 520, 0.14], ["sc12-ph2", 460, 0.2], ["sc12-name", 340, 0.1]].forEach(([id, dy, dl]) =>
+      tl.fromTo($(id), { y: dy }, { y: 0, duration: 0.7, ease: C(E.out, 0.7), immediateRender: false }, S(52.90) + dl));
+    rise($("sc12-ceo"), T(53.62), { dur: 0.5, y: 10 });
+    tl.fromTo($("sc12-shot"), { scale: 1 }, { scale: 1.035, duration: 2.45, ease: "none", immediateRender: false }, S(52.90));
+    whip($("sc12-shot"), $("sc13-shot"), S(55.35), { dir: -1 });
+
+    /* ============ sc13 · 55.35–60.79 · as a chip factory, it made no sense to create chips for just one product ============ */
+    scene("sc13", 55.35, 60.79); ground("foot", S(55.35));
+    gated(55.2, 60.9, () => FX.weave($("sc13-weave"), { amp: 0.6, flicker: 0.025, seed: 1201 }));
+    tl.fromTo($("sc13-cam"), { scale: 1.0 }, { scale: 1.08, duration: 5.5, ease: "none", immediateRender: true }, S(55.35));
+    tl.fromTo($("sc13-dim"), { opacity: 0.3 }, { opacity: 1, duration: 0.8, ease: "none", immediateRender: true }, S(58.2));
+    (function () {
+      const mk = $("sc13-mk"), f = FX.markupDefs(mk, SEG + "-mk13");
+      const tx = 1525, ty = 700;
+      [[220, 300, 120], [700, 420, -90], [520, 820, 90], [1050, 250, -60], [1100, 900, 70]].forEach(([x, y, b], i) => {
+        const a = FX.markup.arrow(tl, mk, S(58.40) + i * 0.12, { x1: x, y1: y, x2: tx - 120 + (i % 2) * 30, y2: ty + (i - 2) * 26, bend: b, dur: 0.7, color: BONE, width: 7, head: 26, filter: f });
+        gsap.set(a, { opacity: 0 }); tl.set(a, { opacity: 1 }, S(58.40) + i * 0.12); });
+      $("sc13-icon").innerHTML = picto("phone", COPL, 6);
+      tl.fromTo($("sc13-icon"), { opacity: 0, scale: 0.5 }, { opacity: 1, scale: 1, duration: 0.5, ease: C(E.out, 0.5), immediateRender: true }, S(59.62));
+      const c = FX.markup.circle(tl, mk, S(59.96), { cx: 1525, cy: 705, rx: 150, ry: 140, rot: -6, dur: 0.3, color: COPL, width: 8, filter: f, seed: 13 });
+      gsap.set(c, { opacity: 0 }); tl.set(c, { opacity: 1 }, S(59.96));
+    })();
+
+    /* ============ fc3 · 60.79–62.41 · "Because you're betting too much" ============ */
+    face("fc3", 60.79, 62.41, 1.0);
+
+    /* ============ sc14 · 62.41–72.87 · one product (wobbling) → whip-pan → chips for any product in demand ============ */
+    scene("sc14", 62.41, 72.87); ground("paper", S(62.41));
+    (function () {
+      const cam = $("sc14-cam"), A = $("sc14-ska"), B = $("sc14-skb");
+      tl.fromTo(cam, { x: 40, scale: 1 }, { x: 0, duration: 3.4, ease: E.cam, immediateRender: true }, S(62.41));
+      // card A: a factory balanced on one product
+      pen(A, [[190, 706], [600, 700], [1010, 706]], S(62.45), 0.4, { seed: 141 });
+      pen(A, [[520, 700], [522, 524], [680, 520], [682, 700]], S(62.45), 0.45, { seed: 142, color: INK });
+      A.insertAdjacentHTML("beforeend", '<g id="pd01-sc14-ph" opacity="0"><g transform="translate(540 548) scale(1.2)">' + picto("phone", INK, 4.5) + "</g></g>");
+      tl.set(document.getElementById("pd01-sc14-ph"), { attr: { opacity: 1 } }, S(62.75));
+      A.insertAdjacentHTML("beforeend", '<g id="pd01-sc14-fa" opacity="0"><g transform="translate(480 296) scale(2.6)">' + picto("factory", COPD, 3) + "</g></g>");
+      const fa = document.getElementById("pd01-sc14-fa"), pr = { y: -260, a: 0 };
+      const put = () => fa.setAttribute("transform", "translate(0 " + pr.y.toFixed(1) + ") rotate(" + pr.a.toFixed(2) + " 600 520)");
+      put();
+      tl.set(fa, { attr: { opacity: 1 } }, S(62.62));
+      tl.fromTo(pr, { y: -260 }, { y: 0, duration: 0.6, ease: C("power2.in", 0.6), onUpdate: put, immediateRender: false }, S(62.62));   // lands 63.22 "on that product"
+      [[63.95, 4], [64.35, -5], [64.75, 7], [65.15, -8], [65.5, 10]].forEach(([t, a], i) => tl.to(pr, { a: a, duration: 0.38, ease: C("sine.inOut", 0.38), onUpdate: put }, S(t)));
+      pen(A, [[560, 560], [575, 600], [556, 640], [574, 690]], S(65.0), 0.3, { seed: 143, color: INK, width: 4 });
+      pen(A, [[650, 540], [636, 590], [654, 630]], S(65.3), 0.25, { seed: 144, color: INK, width: 4 });
+      // whip-pan to card B
+      tl.to(cam, { x: -1700, duration: 0.56, ease: "power3.inOut" }, S(65.80));
+      tl.fromTo($("sc14-shot"), { filter: "blur(0px)" }, { filter: "blur(7px)", duration: 0.28, yoyo: true, repeat: 1, ease: "sine.inOut", immediateRender: false }, S(65.80));
+      tl.to(cam, { x: -1730, duration: 6.5, ease: "none" }, S(66.36));
+      // card B: one factory → chips → any product in demand
+      B.insertAdjacentHTML("beforeend", '<g id="pd01-sc14-fb" opacity="0"><g transform="translate(110 290) scale(2.6)">' + picto("factory", COPD, 3) + "</g></g>");
+      tl.set(document.getElementById("pd01-sc14-fb"), { attr: { opacity: 1 } }, S(66.2));
+      pen(B, [[100, 520], [240, 514], [380, 520]], S(66.3), 0.4, { seed: 145 });
+      pen(B, [[60, 250], [72, 200], [64, 150]], S(67.91), 0.3, { seed: 151, color: COPD, width: 6 });   // "more successful": up arrow
+      pen(B, [[40, 176], [64, 148], [90, 174]], S(68.15), 0.2, { seed: 152, color: COPD, width: 6, jitter: 2 });
+      const kinds = ["phone", "tv", "calc", "pc", "watch", "game"], ang = [-75, -45, -15, 15, 45, 75], BW = [120, 170, 96, 180, 110, 150];
+      kinds.forEach((k, i) => {
+        const a = ang[i] * Math.PI / 180, px = 300 + Math.cos(a) * 600, py = 410 + Math.sin(a) * 320, sx = 300 + Math.cos(a) * 170, sy = 410 + Math.sin(a) * 110, ex = px - Math.cos(a) * 90, ey = py - Math.sin(a) * 78;
+        // chips leave the factory …
+        B.insertAdjacentHTML("beforeend", '<g id="pd01-sc14-c' + i + '" opacity="0"><rect x="' + (sx - 15).toFixed(0) + '" y="' + (sy - 11).toFixed(0) + '" width="30" height="22" rx="3" fill="' + INK + '"/></g>');
+        tl.set(document.getElementById("pd01-sc14-c" + i), { attr: { opacity: 1 } }, S(69.19) + i / 12);
+        // … along arrows …
+        pen(B, [[sx + Math.cos(a) * 34, sy + Math.sin(a) * 30], [(sx + ex) / 2 + 6, (sy + ey) / 2 - 6], [ex, ey]], S(69.75) + i * 0.09, 0.45, { seed: 160 + i });
+        // … to any product
+        B.insertAdjacentHTML("beforeend", '<g id="pd01-sc14-p' + i + '" opacity="0"><g transform="translate(' + (px - 60).toFixed(0) + " " + (py - 60).toFixed(0) + ') scale(1.2)">' + picto(k, INK, 4.5) + "</g></g>");
+        tl.set(document.getElementById("pd01-sc14-p" + i), { attr: { opacity: 1 } }, S(70.79) + i / 12);
+        // demand bars
+        const r = el(B, "rect", { x: (px + 76).toFixed(0), y: (py - 12).toFixed(0), width: 0, height: 24, fill: COP });
+        tl.to(r, { attr: { width: BW[i] }, duration: 0.35, ease: C(E.out, 0.35) }, S(71.56) + i / 24);
+      });
+    })();
+    whip($("sc14-shot"), $("sc15-shot"), S(72.87), { dir: -1, vertical: true });
+
+    /* ============ sc15 · 72.87–79.10 · "right now … obvious … but back in 1983, a novel concept" ============ */
+    scene("sc15", 72.87, 79.10); ground("night", S(72.87));
+    (function () {
+      const svg = $("sc15-ruler"), g = el(svg, "g", {}), y = 760, STEP = 150;
+      el(svg, "path", { d: "M940 690 L980 690 L960 722 Z", fill: COPL });
+      el(g, "line", { x1: -8000, y1: y, x2: 2600, y2: y, stroke: ASHL, "stroke-width": 3, opacity: 0.8 });
+      for (let yr = 2032, k = -6; yr >= 1974; yr--, k++) {
+        const x = 960 - k * STEP;
+        el(g, "line", { x1: x, y1: y, x2: x, y2: y + (yr % 5 ? 26 : 48), stroke: ASHL, "stroke-width": yr % 5 ? 3 : 4 });
+        if (yr <= 2026) { const tx = el(g, "text", { x: x, y: y + 100, "text-anchor": "middle", fill: ASHL, "font-size": 38, class: "t-label" }); tx.textContent = yr; }
+      }
+      // ruler: x offset = years back from 2026 × STEP (proxy → transform attribute)
+      const pr = { x: 0 }, put = () => g.setAttribute("transform", "translate(" + pr.x.toFixed(1) + " 0)");
+      put();
+      tl.fromTo(pr, { x: -40 }, { x: 0, duration: 1.0, ease: E.cam, onUpdate: put, immediateRender: false }, S(72.87));
+      tl.to(pr, { x: 60, duration: 1.72, ease: "power1.in", onUpdate: put }, S(73.9));
+      tl.to(pr, { x: 43 * STEP, duration: 0.62, ease: "power3.out", onUpdate: put }, S(75.62));
+      gsap.set($("sc15"), { autoAlpha: 1 });
+      FX.text.count(tl, $("sc15-yr"), S(75.62), 2026, 1983, 0.55, (v) => String(Math.round(v)));
+      $("sc15-yr").textContent = "2026";
+      tl.set($("sc15-yr"), { className: "d1-abs t-display halate" }, T(76.23));
+      tl.fromTo($("sc15-yr"), { scale: 1.08, transformOrigin: "30% 60%" }, { scale: 1, duration: 0.5, ease: C(E.out, 0.5), immediateRender: false }, T(76.23));
+      gated(75.5, 79.3, () => FX.streaks($("sc15-streaks"), { seed: 61, speed: 0.5, tint: [246, 201, 138], lo: 0.42, gain: 1.0 }));
+      tl.fromTo($("sc15-streaks"), { opacity: 0 }, { opacity: 0.45, duration: 0.8, ease: "power1.out", immediateRender: true }, S(76.2));
+      $("sc15-isk").innerHTML = ideaSVG();
+      slideIn($("sc15-idea"), S(77.40), 420, -40, 12, 3, 0.9);   // "a novel concept": Tsao's idea card
+      tl.fromTo($("sc15-shot"), { scale: 1 }, { scale: 1.04, duration: 2.8, ease: "none", immediateRender: false }, S(76.3));
+    })();
+    whip($("sc15-shot"), $("sc16-shot"), S(79.10), { dir: 1, flash: true });
+
+    /* ============ sc16 · 79.10–83.70 · no such thing as a pure-play chip factory or a foundry ============ */
+    scene("sc16", 79.10, 83.70); ground("paper", S(79.10));
+    (function () {
+      const cam = $("sc16-cam");
+      const at = (cx, cy, z) => ({ x: 1340 - cx * z, y: 540 - cy * z, scale: z });
+      tl.fromTo(cam, at(700, 700, 0.62), Object.assign(at(720, 560, 0.7), { duration: 2.7, ease: "none", immediateRender: false }), S(79.10));
+      gsap.set(cam, at(700, 700, 0.62));
+      tl.to(cam, Object.assign(at(1010, 230, 1.35), { duration: 0.9, ease: E.cam }), S(81.80));
+      tl.to(cam, Object.assign(at(1020, 236, 1.42), { duration: 1.0, ease: "none" }), S(82.70));
+      tl.fromTo($("sc16-ht"), { opacity: 0.2 }, { opacity: 0.5, duration: 1.0, ease: "none", immediateRender: true }, S(81.8));
+      FX.focusHunt(tl, $("sc16-stage"), S(82.70), { dur: 0.6 });
+      tl.fromTo($("sc16-hl"), { scaleX: 0 }, { scaleX: 1, duration: 0.4, ease: "sine.inOut", immediateRender: true }, S(82.16));
+    })();
+    tl.fromTo($("sc16-card"), { y: 60, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8, ease: C(E.out, 0.8), immediateRender: true }, S(79.75));
+    [T(80.47), T(80.95), T(81.19), T(81.51)].forEach((c, i) => show($("sc16-pp").children[i], c));
+    const ch16 = FX.roughDefs(defs, SEG + "-ch16", { freq: 0.04, scale: 7, choke: 0 });
+    show($("sc16-fd"), T(82.07));
+    FX.chokeSettle(tl, ch16, $("sc16-fd"), T(82.07), 12, 0.5, "none");
+    whip($("sc16-shot"), $("sc17-shot"), S(83.70), { dir: 1 });
+
+    /* ============ sc17 · 83.70–87.50 · Tsao could see the future · 2.5D ============ */
+    scene("sc17", 83.70, 87.50); ground("night", S(83.70));
+    (function () {
+      const P = 1200, Z = { "L0": -500, "L1": -160, "L2": 0, "L3": 230 };
+      for (const k in Z) gsap.set($("sc17-" + k), { z: Z[k], scale: (P - Z[k]) / P });
+      tl.fromTo($("sc17-cam"), { x: 50, z: -40, rotationY: 1.8 }, { x: -30, z: 150, rotationY: -1.2, duration: 2.8, ease: E.cam, immediateRender: false }, S(83.70));
+      tl.to($("sc17-cam"), { x: -40, z: 162, duration: 1.0, ease: "none" }, S(86.50));
+      FX.focusHunt(tl, $("sc17-stage"), S(86.3), { dur: 0.7 });
+      tl.fromTo($("sc17-glow"), { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1.1, duration: 1.6, ease: C(E.out, 1.6), immediateRender: true }, S(84.6));   // "see the future"
+    })();
+    rise($("sc17-name"), T(83.83), { dur: 0.7, y: 14 });
+    rise($("sc17-role"), S(84.2), { dur: 0.6, y: 10 });
+    whip($("sc17-shot"), $("sc18-shot"), S(87.50), { dir: -1 });
+
+    /* ============ sc18 · 87.50–93.05 · reorient the whole company ============ */
+    scene("sc18", 87.50, 93.05);
+    (function () {
+      const g = $("sc18-rose"), cx = 960, cy = 540;
+      let s = '<g fill="none" stroke="' + ASHL + '" opacity="0.8">';
+      [420, 400, 330, 318].forEach((r, i) => s += '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" stroke-width="' + (i % 2 ? 1.5 : 3) + '"/>');
+      for (let k = 0; k < 64; k++) { const a = k / 64 * Math.PI * 2, r1 = k % 8 === 0 ? 372 : k % 4 === 0 ? 384 : 392; s += '<path d="M' + (cx + Math.cos(a) * r1).toFixed(1) + " " + (cy + Math.sin(a) * r1).toFixed(1) + " L" + (cx + Math.cos(a) * 400).toFixed(1) + " " + (cy + Math.sin(a) * 400).toFixed(1) + '" stroke-width="2"/>'; }
+      s += "</g>";
+      const star = (n, R, r, rot, fill, op) => { let d = ""; for (let k = 0; k < n * 2; k++) { const a = rot + k / (n * 2) * Math.PI * 2 - Math.PI / 2, rr = k % 2 ? r : R; d += (k ? "L" : "M") + (cx + Math.cos(a) * rr).toFixed(1) + " " + (cy + Math.sin(a) * rr).toFixed(1); } return '<path d="' + d + 'Z" fill="' + fill + '" stroke="' + ASHL + '" stroke-width="2" opacity="' + op + '"/>'; };
+      s += star(8, 300, 70, Math.PI / 8, "rgba(194,197,202,0.05)", 0.55) + star(4, 470, 60, 0, "rgba(194,197,202,0.10)", 0.9);
+      s += '<path d="M960 70 L986 120 L960 108 L934 120 Z" fill="' + COPL + '" opacity="0.95"/>';
+      g.innerHTML = s;
+      const parts = Array.from(g.querySelectorAll("circle, path"));
+      parts.forEach((p, i) => tl.fromTo(p, { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, S(87.55) + Math.floor(i / 12) / 12));
+      tl.fromTo(g, { rotation: 20, svgOrigin: "960 540" }, { rotation: 0, svgOrigin: "960 540", duration: 1.5, ease: E.cam, immediateRender: false }, S(87.50));
+      tl.to(g, { rotation: -25, svgOrigin: "960 540", duration: 1.8, ease: C(E.inOut, 1.8) }, S(89.11));
+    })();
+    tl.fromTo($("sc18-card"), { scale: 0.85, opacity: 0, rotation: 0 }, { scale: 1, opacity: 1, duration: 1.0, ease: C(E.out, 1.0), immediateRender: true }, S(87.62));
+    rise($("sc18-lab"), S(88.0), { dur: 0.6, y: 10 });
+    tl.to($("sc18-card"), { rotation: 90, duration: 1.6, ease: C(E.inOut, 1.6) }, S(89.11));   // "reorient"
+    tl.to($("sc18-card"), { rotation: 96, duration: 1.9, ease: "none" }, S(90.71));
+    tl.to($("sc18-card"), { rotation: 124, scale: 1.25, duration: 0.3, ease: E.in }, S(92.75));   // keeps turning → cut on action
+
+    /* ============ sc19 · 93.05–96.95 · ask permission from his board of directors ============ */
+    scene("sc19", 93.05, 96.95); ground("foot", S(93.05));
+    gated(93.0, 97.1, () => FX.weave($("sc19-weave"), { amp: 0.6, flicker: 0.025, seed: 1801 }));
+    tl.fromTo($("sc19-cam"), { scale: 1.1, rotation: 2 }, { scale: 1.02, rotation: 0, duration: 1.2, ease: E.cam, immediateRender: false }, S(93.05));
+    tl.to($("sc19-cam"), { scale: 1.06, duration: 2.4, ease: "none" }, S(94.25));
+    tl.to($("sc19-cam"), { x: -120, duration: 0.3, ease: E.in }, S(96.65));   // move with the gesture → cut on action
+
+    /* ============ sc20 · 96.95–103.85 · one year old · launched as a private company a year ago ============ */
+    scene("sc20", 96.95, 103.85); ground("paper", S(96.95));
+    (function () {
+      const svg = $("sc20-svg");
+      ink(svg, "M170 640 L1760 641", S(96.95), 0.8, { color: INK, width: 5 });
+      ink(svg, "M370 610 L371 670", S(97.2), 0.2, { color: INK, width: 5 });
+      ink(svg, "M1500 600 L1501 680", S(98.2), 0.25, { color: INK, width: 6 });
+      ink(svg, "M372 730 Q372 756 400 756 L910 756 Q934 756 940 778 Q946 756 970 756 L1472 756 Q1500 756 1500 730", S(100.0), 0.5, { color: INK, width: 4 });
+    })();
+    rise($("sc20-logo"), T(97.03), { dur: 0.7, y: 14 });
+    tl.fromTo($("sc20-dot"), { x: -160, scale: 0.6 }, { x: 0, scale: 1, duration: 0.7, ease: C(E.out, 0.7), immediateRender: true }, S(96.95));
+    tl.to($("sc20-dot"), { x: 1130, duration: 1.7, ease: C(E.inOut, 1.7) }, S(98.20));
+    rise($("sc20-now"), S(98.3), { dur: 0.6, y: 12 });
+    [T(100.15), T(100.47), T(100.71)].forEach((c, i) => show($("sc20-old").children[i], c));
+    [T(101.35), T(101.91), T(102.15), T(102.31), T(102.71)].forEach((c, i) => show($("sc20-lau").children[i], c));
+    tl.fromTo($("sc20-cam"), { scale: 1 }, { scale: 1.05, duration: 6.9, ease: "none", immediateRender: false }, S(96.95));
+    whip($("sc20-shot"), $("sc21-shot"), S(103.85), { dir: 1, vertical: true });
+
+    /* ============ sc21 · 103.85–109.60 · just a CEO, not a founder, no big ownership ============ */
+    scene("sc21", 103.85, 109.60); ground("night", S(103.85));
+    (function () {
+      tl.fromTo($("sc21-badge"), { y: 60, rotation: -8 }, { y: 0, rotation: -3, duration: 1.0, ease: C(E.out, 1.0), immediateRender: false }, S(103.85));
+      show($("sc21-nm"), T(104.79));
+      show($("sc21-r1"), T(105.75));
+      const mk = $("sc21-bmk");
+      pen(mk, [[250, 650], [272, 676], [318, 618]], S(105.95), 0.3, { color: BRDD, width: 8, seed: 211, jitter: 2 });   // tick: CEO
+      show($("sc21-r2"), T(106.79));
+      pen(mk, [[50, 730], [190, 722], [350, 728]], S(107.0), 0.3, { color: INK, width: 8, seed: 212 });   // struck: not a founder
+      const grid = $("sc21-grid");
+      for (let r = 0; r < 10; r++) for (let c = 0; c < 10; c++) {
+        const d = document.createElement("div"); d.className = "d1-tile"; d.id = "pd01-sc21-t" + (r * 10 + c); d.style.left = c * 64 + "px"; d.style.top = r * 64 + "px"; grid.appendChild(d);
+        tl.set(d, { opacity: 1 }, S(107.30) + (r * 10 + c) / 120);
+      }
+      show($("sc21-ot"), T(108.23));
+      [90, 91].forEach((k, i) => tl.to(document.getElementById("pd01-sc21-t" + k), { backgroundColor: COP, duration: 0.001 }, S(108.55) + i / 12));
+      rise($("sc21-tl"), S(108.6), { dur: 0.4, y: 8 });
+      tl.fromTo($("sc21-shot"), { scale: 1 }, { scale: 1.035, duration: 5.75, ease: "none", immediateRender: false }, S(103.85));
+    })();
+    whip($("sc21-shot"), $("sc22-shot"), S(109.60), { dir: 1 });
+
+    /* ============ sc22 · 109.60–113.77 · no big decisions without permission from the board ============ */
+    scene("sc22", 109.60, SEG_END + 1); ground("paper", S(109.60));
+    (function () {
+      const cam = $("sc22-cam");
+      $("sc22-isk").innerHTML = ideaSVG();
+      tl.fromTo(cam, { x: -40 }, { x: -90, duration: 3.9, ease: "none", immediateRender: false }, S(109.60));
+      gsap.set(cam, { x: -40 });
+      tl.fromTo($("sc22-idea"), { x: -700, y: 80, rotation: -16 }, { x: 0, y: 0, rotation: -5, duration: 0.9, ease: C(E.out, 0.9), immediateRender: true }, S(110.20));   // "big decisions": the idea lands on the board's form
+      const mk = $("sc22-mk"), f = FX.markupDefs(mk, SEG + "-mk22", { boil: 4 });
+      const a = FX.markup.arrow(tl, mk, S(111.75), { x1: 840, y1: 640, x2: 1090, y2: 790, bend: 60, dur: 0.5, color: COPD, width: 8, filter: f });
+      gsap.set(a, { opacity: 0 }); tl.set(a, { opacity: 1 }, S(111.75));
+      const st = $("sc22-stsvg");
+      const r = el(st, "rect", { x: 6, y: 6, width: 328, height: 158, rx: 10, fill: "none", stroke: INK, "stroke-width": 5, "stroke-dasharray": "16 12", opacity: 0.55 });
+      const L = 2 * (328 + 158);
+      gsap.set(r, { attr: { "stroke-dasharray": "0 " + L } });
+      const dp = { v: 0 };
+      tl.set(r, { attr: { "stroke-dasharray": "16 12" }, opacity: 0 }, 0);
+      show($("sc22-stl"), T(112.39));
+      tl.fromTo(r, { opacity: 0 }, { opacity: 0.55, duration: 0.3, ease: C(E.out, 0.3), immediateRender: true }, T(112.39));
+      tl.fromTo($("sc22-st"), { scale: 1.2 }, { scale: 1, duration: 0.5, ease: C(E.out, 0.5), immediateRender: false }, T(112.39));
+      // hand-off: whip-pan right, still accelerating at the cut (pd02 continues with a fresh shot)
+      tl.to(cam, { x: -640, duration: 0.25, ease: "power2.in" }, S(113.52));
+      tl.fromTo($("sc22-shot"), { filter: "blur(0px)" }, { filter: "blur(9px)", duration: 0.25, ease: "power2.in", immediateRender: false }, S(113.52));
+    })();
+
+    // hide out-of-window scenes AFTER every measuring helper ran (MANUAL §4.2)
+    ALL.forEach((s) => { if (s.id !== SEG + "-sc01") gsap.set(s, { autoAlpha: 0 }); });
+    FX.mount(tl, DURATION);
+    window.__timelines = window.__timelines || {}; window.__timelines[SEG] = tl;
+  })();
+  </script>
+</template>
+</body>
+</html>
