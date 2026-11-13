@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8" /></head>
+<body>
+<template>
+  <style>
+    #root { position: absolute; inset: 0; overflow: hidden; background: #0d1015; }
+    .p42-shot { position: absolute; inset: 0; overflow: hidden; background: #0d1015; }
+    #pd42-cam { position: absolute; left: 0; top: 0; width: 16384px; height: 8192px; transform-origin: 0 0; }
+    #pd42-map { position: absolute; left: 0; top: 0; width: 16384px; height: 8192px; filter: brightness(1.2) contrast(1.05) saturate(0.45); }
+    #pd42-svg { position: absolute; left: 0; top: 0; width: 16384px; height: 8192px; overflow: visible; }
+    .p42-lb { position: absolute; white-space: nowrap; }
+    .p42-lb .nm { display: block; font-size: 132px; line-height: 1; }
+    .p42-lb .pl { display: block; font-size: 72px; line-height: 1; margin-top: 18px; color: var(--ash-light); }
+    .p42-lb.r { text-align: right; }
+    .p42-w { display: inline-block; white-space: pre; opacity: 0; }
+    .p42-sea { position: absolute; white-space: nowrap; font-size: 70px; color: rgba(194,197,202,0.55); }
+    .p42-credit { position: absolute; right: 96px; bottom: 28px; font-size: 13px; letter-spacing: 0.08em; color: rgba(238,238,232,0.45); z-index: 5; }
+    #pd42-grain, #pd42-dust, #pd42-vig { z-index: 8; }
+  </style>
+
+  <div id="root" data-composition-id="pd42" data-vo-start="5181.8333" data-duration="18.3667" data-width="1920" data-height="1080">
+    <!-- sc001 · 5181.83–5200.20 · "There's a copycat project that's put in place in New York. It's called Silicon Alley. So everyone's sticking with the silicon
+         thing. In Cambridge, they had a project called Silicon Fen. In Israel, they had Silicon Wadi. In Dresden, they had Silicon Saxony. In Bangalore,
+         they had Silicon Plateau. And then in Scotland, they had Silicon Glen." · world night relief, the camera crosses the Atlantic; each place gets a
+         pin on its name and its nickname on "Silicon …" (refs 5fc04bfb pins + 8a634241 accent pins with city labels) -->
+    <div class="p42-shot" id="pd42-shot">
+      <div id="pd42-cam">
+        <img id="pd42-map" src="assets/maps/kit/world_night.jpg" alt="">
+        <svg id="pd42-svg" viewBox="0 0 16384 8192"></svg>
+        <div class="p42-sea t-label" style="left:5330px; top:2860px">Atlantic Ocean</div>
+        <div class="p42-sea t-label" style="left:10700px; top:3650px">Indian Ocean</div>
+        <!-- labels: nickname (lands on "Silicon …") over the place (lands on the place name) -->
+        <div class="p42-lb" id="pd42-L0" style="left:4920px; top:2290px"><span class="nm t-display clean"><span class="p42-w" id="pd42-n0a">SILICON </span><span class="p42-w" id="pd42-n0b">ALLEY</span></span><span class="pl t-label"><span class="p42-w" id="pd42-p0">New York</span></span></div>
+        <div class="p42-lb r" id="pd42-L1" style="right:8270px; top:1730px"><span class="nm t-display clean"><span class="p42-w" id="pd42-n1a">SILICON </span><span class="p42-w" id="pd42-n1b">FEN</span></span><span class="pl t-label"><span class="p42-w" id="pd42-p1">Cambridge</span></span></div>
+        <div class="p42-lb" id="pd42-L2" style="left:9870px; top:2560px"><span class="nm t-display clean"><span class="p42-w" id="pd42-n2a">SILICON </span><span class="p42-w" id="pd42-n2b">WADI</span></span><span class="pl t-label"><span class="p42-w" id="pd42-p2">Israel</span></span></div>
+        <div class="p42-lb" id="pd42-L3" style="left:8900px; top:1560px"><span class="nm t-display clean"><span class="p42-w" id="pd42-n3a">SILICON </span><span class="p42-w" id="pd42-n3b">SAXONY</span></span><span class="pl t-label"><span class="p42-w" id="pd42-p3">Dresden</span></span></div>
+        <div class="p42-lb r" id="pd42-L4" style="right:4740px; top:3290px"><span class="nm t-display clean"><span class="p42-w" id="pd42-n4a">SILICON </span><span class="p42-w" id="pd42-n4b">PLATEAU</span></span><span class="pl t-label"><span class="p42-w" id="pd42-p4">Bangalore</span></span></div>
+        <div class="p42-lb r" id="pd42-L5" style="right:8450px; top:1290px"><span class="nm t-display clean"><span class="p42-w" id="pd42-n5a">SILICON </span><span class="p42-w" id="pd42-n5b">GLEN</span></span><span class="pl t-label"><span class="p42-w" id="pd42-p5">Scotland</span></span></div>
+      </div>
+      <div class="p42-credit t-label">Relief: AWS Terrain Tiles / Natural Earth (PD)</div>
+    </div>
+
+    <audio id="pd42-vo" class="temp-vo" src="vo_pd.mp3" data-start="0" data-duration="18.3667" data-media-start="5181.8333" data-volume="1"></audio>
+    <div id="pd42-grain" class="tx tx-grain" style="background-image:url('assets/textures/grain_01_norm.jpg'); opacity:0.36"></div>
+    <div id="pd42-dust" class="tx tx-dust" style="background-image:url('assets/textures/dust_02.jpg'); opacity:0.32"></div>
+    <div id="pd42-vig" class="vignette" style="opacity:0.9"></div>
+  </div>
+
+  <script>
+  (function () {
+    const SEG = "pd42", START = 5181.8333, DUR = 18.3667, END = START + DUR;
+    const T = (s) => +(s - START).toFixed(3);   // TEXT cues (audited): literal = word start − 0.06
+    const S = (s) => +(s - START).toFixed(3);   // structural cues
+    const tl = gsap.timeline({ paused: true });
+    const $ = (id) => document.getElementById(SEG + "-" + id);
+    const E = FX.ease, C = (e, d) => FX.choppy(e, d, 12), NS = "http://www.w3.org/2000/svg";
+    const BONE = "#eeeee8", ASHL = "#c2c5ca", MAG = "#d1307a", MAGL = "#f3a6c8";
+    const svg = $("svg"), cam = $("cam");
+    const mk = (parent, tag, a) => { const n = document.createElementNS(NS, tag); for (const k in a) n.setAttribute(k, a[k]); parent.appendChild(n); return n; };
+    const camAt = (cx, cy, z) => ({ x: 960 - cx * z, y: 540 - cy * z, scale: z });
+    const rise = (el, t, o) => { o = o || {}; const d = o.dur || 0.4;
+      tl.fromTo(el, { opacity: 0, y: o.y == null ? 22 : o.y }, { opacity: 1, y: 0, duration: d, ease: C(E.out, d), immediateRender: true }, t); };
+
+    // world kit: x = (lon + 180) * 45.5111, y = (90 - lat) * 45.5111
+    const P = (lon, lat) => [(lon + 180) * 45.5111, (90 - lat) * 45.5111];
+    // [place, pin time S(place word), T("Silicon"), T(nickname), T(place label)] — local seconds
+    const SITES = [
+      [P(-74.006, 40.713), S(5184.46), T(5185.42), T(5186.06), T(5184.46)],   // New York · Silicon Alley
+      [P(0.1218, 52.2053), S(5188.84), T(5190.36), T(5190.92), T(5188.84)],   // Cambridge · Silicon Fen (ASR "Fan")
+      [P(34.78, 32.08), S(5191.64), T(5192.20), T(5192.76), T(5191.64)],      // Israel · Silicon Wadi
+      [P(13.737, 51.051), S(5193.56), T(5194.52), T(5195.08), T(5193.56)],    // Dresden · Silicon Saxony
+      [P(77.5946, 12.9716), S(5195.96), T(5196.84), T(5197.40), T(5195.96)],  // Bangalore · Silicon Plateau
+      [P(-3.8, 55.9), S(5198.52), T(5199.32), T(5199.80), T(5198.52)],        // Scotland · Silicon Glen (ASR "Glenn")
+    ];
+
+    // camera: frame 0 is already gliding over the Atlantic towards New York
+    gsap.set(cam, camAt(4250, 2330, 0.6));
+    tl.fromTo(cam, camAt(4250, 2330, 0.6), Object.assign(camAt(4900, 2330, 0.72), { duration: S(5184.5), ease: "sine.out", immediateRender: true }), 0);
+    tl.to(cam, Object.assign(camAt(5000, 2330, 0.73), { duration: S(5186.4) - S(5184.5), ease: "none" }), S(5184.5));
+    // "so everyone's sticking with the silicon thing": across the Atlantic to Europe
+    tl.to(cam, Object.assign(camAt(8800, 2230, 0.5), { duration: 2.2, ease: E.cam }), S(5186.4));
+    tl.to(cam, Object.assign(camAt(9000, 2260, 0.47), { duration: S(5194.9) - S(5188.6), ease: "none" }), S(5188.6));
+    // Bangalore: widen to Europe + India
+    tl.to(cam, Object.assign(camAt(9480, 2420, 0.36), { duration: 1.5, ease: E.cam }), S(5194.9));
+    tl.to(cam, Object.assign(camAt(9500, 2420, 0.352), { duration: END - 5196.4, ease: "none" }), S(5196.4));
+
+    const pins = [];
+    SITES.forEach((s, i) => {
+      const [x, y] = s[0];
+      const g = mk(svg, "g", { opacity: 0 });
+      const halo = mk(g, "circle", { cx: x, cy: y, r: 30, fill: MAG, stroke: BONE, "stroke-width": 9 });
+      mk(g, "circle", { cx: x, cy: y, r: 10, fill: BONE });
+      pins.push(halo);
+      tl.fromTo(g, { attr: { opacity: 0 } }, { attr: { opacity: 1 }, duration: 0.001, immediateRender: false }, s[1]);
+      tl.fromTo(g, { scale: 0.2, svgOrigin: x + " " + y }, { scale: 1, duration: 0.45, ease: C(E.out, 0.45), immediateRender: false }, s[1]);
+      const next = i < SITES.length - 1 ? SITES[i + 1][1] : DUR;
+      FX.radioWaves(svg, x, y, { rings: 3, max: 190, period: 1.4, width: 10, color: MAGL, from: s[1], to: next });   // ungated: hides itself outside from/to (a gate leaves stale rings on out-of-order seeks)
+      rise($("p" + i), s[4], { dur: 0.4, y: 14 });      // place name
+      rise($("n" + i + "a"), s[2], { dur: 0.4 });        // Silicon
+      rise($("n" + i + "b"), s[3], { dur: 0.35 });       // nickname
+      // once the next place is named, this one steps back: pin → light ash, label dims (magenta = the current one only)
+      if (i < SITES.length - 1) {
+        tl.to(halo, { attr: { fill: ASHL }, duration: 0.3 }, next);
+        tl.to($("L" + i), { opacity: 0.62, duration: 0.4 }, next);
+      }
+    });
+
+    FX.grain($("grain"), 3); FX.dust($("dust"), 5, 2);
+    FX.mount(tl, DUR);
+    window.__timelines = window.__timelines || {};
+    window.__timelines[SEG] = tl;
+  })();
+  </script>
+</template>
+</body>
+</html>

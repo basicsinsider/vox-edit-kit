@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8" /></head>
+<body>
+<template>
+  <style>
+    /* pd38 · 4585.1333–4607.1 · "a random American guy who's in the country … his name is Pan Wen-yuan, and he's a RCA man"
+       A · vintage atlas of Taiwan, marker outline round the island, pinned portrait card + name strip, dotted line to the government
+           (inspo b57b4e0e: vintage map + marker outline + pinned photo with a name label; ported from c6s03 C6S102/C6S104)
+       B · RCA: the wordmark stamps in, an RCA colour TV and the 1965 RCA transistor ad, Pan's circle joins RCA
+           (inspo ccc84f71: portrait + related photos; ported from c6s03 C6S103 RCA ad + wordmark stamp) */
+    #root { position: absolute; inset: 0; overflow: hidden; background: var(--paper); color: var(--ink); }
+    #pd38-defs { position: absolute; width: 0; height: 0; }
+    .pd38-sc { position: absolute; inset: 0; overflow: hidden; }
+    /* A */
+    #pd38-a { background: var(--paper); }
+    #pd38-cam { position: absolute; inset: 0; transform-origin: 900px 420px; }
+    #pd38-map { position: absolute; left: 175px; top: 60px; width: 3246px; height: 4399px; transform-origin: 0 0; transform: scale(0.22) rotate(-4deg); }
+    #pd38-map img { position: absolute; left: 0; top: 0; width: 3246px; height: 4399px; filter: url(#pd38-tint) contrast(1.1); }
+    #pd38-msvg { position: absolute; left: 0; top: 0; width: 3246px; height: 4399px; overflow: visible; }
+    #pd38-pp1, #pd38-pp2 { position: absolute; inset: 0; background-size: cover; mix-blend-mode: multiply; filter: grayscale(1); }
+    #pd38-pp1 { opacity: 0.45; } #pd38-pp2 { opacity: 0.35; }
+    #pd38-card { position: absolute; left: 1070px; top: 150px; width: 380px; height: 470px; background: var(--bone); padding: 15px; box-sizing: border-box; box-shadow: 14px 22px 0 rgba(22,26,36,0.18), 0 20px 40px rgba(0,0,0,0.25); transform-origin: 50% 0; }
+    #pd38-card .ph { position: relative; width: 350px; height: 440px; overflow: hidden; background: #2a2f3a; }
+    #pd38-card .ph img { position: absolute; left: -10px; top: -6px; width: 370px; filter: grayscale(1) contrast(1.12) blur(0.4px); }
+    #pd38-card .ph i { position: absolute; inset: 0; background-size: 300px auto; mix-blend-mode: multiply; opacity: 0.4; }
+    #pd38-pin { position: absolute; left: 175px; top: -18px; width: 34px; height: 34px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #eeeee8 0%, #c2c5ca 40%, #878c96 100%); box-shadow: 3px 6px 6px rgba(0,0,0,0.35); }
+    #pd38-am { position: absolute; left: 1480px; top: 196px; font-size: 26px; line-height: 1; padding: 12px 18px 8px; background: var(--ash-light); color: var(--ink); white-space: nowrap; }
+    #pd38-gov { position: absolute; left: 470px; top: 92px; font-size: 26px; line-height: 1; padding: 12px 18px 8px; background: var(--board-dark); color: var(--bone); white-space: nowrap; }
+    #pd38-name { position: absolute; left: 1010px; top: 668px; padding: 18px 30px 8px; background: var(--ash-light); color: var(--ink); font-size: 84px; line-height: 1; white-space: nowrap; box-shadow: 0 12px 24px rgba(22,26,36,0.25); transform: rotate(-1.5deg); }
+    #pd38-name span { display: inline-block; }
+    #pd38-mk { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; }
+    #pd38-acred { position: absolute; right: 96px; bottom: 40px; font-size: 16px; line-height: 1; letter-spacing: 0.1em; color: var(--ink-soft); white-space: nowrap; }
+    /* B */
+    #pd38-b { background: radial-gradient(100% 90% at 40% 45%, #1a1e27 0%, #0c0f15 75%); color: var(--bone); }
+    #pd38-bcam { position: absolute; inset: 0; transform-origin: 700px 480px; }
+    #pd38-logo { position: absolute; left: 150px; top: 300px; width: 660px; height: 189px; transform-origin: 50% 50%; }
+    #pd38-logo img { width: 660px; height: 189px; filter: invert(1) brightness(0.94); }
+    #pd38-tv { position: absolute; left: 980px; top: 120px; width: 520px; height: 460px; overflow: hidden; border: 10px solid var(--bone); box-shadow: 0 24px 50px rgba(0,0,0,0.6); }
+    #pd38-tv img { position: absolute; left: -309px; top: -180px; width: 1079px; filter: url(#pd38-tintn) contrast(1.06); }
+    #pd38-ad { position: absolute; left: 1400px; top: 360px; width: 400px; height: 554px; overflow: hidden; border: 10px solid var(--bone); box-shadow: 0 24px 50px rgba(0,0,0,0.6); }
+    #pd38-ad img { position: absolute; left: 0; top: 0; width: 400px; filter: url(#pd38-tintn) contrast(1.05); }
+    #pd38-panc { position: absolute; left: 380px; top: 600px; width: 230px; height: 230px; border-radius: 50%; overflow: hidden; border: 7px solid var(--ash-light); box-shadow: 0 16px 40px rgba(0,0,0,0.6); background: #1c1f26; }
+    #pd38-panc img { position: absolute; left: -14px; top: -8px; width: 260px; filter: grayscale(1) contrast(1.1); }
+    #pd38-bmk { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; }
+    #pd38-bcred { position: absolute; right: 96px; bottom: 40px; font-size: 16px; line-height: 1; letter-spacing: 0.1em; color: var(--ash); white-space: nowrap; }
+  </style>
+  <div id="root" data-composition-id="pd38" data-vo-start="4585.1333" data-duration="21.9667" data-width="1920" data-height="1080">
+    <svg id="pd38-defs"></svg>
+    <div id="pd38-a" class="pd38-sc">
+      <div id="pd38-cam">
+        <div id="pd38-map">
+          <img src="assets/maps/kit/taiwan_atlas.jpg" alt="" />
+          <svg id="pd38-msvg" viewBox="0 0 1623 2200"><path id="pd38-outline" d="M1458.7 275.4 L1412.3 333.1 L1404.2 363.1 L1404.2 395.1 L1410.3 436.4 L1408.2 462.1 L1428.4 483.8 L1444.5 490.0 L1432.5 490.0 L1422.3 495.1 L1430.5 518.9 L1416.3 538.5 L1416.3 549.8 L1422.3 561.1 L1402.2 573.5 L1388.1 597.3 L1386.1 617.9 L1382.0 629.2 L1380.0 646.8 L1376.0 652.0 L1380.0 658.1 L1384.1 664.4 L1380.0 671.5 L1355.9 701.5 L1341.8 713.9 L1341.8 721.1 L1321.7 737.6 L1309.5 775.8 L1291.4 808.8 L1295.5 829.4 L1301.5 836.6 L1303.5 846.0 L1293.4 866.5 L1291.4 887.2 L1271.2 958.4 L1243.0 1063.6 L1210.8 1256.5 L1190.7 1287.5 L1180.6 1311.2 L1176.5 1356.7 L1164.5 1399.0 L1150.3 1410.3 L1144.3 1420.6 L1130.2 1450.5 L1118.2 1491.8 L1094.0 1529.0 L1057.7 1562.0 L1057.7 1581.5 L1055.7 1594.0 L1041.5 1614.5 L997.2 1647.5 L967.0 1675.5 L952.9 1710.5 L928.8 1742.5 L918.6 1781.7 L888.5 1853.9 L882.4 1900.3 L884.4 2043.8 L874.4 2071.6 L860.2 2085.0 L862.2 2123.2 L852.1 2121.2 L822.0 2102.6 L803.8 2111.8 L791.7 2116.0 L783.6 2103.6 L773.6 2068.5 L773.6 2059.2 L773.6 2029.3 L781.6 2014.8 L739.4 1897.2 L723.2 1876.6 L711.1 1848.8 L687.0 1831.2 L680.9 1829.2 L678.9 1817.8 L648.6 1801.3 L628.5 1785.8 L616.5 1779.7 L610.4 1781.7 L578.1 1760.0 L578.1 1755.9 L570.1 1732.2 L556.0 1711.5 L529.8 1684.7 L529.8 1665.1 L529.8 1643.5 L513.6 1614.5 L501.6 1583.6 L505.6 1569.2 L503.6 1562.0 L499.6 1556.8 L491.5 1541.3 L485.4 1508.3 L479.4 1486.7 L481.4 1471.2 L485.4 1447.4 L469.4 1449.5 L463.3 1461.8 L453.2 1456.7 L451.2 1437.1 L439.1 1437.1 L429.1 1445.3 L421.0 1432.0 L425.0 1419.5 L439.1 1415.5 L447.2 1407.2 L425.0 1399.0 L441.1 1394.8 L431.1 1381.4 L427.1 1365.9 L437.1 1360.8 L439.1 1346.3 L437.1 1334.0 L445.1 1320.5 L445.1 1310.2 L455.2 1287.5 L453.2 1281.3 L465.3 1272.0 L475.4 1270.0 L469.4 1265.8 L459.2 1264.8 L465.3 1246.2 L483.4 1245.2 L467.4 1206.0 L471.4 1193.6 L465.3 1187.5 L471.4 1177.1 L461.3 1166.8 L471.4 1137.9 L471.4 1077.0 L487.5 1038.8 L495.6 999.6 L511.6 975.9 L513.6 966.6 L529.8 951.1 L535.9 929.5 L556.0 908.9 L570.1 875.9 L588.2 832.5 L600.3 822.2 L608.4 817.0 L610.4 804.6 L624.5 790.2 L628.5 762.4 L658.8 729.4 L660.8 720.0 L672.9 700.5 L699.0 640.6 L711.1 607.6 L755.5 560.1 L761.5 537.5 L777.6 503.4 L785.7 484.9 L803.8 475.6 L807.9 465.2 L828.0 448.7 L854.2 448.7 L858.2 429.1 L870.3 408.5 L880.4 401.2 L894.5 366.2 L900.5 355.9 L898.5 348.6 L900.5 338.3 L906.5 329.1 L910.6 314.6 L920.6 304.2 L924.7 300.1 L930.8 280.6 L954.9 244.4 L985.1 213.5 L1033.5 194.9 L1049.6 183.6 L1112.1 169.1 L1146.3 160.8 L1162.5 147.4 L1174.5 147.4 L1186.7 154.7 L1192.7 163.9 L1192.7 149.5 L1172.5 133.0 L1178.5 123.7 L1184.6 119.6 L1194.7 96.9 L1231.0 74.2 L1277.3 71.1 L1307.5 108.2 L1317.6 122.7 L1329.7 120.7 L1333.7 123.7 L1329.7 129.9 L1331.7 137.2 L1341.8 145.4 L1353.8 151.6 L1458.7 179.4 L1454.6 192.8 L1460.7 222.8 L1470.8 233.1 L1492.9 231.0 L1509.0 238.2 L1470.8 265.1 Z" fill="#2f9e5b" fill-opacity="0" stroke="#2f9e5b" stroke-width="14" stroke-linejoin="round" stroke-linecap="round"/><circle id="pd38-tpe" cx="1265" cy="226" r="26" fill="#17603a" stroke="#eeeee8" stroke-width="8"/></svg>
+        </div>
+        <div id="pd38-pp1" style="background-image:url('assets/textures/paper_fiber_01.jpg')"></div>
+        <div id="pd38-pp2" style="background-image:url('assets/textures/paper_cream_01.jpg')"></div>
+        <svg id="pd38-mk" viewBox="0 0 1920 1080"></svg>
+        <div id="pd38-gov" class="t-label">Government</div>
+        <div id="pd38-card"><div class="ph"><img src="assets/c3/photos/pan_wen_yuan_enwiki.jpg" alt="" /><i style="background-image:url('assets/textures/halftone_02_norm.jpg')"></i></div><div id="pd38-pin"></div></div>
+        <div id="pd38-am" class="t-label">American</div>
+        <div id="pd38-name" class="t-display"><span id="pd38-n1">PAN&nbsp;</span><span id="pd38-n2">WEN-YUAN</span></div>
+      </div>
+      <div id="pd38-acred" class="t-label">Photo via Wikipedia (fair use) · Relief: AWS Terrain Tiles / Natural Earth</div>
+      <div class="vignette" style="opacity:0.3"></div>
+    </div>
+    <div id="pd38-b" class="pd38-sc">
+      <div id="pd38-bcam">
+        <div id="pd38-tv"><img src="assets/c6/made/rca_ctc5_tv_withbg.jpg" alt="" /></div>
+        <div id="pd38-ad"><img src="assets/c5/documents/electronics_1965-04-19_rca_transistor_ad.jpg" alt="" /></div>
+        <div id="pd38-logo"><img src="assets/c5/logos/rca_wordmark_1968.svg" alt="" /></div>
+        <svg id="pd38-bmk" viewBox="0 0 1920 1080"></svg>
+        <div id="pd38-panc"><img src="assets/c3/photos/pan_wen_yuan_enwiki.jpg" alt="" /></div>
+      </div>
+      <div id="pd38-bcred" class="t-label">RCA CTC-5: Commons, CC BY-SA 4.0 · RCA ad, Electronics 1965 (fair use)</div>
+      <div class="vignette" style="opacity:0.6"></div>
+    </div>
+    <div id="pd38-grain" class="tx tx-grain" style="background-image:url('assets/textures/grain_02_norm.jpg'); opacity:0.28"></div>
+    <div id="pd38-dust" class="tx tx-dust" style="background-image:url('assets/textures/dust_01.jpg'); opacity:0.16"></div>
+    <audio id="pd38-vo" class="temp-vo" src="vo_pd.mp3" data-start="0" data-duration="21.9667" data-media-start="4585.1333" data-volume="1"></audio>
+  </div>
+  <script>
+  (function () {
+    const START = 4585.1333, DUR = 21.9667;
+    const T = (s) => +(s - START).toFixed(3);   // TEXT cues (audited): word start − 0.06
+    const S = T;
+    const tl = gsap.timeline({ paused: true });
+    const $ = (id) => document.getElementById("pd38-" + id);
+    const E = FX.ease, C = (e, d) => FX.choppy(e, d, 12);
+    FX.grain($("grain"), 3801);
+    FX.dust($("dust"), 3803, 2);
+    FX.tintDefs($("defs"), "pd38-tint", "#20242d", "#eeeee8");     // atlas → silicon print on paper
+    FX.tintDefs($("defs"), "pd38-tintn", "#12151c", "#e4e3da");    // night duotone for B's photos
+    const wA = FX.whipDefs($("defs"), "pd38-wa"), wB = FX.whipDefs($("defs"), "pd38-wb");
+    $("a").style.filter = "url(#pd38-wa)"; $("b").style.filter = "url(#pd38-wb)";
+    const land = (el, t, d, y) => tl.fromTo(el, { opacity: 0, y: y == null ? 20 : y }, { opacity: 1, y: 0, duration: d || 0.5, ease: C(E.out, d || 0.5), immediateRender: false }, t);
+
+    // ================= A · 4585.13–4598.95 "he reaches out to a random American guy who's in the country … advising the government … his name is Pan Wen-yuan" =================
+    gsap.set($("b"), { autoAlpha: 0 });
+    gsap.set([$("am"), $("gov"), $("n1"), $("n2"), $("name"), $("tpe")], { opacity: 0 });
+    gsap.set($("card"), { y: -760, rotation: -8 });
+    // frame 0 alive: the marker is already running round the island; the atlas drifts
+    const ol = $("outline"), olen = ol.getTotalLength();
+    ol.setAttribute("stroke-dasharray", olen + " " + olen);
+    gsap.set(ol, { attr: { "stroke-dashoffset": olen * 0.82 } });
+    tl.to(ol, { attr: { "stroke-dashoffset": 0 }, duration: 1.6, ease: C(E.out, 1.6) }, 0);
+    tl.to(ol, { attr: { "fill-opacity": 0.22 }, duration: 0.8, ease: "power1.out" }, 1.2);
+    tl.fromTo($("cam"), { scale: 1.0 }, { scale: 1.07, duration: 13.8, ease: "none", immediateRender: true }, 0);
+    // the card drops and is pinned beside the island on "American guy"
+    tl.to($("card"), { y: 0, rotation: 3, duration: 0.9, ease: C(E.out, 0.9) }, S(4586.6));
+    land($("am"), T(4587.04), 0.45, 10);
+    // "consulting work for the government" — a dotted line from the card to a green Taipei pin
+    const pen = FX.markupDefs($("mk"), "pd38-pen", { boil: 4 });
+    const ar = FX.markup.arrow(tl, $("mk"), S(4590.1), { x1: 1060, y1: 330, x2: 758, y2: 142, bend: 60, head: 22, dur: 0.6, color: "#17603a", width: 5, filter: pen });
+    gsap.set(ar, { opacity: 0 }); tl.set(ar, { opacity: 1 }, S(4590.1));
+    tl.to($("tpe"), { opacity: 1, duration: 0.001 }, S(4590.5));
+    land($("gov"), T(4590.72), 0.45, 10);
+    // the name strip lands on the name
+    tl.set($("name"), { opacity: 1 }, T(4597.04));
+    tl.fromTo($("name"), { scaleX: 0.2, transformOrigin: "0 50%" }, { scaleX: 1, duration: 0.35, ease: C(E.out, 0.35), immediateRender: false }, T(4597.04));
+    land($("n1"), T(4597.04), 0.4, 14);
+    land($("n2"), T(4597.52), 0.5, 14);
+
+    // ================= whip → B · 4598.95–4607.10 "he's a RCA man. RCA was a very big technology company … part of RCA's research team" =================
+    FX.whip(tl, $("a"), $("b"), S(4598.95), { dir: 1, blurA: wA, blurB: wB });
+    gsap.set([$("logo"), $("tv"), $("ad"), $("panc")], { opacity: 0 });
+    tl.fromTo($("bcam"), { scale: 1.06 }, { scale: 1.0, duration: 8.1, ease: E.cam, immediateRender: false }, S(4598.95));
+    // the wordmark stamps on "RCA"
+    tl.fromTo($("logo"), { opacity: 0, scale: 1.5 }, { opacity: 1, scale: 1, duration: 0.3, ease: C(E.out, 0.3), immediateRender: false }, T(4599.25));
+    tl.fromTo($("logo"), { scale: 1 }, { scale: 1.04, duration: 0.12, yoyo: true, repeat: 1, immediateRender: false }, T(4600.45));
+    // "a very, very big technology company back in the day" — an RCA colour TV, then the 1965 RCA transistor ad
+    tl.fromTo($("tv"), { opacity: 0, y: 80, rotation: 4 }, { opacity: 1, y: 0, rotation: -2, duration: 0.9, ease: C(E.out, 0.9), immediateRender: false }, S(4601.75));
+    tl.fromTo($("ad"), { opacity: 0, y: 90, rotation: 8 }, { opacity: 1, y: 0, rotation: 3, duration: 0.9, ease: C(E.out, 0.9), immediateRender: false }, S(4602.7));
+    tl.fromTo($("tv").firstElementChild, { scale: 1 }, { scale: 1.08, duration: 5, ease: "none", immediateRender: false, transformOrigin: "50% 40%" }, S(4601.75));
+    // "this guy is part of RCA's research team" — Pan's circle joins the wordmark
+    tl.fromTo($("panc"), { opacity: 0, x: -260, y: 120, scale: 0.7 }, { opacity: 1, x: 0, y: 0, scale: 1, duration: 0.9, ease: C(E.out, 0.9), immediateRender: false }, S(4605.2));
+    const bpen = FX.markupDefs($("bmk"), "pd38-bpen", { boil: 4 });
+    const br = FX.markup.arrow(tl, $("bmk"), S(4605.75), { x1: 625, y1: 690, x2: 700, y2: 515, bend: -40, head: 22, dur: 0.45, color: "#c2c5ca", width: 5, filter: bpen });
+    gsap.set(br, { opacity: 0 }); tl.set(br, { opacity: 1 }, S(4605.75));
+
+    FX.mount(tl, DUR);
+    window.__timelines["pd38"] = tl;
+  })();
+  </script>
+</template>
+</body>
+</html>

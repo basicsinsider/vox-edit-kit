@@ -31,7 +31,12 @@ TAIL = 3.0                     # and is gone this long after the last frame
 FADE_OUT = 2.8
 
 
+# per-cue balance trims (dB on every layer of the cue), from the act-level check (aim −20…−24 LU re the voice; SOUND_PLAN §8)
+TRIM = {"I8": -1.5, "I5": -0.5, "I2": +1.0, "I6": +0.5}
+
+
 def L(cue, track, stem, start, end, offset, rel, fi=1.5, fo=1.5, auto=None, note=""):
+    rel = round(rel + TRIM.get(cue, 0.0), 2)
     d = dict(cue=cue, track=track, stem=stem, start=round(start, 3), end=round(end, 3), offset=round(offset, 3), rel_lu=rel,
              fade_in=fi, fade_out=fo)
     if auto:
@@ -50,7 +55,7 @@ intro_layers = [
     L("I0", DR, "melody", 0.0, 182.0, 92.0, -30, 0.6, 5.0, note="tempo-free A-minor floor from frame 1; every track enters and leaves over it"),
     L("I0", DR, "melody", 177.0, END, 150.0, -30, 5.0, 5.0),
     # --- I1 0–45.6: "Our story starts in 1983 with Robert Tsao" → the insight 11.84 → 4 million → 24 million 28.40 → record profits 43
-    L("I1", "observatory", "instruments", 0.0, 46.8, 0.0, -22, 0.5, 1.6,
+    L("I1", "observatory", "instruments", 0.0, 46.8, 0.0, -21, 0.5, 1.6,
       auto=[[0.0, -2], [11.0, -2], [12.6, 0], [46.8, 0]],
       note="the IDEA theme: curious electronic pulses, low under the first two sentences, opens on 'an unique insight' 11.84 / "
            "'An insight that's gonna change the future' 12.64; carries 'You see, just a year earlier' 16.80 and the numbers "
@@ -58,7 +63,7 @@ intro_layers = [
     L("I1", "observatory", "melody", 0.0, 46.8, 0.0, -26, 0.5, 1.6, note="its melody is only active 0–15 and 40–50: the opening and 'record profits'"),
     L("I1", "observatory", "bass", 16.4, 46.8, 16.4, -29, 1.5, 1.2, note="weight from 'You see' — the boom"),
     # --- I2 45.6–66: the phone boom dies, UMC's sales die → "it made no sense to create chips for just one product"
-    L("I2", "stay_this_way", "instruments", 44.6, 68.5, 74.0, -21, 2.0, 3.0,
+    L("I2", "stay_this_way", "instruments", 44.6, 68.5, 74.0, -18.0, 2.0, 3.0,
       note="the bust: the pulse is gone, a dark floating pad under 'died away' 48.88 / 'UMC's sales also died away' → the lesson 53–65"),
     # --- I3 65.97–113.5: "In fact, a chip factory would be more successful if it made chips for basically any product" → the foundry
     L("I3", "melted_mind", "instruments", 65.2, 114.2, 19.5, -22, 1.5, 1.5,
@@ -68,7 +73,7 @@ intro_layers = [
     L("I3", "melted_mind", "melody", 72.5, 94.5, 26.8, -25, 2.0, 2.0, note="'Now, right now that sounds obvious… back in 1983 this was a novel concept'"),
     L("I3", "melted_mind", "bass", 65.2, 94.0, 19.5, -29, 1.5, 2.0),
     # --- I4 113.89–160.6: the board says yes → "one condition" 123.86 → the unnamed executive
-    L("I4", "mindscape", "instruments", 120.6, 161.6, 0.0, -22, 2.5, 1.8,
+    L("I4", "mindscape", "instruments", 120.6, 161.6, 0.0, -21, 2.5, 1.8,
       note="the mystery colour (dark electronic pulses): creeps in under 'But at the end of the meeting' 121.09, there on 'one "
            "condition' 123.86; 'the most respected Chinese American in the chip business' 132–136, '25,000 people' 138"),
     L("I4", "mindscape", "melody", 123.6, 158.0, 3.0, -25, 1.0, 2.5, note="the executive's motif (file 0–35) — it returns at the reveal as One Step Away's melody register"),
@@ -79,7 +84,7 @@ intro_layers = [
            "'he flies back feeling on top of the world' 175.3–177.2; out as Sunkit's first question starts 182.88"),
     L("I5", "until_now", "melody", 160.3, 183.4, 61.0, -24, 1.2, 1.4),
     # --- I6 182.88–227.2: the aside (Sunkit's questions, face-cam pop-ins): floor only, nothing rhythmic over the two voices
-    L("I6", "stay_this_way", "melody", 183.0, 229.0, 44.0, -29, 3.0, 3.0, note="a breath of air over the drone while they talk (tempo-free)"),
+    L("I6", "stay_this_way", "melody", 183.0, 229.0, 44.0, -20.5, 3.0, 3.0, note="a breath of air over the drone while they talk (tempo-free)"),
     # --- I7 227.52–272.4: "but to his surprise" 230.48 → stonewalled 244.08 → "so he drops the idea" 268.83
     L("I7", "stay_this_way", "instruments", 229.3, 274.5, 96.0, -22, 2.0, 3.5,
       note="the cold shoulder: dark floating pad from 'but to his surprise' 230.48; 'he's getting stonewalled' 244.08; "
@@ -95,12 +100,10 @@ intro_layers = [
     L("I8", "one_step_away", "bass", 276.6, END, 61.6, -27, 1.0, 5.0, note="bass from 'Just across the street' 277.07"),
     L("I8", "one_step_away", "drums", 314.2, END, 99.2, -28, 0.4, 5.0, note="its percussion only from the reveal (file 100)"),
 ]
-intro_stingers = [
-    dict(file="boom_sub_bass_clean_01", t=48.88, sync="loudest", rel_lu=-31, note="'the phone boom… died away' — a sub drop, felt not heard"),
-    dict(file="boom_sub_bass_clean_01", t=123.86, sync="loudest", rel_lu=-31, note="'one condition'"),
-    dict(file="riser_reverse_cymbal_short", t=314.95, sync="loudest", rel_lu=-31, note="into 'Morris Chang'"),
-    dict(file="boom_dark_cinematic_low_hit", t=315.02, sync="loudest", rel_lu=-28, note="'Morris Chang' — the reveal"),
-    dict(file="boom_cinematic_deep", t=323.74, sync="loudest", rel_lu=-29, note="'TSMC'"),
+intro_stingers = [   # phase 2: the editors' picture-synced hits win where they exist (pd01 whoosh 48.84 + boom 51.96 on the bust;
+                     # pd03 air_swell 313.17 + boom_low 314.99 "MORRIS CHANG" → boom_dark_cinematic_low_hit) — no stinger of ours there
+    dict(file="boom_sub_bass_clean_01", t=123.86, sync="loudest", rel_lu=-31, note="'one condition' (pd02 has only a highlighter there)"),
+    dict(file="boom_cinematic_deep", t=323.74, sync="loudest", rel_lu=-30, note="'TSMC' — low weight under pd03's stamp_thud 323.72"),
 ]
 
 # ============================================================ section colours (reusable; A minor family)
@@ -135,16 +138,17 @@ SECTION_COLOUR = {
 # marker_edits against the editors' sfx.json (t = master time of the marker = section start + its local t).
 SECTION_STINGERS = {}      # "pd35": [dict(file="boom_cinematic_deep", t=4219.9, rel_lu=-29, note="'Deng Xiaoping'")]
 MARKER_EDITS = {}          # "pd16": [dict(t=1931.2, type="boom_low", action="drop", note="…")]
-OFFSET_OVERRIDE = {}       # "pd33": 8   (read offset of the colour track at the section's music entry)
+OFFSET_OVERRIDE = {"pd08": 60}   # pd08: 104 measured −24.1 LU re VO (busier passage, more duck) → 60       # "pd33": 8   (read offset of the colour track at the section's music entry)
 
 _rot = {}
 
 
 def pick_offset(col, need, sec_id):
     c = COL[col]
-    if sec_id in OFFSET_OVERRIDE:
-        return OFFSET_OVERRIDE[sec_id]
     k = _rot.get(col, 0)
+    if sec_id in OFFSET_OVERRIDE:          # an override still uses up its rotation slot, so the other sections keep their passages
+        _rot[col] = k + 1
+        return OFFSET_OVERRIDE[sec_id]
     n = len(c["win"])
     for j in range(n):
         o = c["win"][(k + j) % n]

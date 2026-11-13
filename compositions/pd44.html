@@ -1,0 +1,433 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8" /></head>
+<body>
+<template>
+  <style>
+    #root { position: absolute; inset: 0; overflow: hidden; background: var(--night); }
+    .p44-scene { position: absolute; inset: 0; overflow: hidden; visibility: hidden; opacity: 0; }
+    .p44-shot { position: absolute; inset: 0; overflow: hidden; transform-origin: 50% 50%; background: var(--night); }
+    .p44-paper { background: var(--paper); }
+    .p44-p1, .p44-p2 { position: absolute; inset: 0; background-size: cover; background-position: center; pointer-events: none; mix-blend-mode: multiply; filter: saturate(0.3); }
+    .p44-abs { position: absolute; white-space: nowrap; }
+    .p44-w { display: inline-block; white-space: pre; opacity: 0; }
+    .p44-credit { position: absolute; right: 96px; bottom: 28px; font-size: 13px; letter-spacing: 0.08em; color: rgba(238,238,232,0.5); z-index: 5; }
+    .p44-grid { position: absolute; inset: -60px; pointer-events: none; opacity: 0.5;
+      background-image: repeating-linear-gradient(0deg, rgba(194,197,202,0.075) 0 2px, rgba(0,0,0,0) 2px 96px), repeating-linear-gradient(90deg, rgba(194,197,202,0.075) 0 2px, rgba(0,0,0,0) 2px 96px); }
+
+    /* sc001 · name card + book (night) */
+    #pd44-c1 { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 1560px 540px; }
+    #pd44-blk { position: absolute; left: 150px; top: 250px; width: 520px; height: 830px; background: var(--magenta); }
+    #pd44-blk::after, .p44-tex::after { content: ""; position: absolute; inset: 0; background-image: url('assets/textures/paper_fiber_01_norm.jpg'); background-size: 600px auto; mix-blend-mode: overlay; opacity: 0.5; pointer-events: none; }
+    #pd44-blk2 { position: absolute; left: 670px; top: 250px; width: 22px; height: 830px; background: var(--magenta-dark); }
+    #pd44-cut { position: absolute; left: 96px; top: 283px; width: 630px; height: 797px; object-fit: contain; filter: grayscale(1) contrast(1.12) brightness(1.04) drop-shadow(0 18px 30px rgba(0,0,0,0.45)); }
+    #pd44-kick { left: 790px; top: 236px; font-size: 28px; color: var(--magenta-light); }
+    #pd44-role { left: 792px; top: 300px; font-size: 30px; color: var(--ash-light); }
+    #pd44-nm { left: 786px; top: 352px; font-size: 78px; line-height: 1.0; }
+    #pd44-book { position: absolute; left: 1360px; top: 250px; width: 400px; height: 608px; transform-origin: 50% 50%; }
+    #pd44-book .face { position: absolute; inset: 0; box-shadow: 0 30px 60px rgba(0,0,0,0.55); }
+    #pd44-back { background: #1e2230; }
+    #pd44-back::before { content: ""; position: absolute; left: 40px; right: 40px; top: 70px; height: 220px; background: repeating-linear-gradient(180deg, rgba(194,197,202,0.28) 0 6px, rgba(0,0,0,0) 6px 22px); }
+    #pd44-back::after { content: ""; position: absolute; right: 40px; bottom: 50px; width: 120px; height: 70px; background: repeating-linear-gradient(90deg, rgba(238,238,232,0.8) 0 3px, rgba(0,0,0,0) 3px 7px); }
+    #pd44-front { opacity: 0; overflow: hidden; }
+    #pd44-front img { width: 100%; height: 100%; object-fit: cover; filter: saturate(0.85) contrast(1.04); }
+
+    /* desk (paper): zone A 0–1920 (Boston → the theory), zone B 1920–3840 (the market diagram) */
+    #pd44-desk { position: absolute; left: 0; top: 0; width: 3840px; height: 1080px; transform-origin: 0 0; }
+    #pd44-dsvg { position: absolute; left: 0; top: 0; width: 3840px; height: 1080px; overflow: visible; }
+    .p44-card { position: absolute; background: var(--bone); box-shadow: 0 22px 42px rgba(22,26,36,0.3); }
+    .p44-card .in { position: absolute; left: 16px; top: 16px; right: 16px; bottom: 70px; overflow: hidden; background: var(--ash-dark); }
+    .p44-card .in img { position: absolute; left: 0; top: 0; width: 100%; height: 100%; object-fit: cover; filter: contrast(1.1) brightness(0.9); }
+    .p44-card .cap { position: absolute; left: 20px; bottom: 20px; font-size: 30px; color: var(--ink); }
+    #pd44-note { left: 1100px; top: 250px; width: 640px; height: 520px; background: var(--bone); }
+    #pd44-note::before { content: ""; position: absolute; inset: 24px; background-image: repeating-linear-gradient(0deg, rgba(22,26,36,0.12) 0 2px, rgba(0,0,0,0) 2px 48px); }
+    #pd44-nt { left: 1146px; top: 290px; font-size: 28px; color: var(--magenta); }
+    #pd44-nh { left: 1140px; top: 420px; font-size: 76px; line-height: 1.02; color: var(--ink); }
+    .p44-lab { font-size: 30px; color: var(--ink); }
+    .p44-box { display: inline-block; background: var(--ink); color: var(--paper); padding: 10px 14px 6px; font-size: 28px; line-height: 1; }
+    .p44-tile { position: absolute; width: 280px; height: 70px; background: var(--ink); color: var(--paper); font-size: 26px; line-height: 70px; text-align: center; opacity: 0; }
+
+    /* chart (night) */
+    #pd44-c5 { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 1100px 560px; }
+    #pd44-csvg { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; }
+    #pd44-perf { left: 132px; top: 520px; font-size: 26px; color: var(--ash-light); transform: rotate(-90deg); transform-origin: 0 0; }
+    #pd44-time { left: 1590px; top: 926px; font-size: 26px; color: var(--ash-light); }
+    #pd44-lbig { left: 300px; top: 300px; font-size: 32px; color: var(--copper-light); }
+    #pd44-lnew { left: 300px; top: 790px; font-size: 32px; color: var(--magenta-light); }
+    #pd44-lwant { left: 560px; top: 500px; font-size: 30px; }
+    #pd44-chp { left: 1250px; top: 640px; font-size: 30px; color: var(--ash-light); }
+    #pd44-pct { left: 1240px; top: 690px; font-size: 120px; line-height: 1; }
+    #pd44-grain, #pd44-dust, #pd44-vig { z-index: 8; }
+  </style>
+
+  <div id="root" data-composition-id="pd44" data-vo-start="5360.9667" data-duration="108.6667" data-width="1920" data-height="1080">
+    <svg id="pd44-defs" width="0" height="0" style="position:absolute"></svg>
+
+    <!-- sc001 · 5360.97–5379.60 · "And this second theory actually comes from a book from a Harvard professor named Clayton Christensen. … And that's the innovator's
+         dilemma. Now, if you have read the book, I'm guessing you haven't. It's like the reason he comes up with this book is looking at Boston." · night name card:
+         grey cut-out on a magenta block, name + role, the book seen from the back, it turns to its cover on "innovator's dilemma" (ref ccc84f71 cut-out over colour
+         blocks + small related image; ref 566a46e7 cut-out + props) -->
+    <div class="p44-scene" id="pd44-sc001"><div class="p44-shot" id="pd44-sc001-shot">
+      <div class="p44-grid"></div>
+      <div id="pd44-c1">
+        <div id="pd44-blk"></div>
+        <div id="pd44-blk2" class="p44-tex"></div>
+        <img id="pd44-cut" src="assets/podcast/pd44/christensen_cutout.png" alt="">
+        <div class="p44-abs t-label" id="pd44-kick"><span class="p44-w" id="pd44-k1">Second </span><span class="p44-w" id="pd44-k2">theory</span></div>
+        <div class="p44-abs t-label" id="pd44-role"><span class="p44-w" id="pd44-r1">Harvard </span><span class="p44-w" id="pd44-r2">professor</span></div>
+        <div class="p44-abs t-display halate" id="pd44-nm"><span class="p44-w" id="pd44-m1">CLAYTON</span><br><span class="p44-w" id="pd44-m2">CHRISTENSEN</span></div>
+        <div id="pd44-book">
+          <div class="face" id="pd44-back"></div>
+          <div class="face" id="pd44-front"><img src="assets/podcast/pd44/innovators_dilemma_1997_cover.jpg" alt=""></div>
+        </div>
+      </div>
+      <div class="p44-credit t-label">Photo: World Economic Forum (CC BY-SA 2.0) · Cover: Harvard Business School Press, 1997</div>
+    </div></div>
+
+    <!-- desk · 5379.60–5426.60 and 5448.40–5469.63 · zone A: "he uses the example of Boston to build this theory … innovators' dilemma"; zone B: the market
+         diagram — big company / successful, dominant product / big customers / big fat margins, revenue, profit → a disruptive product, worse, not worried,
+         big customers don't want it → (after the chart) customers switch, the smaller company becomes the big company, the big company's system (bigger margins,
+         salespeople, customers, engineers, research departments) keeps pushing the expensive product, it disappears (ref b76c4b43 grid-paper desk with diagram
+         cards; ref 3dbd4abf grid paper + sticky labels) -->
+    <div class="p44-scene" id="pd44-desk-sc"><div class="p44-shot p44-paper" id="pd44-desk-shot">
+      <div class="p44-p1" style="background-image:url('assets/textures/paper_graph_01_hires.jpg'); opacity:0.48"></div>
+      <div class="p44-p2" style="background-image:url('assets/textures/paper_fiber_01.jpg'); opacity:0.35"></div>
+      <div id="pd44-desk">
+        <!-- zone A -->
+        <div class="p44-card" id="pd44-bcard" style="left:200px; top:220px; width:600px; height:640px">
+          <div class="in"><img src="assets/podcast/pd44/boston_card.jpg" alt="">
+            <svg viewBox="1300 1000 2400 2800" preserveAspectRatio="xMidYMid slice" style="position:absolute; left:0; top:0; width:100%; height:100%"><path id="pd44-bro" d="" fill="none" stroke="#d1307a" stroke-width="30" stroke-linecap="round" stroke-linejoin="round"/><circle cx="2686" cy="2370" r="34" fill="#eeeee8" stroke="#161a24" stroke-width="12"/></svg>
+          </div>
+          <div class="cap t-label"><span class="p44-w" id="pd44-bc1">Boston</span></div>
+        </div>
+        <div class="p44-abs" id="pd44-note"></div>
+        <div class="p44-abs t-label" id="pd44-nt"><span class="p44-w" id="pd44-nt1">Theory</span></div>
+        <div class="p44-abs t-display" id="pd44-nh"><span class="p44-w" id="pd44-nh1">INNOVATOR’S</span><br><span class="p44-w" id="pd44-nh2">DILEMMA</span></div>
+        <!-- zone B labels (desk x = 1920 + local x) -->
+        <div class="p44-abs t-label p44-lab" style="left:2120px; top:150px"><span class="p44-w" id="pd44-bg1">Big </span><span class="p44-w" id="pd44-bg2">company</span></div>
+        <div class="p44-abs t-label p44-lab" style="left:2520px; top:566px"><span class="p44-w" id="pd44-pr1">Product</span></div>
+        <div class="p44-abs t-label p44-lab" style="left:2462px; top:150px; color:var(--copper-dark)"><span class="p44-w" id="pd44-dm1">Dominant</span></div>
+        <div class="p44-abs t-label p44-lab" style="left:3360px; top:126px"><span class="p44-w" id="pd44-cu1">Big </span><span class="p44-w" id="pd44-cu2">customers</span></div>
+        <div class="p44-abs t-label p44-lab" style="left:2120px; top:668px"><span class="p44-w" id="pd44-mg1">Big </span><span class="p44-w" id="pd44-mg2">fat </span><span class="p44-w" id="pd44-mg3">margins</span></div>
+        <div class="p44-abs t-label p44-lab" style="left:2120px; top:768px"><span class="p44-w" id="pd44-rv1">Revenue</span></div>
+        <div class="p44-abs t-label p44-lab" style="left:2120px; top:868px"><span class="p44-w" id="pd44-pf1">Profit</span></div>
+        <div class="p44-abs t-label p44-lab" style="left:2920px; top:920px"><span class="p44-w" id="pd44-dp1">Disruptive </span><span class="p44-w" id="pd44-dp2">product</span></div>
+        <div class="p44-abs t-label p44-lab" style="left:3560px; top:610px; color:var(--magenta-dark)"><span class="p44-w" id="pd44-wo1">Worse</span></div>
+        <div class="p44-abs t-label" style="left:2110px; top:86px"><span class="p44-w p44-box" id="pd44-nw1">Not worried</span></div>
+        <div class="p44-abs t-label p44-lab" style="left:2462px; top:150px; color:var(--copper-dark)"><span class="p44-w" id="pd44-ex1">Expensive</span></div>
+        <div class="p44-tile t-label" id="pd44-ti0" style="left:2120px; top:640px">Bigger margins</div>
+        <div class="p44-tile t-label" id="pd44-ti1" style="left:2420px; top:640px">Salespeople</div>
+        <div class="p44-tile t-label" id="pd44-ti2" style="left:2120px; top:730px">Customers</div>
+        <div class="p44-tile t-label" id="pd44-ti3" style="left:2420px; top:730px">Engineers</div>
+        <div class="p44-tile t-label" id="pd44-ti4" style="left:2120px; top:820px; width:580px">Research departments</div>
+        <svg id="pd44-dsvg" viewBox="0 0 3840 1080"></svg>
+      </div>
+    </div></div>
+
+    <!-- chart · 5426.60–5448.40 · "But what ends up happening is this new product starts selling to all these customers that the big company just didn't care
+         about … but slowly … the product is improving at such a rate that slowly the product becomes so much better than even what the biggest customers want.
+         And on top of that, it's usually a lot cheaper. Fifty percent, eighty percent cheaper." · night line chart: big company (copper) high, new product (magenta)
+         from the low end climbing through the dashed "what the biggest customers want" line, cheaper 50 % / 80 % (ref 255d4d29 dark curve with milestones;
+         ref 2ebb47ad two-series line chart with tags) -->
+    <div class="p44-scene" id="pd44-chart-sc"><div class="p44-shot" id="pd44-chart-shot">
+      <div class="p44-grid"></div>
+      <div id="pd44-c5">
+        <svg id="pd44-csvg" viewBox="0 0 1920 1080"></svg>
+        <div class="p44-abs t-label" id="pd44-perf">Performance</div>
+        <div class="p44-abs t-label" id="pd44-time">Time</div>
+        <div class="p44-abs t-label" id="pd44-lbig"><span class="p44-w" id="pd44-lb1">Big </span><span class="p44-w" id="pd44-lb2">company</span></div>
+        <div class="p44-abs t-label" id="pd44-lnew"><span class="p44-w" id="pd44-ln1">New </span><span class="p44-w" id="pd44-ln2">product</span></div>
+        <div class="p44-abs t-label clean" id="pd44-lwant"><span class="p44-w" id="pd44-lw1">What </span><span class="p44-w" id="pd44-lw2">the </span><span class="p44-w" id="pd44-lw3">biggest </span><span class="p44-w" id="pd44-lw4">customers </span><span class="p44-w" id="pd44-lw5">want</span></div>
+        <div class="p44-abs t-label" id="pd44-chp"><span class="p44-w" id="pd44-ch1">cheaper</span></div>
+        <div class="p44-abs t-display halate yellow" id="pd44-pct"><span class="p44-w" id="pd44-pc1">50%  </span><span class="p44-w" id="pd44-pc2">80%</span></div>
+      </div>
+    </div></div>
+
+    <audio id="pd44-vo" class="temp-vo" src="vo_pd.mp3" data-start="0" data-duration="108.6667" data-media-start="5360.9667" data-volume="1"></audio>
+    <div id="pd44-grain" class="tx tx-grain" style="background-image:url('assets/textures/grain_01_norm.jpg'); opacity:0.36"></div>
+    <div id="pd44-dust" class="tx tx-dust" style="background-image:url('assets/textures/dust_02.jpg'); opacity:0.34"></div>
+    <div id="pd44-vig" class="vignette" style="opacity:0.9"></div>
+  </div>
+
+  <script>
+  (function () {
+    const SEG = "pd44", START = 5360.9667, DUR = 108.6667, END = START + DUR;
+    const T = (s) => +(s - START).toFixed(3);   // TEXT cues (audited): literal = word start − 0.06
+    const S = (s) => +(s - START).toFixed(3);   // structural cues
+    const tl = gsap.timeline({ paused: true });
+    const $ = (id) => document.getElementById(SEG + "-" + id);
+    const defs = $("defs"), E = FX.ease, C = (e, d) => FX.choppy(e, d, 12), NS = "http://www.w3.org/2000/svg";
+    const INK = "#161a24", BONE = "#eeeee8", ASH = "#878c96", ASHL = "#c2c5ca", ASHD = "#343843";
+    const MAG = "#d1307a", MAGL = "#f3a6c8", MAGD = "#7a1746", COP = "#e0882a", COPL = "#f6c98a", COPD = "#8a4f0f";
+    const mk = (parent, tag, a) => { const n = document.createElementNS(NS, tag); for (const k in a) n.setAttribute(k, a[k]); parent.appendChild(n); return n; };
+    const rise = (el, t, o) => { o = o || {}; const d = o.dur || 0.4;
+      tl.fromTo(el, { opacity: 0, y: o.y == null ? 12 : o.y }, { opacity: 1, y: 0, duration: d, ease: C(E.out, d), immediateRender: true }, t); };
+    const pop = (el, t, d) => { d = d || 0.35; tl.fromTo(el, { opacity: 0, scale: 0.4 }, { opacity: 1, scale: 1, duration: d, ease: C(E.out, d), immediateRender: true }, t); };
+    const drawLine = (p, t, dur, ease) => { const L = p.getTotalLength(); p.setAttribute("stroke-dasharray", L + " " + L);
+      gsap.set(p, { attr: { "stroke-dashoffset": L }, opacity: 0 }); tl.set(p, { opacity: 1 }, t);
+      tl.fromTo(p, { attr: { "stroke-dashoffset": L } }, { attr: { "stroke-dashoffset": 0 }, duration: dur, ease: ease || C(E.inOut, dur), immediateRender: false }, t); return p; };
+    const whip = (a, b, t, dir, k) => {
+      const A = $(a + "-shot"), B = $(b + "-shot"), h = 0.16;
+      const ba = FX.whipDefs(defs, SEG + "-wa" + k), bb = FX.whipDefs(defs, SEG + "-wb" + k);
+      tl.set(A, { filter: "url(#" + SEG + "-wa" + k + ")" }, t - h - 0.01); tl.set(A, { filter: "none" }, t + 0.06);
+      tl.set(B, { filter: "url(#" + SEG + "-wb" + k + ")" }, t - 0.001); tl.set(B, { filter: "none" }, t + h + 0.02);
+      FX.whip(tl, A, B, t, { dir: dir, dur: 0.32, blurA: ba, blurB: bb });
+    };
+    const camAt = (cx, cy, z) => ({ x: 960 - cx * z, y: 540 - cy * z, scale: z });
+
+    // ---------- scene windows (the desk is shown twice) ----------
+    const W1 = 5379.6, W2 = 5426.6, W3 = 5448.4;
+    const WIN = [["sc001", [[START, W1]]], ["desk-sc", [[W1, W2], [W3, END]]], ["chart-sc", [[W2, W3]]]];
+    WIN.forEach((w) => w[1].forEach((r) => {
+      const el = $(w[0]);
+      if (r[0] === START) gsap.set(el, { autoAlpha: 1 });
+      else tl.fromTo(el, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.001, immediateRender: false }, S(r[0]) - 0.001);
+      if (r[1] < END) tl.set(el, { autoAlpha: 0 }, S(r[1]) + 0.06);
+    }));
+    const GROUND = { paper: [0.28, 0.14, 0.3], night: [0.9, 0.34, 0.36] };   // vig, dust, grain
+    const OV = [$("vig"), $("dust"), $("grain")];
+    gsap.set(OV, { opacity: (i) => GROUND.night[i] });
+    [[W1, "paper"], [W2, "night"], [W3, "paper"]].forEach((g) => tl.set(OV, { opacity: (i) => GROUND[g[1]][i] }, S(g[0])));
+
+    /* ===== sc001 · Clayton Christensen + the book ===== */
+    (function () {
+      // frame 0: the magenta block is sliding in under the grey cut-out, the camera drifts
+      tl.fromTo($("blk"), { x: -160, scaleY: 0.86 }, { x: 0, scaleY: 1, duration: 1.3, ease: C(E.out, 1.3), immediateRender: true }, 0);
+      tl.fromTo($("blk2"), { scaleY: 0.2, transformOrigin: "50% 100%" }, { scaleY: 1, duration: 1.2, ease: C(E.out, 1.2), immediateRender: true }, 0.1);
+      tl.fromTo($("cut"), { x: 90, opacity: 0.55 }, { x: 0, opacity: 1, duration: 1.0, ease: C(E.out, 1.0), immediateRender: true }, 0);
+      tl.fromTo($("c1"), { scale: 1.0 }, { scale: 1.035, duration: S(5373.2), ease: "sine.inOut", immediateRender: true }, 0);
+      rise($("k1"), T(5361.36));                 // second
+      rise($("k2"), T(5361.60));                 // theory
+      // "comes from a book": the book slides in, back cover first
+      tl.fromTo($("book"), { opacity: 0, x: 260, rotation: 6 }, { opacity: 1, x: 0, rotation: 2, duration: 1.1, ease: C(E.out, 1.1), immediateRender: true }, S(5363.2));
+      rise($("r1"), T(5363.92));                 // Harvard
+      rise($("r2"), T(5364.40));                 // professor
+      rise($("m1"), T(5364.96), { dur: 0.5, y: 18 });   // Clayton
+      rise($("m2"), T(5365.52), { dur: 0.5, y: 18 });   // Christensen
+      // "and that's the innovator's dilemma": the book turns to its cover
+      tl.to($("book"), { scaleX: 0, rotation: 0, duration: 0.25, ease: C("sine.in", 0.25) }, S(5371.75));
+      tl.set($("back"), { opacity: 0 }, S(5371.99));
+      tl.set($("front"), { opacity: 1 }, T(5371.92));
+      tl.to($("book"), { scaleX: 1, duration: 0.35, ease: C(E.out, 0.35) }, S(5371.99));
+      // "if you have read the book …": a slow push on to the book
+      tl.to($("c1"), { scale: 1.12, duration: W1 - 5373.2, ease: "sine.inOut" }, S(5373.2));
+    })();
+
+    whip("sc001", "desk", S(W1), 1, 1);
+
+    /* ===== desk ===== */
+    const desk = $("desk"), dsvg = $("dsvg");
+    const pen = FX.markupDefs(dsvg, SEG + "-pen", { boil: 4 });
+    dsvg.setAttribute("viewBox", "0 0 3840 1080");
+    const B = (x) => 1920 + x;    // zone B local → desk x
+    gsap.set(desk, camAt(960, 540, 1.0));
+    // camera: contiguous moves over the desk
+    [[S(W1), 980, 545, 1.03, S(5386.5), "none"], [S(5386.5), B(760), 400, 1.3, 1.4, E.cam], [S(5387.9), B(780), 410, 1.32, S(5394.3), "none"],
+     [S(5394.3), B(960), 540, 1.0, 1.0, E.cam], [S(5395.3), B(960), 540, 1.02, S(5396.9), "none"], [S(5396.9), B(720), 690, 1.25, 0.9, E.cam],
+     [S(5397.8), B(730), 690, 1.27, S(5400.0), "none"], [S(5400.0), B(960), 540, 1.0, 1.0, E.cam], [S(5401.0), B(960), 540, 1.02, S(5403.8), "none"],
+     [S(5403.8), B(1300), 760, 1.35, 1.0, E.cam], [S(5404.8), B(1310), 760, 1.38, S(5418.9), "none"], [S(5418.9), B(960), 540, 1.0, 1.0, E.cam],
+     [S(5419.9), B(960), 540, 1.03, S(W2), "none"],
+     [S(W3), B(960), 540, 1.0, 0.001, "none"], [S(W3) + 0.001, B(960), 540, 1.03, S(5456.7), "none"], [S(5456.7), B(640), 600, 1.3, 1.0, E.cam],
+     [S(5457.7), B(650), 600, 1.33, S(5468.0), "none"], [S(5468.0), B(960), 540, 1.0, 1.3, E.cam], [S(5469.3), B(960), 540, 0.995, S(END), "none"]]
+      .forEach((k, i, A) => {
+        const dur = k[5] === "none" ? (k[4] - k[0]) : k[4];   // "none" rows carry an END time, eased rows a duration
+        tl.to(desk, Object.assign(camAt(k[1], k[2], k[3]), { duration: Math.max(0.001, dur), ease: k[5] }), k[0]);
+      });
+
+    // --- zone A: Boston card → pen arrow → "theory" card
+    (function () {
+      const R128 = "M2913 3410 C2874 3438 2787 3540 2680 3576 C2572 3611 2394 3636 2266 3623 C2138 3610 1988 3539 1911 3497 C1833 3455 1828 3455 1800 3371 C1772 3287 1799 3123 1742 2993 C1685 2863 1511 2683 1456 2592 C1402 2500 1404 2539 1416 2442 C1427 2344 1506 2149 1526 2008 C1547 1867 1531 1680 1538 1598 C1545 1515 1484 1559 1567 1511 C1650 1462 1903 1349 2033 1305 C2163 1262 2280 1262 2348 1250 C2416 1238 2404 1263 2441 1234 C2478 1205 2493 1087 2569 1076 C2645 1066 2819 1155 2895 1171 C2971 1187 2980 1180 3023 1171 C3067 1162 3112 1141 3157 1116 C3203 1091 3244 1085 3297 1021 C3351 956 3373 784 3478 728 C3583 673 3824 705 3926 689 C4028 673 3972 691 4089 633";
+      $("bro").setAttribute("d", R128);
+      const a = S(W1);
+      tl.fromTo($("bcard"), { rotation: -6, y: -40 }, { rotation: -2, y: 0, duration: 0.9, ease: C(E.out, 0.9), immediateRender: false }, a);
+      rise($("bc1"), T(5379.60));                // Boston
+      tl.fromTo($("note"), { opacity: 0, y: 30, rotation: 3 }, { opacity: 1, y: 0, rotation: 1.5, duration: 0.6, ease: C(E.out, 0.6), immediateRender: true }, S(5382.4));
+      const ar = FX.markup.pen(tl, dsvg, S(5382.5), { points: [[820, 520], [930, 470], [1060, 490]], color: MAG, width: 9, dur: 0.6, filter: pen, seed: 9 });
+      const ah = FX.markup.pen(tl, dsvg, S(5383.05), { points: [[1030, 456], [1068, 490], [1026, 520]], color: MAG, width: 9, dur: 0.2, filter: pen, seed: 10 });
+      gsap.set([ar, ah], { opacity: 0 }); tl.set(ar, { opacity: 1 }, S(5382.5)); tl.set(ah, { opacity: 1 }, S(5383.05));
+      rise($("nt1"), T(5382.96));                // theory
+      rise($("nh1"), T(5385.29), { dur: 0.45, y: 16 });   // innovators'
+      rise($("nh2"), T(5385.93), { dur: 0.45, y: 16 });   // dilemma
+    })();
+
+    // --- zone B: the market diagram
+    const g = mk(dsvg, "g", {});
+    // big company (copper building)
+    const big = mk(g, "g", {}), bigIn = mk(big, "g", {});
+    mk(bigIn, "rect", { x: B(200), y: 250, width: 300, height: 320, fill: COP });
+    mk(bigIn, "rect", { x: B(200), y: 230, width: 300, height: 24, fill: COPD });
+    for (let r = 0; r < 4; r++) for (let c = 0; c < 4; c++) mk(bigIn, "rect", { x: B(226 + c * 70), y: 280 + r * 66, width: 36, height: 40, fill: COPL });
+    mk(bigIn, "rect", { x: B(320), y: 500, width: 60, height: 70, fill: COPD });
+    // the product (copper box) + the share ring for "dominant"
+    const prod = mk(g, "g", {});
+    mk(prod, "rect", { x: B(600), y: 320, width: 170, height: 170, rx: 14, fill: COP, stroke: COPD, "stroke-width": 8 });
+    mk(prod, "path", { d: "M" + B(640) + " 360 L" + B(730) + " 360 L" + B(730) + " 450 L" + B(640) + " 450 Z", fill: COPL });
+    const ring = mk(g, "circle", { cx: B(685), cy: 405, r: 140, fill: "none", stroke: COPD, "stroke-width": 16, "stroke-linecap": "round", transform: "rotate(-90 " + B(685) + " 405)" });
+    // big customers (three large figures)
+    const person = (parent, x, y, s, fill) => { const p = mk(parent, "g", {}); mk(p, "circle", { cx: x, cy: y - 92 * s, r: 34 * s, fill: fill });
+      mk(p, "path", { d: "M" + (x - 58 * s) + " " + y + " Q" + (x - 58 * s) + " " + (y - 54 * s) + " " + x + " " + (y - 54 * s) + " Q" + (x + 58 * s) + " " + (y - 54 * s) + " " + (x + 58 * s) + " " + y + " Z", fill: fill }); return p; };
+    const cust = [person(g, B(1480), 470, 1.25, INK), person(g, B(1620), 470, 1.25, INK), person(g, B(1760), 470, 1.25, INK)];
+    // the money panel: big fat margins / revenue / profit
+    const barM = mk(g, "rect", { x: B(600), y: 656, width: 300, height: 60, fill: COP });
+    const barR = mk(g, "rect", { x: B(600), y: 768, width: 260, height: 34, fill: COPD });
+    const barP = mk(g, "rect", { x: B(600), y: 868, width: 200, height: 34, fill: COPD });
+    // the new player (magenta, small) + its small product
+    const nw = mk(g, "g", {}), nwIn = mk(nw, "g", {});
+    mk(nwIn, "rect", { x: B(1020), y: 790, width: 110, height: 110, fill: MAG });
+    mk(nwIn, "rect", { x: B(1020), y: 778, width: 110, height: 14, fill: MAGD });
+    for (let c = 0; c < 2; c++) for (let r = 0; r < 2; r++) mk(nwIn, "rect", { x: B(1040 + c * 46), y: 808 + r * 40, width: 24, height: 24, fill: MAGL });
+    mk(nwIn, "rect", { x: B(1160), y: 832, width: 68, height: 68, rx: 8, fill: MAG, stroke: MAGD, "stroke-width": 6 });
+    // quality meters: the big company's product vs the new one
+    const mtr = mk(g, "g", {});
+    mk(mtr, "rect", { x: B(1480), y: 680, width: 70, height: 280, fill: "none", stroke: INK, "stroke-width": 5 });
+    mk(mtr, "rect", { x: B(1620), y: 680, width: 70, height: 280, fill: "none", stroke: INK, "stroke-width": 5 });
+    const mBig = mk(mtr, "rect", { x: B(1486), y: 706, width: 58, height: 248, fill: COP });
+    const mNew = mk(mtr, "rect", { x: B(1626), y: 836, width: 58, height: 118, fill: MAG });
+
+    // initial (hidden) states
+    gsap.set([big, prod, ring, mtr, nw].concat(cust), { opacity: 0 });
+    gsap.set([barM, barR, barP], { scaleX: 0, transformOrigin: "0% 50%" });
+    const L = 2 * Math.PI * 140; ring.setAttribute("stroke-dasharray", L + " " + L); gsap.set(ring, { attr: { "stroke-dashoffset": L } });
+
+    // "usually there's a big company in an industry that's very successful"
+    tl.to(big, { opacity: 1, duration: 0.001 }, S(5388.3));
+    tl.fromTo(bigIn, { y: 40 }, { y: 0, duration: 0.6, ease: C(E.out, 0.6), immediateRender: false }, S(5388.3));
+    rise($("bg1"), T(5388.32));                // big
+    rise($("bg2"), T(5388.48));                // company
+    // "has a successful product that's dominant in that industry"
+    tl.to(prod, { opacity: 1, duration: 0.001 }, S(5391.5));
+    tl.fromTo(prod, { scale: 0.5, svgOrigin: B(685) + " 405" }, { scale: 1, duration: 0.45, ease: C(E.out, 0.45), immediateRender: false }, S(5391.5));
+    rise($("pr1"), T(5391.52));                // product
+    tl.to(ring, { opacity: 1, duration: 0.001 }, S(5392.2));
+    tl.to(ring, { attr: { "stroke-dashoffset": L * 0.18 }, duration: 0.9, ease: C(E.out, 0.9) }, S(5392.2));
+    rise($("dm1"), T(5392.16));                // dominant
+    // "all the big customers want this product"
+    cust.forEach((c, i) => { tl.to(c, { opacity: 1, duration: 0.001 }, S(5394.6) + i * 0.08); tl.fromTo(c, { y: 30 }, { y: 0, duration: 0.45, ease: C(E.out, 0.45), immediateRender: false }, S(5394.6) + i * 0.08); });
+    rise($("cu1"), T(5394.56));                // big
+    rise($("cu2"), T(5394.80));                // customers
+    const want = [];
+    [[B(1430), 340], [B(1430), 400], [B(1430), 460]].forEach((p, i) => {
+      const a = FX.markup.pen(tl, dsvg, S(5395.55) + i * 0.1, { points: [[p[0], p[1]], [B(1100), 360 + i * 30], [B(800), 380 + i * 25]], color: INK, width: 7, dur: 0.6, filter: pen, seed: 20 + i });
+      gsap.set(a, { opacity: 0 }); tl.set(a, { opacity: 0.85 }, S(5395.55) + i * 0.1); want.push(a);
+    });
+    // "big fat margins … revenue and profit"
+    rise($("mg1"), T(5397.04)); rise($("mg2"), T(5397.28)); rise($("mg3"), T(5397.52));
+    tl.to(barM, { scaleX: 1, duration: 0.6, ease: C(E.out, 0.6) }, S(5397.35));
+    rise($("rv1"), T(5398.96));
+    tl.to(barR, { scaleX: 1, duration: 0.6, ease: C(E.out, 0.6) }, S(5399.0));
+    rise($("pf1"), T(5399.52));
+    tl.to(barP, { scaleX: 1, duration: 0.6, ease: C(E.out, 0.6) }, S(5399.55));
+
+    // "there's usually a disruptive product that comes to market"
+    tl.to(nw, { opacity: 1, duration: 0.001 }, S(5403.95));
+    tl.fromTo(nwIn, { x: 260 }, { x: 0, duration: 0.8, ease: C(E.out, 0.8), immediateRender: false }, S(5403.95));
+    rise($("dp1"), T(5403.92));                // disruptive
+    rise($("dp2"), T(5404.56));                // product
+    // "… it's actually worse than what the bigger company is offering"
+    tl.to(mtr, { opacity: 1, duration: 0.3 }, S(5412.3));
+    tl.fromTo(mBig, { scaleY: 0, transformOrigin: "50% 100%" }, { scaleY: 1, duration: 0.7, ease: C(E.out, 0.7), immediateRender: false }, S(5412.3));
+    tl.fromTo(mNew, { scaleY: 0, transformOrigin: "50% 100%" }, { scaleY: 1, duration: 0.7, ease: C(E.out, 0.7), immediateRender: false }, S(5414.9));
+    rise($("wo1"), T(5415.33));                // worse
+    // "the big company is not really worried about this new player"
+    tl.fromTo($("nw1"), { opacity: 0, scale: 1.3 }, { opacity: 1, scale: 1, duration: 0.3, ease: C(E.out, 0.3), immediateRender: true }, T(5419.09));   // not (really) worried
+    // "the big customers don't really want the product that this new player has": a dashed reach towards it, crossed out
+    const rej = mk(dsvg, "path", { d: "M" + B(1500) + " 520 Q" + B(1380) + " 640 " + B(1250) + " 820", fill: "none", stroke: INK, "stroke-width": 6, "stroke-linecap": "round", "stroke-dasharray": "4 16" });
+    const rc = mk(dsvg, "clipPath", { id: SEG + "-rc" }), rcr = mk(rc, "rect", { x: B(1240), y: 500, width: 300, height: 0 });
+    rej.setAttribute("clip-path", "url(#" + SEG + "-rc)");
+    tl.fromTo(rcr, { attr: { height: 0 } }, { attr: { height: 340 }, duration: 0.6, ease: C(E.out, 0.6), immediateRender: true }, S(5422.7));
+    const xa = FX.markup.pen(tl, dsvg, S(5423.15), { points: [[B(1336), 626], [B(1396), 690]], color: INK, width: 9, dur: 0.18, filter: pen, seed: 31 });
+    const xb = FX.markup.pen(tl, dsvg, S(5423.4), { points: [[B(1398), 628], [B(1334), 688]], color: INK, width: 9, dur: 0.18, filter: pen, seed: 33 });
+    gsap.set([xa, xb], { opacity: 0 }); tl.set(xa, { opacity: 1 }, S(5423.15)); tl.set(xb, { opacity: 1 }, S(5423.4));
+
+    whip("desk", "chart", S(W2), 1, 2);
+
+    /* ===== chart · the theory as a line chart ===== */
+    (function () {
+      const s = $("csvg"), a = S(W2);
+      tl.fromTo($("c5"), { scale: 1.0 }, { scale: 1.06, duration: S(W3) - a, ease: "sine.inOut", immediateRender: false }, a);
+      // axes draw in as the shot lands
+      drawLine(mk(s, "path", { d: "M240 140 L240.5 900", stroke: ASHL, "stroke-width": 4, fill: "none" }), a, 0.6);
+      drawLine(mk(s, "path", { d: "M240 900 L1700 900.5", stroke: ASHL, "stroke-width": 4, fill: "none" }), a + 0.1, 0.8);
+      tl.fromTo([$("perf"), $("time")], { opacity: 0 }, { opacity: 1, duration: 0.4, immediateRender: true }, a + 0.3);
+      // the big company: high, gently rising (copper)
+      const bigL = mk(s, "path", { d: "M260 390 C700 360 1200 300 1660 250", fill: "none", stroke: COP, "stroke-width": 10, "stroke-linecap": "round" });
+      drawLine(bigL, a + 0.2, 1.4);
+      rise($("lb1"), T(5430.69)); rise($("lb2"), T(5430.93));   // the big company
+      // the new product: starts at the bottom (magenta)
+      rise($("ln1"), T(5428.29)); rise($("ln2"), T(5428.45));   // new product
+      const nl = mk(s, "path", { d: "M260 850 C500 846 650 836 760 822 C900 800 1000 760 1100 700 C1250 610 1350 520 1450 430 C1530 360 1600 320 1660 300", fill: "none", stroke: MAG, "stroke-width": 12, "stroke-linecap": "round" });
+      const NL = nl.getTotalLength(); nl.setAttribute("stroke-dasharray", NL + " " + NL);
+      gsap.set(nl, { attr: { "stroke-dashoffset": NL }, opacity: 0 });
+      tl.set(nl, { opacity: 1 }, S(5428.4));
+      // first leg: "starts selling to all these customers that the big company just didn't care about"; then "slowly … improving at such a rate"
+      tl.fromTo(nl, { attr: { "stroke-dashoffset": NL } }, { attr: { "stroke-dashoffset": NL * 0.68 }, duration: 2.6, ease: C("sine.out", 2.6), immediateRender: false }, S(5428.4));
+      tl.to(nl, { attr: { "stroke-dashoffset": 0 }, duration: S(5443.2) - S(5434.9), ease: C("sine.in", S(5443.2) - S(5434.9)) }, S(5434.9));
+      const head = mk(s, "circle", { cx: 0, cy: 0, r: 16, fill: MAGL });
+      // the small customers at the low end: they light up as the new product reaches them
+      [[660, 872], [730, 882], [800, 868], [870, 880], [940, 870], [1010, 882]].forEach((p, i) => {
+        const d = mk(s, "circle", { cx: p[0], cy: p[1], r: 11, fill: ASHL, opacity: 0 });
+        tl.to(d, { attr: { opacity: 1 }, duration: 0.2 }, S(5429.75) + i * 0.06);
+        tl.to(d, { attr: { fill: MAGL }, duration: 0.2 }, S(5430.4) + i * 0.12);
+      });
+      // the line's head dot follows the draw (sampled at build time)
+      const pts = []; for (let i = 0; i <= 120; i++) { const q = nl.getPointAtLength(NL * i / 120); pts.push([q.x, q.y]); }
+      const prog = { p: 0 };
+      const putH = () => { const q = pts[Math.min(120, Math.max(0, Math.round(prog.p * 120)))]; head.setAttribute("cx", q[0].toFixed(1)); head.setAttribute("cy", q[1].toFixed(1)); };
+      putH(); gsap.set(head, { opacity: 0 }); tl.set(head, { opacity: 1 }, S(5428.4));
+      tl.fromTo(prog, { p: 0 }, { p: 0.32, duration: 2.6, ease: C("sine.out", 2.6), immediateRender: false, onUpdate: putH }, S(5428.4));
+      tl.fromTo(prog, { p: 0.32 }, { p: 1, duration: S(5443.2) - S(5434.9), ease: C("sine.in", S(5443.2) - S(5434.9)), immediateRender: false, onUpdate: putH }, S(5434.9));
+      // "… so much better than even what the biggest customers want": the demand line (dashed) and its label word by word
+      const dl = mk(s, "path", { d: "M260 590 C700 575 1200 545 1660 520", fill: "none", stroke: BONE, "stroke-width": 6, "stroke-dasharray": "14 14", "stroke-linecap": "round" });
+      const dc = mk(s, "clipPath", { id: SEG + "-dc" }), dcr = mk(dc, "rect", { x: 200, y: 400, width: 0, height: 300 });
+      dl.setAttribute("clip-path", "url(#" + SEG + "-dc)");
+      tl.fromTo(dcr, { attr: { width: 0 } }, { attr: { width: 1520 }, duration: 0.9, ease: C(E.inOut, 0.9), immediateRender: true }, S(5441.4));
+      rise($("lw1"), T(5442.29)); rise($("lw2"), T(5442.45)); rise($("lw3"), T(5442.53)); rise($("lw4"), T(5442.85)); rise($("lw5"), T(5443.33));
+      // crossing point flash (the new product passes the demand line ≈ 5442.4)
+      const cx = mk(s, "circle", { cx: 1395, cy: 534, r: 12, fill: "none", stroke: MAGL, "stroke-width": 8, opacity: 0 });
+      tl.fromTo(cx, { attr: { r: 12, opacity: 1 } }, { attr: { r: 110, opacity: 0 }, duration: 0.7, ease: C(E.out, 0.7), immediateRender: false }, S(5442.5));
+      // "a lot cheaper. Fifty percent, eighty percent cheaper" — the key number (lemon)
+      rise($("ch1"), T(5445.94));
+      rise($("pc1"), T(5446.58), { dur: 0.4, y: 20 });
+      rise($("pc2"), T(5447.38), { dur: 0.4, y: 20 });
+    })();
+
+    whip("chart", "desk", S(W3), -1, 3);
+
+    // ===== back on the desk: the switch, the swap, the system, the fade =====
+    // clear the earlier marks that the story has moved past
+    tl.to([$("dp1"), $("dp2"), $("wo1"), mtr, rej, xa, xb, $("nw1")], { opacity: 0, duration: 0.4 }, S(5450.2));
+    // "the big company customers start switching to the smaller company's product"
+    want.forEach((a, i) => tl.to(a, { opacity: 0, duration: 0.3 }, S(5450.75) + i * 0.06));
+    [[B(1500), 520], [B(1620), 520], [B(1740), 520]].forEach((p, i) => {
+      const a = FX.markup.pen(tl, dsvg, S(5450.8) + i * 0.12, { points: [[p[0], p[1]], [B(1400 - i * 20), 660], [B(1250), 800]], color: MAGD, width: 7, dur: 0.7, filter: pen, seed: 40 + i });
+      gsap.set(a, { opacity: 0 }); tl.set(a, { opacity: 0.9 }, S(5450.8) + i * 0.12);
+      tl.to(a, { opacity: 0, duration: 0.4 }, S(5454.2));
+    });
+    cust.forEach((c, i) => tl.to(c, { x: -40, duration: 0.6, ease: C(E.out, 0.6) }, S(5450.85) + i * 0.08));
+    // "and the smaller company becomes the big company"
+    tl.fromTo(nw, { scale: 1, svgOrigin: B(1020) + " 900" }, { scale: 2.6, duration: 1.0, ease: C(E.out, 1.0), immediateRender: false }, S(5453.36));
+    // "the big company that was big before cannot really compete": the money panel gives way to the company's system
+    tl.to([barM, barR, barP, $("mg1"), $("mg2"), $("mg3"), $("rv1"), $("pf1"), ring, $("dm1")], { opacity: 0, duration: 0.4 }, S(5456.8));
+    // "because their whole system is built on having bigger margins, salespeople getting paid a lot, customers, engineers, research departments"
+    [[$("ti0"), T(5459.30)], [$("ti1"), T(5460.18)], [$("ti2"), T(5462.10)], [$("ti3"), T(5462.82)], [$("ti4"), T(5463.62)]].forEach((x) => pop(x[0], x[1], 0.3));
+    // "everything is built to keep pushing this expensive product"
+    const push = [];
+    [[B(260), 640], [B(560), 640]].forEach((p, i) => {
+      const a = FX.markup.pen(tl, dsvg, S(5466.1) + i * 0.15, { points: [[p[0], p[1] - 6], [p[0] + 120, 560], [B(640 + i * 60), 500]], color: COPD, width: 9, dur: 0.6, filter: pen, seed: 50 + i });
+      gsap.set(a, { opacity: 0 }); tl.set(a, { opacity: 1 }, S(5466.1) + i * 0.15); push.push(a);
+    });
+    rise($("ex1"), T(5466.90));                // expensive (product)
+    tl.to(prod, { scale: 1.08, svgOrigin: B(685) + " 405", duration: 0.25, yoyo: true, repeat: 1, ease: "sine.inOut" }, S(5466.4));
+    // "so they slowly basically disappear": the whole copper side fades to a ghost
+    const gone = [big, prod, $("bg1"), $("bg2"), $("pr1"), $("ex1"), $("ti0"), $("ti1"), $("ti2"), $("ti3"), $("ti4")].concat(push);
+    tl.to(gone, { opacity: 0.12, duration: 0.8, ease: C("sine.inOut", 0.8) }, S(5468.3));
+
+    FX.grain($("grain"), 3); FX.dust($("dust"), 5, 2);
+    FX.mount(tl, DUR);
+    window.__timelines = window.__timelines || {};
+    window.__timelines[SEG] = tl;
+  })();
+  </script>
+</template>
+</body>
+</html>

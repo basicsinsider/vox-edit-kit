@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8" /></head>
+<body>
+<template>
+  <style>
+    /* pd39 · 4850.1–4931.4333 · Pan's verdict: Taiwan only offers cheap labour → move up the value chain (to chips) or give up;
+       the two questions and the two answers: around four years, ten million dollars.
+       L · value-chain ladder of tile rows on graph paper, Taiwan on the lowest rung, cheaper countries arrive below, Taiwan climbs to CHIPS
+           (inspo d0fc4b3f: a grid of faded tiles with one highlighted row + call-out; idea from part5 notes candidate 1)
+       Q · night: the breakfast host and Pan, two question cards answered on the words (inspo a06c4bb3/d0fc4b3f call-out boxes +
+           ccc84f71 circle portraits; ported from c6s03 C6S107's breakfast cards)
+       Z · lined paper: the special-economic-zone flow — parts in, assembled, shipped out (inspo b76c4b43: diagram card on a desk) */
+    #root { position: absolute; inset: 0; overflow: hidden; background: var(--paper); color: var(--ink); }
+    #pd39-defs { position: absolute; width: 0; height: 0; }
+    .pd39-sc { position: absolute; inset: 0; overflow: hidden; }
+    .pd39-pp { position: absolute; inset: 0; background-size: cover; mix-blend-mode: multiply; }
+    /* L */
+    #pd39-l { background: var(--paper); }
+    #pd39-lcam { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 0 0; }
+    .pd39-rail { position: absolute; top: 176px; width: 8px; height: 824px; background: var(--ink); transform-origin: 50% 100%; }
+    .pd39-rung { position: absolute; left: 690px; width: 548px; height: 6px; background: var(--ink); transform-origin: 0 50%; }
+    .pd39-tile { position: absolute; width: 60px; height: 60px; background: var(--paper-2); border: 3px solid rgba(22,26,36,0.35); box-sizing: border-box; }
+    .pd39-tile.chip { background: var(--ash-dark); border: 4px dashed var(--ash); }
+    .pd39-tile.cty { background: var(--ash); border-color: var(--ash-dark); }
+    .pd39-lab { position: absolute; left: 1290px; font-size: 40px; line-height: 1; color: var(--ink); white-space: nowrap; }
+    .pd39-lab span { display: inline-block; }
+    #pd39-tw { position: absolute; left: 440px; top: 812px; font-size: 30px; line-height: 1; padding: 13px 20px 9px; background: var(--board); color: var(--bone); white-space: nowrap; box-shadow: 0 8px 18px rgba(22,26,36,0.2); }
+    #pd39-title { position: absolute; left: 96px; top: 84px; font-size: 62px; line-height: 1; color: var(--ink); white-space: nowrap; }
+    #pd39-title span { display: inline-block; }
+    #pd39-lmk { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; }
+    #pd39-lpan { position: absolute; left: 1300px; top: 262px; width: 120px; height: 120px; border-radius: 50%; overflow: hidden; border: 5px solid var(--ash-dark); background: #1c1f26; }
+    #pd39-lpan img { position: absolute; left: -8px; top: -4px; width: 136px; filter: grayscale(1) contrast(1.1); }
+    /* Q */
+    #pd39-q { background: radial-gradient(70% 70% at 50% 40%, #222731 0%, #0c0f15 80%); color: var(--bone); }
+    #pd39-qcam { position: absolute; inset: 0; transform-origin: 960px 600px; }
+    .pd39-cir { position: absolute; top: 110px; width: 220px; height: 220px; border-radius: 50%; overflow: hidden; background: #1c1f26; box-shadow: 0 16px 40px rgba(0,0,0,0.6); }
+    .pd39-cir img { position: absolute; filter: grayscale(1) contrast(1.1); }
+    #pd39-fei { left: 150px; border: 7px solid var(--board-light); }
+    #pd39-pan { left: 1550px; border: 7px solid var(--ash-light); }
+    #pd39-bk { position: absolute; left: 0; top: 196px; width: 1920px; text-align: center; font-size: 30px; line-height: 1; }
+    .pd39-card { position: absolute; top: 360px; width: 560px; height: 570px; background: var(--paper); color: var(--ink); box-shadow: 0 26px 50px rgba(0,0,0,0.6); overflow: hidden; }
+    .pd39-card .tx2 { position: absolute; inset: 0; background-size: cover; mix-blend-mode: multiply; opacity: 0.45; filter: grayscale(1); }
+    #pd39-c1 { left: 360px; } #pd39-c2 { left: 1000px; }
+    .pd39-qh { position: absolute; left: 36px; top: 40px; font-size: 88px; line-height: 1; white-space: nowrap; }
+    .pd39-qs { position: absolute; left: 40px; top: 146px; font-size: 30px; line-height: 1; color: var(--ink-soft); white-space: nowrap; }
+    .pd39-qh span, .pd39-qs span { display: inline-block; }
+    .pd39-ab { position: absolute; left: 36px; top: 214px; width: 488px; height: 320px; background: var(--ink); }
+    .pd39-big { position: absolute; left: 0; width: 488px; text-align: center; white-space: nowrap; line-height: 1; }
+    .pd39-big span { display: inline-block; }
+    .pd39-sm { position: absolute; left: 0; width: 488px; text-align: center; font-size: 26px; line-height: 1; white-space: nowrap; color: var(--ash-light); }
+    .pd39-sm span { display: inline-block; }
+    #pd39-qmk { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; }
+    #pd39-qcred { position: absolute; right: 96px; bottom: 40px; font-size: 16px; line-height: 1; letter-spacing: 0.1em; color: var(--ash); white-space: nowrap; }
+    /* Z */
+    #pd39-z { background: var(--paper); }
+    #pd39-zcam { position: absolute; inset: 0; transform-origin: 960px 540px; }
+    #pd39-zone { position: absolute; left: 700px; top: 400px; width: 520px; height: 320px; background: var(--board); overflow: hidden; box-shadow: 14px 16px 0 rgba(22,26,36,0.16); }
+    #pd39-zone i { position: absolute; inset: 0; background-size: 420px auto; mix-blend-mode: multiply; opacity: 0.4; }
+    #pd39-zl { position: absolute; left: 0; top: 318px; width: 1920px; text-align: center; font-size: 36px; line-height: 1; color: var(--ink); white-space: nowrap; }
+    #pd39-zl span { display: inline-block; }
+    #pd39-zcl { position: absolute; left: 700px; top: 642px; width: 520px; text-align: center; font-size: 30px; line-height: 1; color: var(--bone); white-space: nowrap; }
+    #pd39-zcl span { display: inline-block; }
+    .pd39-part { position: absolute; width: 44px; height: 44px; background: var(--ash); border: 3px solid var(--ink); box-sizing: border-box; }
+    #pd39-prod { position: absolute; left: 912px; top: 500px; width: 96px; height: 96px; background: var(--paper-2); border: 5px solid var(--ink); box-sizing: border-box; }
+    #pd39-prod::after { content: ""; position: absolute; left: 18px; top: 18px; right: 18px; bottom: 18px; border: 3px solid var(--ink-soft); }
+    #pd39-chip { position: absolute; left: 230px; top: 150px; width: 130px; height: 130px; background: var(--ash-dark); border: 8px dashed var(--ash); box-sizing: border-box; }
+    #pd39-zmk { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; }
+  </style>
+  <div id="root" data-composition-id="pd39" data-vo-start="4850.1" data-duration="82.0333" data-width="1920" data-height="1080">
+    <svg id="pd39-defs"></svg>
+    <!-- L · the value-chain ladder -->
+    <div id="pd39-l" class="pd39-sc">
+      <div class="pd39-pp" style="background-image:url('assets/textures/paper_graph_01_hires.jpg'); opacity:0.6"></div>
+      <div class="pd39-pp" style="background-image:url('assets/textures/paper_cream_02.jpg'); opacity:0.35; filter:grayscale(1)"></div>
+      <div id="pd39-lcam">
+        <div id="pd39-rows"></div>
+        <div class="pd39-rail" id="pd39-rl" style="left:686px"></div>
+        <div class="pd39-rail" id="pd39-rr" style="left:1234px"></div>
+        <div id="pd39-lab0" class="pd39-lab t-display" style="top:812px"><span id="pd39-a1">CHEAP&nbsp;</span><span id="pd39-a2">LABOR</span></div>
+        <div id="pd39-labT" class="pd39-lab t-display" style="top:212px; color:var(--ink-soft)"><span id="pd39-b1">TECHNOLOGICAL&nbsp;</span><span id="pd39-b2">WORLD</span></div>
+        <div id="pd39-labC" class="pd39-lab t-display" style="top:204px; font-size:56px; color:var(--board-dark)">CHIPS</div>
+        <div id="pd39-labN" class="pd39-lab t-display" style="top:932px; color:var(--ink-soft)"><span id="pd39-c1w">EVEN&nbsp;</span><span id="pd39-c2w">CHEAPER&nbsp;</span><span id="pd39-c3w">LABOR</span></div>
+        <div id="pd39-lpan"><img src="assets/c3/photos/pan_wen_yuan_enwiki.jpg" alt="" /></div>
+        <svg id="pd39-lmk" viewBox="0 0 1920 1080"></svg>
+        <div id="pd39-tw" class="t-label">Taiwan</div>
+      </div>
+      <div id="pd39-title" class="t-display"><span id="pd39-v1">THE&nbsp;</span><span id="pd39-v2">VALUE&nbsp;</span><span id="pd39-v3">CHAIN</span></div>
+      <div class="vignette" style="opacity:0.25"></div>
+    </div>
+    <!-- Q · the two questions -->
+    <div id="pd39-q" class="pd39-sc">
+      <div id="pd39-qcam">
+        <div id="pd39-fei" class="pd39-cir"><img src="assets/c6/photos/fei_hua_1971.jpg" alt="" style="left:-14px;top:-12px;width:250px" /></div>
+        <div id="pd39-pan" class="pd39-cir"><img src="assets/c3/photos/pan_wen_yuan_enwiki.jpg" alt="" style="left:-12px;top:-6px;width:250px" /></div>
+        <div id="pd39-bk" class="t-label clean">Breakfast</div>
+        <div id="pd39-c1" class="pd39-card">
+          <div class="tx2" style="background-image:url('assets/textures/paper_fiber_01.jpg')"></div>
+          <div class="pd39-qh t-display"><span id="pd39-h1a">HOW&nbsp;</span><span id="pd39-h1b">MUCH</span></div>
+          <div class="pd39-qs t-label"><span id="pd39-s1a">will it&nbsp;</span><span id="pd39-s1b">cost?</span></div>
+          <div class="pd39-ab" id="pd39-ab1">
+            <div class="pd39-big t-display halate yellow" style="top:46px; font-size:150px"><span id="pd39-m0">$</span><span id="pd39-m1">10</span></div>
+            <div class="pd39-big t-display halate yellow" style="top:208px; font-size:80px"><span id="pd39-m2">MILLION</span></div>
+          </div>
+        </div>
+        <div id="pd39-c2" class="pd39-card">
+          <div class="tx2" style="background-image:url('assets/textures/paper_fiber_01.jpg')"></div>
+          <div class="pd39-qh t-display"><span id="pd39-h2a">HOW&nbsp;</span><span id="pd39-h2b">LONG</span></div>
+          <div class="pd39-qs t-label"><span id="pd39-s2a">will it&nbsp;</span><span id="pd39-s2b">take?</span></div>
+          <div class="pd39-ab" id="pd39-ab2">
+            <div class="pd39-sm t-label" style="top:30px"><span id="pd39-y0">Around</span></div>
+            <div class="pd39-big t-display clean" style="top:70px; font-size:130px"><span id="pd39-y1">4</span></div>
+            <div class="pd39-big t-display clean" style="top:200px; font-size:64px"><span id="pd39-y2">YEARS</span></div>
+            <div class="pd39-sm t-label" style="top:278px"><span id="pd39-o1">Older&nbsp;</span><span id="pd39-o2">generation</span></div>
+          </div>
+        </div>
+        <svg id="pd39-qmk" viewBox="0 0 1920 1080"></svg>
+      </div>
+      <div id="pd39-qcred" class="t-label">Photos: Commons (CC0) · Wikipedia (fair use)</div>
+      <div class="vignette" style="opacity:0.6"></div>
+    </div>
+    <!-- Z · special economic zones -->
+    <div id="pd39-z" class="pd39-sc">
+      <div class="pd39-pp" style="background-image:url('assets/textures/paper_lined_01_hires.jpg'); opacity:0.55; filter:grayscale(1)"></div>
+      <div class="pd39-pp" style="background-image:url('assets/textures/paper_fiber_01.jpg'); opacity:0.35; filter:grayscale(1)"></div>
+      <div id="pd39-zcam">
+        <div id="pd39-chip"></div>
+        <div id="pd39-zl" class="t-display"><span id="pd39-z1">SPECIAL&nbsp;</span><span id="pd39-z2">ECONOMIC&nbsp;</span><span id="pd39-z3">ZONES</span></div>
+        <div id="pd39-zone"><i style="background-image:url('assets/textures/halftone_01_norm.jpg')"></i></div>
+        <div id="pd39-parts"></div>
+        <div id="pd39-prod"></div>
+        <div id="pd39-zcl" class="t-display"><span id="pd39-k1">CHEAP&nbsp;</span><span id="pd39-k2">LABOR</span></div>
+        <svg id="pd39-zmk" viewBox="0 0 1920 1080"></svg>
+      </div>
+      <div class="vignette" style="opacity:0.25"></div>
+    </div>
+    <div id="pd39-grain" class="tx tx-grain" style="background-image:url('assets/textures/grain_02_norm.jpg'); opacity:0.26"></div>
+    <div id="pd39-dust" class="tx tx-dust" style="background-image:url('assets/textures/dust_02.jpg'); opacity:0.14"></div>
+    <audio id="pd39-vo" class="temp-vo" src="vo_pd.mp3" data-start="0" data-duration="81.3333" data-media-start="4850.1" data-volume="1"></audio>
+  </div>
+  <script>
+  (function () {
+    const START = 4850.1, DUR = 81.3333;
+    const T = (s) => +(s - START).toFixed(3);   // TEXT cues (audited): word start − 0.06
+    const S = T;
+    const tl = gsap.timeline({ paused: true });
+    const $ = (id) => document.getElementById("pd39-" + id);
+    const E = FX.ease, C = (e, d) => FX.choppy(e, d, 12);
+    FX.grain($("grain"), 3901);
+    FX.dust($("dust"), 3903, 2);
+    const wL = FX.whipDefs($("defs"), "pd39-wl"), wQ = FX.whipDefs($("defs"), "pd39-wq"), wZ = FX.whipDefs($("defs"), "pd39-wz");
+    $("l").style.filter = "url(#pd39-wl)"; $("q").style.filter = "url(#pd39-wq)"; $("z").style.filter = "url(#pd39-wz)";
+    const land = (el, t, d, y) => tl.fromTo(el, { opacity: 0, y: y == null ? 20 : y }, { opacity: 1, y: 0, duration: d || 0.5, ease: C(E.out, d || 0.5), immediateRender: false }, t);
+    const pop = (el, t, d, s0) => tl.fromTo(el, { opacity: 0, scale: s0 || 0.6 }, { opacity: 1, scale: 1, duration: d || 0.5, ease: C(E.out, d || 0.5), immediateRender: false }, t);
+    gsap.set([$("q"), $("z")], { autoAlpha: 0 });
+
+    // ================= L · 4850.10–4881.00 the value chain =================
+    // rows (tile tops): rung 0 = Taiwan's (cheap labour) … rung 5 = the top (technological world → chips); rung N below = even cheaper labour
+    const ROWS = [800, 680, 560, 440, 320, 200], NEW = 920, X0 = 718, STEP = 86;
+    const rowsEl = $("rows"), rowTiles = [], rungs = [];
+    const mkRow = (y, cls) => {
+      rowsEl.insertAdjacentHTML("beforeend", '<div class="pd39-rung" style="top:' + (y + 27) + 'px"></div>');
+      const r = rowsEl.lastElementChild; rungs.push(r);
+      const ts = [];
+      for (let k = 0; k < 6; k++) { rowsEl.insertAdjacentHTML("beforeend", '<div class="pd39-tile ' + (cls || "") + '" style="left:' + (X0 + k * STEP) + 'px;top:' + y + 'px"></div>'); ts.push(rowsEl.lastElementChild); }
+      return ts;
+    };
+    ROWS.forEach((y, i) => rowTiles.push(mkRow(y, i === 5 ? "chip" : "")));
+    const newRow = mkRow(NEW, "cty");
+    // frame 0 alive: the rails are already rising, rungs and tile rows follow from the bottom at 12 fps
+    gsap.set([$("rl"), $("rr")], { scaleY: 0.72 });
+    tl.to([$("rl"), $("rr")], { scaleY: 1, duration: 1.3, ease: C(E.out, 1.3) }, 0);
+    gsap.set(rungs, { scaleX: 0 });
+    gsap.set(rungs.slice(0, 2), { scaleX: 1 });
+    rungs.slice(2, 6).forEach((r, i) => tl.to(r, { scaleX: 1, duration: 0.4, ease: C(E.out, 0.4) }, 0.1 + i * 0.17));
+    rowTiles.forEach((ts, i) => { if (i < 2) return; gsap.set(ts, { opacity: 0, scale: 0.4 }); tl.to(ts, { opacity: 1, scale: 1, duration: 0.3, stagger: 1 / 12, ease: C(E.out, 0.3) }, 0.15 + (i - 2) * 0.2); });
+    gsap.set(newRow, { opacity: 0, x: 760 });
+    gsap.set([$("a1"), $("a2"), $("b1"), $("b2"), $("labC"), $("c1w"), $("c2w"), $("c3w"), $("tw"), $("v1"), $("v2"), $("v3"), $("lpan")], { opacity: 0 });
+    tl.fromTo($("lcam"), { scale: 1.04, x: -38, y: -30 }, { scale: 1.0, x: 0, y: 0, duration: 4, ease: E.cam, immediateRender: true }, 0);
+    // "He tells the leaders of Taiwan" — Taiwan's chip sits at the lowest rung
+    land($("tw"), T(4851.23), 0.5, 14);
+    // "what Taiwan is really offering to the world is cheap labor" — its row turns green
+    tl.to(rowTiles[0], { backgroundColor: "#2f9e5b", borderColor: "#17603a", duration: 0.001, stagger: 1 / 12 }, S(4854.4));
+    land($("a1"), T(4854.59), 0.45, 10);
+    land($("a2"), T(4854.83), 0.45, 10);
+    // "It has no part in the technological world at all"
+    land($("b1"), T(4856.51), 0.45, 10);
+    land($("b2"), T(4857.23), 0.45, 10);
+    const lpen = FX.markupDefs($("lmk"), "pd39-lpen", { boil: 4 });
+    // "there are countries coming onto the scene that now have even cheaper labor" — a new grey rung slides in below Taiwan
+    tl.to(rungs[6], { scaleX: 1, duration: 0.4, ease: C(E.out, 0.4) }, S(4861.5));
+    tl.to(newRow, { opacity: 1, x: 0, duration: 1.0, stagger: 1 / 12, ease: C(E.out, 1.0) }, S(4861.6));
+    land($("c1w"), T(4863.82), 0.4, 10);
+    land($("c2w"), T(4863.98), 0.4, 10);
+    land($("c3w"), T(4864.38), 0.4, 10);
+    // "Taiwan is not gonna stay in the position it's in" — Taiwan's row shudders (12 fps)
+    tl.fromTo(rowTiles[0].concat([$("tw")]), { x: 0 }, { x: 7, duration: 1 / 12, yoyo: true, repeat: 9, ease: "steps(1)", immediateRender: false }, S(4865.4));
+
+    // ---- 4867.75 hard cut on action: closer on the lower rungs; "move up the value chain … or just give up" ----
+    tl.set($("lcam"), { scale: 1.08, x: -40, y: -64 }, S(4867.75));
+    tl.to($("lcam"), { x: -20, duration: 7.7, ease: "none" }, S(4867.75));
+    land($("v1"), T(4869.10), 0.45, 14);
+    land($("v2"), T(4869.18), 0.5, 14);
+    land($("v3"), T(4869.50), 0.5, 14);
+    const up = FX.markup.arrow(tl, $("lmk"), S(4868.75), { x1: 1262, y1: 790, x2: 1270, y2: 250, bend: -70, head: 30, dur: 1.0, color: "#17603a", width: 7, filter: lpen });
+    gsap.set(up, { opacity: 0 }); tl.set(up, { opacity: 1 }, S(4868.75));
+    // "or just give up on this" — a dashed grey arrow down and out (no text)
+    const dn = FX.markup.arrow(tl, $("lmk"), S(4872.95), { x1: 520, y1: 870, x2: 380, y2: 990, bend: 30, head: 24, dur: 0.6, color: "#4b5160", width: 6, filter: lpen });
+    gsap.set(dn, { opacity: 0 }); tl.set(dn, { opacity: 1 }, S(4872.95));
+    // "moving up the value chain means going to chips" — the camera cranes up while Taiwan climbs rung by rung (12 fps)
+    tl.to($("lcam"), { y: 30, scale: 1.1, x: -60, duration: 2.6, ease: E.cam }, S(4875.5));
+    tl.to([up[0], up[1], dn[0], dn[1]], { opacity: 0.35, duration: 0.4 }, S(4875.5));
+    tl.to([$("labN"), dn[0], dn[1]], { opacity: 0, duration: 0.4 }, S(4875.5));
+    for (let i = 1; i <= 5; i++) tl.to($("tw"), { y: -(800 - ROWS[i]), duration: 0.3, ease: C(E.out, 0.3) }, S(4875.6) + (i - 1) * 0.4);
+    tl.to(rowTiles[5], { backgroundColor: "#17603a", borderColor: "#9bd8b0", duration: 0.001, stagger: 1 / 12 }, S(4877.35));
+    tl.to([$("b1"), $("b2")], { opacity: 0, duration: 0.25 }, S(4877.3));
+    pop($("labC"), T(4877.57), 0.45, 0.7);
+    // "he's the chips guy" — Pan's circle beside CHIPS
+    pop($("lpan"), S(4878.9), 0.6);
+
+    // ================= whip → Q · 4881.00–4903.70 the breakfast host, the two questions, "around four years" =================
+    FX.whip(tl, $("l"), $("q"), S(4881.0), { dir: 1, blurA: wL, blurB: wQ });
+    const qEls = ["fei", "bk", "h1a", "h1b", "s1a", "s1b", "h2a", "h2b", "s2a", "s2b", "m0", "m1", "m2", "y0", "y1", "y2", "o1", "o2"].map($);
+    gsap.set(qEls, { opacity: 0 });
+    gsap.set([$("c1"), $("c2")], { y: 760 });
+    tl.fromTo($("qcam"), { scale: 1.06 }, { scale: 1.0, duration: 10, ease: E.cam, immediateRender: false }, S(4881.0));
+    tl.fromTo($("pan"), { x: 260 }, { x: 0, duration: 1.0, ease: C(E.out, 1.0), immediateRender: false }, S(4881.0));
+    // "the guy who set up this whole thing at breakfast"
+    pop($("fei"), S(4882.1), 0.7);
+    land($("bk"), T(4883.55), 0.5, 10);
+    // "it makes perfect sense" — a small nod
+    tl.fromTo($("fei"), { y: 0 }, { y: 14, duration: 0.18, yoyo: true, repeat: 1, ease: "power1.inOut", immediateRender: false }, S(4886.3));
+    // "asked him two question" — two blank cards slide up
+    tl.to($("c1"), { y: 0, duration: 0.9, ease: C(E.out, 0.9) }, S(4891.55));
+    tl.to($("c2"), { y: 0, duration: 0.9, ease: C(E.out, 0.9) }, S(4891.75));
+    tl.to($("bk"), { opacity: 0, duration: 0.3 }, S(4891.5));
+    land($("h1a"), T(4894.07), 0.4, 14);
+    land($("h1b"), T(4894.23), 0.4, 14);
+    land($("s1a"), T(4894.55), 0.4, 8);
+    land($("s1b"), T(4895.03), 0.4, 8);
+    land($("h2a"), T(4896.71), 0.4, 14);
+    land($("h2b"), T(4896.87), 0.4, 14);
+    land($("s2a"), T(4897.27), 0.4, 8);
+    land($("s2b"), T(4897.59), 0.4, 8);
+    // "Pan answers both questions" — a pen line from Pan to the cards
+    const qpen = FX.markupDefs($("qmk"), "pd39-qpen", { boil: 4 });
+    const qa = FX.markup.arrow(tl, $("qmk"), S(4898.6), { x1: 1610, y1: 350, x2: 1500, y2: 520, bend: -40, head: 24, dur: 0.6, color: "#c2c5ca", width: 5, filter: qpen });
+    gsap.set(qa, { opacity: 0 }); tl.set(qa, { opacity: 1 }, S(4898.6));
+    tl.fromTo($("pan"), { scale: 1 }, { scale: 1.08, duration: 0.25, yoyo: true, repeat: 1, ease: "power1.inOut", immediateRender: false }, S(4898.6));
+    // "around four years"
+    land($("y0"), T(4901.91), 0.4, 8);
+    pop($("y1"), T(4902.15), 0.45, 0.6);
+    land($("y2"), T(4902.39), 0.4, 10);
+
+    // ================= whip ↓ → Z · 4903.70–4914.95 "Taiwan is not really manufacturing any chips … special economic zones … assembling it and shipping it out … cheap labor" =================
+    FX.whip(tl, $("q"), $("z"), S(4903.7), { dir: 1, vertical: true, blurA: wQ, blurB: wZ });
+    gsap.set([$("z1"), $("z2"), $("z3"), $("k1"), $("k2"), $("prod")], { opacity: 0 });
+    gsap.set($("zone"), { scaleY: 0.08, transformOrigin: "50% 50%" });
+    tl.fromTo($("zcam"), { scale: 1.08 }, { scale: 1.0, duration: 11, ease: E.cam, immediateRender: false }, S(4903.7));
+    const zpen = FX.markupDefs($("zmk"), "pd39-zpen", { boil: 4 });
+    // "not really manufacturing any chips" — the chip gets a pen cross
+    const zx = FX.markup.cross(tl, $("zmk"), S(4905.2), { x: 295, y: 215, s: 74, dur: 0.18, color: "#d1307a", width: 9, filter: zpen });
+    gsap.set(zx, { opacity: 0 }); tl.set(zx, { opacity: 1 }, S(4905.2));
+    // the zone opens; its name lands on the words
+    tl.to($("zone"), { scaleY: 1, duration: 0.8, ease: C(E.out, 0.8) }, S(4906.9));
+    land($("z1"), T(4907.83), 0.4, 10);
+    land($("z2"), T(4908.23), 0.4, 10);
+    land($("z3"), T(4908.63), 0.4, 10);
+    // lanes: in from the left, out to the right
+    const ain = FX.markup.arrow(tl, $("zmk"), S(4907.2), { x1: 150, y1: 640, x2: 660, y2: 600, bend: -20, head: 26, dur: 0.6, color: "#161a24", width: 5, filter: zpen });
+    const aout = FX.markup.arrow(tl, $("zmk"), S(4910.5), { x1: 1260, y1: 600, x2: 1780, y2: 640, bend: -20, head: 26, dur: 0.6, color: "#161a24", width: 5, filter: zpen });
+    gsap.set(ain.concat(aout), { opacity: 0 }); tl.set(ain, { opacity: 1 }, S(4907.2)); tl.set(aout, { opacity: 1 }, S(4910.5));
+    // parts come in ("stuff is just coming into these special economic zones"), are assembled ("assembling it"), the product leaves ("shipping it out")
+    const PX = [760, 830, 900, 970, 1040], PY = [470, 540, 470, 540, 470], parts = [];
+    PX.forEach((x, i) => { $("parts").insertAdjacentHTML("beforeend", '<div class="pd39-part" style="left:' + x + 'px;top:' + PY[i] + 'px"></div>'); parts.push($("parts").lastElementChild); });
+    gsap.set(parts, { opacity: 0, x: -640 });
+    tl.to(parts, { opacity: 1, x: 0, duration: 0.9, stagger: 0.12, ease: C(E.out, 0.9) }, S(4907.4));
+    tl.to(parts, { x: (i) => 938 - PX[i], y: (i) => 526 - PY[i], scale: 0.4, opacity: 0, duration: 0.5, stagger: 0.05, ease: C(E.in, 0.5) }, S(4909.55));
+    tl.fromTo($("prod"), { opacity: 0, scale: 0.3 }, { opacity: 1, scale: 1, duration: 0.45, ease: C(E.out, 0.45), immediateRender: false }, S(4909.95));
+    tl.to($("prod"), { x: 820, duration: 1.0, ease: C(E.inOut, 1.0) }, S(4910.65));
+    // "the only thing they're providing … is cheap labor"
+    land($("k1"), T(4914.31), 0.3, 8);
+    land($("k2"), T(4914.55), 0.3, 8);
+
+    // ================= whip ← back to Q · 4914.95–4931.43 "four years … older generation … ten million dollars" =================
+    tl.set($("q"), { y: 0 }, S(4914.9));
+    FX.whip(tl, $("z"), $("q"), S(4914.95), { dir: -1, blurA: wZ, blurB: wQ });
+    tl.set([$("fei"), $("pan")], { opacity: 0.55 }, S(4914.95));
+    tl.set(qa, { opacity: 0 }, S(4914.95));
+    tl.fromTo($("qcam"), { scale: 1.0, x: 0 }, { scale: 1.06, x: -120, duration: 13.6, ease: "none", immediateRender: false }, S(4915.1));
+    // "it will take four years" — the answer gets a pen underline
+    const ul = FX.markup.underline(tl, $("qmk"), S(4915.55), { x1: 1150, x2: 1400, y: 838, dur: 0.45, color: "#f8f0a0", width: 6, filter: qpen });
+    gsap.set(ul, { opacity: 0 }); tl.set(ul, { opacity: 1 }, S(4915.55));
+    // "something that's like older generation"
+    land($("o1"), T(4924.33), 0.4, 8);
+    land($("o2"), T(4924.73), 0.4, 8);
+    // "on top of that … ten million dollars" — the camera swings to card 1; the key number (lemon, the scene's one halate)
+    tl.to($("qcam"), { x: 150, scale: 1.08, duration: 1.4, ease: E.cam }, S(4928.75));
+    tl.to([$("fei"), $("pan")], { opacity: 0, duration: 0.6, ease: "power1.in" }, S(4928.75));
+    pop($("m1"), T(4930.39), 0.25, 1.4);
+    pop($("m2"), T(4930.71), 0.2, 1.3);
+    pop($("m0"), T(4931.03), 0.15, 1.3);
+
+    FX.mount(tl, DUR);
+    window.__timelines["pd39"] = tl;
+  })();
+  </script>
+</template>
+</body>
+</html>

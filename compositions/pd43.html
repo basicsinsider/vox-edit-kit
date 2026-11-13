@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8" /></head>
+<body>
+<template>
+  <style>
+    #root { position: absolute; inset: 0; overflow: hidden; background: var(--night); }
+    .p43-scene { position: absolute; inset: 0; overflow: hidden; visibility: hidden; opacity: 0; }
+    .p43-shot { position: absolute; inset: 0; overflow: hidden; transform-origin: 50% 50%; background: var(--night); }
+    .p43-paper { background: var(--paper); }
+    .p43-p1, .p43-p2 { position: absolute; inset: 0; background-size: cover; background-position: center; pointer-events: none; mix-blend-mode: multiply; filter: saturate(0.3); }
+    .p43-abs { position: absolute; white-space: nowrap; }
+    .p43-w { display: inline-block; white-space: pre; opacity: 0; }
+    .p43-credit { position: absolute; right: 96px; bottom: 28px; font-size: 13px; letter-spacing: 0.08em; color: rgba(238,238,232,0.5); z-index: 5; }
+
+    /* sc001 · Boston satellite map */
+    #pd43-cam { position: absolute; left: 0; top: 0; width: 5360px; height: 4102px; transform-origin: 0 0; }
+    #pd43-map { position: absolute; left: 0; top: 0; width: 5360px; height: 4102px; filter: grayscale(0.9) brightness(0.66) contrast(1.16); }
+    #pd43-svg { position: absolute; left: 0; top: 0; width: 5360px; height: 4102px; overflow: visible; }
+    .p43-shade { position: absolute; inset: 0; pointer-events: none; background: linear-gradient(90deg, rgba(12,15,21,0.66) 0%, rgba(12,15,21,0) 34%), linear-gradient(0deg, rgba(12,15,21,0.6) 0%, rgba(12,15,21,0) 30%); }
+    .p43-ml { position: absolute; left: 0; top: 0; white-space: nowrap; }
+    #pd43-bos { font-size: 64px; letter-spacing: 0.04em; }
+    #pd43-r128 { font-size: 44px; line-height: 1; padding: 12px 18px 8px; background: var(--magenta); color: var(--bone); }
+    #pd43-r128::after { content: ""; position: absolute; inset: 0; background-image: url('assets/textures/paper_fiber_01_norm.jpg'); background-size: 500px auto; mix-blend-mode: overlay; opacity: 0.45; pointer-events: none; }
+    #pd43-ww { font-size: 26px; color: var(--magenta-light); }
+    #pd43-mit, #pd43-hvd { font-size: 46px; }
+    #pd43-pent { font-size: 30px; color: var(--ash-light); }
+    #pd43-dec { left: 96px; top: 96px; font-size: 44px; }
+
+    /* sc002 · DEC card on paper */
+    #pd43-c2 { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 960px 540px; }
+    #pd43-photo { position: absolute; left: 150px; top: 150px; width: 600px; height: 740px; background: var(--bone); box-shadow: 0 26px 50px rgba(22,26,36,0.34); }
+    #pd43-photo .in { position: absolute; left: 16px; top: 16px; right: 16px; bottom: 16px; overflow: hidden; background: var(--ash-dark); }
+    #pd43-photo img { position: absolute; left: 0; top: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 40%; filter: grayscale(0.8) contrast(1.08) brightness(1.02); }
+    #pd43-photo .in::after { content: ""; position: absolute; inset: 0; background-image: url('assets/textures/halftone_01_norm.jpg'); background-size: 520px auto; mix-blend-mode: overlay; opacity: 0.3; }
+    #pd43-tape { position: absolute; left: 375px; top: 126px; width: 160px; height: 46px; background: rgba(243,166,200,0.8); transform: rotate(-4deg); box-shadow: 0 2px 5px rgba(22,26,36,0.2); }
+    #pd43-name { left: 864px; top: 150px; font-size: 96px; line-height: 0.98; color: var(--ink); }
+    #pd43-decb { left: 868px; top: 486px; font-size: 76px; line-height: 1; padding: 14px 22px 8px; background: var(--magenta); color: var(--bone); opacity: 0; }
+    #pd43-decb::after { content: ""; position: absolute; inset: 0; background-image: url('assets/textures/paper_fiber_01_norm.jpg'); background-size: 500px auto; mix-blend-mode: overlay; opacity: 0.45; pointer-events: none; }
+    #pd43-no { left: 862px; top: 650px; font-size: 200px; line-height: 1; color: var(--ink); }
+    #pd43-hl { position: absolute; left: 852px; top: 742px; width: 380px; height: 92px; background: var(--yellow); mix-blend-mode: multiply; transform-origin: 0 50%; transform: scaleX(0); opacity: 0.9; }
+    #pd43-nol { left: 868px; top: 872px; font-size: 34px; color: var(--ink); }
+    #pd43-grain, #pd43-dust, #pd43-vig { z-index: 8; }
+  </style>
+
+  <div id="root" data-composition-id="pd43" data-vo-start="5237.5333" data-duration="30.2333" data-width="1920" data-height="1080">
+    <svg id="pd43-defs" width="0" height="0" style="position:absolute"></svg>
+
+    <!-- sc001 · 5237.53–5261.00 · "So let's look at why Boston failed, because Boston had this thing called Route 128, which happens after World War Two, where
+         this highway is created in Boston. And this highway kind of becomes like the connecting tissue … Colleges like MIT, Harvard, Pentagon funding going
+         into this in the fifties and sixties, even in the seventies. And some of the biggest computer companies, technological companies were located here
+         in Boston." · Esri satellite of greater Boston (silicon duotone), Route 128 drawn in magenta, MIT/Harvard pins, Pentagon money arrow, decades,
+         company dots along the highway (refs 9b4c4611 city dots + small-caps labels, 381944c6 city plan; highway idea ported from pd07's Boston map) -->
+    <div class="p43-scene" id="pd43-sc001"><div class="p43-shot" id="pd43-sc001-shot" style="background:#1d1f22">
+      <div id="pd43-cam">
+        <img id="pd43-map" src="assets/podcast/pd43/boston_esri_z13.jpg" alt="">
+        <svg id="pd43-svg" viewBox="0 0 5360 4102"></svg>
+      </div>
+      <div class="p43-shade"></div>
+      <div class="p43-ml t-display clean" id="pd43-bos"><span class="p43-w" id="pd43-bos1">BOSTON</span></div>
+      <div class="p43-ml t-display" id="pd43-r128" style="opacity:0">ROUTE 128</div>
+      <div class="p43-ml t-label" id="pd43-ww"><span class="p43-w" id="pd43-ww1">After </span><span class="p43-w" id="pd43-ww2">World War II</span></div>
+      <div class="p43-ml t-display clean" id="pd43-mit"><span class="p43-w" id="pd43-mit1">MIT</span></div>
+      <div class="p43-ml t-display clean" id="pd43-hvd"><span class="p43-w" id="pd43-hvd1">HARVARD</span></div>
+      <div class="p43-ml t-label" id="pd43-pent"><span class="p43-w" id="pd43-pe1">Pentagon </span><span class="p43-w" id="pd43-pe2">funding</span></div>
+      <div class="p43-abs t-display clean" id="pd43-dec"><span class="p43-w" id="pd43-d1">1950s  </span><span class="p43-w" id="pd43-d2">1960s  </span><span class="p43-w" id="pd43-d3">1970s</span></div>
+      <div class="p43-credit t-label">Imagery: Esri, Maxar, Earthstar Geographics</div>
+    </div></div>
+
+    <!-- sc002 · 5261.00–5267.77 · "One of the companies was Digital Equipment Corporation, DEC. For a while this used to be the second largest computer company in the
+         world." · paper: pinned photo of a DEC PDP-8 (its front panel reads DIGITAL EQUIPMENT CORPORATION), the name word by word, DEC tag, the key number
+         2ND with a highlighter (refs f3ea432e portrait + photo + year tag, 6af0421b big number beside the subject) -->
+    <div class="p43-scene" id="pd43-sc002"><div class="p43-shot p43-paper" id="pd43-sc002-shot">
+      <div class="p43-p1" style="background-image:url('assets/textures/paper_graph_01_hires.jpg'); opacity:0.42"></div>
+      <div class="p43-p2" style="background-image:url('assets/textures/paper_fiber_01.jpg'); opacity:0.35"></div>
+      <div id="pd43-c2">
+        <div id="pd43-photo"><div class="in"><img src="assets/podcast/pd43/pdp8_science_museum.jpg" alt=""></div></div>
+        <div id="pd43-tape"></div>
+        <div class="p43-abs t-display" id="pd43-name"><span class="p43-w" id="pd43-n1">DIGITAL</span><br><span class="p43-w" id="pd43-n2">EQUIPMENT</span><br><span class="p43-w" id="pd43-n3">CORPORATION</span></div>
+        <div class="p43-abs t-display" id="pd43-decb">DEC</div>
+        <div id="pd43-hl"></div>
+        <div class="p43-abs t-display" id="pd43-no"><span class="p43-w" id="pd43-no1">2ND</span></div>
+        <div class="p43-abs t-label" id="pd43-nol"><span class="p43-w" id="pd43-l1">largest </span><span class="p43-w" id="pd43-l2">computer </span><span class="p43-w" id="pd43-l3">company</span></div>
+      </div>
+      <div class="p43-credit t-label" style="color:rgba(22,26,36,0.55)">Photo: PDP-8, Science Museum London (CC0)</div>
+    </div></div>
+
+    <audio id="pd43-vo" class="temp-vo" src="vo_pd.mp3" data-start="0" data-duration="30.2333" data-media-start="5237.5333" data-volume="1"></audio>
+    <div id="pd43-grain" class="tx tx-grain" style="background-image:url('assets/textures/grain_01_norm.jpg'); opacity:0.36"></div>
+    <div id="pd43-dust" class="tx tx-dust" style="background-image:url('assets/textures/dust_02.jpg'); opacity:0.34"></div>
+    <div id="pd43-vig" class="vignette" style="opacity:0.9"></div>
+  </div>
+
+  <script>
+  (function () {
+    const SEG = "pd43", START = 5237.5333, DUR = 30.2333, END = START + DUR;
+    const T = (s) => +(s - START).toFixed(3);   // TEXT cues (audited): literal = word start − 0.06
+    const S = (s) => +(s - START).toFixed(3);   // structural cues
+    const tl = gsap.timeline({ paused: true });
+    const $ = (id) => document.getElementById(SEG + "-" + id);
+    const defs = $("defs"), E = FX.ease, C = (e, d) => FX.choppy(e, d, 12), NS = "http://www.w3.org/2000/svg";
+    const BONE = "#eeeee8", ASHL = "#c2c5ca", MAG = "#d1307a", MAGL = "#f3a6c8", INK = "#161a24";
+    const mk = (parent, tag, a) => { const n = document.createElementNS(NS, tag); for (const k in a) n.setAttribute(k, a[k]); parent.appendChild(n); return n; };
+    const rise = (el, t, o) => { o = o || {}; const d = o.dur || 0.45;
+      tl.fromTo(el, { opacity: 0, y: o.y == null ? 14 : o.y }, { opacity: 1, y: 0, duration: d, ease: C(E.out, d), immediateRender: true }, t); };
+    const drawLine = (p, t, dur, ease) => { const L = p.getTotalLength(); p.setAttribute("stroke-dasharray", L + " " + L);
+      gsap.set(p, { attr: { "stroke-dashoffset": L }, opacity: 0 }); tl.set(p, { opacity: 1 }, t);
+      tl.fromTo(p, { attr: { "stroke-dashoffset": L } }, { attr: { "stroke-dashoffset": 0 }, duration: dur, ease: ease || C(E.inOut, dur), immediateRender: false }, t); return p; };
+    const whip = (a, b, t, dir, k) => {
+      const A = $(a + "-shot"), B = $(b + "-shot"), h = 0.16;
+      const ba = FX.whipDefs(defs, SEG + "-wa" + k), bb = FX.whipDefs(defs, SEG + "-wb" + k);
+      tl.set(A, { filter: "url(#" + SEG + "-wa" + k + ")" }, t - h - 0.01); tl.set(A, { filter: "none" }, t + 0.06);
+      tl.set(B, { filter: "url(#" + SEG + "-wb" + k + ")" }, t - 0.001); tl.set(B, { filter: "none" }, t + h + 0.02);
+      FX.whip(tl, A, B, t, { dir: dir, dur: 0.32, blurA: ba, blurB: bb });
+    };
+
+    // ---------- scenes ----------
+    const W1 = 5261.0;
+    const SC = [["sc001", START, W1, "night"], ["sc002", W1, END, "paper"]];
+    const GROUND = { paper: [0.28, 0.14, 0.3], night: [0.9, 0.34, 0.36] };   // vig, dust, grain
+    SC.forEach((s, i) => {
+      const el = $(s[0]);
+      if (i === 0) gsap.set(el, { autoAlpha: 1 });
+      else tl.fromTo(el, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.001, immediateRender: false }, S(s[1]) - 0.001);
+      if (s[2] < END) tl.set(el, { autoAlpha: 0 }, S(s[2]) + 0.06);
+    });
+    const OV = [$("vig"), $("dust"), $("grain")];
+    gsap.set(OV, { opacity: (i) => GROUND.night[i] });
+    SC.forEach((s, k) => { if (k) tl.set(OV, { opacity: (i) => GROUND[s[3]][i] }, S(s[1])); });
+
+    /* ===== sc001 · Boston, Route 128 ===== */
+    (function () {
+      const svg = $("svg"), camEl = $("cam");
+      // map pixel space: Esri z13 web-mercator mosaic (assets/podcast/pd43/boston_esri_z13.json)
+      const PL = { boston: [2686, 2370], mit: [2480, 2370], harvard: [2349, 2237] };
+      // Route 128 (Braintree → Canton → Waltham → Woburn → Peabody → Gloucester), Natural Earth 10m "Beltway"/128 geometry, smoothed
+      const R128 = "M2913 3410 C2874 3438 2787 3540 2680 3576 C2572 3611 2394 3636 2266 3623 C2138 3610 1988 3539 1911 3497 C1833 3455 1828 3455 1800 3371 C1772 3287 1799 3123 1742 2993 C1685 2863 1511 2683 1456 2592 C1402 2500 1404 2539 1416 2442 C1427 2344 1506 2149 1526 2008 C1547 1867 1531 1680 1538 1598 C1545 1515 1484 1559 1567 1511 C1650 1462 1903 1349 2033 1305 C2163 1262 2280 1262 2348 1250 C2416 1238 2404 1263 2441 1234 C2478 1205 2493 1087 2569 1076 C2645 1066 2819 1155 2895 1171 C2971 1187 2980 1180 3023 1171 C3067 1162 3112 1141 3157 1116 C3203 1091 3244 1085 3297 1021 C3351 956 3373 784 3478 728 C3583 673 3824 705 3926 689 C4028 673 3972 691 4089 633 C4207 575 4498 396 4631 340 C4764 285 4801 293 4888 301 C4974 309 5106 373 5150 388";
+      const RP = [[2913, 3410], [2680, 3576], [2266, 3623], [1911, 3497], [1800, 3371], [1742, 2993], [1456, 2592], [1416, 2442], [1526, 2008], [1538, 1598], [1567, 1511], [2033, 1305], [2348, 1250], [2441, 1234], [2569, 1076], [2895, 1171], [3023, 1171], [3157, 1116], [3297, 1021], [3478, 728]];
+
+      // camera proxy (map px centre + zoom); screen labels follow their map anchors
+      const cv = { cx: 2690, cy: 2230, z: 0.39 };
+      const labels = [[$("bos"), PL.boston, 30, -34], [$("r128"), [1416, 2442], -300, -30], [$("ww"), [1416, 2442], -300, 34],
+        [$("mit"), PL.mit, 34, 6], [$("hvd"), PL.harvard, -250, -66], [$("pent"), [2000, 2700], -150, 20]];
+      const apply = () => {
+        camEl.style.transform = "translate(" + (960 - cv.cx * cv.z).toFixed(2) + "px," + (540 - cv.cy * cv.z).toFixed(2) + "px) scale(" + cv.z.toFixed(4) + ")";
+        labels.forEach((l) => { const x = 960 + (l[1][0] - cv.cx) * cv.z + l[2], y = 540 + (l[1][1] - cv.cy) * cv.z + l[3];
+          l[0].style.left = x.toFixed(1) + "px"; l[0].style.top = y.toFixed(1) + "px"; });
+      };
+      apply();
+      // contiguous camera keys (each tween re-applies on update)
+      const keys = [[0, 2690, 2230, 0.39], [S(5240.6), 2600, 2290, 0.52], [S(5241.0), 2600, 2290, 0.52], [S(5242.8), 2680, 2160, 0.362],
+        [S(5250.85), 2685, 2165, 0.375], [S(5252.1), 2440, 2360, 1.0], [S(5256.55), 2420, 2390, 1.04], [S(5258.1), 2680, 2160, 0.364], [S(W1), 2684, 2158, 0.37]];
+      for (let i = 1; i < keys.length; i++) {
+        const a = keys[i - 1], b = keys[i], d = b[0] - a[0];
+        const still = (i === 2 || i === 4 || i === 6 || i === 8);
+        tl.fromTo(cv, { cx: a[1], cy: a[2], z: a[3] }, { cx: b[1], cy: b[2], z: b[3], duration: d, ease: still ? "none" : (i === 1 ? "sine.out" : E.cam), immediateRender: false, onUpdate: apply }, a[0]);
+      }
+
+      // Boston (city dot + label)
+      const bd = mk(svg, "circle", { cx: PL.boston[0], cy: PL.boston[1], r: 20, fill: BONE, stroke: INK, "stroke-width": 6 });
+      gsap.set(bd, { opacity: 0 }); tl.to(bd, { opacity: 1, duration: 0.2 }, S(5238.65));
+      rise($("bos1"), T(5238.65));                     // Boston
+      FX.radioWaves(svg, PL.boston[0], PL.boston[1], { rings: 3, max: 420, period: 1.8, width: 14, color: BONE, from: 0, to: S(5241.3) });   // ungated: it hides itself outside from/to
+
+      // Route 128: label on the word, the highway draws round the city (hero), then "after World War II"
+      tl.fromTo($("r128"), { opacity: 0, scale: 1.25 }, { opacity: 1, scale: 1, duration: 0.35, ease: C(E.out, 0.35), immediateRender: true }, T(5241.21));   // Route 128 (ASR "Roueight")
+      const casing = mk(svg, "path", { d: R128, fill: "none", stroke: "#0c0f15", "stroke-width": 40, "stroke-linecap": "round", "stroke-linejoin": "round", "stroke-opacity": 0.6 });
+      const road = mk(svg, "path", { d: R128, fill: "none", stroke: MAG, "stroke-width": 24, "stroke-linecap": "round", "stroke-linejoin": "round" });
+      road.style.filter = "drop-shadow(0 0 18px rgba(209,48,122,0.75))";
+      drawLine(casing, S(5241.3), 2.2, C("sine.inOut", 2.2));
+      drawLine(road, S(5241.3), 2.2, C("sine.inOut", 2.2));
+      rise($("ww1"), T(5243.05), { dur: 0.35 });       // after
+      rise($("ww2"), T(5243.29), { dur: 0.35 });       // World War II
+      // "this highway is created in Boston": the line flares once
+      tl.fromTo(road, { attr: { "stroke-width": 24 } }, { attr: { "stroke-width": 40 }, duration: 0.3, yoyo: true, repeat: 1, ease: "sine.inOut", immediateRender: false }, S(5244.45));
+
+      // "connecting tissue": fine links from the city out to the ring
+      [1, 3, 5, 7, 9, 11, 13, 15, 17, 19].forEach((k, i) => {
+        const p = RP[k], q = [2600 + (i % 3) * 30, 2320 + (i % 2) * 40];
+        const mx = (p[0] + q[0]) / 2 + (i % 2 ? 60 : -60), my = (p[1] + q[1]) / 2;
+        const l = mk(svg, "path", { d: "M" + q[0] + " " + q[1] + " Q" + mx + " " + my + " " + p[0] + " " + p[1], fill: "none", stroke: ASHL, "stroke-width": 7, "stroke-linecap": "round", "stroke-opacity": 0.7 });
+        drawLine(l, S(5247.6) + i * 0.07, 0.8, C("sine.out", 0.8));
+        tl.to(l, { opacity: 0, duration: 0.4 }, S(5250.6));            // clear before the push on Cambridge
+        tl.to(l, { opacity: 0.5, duration: 0.5 }, S(5257.2));          // back with the ring
+        const n = mk(svg, "circle", { cx: p[0], cy: p[1], r: 16, fill: BONE });
+        gsap.set(n, { opacity: 0 }); tl.to(n, { opacity: 1, duration: 0.1 }, S(5248.3) + i * 0.07);
+      });
+
+      // MIT, Harvard (neutral pins) — the camera has pushed in on Cambridge
+      [[PL.mit, T(5251.61), "mit1"], [PL.harvard, T(5252.17), "hvd1"]].forEach((m) => {
+        const g = mk(svg, "g", { opacity: 0 });
+        mk(g, "circle", { cx: m[0][0], cy: m[0][1], r: 22, fill: BONE, stroke: INK, "stroke-width": 7 });
+        tl.set(g, { attr: { opacity: 1 } }, m[1]);
+        tl.fromTo(g, { scale: 0.2, svgOrigin: m[0][0] + " " + m[0][1] }, { scale: 1, duration: 0.4, ease: C(E.out, 0.4), immediateRender: false }, m[1]);
+        rise($(m[2]), m[1]);
+      });
+      // Pentagon funding: a broad arrow of money flows in from the south-west onto the colleges
+      const fl = mk(svg, "path", { d: "M1760 3060 Q2050 2900 2330 2470", fill: "none", stroke: ASHL, "stroke-width": 26, "stroke-linecap": "round" });
+      drawLine(fl, S(5252.7), 0.8, C(E.out, 0.8));
+      const fh = mk(svg, "path", { d: "M2262 2478 L2336 2460 L2346 2536", fill: "none", stroke: ASHL, "stroke-width": 26, "stroke-linecap": "round", "stroke-linejoin": "round", opacity: 0 });
+      tl.set(fh, { attr: { opacity: 1 } }, S(5253.45));
+      for (let i = 0; i < 4; i++) {
+        const c = mk(svg, "g", { opacity: 0 }), cc = mk(c, "g", {});
+        mk(cc, "circle", { cx: 0, cy: 0, r: 26, fill: "#343843", stroke: ASHL, "stroke-width": 7 });
+        mk(cc, "rect", { x: -4, y: -13, width: 8, height: 26, fill: ASHL });
+        const pr = { u: 0 }, put = () => { const u = pr.u, a = (1 - u) * (1 - u), b = 2 * u * (1 - u), w = u * u;
+          cc.setAttribute("transform", "translate(" + (a * 1760 + b * 2050 + w * 2330).toFixed(1) + " " + (a * 3060 + b * 2900 + w * 2470).toFixed(1) + ")"); };
+        put();
+        const t0 = S(5253.5) + i * 0.55;
+        tl.set(c, { attr: { opacity: 1 } }, t0);
+        tl.fromTo(pr, { u: 0 }, { u: 1, duration: 1.1, ease: C("sine.inOut", 1.1), immediateRender: false, onUpdate: put }, t0);
+        tl.set(c, { attr: { opacity: 0 } }, t0 + 1.12);
+      }
+      rise($("pe1"), T(5252.65));                      // Pentagon
+      rise($("pe2"), T(5253.29));                      // funding
+      rise($("d1"), T(5254.33), { dur: 0.35 });        // fifties
+      rise($("d2"), T(5254.89), { dur: 0.35 });        // sixties
+      rise($("d3"), T(5255.69), { dur: 0.35 });        // seventies
+      // pull back: the Cambridge labels clear before the ring returns
+      tl.to([$("mit"), $("hvd"), $("pent"), $("dec"), fl, fh], { opacity: 0, duration: 0.3 }, S(5256.5));
+
+      // "some of the biggest computer companies … were located here": company blocks pop along the ring (12 fps)
+      const CO = [[1430, 2380], [1500, 2150], [1540, 1860], [1530, 1650], [1700, 1440], [1880, 1370], [2120, 1290], [2440, 1240], [2700, 1110], [2980, 1175],
+        [1780, 3200], [1860, 3470], [2150, 3600], [2500, 3600], [1600, 2760], [3200, 1080]];
+      CO.forEach((p, i) => {
+        const g = mk(svg, "g", { opacity: 0 });
+        mk(g, "rect", { x: p[0] - 26, y: p[1] - 26, width: 52, height: 52, fill: BONE, stroke: INK, "stroke-width": 6 });
+        mk(g, "rect", { x: p[0] - 10, y: p[1] - 10, width: 20, height: 20, fill: "#343843" });
+        const t0 = S(5256.85) + i * 0.1;
+        tl.set(g, { attr: { opacity: 1 } }, t0);
+        tl.fromTo(g, { scale: 0.2, svgOrigin: p[0] + " " + p[1] }, { scale: 1, duration: 0.35, ease: C(E.out, 0.35), immediateRender: false }, t0);
+      });
+    })();
+
+    whip("sc001", "sc002", S(W1), 1, 1);
+
+    /* ===== sc002 · Digital Equipment Corporation ===== */
+    (function () {
+      const a = S(W1);
+      tl.fromTo($("c2"), { scale: 1.0, x: 0 }, { scale: 1.04, x: -16, duration: DUR - a, ease: "sine.inOut", immediateRender: false }, a);
+      tl.fromTo($("photo"), { rotation: -3, y: 40 }, { rotation: -1.2, y: 0, duration: 1.0, ease: C(E.out, 1.0), immediateRender: false }, a);
+      rise($("n1"), T(5262.01), { dur: 0.4, y: 18 });   // Digital
+      rise($("n2"), T(5262.57), { dur: 0.4, y: 18 });   // Equipment
+      rise($("n3"), T(5263.13), { dur: 0.4, y: 18 });   // Corporation
+      tl.fromTo($("decb"), { opacity: 0, scale: 1.3 }, { opacity: 1, scale: 1, duration: 0.3, ease: C(E.out, 0.3), immediateRender: true }, T(5263.85));   // DEC (ASR "D.")
+      // "the second largest computer company": the key number with a highlighter swipe
+      rise($("no1"), T(5266.01), { dur: 0.45, y: 24 }); // second
+      tl.fromTo($("hl"), { scaleX: 0 }, { scaleX: 1, duration: 0.45, ease: C("sine.inOut", 0.45), immediateRender: true }, S(5266.3));
+      rise($("l1"), T(5266.25), { dur: 0.3, y: 10 });   // largest
+      rise($("l2"), T(5266.65), { dur: 0.3, y: 10 });   // computer
+      rise($("l3"), T(5267.05), { dur: 0.3, y: 10 });   // company
+    })();
+
+    FX.grain($("grain"), 3); FX.dust($("dust"), 5, 2);
+    FX.mount(tl, DUR);
+    window.__timelines = window.__timelines || {};
+    window.__timelines[SEG] = tl;
+  })();
+  </script>
+</template>
+</body>
+</html>
