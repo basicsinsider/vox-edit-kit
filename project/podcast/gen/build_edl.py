@@ -18,6 +18,17 @@ NOISE = float(np.percentile(db(rms), 10))
 def quiet(a, b):
     a = max(a, 0.0); i0 = int(a * sr / hop); i1 = max(int(b * sr / hop), i0 + 1); i1 = min(i1, len(rms))
     k = i0 + int(np.argmin(rms[i0:i1])); return k * hop / sr + 0.005, float(db(rms[k]))
+def near_quiet(a, b, toward_end, thr_db=10.0, run=0.03):
+    """the quiet point (RMS < noise+thr for >= run s) CLOSEST to the kept word inside [a,b]: scanning from b back to a when
+    toward_end (cut-in: hug the word start), from a forward otherwise (cut-out: hug the word end). None if no such run.
+    Trims leftover fragments ('sh', 'uh', half words) that the global-minimum rule left between the cut and the word (vo_diff)."""
+    a = max(a, 0.0); i0 = int(a * sr / hop); i1 = min(max(int(b * sr / hop), i0 + 1), len(rms)); n = max(int(run * sr / hop), 1)
+    q = db(rms[i0:i1]) < NOISE + thr_db
+    rng = range(len(q) - n, -1, -1) if toward_end else range(0, len(q) - n + 1)
+    for k in rng:
+        if q[k:k + n].all():
+            j = i0 + k + n // 2; return j * hop / sr + 0.005, float(db(rms[j]))
+    return None
 def snap(t, lo, hi):
     """nearest frame edges to t inside [lo,hi]; pick the quieter"""
     cands = [f / FPS for f in (int(np.floor(t * FPS)), int(np.ceil(t * FPS))) if lo - 1e-6 <= f / FPS <= hi + 1e-6]
@@ -39,17 +50,24 @@ while i < len(w):
     while j + 1 < len(w) and not rm[j + 1]: j += 1
     keep.append((i, j)); i = j + 1
 segs = []
-for a, b in keep:
+for ki, (a, b) in enumerate(keep):
+    prev_keep_end = w[keep[ki - 1][1]]['end'] if ki > 0 else 0.0
+    next_keep_start = w[keep[ki + 1][0]]['start'] if ki + 1 < len(keep) else D
     ws, we = w[a]['start'], w[b]['end']
     pe = w[a - 1]['end'] if a > 0 else 0.0
     ns = w[b + 1]['start'] if b + 1 < len(w) else D
     if a == 0: tin, din = 0.0, -100.0
     else:
+        # abutting speech (no gap before the kept word): ASR boundaries are loose -> search back into the REMOVED words (up to half of them, 0.25 s)
         lo = max(pe, ws - 0.30) if ws - pe > 0.02 else ws - 0.08
         tin, din = quiet(lo, ws - 0.01 if ws - pe > 0.02 else ws + 0.08)
+        nq = near_quiet(max(pe, ws - 0.22), ws - 0.02, True) if ws - pe > 0.06 else None
+        if nq: tin, din = nq
         tin, din = snap(tin, lo, ws + 0.03)
     hi = min(ns, we + 0.40) if ns - we > 0.02 else we + 0.08
     tout, dout = quiet(we + 0.01 if ns - we > 0.02 else we - 0.08, hi)
+    nq = near_quiet(we + 0.02, min(ns, we + 0.25), False) if ns - we > 0.06 else None
+    if nq: tout, dout = nq
     tout, dout = snap(tout, we - 0.03, hi)
     if tout - tin < 2 / FPS: continue
     segs.append({'w': [a, b], 'in': round(tin, 4), 'out': round(tout, 4), 'in_db': round(din, 1), 'out_db': round(dout, 1)})

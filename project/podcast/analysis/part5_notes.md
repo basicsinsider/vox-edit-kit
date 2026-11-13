@@ -8,8 +8,8 @@ Cuts: `part5_cuts.json` — 45 ranges, 83 words, about 20 s of speech removed (p
 - **The take has no sign-off.** The last word in the transcript is id 21411 "is." ending at 5898.68 s; the audio file is
   5899.9 s long (ffprobe on `media/raw_audio.wav`), so only ~1.2 s of non-speech follows. There is no "thanks for watching",
   no outro and **no after-recording chatter in the transcript** — nothing to cut after the last word.
-- The recording stops mid-story: Sam announced "three examples" of failed Silicon Valley copies (19488) and only the first
-  (Boston / Route 128) is finished. Examples two and three, and "exactly how Taiwan does the Silicon Valley" (19258), are
+- The recording stops mid-story: Sam announced "three examples" of failed Silicon Valley copies (19493–19494) and only the first
+  (Boston / Route 128) is finished. Examples two and three, and "exactly how Taiwan does the Silicon Valley" (19263–19269), are
   promised but never arrive in this take. The TSMC vs UMC story itself is not reached. The lead should check whether a
   second take exists.
 - **Last line that should be in the video (recommended out-point):** ids 21389–21395, 5891.96–5894.8 s —
@@ -56,7 +56,7 @@ Ratings: A = hard to follow without it, B = clearly improves it, C = nice to hav
    quickly, Pan Wan answers both questions. First he says it's probably gonna take around four years to even get into chips.
    ... And on top of that will probably take ten million dollars."
    See: two question cards answered with the two numbers. Why: these are the key numbers of the Taiwan decision and they are
-   spoken 30 s apart with an aside in between; the 10 million returns later (18892, 19169).
+   spoken 30 s apart with an aside in between; the 10 million returns later (18890–18891, 19169–19170).
    Spoken facts: "two question", "around four years", "four years just to get into something that's like older generation",
    "ten million dollars".
 
@@ -130,7 +130,7 @@ Ratings: A = hard to follow without it, B = clearly improves it, C = nice to hav
     company in the world."
     See: photos of a mainframe and a minicomputer side by side with the two company names, reusing the chart from 11 with
     the two lines now labelled. Why: puts real objects and names on the abstract theory. Spoken facts: "hundreds of
-    thousands of dollars", "millions of dollars" (20500), "15, 20 years", "second largest".
+    thousands of dollars", "millions of dollars" (20501–20503), "15, 20 years", "second largest".
 
 13. **B — In-house vs bought parts, and the car analogy** · 5741.0–5800.4 · ids 20829–21047 (59 s; car analogy alone 5784.4–5800.4, ids 20983–21047, 16 s)
     Quote: "Now companies are popping up that are not just building computers, they're building like a specific part of the
@@ -139,7 +139,7 @@ Ratings: A = hard to follow without it, B = clearly improves it, C = nice to hav
     not that much worse that the customers would care."
     See: one box "everything in house" vs a computer assembled from several suppliers' parts; then two speedometers 130 vs
     110. Why: two numbers compared and a structural idea. Spoken numbers: "130 miles an hour", "110 miles per hour",
-    "40s, 50s, and 60s" (20741–20745).
+    "40s, 50s, and 60s" (20742–20745).
 
 14. **B — One customer vs many** · 5848.8–5862.1 · ids 21233–21282 (13 s)
     Quote: "they can improve much faster than DC can improve its chips because DC chip department has one customer, DC, while
@@ -156,42 +156,42 @@ Count: A = 4 (2, 7, 8, 11) · B = 8 (1, 4, 6, 9, 10, 12, 13, 14) · C = 2 (3, 5)
 | ASR form | correct | ids |
 |---|---|---|
 | Bill Hewlett / Hewlett | Bill Hewlett (correct) | 17338–17339, 17347 |
-| Pen Wanwan / Pan Wan / Panuan / Panwan | Pan Wen-Yuan (same person; confirm spelling with part 4) | 17595–17596, 18212–18213, 18361, 18444 |
-| Fred Termin / Termin | Fred (Frederick) Terman | 17834–17835, 19447–19448, 19853 |
+| Pen Wanwan / Pan Wan / Panuan / Panwan | Pan Wen-Yuan (same person; confirm spelling with part 4) | 17595–17596, 18212–18213, 18363, 18444 |
+| Fred Termin / Termin | Fred (Frederick) Terman | 17834–17835, 19446–19447, 19853 |
 | Terman's | Terman's (correct) | 19879 |
-| UN | UN (the 1971 UN decision; "seventy one, seventy two, seventy three, early seventies" 18549–18556; "nineteen seventy one" 18541–18543) | 17880 |
-| Secretary General | as spoken (the organiser of the breakfast) | 17906–17907 |
-| "son of the leader" / economic minister / "the Sun" | the leader's son — "Sun" at 19164 is "son"; he never names him in this range | 17921–17935, 18996–18999, 19164 |
-| early 70s, 1970s | early 70s, 1970s | 17994–17996 |
-| four years / ten million dollars / 10 million | 4 years / $10 million | 18225–18226, 18279–18280, 18310–18311; 18343–18345, 18892–18893, 19168–19170 |
-| PSMC | TSMC | 18660 |
+| UN | UN ("nineteen seventy one" 18541–18543; "seventy one, seventy two, seventy three, early seventies" 18549–18556) | 17881 |
+| Secretary General | as spoken (the organiser of the breakfast) | 17907–17908 |
+| "son of the leader" / economic minister / "the Sun" | the leader's son — "Sun" at 19166 is "son"; he never names him in this range | 17918–17927, 17935–17936, 17955–17958, 18996–18999, 19166 |
+| early 70s, 1970s | early 70s, 1970s | 17993–17996 |
+| four years / ten million dollars / 10 million | 4 years / $10 million | 18225–18226, 18280–18281, 18310–18311, 18644–18645; 18343–18345, 18890–18891, 19169–19171 |
+| PSMC | TSMC | 18663 |
 | Taiwanese shield | as spoken | 18676–18677 |
 | ten major projects | Ten Major (Construction) Projects — he says "ten major projects" | 18747–18749 |
-| cabinet in China | as spoken (17689–17691); do not correct | 17689–17691 |
+| cabinet in China | as spoken; do not correct | 17693–17695 |
 | South Korea, India | correct | 17558–17559, 17562 |
-| Silicon Alley (New York) | Silicon Alley | 19339–19345 |
-| Silicon Fan (Cambridge) | Silicon Fen | 19354–19362 |
-| Silicon Wadi (Israel) | Silicon Wadi | 19363–19368 |
-| Silicon Saxony (Dresden) | Silicon Saxony | 19369–19374 |
-| Silicon Plateau (Bangalore) | Silicon Plateau | 19375–19380 |
-| Silicon Glenn (Scotland) | Silicon Glen | 19381–19388 |
-| Roueight | Route 128 (probably; re-listen) | 19541 |
-| World War Two | World War Two | 19546–19548 |
+| Silicon Alley (New York) | Silicon Alley | 19340–19345 |
+| Silicon Fan (Cambridge) | Silicon Fen | 19355, 19361–19362 |
+| Silicon Wadi (Israel) | Silicon Wadi | 19364, 19367–19368 |
+| Silicon Saxony (Dresden) | Silicon Saxony | 19370, 19373–19374 |
+| Silicon Plateau (Bangalore) | Silicon Plateau | 19376, 19379–19380 |
+| Silicon Glenn (Scotland) | Silicon Glen | 19384, 19387–19388 |
+| Roueight | Route 128 (probably; re-listen) | 19544 |
+| World War Two | World War Two | 19548–19550 |
 | M IP | MIT | 19577–19578 |
-| Harvard, Pentagon | correct | 19579–19580, 19966–19988 |
-| Digital Equipment Corporation, D. / DC | Digital Equipment Corporation, DEC (every "DC" in sections 12–14 = DEC) | 19613–19616, 20410–20416, 20461, 20526, 20553, 20590, 20600, 20973, 21240, 21246, 21251, 21282, 21340, 21348 |
-| the Celtics | Celtics | 19655–19656 |
-| Anna Lee Saxony (Berkeley researcher) | AnnaLee Saxenian | 19697–19699 |
+| Harvard, Pentagon | correct | 19579, 19984; 19580 |
+| Digital Equipment Corporation, D. / DC | Digital Equipment Corporation, DEC (every "DC" in sections 12–14 = DEC) | 19613–19616, 20413–20416, 20461, 20522, 20550, 20589, 20600, 20973, 21242, 21248, 21254, 21282, 21340, 21348 |
+| the Celtics | Celtics | 19656 |
+| Anna Lee Saxony (Berkeley researcher) | AnnaLee Saxenian | 19694 (Berkeley), 19697–19699 |
 | Clayton Christensen (Harvard professor) | Clayton Christensen | 19987–19988 |
-| innovator's dilemma / innovators' dilemma | The Innovator's Dilemma | 20012–20014, 20057–20058 |
+| innovator's dilemma / innovators' dilemma | The Innovator's Dilemma | 20013–20014, 20057–20058 |
 | Fifty percent, eighty percent | 50%, 80% | 20285–20288 |
-| IBM | IBM | 20435, 20505, 20615, 20617 |
-| 15, 20 years | 15, 20 years | 20548–20550 |
+| IBM | IBM | 20435, 20508, 20615, 20617 |
+| 15, 20 years | 15, 20 years | 20547–20549 |
 | crossed the Rubicon | Rubicon | 20570 |
-| 40s, 50s, and 60s | 40s, 50s, 60s | 20741–20745 |
-| 130 miles an hour / 110 miles per hour | 130 mph / 110 mph | 21002–21005, 21026–21029 |
-| Walmart, Costco | correct | 21068–21070 |
-| Intel | Intel | 21130, 21252 |
+| 40s, 50s, and 60s | 40s, 50s, 60s | 20742–20745 |
+| 130 miles an hour / 110 miles per hour | 130 mph / 110 mph | 21002–21005, 21027–21030 |
+| Walmart, Costco | correct | 21069, 21071 |
+| Intel | Intel | 21130, 21256 |
 | Jason Tatum and Jalen Brown | Jayson Tatum, Jaylen Brown | 21384–21388, 21398–21399 |
 
 ## 4. ASR doubtful / re-listen / crosstalk
@@ -202,24 +202,24 @@ Count: A = 4 (2, 7, 8, 11) · B = 8 (1, 4, 6, 9, 10, 12, 13, 14) · C = 2 (3, 5)
 - 17859–17883 "So this was an idea already they had to go more into the tech, but because of the decision at the UN, I think." — sentence
   runs into the next line; fine after the one-word cut, but check the join.
 - 17901–17936 "got from you know the son of the I guess I'm saying son of the leader when in reality he's like the economic minister" —
-  a broken-off phrase followed by a self-correction that carries content; NOT cut. Lead may trim "the son of the" (17918–17921)
+  a broken-off phrase followed by a self-correction that carries content; NOT cut. Lead may trim "the son of the" (17917–17920)
   after listening.
 - 18134–18183 Sam sets up the organiser's reply twice ("And this is when the guy who set up this whole thing at breakfast he's
   like, okay, so I get what you're saying. It makes perfect sense." then "So at this point, the guy who's sitting there ... asked
   him two question"). Reads as a soft retake of the set-up, but the first half has content (he agrees), so NOT cut. Re-listen.
 - 18574 "So" standing alone before "Things are moving slower." — left in.
-- 18600–18609 "there's like a original dominant effect" — probably "domino effect"; left in.
+- 18602–18607 "there's like a original dominant effect" — probably "domino effect"; left in.
 - 18618–18649 Sunkit's recap "they do which makes sense feel like their survival is at stake. Well, I guess four years is not that
   long." — tangled but real; left in.
 - 18716–18724 "Yeah, they didn't think chips is gonna become a" — trails off (the abandoned "because this is this." after it is cut).
   If the join sounds bad, widen the cut to 18716–18728 only after listening; it does carry the answer to Sunkit.
 - 18810–18816 "History, you know, all this happened here." — probably "Historic..."; left in.
-- 18960–18966 "there are still factions debate constantly against each other" — a word missing in ASR; left in.
+- 18961–18970 "there are still factions debate constantly against each other" — a word missing in ASR; left in.
 - 19150–19152 "Makes sense. Yeah." — Sunkit acknowledgement, possibly over Sam.
-- 19164 "the Sun" = "the son".
+- 19166 "the Sun" = "the son".
 - 19518–19519 "You know." split from its sentence by a pause; left in.
-- 19541 "Roueight" — the route number is not legible in ASR; must be heard before any on-screen text.
-- 19569–19574 "everything that's happening in Silicon Valley" — he says Silicon Valley while describing Boston; leave as spoken,
+- 19544 "Roueight" — the route number is not legible in ASR; must be heard before any on-screen text.
+- 19568–19574 "everything that's happening in Silicon Valley" — he says Silicon Valley while describing Boston; leave as spoken,
   but keep it off screen.
 - 19616 "D." = "DEC"; 21181–21182 "Oh D." — a two-word fragment (5836.6–5837.5), either Sunkit's "Oh, I see" or a stray "DEC".
   Left in; cut it (21181–21182) if listening shows it is noise.
@@ -227,7 +227,7 @@ Count: A = 4 (2, 7, 8, 11) · B = 8 (1, 4, 6, 9, 10, 12, 13, 14) · C = 2 (3, 5)
 - 19861–19862 "Yeah." then "And in his mind..." — speaker change inside the line group.
 - 19889–19914 "This was maybe an unintended consequences, but like I'm pretty sure this was what you were about to say" — Sam talking
   to Sunkit; fine, left in.
-- 19918–19920 "non competes with the reason" = "were the reason".
+- 19917–19921 "non competes with the reason" = "were the reason".
 - 20026–20028 "It's like" + 1.5 s pause before "the reason he comes up with this book" — hanging filler; not cut (would be a
   candidate if the pause pass leaves an awkward gap): ids 20026–20027.
 - 20388–20405 Sunkit and Sam overlap ("I knew the dilemma I didn't know that it was Yeah I didn't know it was worse. Yeah.").

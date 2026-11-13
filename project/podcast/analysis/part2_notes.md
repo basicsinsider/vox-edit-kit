@@ -42,7 +42,7 @@ Ids/times are raw (pre-cut). Quotes are verbatim ASR (names corrected in §3).
 | E9 | **A** | 1964.0–2003.3 | 7013–7160 | "Texas Instrument was one of the biggest technological companies at the time. And at Texas Instrument, this guy named Jake Kelby … And it happened in Texas." | New person (name + portrait), then the idea itself: wires printed on a wafer instead of hand wiring → "integrated circuit (IC)". Photo of Kilby's first IC if a free one exists. | Texas Instrument(s); Jack Kilby; "print all the wiring you need on like a wafer"; "integrated circuit"; "IC"; Texas |
 | E10 | **B** | 2003.3–2048.2 | 7161–7329 | "But one issue with this solution was he used Germania … And he uses silicon instead of germanium … if you want to build a lot of iPhones or computers or anything else you can imagine." | Two-column comparison germanium vs silicon; Robert Noyce name + portrait, Fairchild recall. | germanium: "heated up very quickly", "expensive element"; Fairchild Semiconductor; Robert Noyce; silicon: "cheaper", "easier to get" |
 | E11 | **B** | 2048.2–2083.0 | 7330–7459 | "On top of that, silicon is a semiconductor … and that's why it's called Silicon Valley." | Simple on/off conduction animation (conductor – semiconductor – insulator scale), ending on the words "Silicon Valley" — the payoff of the whole first act. | "conduct electricity sometimes, and sometimes they don't"; "like a metal and like a non-metal"; "that's why it's called Silicon Valley" |
-| E12 | **A** | 2095.5–2123.6 | 7509–7613 | "…the Moore's Law gets invented a little bit later … every two years, the amount of transistors you can fit in one chip has been doubling … but the price is staying the same." | The classic doubling chart (transistors per chip, 2-year steps) with a flat price line. A numeric law — needs a chart. | Moore's Law; "some guy at Intel whose name is Gordon Moore"; "every two years"; "doubling"; "I think in the eighties, he announced it"; "better by a factor of two, but the price is staying the same" |
+| E12 | **A** | 2097.3–2123.4 | 7509–7613 | "…the Moore's Law gets invented a little bit later … every two years, the amount of transistors you can fit in one chip has been doubling … but the price is staying the same." | The classic doubling chart (transistors per chip, 2-year steps) with a flat price line. A numeric law — needs a chart. | Moore's Law; "some guy at Intel whose name is Gordon Moore"; "every two years"; "doubling"; "I think in the eighties, he announced it"; "better by a factor of two, but the price is staying the same" |
 | E13 | **C** | 2136.9–2149.7 | 7667–7714 | "You know you have seen the ASML videos, and TSM C factories just don't let you shoot videos inside … Like that's how strict they are." | Short b-roll / photo of a fab exterior or cleanroom (free source) — optional. | ASML; TSMC; no videos, no pictures |
 | E14 | **B** | 2190.8–2209.1 | 7857–7920 | "because before the same thing you were doing would let's say cost millions of dollars … So the cost went from millions of dollars to five dollars. Like that's a massive deal in like how much electronics we have around us today." | Two big numbers: "millions of dollars" → "$5" counter/drop. | "millions of dollars"; "five dollars" |
 | E15 | **B** | 2229.0–2256.4 | 7995–8086 | "So California law has this unique thing for a very long time where non competes were illegal in the state … accidentally written into California code very long time ago." | US map: California highlighted "non-competes illegal" vs rest of US; define the term on screen ("non-compete"). | California; "non competes were illegal in the state"; "rest of the United States" |
@@ -70,13 +70,13 @@ No visual needed: sections 6 and 15 (banter), most of 12 after the chart, 16.
 | 99 years | 99 years | 5907–5908 |
 | Boston | Boston | 5969, 6193 |
 | University of Houston's | University of Houston | 6273–6275 |
-| twenty five, thirty dollars an hour; 300 people; ten grand a year | $25–30 an hour; 300; $10,000 a year | 6304–6309; 6322–6323; 6329–6333 |
+| twenty five, thirty dollars an hour; 300 people; ten grand a year | $25–30 an hour; 300; $10,000 a year | 6304–6309; 6324–6325; 6330–6333 |
 | HP, General Electric, Lockheed Martin | HP (Hewlett-Packard), General Electric, Lockheed Martin | 6390, 6393–6394, 6395–6396 |
 | Stanford Industrial Park | Stanford Industrial Park | 6432–6434 |
 | science park / Stanford Science Park | (as spoken; today "Stanford Research Park" — do not change the words) | 6439–6442 |
 | World War Two; early fifties | World War Two; early fifties | 6483–6485; 6490–6491, 6498–6499 |
 | iPhone | iPhone | 6572, 6579, 6590–6591 |
-| tens of thousands | tens of thousands | 6545–6547 |
+| tens of thousands | tens of thousands | 6544–6546 |
 | traitorous eight / Traders 8 / T Traiterous Eight | the Traitorous Eight | 6789–6790, 6834–6835 (cut), 6849–6851 |
 | Fairchild Semiconductors / Fair Shell semiconductors | Fairchild Semiconductor | 6861–6862, 6931–6932, 7241–7243, 8711–8712, 8717 |
 | twenty sixteen, twenty fifteen; two billion dollars | 2016 / 2015; $2 billion | 6893–6896; 6902–6904 |
@@ -95,7 +95,7 @@ No visual needed: sections 6 and 15 (banter), most of 12 after the chart, 16.
 | TSM C | TSMC | 7676–7677, 7767–7768 |
 | millions of dollars → five dollars | millions of dollars → $5 | 7869–7871, 7891–7894, 7899–7905 |
 | California | California | 7993, 7996, 8067, 8081, 8381, 8422, 8463, 8729 |
-| non competes / non compete | non-competes / non-compete | 8010–8011, 8027–8028, 8061–8062, 8499–8500, 8585–8586, 8673–8674, 8679–8680, 8696–8699, 8787–8788 |
+| non competes / non compete | non-competes / non-compete | 8008–8009, 8027–8028, 8061–8062, 8499–8500, 8585–8586, 8673–8674, 8681–8682, 8696–8697, 8698–8699, 8789–8790 |
 | Ken Griffin's company | Ken Griffin (his company is not named in the take) | 8044–8046 |
 | 1946 | spoken year for the New York codification mandate — **re-listen** (likely "1846"; keep whatever is actually said) | 8089 |
 | New York | New York | 8091, 8139, 8200, 8215, 8229, 8286, 8302, 8323, 8355, 8369, 8442, 8453 |

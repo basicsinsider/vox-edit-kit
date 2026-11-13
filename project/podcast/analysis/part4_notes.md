@@ -53,43 +53,43 @@ Also considered and rejected (stay on speakers): the Putin aside (4059.6), the i
 ## 3. Names & spellings (ASR form → correct, with ids)
 
 People
-- "Kissinger" 13861, 13976, 14200 → Henry Kissinger (correct).
-- "Nixon" 13873, 14048, 14164, 14177, 14699, 14725, 14879 → Richard Nixon.
-- "Mao Zhudang" 13880–13881, 14572–14573; "Mao Zhizong" 14588–14589; "Mao Zhidang" 15599–15600 → Mao Zedong.
-- "George H.W. Bush" 14022–14025; "Bush won" 14027–14028 → Bush 1 / Bush Sr.; "Bush" 14232, 14269, 14299; "George Bush" 14835–14836.
-- "Putin" 14639.
+- "Kissinger" 13862, 13976, 14200 → Henry Kissinger (correct).
+- "Nixon" 13874, 14040, 14046, 14164, 14178, 14699, 14727, 14878 → Richard Nixon.
+- "Mao Zhudang" 13880–13881, 14572–14573; "Mao Zhizong" 14587–14588; "Mao Zhidang" 15599–15600 → Mao Zedong.
+- "George H.W. Bush" 14023–14025; "Bush won" 14027–14028 → Bush 1 / Bush Sr.; "Bush" 14232, 14269, 14299; "George Bush" 14835–14836.
+- "Putin" 14638.
 - "Carter" 15112 → Jimmy Carter.
 - "Chiang Kai shek" 15205–15207; "Chiankai shek" 15212–15213 (Sam repeating); "Shankai shek" 15214–15215 (Sunkit's attempt) → Chiang Kai-shek.
-- "Chiang Ching Ko" 15417–15419 → Chiang Ching-kuo. Throughout "the sun"/"Sun" (15455, 15461, 16090, 16171, 16222, 16424, 16453, 16639) → "the son" (ASR homophone, not a name).
+- "Chiang Ching Ko" 15417–15419 → Chiang Ching-kuo. Throughout "the sun"/"Sun" (15456, 15461, 16095, 16171, 16223, 16430, 16455, 16639) → "the son" (ASR homophone, not a name).
 - "Kim Jong-un" 15575–15576 (Sunkit's joke guess; keep as said).
-- "Deng Zhaoping" 15581–15582; "Deng Xiaoping" 15601–15602; "Deng" 15610, 15802, 15806 → Deng Xiaoping.
+- "Deng Zhaoping" 15581–15582; "Deng Xiaoping" 15601–15602; "Deng" 15610, 15800, 15806 → Deng Xiaoping.
 - "Stalin" 15768.
 - "Sun Yu Swan" 15912–15914 → Sun Yun-suan.
 - "Keiki Li" 15961–15962; "Kate Lee" 15979–15980 → K.T. Li (Li Kwoh-ting).
 - "Lex Friedman" 15963–15964 → Lex Fridman.
 - "Jensen Wang" 15970–15971, "Jen Sun Wang" 15972–15974, "Jensen Wan" 15975–15976 → Jensen Huang (Jen-Hsun Huang).
 - "Pen Wen. Juan" 17000–17002; "Pen Wen Wan" 17268–17270 → Pan Wen-yuan.
-- "Fred Terman" 17279–17280; "Terman" 17306, 17323 → Frederick Terman (correct here).
+- "Fred Terman" 17278–17279; "Terman" 17306, 17323 → Frederick Terman (correct here).
 
 Organisations / terms
-- "CCP", "ROC" (13470 area), "UN", "security council", "general council"/"general assembly" (he uses both: "general assembly" 13529, 14411; "General Council" 13583, 13612, 13651 → he means the General Assembly; on-screen text follows his words).
-- "important question" 14344–14345, 14360–14361, 14384–14385, 14408–14409, 14430–14431 (UN term, correct).
-- "seed" 14111, 14123, 13622 area → "seat".
-- "NVIDIA" 15969; "RCA" 17006, 17008, 17028; "TSMC" 17158; "Stanford" 17283; "Silicon Valley" 17312–17313; "Twitter" 17142.
-- "ten major projects" 16264–16266; "10 measure projects" 16410–16412; "10 major projects" 16633–16635 → Ten Major Construction Projects (say "Ten Major Projects" as he does).
-- "Apollo 11" 16528–16529; "Cultural Revolution" 14607–14608; "China shock" 13828–13829 (his term for the Nixon/Kissinger opening); "World War Two" 15082–15084; "World War One" 15473–15475, 15529–15531; "World War II" 15533–15535.
+- "CCP", "ROC" (13474, 13493), "UN", "security council", "general council"/"general assembly" (he uses both: "general assembly" 13529, 14411; "general council" 13583–13584, 13612–13613, 13652–13653 → he means the General Assembly; on-screen text follows his words).
+- "important question" 14345–14346, 14360–14361, 14385–14386, 14407–14408, 14430–14431; "important question votes" 14749–14751 (UN term, correct).
+- "seed" 13622, 14111, 14123 → "seat".
+- "NVIDIA" 15969; "RCA" 17006, 17009, 17272 (and "RCA's" near 17028); "TSMC" 17159; "Stanford" 17282; "Silicon Valley" 17312–17313; "Twitter" 17143.
+- "ten major projects" 16266–16268; "10 measure projects" 16410–16412; "10 major projects" 16633–16635 → Ten Major Construction Projects (say "Ten Major Projects" as he does).
+- "Apollo 11" 16528–16529; "Cultural Revolution" 14609–14610; "China shock" 13829–13830 (his term for the Nixon/Kissinger opening); "World War Two" 15082–15084; "World War One" 15473–15475, 15529–15531; "World War II" 15533–15535.
 
 Places
-- Soviet Union, China, Taiwan, Africa, Japan, Moscow (15494, 15558), Saudi Arabia (16342–16343), United States.
+- Soviet Union, China, Taiwan, Africa, Japan, Moscow (15494, 15560), Saudi Arabia (16342–16343), United States.
 - "Tan's Tanzania" 14960–14961 → Tanzania.
 - "Triwan" 15404 → Taiwan. "so with the Union" 15656–15659 → Soviet Union.
 
 Dates / numbers
 - "July" 13975 (Kissinger's secret trip), "October" 13983 (the vote) — year not spoken here.
-- "66%" 14373. "two times in the 50s" 14567–14571. "1979" 15109. "15 or 12" 15478–15480 (his age). "next 15 years" 15696–15698.
-- "1970s" 15831. "twenty years" 16105 area. "ten"/"10" major projects. "zero interest rate" 16345–16347.
-- "nineteen sixty nine" 16483–16486. "two years ago" 16799–16801 (moon landing relative to the breakfast). "20 years or like 30 years, 50 years" 16824–16832.
-- "seven or eight people" 17085–17088. "every one in seven kid" 17148–17152. "thirty years ago or twenty years ago" 17284–17290.
+- "66%" 14372. "two times in the 50s" 14567–14571. "1979" 15109. "15 or 12" 15478–15480 (his age). "next 15 years" 15696–15698 ("15" = 15697).
+- "1970s" 15832. "twenty years" 16104–16105. "ten"/"10" major projects. "zero interest rate" 16345–16347.
+- "nineteen sixty nine" 16484–16486. "two years ago" 16799–16801 (moon landing relative to the breakfast). "20 years or like 30 years, 50 years" from 16823.
+- "seven or eight people" 17085–17088. "every one in seven kid" 17148–17152 ("seven" = 17151). "thirty years ago or twenty years ago" 17284–17290.
 
 ## 4. ASR doubtful / re-listen / crosstalk
 
