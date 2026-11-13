@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8" /></head>
+<body>
+<template>
+  <style>
+    /* pd36 · 4306.4667–4346.3667 · the cabinet of engineers: Sun Yun-suan (the energy grid) and K.T. Li (the money guy)
+       A  · ID-photo board on a dark desk (inspo 8e364ca5: ID photos with name strips; ported from c6s02 C6S065 dossier V3)
+       A2 · Taiwan's power grid relit on the green island (inspo none — ported from c6s03 C6S083's pins-on-Taiwan idea)
+       B  · K.T. Li name card on paper (inspo ccc84f71: B/W portrait framed by colour blocks + small related photos) */
+    #root { position: absolute; inset: 0; overflow: hidden; background: var(--night); color: var(--bone); }
+    #pd36-defs { position: absolute; width: 0; height: 0; }
+    .pd36-sc { position: absolute; inset: 0; overflow: hidden; }
+    /* A */
+    #pd36-a { background: radial-gradient(110% 90% at 55% 45%, #232833 0%, #12151c 75%); }
+    #pd36-acam { position: absolute; inset: 0; transform-origin: 980px 520px; }
+    #pd36-desk { position: absolute; inset: -40px; background-size: cover; mix-blend-mode: multiply; opacity: 0.55; filter: grayscale(1); }
+    .pd36-card { position: absolute; background: var(--bone); padding: 14px 14px 14px; box-shadow: 0 24px 48px rgba(0,0,0,0.55); }
+    .pd36-card .ph { position: relative; overflow: hidden; width: 100%; height: 100%; background: #1c1f26; }
+    .pd36-card .ph img { position: absolute; filter: grayscale(1) contrast(1.08) brightness(1.02); }
+    .pd36-card .ph i { position: absolute; inset: 0; background-size: 420px auto; mix-blend-mode: multiply; opacity: 0.22; }
+    #pd36-cck { left: 156px; top: 176px; width: 332px; height: 430px; transform: rotate(-4deg); }
+    #pd36-sun { left: 716px; top: 112px; width: 500px; height: 664px; }
+    .pd36-tape { position: absolute; width: 130px; height: 34px; background: rgba(155,216,176,0.55); top: -16px; left: 50%; margin-left: -65px; transform: rotate(-3deg); }
+    #pd36-ktag { position: absolute; left: 172px; top: 664px; font-size: 26px; line-height: 1; padding: 12px 18px 8px; background: var(--board-dark); color: var(--bone); white-space: nowrap; }
+    #pd36-strip { position: absolute; left: 700px; top: 826px; padding: 16px 30px 6px; background: var(--paper); color: var(--ink); font-size: 84px; line-height: 1; white-space: nowrap; box-shadow: 0 14px 28px rgba(0,0,0,0.5); transform: rotate(-1.2deg); }
+    #pd36-strip span { display: inline-block; }
+    #pd36-role { position: absolute; left: 1300px; top: 176px; font-size: 30px; line-height: 1; padding: 13px 20px 9px; background: var(--board); color: var(--bone); white-space: nowrap; }
+    #pd36-role span { display: inline-block; }
+    .pd36-chip { position: absolute; font-size: 26px; line-height: 1; padding: 12px 18px 8px; white-space: nowrap; }
+    #pd36-cn { left: 1310px; top: 372px; background: var(--ash-dark); color: var(--bone); border: 2px solid var(--ash); }
+    #pd36-tw { left: 1560px; top: 600px; background: var(--board); color: var(--bone); }
+    #pd36-amk { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; }
+    /* A2 */
+    #pd36-m { background: radial-gradient(90% 90% at 50% 50%, #141a22 0%, #0b0e13 80%); }
+    #pd36-mcam { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 960px 540px; }
+    #pd36-map { position: absolute; left: 516px; top: 22px; width: 1623px; height: 2200px; transform-origin: 0 0; transform: scale(0.47); }
+    #pd36-map img { position: absolute; left: 0; top: 0; width: 1623px; height: 2200px; filter: brightness(0.82) saturate(0.9); }
+    #pd36-grid { position: absolute; left: 0; top: 0; width: 1623px; height: 2200px; overflow: visible; }
+    #pd36-sunc { position: absolute; left: 140px; top: 120px; width: 190px; height: 190px; border-radius: 50%; overflow: hidden; border: 6px solid var(--board-light); box-shadow: 0 14px 34px rgba(0,0,0,0.6); }
+    #pd36-sunc img { position: absolute; left: -14px; top: -10px; width: 220px; filter: grayscale(1) contrast(1.08); }
+    #pd36-sunl { position: absolute; left: 140px; top: 330px; width: 190px; text-align: center; font-size: 22px; line-height: 1; }
+    #pd36-eg { position: absolute; left: 1350px; top: 236px; font-size: 64px; line-height: 1; white-space: nowrap; }
+    #pd36-eg span { display: inline-block; }
+    #pd36-twl { position: absolute; left: 1222px; top: 720px; font-size: 30px; line-height: 1; color: var(--board-light); }
+    #pd36-mcred { position: absolute; right: 96px; bottom: 40px; font-size: 16px; line-height: 1; letter-spacing: 0.1em; color: var(--ash); white-space: nowrap; }
+    /* B */
+    #pd36-b { background: var(--paper); color: var(--ink); }
+    #pd36-bp1, #pd36-bp2 { position: absolute; inset: 0; background-size: cover; mix-blend-mode: multiply; filter: grayscale(1); }
+    #pd36-bp1 { opacity: 0.5; } #pd36-bp2 { opacity: 0.3; }
+    #pd36-bcam { position: absolute; inset: 0; transform-origin: 1300px 480px; }
+    .pd36-blk { position: absolute; background: var(--board); overflow: hidden; }
+    .pd36-blk i { position: absolute; inset: 0; background-size: 520px auto; mix-blend-mode: multiply; opacity: 0.45; }
+    #pd36-blk1 { left: 1010px; top: 96px; width: 96px; height: 760px; transform-origin: 50% 0; }
+    #pd36-blk2 { left: 1586px; top: 300px; width: 238px; height: 610px; transform-origin: 50% 100%; }
+    #pd36-li { position: absolute; left: 1066px; top: 150px; width: 500px; height: 670px; overflow: hidden; box-shadow: -16px 16px 0 rgba(22,26,36,0.16); }
+    #pd36-li img { position: absolute; left: -10px; top: 0; width: 520px; filter: grayscale(1) contrast(1.12); transform-origin: 50% 30%; }
+    #pd36-li i, .pd36-sm i { position: absolute; inset: 0; background-size: 380px auto; mix-blend-mode: multiply; opacity: 0.28; }
+    .pd36-sm { position: absolute; overflow: hidden; border: 6px solid var(--paper); box-shadow: 10px 12px 0 rgba(22,26,36,0.18); }
+    #pd36-sm1 { left: 1600px; top: 560px; width: 240px; height: 280px; transform: rotate(2.5deg); }
+    #pd36-sm1 img { position: absolute; left: -144px; top: -200px; width: 520px; filter: url(#pd36-tint) contrast(1.05); }
+    #pd36-sm2 { left: 760px; top: 650px; width: 300px; height: 156px; transform: rotate(-3deg); }
+    #pd36-sm2 img { position: absolute; left: 0; top: 0; width: 300px; filter: url(#pd36-tint) contrast(1.05); }
+    #pd36-cap1 { position: absolute; left: 1600px; top: 862px; width: 260px; font-size: 18px; line-height: 1.2; color: var(--ink-soft); }
+    #pd36-kick { position: absolute; left: 96px; top: 210px; font-size: 26px; line-height: 1; color: var(--paper); background: var(--board-dark); padding: 12px 18px 8px; white-space: nowrap; }
+    #pd36-name { position: absolute; left: 90px; top: 280px; font-size: 176px; line-height: 0.95; color: var(--ink); white-space: nowrap; }
+    #pd36-name span { display: inline-block; }
+    #pd36-rule { position: absolute; left: 96px; top: 470px; width: 620px; height: 4px; background: var(--ink); transform-origin: 0 50%; }
+    #pd36-mg { position: absolute; left: 96px; top: 500px; font-size: 40px; line-height: 1; color: var(--board-dark); white-space: nowrap; }
+    #pd36-mg span { display: inline-block; }
+    #pd36-lm { position: absolute; left: 96px; top: 724px; font-size: 24px; line-height: 1; color: var(--ink); white-space: nowrap; }
+    #pd36-lm span { display: inline-block; }
+    #pd36-bar { position: absolute; left: 96px; top: 760px; width: 620px; height: 56px; }
+    #pd36-bar b { position: absolute; top: 0; height: 56px; background: var(--board); overflow: hidden; }
+    #pd36-bar b i { position: absolute; inset: 0; background-size: 300px auto; mix-blend-mode: multiply; opacity: 0.5; }
+    #pd36-slots { position: absolute; left: 96px; top: 880px; width: 700px; height: 60px; }
+    #pd36-slots s { position: absolute; top: 0; height: 56px; border: 2px dashed rgba(22,26,36,0.45); box-sizing: border-box; }
+    #pd36-bcred { position: absolute; right: 96px; bottom: 40px; font-size: 16px; line-height: 1; letter-spacing: 0.1em; color: var(--ink-soft); white-space: nowrap; }
+  </style>
+  <div id="root" data-composition-id="pd36" data-vo-start="4306.4667" data-duration="39.9" data-width="1920" data-height="1080">
+    <svg id="pd36-defs"></svg>
+    <!-- A · the board -->
+    <div id="pd36-a" class="pd36-sc">
+      <div id="pd36-acam">
+        <div id="pd36-desk" style="background-image:url('assets/textures/paper_fiber_01.jpg')"></div>
+        <div id="pd36-cck" class="pd36-card"><div class="ph"><img src="assets/c6/photos/chiang_ching_kuo_portrait_colour.jpg" alt="" style="left:-18px;top:-6px;width:340px" /><i style="background-image:url('assets/textures/halftone_01_norm.jpg')"></i></div><div class="pd36-tape"></div></div>
+        <div id="pd36-ktag" class="t-label">Cabinet</div>
+        <div id="pd36-sun" class="pd36-card"><div class="ph"><img src="assets/c6/photos/sun_yun_suan_premier_portrait_colour.jpg" alt="" style="left:-14px;top:-4px;width:500px" /><i style="background-image:url('assets/textures/halftone_02_norm.jpg')"></i></div><div class="pd36-tape"></div></div>
+        <div id="pd36-strip" class="t-display"><span id="pd36-s1">SUN&nbsp;</span><span id="pd36-s2">YUN-SUAN</span></div>
+        <div id="pd36-role" class="t-label"><span id="pd36-r1">Chinese&nbsp;</span><span id="pd36-r2">engineer</span></div>
+        <div id="pd36-cn" class="pd36-chip t-label">China</div>
+        <div id="pd36-tw" class="pd36-chip t-label">Taiwan</div>
+        <svg id="pd36-amk" viewBox="0 0 1920 1080"></svg>
+      </div>
+      <div class="vignette" style="opacity:0.75"></div>
+    </div>
+    <!-- A2 · the grid -->
+    <div id="pd36-m" class="pd36-sc">
+      <div id="pd36-mcam">
+        <div id="pd36-map">
+          <img src="assets/podcast/pd36/tw_green_1623.png" alt="" />
+          <svg id="pd36-grid" viewBox="0 0 1623 2200"></svg>
+        </div>
+        <div id="pd36-twl" class="t-label">Taiwan</div>
+      </div>
+      <div id="pd36-sunc"><img src="assets/c6/photos/sun_yun_suan_premier_portrait_colour.jpg" alt="" /></div>
+      <div id="pd36-sunl" class="t-label clean">Sun Yun-suan</div>
+      <div id="pd36-eg" class="t-display halate"><span id="pd36-e1">ENERGY&nbsp;</span><span id="pd36-e2">GRID</span></div>
+      <div id="pd36-mcred" class="t-label">Relief: AWS Terrain Tiles / Natural Earth</div>
+      <div class="vignette" style="opacity:0.6"></div>
+    </div>
+    <!-- B · K.T. Li -->
+    <div id="pd36-b" class="pd36-sc">
+      <div id="pd36-bp1" style="background-image:url('assets/textures/paper_fiber_01.jpg')"></div>
+      <div id="pd36-bp2" style="background-image:url('assets/textures/paper_cream_02.jpg')"></div>
+      <div id="pd36-bcam">
+        <div id="pd36-blk1" class="pd36-blk"><i style="background-image:url('assets/textures/halftone_01_norm.jpg')"></i></div>
+        <div id="pd36-blk2" class="pd36-blk"><i style="background-image:url('assets/textures/halftone_01_norm.jpg')"></i></div>
+        <div id="pd36-li"><img src="assets/c6/derived/c6s02/kt_li_crop.jpg" alt="" /><i style="background-image:url('assets/textures/halftone_02_norm.jpg')"></i></div>
+        <div id="pd36-sm1" class="pd36-sm"><img src="assets/c6/photos/chiang_ching_kuo_with_li_kwoh_ting_print.jpg" alt="" /><i style="background-image:url('assets/textures/halftone_01_norm.jpg')"></i></div>
+        <div id="pd36-sm2" class="pd36-sm"><img src="assets/c4/documents/old_taiwan_dollar_500_1946_back.jpg" alt="" /><i style="background-image:url('assets/textures/halftone_01_norm.jpg')"></i></div>
+        <div id="pd36-cap1" class="t-label">With Chiang Ching-kuo</div>
+        <div id="pd36-kick" class="t-label">Cabinet</div>
+        <div id="pd36-name" class="t-display"><span id="pd36-n1">K.T.&nbsp;</span><span id="pd36-n2">LI</span></div>
+        <div id="pd36-rule"></div>
+        <div id="pd36-mg" class="t-label"><span id="pd36-g1">The&nbsp;</span><span id="pd36-g2">money&nbsp;</span><span id="pd36-g3">guy</span></div>
+        <div id="pd36-lm" class="t-label"><span id="pd36-l1">Limited&nbsp;</span><span id="pd36-l2">money</span></div>
+        <div id="pd36-slots"></div>
+        <div id="pd36-bar"></div>
+      </div>
+      <div id="pd36-bcred" class="t-label">Photos: Wikimedia Commons</div>
+      <div class="vignette" style="opacity:0.3"></div>
+    </div>
+    <div id="pd36-grain" class="tx tx-grain" style="background-image:url('assets/textures/grain_02_norm.jpg'); opacity:0.28"></div>
+    <div id="pd36-dust" class="tx tx-dust" style="background-image:url('assets/textures/dust_02.jpg'); opacity:0.18"></div>
+    <audio id="pd36-vo" class="temp-vo" src="vo_pd.mp3" data-start="0" data-duration="39.9" data-media-start="4306.4667" data-volume="1"></audio>
+  </div>
+  <script>
+  (function () {
+    const START = 4306.4667, DUR = 39.9;
+    const T = (s) => +(s - START).toFixed(3);   // TEXT cues (audited): word start − 0.06
+    const S = T;                                 // structural cues
+    const tl = gsap.timeline({ paused: true });
+    const $ = (id) => document.getElementById("pd36-" + id);
+    const E = FX.ease, C = (e, d) => FX.choppy(e, d, 12);
+    const NS = "http://www.w3.org/2000/svg";
+    FX.grain($("grain"), 3601);
+    FX.dust($("dust"), 3603, 2);
+    FX.tintDefs($("defs"), "pd36-tint", "#1c1f26", "#e4e3da");
+    const wA = FX.whipDefs($("defs"), "pd36-wa"), wM = FX.whipDefs($("defs"), "pd36-wm"), wB = FX.whipDefs($("defs"), "pd36-wb");
+    $("a").style.filter = "url(#pd36-wa)"; $("m").style.filter = "url(#pd36-wm)"; $("b").style.filter = "url(#pd36-wb)";
+    const land = (el, t, d, y) => tl.fromTo(el, { opacity: 0, y: y == null ? 20 : y }, { opacity: 1, y: 0, duration: d || 0.5, ease: C(E.out, d || 0.5), immediateRender: false }, t);
+    const pop = (el, t, d) => tl.fromTo(el, { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: d || 0.5, ease: C(E.out, d || 0.5), immediateRender: false }, t);
+
+    // ================= A · 4306.47–4314.30 "One person he puts on his cabinet is Sun Yun-suan … Chinese engineer … studied in China … came to Taiwan" =================
+    gsap.set([$("m"), $("b")], { autoAlpha: 0 });
+    gsap.set([$("ktag"), $("s1"), $("s2"), $("r1"), $("r2"), $("cn"), $("tw"), $("role")], { opacity: 0 });
+    gsap.set($("strip"), { opacity: 0 });
+    gsap.set($("sun"), { y: -900, rotation: -6 });
+    // frame 0 alive: Chiang Ching-kuo's card is already sliding onto the desk, the camera drifts
+    tl.fromTo($("cck"), { x: -420, rotation: -14 }, { x: 0, rotation: -4, duration: 1.2, ease: C(E.out, 1.2), immediateRender: true }, 0);
+    tl.fromTo($("acam"), { scale: 1.04, x: 20 }, { scale: 1.0, x: -20, duration: 7.9, ease: "none", immediateRender: true }, 0);
+    land($("ktag"), T(4307.66), 0.5, 12);
+    // Sun's ID photo drops in and is taped down as his name is spoken
+    tl.to($("sun"), { y: 0, rotation: 1.5, duration: 0.9, ease: C(E.out, 0.9) }, S(4307.75));
+    tl.set($("strip"), { opacity: 1 }, T(4308.22));
+    tl.fromTo($("strip"), { scaleX: 0.2, transformOrigin: "0 50%" }, { scaleX: 1, duration: 0.35, ease: C(E.out, 0.35), immediateRender: false }, T(4308.22));
+    land($("s1"), T(4308.22), 0.4, 14);
+    land($("s2"), T(4308.62), 0.5, 14);
+    tl.set($("role"), { opacity: 1 }, T(4309.98));
+    land($("r1"), T(4309.98), 0.4, 10);
+    land($("r2"), T(4310.30), 0.4, 10);
+    // "who studied in China, and when he came to Taiwan" — a pen route China → Taiwan
+    land($("cn"), T(4311.50), 0.45, 10);
+    const pen = FX.markupDefs($("amk"), "pd36-pen", { boil: 4 });
+    const ar = FX.markup.arrow(tl, $("amk"), S(4312.0), { x1: 1420, y1: 430, x2: 1610, y2: 590, bend: -60, head: 24, dur: 0.6, color: "#c2c5ca", width: 5, filter: pen });
+    gsap.set(ar, { opacity: 0 }); tl.set(ar, { opacity: 1 }, S(4312.0));
+    land($("tw"), T(4312.62), 0.45, 10);
+
+    // ================= whip → A2 · 4314.30–4320.70 "responsible for fixing the energy grid of Taiwan … back to normal after all the bombing, surprisingly quick" =================
+    FX.whip(tl, $("a"), $("m"), S(4314.30), { dir: 1, blurA: wA, blurB: wM });
+    const P = { kee: [1366, 165], tpe: [1265, 226], hsc: [935, 367], txg: [772, 764], cyi: [644, 1173], tnn: [509, 1473], khh: [560, 1699], ttt: [1035, 1613], hua: [1287, 868], sua: [1433, 489] };
+    const L = [["kee", "tpe"], ["tpe", "hsc"], ["tpe", "sua"], ["hsc", "txg"], ["sua", "hua"], ["txg", "cyi"], ["txg", "hua"], ["cyi", "tnn"], ["hua", "ttt"], ["tnn", "khh"], ["khh", "ttt"]];
+    const grid = $("grid"), lit = [], nodes = [];
+    L.forEach(([a, b], i) => {
+      const [x1, y1] = P[a], [x2, y2] = P[b], mx = (x1 + x2) / 2 + (i % 2 ? 14 : -14), my = (y1 + y2) / 2;
+      const d = "M" + x1 + " " + y1 + " Q" + mx + " " + my + " " + x2 + " " + y2;
+      const broken = document.createElementNS(NS, "path");
+      broken.setAttribute("d", d); broken.setAttribute("fill", "none"); broken.setAttribute("stroke", "#343843"); broken.setAttribute("stroke-width", "9"); broken.setAttribute("stroke-dasharray", "14 26");
+      grid.appendChild(broken);
+      const p = document.createElementNS(NS, "path");
+      p.setAttribute("d", d); p.setAttribute("fill", "none"); p.setAttribute("stroke", "#9bd8b0"); p.setAttribute("stroke-width", "10"); p.setAttribute("stroke-linecap", "round");
+      grid.appendChild(p);
+      const len = p.getTotalLength(); p.setAttribute("stroke-dasharray", len + " " + len); p.setAttribute("stroke-dashoffset", len);
+      lit.push([p, len]);
+    });
+    Object.keys(P).forEach((k) => {
+      const c = document.createElementNS(NS, "circle");
+      c.setAttribute("cx", P[k][0]); c.setAttribute("cy", P[k][1]); c.setAttribute("r", "20"); c.setAttribute("fill", "#0c0f15"); c.setAttribute("stroke", "#878c96"); c.setAttribute("stroke-width", "7");
+      grid.appendChild(c); nodes.push(c);
+    });
+    gsap.set([$("sunc"), $("sunl"), $("e1"), $("e2"), $("twl")], { opacity: 0 });
+    tl.fromTo($("mcam"), { scale: 1.08 }, { scale: 1.0, duration: 6.4, ease: E.cam, immediateRender: false }, S(4314.30));
+    pop($("sunc"), S(4314.45), 0.6);
+    tl.to($("sunl"), { opacity: 1, duration: 0.3 }, S(4314.7));
+    land($("e1"), T(4315.02), 0.5, 18);
+    land($("e2"), T(4315.42), 0.5, 18);
+    land($("twl"), T(4316.06), 0.45, 10);
+    // the grid comes back on, line by line at 12 fps, from the north down — "got back to normal … surprisingly quick"
+    lit.forEach(([p, len], i) => tl.fromTo(p, { attr: { "stroke-dashoffset": len } }, { attr: { "stroke-dashoffset": 0 }, duration: 0.7, ease: C(E.out, 0.7), immediateRender: false }, S(4316.6) + i * 0.27));
+    nodes.forEach((c, i) => tl.to(c, { attr: { fill: "#9bd8b0", stroke: "#eeeee8" }, duration: 0.001 }, S(4316.9) + i * 0.27));
+
+    // ================= whip ↓ → B · 4320.70–4346.37 "Another person who's part of this cabinet is K.T. Li" … the money guy =================
+    FX.whip(tl, $("m"), $("b"), S(4320.70), { dir: 1, vertical: true, blurA: wM, blurB: wB });
+    gsap.set([$("kick"), $("n1"), $("n2"), $("g1"), $("g2"), $("g3"), $("l1"), $("l2"), $("sm1"), $("sm2"), $("cap1")], { opacity: 0 });
+    gsap.set($("rule"), { scaleX: 0 });
+    tl.fromTo($("blk1"), { scaleY: 0.3 }, { scaleY: 1, duration: 1.1, ease: C(E.out, 1.1), immediateRender: false }, S(4320.70));
+    tl.fromTo($("blk2"), { scaleY: 0.3 }, { scaleY: 1, duration: 1.2, ease: C(E.out, 1.2), immediateRender: false }, S(4320.85));
+    tl.fromTo($("li"), { x: 90 }, { x: 0, duration: 1.1, ease: C(E.out, 1.1), immediateRender: false }, S(4320.70));
+    land($("kick"), T(4322.38), 0.5, 12);
+    land($("n1"), T(4323.10), 0.55, 26);
+    land($("n2"), T(4323.74), 0.55, 26);
+    tl.to($("rule"), { scaleX: 1, duration: 0.9, ease: C(E.out, 0.9) }, S(4324.0));
+    // the aside (Lex Fridman, Jensen Huang) holds the card with a slow push; the related photos settle in
+    tl.fromTo($("li").firstElementChild, { scale: 1.0 }, { scale: 1.1, duration: 25, ease: "none", immediateRender: false }, S(4320.70));
+    tl.fromTo($("bcam"), { scale: 1.0 }, { scale: 1.035, duration: 16, ease: "none", immediateRender: false }, S(4321.5));
+    tl.fromTo($("sm1"), { opacity: 0, y: 60, rotation: 8 }, { opacity: 1, y: 0, rotation: 2.5, duration: 0.8, ease: C(E.out, 0.8), immediateRender: false }, S(4325.2));
+    tl.to($("cap1"), { opacity: 1, duration: 0.4 }, S(4325.8));
+    // "he's the money guy" — the role line, then the 1946 Taiwan banknote
+    land($("g1"), T(4339.42), 0.4, 10);
+    land($("g2"), T(4339.50), 0.45, 10);
+    land($("g3"), T(4339.82), 0.45, 10);
+    tl.fromTo($("sm2"), { opacity: 0, x: -60, rotation: -10 }, { opacity: 1, x: 0, rotation: -3, duration: 0.8, ease: C(E.out, 0.8), immediateRender: false }, S(4340.0));
+    // "deciding where … limited money … should be dedicated" — one green budget bar splits into unequal parts that drop into slots
+    const W = [240, 110, 170, 100], X0 = [0, 240, 350, 520], X1 = [0, 270, 410, 610];
+    const bar = $("bar"), slots = $("slots"), seg = [];
+    W.forEach((w, i) => {
+      bar.insertAdjacentHTML("beforeend", '<b style="left:' + X0[i] + 'px;width:' + w + 'px"><i style="background-image:url(\'assets/textures/halftone_01_norm.jpg\')"></i></b>');
+      slots.insertAdjacentHTML("beforeend", '<s style="left:' + X1[i] + 'px;width:' + w + 'px"></s>');
+    });
+    Array.from(bar.children).forEach((b) => seg.push(b));
+    const sl = Array.from(slots.children);
+    gsap.set(seg, { scaleX: 0, transformOrigin: "0 50%" }); gsap.set(sl, { opacity: 0 });
+    tl.to(seg, { scaleX: 1, duration: 0.6, stagger: 0.08, ease: C(E.out, 0.6) }, S(4342.2));
+    land($("l1"), T(4343.34), 0.4, 8);
+    land($("l2"), T(4343.74), 0.4, 8);
+    tl.to(sl, { opacity: 1, duration: 0.001, stagger: 1 / 12 }, S(4343.9));
+    seg.forEach((b, i) => tl.to(b, { x: X1[i] - X0[i], y: 120, duration: 0.8, ease: C(E.inOut, 0.8) }, S(4344.25) + i * 0.17));
+
+    FX.mount(tl, DUR);
+    window.__timelines["pd36"] = tl;
+  })();
+  </script>
+</template>
+</body>
+</html>

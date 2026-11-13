@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8" /></head>
+<body>
+<template>
+  <style>
+    #root { position: absolute; inset: 0; overflow: hidden; background: var(--night); }
+    .p20-scene { position: absolute; inset: 0; overflow: hidden; visibility: hidden; opacity: 0; }
+    .p20-shot { position: absolute; inset: 0; overflow: hidden; transform-origin: 50% 50%; background: var(--night); }
+    .p20-grid { position: absolute; inset: -60px; pointer-events: none; opacity: 0.5;
+      background-image: repeating-linear-gradient(0deg, rgba(194,197,202,0.085) 0 2px, rgba(0,0,0,0) 2px 96px), repeating-linear-gradient(90deg, rgba(194,197,202,0.085) 0 2px, rgba(0,0,0,0) 2px 96px); }
+    .p20-cam { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 960px 540px; }
+    .p20-credit { position: absolute; right: 96px; bottom: 28px; font-size: 13px; letter-spacing: 0.08em; color: rgba(238,238,232,0.5); z-index: 5; }
+    /* sc001 */
+    #pd20-tw { position: absolute; left: 150px; top: 200px; width: 420px; height: 680px; overflow: visible; }
+    #pd20-twl { position: absolute; left: 520px; top: 250px; font-size: 44px; color: var(--board-light); white-space: nowrap; opacity: 0; }
+    #pd20-yr { position: absolute; left: 500px; top: 300px; width: 1330px; text-align: right; font-size: 560px; line-height: 0.92; white-space: nowrap; opacity: 0; transform-origin: 100% 60%;
+      color: transparent; background-image: linear-gradient(rgba(238,238,232,0.42), rgba(238,238,232,0.42)), url('assets/c6/derived/c6s01/un1971_hall_wide.jpg'); background-size: 1420px auto; background-position: 50% 42%; -webkit-background-clip: text; background-clip: text; filter: grayscale(0.7) contrast(1.1) brightness(1.25); }
+    #pd20-yrs { position: absolute; left: 500px; top: 300px; width: 1330px; text-align: right; font-size: 560px; line-height: 0.92; white-space: nowrap; opacity: 0; transform-origin: 100% 60%; color: rgba(238,238,232,0.14); }
+    /* sc002 */
+    #pd20-ubg { position: absolute; inset: -80px; background-size: cover; background-position: center; filter: blur(34px) brightness(0.3) grayscale(0.9); }
+    #pd20-strip { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; }
+    .p20-card { position: absolute; top: 150px; width: 880px; height: 742px; background: var(--bone); box-shadow: 0 30px 60px rgba(0,0,0,0.65); }
+    .p20-card .in { position: absolute; left: 12px; top: 12px; right: 12px; bottom: 12px; overflow: hidden; background: var(--ash-dark); }
+    .p20-card img { position: absolute; left: 0; top: 0; width: 100%; height: 100%; object-fit: cover; filter: grayscale(0.75) contrast(1.08); }
+    .p20-card .in::after { content: ""; position: absolute; inset: 0; background-image: url('assets/textures/halftone_01_norm.jpg'); background-size: 620px auto; mix-blend-mode: overlay; opacity: 0.28; }
+    .p20-cap { position: absolute; left: 0; width: 1920px; top: 922px; text-align: center; font-size: 26px; white-space: nowrap; opacity: 0; }
+    /* sc003 map */
+    #pd20-mapcam { position: absolute; left: 0; top: 0; width: 3199px; height: 2475px; transform-origin: 0 0; }
+    #pd20-mapcam > img { position: absolute; left: 0; top: 0; width: 3199px; height: 2475px; filter: brightness(1.2) contrast(1.05); }
+    #pd20-mapsvg { position: absolute; left: 0; top: 0; width: 3199px; height: 2475px; overflow: visible; }
+    .p20-ml { position: absolute; white-space: nowrap; opacity: 0; }
+    #pd20-twA { left: 1440px; top: 1790px; font-size: 40px; color: var(--board-light); }
+    #pd20-twB { left: 1432px; top: 1846px; font-size: 54px; color: var(--board-light); }
+    #pd20-ccp { left: 900px; top: 880px; width: 700px; text-align: center; font-size: 50px; }
+    #pd20-ccp span { background: var(--ash-light); color: var(--ink); padding: 0.14em 0.4em 0.08em; display: inline-block; }
+    #pd20-chn { left: 900px; top: 960px; width: 700px; text-align: center; font-size: 170px; }
+    #pd20-cv { position: absolute; left: 0; top: 0; width: 10px; height: 10px; opacity: 0; }
+    #pd20-cv svg { position: absolute; left: -115px; top: -38px; width: 230px; height: 76px; overflow: visible; transform: rotate(-58deg); }
+    #pd20-usl { position: absolute; left: -350px; top: 84px; width: 300px; text-align: right; font-size: 32px; white-space: nowrap; opacity: 0; }
+    #pd20-acl { position: absolute; left: -350px; top: 126px; width: 300px; text-align: right; font-size: 21px; color: var(--ash-light); white-space: nowrap; opacity: 0; }
+    #pd20-grain, #pd20-dust, #pd20-vig { z-index: 8; }
+  </style>
+
+  <div id="root" data-composition-id="pd20" data-vo-start="2465.8" data-duration="36" data-width="1920" data-height="1080">
+    <audio id="pd20-vo" class="temp-vo" src="vo_pd.mp3" data-start="0" data-duration="36" data-media-start="2465.8" data-volume="1"></audio>
+    <svg id="pd20-defs" width="0" height="0" style="position:absolute"></svg>
+
+    <!-- sc001 · 2465.80–2469.25 · "I want to open [the] Taiwan part of the story in nineteen seventy one" · date title, UN film inside the numerals (ref 10fe493f; the plan's 62b64549 is not in the saved set) -->
+    <div class="p20-scene" id="pd20-sc001"><div class="p20-shot" id="pd20-sc001-shot">
+      <div class="p20-grid"></div>
+      <div class="p20-cam" id="pd20-sc001-cam">
+        <svg id="pd20-tw" viewBox="1318 1700 96 258"></svg>
+        <div id="pd20-twl" class="t-label">Taiwan</div>
+        <div id="pd20-yrs" class="t-display">1971</div>
+        <div id="pd20-yr" class="t-display">1971</div>
+      </div>
+      <div class="p20-credit t-label">UN film, 1971</div>
+    </div></div>
+
+    <!-- sc002 · 2469.25–2483.10 · "this is the point when Taiwan gets officially kicked out of the UN. And for Taiwanese leaders at that point … they don't know what this means" · photo sequence, centre sharp (ref 4abe44bc), 1971 UN film stills ported from c6s01 -->
+    <div class="p20-scene" id="pd20-sc002"><div class="p20-shot" id="pd20-sc002-shot">
+      <div id="pd20-ubg" style="background-image:url('assets/c6/derived/c6s01/un1971_hall_wide.jpg')"></div>
+      <div class="p20-cam" id="pd20-sc002-cam">
+        <div id="pd20-strip">
+          <div class="p20-card" id="pd20-c1" style="left:520px"><div class="in"><img src="assets/c6/derived/c6s01/un1971_hall_wide.jpg" alt=""></div></div>
+          <div class="p20-card" id="pd20-c2" style="left:1480px"><div class="in"><img src="assets/c5/made/un1971_vote_board_still.jpg" alt=""></div></div>
+          <div class="p20-card" id="pd20-c3" style="left:2440px"><div class="in"><img src="assets/c6/derived/c6s02/presidential_office_rally_1961_still.jpg" alt="" style="transform:scale(1.12)"></div></div>
+        </div>
+        <div class="p20-cap t-label clean" id="pd20-cap1">United Nations General Assembly · 1971</div>
+        <div class="p20-cap t-label clean" id="pd20-cap2">Presidential Office · Taipei</div>
+      </div>
+      <div class="p20-credit t-label">UN film, 1971 · Universal Newsreel, 1961</div>
+    </div></div>
+
+    <!-- sc003 · 2483.10–2501.80 · "now Taiwan is basically not a country anymore … CCP that controls China, which is so much bigger than Taiwan, is a country … already tried invading Taiwan two times … because of the United States. We would just send a aircraft carrier" · two territories on a dark sea (refs e2d14822, 7c824c47) -->
+    <div class="p20-scene" id="pd20-sc003"><div class="p20-shot" id="pd20-sc003-shot" style="background:#10141b">
+      <div id="pd20-mapcam">
+        <img src="assets/podcast/pd20/east_asia_night_3199.jpg" alt="">
+        <svg id="pd20-mapsvg" viewBox="0 0 3199 2475"></svg>
+        <div class="p20-ml t-display" id="pd20-twA">TAIWAN</div>
+        <div class="p20-ml t-display" id="pd20-twB">TAIWAN</div>
+        <div class="p20-ml t-label" id="pd20-ccp"><span>CCP</span></div>
+        <div class="p20-ml t-display clean" id="pd20-chn">CHINA</div>
+        <div id="pd20-cv">
+          <svg viewBox="0 0 180 60"><path d="M4 22 L120 14 L160 20 L176 30 L160 40 L120 46 L4 38 Z" fill="#c2c5ca" stroke="#eeeee8" stroke-width="3" stroke-linejoin="round"/><path d="M20 30 L150 30" stroke="#343843" stroke-width="3" stroke-dasharray="10 8"/><rect x="92" y="15" width="26" height="9" fill="#343843"/></svg>
+          <div id="pd20-usl" class="t-display clean">UNITED STATES</div>
+          <div id="pd20-acl" class="t-label">Aircraft carrier</div>
+        </div>
+      </div>
+      <div class="p20-credit t-label">Relief: AWS Terrain Tiles · Natural Earth</div>
+    </div></div>
+
+    <div id="pd20-grain" class="tx tx-grain" style="background-image:url('assets/textures/grain_01_norm.jpg')"></div>
+    <div id="pd20-dust" class="tx tx-dust" style="background-image:url('assets/textures/dust_02.jpg')"></div>
+    <div id="pd20-vig" class="vignette"></div>
+  </div>
+
+  <script>
+  (function () {
+    const SEG = "pd20", START = 2465.8, END = 2501.8, DUR = 36;
+    const T = (s) => +(s - START).toFixed(3);   // TEXT cues (audited): literal = word start − 0.06
+    const S = (s) => +(s - START).toFixed(3);   // structural cues
+    const tl = gsap.timeline({ paused: true });
+    const $ = (id) => document.getElementById(SEG + "-" + id);
+    const NS = "http://www.w3.org/2000/svg";
+    const defs = $("defs"), E = FX.ease, C = (e, d) => FX.choppy(e, d, 12);
+    const BONE = "#eeeee8", MAG = "#d1307a", MAGL = "#f3a6c8", ASH = "#878c96", ASHL = "#c2c5ca", GRN = "#2f9e5b", GRNL = "#9bd8b0";
+    function mk(parent, tag, attrs) { const n = document.createElementNS(NS, tag); for (const k in attrs) n.setAttribute(k, attrs[k]); parent.appendChild(n); return n; }
+    const CHINA = /*CHINA*/, TAIWAN = /*TAIWAN*/;
+
+    // ---------- scenes ----------
+    const C1 = 2469.25, C2 = 2483.10;
+    const SC = [["sc001", START, C1], ["sc002", C1, C2], ["sc003", C2, END]];
+    SC.forEach((s, i) => {
+      const el = $(s[0]);
+      if (i === 0) gsap.set(el, { autoAlpha: 1 });
+      else tl.fromTo(el, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.001, immediateRender: false }, S(s[1]) - 0.02);
+      if (s[2] < END) tl.set(el, { autoAlpha: 0 }, S(s[2]) + 0.06);
+    });
+    gsap.set([$("vig"), $("dust"), $("grain")], { opacity: (i) => [0.9, 0.34, 0.36][i] });
+    function whip(a, b, t, o) {
+      const A = $(a + "-shot"), B = $(b + "-shot"), h = 0.16, id = SEG + "-w" + a.slice(-1);
+      const ba = FX.whipDefs(defs, id + "a"), bb = FX.whipDefs(defs, id + "b");
+      tl.set(A, { filter: "url(#" + id + "a)" }, t - h - 0.01); tl.set(A, { filter: "none" }, t + 0.06);
+      tl.set(B, { filter: "url(#" + id + "b)" }, t - 0.001); tl.set(B, { filter: "none" }, t + h + 0.02);
+      FX.whip(tl, A, B, t, Object.assign({ dir: 1, dur: 0.32, blurA: ba, blurB: bb }, o));
+    }
+    const rise = (el, t, o) => { o = o || {}; const d = o.dur || 0.5;
+      tl.fromTo(el, { opacity: 0, y: o.y == null ? 16 : o.y }, { opacity: 1, y: 0, duration: d, ease: C(E.out, d), immediateRender: true }, t); };
+
+    /* ===== sc001 · Taiwan (board green) → 1971 ===== */
+    (function () {
+      const tw = $("tw");
+      tw.insertAdjacentHTML("beforeend", '<defs><pattern id="pd20-dots" width="3.2" height="3.2" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><circle cx="1.6" cy="1.6" r="0.62" fill="#0c2a18" fill-opacity="0.4"/></pattern></defs>');
+      mk(tw, "path", { d: TAIWAN, fill: GRN }); mk(tw, "path", { d: TAIWAN, fill: "url(#pd20-dots)", stroke: GRNL, "stroke-width": 1.2, "stroke-linejoin": "round" });
+      gsap.set(tw, { scale: 1.12, x: 40, transformOrigin: "50% 50%" });
+      tl.fromTo(tw, { scale: 1.12, x: 40 }, { scale: 1.0, x: 0, duration: 1.4, ease: C(E.out, 1.4), immediateRender: false }, 0);
+      tl.fromTo($("sc001-cam"), { scale: 1.0 }, { scale: 1.05, duration: S(C1) + 0.2, ease: "none", immediateRender: false }, 0);
+      rise($("twl"), T(2466.75), { dur: 0.4 });                         // Taiwan (part of the story)
+      tl.fromTo([$("yr"), $("yrs")], { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, T(2467.95));   // nineteen seventy one
+      tl.fromTo([$("yr"), $("yrs")], { scale: 1.12 }, { scale: 1, duration: 0.9, ease: C(E.out, 0.9), immediateRender: false }, T(2467.95));
+      tl.fromTo($("yr"), { backgroundPosition: "50% 42%" }, { backgroundPosition: "44% 46%", duration: 1.4, ease: "none", immediateRender: false }, T(2467.95));
+    })();
+
+    whip("sc001", "sc002", S(C1), { dir: 1 });
+
+    /* ===== sc002 · the UN, 1971 → the leaders in Taipei ===== */
+    (function () {
+      const a = S(C1), b = S(C2), strip = $("strip"), cards = [$("c1"), $("c2"), $("c3")];
+      const blur = (el, on, t) => tl.to(el, { filter: on ? "blur(7px) brightness(0.45)" : "blur(0px) brightness(1)", duration: 0.7, ease: "power2.out" }, t);
+      gsap.set(cards[0], { filter: "blur(0px) brightness(1)" }); gsap.set([cards[1], cards[2]], { filter: "blur(7px) brightness(0.45)" });
+      tl.fromTo($("sc002-cam"), { scale: 1.0 }, { scale: 1.06, duration: b - a + 0.2, ease: "none", immediateRender: false }, a);
+      // "kicked out of the UN": slide to the vote board
+      tl.to(strip, { x: -960, duration: 1.0, ease: C(E.inOut, 1.0) }, S(2471.0)); blur(cards[0], true, S(2471.0)); blur(cards[1], false, S(2471.0));
+      rise($("cap1"), T(2472.36), { dur: 0.4, y: 10 });                 // UN
+      tl.to($("cap1"), { opacity: 0, duration: 0.3 }, S(2473.0));
+      // "And for Taiwanese leaders at that point …": slide to Taipei, hold with the slow push
+      tl.to(strip, { x: -1920, duration: 1.1, ease: C(E.inOut, 1.1) }, S(2473.1)); blur(cards[1], true, S(2473.1)); blur(cards[2], false, S(2473.1));
+      rise($("cap2"), S(2474.3), { dur: 0.4, y: 10 });
+    })();
+
+    whip("sc002", "sc003", S(C2), { dir: 1 });
+
+    /* ===== sc003 · Taiwan and China ===== */
+    (function () {
+      const a = S(C2), cam = $("mapcam"), svg = $("mapsvg");
+      svg.insertAdjacentHTML("beforeend", '<defs><pattern id="pd20-hatch" width="16" height="16" patternUnits="userSpaceOnUse" patternTransform="rotate(40)"><rect x="0" y="0" width="4" height="16" fill="#c2c5ca" fill-opacity="0.16"/></pattern></defs>');
+      const chf = mk(svg, "path", { d: CHINA, fill: ASH, "fill-opacity": 0.3 }), chh = mk(svg, "path", { d: CHINA, fill: "url(#pd20-hatch)" });
+      const cho = mk(svg, "path", { d: CHINA, fill: "none", stroke: ASHL, "stroke-width": 5, "stroke-linejoin": "round", "stroke-opacity": 0.75 });
+      const twf = mk(svg, "path", { d: TAIWAN, fill: GRN, "fill-opacity": 0.85 });
+      const two = mk(svg, "path", { d: TAIWAN, fill: "none", stroke: GRNL, "stroke-width": 3.5, "stroke-linejoin": "round" });
+      gsap.set([chf, chh, cho], { opacity: 0 });
+      // camera: close on Taiwan → pull back to China → push into the Strait
+      gsap.set(cam, { scale: 1.6, x: -1200, y: -2388 });
+      tl.fromTo(cam, { scale: 1.6, x: -1200, y: -2388 }, { scale: 1.5, x: -1060, y: -2200, duration: S(2487.5) - a, ease: "sine.out", immediateRender: false }, a);
+      tl.to(cam, { scale: 0.62, x: -30, y: -250, duration: 2.0, ease: E.cam }, S(2487.5));
+      tl.to(cam, { scale: 1.3, x: -777, y: -1780, duration: 1.6, ease: E.cam }, S(2492.75));
+      tl.to(cam, { scale: 1.36, x: -850, y: -1880, duration: DUR - S(2494.35), ease: "sine.out" }, S(2494.35));
+      rise($("twA"), T(2483.80), { dur: 0.4 });                          // Taiwan
+      // "basically not a country anymore": the fill drains, the border breaks into dashes
+      tl.to(twf, { attr: { "fill-opacity": 0.22 }, duration: 0.6, ease: C(E.out, 0.6) }, S(2484.92));
+      tl.set(two, { attr: { "stroke-dasharray": "9 7" } }, S(2485.16));
+      tl.to($("twA"), { opacity: 0, duration: 0.3 }, S(2487.4));
+      // "CCP that controls China … so much bigger than Taiwan … is a country"
+      tl.to([chf, chh, cho], { opacity: 1, duration: 0.8, ease: C(E.out, 0.8) }, S(2487.7));
+      rise($("ccp"), T(2488.04), { dur: 0.4, y: 24 });                   // CCP
+      rise($("chn"), T(2489.32), { dur: 0.5, y: 30 });                   // China
+      rise($("twB"), T(2491.08), { dur: 0.4, y: 20 });                   // Taiwan
+      tl.to(chf, { attr: { "fill-opacity": 0.5 }, duration: 0.5, ease: C(E.out, 0.5) }, S(2491.96));
+      tl.to(cho, { attr: { "stroke-width": 8, "stroke-opacity": 1 }, duration: 0.5 }, S(2491.96));
+      // "already tried invading Taiwan two times": two magenta arrows across the Strait (markup emphasis)
+      const mkv = mk(svg, "g", {});
+      const arrow = (t, o) => { const ps = FX.markup.arrow(tl, mkv, t, Object.assign({ color: MAGL, width: 8, head: 22, dur: 0.55 }, o));
+        ps.forEach((p, i) => { gsap.set(p, { opacity: 0 }); tl.set(p, { opacity: 1 }, t + (i ? 0.46 : 0)); tl.to(p, { opacity: 0, duration: 0.4 }, S(2497.0) + 0.1 * i); }); };
+      arrow(S(2494.28), { x1: 1236, y1: 1668, x2: 1336, y2: 1752, bend: -18 });
+      arrow(S(2495.32), { x1: 1172, y1: 1772, x2: 1318, y2: 1828, bend: 16 });
+      // "because of the United States. We would just send a aircraft carrier"
+      const cv = $("cv"); gsap.set(cv, { x: 1150, y: 2140 });
+      tl.fromTo(cv, { opacity: 0 }, { opacity: 1, duration: 0.3, immediateRender: false }, S(2498.7));
+      tl.fromTo(cv, { x: 1150, y: 2140 }, { x: 1226, y: 1840, duration: 1.7, ease: E.out, immediateRender: false }, S(2498.7));
+      rise($("usl"), T(2498.84), { dur: 0.35, y: 10 });                  // United States
+      rise($("acl"), T(2500.50), { dur: 0.3, y: 8 });                    // aircraft carrier
+    })();
+
+    FX.grain($("grain"), 3); FX.dust($("dust"), 5, 2);
+    FX.mount(tl, DUR);
+    window.__timelines = window.__timelines || {};
+    window.__timelines[SEG] = tl;
+  })();
+  </script>
+</template>
+</body>
+</html>

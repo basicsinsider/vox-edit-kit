@@ -576,7 +576,7 @@
     function gated(a, b, fn) { const on = FX.onFrame; FX.onFrame = (f) => on(FX.gate(S(a) - 0.1, S(b) + 0.1, f)); try { return fn(); } finally { FX.onFrame = on; } }
     function scene(id, a, b) {
       ALL.push($(id));
-      tl.fromTo($(id), { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.001, immediateRender: false }, S(a));
+      if (S(a) > 0) tl.set($(id), { autoAlpha: 1 }, S(a) - 0.002);   // shown just before its first frame (a show at exactly t renders hidden on that frame)
       if (b < SEG_END) tl.set($(id), { autoAlpha: 0 }, S(b));
     }
     function ground(kind, t) {

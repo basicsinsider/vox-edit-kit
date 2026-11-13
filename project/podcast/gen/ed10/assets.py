@@ -101,6 +101,12 @@ def cards():
     Image.open("assets/c3/flags/flag_us_48star_1912_1959.png").convert("L").resize((640, 337), Image.LANCZOS).convert("RGB").save(OUT + "pd21/us48_grey.jpg", quality=90)
     Image.open("assets/c3/derived/c3s02/sc_poster.jpg").convert("L").crop((0, 20, 2337, 1270)).save(OUT + "pd21/sc_poster_top.jpg", quality=88)
 
+def cards24():
+    im = Image.open("assets/c4/paintings/emperor_meiji_portrait_painting.jpg").convert("L")
+    im.crop((250, 60, 1650, 1810)).resize((640, 800), Image.LANCZOS).save(OUT + "pd24/meiji_card.jpg", quality=88)
+    im = Image.open("assets/c4/photos/taihoku_1930s_street_joss_paper_store.jpg").convert("L")
+    im.crop((0, 380, 1280, 1980)).resize((960, 1200), Image.LANCZOS).save(OUT + "pd24/taihoku_street_card.jpg", quality=88)
+
 def world():
     p = json.load(open("assets/c3/derived/c3s03/paths.json"))["world"]
     rec = json.load(open("assets/c3/data/recognition.json"))
@@ -108,6 +114,7 @@ def world():
 
 if __name__ == "__main__":
     cards()
+    cards24()
     data = {"ea": east_asia(), "tw": taiwan(), "world": world()}
     json.dump(data, open(os.path.join(HERE, "maps.json"), "w"))
     for k, v in data.items(): print(k, v["size"], {a: len(b) for a, b in v.get("d", {}).items()} if k != "world" else len(v["d"]))

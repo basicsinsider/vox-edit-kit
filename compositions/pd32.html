@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8" /></head>
+<body>
+<template>
+  <style>
+    /* pd32 · 3875.9333–3905.7333 · The "important question": a majority is not enough, you need 66 % — and the motion is defeated.
+       Paper threshold chart: a band of 18 × 5 tiles filled column by column, two threshold lines (majority = column 9, 66 % = column 12)
+       (inspo a06c4bb3 / d0fc4b3f: grid of tiles with a share call-out). No vote counts — none are spoken. */
+    #root { position: absolute; inset: 0; overflow: hidden; background: var(--paper); color: var(--ink); }
+    #pd32-defs { position: absolute; width: 0; height: 0; }
+    #pd32-p1, #pd32-p2 { position: absolute; inset: 0; background-size: cover; mix-blend-mode: multiply; filter: grayscale(1); pointer-events: none; }
+    #pd32-p1 { opacity: 0.5; } #pd32-p2 { opacity: 0.3; }
+    #pd32-cam { position: absolute; inset: 0; transform-origin: 960px 620px; }
+    #pd32-kick { position: absolute; left: 96px; top: 84px; font-size: 24px; line-height: 1; color: var(--paper); background: var(--ink); padding: 10px 16px 7px; white-space: nowrap; }
+    #pd32-title { position: absolute; left: 92px; top: 132px; font-size: 112px; line-height: 1; color: var(--ink); white-space: nowrap; }
+    #pd32-title span { display: inline-block; white-space: pre; }
+    #pd32-band { position: absolute; left: 102px; top: 470px; width: 1716px; height: 468px; }
+    .pd32-t { position: absolute; width: 84px; height: 84px; box-sizing: border-box; border: 3px solid rgba(22,26,36,0.5); background: rgba(214,213,204,0.6); overflow: hidden; }
+    .pd32-t b { position: absolute; inset: 0; background: var(--ink); opacity: 0; }
+    .pd32-t u { position: absolute; inset: 0; background: var(--board); opacity: 0; }
+    .pd32-t i { position: absolute; inset: 0; background-size: 300px auto; mix-blend-mode: multiply; opacity: 0.4; }
+    .pd32-line { position: absolute; top: 400px; width: 0; height: 574px; border-left: 5px dashed var(--ink); transform-origin: 50% 0; }
+    #pd32-l66 { border-left: 6px solid var(--ink); top: 300px; height: 674px; }
+    #pd32-maj { position: absolute; left: 640px; top: 406px; width: 500px; text-align: right; font-size: 28px; line-height: 1; color: var(--ink); white-space: nowrap; padding-right: 0; }
+    #pd32-majw { display: inline-block; position: relative; }
+    #pd32-n66 { position: absolute; left: 1272px; top: 286px; font-size: 136px; line-height: 1; background: var(--yellow); color: var(--ink); padding: 12px 22px 0; white-space: nowrap; transform-origin: 0 100%; }
+    #pd32-of { position: absolute; left: 1606px; top: 392px; font-size: 24px; line-height: 1.3; color: var(--ink); white-space: nowrap; }
+    #pd32-fav { position: absolute; left: 102px; top: 966px; font-size: 26px; line-height: 1; color: var(--ink); white-space: nowrap; }
+    #pd32-ag { position: absolute; left: 1318px; top: 966px; width: 500px; text-align: right; font-size: 26px; line-height: 1; color: var(--ink); white-space: nowrap; }
+    #pd32-steps { position: absolute; left: 920px; top: 96px; width: 904px; height: 70px; }
+    .pd32-step { position: absolute; top: 0; font-size: 22px; line-height: 1; padding: 14px 16px 10px; white-space: nowrap; border: 3px solid var(--ink); }
+    #pd32-s1 { left: 0; background: var(--ink); color: var(--paper); }
+    #pd32-s2 { right: 0; color: var(--ink); border-style: dashed; }
+    #pd32-stamp { position: absolute; left: 112px; top: 300px; font-size: 108px; line-height: 1; color: var(--paper); background: var(--ink); padding: 18px 28px 4px; transform: rotate(-4deg); white-space: nowrap; box-shadow: 12px 14px 0 rgba(22,26,36,0.22); }
+    #pd32-mk { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; pointer-events: none; }
+  </style>
+  <div id="root" data-composition-id="pd32" data-vo-start="3875.9333" data-duration="29.8" data-width="1920" data-height="1080">
+    <svg id="pd32-defs"></svg>
+    <div id="pd32-p1" style="background-image:url('assets/textures/paper_fiber_01.jpg')"></div>
+    <div id="pd32-p2" style="background-image:url('assets/textures/paper_cream_02.jpg')"></div>
+    <div id="pd32-cam">
+      <div id="pd32-kick" class="t-label">A UN term</div>
+      <div id="pd32-title" class="t-serif-i"><span>&ldquo;Important </span><span>question&rdquo;</span></div>
+      <div id="pd32-steps">
+        <div id="pd32-s1" class="pd32-step t-label">Vote: important question?</div>
+        <div id="pd32-s2" class="pd32-step t-label">The actual vote</div>
+      </div>
+      <div id="pd32-band"></div>
+      <div id="pd32-lmaj" class="pd32-line" style="left:961px"></div>
+      <div id="pd32-l66" class="pd32-line" style="left:1248px"></div>
+      <div id="pd32-maj" class="t-label" style="left:446px"><span id="pd32-majw">Majority</span></div>
+      <div id="pd32-n66" class="t-display">66%</div>
+      <div id="pd32-of" class="t-label">of the<br/>countries</div>
+      <div id="pd32-fav" class="t-label">In favor</div>
+      <div id="pd32-ag" class="t-label">Against</div>
+      <div id="pd32-stamp" class="t-display">DEFEATED</div>
+      <svg id="pd32-mk" viewBox="0 0 1920 1080"></svg>
+    </div>
+    <div id="pd32-grain" class="tx tx-grain" style="background-image:url('assets/textures/grain_02_norm.jpg'); opacity:0.24"></div>
+    <div id="pd32-dust" class="tx tx-dust" style="background-image:url('assets/textures/dust_03.jpg'); opacity:0.12"></div>
+    <div class="vignette" style="opacity:0.3"></div>
+    <audio id="pd32-vo" class="temp-vo" src="vo_pd.mp3" data-start="0" data-duration="29.8" data-media-start="3875.9333" data-volume="1"></audio>
+  </div>
+  <script>
+  (function () {
+    const START = 3875.9333, DUR = 29.8;
+    const T = (s) => +(s - START).toFixed(3);   // TEXT cues (audited): word start − 0.06
+    const S = T;
+    const tl = gsap.timeline({ paused: true });
+    const $ = (id) => document.getElementById("pd32-" + id);
+    const E = FX.ease, C = (e, d) => FX.choppy(e, d, 12);
+    const INK = "#161a24";
+    FX.grain($("grain"), 3201);
+    FX.dust($("dust"), 3203, 2);
+    const land = (el, t, d, y) => tl.fromTo(el, { opacity: 0, y: y == null ? 18 : y }, { opacity: 1, y: 0, duration: d || 0.5, ease: C(E.out, d || 0.5), immediateRender: false }, t);
+
+    // ---- the band: 18 columns × 5 rows, index runs column by column (left → right, bottom → top) ----
+    const band = $("band"), COLS = 18, ROWS = 5, N = COLS * ROWS, tiles = [];
+    for (let i = 0; i < N; i++) {
+      const c = Math.floor(i / ROWS), r = ROWS - 1 - (i % ROWS);
+      band.insertAdjacentHTML("beforeend", '<div class="pd32-t" style="left:' + c * 96 + 'px;top:' + r * 96 + 'px"><b></b><u></u><i style="background-image:url(\'assets/textures/halftone_01_norm.jpg\')"></i></div>');
+    }
+    const ts = Array.from(band.children), ink = ts.map((e) => e.children[0]), grn = ts.map((e) => e.children[1]);
+    const step12 = (k) => Math.round(k * 12) / 12;
+    // fill tiles a..b-1 of a layer between t and t+dur (12 fps); dir −1 = from the right end
+    const fill = (layer, a, b, t, dur, on, rev) => { for (let i = a; i < b; i++) { const k = rev ? (b - 1 - i) : (i - a); tl.set(layer[i], { opacity: on ? 1 : 0 }, t + step12(dur * k / Math.max(1, b - a))); } };
+
+    // ---- frame 0 alive: the empty tiles are popping in ("One thing he tries is… let's vote on this becoming…") ----
+    gsap.set(ts, { opacity: 0 }); gsap.set(ts.slice(0, 15), { opacity: 1 });
+    for (let i = 15; i < N; i++) tl.set(ts[i], { opacity: 1 }, step12(0.08 + (i - 15) * 0.032));
+    tl.fromTo($("cam"), { scale: 1.05 }, { scale: 1, duration: 3.4, ease: E.cam, immediateRender: true }, 0);
+    gsap.set([$("kick"), $("maj"), $("n66"), $("of"), $("fav"), $("ag"), $("s1"), $("s2"), $("stamp")], { opacity: 0 });
+    gsap.set($("title").children, { opacity: 0 });
+    gsap.set([$("lmaj"), $("l66")], { scaleY: 0 });
+    // "an important question" · "like a UN term"
+    land($("title").children[0], T(3879.3), 0.5, 22); land($("title").children[1], T(3879.7), 0.5, 22);
+    land($("kick"), T(3882.03), 0.45, 10);
+    // "you cannot make a decision with just majority" — just over half is filled; the majority line; struck out
+    fill(ink, 0, 46, S(3885.3), 1.5, true);
+    tl.to($("lmaj"), { scaleY: 1, duration: 0.5, ease: C(E.out, 0.5) }, S(3886.9));
+    land($("maj"), T(3887.15), 0.45, 10);
+    const f = FX.markupDefs($("mk"), "pd32-pen", { boil: 4 });
+    const strike = FX.markup.pen(tl, $("mk"), S(3887.62), { points: [[772, 424], [840, 416], [900, 424], [952, 415]], dur: 0.35, width: 7, color: "#d1307a", filter: f, seed: 5, jitter: 4 });
+    gsap.set(strike, { opacity: 0 }); tl.set(strike, { opacity: 1 }, S(3887.62));
+    // "You need 66% of the countries to vote in favor of it"
+    tl.to($("l66"), { scaleY: 1, duration: 0.5, ease: C(E.out, 0.5) }, S(3887.95));
+    tl.fromTo($("n66"), { opacity: 0, scale: 1.35 }, { opacity: 1, scale: 1, duration: 0.45, ease: C(E.out, 0.45), immediateRender: false }, T(3888.11));
+    land($("of"), T(3889.39), 0.45, 10);
+    fill(ink, 46, 60, S(3889.5), 1.3, true);
+    land($("fav"), T(3891.23), 0.45, 10);
+    // "So before the actual vote… the UN has a vote on making this question an important question" — reset, two steps
+    fill(ink, 0, 60, S(3893.5), 0.9, false, true);
+    tl.to($("fav"), { opacity: 0, duration: 0.3 }, S(3893.5));
+    land($("s2"), T(3894.11), 0.5, 10);
+    land($("s1"), T(3897.02), 0.5, 10);
+    const ar = FX.markup.arrow(tl, $("mk"), S(3897.5), { x1: 1376, y1: 126, x2: 1496, y2: 130, bend: -14, head: 20, dur: 0.5, color: INK, width: 5, filter: f });
+    gsap.set(ar, { opacity: 0 }); tl.set(ar, { opacity: 1 }, S(3897.5));
+    // the votes come in: in favour from the left (green), against from the right (ink) — the green stops short of the majority line
+    fill(grn, 0, 41, S(3898.4), 3.1, true);
+    fill(ink, 41, 90, S(3898.7), 3.0, true, true);
+    // "it gets defeated easily" · "Majority of the people are against it"
+    tl.fromTo($("stamp"), { opacity: 0, scale: 1.6, rotation: -11 }, { opacity: 1, scale: 1, rotation: -4, duration: 0.35, ease: C(E.out, 0.35), immediateRender: false }, T(3901.98));
+    tl.to($("fav"), { opacity: 1, duration: 0.3 }, S(3903.2));
+    land($("ag"), T(3903.82), 0.45, 10);
+    tl.to($("cam"), { scale: 1.035, duration: DUR - 3.4, ease: "none" }, 3.4);
+
+    FX.mount(tl, DUR);
+    window.__timelines["pd32"] = tl;
+  })();
+  </script>
+</template>
+</body>
+</html>

@@ -28,7 +28,7 @@
     #pd21-croc .ac { color: var(--board-dark); }
     #pd21-rocblk { position: absolute; left: 540px; top: 236px; width: 364px; height: 520px; background: var(--board); transform: rotate(-1.5deg); background-image: radial-gradient(circle, rgba(23,96,58,0.55) 1.5px, transparent 2px); background-size: 7px 7px; }
     #pd21-nat { position: absolute; left: 574px; top: 782px; font-size: 24px; background: var(--board-dark); color: var(--bone); padding: 10px 16px 6px; white-space: nowrap; transform: rotate(1.5deg); }
-    #pd21-cus { left: 990px; top: 640px; transform: rotate(-1.2deg); }
+    #pd21-cus { left: 1040px; top: 664px; transform: rotate(-1.2deg); }
     #pd21-cus .ph { height: 170px; }
     #pd21-cus .ac { font-size: 40px; margin-top: 14px; margin-bottom: 14px; white-space: nowrap; }
     #pd21-amk { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; }
@@ -105,7 +105,7 @@
       <div id="pd21-wsu" class="pd21-wl t-display" data-ll="88,61" data-a="c"><span class="n">2</span>SOVIET UNION</div>
       <div id="pd21-wuk" class="pd21-wl t-display" data-ll="-7,55.5" data-a="r"><span class="n">3</span>UNITED KINGDOM</div>
       <div id="pd21-wroc" class="pd21-wl t-display" data-ll="86,35.5"><span id="pd21-n4" class="n">4</span>ROC<span class="s t-label">Republic of China</span></div>
-      <div id="pd21-title" class="t-display halate"><span id="pd21-t1">THE FOUR&nbsp;</span><span id="pd21-t2">POLICEMEN</span></div>
+      <div id="pd21-title" class="t-display halate cool"><span id="pd21-t1">THE FOUR&nbsp;</span><span id="pd21-t2">POLICEMEN</span></div>
       <div id="pd21-dots"><div class="pd21-dot" style="left:0"><i></i></div><div class="pd21-dot" style="left:76px"><i></i></div><div class="pd21-dot" style="left:152px"><i></i></div><div class="pd21-dot" style="left:228px"><i style="background:var(--board-light)"></i></div></div>
     </div>
 
@@ -156,12 +156,16 @@
       $("acam").style.transform = "translate(" + ox.toFixed(2) + "px," + oy.toFixed(2) + "px) scale(" + camA.s.toFixed(4) + ")";
       for (const l of mlabs) l.el.style.transform = "translate(" + (l.x * camA.s + ox).toFixed(1) + "px," + (l.y * camA.s + oy).toFixed(1) + "px) translate(-50%,-50%)";
     };
-    gsap.set([$("cccp"), $("croc"), $("rocblk"), $("nat"), $("cus")], { opacity: 0 });
+    gsap.set([$("croc"), $("rocblk"), $("nat"), $("cus")], { opacity: 0 });
+    const ccpTxt = [$("cccp").querySelector(".ac"), $("cccp").querySelector(".fn")];
+    gsap.set(ccpTxt, { opacity: 0 });
+    gsap.set($("cccp"), { scale: 1.2, rotation: -7, y: -40 });
     tl.fromTo(camA, { s: 0.64, cx: 1500 }, { s: 0.69, cx: 1540, duration: tA + 0.3, ease: "none", immediateRender: false }, 0);
     // 2582.63 "the CCP actually wasn't the one fighting" — the CCP card is pinned on the north-west
-    pin($("cccp"), T(2582.57), -2.5);
+    tl.to($("cccp"), { scale: 1, rotation: -2.5, y: 0, duration: 0.55, ease: C(E.out, 0.55) }, 0);   // the photo card is already dropping on frame 0; its text waits for the word
+    tl.to(ccpTxt, { opacity: 1, duration: 0.2, stagger: 0.12, ease: C(E.out, 0.2) }, T(2582.57));
     // 2585.5 "purposefully stayed out of World War II to protect their forces" — the card is pushed to the edge and dims
-    tl.to($("cccp"), { x: -40, y: -34, scale: 0.72, rotation: -6, duration: 1.2, ease: C(E.inOut, 1.2), transformOrigin: "0 0" }, S(2586.0));
+    tl.to($("cccp"), { x: 0, y: -30, scale: 0.72, rotation: -5, duration: 1.2, ease: C(E.inOut, 1.2), transformOrigin: "0 0" }, S(2586.0));
     tl.to($("cccp").querySelector(".ph img"), { opacity: 0.45, duration: 1.0, ease: "power1.out" }, S(2586.0));
     // 2589.83 "it was the ROC, the nationalist government of China, that was ruling China at the time"
     tl.fromTo($("rocblk"), { opacity: 0, scale: 0.9 }, { opacity: 1, scale: 1, duration: 0.4, ease: C(E.out, 0.4), immediateRender: false }, S(2589.7));
@@ -171,9 +175,9 @@
     // 2594.79 "fighting with the United States against Japan"
     pin($("cus"), T(2595.37), -1.2);
     const mkA = FX.markupDefs($("amk"), "pd21-mka", { boil: 4 });
-    const link = FX.markup.pen(tl, $("amk"), S(2595.75), { points: [[930, 700], [960, 716], [992, 730]], color: "#161a24", width: 6, dur: 0.3, filter: mkA, seed: 5, blend: "normal" });
+    const link = FX.markup.pen(tl, $("amk"), S(2595.75), { points: [[934, 716], [985, 740], [1036, 760]], color: "#161a24", width: 6, dur: 0.3, filter: mkA, seed: 5, blend: "normal" });
     const ar1 = FX.markup.arrow(tl, $("amk"), S(2596.45), { x1: 900, y1: 330, x2: 1250, y2: 300, bend: -60, color: "#161a24", width: 6, dur: 0.45, filter: mkA });
-    const ar2 = FX.markup.arrow(tl, $("amk"), S(2596.55), { x1: 1360, y1: 690, x2: 1470, y2: 560, bend: 40, color: "#161a24", width: 6, dur: 0.4, filter: mkA });
+    const ar2 = FX.markup.arrow(tl, $("amk"), S(2596.55), { x1: 1400, y1: 706, x2: 1490, y2: 580, bend: 40, color: "#161a24", width: 6, dur: 0.4, filter: mkA });
     const circ = FX.markup.circle(tl, $("amk"), S(2596.6), { cx: 1560, cy: 400, rx: 290, ry: 250, rot: -28, color: "#d1307a", width: 8, dur: 0.6, filter: mkA, seed: 7 });
     [link].concat(ar1, ar2, [circ]).forEach((p) => gsap.set(p, { opacity: 0 }));
     tl.set(link, { opacity: 1 }, S(2595.75)); tl.set(ar1, { opacity: 1 }, S(2596.45)); tl.set(ar2, { opacity: 1 }, S(2596.55)); tl.set(circ, { opacity: 1 }, S(2596.6));
@@ -227,6 +231,7 @@
     land($("dun"), T(2618.26), 0.5, 18);
     // 2619.92 "and they get a permanent seat on the Security Council" — push to the five permanent members; China circled
     tl.to(camD, { s: 1.5, x: -2121, y: -245, duration: 1.25, ease: E.cam }, S(2619.75));
+    tl.to($("cred"), { opacity: 0, duration: 0.3 }, S(2619.75));
     const mkD = FX.markupDefs($("dmk"), "pd21-mkd", { boil: 4 });
     const cD = FX.markup.circle(tl, $("dmk"), S(2621.0), { cx: 884, cy: 506, rx: 150, ry: 176, rot: -8, color: "#2f9e5b", width: 9, dur: 0.5, filter: mkD, seed: 11 });
     gsap.set(cD, { opacity: 0 }); tl.set(cD, { opacity: 1 }, S(2621.0));

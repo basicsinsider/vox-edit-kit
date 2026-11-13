@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8" /></head>
+<body>
+<template>
+  <style>
+    #root { position: absolute; inset: 0; overflow: hidden; background: var(--night); }
+    .p28-scene { position: absolute; inset: 0; overflow: hidden; visibility: hidden; opacity: 0; }
+    .p28-shot { position: absolute; inset: 0; overflow: hidden; transform-origin: 50% 50%; background: var(--night); }
+    .p28-paper { background: var(--paper); }
+    .p28-p1, .p28-p2 { position: absolute; inset: 0; background-size: cover; background-position: center; pointer-events: none; mix-blend-mode: multiply; filter: saturate(0.3); }
+    .p28-abs { position: absolute; white-space: nowrap; }
+    .p28-w { display: inline-block; white-space: pre; opacity: 0; }
+    .p28-shade { position: absolute; inset: 0; pointer-events: none; }
+    .p28-credit { position: absolute; right: 96px; bottom: 28px; font-size: 13px; letter-spacing: 0.08em; color: rgba(238,238,232,0.5); z-index: 5; }
+
+    /* sc001 map */
+    #pd28-s1-cam { position: absolute; left: 0; top: 0; width: 6398px; height: 4950px; transform-origin: 0 0; }
+    #pd28-s1-map { position: absolute; left: 0; top: 0; width: 6398px; height: 4950px; filter: brightness(1.14) contrast(1.05) saturate(0.6); }
+    #pd28-s1-svg { position: absolute; left: 0; top: 0; width: 6398px; height: 4950px; overflow: visible; }
+    .p28-ml { position: absolute; white-space: nowrap; letter-spacing: 0.04em; }
+    #pd28-s1-shade { background: linear-gradient(90deg, rgba(12,15,21,0.82) 0%, rgba(12,15,21,0.5) 30%, rgba(12,15,21,0) 52%); }
+    #pd28-s1-k { left: 100px; top: 372px; font-size: 30px; color: var(--board-light); opacity: 0; }
+    #pd28-s1-t { left: 96px; top: 420px; font-size: 92px; line-height: 1.02; white-space: normal; width: 760px; }
+
+    /* sc002 diagram board */
+    #pd28-s2-cam { position: absolute; left: 0; top: 0; width: 1920px; height: 1700px; transform-origin: 0 0; }
+    #pd28-zone { position: absolute; left: 560px; top: 280px; width: 800px; height: 520px; border: 6px dashed var(--board); border-radius: 18px; background: rgba(47,158,91,0.15); box-sizing: border-box; }
+    #pd28-ztag { position: absolute; left: 588px; top: 254px; font-size: 30px; line-height: 1; padding: 10px 14px 8px; background: var(--board-dark); color: var(--bone); white-space: nowrap; }
+    .p28-box { display: inline-block; background: var(--ink); color: var(--paper); padding: 0.1em 0.24em 0.05em; line-height: 1; opacity: 0; }
+    .p28-wb { margin-right: 0; padding-right: 0.2em; }
+    .p28-big { font-size: 54px; color: var(--ink); line-height: 1; }
+    .p28-ico { position: absolute; overflow: visible; }
+    .p28-crate { position: absolute; left: 0; top: 528px; width: 64px; height: 64px; background: var(--paper-2); border: 5px solid var(--ink); box-sizing: border-box; opacity: 0; }
+    .p28-crate::after { content: ""; position: absolute; left: 6px; right: 6px; top: 24px; height: 5px; background: var(--ink); opacity: 0.6; }
+    .p28-prod { position: absolute; left: 0; top: 516px; width: 92px; height: 78px; background: var(--ink); border-radius: 8px; opacity: 0; }
+    .p28-prod::after { content: ""; position: absolute; left: 10px; top: 10px; width: 52px; height: 48px; background: var(--ash-light); border-radius: 10px; }
+    .p28-prod::before { content: ""; position: absolute; right: 9px; top: 14px; width: 12px; height: 12px; border-radius: 50%; background: var(--ash-light); box-shadow: 0 20px 0 var(--ash-light); }
+    #pd28-arm { position: absolute; left: 548px; top: 486px; width: 14px; height: 190px; background: var(--ink); transform-origin: 50% 100%; }
+    #pd28-post { position: absolute; left: 540px; top: 662px; width: 30px; height: 30px; border-radius: 50%; background: var(--ink); }
+    .p28-per { position: absolute; width: 74px; height: 104px; opacity: 0; overflow: visible; }
+    #pd28-s2-svg { position: absolute; left: 0; top: 0; width: 1920px; height: 1700px; overflow: visible; pointer-events: none; }
+
+    /* sc003 aerial */
+    #pd28-s3-cam { position: absolute; left: 0; top: 0; width: 3328px; height: 2560px; transform-origin: 0 0; }
+    #pd28-s3-map { position: absolute; left: 0; top: 0; width: 3328px; height: 2560px; filter: grayscale(0.88) brightness(0.62) contrast(1.18); }
+    #pd28-s3-svg { position: absolute; left: 0; top: 0; width: 3328px; height: 2560px; overflow: visible; }
+    #pd28-s3-shade { background: linear-gradient(0deg, rgba(12,15,21,0.82) 0%, rgba(12,15,21,0) 36%), linear-gradient(90deg, rgba(12,15,21,0.7) 0%, rgba(12,15,21,0) 36%); }
+    #pd28-s3-pl { left: 100px; top: 96px; font-size: 64px; letter-spacing: 0.04em; }
+    #pd28-s3-pl2 { left: 104px; top: 174px; font-size: 26px; color: var(--board-light); }
+    #pd28-s3-as { left: 96px; top: 800px; font-size: 150px; line-height: 1; opacity: 0; }
+    #pd28-grain, #pd28-dust, #pd28-vig { z-index: 8; }
+  </style>
+
+  <div id="root" data-composition-id="pd28" data-vo-start="3266.7" data-duration="52.3333" data-width="1920" data-height="1080">
+    <svg id="pd28-defs" width="0" height="0" style="position:absolute"></svg>
+
+    <!-- sc001 · 3266.70–3273.62 · "And one of the things is that they become the first country in Asia to set up special economic zones inside of their own country." · East Asia night map, Taiwan in board green (ref 7c824c47; ported from c4s03 C4S095) -->
+    <div class="p28-scene" id="pd28-sc001"><div class="p28-shot" id="pd28-sc001-shot" style="background:#131a22">
+      <div id="pd28-s1-cam">
+        <img id="pd28-s1-map" src="assets/maps/kit/east_asia_night.jpg" alt="">
+        <svg id="pd28-s1-svg" viewBox="0 0 6398 4950"></svg>
+        <div class="p28-ml t-display clean" style="left:2850px; top:3610px; font-size:84px">TAIWAN</div>
+        <div class="p28-ml t-display" style="left:1250px; top:2700px; font-size:150px; color:rgba(194,197,202,0.8)">CHINA</div>
+        <div class="p28-ml t-display" style="left:3300px; top:2640px; font-size:104px; color:rgba(194,197,202,0.7)">JAPAN</div>
+      </div>
+      <div class="p28-shade" id="pd28-s1-shade"></div>
+      <div class="p28-abs t-label" id="pd28-s1-k">First in Asia</div>
+      <div class="p28-abs t-display clean" id="pd28-s1-t"><span class="p28-w" id="pd28-s1-t1">SPECIAL </span><span class="p28-w" id="pd28-s1-t2">ECONOMIC </span><span class="p28-w" id="pd28-s1-t3">ZONES</span></div>
+      <div class="p28-credit t-label">Relief: AWS Terrain Tiles / Natural Earth (PD)</div>
+    </div></div>
+
+    <!-- sc002 · 3273.62–3304.30 · "…set up a factory in this zone and you're not taxed or taxed at a lower rate … in the late sixties, you can import whatever you want, you don't have to pay any tariffs. And then you can create your final product and ship it out. You don't have to pay any taxes. … The labor in Taiwan is cheaper … the labor pool that Taiwan has, which is getting educated." · grid-paper flow diagram (ref b76c4b43; ported from c4s03 C4S100–101) -->
+    <div class="p28-scene" id="pd28-sc002"><div class="p28-shot p28-paper" id="pd28-sc002-shot">
+      <div class="p28-p1" style="background-image:url('assets/textures/paper_graph_01_hires.jpg'); opacity:0.5"></div>
+      <div class="p28-p2" style="background-image:url('assets/textures/paper_fiber_01.jpg'); opacity:0.35"></div>
+      <div id="pd28-s2-cam">
+        <div id="pd28-zone"></div>
+        <div id="pd28-ztag" class="t-label">Special economic zone</div>
+        <div class="p28-abs t-display" style="left:1090px; top:214px; font-size:46px"><span class="p28-box p28-wb" id="pd28-d1">LATE</span><span class="p28-box p28-wb" id="pd28-d2">1960s</span></div>
+        <svg id="pd28-s2-svg" viewBox="0 0 1920 1700"></svg>
+        <div class="p28-crate" id="pd28-cr0"></div><div class="p28-crate" id="pd28-cr1"></div><div class="p28-crate" id="pd28-cr2"></div>
+        <div class="p28-crate" id="pd28-cr3"></div><div class="p28-crate" id="pd28-cr4"></div><div class="p28-crate" id="pd28-cr5"></div>
+        <div class="p28-prod" id="pd28-pr0"></div><div class="p28-prod" id="pd28-pr1"></div>
+        <svg class="p28-ico" id="pd28-fac" viewBox="0 0 100 100" style="left:820px; top:400px; width:280px; height:280px"><path d="M8 92 L8 50 L28 38 L28 50 L48 38 L48 50 L68 38 L68 14 L82 14 L82 92 Z" fill="#161a24"/><path d="M18 62h10v12H18zM38 62h10v12H38zM58 62h10v12H58z" fill="#e7e6df"/></svg>
+        <svg class="p28-ico" id="pd28-ship" viewBox="0 0 240 130" style="left:1560px; top:506px; width:250px; height:135px"><path d="M6 78 L234 78 L206 122 L32 122 Z" fill="#161a24"/><path d="M150 78 L150 40 L196 40 L196 78 Z M162 40 L162 12 L182 12 L182 40 Z" fill="#161a24"/><path d="M158 52h10v10h-10zM176 52h10v10h-10z" fill="#e7e6df"/></svg>
+        <div id="pd28-arm"></div><div id="pd28-post"></div>
+        <div class="p28-abs t-display" style="left:880px; top:700px; font-size:36px"><span class="p28-box" id="pd28-low">LOWER TAX RATE</span></div>
+        <div class="p28-abs t-display p28-big" id="pd28-imp" style="left:140px; top:426px; opacity:0">IMPORT</div>
+        <div class="p28-abs t-display" style="left:140px; top:640px; font-size:46px"><span class="p28-box p28-wb" id="pd28-nt1">NO</span><span class="p28-box p28-wb" id="pd28-nt2">TARIFFS</span></div>
+        <div class="p28-abs t-label" id="pd28-fp" style="left:1124px; top:432px; font-size:30px; line-height:1.25; color:var(--ink)"><span class="p28-w" id="pd28-fp1">Final</span><br><span class="p28-w" id="pd28-fp2">product</span></div>
+        <div class="p28-abs t-display p28-big" id="pd28-exp" style="left:1500px; top:426px; opacity:0">EXPORT</div>
+        <div class="p28-abs t-display" style="left:1500px; top:660px; font-size:46px"><span class="p28-box p28-wb" id="pd28-nx1">NO</span><span class="p28-box p28-wb" id="pd28-nx2">TAXES</span></div>
+        <!-- labour pool (lower half of the board) -->
+        <div class="p28-abs t-display p28-big" id="pd28-lab" style="left:140px; top:1010px; opacity:0">LABOR</div>
+        <div class="p28-abs t-display" style="left:140px; top:1084px; font-size:46px"><span class="p28-box" id="pd28-chp">CHEAPER</span></div>
+        <div class="p28-abs t-display" style="left:140px; top:1160px; font-size:46px"><span class="p28-box" id="pd28-edu" style="background:var(--board-dark); color:var(--bone)">EDUCATED</span></div>
+        <div id="pd28-pool"></div>
+      </div>
+    </div></div>
+
+    <!-- sc003 · 3304.30–3319.03 · "So a lot of companies start doing this and they start setting up just finished-product factories … they're doing the assembly in Taiwan and they can take advantage of the cheap and educated labor pool that is available in the country." · Kaohsiung harbour aerial with the export zone and factory pins (ref 5fc04bfb; ported from c4s03 C4S102) -->
+    <div class="p28-scene" id="pd28-sc003"><div class="p28-shot" id="pd28-sc003-shot">
+      <div id="pd28-s3-cam">
+        <img id="pd28-s3-map" src="assets/c4/maps/kaohsiung_harbour_epz_esri_z16.jpg" alt="">
+        <svg id="pd28-s3-svg" viewBox="0 0 3328 2560"></svg>
+      </div>
+      <div class="p28-shade" id="pd28-s3-shade"></div>
+      <div class="p28-abs t-display clean" id="pd28-s3-pl">KAOHSIUNG, TAIWAN</div>
+      <div class="p28-abs t-label" id="pd28-s3-pl2">Export processing zone</div>
+      <div class="p28-abs t-display halate" id="pd28-s3-as">ASSEMBLY</div>
+      <div class="p28-credit t-label">Imagery: Esri, Maxar, Earthstar Geographics</div>
+    </div></div>
+
+    <div id="pd28-grain" class="tx tx-grain" style="background-image:url('assets/textures/grain_01_norm.jpg'); opacity:0.36"></div>
+    <div id="pd28-dust" class="tx tx-dust" style="background-image:url('assets/textures/dust_02.jpg'); opacity:0.34"></div>
+    <div id="pd28-vig" class="vignette" style="opacity:0.9"></div>
+  </div>
+
+  <script>
+  (function () {
+    const SEG = "pd28", START = 3266.7, DUR = 52.3333, END = START + DUR;
+    const T = (s) => +(s - START).toFixed(3);   // TEXT cues (audited): literal = word start − 0.06
+    const S = (s) => +(s - START).toFixed(3);   // structural cues
+    const tl = gsap.timeline({ paused: true });
+    const $ = (id) => document.getElementById(SEG + "-" + id);
+    const defs = $("defs"), E = FX.ease, C = (e, d) => FX.choppy(e, d, 12), NS = "http://www.w3.org/2000/svg";
+    const INK = "#161a24", BONE = "#eeeee8", BOARD = "#2f9e5b", BOARDL = "#9bd8b0", BOARDD = "#17603a", YEL = "#f2e24a";
+    const mk = (parent, tag, a) => { const n = document.createElementNS(NS, tag); for (const k in a) n.setAttribute(k, a[k]); parent.appendChild(n); return n; };
+    const cam = (cx, cy, z) => ({ x: 960 - cx * z, y: 540 - cy * z, scale: z });
+    const TW_D = "M237.9 51.6L227.3 65.8L225.5 73.1L225.5 81.0L226.8 91.1L226.4 97.5L231.0 102.8L234.7 104.3L231.9 104.3L229.6 105.6L231.5 111.4L228.2 116.2L228.2 119.0L229.6 121.8L225.0 124.8L221.8 130.6L221.3 135.7L220.4 138.5L219.9 142.8L219.5 145.1L220.9 147.6L217.2 151.9L212.1 158.2L211.6 160.3L206.6 165.1L203.8 174.5L199.7 182.6L200.6 187.6L202.4 190.2L202.0 193.7L199.7 198.5L197.8 210.2L190.9 240.1L183.1 278.8L179.9 295.0L175.3 302.6L173.4 311.7L173.0 322.1L169.7 328.4L166.5 331.5L165.1 335.8L161.4 346.9L155.4 357.8L148.1 365.4L146.2 369.0L146.2 373.8L144.9 377.1L140.2 382.7L126.9 394.6L124.6 396.8L120.9 406.5L115.4 415.1L112.2 430.3L106.6 442.2L106.2 458.4L105.7 489.5L102.9 493.8L101.1 500.4L101.6 508.3L96.0 502.0L88.2 499.2L87.3 503.7L83.6 501.7L84.1 496.9L81.3 490.6L81.3 487.8L81.7 480.4L83.1 477.1L72.5 448.3L67.9 439.4L62.9 434.6L60.1 433.1L57.3 428.8L50.4 424.7L46.7 421.7L44.0 421.4L36.6 416.1L36.6 415.1L34.8 409.2L31.5 404.2L25.6 397.6L25.6 392.8L25.6 387.5L21.9 380.4L19.1 372.8L20.0 369.2L19.1 366.9L16.8 362.4L15.4 354.3L14.0 349.0L14.5 345.2L15.4 339.3L11.7 339.8L10.4 342.9L8.0 341.6L7.6 336.8L4.8 336.8L2.5 338.8L0.7 335.5L1.6 332.5L4.8 331.5L6.7 329.5L1.6 326.4L4.8 324.9L1.6 321.4L3.0 318.6L5.3 316.8L3.9 313.0L5.3 309.5L6.2 306.9L8.0 301.1L9.9 299.8L9.0 296.3L12.2 295.5L12.7 294.0L10.8 294.5L9.4 292.7L12.7 289.7L13.1 284.4L12.2 278.0L10.8 276.3L12.2 273.0L9.9 270.4L12.2 263.4L12.2 248.4L15.9 239.0L17.7 229.4L21.4 223.6L24.6 219.0L26.5 213.7L30.6 208.6L32.9 203.1L37.5 190.7L40.3 186.6L42.6 185.3L43.5 183.1L46.7 179.5L47.7 172.7L49.5 169.9L55.5 160.8L58.3 156.0L64.2 141.3L67.0 133.2L77.1 121.5L78.5 115.9L82.2 107.6L84.1 103.0L88.2 100.7L89.1 98.2L93.7 94.2L99.7 94.2L100.6 89.3L103.4 84.3L106.2 79.7L109.8 72.4L109.8 69.6L110.3 67.1L111.7 64.8L112.6 61.2L114.9 58.7L116.3 56.2L118.1 51.4L126.0 39.7L138.4 33.4L142.6 30.3L149.0 27.3L164.2 24.5L169.7 20.7L173.0 20.2L175.7 22.0L177.1 24.3L177.1 20.7L172.5 16.7L173.9 14.4L176.2 10.8L180.8 4.7L190.9 0.9L198.3 3.2L205.2 14.4L208.4 13.6L208.9 15.1L210.7 19.2L213.9 21.2L237.9 28.1L237.0 31.3L238.4 38.7L240.7 41.2L245.7 40.7L249.4 42.5L240.7 49.1Z";
+
+    // ---------- scenes ----------
+    const W1 = 3273.62, W2 = 3304.30;
+    const SC = [["sc001", START, W1, "night"], ["sc002", W1, W2, "paper"], ["sc003", W2, END, "night"]];
+    const GROUND = { paper: [0.28, 0.14, 0.3], night: [0.9, 0.34, 0.36] };   // vig, dust, grain
+    SC.forEach((s, i) => {
+      const el = $(s[0]);
+      if (i === 0) gsap.set(el, { autoAlpha: 1 });
+      else tl.fromTo(el, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.001, immediateRender: false }, S(s[1]) - 0.001);
+      if (s[2] < END) tl.set(el, { autoAlpha: 0 }, S(s[2]) + 0.06);
+    });
+    const OV = [$("vig"), $("dust"), $("grain")];
+    gsap.set(OV, { opacity: (i) => GROUND.night[i] });
+    SC.forEach((s, k) => { if (k) tl.set(OV, { opacity: (i) => GROUND[s[3]][i] }, S(s[1])); });
+
+    const rise = (el, t, o) => { o = o || {}; const d = o.dur || 0.5;
+      tl.fromTo(el, { opacity: 0, y: o.y == null ? 14 : o.y }, { opacity: 1, y: 0, duration: d, ease: C(E.out, d), immediateRender: true }, t); };
+    const box = (el, t) => tl.fromTo(el, { opacity: 0, scale: 1.25 }, { opacity: 1, scale: 1, duration: 0.3, ease: C(E.out, 0.3), immediateRender: true }, t);
+    const whip = (a, b, t, dir, k) => {
+      const A = $(a + "-shot"), B = $(b + "-shot"), h = 0.16;
+      const ba = FX.whipDefs(defs, SEG + "-wa" + k), bb = FX.whipDefs(defs, SEG + "-wb" + k);
+      tl.set(A, { filter: "url(#" + SEG + "-wa" + k + ")" }, t - h - 0.01); tl.set(A, { filter: "none" }, t + 0.06);
+      tl.set(B, { filter: "url(#" + SEG + "-wb" + k + ")" }, t - 0.001); tl.set(B, { filter: "none" }, t + h + 0.02);
+      FX.whip(tl, A, B, t, { dir: dir, dur: 0.32, blurA: ba, blurB: bb });
+    };
+    const gated = (a, b, fn) => { const on = FX.onFrame; FX.onFrame = (f) => on(FX.gate(S(a), S(b), f)); fn(); FX.onFrame = on; };
+
+    /* ===== sc001 · East Asia: Taiwan, first in Asia with special economic zones ===== */
+    (function () {
+      const s = $("s1-svg"), c = $("s1-cam");
+      const g = mk(s, "g", { transform: "translate(2565 3406)" });
+      const tw = mk(g, "path", { d: TW_D, fill: BOARD, "fill-opacity": 0.3, stroke: BOARDL, "stroke-width": 7, "stroke-linejoin": "round" });
+      tw.style.filter = "drop-shadow(0 0 14px rgba(155,216,176,0.8))";
+      tl.fromTo(tw, { attr: { "fill-opacity": 0.3 } }, { attr: { "fill-opacity": 0.72 }, duration: 0.9, ease: C(E.out, 0.9), immediateRender: true }, 0.1);
+      gated(START, W1 + 0.2, () => FX.radioWaves(s, 2690, 3660, { rings: 3, max: 520, period: 1.9, width: 13, color: BOARDL, from: S(3270.55), to: S(W1 + 0.2) }));
+      gsap.set(c, cam(2250, 3420, 0.42));
+      tl.fromTo(c, cam(2250, 3420, 0.42), Object.assign(cam(2250, 3560, 0.56), { duration: W1 - START + 0.2, ease: "sine.out", immediateRender: true }), 0);
+      rise($("s1-k"), T(3268.79), { dur: 0.5 });          // first (country in Asia)
+      rise($("s1-t1"), T(3270.55), { dur: 0.45, y: 18 });  // special
+      rise($("s1-t2"), T(3271.03), { dur: 0.45, y: 18 });  // economic
+      rise($("s1-t3"), T(3271.59), { dur: 0.45, y: 18 });  // zones
+    })();
+
+    whip("sc001", "sc002", S(W1), 1, 1);
+
+    /* ===== sc002 · the mechanism: parts in (no tariffs) → factory → final product → ship out (no taxes); then the labour pool ===== */
+    (function () {
+      const a = S(W1), c = $("s2-cam"), svg = $("s2-svg");
+      gsap.set(c, { x: 0, y: 0, scale: 1 });
+      // beat 1 · 3273.6–3283.0 · "set up a factory in this zone … not taxed or taxed at a lower rate … in the late sixties"
+      tl.fromTo($("zone"), { scale: 0.86, opacity: 0 }, { scale: 1, opacity: 1, duration: 1.0, ease: C(E.out, 1.0), immediateRender: true }, a + 0.05);
+      tl.fromTo($("ztag"), { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.5, ease: C(E.out, 0.5), immediateRender: true }, a + 0.35);
+      tl.fromTo($("fac"), { opacity: 0, y: -120 }, { opacity: 1, y: 0, duration: 0.8, ease: C(E.out, 0.8), immediateRender: true }, S(3274.87));   // factory
+      box($("low"), T(3277.67));                              // lower (rate)
+      tl.to($("low"), { opacity: 0, duration: 0.3 }, S(3282.9));
+      rise($("d1"), T(3282.08), { dur: 0.3, y: 8 });          // late
+      rise($("d2"), T(3282.40), { dur: 0.3, y: 8 });          // sixties
+      // lanes (hand-ruled, slight slope so nothing is perfectly horizontal)
+      const lane = (x1, x2, t) => {
+        const p = mk(svg, "path", { d: "M" + x1 + " 620 L" + x2 + " 619", fill: "none", stroke: INK, "stroke-width": 5, "stroke-linecap": "round", "stroke-dasharray": "4 14" });
+        const h = mk(svg, "path", { d: "M" + (x2 - 20) + " 604 L" + x2 + " 619 L" + (x2 - 20) + " 634", fill: "none", stroke: INK, "stroke-width": 5, "stroke-linecap": "round", "stroke-linejoin": "round" });
+        gsap.set([p, h], { opacity: 0 }); tl.to([p, h], { opacity: 1, duration: 0.3 }, t);
+      };
+      // beat 2 · 3283.1–3286.0 · "you can import whatever you want, you don't have to pay any tariffs"
+      lane(140, 520, S(3283.2));
+      rise($("imp"), T(3283.28), { dur: 0.4 });               // import
+      const crate = (i, t) => { const el = $("cr" + i);
+        tl.fromTo(el, { x: 120, opacity: 0 }, { x: 240, opacity: 1, duration: 0.3, ease: "none", immediateRender: true }, t);
+        tl.to(el, { x: 900, duration: 1.5, ease: C(E.inOut, 1.5) }, t + 0.3);
+        tl.to(el, { opacity: 0, duration: 0.12 }, t + 1.7); };
+      gsap.set([$("arm"), $("post")], { opacity: 0 }); tl.to([$("arm"), $("post")], { opacity: 1, duration: 0.25 }, S(3283.0));
+      crate(0, S(3283.4)); crate(1, S(3283.95)); crate(2, S(3284.5));
+      tl.fromTo($("arm"), { rotation: 0 }, { rotation: 82, duration: 0.7, ease: C(E.out, 0.7), immediateRender: true }, S(3284.0));   // the barrier lifts
+      rise($("nt1"), T(3284.64), { dur: 0.3, y: 8 });         // (you) don't (have to pay)
+      rise($("nt2"), T(3285.44), { dur: 0.3, y: 8 });         // tariffs
+      tl.fromTo($("fac"), { scale: 1 }, { scale: 1.05, duration: 0.2, ease: "power1.out", yoyo: true, repeat: 3, immediateRender: false }, S(3285.6));   // working
+      // beat 3 · 3286.1–3290.1 · "create your final product and ship it out. You don't have to pay any taxes."
+      const prod = (i, t0, t1) => { const el = $("pr" + i);
+        tl.fromTo(el, { x: 1010, opacity: 0, scale: 0.6 }, { x: 1150, opacity: 1, scale: 1, duration: 0.6, ease: C(E.out, 0.6), immediateRender: true }, t0);
+        tl.to(el, { x: 1596, y: -7, duration: 1.0, ease: C(E.inOut, 1.0) }, t1); };
+      prod(0, S(3287.12), S(3287.9));
+      rise($("fp1"), T(3287.12), { dur: 0.3, y: 8 });         // final
+      rise($("fp2"), T(3287.36), { dur: 0.3, y: 8 });         // product
+      lane(1380, 1540, S(3287.8));
+      tl.fromTo($("ship"), { opacity: 0, x: 90 }, { opacity: 1, x: 0, duration: 0.8, ease: C(E.out, 0.8), immediateRender: true }, S(3286.9));
+      rise($("exp"), T(3287.84), { dur: 0.4 });               // ship (it out) → export
+      rise($("nx1"), T(3288.64), { dur: 0.3, y: 8 });         // (you) don't
+      rise($("nx2"), T(3289.52), { dur: 0.3, y: 8 });         // taxes
+      // beat 4 · 3290.1–3293.6 · "the reasons companies would do this…" — the flow keeps running
+      crate(3, S(3290.4)); crate(4, S(3290.95)); crate(5, S(3291.5));
+      tl.to($("pr0"), { opacity: 0, duration: 0.3 }, S(3291.9));
+      prod(1, S(3292.3), S(3292.95));
+      // beat 5 · 3293.6–3304.3 · pan down: "The labor in Taiwan is cheaper … labor pool … getting educated"
+      tl.to(c, { scale: 0.8, x: 192, y: -50, duration: 1.3, ease: E.cam }, S(3293.55));   // pull back: the whole flow + the labour pool under it
+      const pool = $("pool"), per = [];
+      for (let r = 0; r < 2; r++) for (let i = 0; i < 12; i++) {
+        const d = document.createElement("div"); d.className = "p28-per"; d.style.left = (500 + i * 104) + "px"; d.style.top = (1000 + r * 138) + "px";
+        d.innerHTML = '<svg viewBox="0 0 100 140" width="74" height="104" style="overflow:visible"><circle cx="50" cy="59" r="12" fill="' + BOARDD + '"/><path d="M31 135 L31 92 Q31 77 50 77 Q69 77 69 92 L69 135 L56 135 L56 112 L44 112 L44 135 Z" fill="' + BOARDD + '"/><g class="cap" opacity="0"><path d="M50 26 L84 38 L50 50 L16 38 Z" fill="' + INK + '"/><path d="M78 40 L78 58" stroke="' + INK + '" stroke-width="4" fill="none"/></g></svg>';
+        pool.appendChild(d); per.push(d);
+      }
+      rise($("lab"), T(3294.00), { dur: 0.4 });               // labor
+      per.slice(0, 12).forEach((d, i) => tl.fromTo(d, { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.3, ease: C(E.out, 0.3), immediateRender: true }, S(3294.0) + i * 0.07));
+      box($("chp"), T(3294.96));                              // cheaper
+      // "come set up a factory here": workers → factory
+      const up = mk(svg, "path", { d: "M960 980 L962 830", fill: "none", stroke: INK, "stroke-width": 6, "stroke-linecap": "round" });
+      const uh = mk(svg, "path", { d: "M942 852 L962 828 L982 852", fill: "none", stroke: INK, "stroke-width": 6, "stroke-linecap": "round", "stroke-linejoin": "round" });
+      gsap.set([up, uh], { opacity: 0 });
+      tl.fromTo(up, { opacity: 0, attr: { d: "M960 980 L960.5 960" } }, { opacity: 1, attr: { d: "M960 980 L962 830" }, duration: 0.7, ease: C(E.out, 0.7), immediateRender: false }, S(3296.3));
+      tl.set(uh, { opacity: 1 }, S(3296.9));
+      per.slice(12).forEach((d, i) => tl.fromTo(d, { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.3, ease: C(E.out, 0.3), immediateRender: true }, S(3300.2) + i * 0.07));   // labor pool
+      box($("edu"), T(3302.40));                              // educated
+      per.forEach((d, i) => tl.fromTo(d.querySelector(".cap"), { opacity: 0, y: -18 }, { opacity: 1, y: 0, duration: 0.25, ease: C(E.out, 0.25), immediateRender: true }, S(3302.42) + i * 0.035));
+      tl.to(c, { scale: 0.82, x: 173, y: -62, duration: 9.2, ease: "none" }, S(3294.9));
+    })();
+
+    whip("sc002", "sc003", S(W2), -1, 2);
+
+    /* ===== sc003 · Kaohsiung harbour: the zone fills with finished-product factories; assembly in Taiwan ===== */
+    (function () {
+      const a = S(W2), s = $("s3-svg"), c = $("s3-cam");
+      FX.markupDefs(s, SEG + "-mk", { boil: 12 }); s.setAttribute("viewBox", "0 0 3328 2560");
+      const zoneD = "M685 706 L808 685 L1117 903 L1260 1070 L1426 1331 L1545 1521 L1616 1664 L1497 1806 L1450 2009 L1367 1997 L1295 1783 L1117 1474 L975 1165 L832 903 Z";
+      const z = mk(s, "path", { d: zoneD, fill: BOARD, "fill-opacity": 0, stroke: BOARDL, "stroke-width": 9, "stroke-linejoin": "round" });
+      z.style.filter = "drop-shadow(0 0 8px rgba(155,216,176,0.85))";
+      const zl = z.getTotalLength(); z.setAttribute("stroke-dasharray", zl + " " + zl);
+      gsap.set(z, { attr: { "stroke-dashoffset": zl } });
+      tl.fromTo(z, { attr: { "stroke-dashoffset": zl } }, { attr: { "stroke-dashoffset": 0 }, duration: 1.0, ease: C(E.inOut, 1.0), immediateRender: false }, a + 0.3);
+      tl.to(z, { attr: { "fill-opacity": 0.42 }, duration: 0.6 }, a + 1.1);
+      gsap.set(c, cam(1300, 1450, 0.72));
+      tl.fromTo(c, cam(1300, 1450, 0.72), Object.assign(cam(1000, 1500, 0.9), { duration: 1.4, ease: E.cam, immediateRender: false }), a);
+      FX.focusHunt(tl, c, a + 1.3, { dur: 0.7, a: 3, b: 5 });
+      tl.to(c, Object.assign(cam(1000, 1560, 0.98), { duration: DUR - a - 1.42, ease: "none" }), a + 1.4);
+      // "a lot of companies start doing this … finished product factories": factory pins pop along the zone (12 fps)
+      [[800, 760], [900, 870], [990, 1010], [1080, 1120], [1130, 1290], [1230, 1380], [1300, 1530], [1400, 1620], [1380, 1790], [1480, 1700], [1420, 1920], [1210, 1200]].forEach((p, i) => {
+        const g = mk(s, "g", { opacity: 0 });
+        mk(g, "circle", { cx: p[0], cy: p[1], r: 24, fill: BONE });
+        mk(g, "circle", { cx: p[0], cy: p[1], r: 9, fill: INK });
+        const rg = mk(s, "circle", { cx: p[0], cy: p[1], r: 24, fill: "none", stroke: BONE, "stroke-width": 6, opacity: 0 });
+        const t0 = S(3305.1) + i * 0.36;
+        tl.to(g, { attr: { opacity: 1 }, duration: 0.001 }, t0);
+        tl.fromTo(rg, { attr: { r: 20, opacity: 0.9 } }, { attr: { r: 110, opacity: 0 }, duration: 0.8, ease: C(E.out, 0.8), immediateRender: false }, t0);
+      });
+      // parts in, finished goods out (marker legs), then the word: assembly
+      const leg = (d, t, dur) => { const p = mk(s, "path", { d: d, fill: "none", stroke: YEL, "stroke-width": 22, "stroke-linecap": "round", opacity: 0.9, filter: "url(#" + SEG + "-mk)" });
+        const L = p.getTotalLength(); p.setAttribute("stroke-dasharray", L + " " + L); gsap.set(p, { attr: { "stroke-dashoffset": L }, opacity: 0 });
+        tl.set(p, { opacity: 0.9 }, t);
+        tl.fromTo(p, { attr: { "stroke-dashoffset": L } }, { attr: { "stroke-dashoffset": 0 }, duration: dur, ease: C("sine.inOut", dur), immediateRender: false }, t); };
+      leg("M1240 2520 Q1180 2100 1130 1700 Q1100 1500 1180 1420", S(3310.3), 1.2);
+      leg("M1240 1450 Q1330 1600 1320 1900 Q1310 2200 1390 2540", S(3312.0), 1.2);
+      rise($("s3-as"), T(3313.76), { dur: 0.6, y: 20 });      // assembly (in Taiwan)
+    })();
+
+    FX.grain($("grain"), 3); FX.dust($("dust"), 5, 2);
+    FX.mount(tl, DUR);
+    window.__timelines = window.__timelines || {};
+    window.__timelines[SEG] = tl;
+  })();
+  </script>
+</template>
+</body>
+</html>
