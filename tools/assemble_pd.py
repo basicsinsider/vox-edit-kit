@@ -22,12 +22,14 @@ def frames(p):
 TOTAL = frames(o.aroll); print('A-roll frames', TOTAL, '=', TOTAL / FPS, 's; master length', S['length'])
 only = set(o.only.split(',')) if o.only else None
 plan = []; cur = 0; missing = []
+# the A-roll is always split at EVERY section boundary (fixed part ranges -> cached parts stay valid as pieces arrive)
 for s in S['sections']:
     f0, f1 = round(s['start'] * FPS), round(s['end'] * FPS); p = f"{o.pieces}/{s['id']}.mp4"
-    if not os.path.exists(p) or (only and s['id'] not in only): missing.append(s['id']); continue
+    if f0 > cur: plan.append(('a', cur, f0))
+    if not os.path.exists(p) or (only and s['id'] not in only):
+        missing.append(s['id']); plan.append(('a', f0, f1)); cur = f1; continue
     n = frames(p)
     if n != f1 - f0: print(f"!! {s['id']}: piece has {n} frames, slot is {f1 - f0} — fix the piece"); sys.exit(1)
-    if f0 > cur: plan.append(('a', cur, f0))
     plan.append(('p', p, s['id'])); cur = f1
 if cur < TOTAL: plan.append(('a', cur, TOTAL))
 print('pieces used', sum(1 for x in plan if x[0] == 'p'), '| missing (A-roll kept):', ' '.join(missing) or 'none')
