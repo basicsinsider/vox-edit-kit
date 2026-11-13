@@ -790,6 +790,19 @@ on action. Use it whenever the narrator quotes someone or introduces a historic 
 - [ ] Smooth long eases, 12 fps. [ ] Cuts on action; whips, no iris. [ ] No photo/clip used > 2× in a chunk.
 
 ## Changelog
+- 2026-11-13 — **Podcast A-roll edit (`project/podcast/`, "TSMC vs UMC", 95:52)**: new workflow for a two-person video podcast with no
+  script. Krish's rules: first 5 min a full edit, after that edited sections only where needed (41 sections, 27 % of the runtime), the
+  rest stays on the speakers, cut by an EDL (226 word cuts from 5 parallel transcript analysts, `project/podcast/gen/build_edl.py`:
+  cut points hug the kept word — the quietest 10 ms nearest the word, not the global minimum, which left "sh"/"uh" fragments; checked by
+  re-transcribing the cut VO, `gen/vo_diff.py`), punch-ins (108 %) on every second EDL piece, 30 fps throughout (`render --fps 30`,
+  `tools/render_pd.sh`), each section rendered alone and dropped into the A-roll frame-exactly (`tools/assemble_pd.py`: A-roll split
+  at fixed section boundaries so cached parts survive). Sound only in "islands" (intro + each section), new Music limits held in all 39
+  (`tools/audio/pd_islands.py`, which also ducks the SFX bus ≥ 17.5 LU under the voice). Lessons: (1) when a section's end moves, change
+  `data-duration` AND every `DUR`/`END` constant in the composition (and its generator source); (2) a scene shown with `tl.set` exactly
+  at a boundary can render hidden on that frame — show at t − 0.002 (pd01 editor); (3) `FX.radioWaves` inside `FX.gate` leaves rings on
+  screen when a frame is reached by seeking past the gate (ED15); (4) never run two copies of `pd_islands.py` (shared scratch folder);
+  (5) Drive files can be incomplete at the source (zeros after 3.2 GB, no moov) — probe ranges against Drive before blaming the download;
+  (6) a helper session must stay in a blocking wait while its render runs (one ended its turn after launching the job).
 - 2026-11-13 — **Music limits tightened (Krish: viewers still found the music too loud)**: ≥ 20 LU under the voice in 3 s windows, never < 18, restrained in pauses (no lifts, ceiling VO − 20), bed target VO − 22, SFX caps −4 dB; `vo_duck` new defaults + `ceiling`/`gap_fast`, `vo_music_scan.py` prints a PASS/FAIL verdict (§0, §10.8 "Music limits"). inspo-frames asset references saved in `references/inspo-assets/` (57 assets, INDEX.md + contact sheets; search with `filters.kind=asset`).
 - 2026-11-08 — Paraguay sound phase 1: E-minor Epidemic family chosen + analysed, 28 new SFX + the old set re-downloaded, place_sound
   types/bleeps added (§10.8 "Paraguay"), `project/paraguay/SOUND_PLAN.md` + generated cue sheet (`project/paraguay/gen/make_cuesheet.py`).
