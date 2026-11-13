@@ -4,8 +4,10 @@ Sound designer. Sources: BRIEF.md rule 4 (the owner's loudest complaint: music a
 `sections.json`, MANUAL §7, §10.3, §10.8 and its block **"Music limits — BINDING"**; earlier plans `project/paraguay/SOUND_PLAN.md`,
 `project/ivan/SOUND_PLAN.md`. Tracks / ids / why: `assets/audio/epidemic/LOG.md` ("Podcast"). Measured stems, sections, keys:
 `assets/audio/epidemic/ANALYSIS.md`. Status: phase 1 done (tools, tracks, generator, two test islands); **phase 2 (2026-11-13):
-islands isl00–isl33 (pd01–pd39) built from the editors' final markers, ALL LIMITS MET in every island; pd40–pd44 (isl34–isl38) wait
-for their pictures** — then `pd_islands.py --skip-built --format flac` builds only what is new or changed. Numbers: `SOUND_REPORT.md`.
+all 39 islands (pd01–pd44) built from the editors' final markers, ALL LIMITS MET in every island; full-length
+`assets/audio/podcast/pd_beds_mix.flac` stitched and checked as the final mix is built.** After any change, `pd_islands.py --skip-built
+--format flac` rebuilds only what changed, re-stitches, re-checks and rewrites `SOUND_REPORT.md`. Run ONE copy at a time: two concurrent
+runs share `work/sound/isl/` and delete each other's VO slices (happened once on 2026-11-13; the second run's isl28 failed, re-built clean).
 
 ## 0. The design in one paragraph
 Music and SFX exist only in **islands**: (a) the intro 0–346 s, whose tail fades over 5 s under Sam's first on-camera line, and (b) each
@@ -157,8 +159,10 @@ No 3 s window without speech exists in either test (the "pauses" line of the ver
 music at VO − 20 everywhere. The duck was active 33–37 % of the time (mean −2.3 / −3.6 dB, max −6.7 / −11.6 dB). Stitch check: the
 island in the full-length file is bit-identical to its pre-mix; 1 s before it and after the test intro the file is exactly zero.
 
-## 8b. Phase-2 results (2026-11-13, islands isl00–isl33 = pd01–pd39; details per island in `SOUND_REPORT.md`)
-Pooled over 34 islands (1951 s): 3 s music gap while speaking min **19.5** / p5 **20.8** / median **22.6** LU; 0.4 s p1 **18.6**;
+## 8b. Phase-2 results (2026-11-13, all 39 islands; details per island in `SOUND_REPORT.md`)
+Final (39 islands, 2158 s = 38 % of the video): identical pooled numbers to the 34-island state below; every cue −22.4…−24.0 LU re
+the voice; full-length final-mix check: voice −18.2 / mix −18.2 LUFS-I, LRA 3.8 / 3.8, true peak −4.6 / −4.6 dBTP. pd42 boundary
+(5201.70) applied. Earlier state, pooled over 34 islands (1951 s): 3 s music gap while speaking min **19.5** / p5 **20.8** / median **22.6** LU; 0.4 s p1 **18.6**;
 music + SFX min **16.1**; mix − voice ≤ **+0.02 LU** per island. Every cue −22.4…−24.0 LU re the voice. Full-length check of the
 stitched FLAC exactly as the final mix is built (mono VO duplicated L = R at unity + the bed, `amix normalize=0`): voice alone
 −18.2 LUFS-I, mix −18.2 LUFS-I, LRA 3.8 = 3.8. pd08 needed a different passage of Sliding Doors (`OFFSET_OVERRIDE` 60: the 104 s

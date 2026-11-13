@@ -261,3 +261,5 @@ SFX for the podcast — `sfx/` re-downloaded 2026-11-13 (ids in the SFX table ab
 boom_dark_cinematic_low_hit, boom_cinematic_deep, boom_sub_bass_clean_01, riser_reverse_cymbal_short, swell_reverse_timpani_cymbal,
 paper_slide_wood_table (+_04), marker_circle, marker_drag, highlighter_drag_text, rubber_stamp_document_01, stamp_hand_press_short.
 Everything else is fetched only if an editor's marker needs it (`tools/audio/pd_islands.py --preflight` lists the missing files).
+SFX re-downloaded for the podcast markers, phase 2 (ids in the tables above): coins_drop_01, jet_pass_long_distant, jet_pass_overhead_01,
+phone_ring_04, typewriter_hermes_01, typewriter_hermes_03, factory_machine_room_electronics_hum, crowd_walla_indoor_large_02.

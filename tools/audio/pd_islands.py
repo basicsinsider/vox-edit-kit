@@ -58,10 +58,16 @@ INTRO_TAIL = 5.5       # the intro music fades out over ~5 s under his first on-
 PRE = 1.0              # island starts this long before a section's first frame (music enters ~0.8 s before the cut)
 POST = 3.2             # island ends this long after a section's last frame (fade-out over ~2.5–3 s)
 MARKERS_DIR = os.path.join(ROOT, "compositions")   # --markers-dir overrides (tests with dummy markers)
-MERGE_GAP = 20.0       # sections closer than this share one island (music held very low between them)
+MERGE_GAP = 20.0
+SFX_GAP = 17.5         # SFX-bus duck: SFX alone 3 s ≥ 17.5 LU under the VO → music (≥ 20) + SFX stays ≥ 15.6 > 14 (the binding limit)       # sections closer than this share one island (music held very low between them)
 
 # editors' marker types that place_sound does not know -> a known type (extend as editors invent names; reported)
-PD_ALIAS = {"swoosh": "whoosh", "whoosh_low": "whoosh_soft", "whoosh_small": "whoosh_soft", "push": "whoosh_soft", "zoom": "whoosh_soft",
+PD_ALIAS = {  # podcast editors' invented names (phase 2, 2026-11-13) — checked BEFORE place_sound's own ALIAS
+            "route_draw": "marker_long", "line_draw": "marker_long", "title_thud": "stamp_thud", "stamp": "rubber_stamp",
+            "pen_scratch": "marker_scratch", "pop": "pop_soft", "tick_run": "dot_ticks", "pop_run": "dot_ticks",
+            "tile_place": "dot_slide", "swipe": "highlighter_swipe", "ratchet": "dial_click", "tile_fill": "counter_ticks",
+            # likely future spellings
+            "swoosh": "whoosh", "whoosh_low": "whoosh_soft", "whoosh_small": "whoosh_soft", "push": "whoosh_soft", "zoom": "whoosh_soft",
             "camera_move": "whoosh_soft", "slide": "paper_slide", "card_slide": "paper_slide", "photo_slide": "paper_slide",
             "paper": "paper_slide", "card": "paper_slide", "thud": "stamp_thud", "impact": "boom_low", "boom": "boom_low", "hit": "boom_low",
             "sub_boom": "boom_low", "tick": "tick_soft", "ticks": "counter_ticks", "counter": "counter_ticks", "count": "counter_ticks",
@@ -71,7 +77,7 @@ PD_ALIAS = {"swoosh": "whoosh", "whoosh_low": "whoosh_soft", "whoosh_small": "wh
             "type": "typewriter", "typing_old": "typewriter", "blip": "tone_blip", "beep": "tone_blip", "chime": "chime_soft",
             "plane": "plane_pass", "jet": "plane_pass", "hum": "factory_hum", "room": "crowd_room", "projector": "projector_loop",
             "tear": "paper_tear", "rustle": "paper_rustle", "flip": "card_flip", "scribble": "pencil_scribble", "pencil": "pencil_scribble",
-            "draw": "string_draw", "line_draw": "string_draw", "stamp_hit": "stamp_thud", "crt": "crt_click", "tv_on": "crt_click"}
+            "draw": "string_draw", "stamp_hit": "stamp_thud", "crt": "crt_click", "tv_on": "crt_click"}
 
 
 def r2(x):
@@ -111,9 +117,10 @@ def build_islands(sections_path=SECTIONS):
 # ---------------------------------------------------------------- markers
 def _known_types():
     """Types place_sound accepts: GAIN keys + AMBTYPES + its ALIAS keys (read from the source, no import side effects)."""
-    src = open(os.path.join(HERE, "place_sound.py")).read()
-    m = re.search(r"\n    ALIAS = (\{.*?\n\s*\})\n", src, re.S)
-    alias = ast.literal_eval(m.group(1)) if m else {}
+    alias = {}
+    for node in ast.walk(ast.parse(open(os.path.join(HERE, "place_sound.py")).read())):
+        if isinstance(node, ast.Assign) and any(getattr(t, "id", None) == "ALIAS" for t in node.targets):
+            alias = ast.literal_eval(node.value)
     import place_sound as PS
     return set(PS.GAIN) | set(PS.AMBTYPES) | {"bleep"}, alias
 
@@ -145,9 +152,9 @@ def island_markers(isl, known=None, alias=None):
             if t < -0.6 or t > s["dur"] + 0.3:
                 notes.append(f"{s['id']}: marker {m['type']}@{t} outside the section (0–{s['dur']}) — dropped")
                 continue
-            m = dict(m)
+            m = {k: v for k, v in m.items() if k != "t_master"}   # ED02's t_master is ignored: t is LOCAL (lead 2026-11-13)
             ty = m["type"]
-            if ty not in known and ty not in alias:
+            if ty in PD_ALIAS or (ty not in known and ty not in alias):
                 to = PD_ALIAS.get(ty)
                 if to is None:
                     to = next((v for k, v in (("whoosh", "whoosh_soft"), ("whip", "whip"), ("boom", "boom_low"), ("paper", "paper_slide"),
@@ -247,8 +254,8 @@ def measure_island(isl, vo, d, length, log):
     x, _ = sf.read(vo, dtype="float64", always_2d=True)
     beds = sum(sf.read(os.path.join(d, f), dtype="float64", always_2d=True)[0] for f in ("music_bed.wav", "sfx.wav", "ambience.wav"))
     k = min(len(x), len(beds))
-    xs = np.repeat(x[:k], 2, 1) * np.sqrt(0.5)           # mono VO → stereo as ffmpeg amix does it (−3 dB per channel: the
-    mix = beds[:k] + xs                                  # same loudness as the mono file; tested 2026-11-13) — the tools' convention
+    xs = np.repeat(x[:k], 2, 1)                          # the final mix: the mono VO duplicated into both channels at unity (L = R,
+    mix = beds[:k] + xs                                  # as the camera's dual-mono; lead 2026-11-13) — 3 LU louder than the mono file
     em = E.hop_energy(mix, 0.01)[:n]
     e2 = E.hop_energy(xs, 0.01)[:n]
     rep["vo_alone_lufs"] = round(lufs_i(e2), 2)
@@ -278,6 +285,15 @@ def measure_island(isl, vo, d, length, log):
     sf.write(os.path.join(d, "premix.flac"), np.clip(beds, -1, 1), SR, subtype="PCM_16")
     rep["premix"] = os.path.relpath(os.path.join(d, "premix.flac"), ROOT)
     return rep
+
+
+def inputs_sha(isl):
+    """Fingerprint of everything an island is built from: its cue sheet + the editors' sfx.json of its sections + the island window."""
+    import hashlib
+    h = hashlib.sha1(json.dumps([isl["start"], isl["end"]]).encode())
+    for p in [os.path.join(CUES, f"{isl['id']}.json")] + [os.path.join(MARKERS_DIR, f"{s['id']}.sfx.json") for s in isl["sections"]]:
+        h.update(open(p, "rb").read() if os.path.exists(p) else b"-")
+    return h.hexdigest()[:16]
 
 
 def build_island(isl, a):
@@ -319,6 +335,19 @@ def build_island(isl, a):
     if r.returncode != 0:
         log(r.stderr[-3000:])
         raise SystemExit(f"place_sound failed for {isl['id']}")
+    # SFX-bus duck (phase 2): the peak caps of place_sound do not bound the LOUDNESS of sustained sounds (rings, typing, whoosh
+    # clusters), so the SFX bus alone is held ≥ SFX_GAP LU under the VO's 3 s loudness (and ≥ SFX_GAP under its LUFS-I in pauses).
+    # Short hits keep their transient (0.4 s gap only 10 LU). Same sidechain as the music duck; the VO is only read.
+    import epidemic_bed as E
+    sp = os.path.join(d, "sfx.wav")
+    sx, _ = sf.read(sp, dtype="float64", always_2d=True)
+    vlu = json.load(open(os.path.join(d, "music_report.json")))["vo_lufs"]
+    with contextlib.redirect_stdout(io.StringIO()):
+        sx, sduck, _ = E.vo_duck(sx, vo, vlu, gap=SFX_GAP, gap_fast=10.0, ceiling=SFX_GAP, max_cut=-30.0)
+    sf.write(sp, sx, SR, subtype="PCM_24")
+    del sx
+    log(f"sfx duck: ≥{SFX_GAP} LU under the VO (3 s) — active {sduck['ducked_pct']} % of the time, mean {sduck['mean_cut_db_while_ducked']} dB, "
+        f"max {sduck['max_cut_db']} dB")
     rep = dict(id=isl["id"], kind=isl["kind"], start=isl["start"], end=isl["end"], len=isl["len"], built_len=length,
                sections=[s["id"] for s in isl["sections"]], markers_in=len(ms), marker_notes=notes)
     hp = os.path.join(d, "sfx_hierarchy.json")
@@ -326,9 +355,11 @@ def build_island(isl, a):
         h = json.load(open(hp))
         rep["markers_kept"] = h["kept"]
     mr = json.load(open(os.path.join(d, "music_report.json")))
+    rep["sfx_duck"] = sduck
     rep["vo_lufs_ffmpeg"], rep["bed_target_lufs"], rep["bed_final_lufs"], rep["vo_duck"] = mr["vo_lufs"], mr["target_lufs"], mr["final_lufs"], mr["vo_duck"]
     rep["missing_layers"] = [ln.strip() for ln in r.stdout.splitlines() if "!! missing" in ln]
     rep.update(measure_island(isl, vo, d, length, log))
+    rep["inputs_sha"] = inputs_sha(isl)
     rep["cues"] = sorted({ly.get("cue", "?") for ly in sheet["layers"]})
     rep["tracks"] = sorted({ly.get("file") or f"{ly['track']}/{ly['stem']}" for ly in sheet["layers"]})
     rep["seconds_to_build"] = round(time.time() - t0, 1)
@@ -420,6 +451,25 @@ def check_stitch(manifest, islands):
     return bad
 
 
+def full_check(manifest):
+    """The final mix exactly as the lead builds it: the mono VO duplicated L = R at unity + the full-length pre-mix, amix
+    normalize=0 — vs the voice alone (ffmpeg ebur128, streamed). Stored in pd_beds_fullcheck.json for the report."""
+    V, F = VO_MASTER, os.path.join(ROOT, manifest["mix"])
+    def ebu(args):
+        r = subprocess.run([FFMPEG, "-hide_banner", "-nostats"] + args + ["-f", "null", "-"], capture_output=True, text=True).stderr
+        t = r[r.rfind("Summary"):]
+        g = lambda k: float(re.search(k + r":\s*(-?[\d.]+)", t).group(1))
+        return dict(I=g("I"), LRA=g("LRA"), peak=g("Peak"))
+    vo = ebu(["-i", V, "-filter_complex", "[0:a]aresample=48000,pan=stereo|c0=c0|c1=c0,ebur128=peak=true"])
+    mx = ebu(["-i", V, "-i", F, "-filter_complex", "[0:a]aresample=48000,pan=stereo|c0=c0|c1=c0[v];[v][1:a]amix=inputs=2:normalize=0:"
+                                                  "duration=first,ebur128=peak=true"])
+    bd = ebu(["-i", F, "-af", "ebur128=peak=true"])
+    out = dict(voice=vo, mix=mx, beds=bd, when=time.strftime("%Y-%m-%d %H:%M"))
+    json.dump(out, open(os.path.join(OUT, "pd_beds_fullcheck.json"), "w"), indent=1)
+    print(f"full length: voice {vo['I']} LUFS-I (LRA {vo['LRA']}, TP {vo['peak']}) · mix {mx['I']} (LRA {mx['LRA']}, TP {mx['peak']}) · beds {bd['I']}")
+    return out
+
+
 def fmt_t(s):
     return f"{int(s // 60)}:{s % 60:05.2f}"
 
@@ -444,6 +494,9 @@ def write_report(islands, total, manifest=None, stitch_issues=None):
          "Method and limits: MANUAL §10.8 \"Music limits\" (Krish 2026-11-13); plan: `project/podcast/SOUND_PLAN.md`.",
          "All gaps are K-weighted (BS.1770) loudness differences in LU: how far the music sits UNDER the voice (bigger = quieter music).",
          "The voice track is never processed: every measurement reads a copy.",
+         "**Conservative by construction:** the duck and every gap below are measured against the MONO voice file (BS.1770 counts one "
+         "channel). The real playback voice is that mono signal duplicated into both channels at unity, which is 3 LU louder — so in the "
+         "final mix every gap is the same or larger (+3 LU) than the numbers printed here.",
          ""]
     if built:
         cat = {k: (np.concatenate(v) if v else np.zeros(0)) for k, v in gaps.items()}
@@ -497,26 +550,58 @@ def write_report(islands, total, manifest=None, stitch_issues=None):
             L.append(f"| {r['id']} | {a['cue']} | {a['start']:.1f}–{a['end']:.1f} | {a['vo']} | {a['music']} | {a['re_vo']:+.1f} LU |"
                      if a["re_vo"] is not None else f"| {r['id']} | {a['cue']} | {a['start']:.1f}–{a['end']:.1f} | — | — | — |")
     L += ["", "## Voice unchanged — mix vs voice alone", "",
-          "Voice (mono → stereo at −3 dB per channel, i.e. exactly what `ffmpeg amix` does with a mono input; same loudness as the mono file) "
-          "+ the pre-mixed beds at unity, per island. If the final mix copies the mono voice into both channels at full level instead, "
-          "the voice is 3 dB louder and every gap above grows by 3 LU. Voice peak = the mono file's sample peak, mix peak = per channel; dBFS.", "",
+          "As the final mix is built (lead 2026-11-13): the cut mono voice duplicated into both channels at unity (L = R, identical to the "
+          "camera's dual-mono) + the one pre-mixed bed at unity (amix normalize=0). Voice peak = the mono file's sample peak, mix peak = per "
+          "channel; dBFS.", "",
           "| island | voice alone LUFS | mix LUFS | Δ | largest Δ in any 10 s | voice peak | mix peak | beds LUFS |", "|---|---|---|---|---|---|---|---|"]
     for r in built:
         L.append(f"| {r['id']} | {r['vo_alone_lufs']} | {r['mix_lufs']} | {r['mix_minus_vo_lu']:+.2f} | {g(r, 'mix_minus_vo_10s_max', '{:+.2f}')} | "
                  f"{r['vo_peak_dbfs']} | {r['mix_peak_dbfs']} | {r['beds_lufs']} |")
-    notes = [(r["id"], n) for r in built for n in r.get("marker_notes", []) if "→" in n or "dropped" in n or "skipped" in n or "MASTER" in n]
+    import collections
+    maps = collections.Counter()
+    other = []
+    for r in built:
+        for n in r.get("marker_notes", []):
+            mm = re.match(r"(pd\d+): type '(.+?)' → '(.+?)'", n)
+            if mm:
+                maps[(mm.group(2), mm.group(3))] += 1
+                maps[("@", mm.group(1))] += 0
+            elif "dropped" in n or "skipped" in n or "MASTER" in n:
+                other.append((r["id"], n))
     miss = [(r["id"], n) for r in built for n in r.get("missing_layers", [])]
-    edges = [(r["id"], r["edge_in_dbfs"], r["edge_out_dbfs"]) for r in built if max(r["edge_in_dbfs"], r["edge_out_dbfs"]) > -60]
+    edges = [(r["id"], r["start"], r["edge_in_dbfs"], r["edge_out_dbfs"]) for r in built if max(r["edge_in_dbfs"], r["edge_out_dbfs"]) > -60]
     L += ["", "## Notes", ""]
-    L += [f"- {i}: {n}" for i, n in notes] or ["- markers: nothing retyped or dropped before the restraint pass."]
+    pairs = sorted(((a, b, k) for (a, b), k in maps.items() if a != "@"), key=lambda x: -x[2])
+    if pairs:
+        secs = sorted({b for (a, b) in maps if a == "@"})
+        L += [f"- Editors' invented marker types, mapped to the nearest existing sound (in {', '.join(secs)}): "
+              + "; ".join(f"`{a}` → `{b}` ×{k}" for a, b, k in pairs) + "."]
+    else:
+        L += ["- markers: no type had to be mapped."]
+    L += ["- ED02's extra `t_master` field is ignored (t is local to the composition, as specified)."]
+    L += [f"- {i}: {n}" for i, n in other]
     L += [f"- **{i}: {n}**" for i, n in miss]
-    L += [f"- {i}: island edge not silent before the safety fade (in {a} dBFS, out {b} dBFS) — check the cue's fades" for i, a, b in edges]
+    for i, st, a, b in edges:
+        L.append(f"- {i}: first 50 ms at {a} dBFS — the island starts at the video's first frame with pd01's whoosh on frame 0 (intended)"
+                 if st == 0 and b <= -60 else f"- {i}: island edge not silent before the safety fade (in {a} dBFS, out {b} dBFS) — check the cue's fades")
+    built_ids = {r["id"] for r in built}
+    todo = [isl for isl in islands if isl["id"] not in built_ids]
+    if todo:
+        L.append(f"- Not built yet (pictures still open): {', '.join(i['id'] + ' (' + '+'.join(s['id'] for s in i['sections']) + ')' for i in todo)} "
+                 "— silent in the pre-mix until built.")
     if manifest:
         L += [f"- Full-length pre-mix: `{manifest['mix']}` ({manifest['frames']} frames, 48 kHz stereo 16-bit) — mount at 0.00, volume 1.0; "
               f"manifest `assets/audio/podcast/pd_beds_manifest.json`."]
+    fc = os.path.join(OUT, "pd_beds_fullcheck.json")
+    if manifest and os.path.exists(fc):
+        f = json.load(open(fc))
+        L += [f"- **Full-length check of the final mix as it is built** (mono voice duplicated L = R at unity + `{manifest['mix']}`, "
+              f"`amix normalize=0`, ffmpeg ebur128, {f['when']}): voice alone **{f['voice']['I']} LUFS-I** (LRA {f['voice']['LRA']}, true peak "
+              f"{f['voice']['peak']} dBTP) · final mix **{f['mix']['I']} LUFS-I** (LRA {f['mix']['LRA']}, true peak {f['mix']['peak']} dBTP) · "
+              f"the bed file alone {f['beds']['I']} LUFS-I (gated, i.e. over the islands)."]
     for s in stitch_issues or []:
         L.append(f"- **stitch check: {s}**")
-    if manifest and not stitch_issues:
+    if manifest and stitch_issues is not None and not stitch_issues:
         L.append("- Stitch check: digital silence between all islands; frame count = master length.")
     open(os.path.join(PROJ, "SOUND_REPORT.md"), "w").write("\n".join(L) + "\n")
     print("wrote project/podcast/SOUND_REPORT.md")
@@ -563,7 +648,7 @@ if __name__ == "__main__":
     ap.add_argument("--keep-vo", action="store_true", help="keep the island's VO slice (work/sound/isl)")
     ap.add_argument("--no-hierarchy", action="store_true")
     ap.add_argument("--markers-dir", default=None, help="read pdNN.sfx.json from here instead of compositions/ (tests)")
-    ap.add_argument("--skip-built", action="store_true", help="skip islands that already have a full-length report + pre-mix")
+    ap.add_argument("--skip-built", action="store_true", help="skip islands already built from the same cue sheet + markers + window")
     a = ap.parse_args()
     if a.markers_dir:
         MARKERS_DIR = os.path.abspath(a.markers_dir)
@@ -582,14 +667,17 @@ if __name__ == "__main__":
         for isl in chosen:
             rp = os.path.join(OUT, isl["id"], "report.json")
             if a.skip_built and os.path.exists(rp) and os.path.exists(os.path.join(OUT, isl["id"], "premix.flac")) \
-                    and json.load(open(rp)).get("built_len") == isl["len"]:
-                print(f"{isl['id']}: already built — skipped")
+                    and json.load(open(rp)).get("built_len") == isl["len"] \
+                    and json.load(open(rp)).get("inputs_sha") == inputs_sha(isl):
+                print(f"{isl['id']}: already built from the same cue sheet + markers — skipped")
                 continue
             build_island(isl, a)                             # one heavy job at a time
     man, issues = None, None
     if not (a.no_stitch or a.report_only):
         man = stitch(islands, total, a.format)
         issues = check_stitch(man, islands)
+        if not issues and all(os.path.exists(os.path.join(OUT, i["id"], "premix.flac")) for i in islands):
+            full_check(man)
     elif os.path.exists(os.path.join(OUT, "pd_beds_manifest.json")):
         man = json.load(open(os.path.join(OUT, "pd_beds_manifest.json")))
     write_report(islands, total, man, issues)
