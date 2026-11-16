@@ -112,3 +112,32 @@ NE 1:10M borders/rivers were 2–13 km off the imagery at Paraguay scale, so `pa
 ## Rebuild / extend
 `.venv/bin/python tools/map_tiles.py fetch terr|esri <z> lon0 lat0 lon1 lat1` (vectors: world-atlas@2 + NE geojson into `/tmp/mk/vec`; Paraguay also needs the OSM JSONs in `/tmp/mk/osm`) then `.venv/bin/python tools/map_kit.py <region>`
 (regions in `REGIONS`, aerials in `AERIALS`; add a dict entry for a new place). One region at a time (peak ≈ 3 GB for the world).
+
+## NVIDIA project (2026-11-16)
+Built with the same tools/styles (`map_kit.py` functions, unchanged) through the wrapper `work/nv-maps/nv_maps.py`, which adds the
+REGIONS / PLACES / AERIALS entries below at runtime plus a grey-base land mask for the PRD (merge into `tools/map_kit.py` to make it
+permanent). Preview: `_preview_nvidia.jpg`. Overlay ids as usual: `#c-china` (one clean fillable path incl. Hainan; de-facto NE borders,
+Aksai Chin inside China), `#c-taiwan`, `#c-hong_kong`, `#c-macao` are separate paths; cities `#p-<place>` = json `places` keys.
+
+| file | what | size | formula (lon/lat → px) | credit line |
+|---|---|---|---|---|
+| `southeast_asia_{atlas,night,sat,satdesat}.jpg` + `.json` + `_overlay.svg` + `_landmask.png` | 95–125°E × 6.5°S–31.5°N: S China coast (Guangzhou/Shenzhen/HK, Shanghai at the top edge), Taiwan, Vietnam, Thailand, Malaysia, Singapore, Sumatra/Borneo, Java N coast (Jakarta), Philippines. 68 places incl. singapore, kuala_lumpur, johor_bahru, kulai, cyberjaya, batam, penang, bangkok, hanoi, ho_chi_minh_city, manila, jakarta, taipei, hsinchu, hong_kong, shenzhen, guangzhou, shanghai, hangzhou | 5428×7030 | `x = (lon - 95) * 180.9485 ; y = (31.5 - lat) * 185` (k = cos 12°) | atlas/night: AWS Terrain Tiles + Natural Earth (PD) · sat: Esri, Maxar, Earthstar Geographics |
+| `china_{atlas,night,sat,satdesat}.jpg` + `.json` + `_overlay.svg` + `_landmask.png` | 72–142°E × 16–55°N: all China + Mongolia, Koreas, Japan to Tokyo, Taiwan, N India/Nepal/Bangladesh, Kazakh/Kyrgyz edge, Russian Far East edge. 76 places (beijing, shanghai, shenzhen, hangzhou, hong_kong, taipei, seoul, tokyo, chengdu, wuhan, xian, hefei…) | 6383×4368 | `x = (lon - 72) * 91.1792 ; y = (55 - lat) * 112` (k = cos 35.5°) | same |
+| `pearl_river_delta_{atlas,night,sat,satdesat}.jpg` + `.json` + `_overlay.svg` + `_landmask.png` | 113.4–114.6°E × 22.0–22.9°N: Hong Kong (Island, Kowloon, NT, Lantau + airport), Victoria Harbour, Shenzhen (Futian, Nanshan/Shekou, Shenzhen Bay), the HK–Shenzhen border, Macau/Zhuhai edge, Pearl River mouths. Places: hong_kong_central, victoria_harbour, mong_kok, sham_shui_po, golden_computer_arcade, shenzhen_futian, huaqiangbei, seg_plaza, huaqiang_electronics_world, shekou_port, hk_macau_ferry_terminal, lo_wu_control_point, futian_checkpoint, shenzhen_bay_port, hk_airport, macau, zhuhai, hong_kong, shenzhen | 6211×5040 (≈ 19 m/px; Esri/terrain z13) | `x = (lon - 113.4) * 5175.52 ; y = (22.9 - lat) * 5600` (k = cos 22.45°) | same + overlay HK/Macau borders © OpenStreetMap contributors (ODbL) |
+| `aerial_shenzhen_huaqiangbei_z17.jpg` | Huaqiangbei, Futian: pins `seg_plaza` 1561,1435 (base of the SEG tower; its roof with the round helipad is displaced up-left by lean), `huaqiang_electronics_world` 1440,1415, `huaqiangbei` 1487,1354 (the N–S pedestrian street); Shenzhen River + HK fish ponds at the bottom | 3328×2816, 1.10 m/px | Web Mercator, formula in json | Esri, Maxar, Earthstar Geographics |
+| `aerial_memphis_xai_colossus_z16.jpg` | xAI Colossus (former Electrolux plant), Paul R Lowry Rd, S Memphis, beside TVA Allen plant + Mississippi: pin `xai_colossus_1` 1406,1358 (building centre, by eye; generator rows around it); `colossus_1_address_3231_paul_r_lowry_rd` 1611,1358 (Nominatim address point, on the road). Esri colour seam on the river (W edge) | 3072×2560, 1.96 m/px | same | same |
+| `aerial_memphis_xai_colossus2_z16.jpg` | Colossus 2, Tulane Rd, Whitehaven: pin `xai_colossus_2_macrohard` 1441,1303 — roof painted "MACROHARD" (legible in the imagery) | 3072×2560, 1.96 m/px | same | same |
+| `aerial_johor_data_centers_z16.jpg` | **Sedenak Tech Park, Kulai** (chosen: data halls clearly visible): pin `sedenak_tech_park_data_halls` 1680,1533 = twin white-roof data halls; `sedenak_tech_park` 1429,1309 = park road grid. Esri imagery dated Feb 2021 (early phase; the park is far bigger now); a few small clouds | 2816×2560, 2.39 m/px | same | same |
+| `aerial_johor_nusajaya_tech_park_z16.jpg` | backup: Nusajaya Tech Park, Iskandar Puteri (2025 imagery, many new halls but haze + one cloud over the centre); pin `nusajaya_tech_park` 1002,641 (OSM area centre). Operators of individual buildings NOT verified — frame the park | 1792×1536, 2.39 m/px | same | same |
+
+`pacific.json` already had santa_clara, san_jose, taipei, hsinchu_city/hsinchu_science_park, shenzhen, hong_kong; added
+`nvidia_hq_santa_clara` (6073.4, 995.7). Singapore / Kuala Lumpur (lat < 5°) and Memphis (lon < 115°W) are outside the Pacific base.
+
+**PRD land mask:** the DEM coast (> 0.5 m) missed the reclaimed land (HK airport, Shenzhen Bay, Macau) and flooded the fish ponds;
+NE 10m is far too coarse and Overpass (OSM coastline) was unreachable. So land/water comes from Esri's `Canvas/World_Light_Gray_Base`
+tiles z13 (water = flat grey-violet ≈ 208,206,212; bridges opened away, ponds < 400 px filled). In `pearl_river_delta_overlay.svg`,
+`#land`, `#c-china`, `#c-hong_kong`, `#c-macao` are traced from that mask (fill-rule evenodd; HK/Macau cut by the OSM boundaries
+R913110 / R1867188), plus `<g id="borders"> #b-hk_mainland_border` (dashed: Shenzhen Bay → Shenzhen River → Sha Tau Kok → Mirs Bay).
+Rivers/lakes there are still NE (coarse). Known limits: Esri clouds over E Shenzhen/Sha Tau Kok (on the border line, upper right) and a
+few over Sai Kung; sea in `pearl_river_delta_sat*` is one calm tone (as the other close-ups). `southeast_asia`/`china` sat are Esri
+z8/z7 (≈ native) — soft beyond a 2× push; use `pearl_river_delta_*` for HK/Shenzhen.

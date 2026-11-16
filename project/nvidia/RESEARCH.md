@@ -541,3 +541,64 @@ It's a very large industry for them."** Same passage: "They have 50% of the worl
 | 2026.68 / 2029.48 | "iPhone 1" / "iPhone 18" | 2007 / Sep 2026 (18 Pro) |
 | 2066.76 | "around 10% of the computing power" | Epoch ✓ |
 | 2250.66 | "about just as much computing power abroad" | UNVERIFIED |
+
+## TOP VISUAL LEADS (40) — URL · what it shows · line it fits
+Licence key: CC/PD = free; © = fair use per MANUAL §10.9 (credit + log). "tested" = fetched here, size given. Relay = blocked here.
+1. NBC: Alice Huang with Jensen Huang (NetThunder) — https://media-cldnry.s-nbcnews.com/image/upload/f_auto,q_auto:best/rockcms/2026-11/261109-alice-huang-rs-0538cb.jpg — tested 2500×1668 · 11 s, 2355 s
+2. NBC: Jensen keynote (Getty/Justin Sullivan) — …/upload/f_auto,q_auto:best/rockcms/2026-11/261112-jensen-huang-mb-1422-3af2b8.jpg · 11 s
+3. NBC article headline "Nvidia CEO Jensen Huang resigns after affair with suspected Chinese spy" (screenshot) — https://www.nbcnews.com/tech/tech-news/nvidia-ceo-jensen-huang-resigns-reports-extramarital-relationships-rcna608402 · 11–20 s
+4. NPR headline "Nvidia CEO Jensen Huang steps down amid alleged spy scandal" — https://www.npr.org/2026/11/12/nx-s1-6037833/jensen-huang-nvidia-stepped-down (503 once; retry/relay) · 2355 s
+5. Commons Jensen Huang portrait (CC) — https://commons.wikimedia.org/wiki/File:Jensen_Huang_Stanford_2026-04-30_010_(cropped).jpg · 1602 s, 1671 s
+6. Commons Jensen at Computex 2010 (CC BY 2.0, 3840×2160) — https://commons.wikimedia.org/wiki/File:Jensen_Huang_at_Computex_Taipei_20100531.jpg · 1610 s
+7. Gamers Nexus video still (3840×2160, tested) — https://gamersnexus.net/u/inline-images/ai-gpu-black-market_MAIN_FINAL-MP4.mp4_snapshot_00.04.51.859.jpg · 38–49 s
+8. Gamers Nexus "Dr. Chow's GPUs" (3840×2160, tested) — https://gamersnexus.net/u/inline-images/image145.jpg · 63–82 s (rooms of GPUs / server)
+9. Golden Computer Arcade, Sham Shui Po (CC BY-SA 4.0, 4128×3096) — https://commons.wikimedia.org/wiki/File:HK_SSP_%E6%B7%B1%E6%B0%B4%E5%9F%97_Sham_Shui_Po_Golden_Computer_Acrade_shop_July_2021_SS2_04.jpg · 40 s
+10. Shekou ferry terminal (CC BY-SA 3.0, 4320×2880) — https://commons.wikimedia.org/wiki/File:Shekou_ferry_terminal.JPG · 54 s
+11. Huaqiangbei street (CC BY-SA 4.0, 3264×2448) — https://commons.wikimedia.org/wiki/File:Huaqiangbei_July_2024_(1).jpg · 59 s
+12. Inside SEG Plaza (CC BY-SA 2.0, 3264×2448) — https://commons.wikimedia.org/wiki/File:Inside_SEG_Plaza_(Bobbie_Johnson)_-_Flickr.jpg · 63 s
+13. SEG Plaza tower (CC BY-SA 4.0) — https://commons.wikimedia.org/wiki/File:SEG_Plaza_in_Shenzhen2021.jpg · 59 s
+14. Bloomberg Megaspeed feature (headline, relay) — https://www.bloomberg.com/news/features/2025-12-22/nvidia-partner-megaspeed-draws-china-chip-smuggling-concerns-in-us · 98 s, 846 s
+15. Dwarkesh × Jensen transcript page (headline screenshot) — https://www.dwarkesh.com/p/jensen-huang ; video YouTube (relay) · 115 s, 1991 s
+16. Federal Register 87 FR 62186 page/PDF header — https://www.federalregister.gov/documents/2022/10/13/2022-21658/implementation-of-additional-export-controls-certain-advanced-computing-and-semiconductor · 185 s
+17. BIS rescission press release (May 2025) — https://www.bis.gov/press-release/department-commerce-rescinds-biden-era-artificial-intelligence-diffusion-rule-strengthens-chip-related · 205 s
+18. TSMC Fab 18 (CC BY 4.0, 8256×5504) — https://commons.wikimedia.org/wiki/File:TSMC_Fab_18_May_2025.jpg · 412 s
+19. CSET reprint of NYT Mag "An Act of War" (Kevin Wolf quote) — https://cset.georgetown.edu/article/an-act-of-war-inside-americas-silicon-blockade-against-china/ · 462 s
+20. Gina Raimondo portrait (CC0, 1856×2400) — https://commons.wikimedia.org/wiki/File:Gina_Raimondo.jpg · 585 s
+21. Fortune/PC Gamer Raimondo "very next day" headline — https://fortune.com/2023/12/02/ai-chip-export-controls-china-nvidia-raimondo/ · 593 s
+22. RTX 4090 D launch (TechNode headline/image) — https://technode.com/2023/12/29/nvidia-launches-chinese-version-of-rtx-4090-to-bypass-us-regulations/ · 598–609 s
+23. PlayStation 2 console (CC0, 4400×2650) — https://commons.wikimedia.org/wiki/File:Sony-PlayStation-2-30001-Console-FL.jpg · 623 s
+24. Deseret News Apr 17 2000 "Export limits put on video game — PlayStation2 could be used for weaponry" — https://www.deseret.com/2000/4/17/19502394/export-limits-put-on-video-game-br-playstation2-could-be-used-for-weaponry/ · 623 s
+25. IBTimes Supermicro hair-dryer image (1500×838, tested) — https://d.ibtimes.com/en/full/4646001/super-micro-hair-dryer.png · 815–838 s
+26. SDNY press release "Three Charged…" + indictment PDF (relay) — https://www.justice.gov/usao-sdny/pr/three-charged-conspiring-unlawfully-divert-us-artificial-intelligence-technology-china · 782–839 s
+27. NVIDIA GB300 NVL72 rack product page/press image (©NVIDIA) — https://www.nvidia.com/en-us/data-center/gb300-nvl72/ ; Computex 2024 rack photos (CC BY 3.0): https://commons.wikimedia.org/wiki/File:Eindr%C3%BCcke_von_der_COMPUTEX_2024_(_%E6%9E%81%E5%AE%A2%E6%B9%BEGeekerwan)_20.png (check it shows the NVL72) · 964–990 s
+28. xAI Colossus Memphis (CC BY-SA 2.0, 2000×1333) — https://commons.wikimedia.org/wiki/File:Musk%E2%80%99s_Colossus_Data_Center_Complex_Is_Poisoning_the_Air_in_Memphis.jpg · 1016 s
+29. Epoch "Diversion and resale" banner (2048², CC BY, tested) — https://epoch.ai/assets/images/posts/2026/chip-smuggling/chip-smuggling-banner.png · 1023 s
+30. Epoch AI Chip Imports fig 1 (CC BY, tested 1293×1344) — https://epoch.ai/assets/images/posts/2026/introducing-the-ai-chip-imports-explorer/web-fig1.png (+ web-fig2.png) → rebuild · 1051–1065 s, 2066 s
+31. Caixin "Computing Shortage Forces Chinese AI Firms to Ration Services" hero (1080×720, tested) — https://img.caixin.com/2026-04-21/177676699851933_1280_720.jpg · 1080–1110 s
+32. Dealroom Liang Wenfeng image — https://storage.googleapis.com/dealroom-images-production/2026/07/28/01a0543bd0ec49ba922a78471cdee15d.png · 1114–1134 s
+33. Ember 2025 China vs US electricity (CC BY) → rebuild bars — https://ember-energy.org/latest-insights/global-electricity-review-2025/major-countries-and-regions/ · 1143 s
+34. Stanford AI Index 2025 Fig 2.1.37 (US vs China gaps) — https://hai-production.s3.amazonaws.com/files/hai_ai-index-report-2025_chapter2_final.pdf → rebuild 31.6 → 3.7 · 1198–1205 s
+35. Epoch "7 months" ECI chart — https://epoch.ai/data-insights/us-vs-china-eci → rebuild (also best fit for "this chart", 1428 s) · 1224 s, 1428 s
+36. NIST CAISI DeepSeek V4 Pro Fig 1 (PD, tested 1400×928) — https://www.nist.gov/sites/default/files/styles/1400_x_1400_limit/public/images/2026/05/01/1-Overall-AI-Capability.png.webp?itok=PIASZIV4 · 1260–1310 s
+37. Anthropic "Detecting and preventing distillation attacks" hero (1200×630, tested) + page — https://assets.claude.com/21fea7f085c648e4f1fffbcd6ed5117475d3e276.jpg · 1484 s
+38. Tom's Hardware "95% to 0%" headline — https://www.tomshardware.com/tech-industry/jensen-huang-says-nvidia-china-market-share-has-fallen-to-zero · 1703–1716 s
+39. Howard Lutnick portrait (CC0, 2550×3300) — https://commons.wikimedia.org/wiki/File:Howard_Lutnick_2025.jpg + NBC/CNBC "4th best" article — https://www.nbcsandiego.com/news/business/money-report/commerce-secretary-lutnick-says-china-is-only-getting-nvidias-4th-best-ai-chip/3868720/ · 1801–1820 s
+40. Jack Kilby's first IC 1958 (CC0) — https://commons.wikimedia.org/wiki/File:Jack_Kilby_First_Integrated_Circuit_1958.jpg (small 748 px — use as inset) + Morris Chang (CC BY 2.0) https://commons.wikimedia.org/wiki/File:Morris_Chang_2021APEC.jpg · 1902 s, 1931 s
+Also: NYT-via-Inquirer Lutnick/Bitdeer page (hero image) — https://www.inquirer.com/news/nation-world/howard-lutnick-commerce-secretary-rules-data-centers-nvidia-chips-china-southeast-asia-cantor-fitzgerald-20261115.html · 2198–2208 s;
+WSJ suitcase story mirror — https://www.tovima.com/wsj/chinese-ai-companies-dodge-u-s-chip-curbs-by-flying-suitcases-of-hard-drives-abroad/ · 2280 s;
+Reuters "chips pile up in Hong Kong" X post — https://x.com/Reuters/status/2118304869396210128 · 1844 s;
+Apple newsroom iPhone 18 Pro — https://apple.com/newsroom/2026/09/apple-debuts-iphone-18-pro-and-iphone-18-pro-max/ · 2029 s.
+
+NEEDS RELAY (blocked here): YouTube (Dwarkesh–Huang ep.; Citadel Securities Huang interview 6 Oct 2025; Reagan Forum Raimondo
+panel 2 Dec 2023; Gamers Nexus black-market video), justice.gov (SDNY release + indictment PDF), nytimes.com, theguardian.com
+(2026/oct/29/nvidia-ceo-targeted-chinese-spy), cnn.com (2026/03/19 Supermicro), datacenterdynamics.com (403), FT/WSJ/Bloomberg/Reuters (paywall).
+
+## DECISIONS FOR THE LEAD
+1. 38 s "this video from a few months ago" — most likely Gamers Nexus (Aug 2025, ~15 months before Nov 2026); confirm with Krish.
+2. 792 s "$1.5 billion" vs record $2.5 bn (≥$510 M diverted): show Sam's number unlabeled, or show the indictment without a figure.
+3. 1063 s China "about 1 %" vs Epoch ~10 %: don't attach "Epoch" to the 1 %.
+4. 1801–1820 s Lutnick: Sam's quote is a paraphrase of the real one ("not even our third best… addicted to the American technology stack").
+5. 1428 s "this chart" — source unknown; propose rebuilt Epoch US-vs-China ECI staircase.
+6. 2029 s "iPhone 18" — real product is iPhone 18 Pro (Sep 2026); base iPhone 18 not out yet.
+7. UNVERIFIED lines to keep label-free: 90 s two tons; 127/2009 s 17 %; 1016 s 800,000 homes; 1023 s "more than all smuggled";
+   1035 s 7 %; 1185 s 20×; 1758 s >500 k; 1906–1919 s yields; 2250 s rent abroad ≈ home; 802 s "South Korea"; Facebook Marketplace.

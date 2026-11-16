@@ -39,3 +39,19 @@ are where expected); Alabuga SEZ located by eye on Esri z12/z14 (the brief's 55.
 Place coordinates: Asunción landmarks from OpenStreetMap/Nominatim, checked by eye on the aerials. Ueno address: ueno's 2026 shareholder
 notice (https://www.ueno.com.py/wp-content/uploads/2026/06/Convocatoria-de-Asambleas-31d50a9a-d9aa-4a4d-9a06-5adcb678a3ea.pdf) — Av. Santa
 Teresa 3088 c/ Concejal Vargas; older sources give Santa Teresa 1827 (Torres del Paseo). BCP address: bcp.gov.py (Av. Federación Rusa y Augusto Roa Bastos).
+
+## NVIDIA project additions (fetched 2026-11-16, no login, no payment)
+| asset(s) | source | licence / credit |
+|---|---|---|
+| `southeast_asia_{atlas,night,landmask}`, `china_{atlas,night,landmask}`, `pearl_river_delta_{atlas,night}` | AWS Terrain Tiles terrarium (z8 / z7 / z13) — SRTM / GMTED2010 / ETOPO1 | public domain |
+| `southeast_asia_{sat,satdesat}`, `china_{sat,satdesat}`, `pearl_river_delta_{sat,satdesat}` | Esri World Imagery tiles z8 / z7 / z13 | © Esri and its data providers (Maxar/Vantor, Earthstar), fair use per MANUAL §10.9; on-screen credit "Esri, Maxar, Earthstar Geographics" |
+| `pearl_river_delta_landmask.png` (+ coast in its reliefs/sat and `#land #c-china #c-hong_kong #c-macao` in its overlay) | Esri Canvas World_Light_Gray_Base tiles z13, https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x} (water colour thresholded) | © Esri, HERE, Garmin, © OpenStreetMap contributors — derived mask only; credit "Esri" with the map |
+| `pearl_river_delta_overlay.svg` HK / Macau boundaries, `#b-hk_mainland_border` | OpenStreetMap via nominatim.openstreetmap.org `lookup?osm_ids=R913110,R1867188&polygon_geojson=1&polygon_threshold=0.0001` | © OpenStreetMap contributors, ODbL |
+| `southeast_asia_overlay.svg`, `china_overlay.svg` (and NE rivers/lakes in the PRD overlay) | Natural Earth 10m via jsDelivr (world-atlas@2, NE lakes + rivers geojson) | public domain |
+| `aerial_shenzhen_huaqiangbei_z17`, `aerial_memphis_xai_colossus_z16`, `aerial_memphis_xai_colossus2_z16`, `aerial_johor_data_centers_z16` (Sedenak Tech Park, imagery 2021-02-15), `aerial_johor_nusajaya_tech_park_z16` (imagery 2025) (.jpg + .json) | Esri World Imagery tiles, stitched unmodified | © Esri and its data providers, fair use; credit "Esri, Maxar, Earthstar Geographics" |
+Place coordinates: PRD/Huaqiangbei places from OpenStreetMap/Nominatim (SEG Plaza, Huaqiang Electronics World, Golden Computer Arcade,
+Shun Tak / HK-Macau Ferry Terminal, Shekou Cruise Center, Lo Wu, Futian checkpoint), checked by eye on the imagery; Colossus 1/2 and the
+Sedenak halls located by eye on Esri z14–z16 (Colossus 1 = 3231 Paul R Lowry Rd per Nominatim; Colossus 2 roof reads "MACROHARD");
+Sedenak Tech Park position cross-checked with Baxtel/DataCenterMap campus points (~1.70 N, 103.41 E: https://baxtel.com/campus/k2-kulai-johor-campus,
+https://baxtel.com/campus/vantage-johor-jhb1-sedenak-campus); imagery dates from Esri's World_Imagery identify service.
+NVIDIA HQ (pacific.json `nvidia_hq_santa_clara`): Nominatim "NVIDIA Endeavor, 2788 San Tomas Expressway, Santa Clara".
