@@ -39,7 +39,7 @@ for sid, src, dur in items:
 total = round(t - GAP, 3)
 
 import os as _os
-PALETTE = _os.environ.get('PALETTE') or ('lib/palette_ivan.css' if any(a.startswith('iv') for a in sys.argv[1:]) else 'lib/palette_paraguay.css' if any(a.startswith('py') for a in sys.argv[1:]) else 'lib/palette_podcast.css' if any(a.startswith('pd') for a in sys.argv[1:]) else 'lib/palette.css')  # per-video palette (Ivan = iv*)
+PALETTE = _os.environ.get('PALETTE') or ('lib/palette_ivan.css' if any(a.startswith('iv') for a in sys.argv[1:]) else 'lib/palette_paraguay.css' if any(a.startswith('py') for a in sys.argv[1:]) else 'lib/palette_podcast.css' if any(a.startswith('pd') for a in sys.argv[1:]) else 'lib/palette_nvidia.css' if any(a.startswith('nv') for a in sys.argv[1:]) else 'lib/palette.css')  # per-video palette (Ivan = iv*)
 html = f'''<!doctype html>
 <html lang="en">
   <head>
