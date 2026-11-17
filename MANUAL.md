@@ -790,6 +790,22 @@ on action. Use it whenever the narrator quotes someone or introduces a historic 
 - [ ] Smooth long eases, 12 fps. [ ] Cuts on action; whips, no iris. [ ] No photo/clip used > 2× in a chunk.
 
 ## Changelog
+- 2026-11-17 — **NVIDIA edit (`project/nvidia/`, "Is the chip ban actually working?", 40:02)**: three raw parts (part 1 face cam 4K60, part 2
+  AUDIO ONLY — Krish confirmed no face cam, part 3 face cam) joined on ONE raw timeline (`gen/combine.py`, each part padded to a whole
+  60 fps frame, `parts.json`), Parakeet per part, EDL keep list with a PART field (`gen/edl_keep.py`), Paraguay's build_edl/render_vo,
+  re-ASR + Whisper repeat scan → 46:39 raw → 40:01 VO. Face-cam master = select() on parts 1+3 with a black gap for part 2
+  (`input/nvidia_join.sh`); frame-check by mean-abs-diff vs the raw source showed +2 source frames (same method bias as Paraguay).
+  New palette volt/flag-red/ice (`lib/palette_nvidia.css`), shared motifs `lib/nv_motifs.{js,css}` (`NV.scoreboard`, `NV.line`, loaded
+  for `nv*` by build_index/build_master). 23 segments. Lessons: (1) **run agents exactly like Paraguay — plain Agent calls with no
+  model override** (Krish, 2026-11-17: forcing a different model per agent made them invisible in the side tab and burned usage);
+  (2) every new layer of the brief caught real faults only in the LEAD's own snapshot pass (wrong subject in a monitor: hard drives
+  under "GPUs"; a gaming die labelled "AI chips"; 1–4 s empty grounds at scene starts) — always snapshot 10 frames per segment;
+  (3) a shared document page drifted to 6 uses across editors — track reuse centrally; (4) editors' sfx types must exist in
+  place_sound (an unknown type aborts the whole build); (5) zsh doesn't word-split `$(…)` — QA loops as bash scripts;
+  (6) `make_sandbox.sh` must run under zsh (under bash `${0:A:h}` is empty and it writes `/work/` at the filesystem root);
+  (7) NVIDIA face-cam punch-ins: `transform-origin:1000px 60px`, ≤ 1.46× or the hair crops; (8) a face-cam file that ends before the
+  composition: put a still of its last frame under the `<video>` (nvs23); (9) `t-label` uppercases — brand names with lowercase
+  letters need `text-transform:none`; (10) shared SVG icons use currentColor → colour them via mask-image on a coloured div.
 - 2026-11-13 — **Podcast A-roll edit (`project/podcast/`, "TSMC vs UMC", 95:52)**: new workflow for a two-person video podcast with no
   script. Krish's rules: first 5 min a full edit, after that edited sections only where needed (41 sections, 27 % of the runtime), the
   rest stays on the speakers, cut by an EDL (226 word cuts from 5 parallel transcript analysts, `project/podcast/gen/build_edl.py`:
