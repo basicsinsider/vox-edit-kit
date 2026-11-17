@@ -324,3 +324,10 @@ boom_cinematic_deep, boom_sub_bass_clean_01, riser_reverse_cymbal_short, swell_r
 | ferry_horn_medium.wav | 67be070b-563c-4380-95be-55a0302300c0 | Boats, Horn, Ship, Ferry, Medium Close | 13.4 s | "a short ferry ride…Shenzhen" |
 | street_market_walla_01.wav | 314c15a9-cc17-4110-99ce-7dae248d62a7 | Ambience, Market, Crowd, Street Market, Walla 01 | 82.9 s | the HK mall / Huaqiangbei electronics market |
 | airport_departure_lounge.wav | e6e78298-d6e0-4450-8865-c0f5fba59e5c | Ambience, Transportation, Airport, Gatwick, Departure Lounge | 22.9 s | individuals carrying chips; employees flying to Malaysia |
+
+SFX re-downloaded for the NVIDIA phase-2 build (2026-11-17; ids in the tables above — place_sound's Epidemic mode needs them for the
+editors' existing marker types): paper_slide_wood_table (+_04), coins_drop_01, rubber_stamp_document_01, stamp_hand_press_short,
+card_swipe_04, whoosh_soft, whoosh_swoosh_light, whoosh_swoosh_wide, glitch_data_06/_12, message_text_ping_01/_02,
+ice_crack_medium_long_01, keyboard_typing_apple, keyboard_typing_17s, lens_autofocus_f4_01/_03, camera_focus_nikon_d3100,
+heartbeat_cinematic_54bpm, jet_pass_overhead_01, cash_register_kaching, factory_machine_room_electronics_hum,
+factory_hum_light_activity_01, crowd_walla_indoor_large_02 (25 files ≈ 250 MB, `tools/epidemic_sfx_fetch.py`).

@@ -312,3 +312,45 @@ def vo_duck(music, vo, vo_lufs, gap=20.0, gap_fast=18.0, margin=0.7, attack=0.05
     log(f"vo_duck: 3 s ≥{gap:g} LU / 0.4 s ≥{gap_fast:g} LU under the VO, ceiling VO−{ceiling} — ducked {rep['ducked_pct']}% of the time, mean {rep['mean_cut_db_while_ducked']} dB "
         f"while ducked, max {rep['max_cut_db']} dB")
     return music, rep, total
+
+
+def sfx_limit(sfx, music, vo, vo_lufs, gap=14.0, margin=1.0, max_cut=-30.0, passes=3, log=print):
+    """Gain-ride the SFX bus (never the VO, never the music) so that wherever he speaks the 3 s loudness of music+SFX stays
+    ≥ `gap` (14) LU under the VO's 3 s loudness — the MANUAL §10.8 "Music limits" SFX row, measured exactly as
+    vo_music_scan.py does it (K-weighted hop energies, 3 s windows, speaking = VO 3 s > VO_LUFS − 12). Needed for a quiet VO
+    (NVIDIA −29.8 LUFS): the per-event peak caps keep each SFX under the local VO PEAK, but sustained types (ticks, scribbles,
+    keyboard, loops) in a soft passage still add up. `music` = stereo array or WAV path (read chunked). Modifies `sfx` in place.
+    Returns (sfx, report)."""
+    from scipy.ndimage import minimum_filter1d, uniform_filter1d
+    hop = 0.01
+    w = int(round(3.0 / hop))
+    ev = hop_energy(vo, hop)
+    em = hop_energy(music, hop)
+    lv3 = window_lufs(ev, 3.0, hop)
+    speak = lv3 > vo_lufs - 12
+    total = None
+    for _ in range(passes):
+        es = hop_energy(sfx, hop)
+        n = min(len(ev), len(em), len(es))
+        mean = lambda e: 10 ** ((window_lufs(e[:n], 3.0, hop) + 0.691) / 10)     # mean-square of the 3 s window
+        tgt = 10 ** ((lv3[:n] - gap - margin + 0.691) / 10)
+        Em, Es = mean(em), mean(es)
+        over = speak[:n] & (Em + Es > tgt) & (Es > 1e-14)
+        G = np.ones(n)
+        G[over] = np.clip((tgt[over] - Em[over]) / Es[over], 10 ** (max_cut / 10), 1.0)
+        need = 10 * np.log10(G)                                   # dB needed for the window centred on each hop
+        need = minimum_filter1d(need, w + 1)                       # every hop inside a too-loud window gets that cut
+        need = uniform_filter1d(need, int(0.05 / hop))             # 50 ms smoothing (no clicks)
+        need = np.maximum(need, max_cut - (total if total is not None else 0.0))
+        if need.min() > -0.05:
+            break
+        apply_gain_db(sfx, need, hop)
+        total = need if total is None else total + need
+    if total is None:
+        total = np.zeros(1)
+    d = total < -0.5
+    rep = dict(gap=gap, margin=margin, cut_pct=round(float(d.mean() * 100), 2),
+               mean_cut_db_while_cut=round(float(total[d].mean()), 2) if d.any() else 0.0, max_cut_db=round(float(total.min()), 2))
+    log(f"sfx_limit: music+SFX 3 s ≥{gap:g} LU under the VO while he speaks — SFX bus cut {rep['cut_pct']}% of the time, "
+        f"mean {rep['mean_cut_db_while_cut']} dB while cut, max {rep['max_cut_db']} dB")
+    return sfx, rep

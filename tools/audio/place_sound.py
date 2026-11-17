@@ -50,6 +50,7 @@ VO_LUFS = -27.2
 MUSIC_TARGET = -41.0          # integrated music bed loudness (~14 LU under the VO)
 GATE_DB = -45.0               # VO activity gate (20 ms RMS); Epidemic mode sets it relative to the measured VO (Ivan VO = −36.8 LUFS)
 AMB_SCALE = 1.0               # Epidemic mode: db(min(0, VO_LUFS + 25)) — keeps room tone / library loops ≈ 30 LU under a quiet VO
+SFX_LIMIT = None              # cue-sheet "sfx_limit": {"gap": 14, "margin": 1.0} — SFX-bus rider vs the VO (epidemic_bed.sfx_limit)
 DUCKS = []                    # cue-sheet "ducks": [{"start","end","db","ramp","sfx_db"}] — insert clips (music thinned, SFX/amb muted)
 
 
@@ -1013,6 +1014,10 @@ def build_sfx_and_amb(markers, scenes, act, vo):
         inner = [dict(d, start=d["start"] + 0.3, end=d["end"] - 0.3, ramp=0.3) for d in DUCKS]   # whips on the boundary survive
         env = db(duck_env(inner, "sfx_db", -60.0))[:, None]
         sfx, amb = sfx * env, amb * env
+    if EPIDEMIC and SFX_LIMIT:                  # cue sheet "sfx_limit": music+SFX 3 s ≥ gap LU under the VO (MANUAL §10.8)
+        import epidemic_bed as E
+        sfx, rep = E.sfx_limit(sfx, os.path.join(BED, "music_bed.wav"), vo, VO_LUFS, **SFX_LIMIT)
+        json.dump(rep, open(os.path.join(BED, "sfx_limit.json"), "w"), indent=1)
     for nm, x in ((f"sfx{SUFFIX}.wav", sfx), (f"ambience{SUFFIX}.wav", amb)):
         sf.write(os.path.join(BED, nm), x, SR, subtype="PCM_24")
         print(f"{nm}: peak {20*np.log10(np.abs(x).max()+1e-12):.1f} dBFS  LUFS {integrated_lufs(x):.1f}")
@@ -1128,6 +1133,7 @@ if __name__ == "__main__":
     act, pauses, vo = vo_activity()
     sheet = json.load(open(os.path.join(ROOT, a.cues)))
     DUCKS = sheet.get("ducks", [])
+    SFX_LIMIT = sheet.get("sfx_limit")
     # sound designer's edits of editor markers (cue sheet "marker_edits": drop / retype one marker by t + type)
     for ed in sheet.get("marker_edits", []):
         hit = [m for m in markers if m["type"] == ed["type"] and abs(m["t"] - ed["t"]) < 0.02]

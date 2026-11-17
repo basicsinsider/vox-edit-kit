@@ -11,7 +11,12 @@ gap 20 / gap_fast 18 / ceiling 20, pause_lift_db 0. Never set them looser."""
 import json, os
 
 # per-act balance trims (dB on every layer of the act) from act_levels.py: aim −20…−24 LU re the VO while he speaks
-TRIM = {"N2": 1.0, "N3": 7.0, "N4": 1.0}   # 0–300 s test 2026-11-17: N3 was −27.5 untrimmed → all four acts −23.8…−24.2 (SOUND_PLAN §5); N5–N21 after the full build
+TRIM = {"N2": 1.0, "N3": 7.0, "N4": 1.0,   # 0–300 s test 2026-11-17: N3 was −27.5 untrimmed → all four acts −23.8…−24.2 (SOUND_PLAN §5)
+        # phase 2 (whole 2402 s, est_trims.py = the real music pipeline per candidate): untrimmed build N11–N20 −24.3…−28.8.
+        # The normalisation is global and the duck caps the loud acts, so the levers are: up for the un-ducked quiet acts
+        # (second half, louder VO), slightly DOWN for the duck-limited acts N6–N10 (frees normalisation headroom, the duck backs off)
+        "N5": 1.5, "N6": -1.0, "N7": -1.5, "N9": -1.5, "N10": -1.0, "N11": 4.0, "N12": 1.5, "N13": 7.0, "N14": 3.5,
+        "N15": 3.0, "N16": 2.0, "N17": 8.0, "N18": 5.5, "N19": 2.5, "N20": 4.0}
 
 DR = "flute"   # C-minor drone; its bass stem carries it (instruments stem is a faint flute air 14 LU under)
 
@@ -73,6 +78,7 @@ layers = [
     glue("N4", 306.0, 330.0, 120.0, -20),
     # ================= N5 uranium (nvs03 314.5–362.4): chips like uranium → bomb → enriched uranium → AI → Taiwan → 'the main question'
     L("N5", "subconscious", "full", 316.0, 352.5, 195.0, -20, 3.0, 2.5,
+      auto=[[316, 0], [339.0, 0], [340.0, -8], [344.5, -8], [345.5, 0]],   # phase 2 scan: 3 s gap 16.8 LU at 342.5 (−3 dB gave only 17.3: a one-hop speech sliver the duck can't catch) ('bad things with AI', VO −41.6 LUFS-S)
       note="the dark dual-use weight (full mix; stems ≈ 10 LU under it): its 211 s peak arrives under 'like create a nuclear bomb' "
            "325 → 'enriched uranium is heavily controlled' 329.5 → AI 335–339 → 'invading a US ally, Taiwan' 343.9–351; out before "
            "'that's not the main question' 357.1 — drone only for 'is that ban working or not' 358.9"),
@@ -149,7 +155,7 @@ layers = [
     glue("N12", 1166.0, 1186.0, 140.0, -20),
     # ================= N13 three ways to measure the lead → tests → the US government's unseen test → caveats (nvs12–13 1174.6–1356.3)
     L("N13", "cinema_neon", "full", 1176.0, 1261.0, 57.0, -20.5, 2.5, 2.5,
-      auto=[[1176, 0], [1230, 0], [1232, -2], [1259, -2]],
+      auto=[[1176, 0], [1226, 0], [1228, -2], [1259, -2]],   # dip from 1228 (phase 2 scan: 17.8 LU at 1230.6)
       note="the explainer colour of the overview returns for the three ways to measure (charts world): chips 20× 1180.6 → test "
            "scores, '30 points…three points' 1198–1205 → 'seven to eight months' 1224.4; thinner under 'building models to succeed "
            "in these tests' 1242–1260 (dense)"),
@@ -261,10 +267,11 @@ sheet = dict(
     bed_lu_under_vo=22.0,
     pause_lift_db=0.0,
     vo_duck=dict(gap=20.0, gap_fast=18.0, ceiling=20.0, margin=0.7, attack=0.05, release=0.4, max_cut=-30.0, passes=3),
+    sfx_limit=dict(gap=14.0, margin=1.0),   # phase 2: SFX-bus rider, music+SFX 3 s ≥ 14 LU under the VO (untrimmed build: min 4.2 LU)
     layers=layers, stingers=stingers, ducks=[], bleeps=[], marker_edits=marker_edits)
 
 assert sheet["bed_lu_under_vo"] >= 22 and sheet["vo_duck"]["gap"] >= 20 and sheet["vo_duck"]["gap_fast"] >= 18 \
-    and sheet["vo_duck"]["ceiling"] >= 20 and sheet["pause_lift_db"] == 0, "binding music limits loosened"
+    and sheet["vo_duck"]["ceiling"] >= 20 and sheet["sfx_limit"]["gap"] >= 14 and sheet["pause_lift_db"] == 0, "binding music limits loosened"
 out = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "music_cuesheet.json")
 json.dump(sheet, open(out, "w"), indent=1)
 print("wrote", os.path.normpath(out), len(layers), "layers,", len(stingers), "stingers")

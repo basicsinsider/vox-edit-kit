@@ -75,8 +75,9 @@ if __name__ == "__main__":
     print(f"ambience while speaking  {L(pa[act]):6.1f} LUFS")
     w = SR // 2
     d = lambda x: 20 * np.log10(x + 1e-9)
-    vp = np.array([np.abs(vo[i:i + w]).max() for i in range(0, len(s) - w, w)])
-    sp = np.array([np.abs(s[i:i + w]).max() for i in range(0, len(s) - w, w)])
+    ns = min(len(vo), len(s))                   # the beds may run past the VO (designed tail): compare the common span
+    vp = np.array([np.abs(vo[i:i + w]).max() for i in range(0, ns - w, w)])
+    sp = np.array([np.abs(s[i:i + w]).max() for i in range(0, ns - w, w)])
     k = min(len(vp), len(sp))
     vp, sp = vp[:k], sp[:k]
     sp_on, sp_speech = sp > 1e-4, (sp > 1e-4) & (vp > 10 ** (-30 / 20))

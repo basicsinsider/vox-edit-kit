@@ -730,6 +730,11 @@ on action. Use it whenever the narrator quotes someone or introduces a historic 
   the music was a steady −37 LUFS-S but the VO dropped to −31), so the duck must follow the VO, not the music's own peaks. Memory: the
   whole-length build peaks at ≈ 7.5 GB (keep the duck/scan chunked; a non-chunked version OOM-killed the box).
 
+- **NVIDIA (2026-11-17, `project/nvidia/SOUND_REPORT.md`)**: C-minor Epidemic family (LOG.md "NVIDIA"). A quiet VO (−29.8 LUFS) let sustained
+  SFX pile up in pauses (music+SFX min 4.2 LU on the first build) → new cue-sheet key `"sfx_limit": {"gap": 14, "margin": 1}` turns down ONLY
+  the SFX track where music+SFX comes within 14 LU of the VO (`epidemic_bed.sfx_limit()`, called by place_sound; off unless set). Brief VO dips
+  can still breach the 18 LU music minimum → add a local `rel_lu` dip in the cue sheet there. `measure_mix.py` now compares only the span the VO
+  covers (beds may run past it). place_sound aborts on any SFX file missing from the box — re-download logged ids first.
 - **Music limits — BINDING for every video (Krish 2026-11-13; replaces the 12 LU figures above and the "−12…−17" act aim).**
   Viewers complained the music was too loud even after the 2026-11-08 duck, so:
   | what | limit | where it is enforced |
