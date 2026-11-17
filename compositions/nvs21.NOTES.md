@@ -23,7 +23,7 @@
 - lint (sandbox `work/nvs21`): 0 errors in nvs21 (the 25 errors are other projects' missing face-cam files); nvs21 warnings only
   `nested_media_start_basis_ambiguous` (video data-start is composition-local), `duplicate_media_discovery_risk` (the same logo in two
   scenes), file length.
-- `sync_audit … --transcript transcript_nv.json`: 13 cues, 0 flagged (all −0.06 s, two read +0.02 against the short neighbour word).
+- `sync_audit … --transcript transcript_nv.json`: 16 cues, 0 flagged (all −0.06 s, two read +0.02 against the short neighbour word).
 - Headless timeline dump: `tl.duration()` = 79.5417 = DUR, no runtime errors, no tween past DUR.
 - Snapshots looked at: every scene start/middle/end and every cut at ±0.05 s; key animations hold ≥ 0.5 s before each cut (sc003's
   "models" label finishes 0.32 s before the whip starts — it is a label on its word, the scene's key moves end 1.7 s earlier).
