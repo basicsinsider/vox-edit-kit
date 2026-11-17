@@ -1,0 +1,629 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8" /></head>
+<body>
+<template>
+  <style>
+    #root { position: absolute; inset: 0; overflow: hidden; background: var(--night); }
+    .n12-scene { position: absolute; inset: 0; overflow: hidden; visibility: hidden; opacity: 0; }
+    .n12-shot { position: absolute; inset: 0; overflow: hidden; transform-origin: 50% 50%; background: var(--night); }
+    .n12-paper { background: var(--paper); }
+    .n12-hall { position: absolute; inset: -40px;
+      background: radial-gradient(ellipse 72% 62% at 50% 44%, color-mix(in srgb, var(--ash-dark) 50%, var(--night)) 0%, var(--night) 72%); }
+    .n12-vw { position: absolute; inset: 0; transform-origin: 50% 50%; }
+    .n12-cam { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 0 0; }
+    .n12-abs { position: absolute; }
+    .n12-p1, .n12-p2 { position: absolute; inset: 0; background-size: cover; background-position: center; pointer-events: none; }
+    .n12-p2 { mix-blend-mode: multiply; }
+    .n12-svg { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; pointer-events: none; }
+    .n12-w { display: inline-block; white-space: pre; opacity: 0; }
+    .n12-ink { color: var(--ink); }
+    .n12-ico { position: absolute; -webkit-mask-size: contain; mask-size: contain; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+      -webkit-mask-position: center; mask-position: center; }
+    .n12-logo { position: absolute; object-fit: contain; }
+    .n12-credit { position: absolute; right: 30px; bottom: 20px; font-size: 13px; letter-spacing: 0.08em; color: rgba(240,239,232,0.62); z-index: 5; }
+    .n12-credit.ink { color: rgba(20,24,27,0.62); }
+    #nvs12-flash { position: absolute; inset: 0; background: var(--bone); opacity: 0; pointer-events: none; z-index: 7; }
+    #nvs12-grain, #nvs12-dust, #nvs12-vig { z-index: 8; }
+
+    /* title-card family (ref ast_e1ede4fafbd84a66): ink bars + bone Haskoy caps over a document, one ice + one volt block */
+    .n12-tab { position: absolute; top: 470px; width: 360px; height: 340px; background: var(--ink); box-shadow: 0 18px 36px rgba(20,24,27,0.35); }
+    .n12-tab .num { position: absolute; left: 0; width: 360px; top: 52px; text-align: center; font-size: 220px; color: var(--bone); }
+    .n12-tab .lab { position: absolute; left: 0; width: 360px; top: 272px; text-align: center; font-size: 30px; color: var(--bone); white-space: nowrap; }
+    .n12-tab .ic { position: absolute; left: 140px; top: 248px; width: 80px; height: 80px; color: var(--bone); }
+    .n12-bar { position: absolute; left: 0; width: 1920px; top: 140px; text-align: center; }
+    .n12-bar span.box { display: inline-block; background: var(--ink); color: var(--bone); font-size: 150px; padding: 26px 48px 10px; transform: rotate(-1.2deg); }
+    .n12-band { position: absolute; left: -40px; width: 2000px; top: 880px; height: 220px; background: var(--volt); mix-blend-mode: multiply; opacity: 0.85;
+      clip-path: polygon(0 18%, 6% 10%, 13% 20%, 21% 8%, 30% 16%, 38% 6%, 47% 18%, 56% 9%, 64% 17%, 73% 7%, 81% 15%, 90% 5%, 100% 14%, 100% 100%, 0 100%); }
+
+    /* chart heads */
+    .n12-head { position: absolute; left: 96px; top: 84px; height: 84px; }
+    .n12-head .tb { position: absolute; left: 0; top: 0; width: 84px; height: 84px; font-size: 64px; text-align: center; line-height: 96px; }
+    .n12-head .tt { position: absolute; left: 112px; top: 6px; font-size: 76px; white-space: nowrap; }
+
+    /* sc002 chips isotype */
+    .n12-slot { position: absolute; width: 92px; height: 92px; border: 3px dashed rgba(195,199,200,0.38); border-radius: 12px; box-sizing: border-box; }
+
+    /* sc004 bars */
+    .n12-hbar { position: absolute; left: 330px; height: 64px; transform-origin: 0 50%; }
+
+    /* sc009 exam */
+    .n12-sheet { position: absolute; background: #f2f0e8; box-shadow: 0 30px 70px rgba(0,0,0,0.6); overflow: hidden; }
+    .n12-bub { position: absolute; width: 44px; height: 44px; border: 3px solid var(--ink); border-radius: 50%; box-sizing: border-box;
+      font-size: 22px; line-height: 42px; text-align: center; color: var(--ink); }
+    .n12-fill { position: absolute; width: 34px; height: 34px; border-radius: 50%; background: var(--ink); opacity: 0; }
+    .n12-qb { position: absolute; height: 16px; border-radius: 8px; background: rgba(20,24,27,0.42); filter: blur(2px); }
+
+    /* sc010 mini sheets */
+    .n12-mini { position: absolute; top: 470px; width: 260px; height: 320px; background: #f4f2eb; box-shadow: 0 16px 32px rgba(20,24,27,0.3); }
+    .n12-mb { position: absolute; width: 26px; height: 26px; border: 3px solid var(--ink); border-radius: 50%; box-sizing: border-box; }
+    .n12-mf { position: absolute; width: 18px; height: 18px; border-radius: 50%; background: var(--ink); opacity: 0; }
+  </style>
+
+  <div id="root" data-composition-id="nvs12" data-vo-start="1174.583" data-duration="85.792" data-width="1920" data-height="1080">
+    <svg id="nvs12-defs" width="0" height="0" style="position:absolute"></svg>
+
+    <!-- sc001 · 1174.58–1180.59 · "three different ways to track the lead" · title card + three tabs (paper) -->
+    <div class="n12-scene" id="nvs12-sc001"><div class="n12-shot n12-paper" id="nvs12-sc001-shot">
+      <div class="n12-p1" style="background-image:url('assets/textures/paper_stained_01_hires.jpg')"></div>
+      <div class="n12-p2" style="background-image:url('assets/textures/newsprint_01.jpg'); opacity:0.3"></div>
+      <div class="n12-vw" id="nvs12-sc001-vw">
+        <svg class="n12-svg" viewBox="0 0 1920 1080"><circle cx="1760" cy="150" r="250" fill="none" stroke="var(--ice)" stroke-width="44" opacity="0.8" style="mix-blend-mode:multiply" /></svg>
+        <div class="n12-band"></div>
+        <div class="n12-bar t-display" id="nvs12-sc001-ti"><span class="box"><span class="n12-w">THE </span><span class="n12-w">LEAD</span></span></div>
+        <div id="nvs12-sc001-tabs"></div>
+      </div>
+    </div></div>
+
+    <!-- sc002 · 1180.59–1188.15 · 1 CHIPS · American companies 20 chips vs China 1 (night isotype) -->
+    <div class="n12-scene" id="nvs12-sc002"><div class="n12-shot" id="nvs12-sc002-shot">
+      <div class="n12-hall"></div>
+      <div class="n12-vw" id="nvs12-sc002-vw">
+        <div class="n12-head" id="nvs12-sc002-head"><div class="tb t-display" style="background:var(--bone);color:var(--ink)">1</div>
+          <div class="tt t-display clean" id="nvs12-sc002-tt"><span class="n12-w">CHIPS</span></div></div>
+        <div class="n12-abs t-label" id="nvs12-sc002-us" style="left:96px;top:300px;font-size:32px;color:var(--ice-light)"><span class="n12-w">AMERICAN </span><span class="n12-w">COMPANIES</span></div>
+        <div class="n12-abs t-label" id="nvs12-sc002-cn" style="left:96px;top:640px;font-size:32px;color:var(--red-light)"><span class="n12-w">CHINA</span></div>
+        <div id="nvs12-sc002-grid"></div>
+        <div class="n12-abs t-display halate yellow" id="nvs12-sc002-x" style="left:1300px;width:524px;top:330px;text-align:center;font-size:300px;opacity:0">20×</div>
+      </div>
+    </div></div>
+
+    <!-- sc003 · 1188.15–1208.38 · 2 test scores: dual line chart, 30 points → 3 points (paper graph; ref ast_d3d145bc2ebb47ad) -->
+    <div class="n12-scene" id="nvs12-sc003"><div class="n12-shot n12-paper" id="nvs12-sc003-shot">
+      <div class="n12-cam" id="nvs12-sc003-cam">
+        <div class="n12-p1" style="background-image:url('assets/textures/paper_graph_01_hires.jpg')"></div>
+        <div class="n12-p2" style="background-image:url('assets/textures/paper_cream_01.jpg'); opacity:0.5"></div>
+        <svg class="n12-svg" id="nvs12-sc003-svg" viewBox="0 0 1920 1080"></svg>
+        <div class="n12-head" style="left:300px;top:110px"><div class="tb t-display label-box" id="nvs12-sc003-tb">2</div>
+          <div class="tt t-display n12-ink" id="nvs12-sc003-tt"><span class="n12-w">AI </span><span class="n12-w">MODELS </span><span class="n12-w">ON </span><span class="n12-w">TEST</span></div></div>
+        <div class="n12-abs t-label" id="nvs12-sc003-ya" style="left:150px;top:600px;font-size:24px;color:var(--ink-soft);transform:rotate(-90deg);transform-origin:50% 50%;width:160px;text-align:center;opacity:0">SCORE</div>
+        <div class="n12-abs t-label" id="nvs12-sc003-lus" style="left:420px;top:418px;font-size:28px;color:var(--ice-dark)"><span class="n12-w">AMERICAN </span><span class="n12-w">MODELS</span></div>
+        <div class="n12-abs t-label" id="nvs12-sc003-lcn" style="left:420px;top:790px;font-size:28px;color:var(--red-dark)"><span class="n12-w">CHINESE </span><span class="n12-w">MODELS</span></div>
+        <div class="n12-abs t-display" id="nvs12-sc003-b30" style="left:400px;top:586px;font-size:56px"><span class="label-box"><span class="n12-w">30 </span><span class="n12-w">POINTS</span></span></div>
+        <div class="n12-abs t-label" id="nvs12-sc003-today" style="left:1530px;top:298px;width:140px;text-align:center;font-size:26px;color:var(--ink)"><span class="n12-w">TODAY</span></div>
+        <div class="n12-abs t-display" id="nvs12-sc003-b3" style="left:1320px;top:490px;font-size:56px"><span class="label-box" style="background:var(--yellow);color:var(--ink)"><span class="n12-w">3 </span><span class="n12-w">POINTS</span></span></div>
+      </div>
+    </div></div>
+
+    <!-- sc004 · 1208.38–1215.42 · close without enough chips: paired bars, test score vs chips (night) -->
+    <div class="n12-scene" id="nvs12-sc004"><div class="n12-shot" id="nvs12-sc004-shot">
+      <div class="n12-hall"></div>
+      <div class="n12-vw" id="nvs12-sc004-vw">
+        <div class="n12-abs t-label clean" id="nvs12-sc004-g1" style="left:330px;top:236px;font-size:30px"><span class="n12-w">TEST SCORE</span></div>
+        <div class="n12-abs t-label clean" id="nvs12-sc004-g2" style="left:330px;top:576px;font-size:30px"><span class="n12-w">CHIPS</span></div>
+        <div id="nvs12-sc004-bars"></div>
+        <svg class="n12-svg" id="nvs12-sc004-svg" viewBox="0 0 1920 1080"></svg>
+      </div>
+    </div></div>
+
+    <!-- sc005 · 1215.42–1228.00 · 3 TIME: ruler, China matches American models 7–8 months later (paper) -->
+    <div class="n12-scene" id="nvs12-sc005"><div class="n12-shot n12-paper" id="nvs12-sc005-shot">
+      <div class="n12-p1" style="left:-200px;background-image:url('assets/textures/paper_lined_01_hires.jpg')"></div>
+      <div class="n12-p2" style="background-image:url('assets/textures/paper_cream_02.jpg'); opacity:0.5"></div>
+      <div class="n12-vw" id="nvs12-sc005-vw">
+        <div class="n12-head"><div class="tb t-display label-box" id="nvs12-sc005-tb">3</div>
+          <div class="tt t-display n12-ink" id="nvs12-sc005-tt"><span class="n12-w">TIME</span></div></div>
+        <div class="n12-abs" id="nvs12-sc005-band" style="left:912px;top:600px;width:96px;height:80px;background:var(--yellow);mix-blend-mode:multiply;opacity:0.9;transform-origin:0 50%"></div>
+        <svg class="n12-svg" id="nvs12-sc005-svg" viewBox="0 0 1920 1080"></svg>
+        <div id="nvs12-sc005-ticks"></div>
+        <div id="nvs12-sc005-us">
+          <div class="n12-abs" style="left:237px;top:476px;width:6px;height:164px;background:var(--ice-dark)"></div>
+          <div class="n12-abs" style="left:222px;top:622px;width:36px;height:36px;border-radius:50%;background:var(--ice-dark)"></div>
+        </div>
+        <div class="n12-abs t-label" id="nvs12-sc005-usl" style="left:262px;top:450px;font-size:28px;color:var(--ice-dark)"><span class="n12-w">AMERICAN </span><span class="n12-w">MODELS</span></div>
+        <div class="n12-abs t-display" id="nvs12-sc005-tod" style="left:262px;top:500px;font-size:40px"><span class="label-box" style="background:var(--ice-dark);color:var(--paper)"><span class="n12-w">TODAY</span></span></div>
+        <div id="nvs12-sc005-trail" class="n12-abs" style="left:240px;top:637px;width:720px;height:6px;background:repeating-linear-gradient(90deg, var(--red) 0 18px, transparent 18px 30px);transform-origin:0 50%"></div>
+        <div id="nvs12-sc005-cn">
+          <div class="n12-abs" style="left:237px;top:640px;width:6px;height:120px;background:var(--red-dark)"></div>
+          <div class="n12-abs" style="left:222px;top:622px;width:36px;height:36px;border-radius:50%;background:var(--red)"></div>
+          <div class="n12-abs t-label" id="nvs12-sc005-cnl" style="left:262px;top:740px;font-size:28px;color:var(--red-dark)"><span class="n12-w">CHINA</span></div>
+        </div>
+        <div class="n12-abs t-display n12-ink" id="nvs12-sc005-mo" style="left:620px;width:680px;top:470px;text-align:center;font-size:96px"><span class="n12-w">7</span><span class="n12-w">–8 </span><span class="n12-w">MONTHS</span></div>
+      </div>
+    </div></div>
+
+    <!-- sc006 · 1228.00–1231.90 · the gap stayed ~7 months for three years: three lanes (night) -->
+    <div class="n12-scene" id="nvs12-sc006"><div class="n12-shot" id="nvs12-sc006-shot">
+      <div class="n12-hall"></div>
+      <div class="n12-vw" id="nvs12-sc006-vw">
+        <div class="n12-abs t-label" style="left:96px;top:84px;font-size:24px;color:var(--ice-light)"><span style="display:inline-block;width:18px;height:18px;border-radius:50%;background:var(--ice);margin-right:14px;vertical-align:-1px"></span>US</div>
+        <div class="n12-abs t-label" style="left:96px;top:124px;font-size:24px;color:var(--red-light)"><span style="display:inline-block;width:18px;height:18px;border-radius:50%;background:var(--red);margin-right:14px;vertical-align:-1px"></span>CHINA</div>
+        <svg class="n12-svg" id="nvs12-sc006-svg" viewBox="0 0 1920 1080"></svg>
+        <div class="n12-abs t-display" id="nvs12-sc006-7" style="left:960px;width:500px;top:206px;text-align:center;font-size:84px"><span class="n12-w halate yellow">7 </span><span class="n12-w clean">MONTHS</span></div>
+        <div class="n12-abs t-display clean" id="nvs12-sc006-3" style="left:276px;width:220px;top:500px;text-align:center;font-size:60px;line-height:1"><span class="n12-w">3 </span><span class="n12-w">YEARS</span></div>
+      </div>
+    </div></div>
+
+    <!-- sc007 · 1231.90–1236.54 · Chinese companies: logo row (night) -->
+    <div class="n12-scene" id="nvs12-sc007"><div class="n12-shot" id="nvs12-sc007-shot">
+      <div class="n12-hall"></div>
+      <div class="n12-vw" id="nvs12-sc007-vw">
+        <div class="n12-abs t-label" id="nvs12-sc007-k" style="left:255px;top:352px;font-size:30px;color:var(--red-light)"><span class="n12-w">CHINESE </span><span class="n12-w">COMPANIES</span></div>
+        <div id="nvs12-sc007-row"></div>
+      </div>
+      <div class="n12-credit t-label">Logos © their owners, fair use</div>
+    </div></div>
+
+    <!-- sc008 · 1236.54–1242.06 · tab 2 lifts: the testing scores, best for them (paper board) -->
+    <div class="n12-scene" id="nvs12-sc008"><div class="n12-shot n12-paper" id="nvs12-sc008-shot">
+      <div class="n12-p1" style="background-image:url('assets/textures/paper_stained_01_hires.jpg')"></div>
+      <div class="n12-p2" style="background-image:url('assets/textures/newsprint_01.jpg'); opacity:0.3"></div>
+      <div class="n12-vw" id="nvs12-sc008-vw">
+        <svg class="n12-svg" viewBox="0 0 1920 1080"><circle cx="1760" cy="150" r="250" fill="none" stroke="var(--ice)" stroke-width="44" opacity="0.8" style="mix-blend-mode:multiply" /></svg>
+        <div class="n12-band"></div>
+        <div class="n12-bar t-display"><span class="box">THE LEAD</span></div>
+        <div id="nvs12-sc008-tabs"></div>
+        <svg class="n12-svg" id="nvs12-sc008-svg" viewBox="0 0 1920 1080"></svg>
+        <img class="n12-logo" id="nvs12-sc008-flag" src="assets/nvidia/shared/logos/flag_china.svg" alt="" style="left:1060px;top:420px;width:120px;height:80px;object-fit:fill;box-shadow:0 8px 16px rgba(20,24,27,0.35)" />
+      </div>
+    </div></div>
+
+    <!-- sc009 · 1242.06–1250.15 · building models to succeed in the tests: exam sheet + answer stencil (night desk) -->
+    <div class="n12-scene" id="nvs12-sc009"><div class="n12-shot" id="nvs12-sc009-shot">
+      <div class="n12-hall"></div>
+      <div class="n12-vw" id="nvs12-sc009-vw">
+        <div class="n12-sheet" id="nvs12-sc009-sheet" style="left:570px;top:70px;width:780px;height:940px">
+          <div class="n12-p2" style="background-image:url('assets/textures/paper_cream_01.jpg'); opacity:0.6"></div>
+          <div class="n12-abs t-display n12-ink" style="left:60px;top:56px;font-size:84px">TEST</div>
+          <div class="n12-abs t-label" style="left:400px;top:80px;font-size:22px;color:var(--ink-soft)">NAME</div>
+          <div class="n12-abs" style="left:490px;top:104px;width:230px;height:3px;background:var(--ink-soft)"></div>
+          <div class="n12-abs" style="left:60px;top:170px;width:660px;height:4px;background:var(--ink)"></div>
+          <div id="nvs12-sc009-rows"></div>
+          <div class="n12-abs" id="nvs12-sc009-st" style="left:360px;top:196px;width:330px;height:720px">
+            <svg id="nvs12-sc009-stsvg" width="330" height="720" viewBox="0 0 330 720" style="position:absolute;left:0;top:0"></svg>
+            <div class="n12-abs t-label" id="nvs12-sc009-stl" style="left:0;width:330px;top:678px;text-align:center;font-size:24px;color:var(--bone)"><span class="n12-w">MODEL</span></div>
+          </div>
+        </div>
+      </div>
+    </div></div>
+
+    <!-- sc010 · 1250.15–1260.375 · tests judge all models equally; the models know the test (paper) -->
+    <div class="n12-scene" id="nvs12-sc010"><div class="n12-shot n12-paper" id="nvs12-sc010-shot">
+      <div class="n12-p1" style="background-image:url('assets/textures/paper_cream_02.jpg')"></div>
+      <div class="n12-p2" style="background-image:url('assets/textures/paper_fiber_01.jpg'); opacity:0.4"></div>
+      <div class="n12-vw" id="nvs12-sc010-vw">
+        <div id="nvs12-sc010-row"></div>
+        <svg class="n12-svg" id="nvs12-sc010-svg" viewBox="0 0 1920 1080"></svg>
+      </div>
+      <div class="n12-credit t-label ink">Logos © their owners, fair use</div>
+    </div></div>
+
+    <div id="nvs12-flash"></div>
+    <div id="nvs12-grain" class="tx tx-grain" style="background-image:url('assets/textures/grain_01_norm.jpg')"></div>
+    <div id="nvs12-dust" class="tx tx-dust" style="background-image:url('assets/textures/dust_02.jpg')"></div>
+    <div id="nvs12-vig" class="vignette"></div>
+    <audio id="nvs12-vo" class="temp-vo" src="vo_nv.mp3" data-start="0" data-duration="85.792" data-media-start="1174.583" data-volume="1"></audio>
+  </div>
+
+  <script>
+  (function () {
+    const SEG = "nvs12", SEG_START = 1174.583, SEG_END = 1260.375, DURATION = 85.792;
+    const T = (s) => +(s - SEG_START).toFixed(3);   // TEXT cues (audited): master word start − 0.06
+    const S = (s) => +(s - SEG_START).toFixed(3);   // STRUCTURAL cues
+    const tl = gsap.timeline({ paused: true });
+    const $ = (id) => document.getElementById(SEG + "-" + id);
+    const NS = "http://www.w3.org/2000/svg";
+    const defs = $("defs");
+    const E = FX.ease;
+    const C = (e, d) => FX.choppy(e, d, 12);
+    const INK = "#14181b", BONE = "#f0efe8", RED = "#dc2f3c", REDD = "#7e151e", REDL = "#f6a4a9", ICE = "#2a9fc9", ICED = "#115973", ICEL = "#9fdcf0", VOLT = "#86c232", YEL = "#f5d033";
+    const ICO = (n) => "url('assets/nvidia/shared/icons/" + n + ".svg')";
+
+    // ---------- scenes ----------
+    const SC = [
+      ["sc001", 1174.583, 1180.59, "paper"], ["sc002", 1180.59, 1188.15, "night"], ["sc003", 1188.15, 1208.38, "paper"],
+      ["sc004", 1208.38, 1215.42, "night"], ["sc005", 1215.42, 1228.00, "paper"], ["sc006", 1228.00, 1231.90, "night"],
+      ["sc007", 1231.90, 1236.54, "night"], ["sc008", 1236.54, 1242.06, "paper"], ["sc009", 1242.06, 1250.15, "night"],
+      ["sc010", 1250.15, 1260.375, "paper"],
+    ];
+    const GROUND = { paper: [0.3, 0.14, 0.22], night: [0.9, 0.42, 0.4] };
+    const EARLY = { sc008: 0.45, sc010: 0.45 };   // slide: incoming scene visible during the slide
+    function ground(kind, t) { const v = GROUND[kind]; tl.set([$("grain"), $("dust"), $("vig")], { opacity: (i) => v[i] }, t); }
+    SC.forEach((s, i) => {
+      const el = $(s[0]), a = s[1] - (EARLY[s[0]] || 0);
+      if (i === 0) gsap.set(el, { autoAlpha: 1 });
+      else tl.fromTo(el, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.001, immediateRender: false }, S(a));
+      if (s[2] < SEG_END) tl.set(el, { autoAlpha: 0 }, S(s[2]) + 0.05);
+    });
+    gsap.set([$("grain"), $("dust"), $("vig")], { opacity: (i) => GROUND.paper[i] });
+    SC.forEach((s, i) => { if (i > 0) ground(s[3], S(s[1])); });
+
+    // ---------- helpers ----------
+    const rise = (el, t, o) => { o = o || {}; const d = o.dur || 0.5;
+      tl.fromTo(el, { opacity: 0, y: o.y == null ? 14 : o.y }, { opacity: 1, y: 0, duration: d, ease: C(E.out, d), immediateRender: true }, t); };
+    const pop = (el, t, o) => { o = o || {}; const n = o.n || 2;
+      tl.fromTo(el, { opacity: 0, scale: o.from == null ? 1.25 : o.from }, { opacity: 1, scale: 1, duration: n / 12, ease: "steps(" + n + ")", immediateRender: true }, t); };
+    const W = (id) => Array.from($(id).querySelectorAll(".n12-w"));
+    function words(id, cues, o) { const ws = W(id); cues.forEach((c, i) => rise(ws[i], c, o)); }
+    function el(parent, tag, attrs) { const n = document.createElementNS(NS, tag); for (const k in attrs) n.setAttribute(k, attrs[k]); parent.appendChild(n); return n; }
+    function div(parent, cls, css, html) { const d = document.createElement("div"); if (cls) d.className = cls; d.style.cssText = css || ""; if (html) d.innerHTML = html; parent.appendChild(d); return d; }
+    function ink(parent, d, t, dur, o) {
+      o = o || {};
+      const p = el(parent, "path", { d: d, fill: "none", stroke: o.color || INK, "stroke-width": o.width || 5, "stroke-linecap": "round", "stroke-linejoin": "round" });
+      if (o.opacity != null) p.setAttribute("opacity", o.opacity);
+      const len = p.getTotalLength() || 1;
+      p.setAttribute("stroke-dasharray", len + " " + len); p.setAttribute("stroke-dashoffset", len);
+      tl.fromTo(p, { attr: { "stroke-dashoffset": len } }, { attr: { "stroke-dashoffset": 0 }, duration: dur, ease: o.ease || C(E.out, dur), immediateRender: true }, t);
+      gsap.set(p, { opacity: 0 }); tl.set(p, { opacity: o.opacity == null ? 1 : o.opacity }, t);
+      return p;
+    }
+    const whipN = { n: 0 };
+    function whip(a, b, t, o) {
+      o = Object.assign({ dir: 1, vertical: false, flash: false, dur: 0.32 }, o);
+      const k = ++whipN.n, ba = FX.whipDefs(defs, SEG + "-wa" + k), bb = FX.whipDefs(defs, SEG + "-wb" + k), h = o.dur / 2;
+      const A = $(a + "-shot"), B = $(b + "-shot");
+      tl.set(A, { filter: "url(#" + SEG + "-wa" + k + ")" }, t - h - 0.01); tl.set(A, { filter: "none" }, t + 0.06);
+      tl.set(B, { filter: "url(#" + SEG + "-wb" + k + ")" }, t - 0.001); tl.set(B, { filter: "none" }, t + h + 0.02);
+      FX.whip(tl, A, B, t, { dir: o.dir, vertical: o.vertical, dur: o.dur, blurA: ba, blurB: bb });
+      if (o.flash) tl.fromTo($("flash"), { opacity: 0 }, { opacity: 0.85, duration: 0.08, yoyo: true, repeat: 1, ease: "power2.in", immediateRender: false }, t - 0.08);
+    }
+    function slide(a, b, t, o) {
+      o = Object.assign({ axis: "y", from: 1, d: 0.45 }, o);
+      const A = $(a + "-shot"), B = $(b + "-shot"), dist = (o.axis === "x" ? 1980 : 1140) * o.from;
+      tl.fromTo(B, { [o.axis]: dist, boxShadow: "0 0 80px rgba(0,0,0,0.5)" }, { [o.axis]: 0, duration: o.d, ease: C(E.inOut, o.d), immediateRender: false }, t - o.d);
+      tl.set(B, { boxShadow: "none" }, t);
+      tl.fromTo(A, { [o.axis]: 0 }, { [o.axis]: -dist * 0.12, duration: o.d, ease: E.in, immediateRender: false }, t - o.d);
+    }
+    function push(id, a, b, s0, s1, o) {
+      o = o || {};
+      const vw = $(id + "-vw");
+      if (o.origin) gsap.set(vw, { transformOrigin: o.origin });
+      gsap.set(vw, { scale: s0 });
+      tl.fromTo(vw, { scale: s0 }, { scale: s1, duration: b - a, ease: o.ease || "none", immediateRender: false }, S(a));
+    }
+    const PEN = FX.markupDefs(defs, SEG + "-pen", { boil: 4 });
+    defs.setAttribute("viewBox", "0 0 1 1");
+    FX.grain($("grain"), 1201);
+    FX.dust($("dust"), 1202, 2);
+
+    // own icons (bone strokes) for the tabs: chip (kit icon), test sheet, clock
+    const SHEET_SVG = '<svg viewBox="0 0 80 80" width="80" height="80"><rect x="16" y="6" width="48" height="66" rx="4" fill="none" stroke="currentColor" stroke-width="6"/><path d="M26 24 L54 25 M26 38 L54 39 M26 52 L44 53" stroke="currentColor" stroke-width="5" stroke-linecap="round" fill="none"/></svg>';
+    const CLOCK_SVG = '<svg viewBox="0 0 80 80" width="80" height="80"><circle cx="40" cy="40" r="32" fill="none" stroke="currentColor" stroke-width="6"/><path d="M40 20 L41 41 L56 49" stroke="currentColor" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>';
+    function tabs(box, o) {
+      const X = [300, 780, 1260], out = [];
+      for (let i = 0; i < 3; i++) {
+        const tb = div(box, "n12-tab", "left:" + X[i] + "px;transform:rotate(" + [-1.6, 1.0, -0.8][i] + "deg)");
+        const num = div(tb, "num t-display", o.labels ? "top:30px;font-size:180px" : "", String(i + 1));
+        let ic = null, lab = null;
+        if (o.labels) lab = div(tb, "lab t-label", "", o.labels[i]);
+        else {
+          ic = div(tb, "ic", "");
+          if (i === 0) { ic.className = "ic n12-ico"; ic.style.background = BONE; ic.style.webkitMaskImage = ICO("chip"); ic.style.maskImage = ICO("chip"); }
+          else ic.innerHTML = i === 1 ? SHEET_SVG : CLOCK_SVG;
+        }
+        out.push({ tb, num, ic, lab });
+      }
+      return out;
+    }
+
+    /* ===== sc001 · title card + three tabs ===== */
+    (function () {
+      const tb = tabs($("sc001-tabs"), {});
+      tb.forEach((o, i) => {
+        gsap.set(o.tb, { opacity: 0 });
+        tl.fromTo(o.tb, { opacity: 0, y: -70 }, { opacity: 1, y: 0, duration: 0.7, ease: C(E.out, 0.7), immediateRender: true }, S(1174.93) + i * 0.16);
+        gsap.set(o.ic, { opacity: 0 });
+        pop(o.ic, S(1179.41) + i * 0.14, { from: 0.4, n: 3 });
+        tl.to(o.num, { y: -40, scale: 0.82, duration: 0.5, ease: C(E.inOut, 0.5) }, S(1179.41) + i * 0.14);
+      });
+      gsap.set($("sc001-ti").querySelector(".box"), { clipPath: "inset(0% 100% 0% 0%)" });
+      tl.fromTo($("sc001-ti").querySelector(".box"), { clipPath: "inset(0% 100% 0% 0%)" }, { clipPath: "inset(0% 0% 0% 0%)", duration: 0.5, ease: C(E.out, 0.5), immediateRender: true }, S(1176.40));
+      words("sc001-ti", [T(1176.45), T(1176.61)], { dur: 0.35, y: 10 });
+      const sv = $("sc001-vw");
+      tl.fromTo(sv.querySelector(".n12-band"), { y: 160 }, { y: 0, duration: 0.9, ease: C(E.out, 0.9), immediateRender: true }, S(1174.583));
+      tl.fromTo(sv.querySelector("circle"), { attr: { r: 150 }, opacity: 0 }, { attr: { r: 250 }, opacity: 0.8, duration: 0.9, ease: C(E.out, 0.9), immediateRender: true }, S(1174.583));
+      push("sc001", 1174.583, 1180.15, 1.0, 1.04, { ease: E.cam, origin: "480px 640px" });
+      tl.to($("sc001-vw"), { scale: 1.4, duration: 0.44, ease: E.in }, S(1180.15));
+    })();
+
+    /* ===== sc002 · 1 CHIPS · 20 vs 1 (hard cut on action) ===== */
+    (function () {
+      const g = $("sc002-grid");
+      gsap.set($("sc002-head").querySelector(".tb"), { opacity: 0 });
+      pop($("sc002-head").querySelector(".tb"), S(1180.75), { from: 1.4, n: 3 });
+      words("sc002-tt", [T(1182.77)], { dur: 0.6, y: 16 });
+      words("sc002-us", [T(1184.05), T(1184.45)], { dur: 0.4, y: 8 });
+      for (let i = 0; i < 20; i++) {
+        const c = i % 10, r = Math.floor(i / 10);
+        const sl0 = div(g, "n12-slot", "left:" + (96 + c * 114) + "px;top:" + (360 + r * 114) + "px");
+        gsap.set(sl0, { opacity: 0 });
+        tl.fromTo(sl0, { opacity: 0 }, { opacity: 1, duration: 2 / 12, ease: "steps(2)", immediateRender: true }, S(1181.0) + (c + r) / 24);
+        tl.to(sl0, { opacity: 0, duration: 0.01 }, S(1184.55) + i / 16 + 1 / 12);
+        const ch = div(g, "n12-ico", "left:" + (96 + c * 114) + "px;top:" + (360 + r * 114) + "px;width:92px;height:92px;background:" + VOLT + ";-webkit-mask-image:" + ICO("chip") + ";mask-image:" + ICO("chip"));
+        gsap.set(ch, { opacity: 0 });
+        pop(ch, S(1184.55) + i / 16, { from: 1.4 });
+      }
+      for (let i = 0; i < 20; i++) {
+        const c = i % 10, r = Math.floor(i / 10);
+        if (i === 0) {
+          const ch = div(g, "n12-ico", "left:96px;top:700px;width:92px;height:92px;background:" + VOLT + ";-webkit-mask-image:" + ICO("chip") + ";mask-image:" + ICO("chip"));
+          gsap.set(ch, { opacity: 0 }); pop(ch, S(1187.29), { from: 1.5 });
+        } else {
+          const sl = div(g, "n12-slot", "left:" + (96 + c * 114) + "px;top:" + (700 + r * 114) + "px");
+          gsap.set(sl, { opacity: 0 });
+          tl.fromTo(sl, { opacity: 0 }, { opacity: 1, duration: 2 / 12, ease: "steps(2)", immediateRender: true }, S(1187.29));
+        }
+      }
+      words("sc002-cn", [T(1187.25)], { dur: 0.3, y: 6 });
+      const x = $("sc002-x");
+      tl.set(x, { opacity: 1 }, T(1185.81));
+      FX.text.count(tl, x, T(1185.81), 1, 20, 0.7, (v) => Math.round(v) + "×");
+      tl.fromTo(x, { scale: 0.85 }, { scale: 1, duration: 0.8, ease: C(E.out, 0.8), immediateRender: false }, T(1185.81));
+      push("sc002", 1180.59, 1188.15, 1.0, 1.04, { ease: E.cam, origin: "700px 560px" });
+    })();
+
+    /* ===== sc003 · 2 test scores: dual line chart (whip →) ===== */
+    whip("sc002", "sc003", S(1188.15), { dir: 1 });
+    (function () {
+      const svg = $("sc003-svg"), cam = $("sc003-cam");
+      // axes + light grid (graph paper already grids the page)
+      ink(svg, "M300 302 L301 901", S(1188.3), 0.6, { width: 3.5 });
+      ink(svg, "M300 901 L1640 899", S(1188.5), 0.8, { width: 3.5 });
+      for (let k = 1; k <= 4; k++) ink(svg, "M300 " + (900 - k * 120) + " L1640 " + (900 - k * 120 + 1), S(1188.6) + k * 0.06, 0.6, { width: 1.5, opacity: 0.35 });
+      tl.fromTo($("sc003-ya"), { opacity: 0 }, { opacity: 1, duration: 0.4, immediateRender: true }, S(1188.9));
+      gsap.set($("sc003-tb"), { opacity: 0 });
+      pop($("sc003-tb"), S(1189.6), { from: 1.4, n: 3 });
+      words("sc003-tt", [T(1190.13), T(1190.61), T(1191.49), T(1191.73)], { dur: 0.35, y: 10 });
+      const US = [[300, 500], [560, 482], [820, 458], [1080, 432], [1340, 406], [1600, 380]];
+      const CN = [[300, 740], [560, 726], [820, 668], [1080, 566], [1340, 452], [1600, 404]];
+      const path = (P) => "M" + P.map((q) => q[0] + " " + q[1]).join(" L");
+      // US area (ice, like the reference's filled series) + line
+      const area = el(svg, "path", { d: path(US) + " L1600 900 L300 900 Z", fill: ICE, opacity: 0.32 });
+      area.style.mixBlendMode = "multiply";
+      gsap.set(area, { clipPath: "inset(0% 100% 0% 0%)" });
+      tl.fromTo(area, { clipPath: "inset(0% 100% 0% 0%)" }, { clipPath: "inset(0% 0% 0% 0%)", duration: 1.3, ease: C(E.inOut, 1.3), immediateRender: true }, S(1192.45));
+      ink(svg, path(US), S(1192.45), 1.3, { color: ICED, width: 7, ease: C(E.inOut, 1.3) });
+      const dU = el(svg, "circle", { cx: 1600, cy: 380, r: 12, fill: ICED }); gsap.set(dU, { opacity: 0 }); tl.set(dU, { opacity: 1 }, S(1193.75));
+      // China line — "progressing really, really fast"
+      words("sc003-lcn", [T(1193.84), T(1194.40)], { dur: 0.4, y: 8 });
+      ink(svg, path(CN), S(1194.5), 2.1, { color: RED, width: 7, ease: C(E.inOut, 2.1) });
+      const dC = el(svg, "circle", { cx: 1600, cy: 404, r: 12, fill: RED }); gsap.set(dC, { opacity: 0 });
+      tl.set(dC, { opacity: 1 }, S(1196.6));
+      tl.fromTo(dC, { attr: { r: 26 } }, { attr: { r: 12 }, duration: 0.6, ease: C(E.out, 0.6), immediateRender: false }, S(1197.3));   // "getting close"
+      words("sc003-lus", [T(1202.64), T(1203.12)], { dur: 0.4, y: 8 });
+      // 30 points (left), 3 points (right)
+      ink(svg, "M384 506 L366 508 L368 734 L386 736", S(1201.0), 0.5, { width: 4 });
+      W("sc003-b30").forEach((w) => gsap.set(w, { opacity: 0 }));
+      gsap.set($("sc003-b30").querySelector(".label-box"), { opacity: 0 });
+      tl.set($("sc003-b30").querySelector(".label-box"), { opacity: 1 }, T(1201.28));
+      words("sc003-b30", [T(1201.28), T(1201.76)], { dur: 0.3, y: 6 });
+      ink(svg, "M1612 384 L1630 386 L1631 400 L1613 402", S(1206.6), 0.35, { width: 4 });
+      ink(svg, "M1600 860 L1601 340", S(1205.0), 0.7, { width: 3, opacity: 0.55, ease: C(E.out, 0.7) });
+      words("sc003-today", [T(1205.20)], { dur: 0.35, y: 6 });
+      gsap.set($("sc003-b3").querySelector(".label-box"), { opacity: 0 });
+      tl.set($("sc003-b3").querySelector(".label-box"), { opacity: 1 }, T(1206.88));
+      words("sc003-b3", [T(1206.88), T(1207.36)], { dur: 0.3, y: 6 });
+      ink(svg, "M1560 492 C1590 470 1612 440 1624 412", S(1206.75), 0.3, { width: 3 });
+      tl.to([$("sc003-b30"), $("sc003-lus"), $("sc003-lcn"), $("sc003-ya")], { opacity: 0, duration: 0.35, ease: "power1.in" }, S(1204.8));
+      // camera: wide → left (30 points) → right (3 points) → push out (cut on action)
+      const cl = (v) => ({ x: Math.min(0, Math.max(1920 - 1920 * v.s, v.x)), y: Math.min(0, Math.max(1080 - 1080 * v.s, v.y)), scale: v.s });
+      const at = (px, py, s) => cl({ x: 960 - px * s, y: 540 - py * s, s: s });
+      const K0 = at(960, 560, 1.0), K1 = at(960, 560, 1.035), K2 = at(560, 620, 1.5), K3 = at(1420, 600, 1.4), K4 = at(1480, 480, 1.75);
+      gsap.set(cam, K0);
+      tl.fromTo(cam, K0, Object.assign({}, K1, { duration: S(1198.3) - S(1188.15), ease: "none", immediateRender: false }), S(1188.15));
+      tl.to(cam, Object.assign({}, K2, { duration: 1.5, ease: E.cam }), S(1198.4));
+      tl.to(cam, Object.assign({}, K3, { duration: 1.3, ease: E.cam }), S(1205.0));
+      tl.to(cam, Object.assign({}, K4, { duration: 0.48, ease: E.in }), S(1207.9));
+      FX.focusHunt(tl, cam, S(1199.95), { dur: 0.6, a: 2, b: 3 });
+    })();
+
+    /* ===== sc004 · close without enough chips: paired bars (hard cut on action) ===== */
+    (function () {
+      const b = $("sc004-bars"), svg = $("sc004-svg");
+      const R = [[300, 1300, ICE, "US", ICEL], [390, 1250, RED, "CHINA", REDL], [640, 1300, ICE, "US", ICEL], [730, 64, RED, "CHINA", REDL]];
+      const bars = R.map((r) => {
+        div(b, "t-label", "position:absolute;left:96px;top:" + (r[0] + 18) + "px;font-size:26px;color:" + r[4], r[3]);
+        const br = div(b, "n12-hbar", "top:" + r[0] + "px;width:" + r[1] + "px;background:" + r[2]);
+        gsap.set(br, { scaleX: 0 });
+        return br;
+      });
+      words("sc004-g1", [T(1209.76)], { dur: 0.4, y: 8 });
+      tl.fromTo(bars[0], { scaleX: 0 }, { scaleX: 1, duration: 1.1, ease: C(E.out, 1.1), immediateRender: true }, S(1209.9));
+      tl.fromTo(bars[1], { scaleX: 0 }, { scaleX: 1, duration: 1.1, ease: C(E.out, 1.1), immediateRender: true }, S(1210.05));
+      words("sc004-g2", [T(1211.36)], { dur: 0.4, y: 8 });
+      tl.fromTo(bars[2], { scaleX: 0 }, { scaleX: 1, duration: 1.1, ease: C(E.out, 1.1), immediateRender: true }, S(1211.45));
+      tl.fromTo(bars[3], { scaleX: 0 }, { scaleX: 1, duration: 0.5, ease: C(E.out, 0.5), immediateRender: true }, S(1211.6));
+      const ring = FX.markup.circle(tl, svg, S(1212.95), { cx: 368, cy: 762, rx: 110, ry: 62, color: REDL, width: 6, filter: PEN, dur: 0.6, seed: 7 });
+      gsap.set(ring, { opacity: 0 }); tl.set(ring, { opacity: 1 }, S(1212.95));
+      const ar = FX.markup.arrow(tl, svg, S(1213.65), { x1: 490, y1: 728, x2: 1540, y2: 470, bend: -90, color: REDL, width: 6, filter: PEN, dur: 0.6, head: 30 });
+      ar.forEach((p) => { gsap.set(p, { opacity: 0 }); tl.set(p, { opacity: 1 }, S(1213.65)); });
+      push("sc004", 1208.38, 1215.42, 1.0, 1.05, { ease: E.cam, origin: "760px 560px" });
+    })();
+
+    /* ===== sc005 · 3 TIME: the ruler (vertical whip ↓) ===== */
+    whip("sc004", "sc005", S(1215.42), { dir: 1, vertical: true });
+    (function () {
+      const svg = $("sc005-svg"), tk = $("sc005-ticks");
+      const X = (m) => 240 + m * 96;
+      gsap.set($("sc005-tb"), { opacity: 0 });
+      pop($("sc005-tb"), S(1215.75), { from: 1.4, n: 3 });
+      words("sc005-tt", [T(1218.16)], { dur: 0.6, y: 14 });
+      ink(svg, "M200 641 L1760 639", S(1218.9), 1.2, { width: 4, ease: C(E.inOut, 1.2) });
+      for (let m = 0; m <= 15; m++) {
+        const big = m % 3 === 0;
+        const t0 = S(1219.0) + m * 0.065;
+        ink(svg, "M" + X(m) + " " + (big ? 616 : 626) + " L" + (X(m) + 1) + " 641", t0, 0.2, { width: big ? 4 : 2.5, opacity: big ? 1 : 0.6 });
+        if (big) { const l = div(tk, "t-label", "position:absolute;left:" + (X(m) - 40) + "px;width:80px;text-align:center;top:668px;font-size:26px;color:" + INK, String(m)); gsap.set(l, { opacity: 0 }); tl.set(l, { opacity: 1 }, t0 + 0.1); }
+      }
+      const cn = $("sc005-cn"), us = $("sc005-us");
+      gsap.set(Array.from(cn.children).slice(0, 2), { opacity: 0 });
+      Array.from(cn.children).slice(0, 2).forEach((e) => pop(e, S(1220.88), { from: 1.3 }));
+      words("sc005-cnl", [T(1220.88)], { dur: 0.35, y: 6 });
+      gsap.set(Array.from(us.children), { opacity: 0 });
+      Array.from(us.children).forEach((e) => pop(e, S(1222.32), { from: 1.3 }));
+      words("sc005-usl", [T(1222.32), T(1222.72)], { dur: 0.35, y: 6 });
+      gsap.set($("sc005-tod").querySelector(".label-box"), { opacity: 0 });
+      tl.set($("sc005-tod").querySelector(".label-box"), { opacity: 1 }, T(1223.68));
+      words("sc005-tod", [T(1223.68)], { dur: 0.3, y: 6 });
+      // China travels to 7–8 months
+      gsap.set($("sc005-trail"), { scaleX: 0 });
+      tl.fromTo(cn, { x: 0 }, { x: X(7.5) - X(0), duration: 1.7, ease: C(E.inOut, 1.7), immediateRender: false }, S(1224.45));
+      tl.fromTo($("sc005-trail"), { scaleX: 0 }, { scaleX: 1, duration: 1.7, ease: C(E.inOut, 1.7), immediateRender: true }, S(1224.45));
+      gsap.set($("sc005-band"), { scaleX: 0 });
+      tl.fromTo($("sc005-band"), { scaleX: 0 }, { scaleX: 1, duration: 0.4, ease: C(E.out, 0.4), immediateRender: true }, S(1226.1));
+      words("sc005-mo", [T(1226.08), T(1226.80), T(1227.04)], { dur: 0.3, y: 8 });
+      push("sc005", 1215.42, 1228.0, 1.0, 1.05, { ease: E.cam, origin: "760px 620px" });
+    })();
+
+    /* ===== sc006 · ~7 months for three years: three lanes (light-flash whip) ===== */
+    whip("sc005", "sc006", S(1228.0), { dir: -1, flash: true });
+    (function () {
+      const svg = $("sc006-svg");
+      const L = [[380, 1192], [540, 1226], [700, 1210]];
+      L.forEach((q, i) => {
+        const t0 = S(1228.15) + i * 0.4, y = q[0];
+        ink(svg, "M600 " + y + " L" + (q[1] - 22) + " " + (y + 1), t0 + 0.1, 0.45, { color: REDL, width: 4, opacity: 0.8 });
+        const a = el(svg, "circle", { cx: 600, cy: y, r: 20, fill: ICE }), b = el(svg, "circle", { cx: q[1], cy: y, r: 20, fill: RED });
+        gsap.set([a, b], { opacity: 0 });
+        tl.set(a, { opacity: 1 }, t0); tl.set(b, { opacity: 1 }, t0 + 0.55);
+      });
+      // ~7-month guide (slightly sloped so it never vanishes)
+      const g = ink(svg, "M1210 320 L1212 760", S(1229.0), 0.5, { color: BONE, width: 3, opacity: 0.7 });
+      g.setAttribute("stroke-dasharray", "12 12"); gsap.set(g, { attr: { "stroke-dashoffset": 0 } });
+      tl.fromTo(g, { opacity: 0 }, { opacity: 0.7, duration: 0.3, immediateRender: true }, S(1229.0));
+      words("sc006-7", [T(1229.12), T(1229.44)], { dur: 0.35, y: 10 });
+      ink(svg, "M536 362 L518 364 L520 716 L538 718", S(1230.5), 0.4, { color: BONE, width: 4 });
+      words("sc006-3", [T(1230.56), T(1231.04)], { dur: 0.3, y: 8 });
+      push("sc006", 1228.0, 1231.9, 1.0, 1.04, { ease: E.cam, origin: "760px 540px" });
+    })();
+
+    /* ===== sc007 · Chinese companies (hard cut) ===== */
+    (function () {
+      const row = $("sc007-row");
+      const LG = ["deepseek", "alibaba", "bytedance", "baidu", "tencent_wordmark"];
+      LG.forEach((n, i) => {
+        const c = div(row, "", "position:absolute;left:" + (255 + i * 290) + "px;top:420px;width:250px;height:210px;background:#171c1f;box-shadow:0 20px 40px rgba(0,0,0,0.5);border-top:8px solid " + RED);
+        const im = document.createElement("img"); im.className = "n12-logo"; im.src = "assets/nvidia/shared/logos/" + n + ".svg"; im.alt = "";
+        im.style.cssText = "left:35px;top:40px;width:180px;height:122px;filter:brightness(0) invert(0.94)"; c.appendChild(im);
+        gsap.set(c, { opacity: 0 });
+        tl.fromTo(c, { opacity: 0, y: 60 }, { opacity: 1, y: 0, duration: 0.8, ease: C(E.out, 0.8), immediateRender: true }, S(1231.95) + i * 0.1);
+        gsap.set(im, { opacity: 0 });
+        tl.fromTo(im, { opacity: 0, scale: 1.3 }, { opacity: 1, scale: 1, duration: 2 / 12, ease: "steps(2)", immediateRender: true }, S(1233.25) + i * 0.15);
+      });
+      words("sc007-k", [T(1233.20), T(1233.92)], { dur: 0.4, y: 8 });
+      push("sc007", 1231.9, 1236.54, 1.0, 1.07, { ease: E.cam, origin: "960px 520px" });
+    })();
+
+    /* ===== sc008 · the board again: tab 2 lifts (paper slides up) ===== */
+    slide("sc007", "sc008", S(1236.54), { axis: "y" });
+    (function () {
+      const tb = tabs($("sc008-tabs"), { labels: ["CHIPS", '<span class="n12-w">TESTING </span><span class="n12-w">SCORES</span>', "TIME"] });
+      tl.to([tb[0].tb, tb[2].tb], { opacity: 0.28, duration: 0.5, ease: C(E.inOut, 0.5) }, S(1236.96));
+      tl.to(tb[1].tb, { y: -40, scale: 1.1, rotation: 0, boxShadow: "0 40px 70px rgba(20,24,27,0.45)", duration: 0.8, ease: C(E.out, 0.8) }, S(1236.96));
+      const ws = Array.from(tb[1].lab.querySelectorAll(".n12-w"));
+      rise(ws[0], T(1238.80), { dur: 0.35, y: 6 }); rise(ws[1], T(1239.20), { dur: 0.35, y: 6 });
+      const svg = $("sc008-svg");
+      const ring = FX.markup.circle(tl, svg, S(1240.5), { cx: 960, cy: 616, rx: 290, ry: 255, color: REDD, width: 8, filter: PEN, dur: 0.7, seed: 4 });
+      ring.style.mixBlendMode = "multiply";
+      gsap.set(ring, { opacity: 0 }); tl.set(ring, { opacity: 1 }, S(1240.5));
+      const fl = $("sc008-flag");
+      gsap.set(fl, { opacity: 0, rotation: 8 });
+      tl.fromTo(fl, { opacity: 0, scale: 1.5 }, { opacity: 1, scale: 1, duration: 2 / 12, ease: "steps(2)", immediateRender: true }, S(1241.2));
+      push("sc008", 1236.54, 1242.06, 1.0, 1.05, { ease: E.cam, origin: "960px 600px" });
+    })();
+
+    /* ===== sc009 · the exam + the model shaped to it (whip ←) ===== */
+    whip("sc008", "sc009", S(1242.06), { dir: -1 });
+    (function () {
+      const rows = $("sc009-rows"), sh = $("sc009-sheet");
+      const ANS = [1, 3, 0, 2, 1, 3], BX = 380, Y0 = 220;
+      const fills = [];
+      gsap.set(sh, { rotation: -2 });
+      tl.fromTo(sh, { y: 260, rotation: 3 }, { y: 0, rotation: -2, duration: 1.0, ease: C(E.out, 1.0), immediateRender: true }, S(1242.06));
+      for (let r = 0; r < 6; r++) {
+        const y = Y0 + r * 110;
+        const g = div(rows, "", "position:absolute;left:0;top:0");
+        div(g, "t-label n12-ink", "position:absolute;left:60px;top:" + (y + 10) + "px;font-size:26px", (r + 1) + ".");
+        div(g, "n12-qb", "left:110px;top:" + (y + 16) + "px;width:" + (200 + (r * 37) % 60) + "px");
+        div(g, "n12-qb", "left:110px;top:" + (y + 44) + "px;width:" + (140 + (r * 53) % 70) + "px");
+        for (let j = 0; j < 4; j++) {
+          div(g, "n12-bub t-label", "left:" + (BX + j * 74) + "px;top:" + y + "px", "ABCD"[j]);
+          if (j === ANS[r]) fills.push(div(g, "n12-fill", "left:" + (BX + j * 74 + 5) + "px;top:" + (y + 5) + "px"));
+        }
+        gsap.set(g, { opacity: 0 });
+        tl.fromTo(g, { opacity: 0 }, { opacity: 1, duration: 2 / 12, ease: "steps(2)", immediateRender: true }, S(1242.6) + r / 12);
+      }
+      // the stencil: a red strip shaped exactly to the right answers (holes) = a model built for this test
+      const st = $("sc009-st"), ss = $("sc009-stsvg");
+      let d = "M0 0 L330 0 L330 720 L0 720 Z";
+      ANS.forEach((a, r) => { const cx = (BX - 360) + a * 74 + 22, cy = (Y0 - 196) + r * 110 + 22, rr = 27; d += " M" + (cx - rr) + " " + cy + " a" + rr + " " + rr + " 0 1 0 " + 2 * rr + " 0 a" + rr + " " + rr + " 0 1 0 " + (-2 * rr) + " 0 Z"; });
+      el(ss, "path", { d: d, fill: RED, "fill-rule": "evenodd", opacity: 0.86 });
+      gsap.set(st, { x: 900, rotation: 6 });
+      tl.fromTo(st, { x: 900, rotation: 6 }, { x: 0, rotation: 0, duration: 1.0, ease: C(E.inOut, 1.0), immediateRender: true }, S(1246.2));
+      words("sc009-stl", [T(1246.96)], { dur: 0.35, y: 6 });
+      fills.forEach((f, i) => tl.fromTo(f, { opacity: 0, scale: 0.4 }, { opacity: 0.92, scale: 1, duration: 2 / 12, ease: "steps(2)", immediateRender: true }, S(1248.2) + i / 10));
+      push("sc009", 1242.06, 1250.15, 1.0, 1.06, { ease: E.cam, origin: "960px 560px" });
+    })();
+
+    /* ===== sc010 · same test for every model; they know it (paper slides in from the right) ===== */
+    (function () {
+      // slide: paper sheet comes in from the right over the desk
+      const A = $("sc009-shot"), B = $("sc010-shot");
+      tl.fromTo(B, { x: 1980 }, { x: 0, duration: 0.45, ease: C(E.inOut, 0.45), immediateRender: false }, S(1250.15) - 0.45);
+      tl.fromTo(A, { x: 0 }, { x: -240, duration: 0.45, ease: E.in, immediateRender: false }, S(1250.15) - 0.45);
+    })();
+    (function () {
+      const row = $("sc010-row"), svg = $("sc010-svg");
+      const LG = [["openai", ICED], ["anthropic", ICED], ["google_deepmind", ICED], ["deepseek", REDD], ["alibaba", REDD]];
+      const ANS = [[1, 3, 0, 2], [2, 0, 3, 1], [0, 2, 1, 3], [3, 1, 2, 0], [1, 0, 3, 2]];
+      const fills = [], strips = [];
+      LG.forEach((lg, i) => {
+        const x = 150 + i * 325;
+        const sh = div(row, "n12-mini", "left:" + x + "px");
+        div(sh, "t-label n12-ink", "position:absolute;left:22px;top:20px;font-size:24px", "TEST");
+        div(sh, "", "position:absolute;left:22px;top:58px;width:216px;height:3px;background:" + INK);
+        for (let r = 0; r < 4; r++) for (let j = 0; j < 4; j++) {
+          div(sh, "n12-mb", "left:" + (52 + j * 46) + "px;top:" + (90 + r * 56) + "px");
+          if (j === ANS[i][r]) fills.push(div(sh, "n12-mf", "left:" + (56 + j * 46) + "px;top:" + (94 + r * 56) + "px"));
+        }
+        const s = div(sh, "", "position:absolute;left:36px;top:78px;width:188px;height:226px;background:" + RED + ";opacity:0.0;mix-blend-mode:multiply");
+        strips.push(s);
+        gsap.set(sh, { opacity: 0, rotation: [-1.5, 1, -0.5, 1.2, -1][i] });
+        tl.fromTo(sh, { opacity: 0, y: 80 }, { opacity: 1, y: 0, duration: 0.8, ease: C(E.out, 0.8), immediateRender: true }, S(1250.75) + i * 0.12);
+        const lo = document.createElement("img"); lo.className = "n12-logo"; lo.alt = ""; lo.src = "assets/nvidia/shared/logos/" + lg[0] + ".svg";
+        lo.style.cssText = "left:" + (x + 50) + "px;top:300px;width:160px;height:110px;filter:brightness(0);opacity:0.88";
+        row.appendChild(lo);
+        const ru = div(row, "", "position:absolute;left:" + (x + 60) + "px;top:430px;width:140px;height:8px;background:" + lg[1]);
+        gsap.set([lo, ru], { opacity: 0 });
+        tl.fromTo(lo, { opacity: 0, y: -24 }, { opacity: 0.88, y: 0, duration: 0.6, ease: C(E.out, 0.6), immediateRender: true }, S(1254.1) + i * 0.1);
+        tl.fromTo(ru, { opacity: 0 }, { opacity: 1, duration: 2 / 12, ease: "steps(2)", immediateRender: true }, S(1254.1) + i * 0.1);
+      });
+      // "judge all the models equally": one level line under every sheet
+      const lv = FX.markup.pen(tl, svg, S(1254.7), { points: [[130, 842], [1760, 838]], jitter: 3, seed: 6, dur: 0.8, width: 6, color: INK });
+      gsap.set(lv, { opacity: 0 }); tl.set(lv, { opacity: 1 }, S(1254.7));
+      [0, 1, 2, 3, 4].forEach((i) => { const tk = ink(svg, "M" + (280 + i * 325) + " 826 L" + (281 + i * 325) + " 856", S(1255.3) + i / 12, 0.2, { width: 5 }); });
+      // "these models know": each sheet's answer key shows through (red), then the bubbles fill — "really good"
+      strips.forEach((s, i) => tl.fromTo(s, { opacity: 0 }, { opacity: 0.42, duration: 2 / 12, ease: "steps(2)", immediateRender: true }, S(1257.77) + i / 12));
+      fills.forEach((f, i) => tl.fromTo(f, { opacity: 0 }, { opacity: 0.95, duration: 1 / 12, ease: "steps(1)", immediateRender: true }, S(1258.95) + Math.floor(i / 2) / 24));
+      push("sc010", 1250.15, 1259.95, 1.0, 1.05, { ease: E.cam, origin: "960px 600px" });
+      tl.to($("sc010-vw"), { scale: 1.22, duration: 0.42, ease: E.in }, S(1259.95));
+    })();
+
+    FX.mount(tl, DURATION);
+    window.__timelines = window.__timelines || {};
+    window.__timelines[SEG] = tl;
+  })();
+  </script>
+</template>
+</body>
+</html>

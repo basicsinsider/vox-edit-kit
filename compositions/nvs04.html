@@ -1,0 +1,650 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8" /></head>
+<body>
+<template>
+  <style>
+    #root { position: absolute; inset: 0; overflow: hidden; background: var(--night); }
+    .n4-scene { position: absolute; inset: 0; overflow: hidden; visibility: hidden; opacity: 0; }
+    .n4-shot { position: absolute; inset: 0; overflow: hidden; transform-origin: 50% 50%; background: var(--night); }
+    .n4-paper { background: var(--paper); }
+    .n4-abs { position: absolute; }
+    .n4-full { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; object-fit: cover; }
+    .n4-fcw { position: absolute; inset: 0; transform-origin: 1000px 270px; }
+    .n4-vw { position: absolute; inset: 0; transform-origin: 50% 50%; }
+    .n4-p1, .n4-p2 { position: absolute; inset: 0; background-size: cover; background-position: center; pointer-events: none; }
+    .n4-p2 { opacity: 0.9; mix-blend-mode: multiply; }
+    .n4-mk { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; pointer-events: none; }
+    .n4-credit { position: absolute; right: 30px; bottom: 20px; font-size: 13px; letter-spacing: 0.08em; color: rgba(240,239,232,0.66); z-index: 5; }
+    .n4-credit.ink { color: rgba(20,24,27,0.66); }
+    .n4-ic { position: absolute; -webkit-mask-size: contain; mask-size: contain; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; -webkit-mask-position: center; mask-position: center; }
+    .n4-cam { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
+    .n4-cam > img.base { position: absolute; left: 0; top: 0; }
+    .n4-lab { position: absolute; white-space: nowrap; line-height: 1; color: var(--bone); text-shadow: 0 2px 4px rgba(0,0,0,0.75), 0 0 16px rgba(0,0,0,0.6); }
+    .n4-scrim-bl { position: absolute; inset: 0; pointer-events: none;
+      background: radial-gradient(ellipse 60% 55% at 0% 100%, rgba(8,10,12,0.86) 0%, rgba(8,10,12,0.5) 45%, rgba(8,10,12,0) 100%); }
+    .n4-tag { position: absolute; padding: 18px 28px 14px 30px; background: var(--ink); color: var(--bone); white-space: nowrap; }
+    .n4-tag::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 8px; background: var(--ice); }
+    #nvs04-flash { position: absolute; inset: 0; background: var(--bone); opacity: 0; pointer-events: none; z-index: 7; }
+    #nvs04-grain, #nvs04-dust, #nvs04-vig { z-index: 8; }
+
+    /* sc003 people cards */
+    .n4-pc { position: absolute; top: 250px; width: 440px; height: 560px; background: #f3f1ea; box-shadow: 0 22px 44px rgba(20,24,27,0.28); }
+    /* sc005 board */
+    #nvs04-sc005-bg { position: absolute; inset: -40px;
+      background: radial-gradient(ellipse 70% 60% at 50% 50%, color-mix(in srgb, var(--ash-dark) 55%, var(--night)) 0%, var(--night) 72%); }
+    /* sc009 inset */
+    #nvs04-sc009-inset { position: absolute; left: 200px; top: 300px; width: 720px; height: 480px; overflow: hidden; background: #222;
+      border: 6px solid var(--bone); box-shadow: 0 30px 70px rgba(0,0,0,0.6); }
+    #nvs04-sc009-acam { position: absolute; left: 0; top: 0; width: 4864px; height: 3840px; transform-origin: 0 0; }
+    #nvs04-sc009-acam img { position: absolute; left: 0; top: 0; width: 4864px; height: 3840px; filter: saturate(0.55) contrast(1.05); }
+    /* sc010 blueprint */
+    #nvs04-sc010-bp { background-image: url('assets/textures/paper_blueprint_01_hires.jpg'); filter: saturate(0.55) brightness(0.72); }
+    #nvs04-sc010-bar { position: absolute; left: 1520px; top: 300px; width: 170px; height: 560px; background: var(--volt); transform-origin: 50% 100%; box-shadow: 0 0 40px rgba(134,194,50,0.25); }
+    #nvs04-sc010-logo { position: absolute; left: 1465px; top: 236px; width: 280px; height: 51px; }
+    /* sc011 card */
+    #nvs04-sc011-card { position: absolute; left: 1180px; top: 250px; width: 600px; height: 440px; background: #1d3e57; box-shadow: 0 30px 60px rgba(0,0,0,0.55); overflow: hidden; border: 4px solid rgba(240,239,232,0.85); }
+    #nvs04-sc011-card .bp { position: absolute; inset: 0; background: url('assets/textures/paper_blueprint_01.jpg') center / cover; filter: saturate(0.55) brightness(0.72); }
+    /* sc012 monitor + toolbox */
+    #nvs04-sc012-wall { position: absolute; inset: 0; background: radial-gradient(ellipse 65% 70% at 35% 45%, #23292d 0%, #121517 60%, #0a0c0d 100%); }
+    #nvs04-sc012-mon { position: absolute; left: 96px; top: 250px; width: 1000px; height: 580px; background: #050607; border-radius: 12px; box-shadow: 0 40px 90px rgba(0,0,0,0.7), inset 0 0 0 2px #2a2f33; }
+    #nvs04-sc012-scr { position: absolute; left: 14px; top: 14px; right: 14px; bottom: 14px; overflow: hidden; background: #000; }
+    #nvs04-sc012-scr video { position: absolute; left: 0; top: 0; width: 100%; height: 100%; object-fit: cover; filter: saturate(0.6) contrast(1.05); }
+    #nvs04-sc012-glare { position: absolute; inset: 0; background: linear-gradient(120deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0) 40%); }
+    #nvs04-sc012-stand { position: absolute; left: 516px; top: 830px; width: 160px; height: 60px; background: linear-gradient(180deg, #1b1f22, #0b0d0e); clip-path: polygon(30% 0, 70% 0, 100% 100%, 0 100%); }
+    .n4-tb { position: absolute; left: 1180px; width: 644px; }
+    .n4-tbh { font-size: 24px; color: var(--ice-light); padding-bottom: 12px; border-bottom: 2px solid rgba(159,220,240,0.45); }
+    .n4-tr { position: relative; height: 62px; margin-top: 10px; font-size: 40px; color: var(--bone); }
+    .n4-tr .nm { position: absolute; left: 0; top: 14px; white-space: nowrap; }
+    .n4-tr .fl { position: absolute; right: 0; top: 14px; width: 54px; height: 36px; box-shadow: 0 2px 6px rgba(0,0,0,0.5); }
+    .n4-nl { background: linear-gradient(180deg, #ae1c28 0 33.4%, #f4f4f4 33.4% 66.7%, #21468b 66.7% 100%); }
+    /* sc014 flow */
+    .n4-fl { position: absolute; font-size: 24px; color: var(--ink); text-align: center; white-space: nowrap; }
+    /* sc016 world */
+    #nvs04-sc016-cam > img.base { width: 8192px; height: 4096px; filter: brightness(1.15) contrast(1.05); }
+  </style>
+
+  <div id="root" data-composition-id="nvs04" data-vo-start="362.292" data-duration="110.375" data-width="1920" data-height="1080">
+    <svg id="nvs04-defs" width="0" height="0" style="position:absolute"></svg>
+
+    <!-- sc001 · 362.29–367.70 · the undecided "working?" gauge -->
+    <div class="n4-scene" id="nvs04-sc001"><div class="n4-shot n4-paper" id="nvs04-sc001-shot">
+      <div class="n4-p1" style="background-image:url('assets/textures/paper_cream_01.jpg')"></div>
+      <div class="n4-p2" style="background-image:url('assets/textures/paper_fiber_01.jpg'); opacity:0.4"></div>
+      <div class="n4-vw" id="nvs04-sc001-vw" style="transform-origin:960px 620px"><svg id="nvs04-sc001-svg" class="n4-mk" viewBox="0 0 1920 1080"></svg></div>
+    </div></div>
+
+    <!-- sc002 · 367.70–370.08 · FACE M -->
+    <div class="n4-scene" id="nvs04-sc002"><div class="n4-shot" id="nvs04-sc002-shot">
+      <div class="n4-fcw" id="nvs04-sc002-fw"><video id="nvs04-sc002-v" class="n4-full" src="assets/facecam/nvidia_facecam_master.mp4" muted playsinline data-start="5.408" data-duration="2.48" data-media-start="367.70"></video></div>
+    </div></div>
+
+    <!-- sc003 · 370.08–376.52 · three people, three readings -->
+    <div class="n4-scene" id="nvs04-sc003"><div class="n4-shot n4-paper" id="nvs04-sc003-shot">
+      <div class="n4-p1" style="background-image:url('assets/textures/paper_cream_02.jpg')"></div>
+      <div class="n4-p2" style="background-image:url('assets/textures/paper_fiber_01.jpg'); opacity:0.4"></div>
+      <div class="n4-vw" id="nvs04-sc003-vw">
+        <div class="n4-pc" id="nvs04-sc003-c1" style="left:186px"></div>
+        <div class="n4-pc" id="nvs04-sc003-c2" style="left:740px"></div>
+        <div class="n4-pc" id="nvs04-sc003-c3" style="left:1294px"></div>
+      </div>
+    </div></div>
+
+    <!-- sc004 · 376.52–387.84 · FACE W → M -->
+    <div class="n4-scene" id="nvs04-sc004"><div class="n4-shot" id="nvs04-sc004-shot">
+      <div class="n4-fcw" id="nvs04-sc004-fw"><video id="nvs04-sc004-v" class="n4-full" src="assets/facecam/nvidia_facecam_master.mp4" muted playsinline data-start="14.228" data-duration="11.42" data-media-start="376.52"></video></div>
+    </div></div>
+
+    <!-- sc005 · 387.84–394.70 · THE SCOREBOARD (full intro) -->
+    <div class="n4-scene" id="nvs04-sc005"><div class="n4-shot" id="nvs04-sc005-shot">
+      <div id="nvs04-sc005-bg"></div>
+      <div class="n4-vw" id="nvs04-sc005-vw" style="transform-origin:960px 834px">
+        <div id="nvs04-sb" style="top:171px"></div>
+        <svg id="nvs04-sc005-svg" class="n4-mk" viewBox="0 0 1920 1080"></svg>
+      </div>
+    </div></div>
+
+    <!-- sc006 · 394.70–406.60 · FACE M → C + compact scoreboard -->
+    <div class="n4-scene" id="nvs04-sc006"><div class="n4-shot" id="nvs04-sc006-shot">
+      <div class="n4-fcw" id="nvs04-sc006-fw"><video id="nvs04-sc006-v" class="n4-full" src="assets/facecam/nvidia_facecam_master.mp4" muted playsinline data-start="32.408" data-duration="12.0" data-media-start="394.70"></video></div>
+      <div id="nvs04-sbc"></div>
+    </div></div>
+
+    <!-- sc007 · 406.60–412.62 · FACE W → M -->
+    <div class="n4-scene" id="nvs04-sc007"><div class="n4-shot" id="nvs04-sc007-shot">
+      <div class="n4-fcw" id="nvs04-sc007-fw"><video id="nvs04-sc007-v" class="n4-full" src="assets/facecam/nvidia_facecam_master.mp4" muted playsinline data-start="44.308" data-duration="6.12" data-media-start="406.60"></video></div>
+    </div></div>
+
+    <!-- sc008 · 412.62–416.42 · the United States -->
+    <div class="n4-scene" id="nvs04-sc008"><div class="n4-shot" id="nvs04-sc008-shot" style="background:#0e151c">
+      <div class="n4-cam" id="nvs04-sc008-cam" style="width:6392px;height:3524px">
+        <img class="base" src="assets/maps/kit/us_satdesat.jpg" alt="" style="width:6392px;height:3524px" />
+        <img id="nvs04-sc008-fill" src="assets/nvidia/nvs04/derived/us_fill.png" alt="" style="position:absolute;left:0;top:0;width:6392px;height:3524px;opacity:0" />
+      </div>
+      <div class="n4-ic" id="nvs04-sc008-chip" style="left:900px;top:330px;width:120px;height:120px;background:var(--volt);-webkit-mask-image:url('assets/nvidia/shared/icons/chip.svg');mask-image:url('assets/nvidia/shared/icons/chip.svg');filter:drop-shadow(0 0 18px rgba(134,194,50,0.55))"></div>
+      <div class="n4-lab t-display" id="nvs04-sc008-us" style="left:0;width:1920px;top:500px;text-align:center;font-size:84px;letter-spacing:0.04em;opacity:0">UNITED STATES</div>
+      <div class="n4-credit t-label">Imagery: Esri, Maxar, Earthstar Geographics · borders: Natural Earth (PD)</div>
+    </div></div>
+
+    <!-- sc009 · 416.42–422.27 · Taiwan + zoom box on Hsinchu (ref ast_671f213364e14029) -->
+    <div class="n4-scene" id="nvs04-sc009"><div class="n4-shot" id="nvs04-sc009-shot" style="background:#141c25">
+      <div class="n4-cam" id="nvs04-sc009-cam" style="width:5428px;height:7030px">
+        <img class="base" src="assets/maps/kit/southeast_asia_satdesat.jpg" alt="" style="width:5428px;height:7030px" />
+        <svg id="nvs04-sc009-tw" viewBox="0 0 5428 7030" style="position:absolute;left:0;top:0;width:5428px;height:7030px;overflow:visible"></svg>
+      </div>
+      <svg id="nvs04-sc009-svg" class="n4-mk" viewBox="0 0 1920 1080"></svg>
+      <div class="n4-lab t-display" id="nvs04-sc009-twl" style="font-size:72px;letter-spacing:0.04em;opacity:0">TAIWAN</div>
+      <div id="nvs04-sc009-inset"><div id="nvs04-sc009-acam"><img src="assets/maps/kit/aerial_hsinchu_park_z17.jpg" alt="" /></div>
+        <div class="n4-tag t-label" id="nvs04-sc009-tag" style="left:30px;bottom:30px;font-size:24px;opacity:0">TSMC · Hsinchu</div></div>
+      <div class="n4-credit t-label">Imagery: Esri, Maxar, Earthstar Geographics</div>
+    </div></div>
+
+    <!-- sc010 · 422.27–434.75 · chip design on blueprint, NVIDIA, market value -->
+    <div class="n4-scene" id="nvs04-sc010"><div class="n4-shot" id="nvs04-sc010-shot" style="background:#163a52">
+      <div class="n4-p1" id="nvs04-sc010-bp"></div>
+      <div class="n4-vw" id="nvs04-sc010-vw" style="transform-origin:0 0">
+        <svg id="nvs04-sc010-svg" class="n4-mk" viewBox="0 0 1920 1080"></svg>
+        <div id="nvs04-sc010-bar"></div>
+        <img id="nvs04-sc010-logo" src="assets/nvidia/shared/logos/nvidia_wordmark.svg" alt="" />
+        <div class="n4-abs t-label" id="nvs04-sc010-mv" style="left:1420px;top:884px;width:370px;text-align:center;font-size:26px;color:var(--bone);opacity:0">Market value</div>
+      </div>
+    </div></div>
+
+    <!-- sc011 · 434.75–444.75 · NVIDIA HQ · its IP · US control -->
+    <div class="n4-scene" id="nvs04-sc011"><div class="n4-shot" id="nvs04-sc011-shot">
+      <div class="n4-vw" id="nvs04-sc011-vw" style="transform-origin:560px 700px"><img class="n4-full" src="assets/nvidia/shared/places/nvidia_hq_voyager_sign.jpg" alt="" style="filter:saturate(0.55) brightness(0.86) contrast(1.06)" /></div>
+      <div class="n4-tag t-label" id="nvs04-sc011-tag" style="left:96px;top:96px;font-size:26px;opacity:0">NVIDIA HQ · Santa Clara, California</div>
+      <div id="nvs04-sc011-card"><div class="bp"></div><svg id="nvs04-sc011-svg" viewBox="0 0 1920 1080" style="position:absolute;left:-12px;top:-10px;width:620px;height:349px"></svg></div>
+      <div class="n4-ic" id="nvs04-sc011-lock" style="left:1380px;top:330px;width:200px;height:200px;background:var(--ice);-webkit-mask-image:url('assets/nvidia/shared/icons/lock.svg');mask-image:url('assets/nvidia/shared/icons/lock.svg');opacity:0;filter:drop-shadow(0 10px 20px rgba(0,0,0,0.5))"></div>
+      <div class="n4-credit t-label">Photo: © NVIDIA (fair use)</div>
+    </div></div>
+
+    <!-- sc012 · 444.75–453.63 · the machines and software are American / Western -->
+    <div class="n4-scene" id="nvs04-sc012"><div class="n4-shot" id="nvs04-sc012-shot">
+      <div id="nvs04-sc012-wall"></div>
+      <div class="n4-vw" id="nvs04-sc012-vw">
+        <div id="nvs04-sc012-mon"><div id="nvs04-sc012-scr">
+          <video id="nvs04-sc012-v1" src="assets/nvidia/shared/footage/fab_wafer_lithography_st.mp4" muted playsinline data-start="82.458" data-duration="4.79" data-media-start="0"></video>
+          <video id="nvs04-sc012-v2" src="assets/nvidia/shared/footage/fab_chip_assembly_st.mp4" muted playsinline data-start="87.248" data-duration="4.2" data-media-start="0"></video>
+          <div id="nvs04-sc012-glare"></div></div></div>
+        <div id="nvs04-sc012-stand"></div>
+      </div>
+      <div class="n4-abs t-label" id="nvs04-sc012-k" style="left:1180px;top:150px;font-size:26px;color:var(--ash-light);opacity:0">TSMC · Taiwan</div>
+      <div class="n4-tb" id="nvs04-sc012-ga" style="top:220px">
+        <div class="n4-tbh t-label" id="nvs04-sc012-ha">Chip-making machines</div>
+        <div class="n4-tr t-display" id="nvs04-sc012-r1"><span class="nm">Applied Materials</span><img class="fl" src="assets/nvidia/shared/logos/flag_us.svg" alt="" /></div>
+        <div class="n4-tr t-display" id="nvs04-sc012-r2"><span class="nm">Lam Research</span><img class="fl" src="assets/nvidia/shared/logos/flag_us.svg" alt="" /></div>
+        <div class="n4-tr t-display" id="nvs04-sc012-r3"><span class="nm">KLA</span><img class="fl" src="assets/nvidia/shared/logos/flag_us.svg" alt="" /></div>
+        <div class="n4-tr t-display" id="nvs04-sc012-r4"><span class="nm">ASML</span><div class="fl n4-nl"></div></div>
+      </div>
+      <div class="n4-tb" id="nvs04-sc012-gb" style="top:640px">
+        <div class="n4-tbh t-label" id="nvs04-sc012-hb">Design software</div>
+        <div class="n4-tr t-display" id="nvs04-sc012-r5"><span class="nm">Synopsys</span><img class="fl" src="assets/nvidia/shared/logos/flag_us.svg" alt="" /></div>
+        <div class="n4-tr t-display" id="nvs04-sc012-r6"><span class="nm">Cadence</span><img class="fl" src="assets/nvidia/shared/logos/flag_us.svg" alt="" /></div>
+      </div>
+      <div class="n4-credit t-label">Footage: STMicroelectronics, CC BY 3.0</div>
+    </div></div>
+
+    <!-- sc013 · 453.63–455.65 · FACE C -->
+    <div class="n4-scene" id="nvs04-sc013"><div class="n4-shot" id="nvs04-sc013-shot">
+      <div class="n4-fcw" id="nvs04-sc013-fw"><video id="nvs04-sc013-v" class="n4-full" src="assets/facecam/nvidia_facecam_master.mp4" muted playsinline data-start="91.338" data-duration="2.42" data-media-start="453.63"></video></div>
+    </div></div>
+
+    <!-- sc014 · 455.65–462.67 · American technology → the government decides who buys -->
+    <div class="n4-scene" id="nvs04-sc014"><div class="n4-shot n4-paper" id="nvs04-sc014-shot">
+      <div class="n4-p1" style="background-image:url('assets/textures/paper_graph_01_hires.jpg')"></div>
+      <div class="n4-p2" style="background-image:url('assets/textures/paper_cream_01.jpg'); opacity:0.5"></div>
+      <div class="n4-vw" id="nvs04-sc014-vw">
+        <div class="n4-ic" id="nvs04-sc014-fac" style="left:200px;top:390px;width:200px;height:200px;background:var(--ink);-webkit-mask-image:url('assets/nvidia/shared/icons/factory.svg');mask-image:url('assets/nvidia/shared/icons/factory.svg')"></div>
+        <img id="nvs04-sc014-usf" src="assets/nvidia/shared/logos/flag_us.svg" alt="" style="position:absolute;left:366px;top:376px;width:72px;height:38px;box-shadow:0 2px 6px rgba(0,0,0,0.3)" />
+        <div class="n4-fl t-label" id="nvs04-sc014-l1" style="left:100px;top:620px;width:400px;opacity:0">U.S. tools &amp; software</div>
+        <div class="n4-ic" id="nvs04-sc014-chip" style="left:690px;top:410px;width:160px;height:160px;background:var(--volt-dark);-webkit-mask-image:url('assets/nvidia/shared/icons/chip.svg');mask-image:url('assets/nvidia/shared/icons/chip.svg')"></div>
+        <img id="nvs04-sc014-seal" src="assets/nvidia/shared/logos/commerce_dept_seal.svg" alt="" style="position:absolute;left:1060px;top:380px;width:220px;height:220px" />
+        <div class="n4-fl t-label" id="nvs04-sc014-l2" style="left:970px;top:620px;width:400px;opacity:0;color:var(--ice-dark)">U.S. Commerce Dept.</div>
+        <div class="n4-ic" id="nvs04-sc014-pa" style="left:1600px;top:210px;width:150px;height:150px;background:var(--ink);-webkit-mask-image:url('assets/nvidia/shared/icons/person.svg');mask-image:url('assets/nvidia/shared/icons/person.svg')"></div>
+        <div class="n4-ic" id="nvs04-sc014-pb" style="left:1600px;top:620px;width:150px;height:150px;background:var(--ink-soft);-webkit-mask-image:url('assets/nvidia/shared/icons/person.svg');mask-image:url('assets/nvidia/shared/icons/person.svg')"></div>
+        <svg id="nvs04-sc014-svg" class="n4-mk" viewBox="0 0 1920 1080"></svg>
+      </div>
+      <div class="n4-credit t-label ink">Seal: U.S. Department of Commerce (PD)</div>
+    </div></div>
+
+    <!-- sc015 · 462.67–464.93 · FACE M -->
+    <div class="n4-scene" id="nvs04-sc015"><div class="n4-shot" id="nvs04-sc015-shot">
+      <div class="n4-fcw" id="nvs04-sc015-fw"><video id="nvs04-sc015-v" class="n4-full" src="assets/facecam/nvidia_facecam_master.mp4" muted playsinline data-start="100.378" data-duration="2.36" data-media-start="462.67"></video></div>
+    </div></div>
+
+    <!-- sc016 · 464.93–472.67 · every chip on the planet is under American law -->
+    <div class="n4-scene" id="nvs04-sc016"><div class="n4-shot" id="nvs04-sc016-shot" style="background:#0f1318">
+      <div class="n4-cam" id="nvs04-sc016-cam" style="width:8192px;height:4096px">
+        <img class="base" src="assets/nvidia/nvs04/derived/world_night_8k.jpg" alt="" />
+        <svg id="nvs04-sc016-map" viewBox="0 0 8192 4096" style="position:absolute;left:0;top:0;width:8192px;height:4096px;overflow:visible"></svg>
+      </div>
+      <div class="n4-lab t-label" id="nvs04-sc016-dc" style="font-size:24px;color:var(--ice-light);opacity:0">Washington, D.C.</div>
+      <div class="n4-scrim-bl"></div>
+      <div class="n4-tag" id="nvs04-sc016-tag" style="left:96px;bottom:110px;opacity:0"><div class="t-display" style="font-size:44px;letter-spacing:0.02em">KEVIN WOLF</div><div class="t-label" style="font-size:22px;color:var(--ash-light);margin-top:8px">Former Assistant Secretary of Commerce</div></div>
+      <div class="n4-credit t-label">Relief: AWS Terrain Tiles (PD) · vectors: Natural Earth (PD)</div>
+    </div></div>
+
+    <div id="nvs04-flash"></div>
+    <div id="nvs04-grain" class="tx tx-grain" style="background-image:url('assets/textures/grain_01_norm.jpg')"></div>
+    <div id="nvs04-dust" class="tx tx-dust" style="background-image:url('assets/textures/dust_02.jpg')"></div>
+    <div id="nvs04-vig" class="vignette"></div>
+    <audio id="nvs04-vo" class="temp-vo" src="vo_nv.mp3" data-start="0" data-duration="110.375" data-media-start="362.292" data-volume="1"></audio>
+  </div>
+
+  <script>
+  (function () {
+    const SEG = "nvs04", SEG_START = 362.292, SEG_END = 472.667, DURATION = 110.375;
+    const T = (s) => +(s - SEG_START).toFixed(3);   // TEXT cues (audited): master word start − 0.06
+    const S = (s) => +(s - SEG_START).toFixed(3);   // STRUCTURAL cues
+    const tl = gsap.timeline({ paused: true });
+    const $ = (id) => document.getElementById(SEG + "-" + id);
+    const NS = "http://www.w3.org/2000/svg";
+    const defs = $("defs");
+    const E = FX.ease;
+    const C = (e, d) => FX.choppy(e, d, 12);
+    const INK = "#14181b", INKS = "#4a5156", BONE = "#f0efe8", ICE = "#2a9fc9", ICED = "#115973", ICEL = "#9fdcf0",
+      VOLT = "#86c232", VOLTD = "#3f6410", VOLTL = "#c9ec8f", ASH = "#888e92";
+    // Taiwan outline in southeast_asia_* pixel space (kit southeast_asia_overlay.svg #c-taiwan)
+    const TAIWAN_D = "M4868.6,1211.9L4855.6,1226.3L4853.7,1229.4L4852.4,1233.7L4851.1,1238.4L4850.4,1243.4L4851.1,1248.1L4853.0,1258.1L4853.0,1260.6L4851.7,1263.1L4852.4,1268.4L4854.3,1272.2L4858.9,1275.0L4864.1,1275.6L4864.1,1276.9L4862.1,1276.5L4860.2,1276.9L4858.2,1277.5L4856.9,1278.4L4858.9,1281.5L4859.5,1285.6L4858.9,1289.4L4855.0,1291.5L4854.3,1293.1L4855.0,1295.0L4856.3,1296.5L4856.9,1298.4L4855.0,1300.0L4850.4,1302.2L4845.8,1307.5L4845.8,1309.3L4845.8,1314.0L4845.2,1315.6L4844.5,1317.2L4843.9,1319.0L4843.2,1323.1L4843.2,1324.3L4842.6,1325.3L4842.6,1327.2L4843.9,1328.7L4844.5,1329.7L4843.2,1331.8L4839.3,1335.6L4835.4,1340.9L4832.2,1343.4L4830.9,1344.6L4831.5,1345.9L4830.9,1346.8L4826.3,1350.3L4824.3,1351.8L4822.4,1355.6L4820.4,1363.4L4815.9,1370.6L4814.6,1373.4L4814.6,1376.2L4815.9,1379.6L4817.2,1381.2L4818.5,1382.8L4818.5,1384.6L4817.8,1387.1L4815.2,1390.9L4814.6,1393.1L4814.6,1397.1L4812.0,1407.4L4808.1,1418.7L4802.2,1444.3L4798.9,1450.5L4791.1,1492.1L4788.5,1509.0L4786.6,1512.1L4782.0,1518.3L4780.0,1521.5L4778.7,1525.5L4777.4,1532.7L4777.4,1539.3L4776.8,1545.5L4773.5,1552.1L4772.2,1553.3L4769.0,1555.5L4767.7,1557.1L4767.0,1558.6L4765.7,1562.4L4762.5,1567.7L4760.5,1576.1L4758.5,1580.2L4752.0,1589.6L4750.7,1591.4L4741.6,1598.9L4739.0,1601.4L4739.0,1603.3L4739.0,1607.4L4739.0,1609.2L4738.4,1611.1L4737.1,1613.3L4733.8,1617.4L4730.5,1620.2L4719.5,1627.4L4711.6,1634.9L4709.7,1635.8L4708.4,1637.7L4705.1,1646.4L4703.2,1649.5L4697.3,1656.1L4695.4,1660.2L4694.1,1668.0L4690.8,1678.9L4684.3,1689.8L4683.0,1693.6L4682.3,1703.9L4682.3,1713.6L4683.0,1747.3L4681.7,1752.0L4679.7,1755.7L4677.8,1757.3L4675.2,1759.8L4675.2,1765.4L4675.8,1771.4L4675.8,1775.1L4672.6,1770.7L4668.0,1767.3L4662.8,1765.1L4656.9,1763.9L4656.9,1767.9L4655.6,1769.5L4653.0,1769.2L4650.4,1767.0L4650.4,1765.4L4651.1,1761.1L4647.2,1754.8L4647.2,1753.2L4647.2,1752.0L4647.2,1749.8L4647.2,1742.9L4647.8,1740.8L4649.8,1738.6L4649.8,1736.7L4636.1,1703.0L4634.8,1701.1L4630.9,1696.7L4628.3,1690.1L4627.0,1688.3L4621.1,1684.2L4619.1,1683.0L4617.2,1682.3L4616.5,1679.8L4616.5,1678.9L4613.3,1677.0L4606.8,1673.9L4603.5,1672.0L4600.3,1669.2L4598.3,1668.3L4596.3,1667.3L4594.4,1668.0L4592.4,1668.0L4584.0,1661.4L4575.5,1650.2L4584.0,1660.2L4583.3,1655.5L4581.4,1653.0L4580.7,1650.8L4576.8,1646.7L4570.3,1641.4L4568.3,1638.6L4567.0,1635.5L4568.3,1632.7L4569.6,1629.9L4568.3,1626.1L4566.4,1622.4L4563.1,1617.4L4559.9,1610.8L4559.2,1608.0L4559.2,1606.1L4560.5,1603.6L4560.5,1602.1L4559.2,1600.8L4558.6,1599.9L4557.9,1598.3L4556.0,1595.2L4555.3,1593.9L4554.0,1585.2L4553.4,1581.1L4552.0,1578.6L4549.4,1576.1L4552.7,1573.9L4554.7,1569.9L4554.0,1566.8L4549.4,1566.1L4548.8,1567.4L4548.1,1569.6L4546.8,1571.1L4544.2,1571.1L4543.6,1569.6L4543.6,1565.2L4542.9,1563.6L4540.3,1562.4L4539.0,1563.6L4537.7,1565.5L4535.8,1566.1L4533.8,1564.6L4533.2,1562.1L4533.8,1559.9L4534.5,1558.3L4536.4,1557.4L4539.0,1557.1L4541.0,1556.4L4541.6,1554.6L4541.0,1553.6L4534.5,1552.1L4534.5,1550.8L4539.7,1550.8L4539.0,1548.9L4536.4,1546.8L4534.5,1544.6L4535.1,1542.1L4536.4,1541.1L4538.4,1540.5L4539.7,1539.0L4539.0,1536.1L4537.7,1534.3L4538.4,1532.4L4539.7,1529.9L4541.0,1528.3L4541.0,1526.8L4541.0,1525.2L4543.6,1519.6L4544.2,1518.3L4546.2,1518.0L4543.6,1516.5L4544.9,1513.6L4547.5,1513.6L4549.4,1512.7L4550.7,1513.0L4550.1,1510.8L4548.8,1511.8L4547.5,1511.5L4545.5,1511.5L4545.5,1509.3L4547.5,1505.8L4550.1,1505.5L4553.4,1505.5L4550.7,1499.0L4548.1,1493.7L4549.4,1491.2L4549.4,1489.9L4547.5,1489.0L4547.5,1488.0L4548.8,1486.5L4549.4,1484.9L4552.0,1481.5L4546.2,1481.8L4546.2,1476.2L4549.4,1473.0L4549.4,1462.4L4549.4,1454.6L4551.4,1448.0L4554.7,1443.0L4555.3,1436.8L4557.3,1431.2L4557.9,1429.3L4562.5,1424.0L4563.1,1422.1L4563.1,1421.2L4567.0,1418.4L4568.3,1416.5L4569.6,1411.8L4570.3,1409.9L4575.5,1405.6L4576.8,1403.7L4578.8,1398.7L4581.4,1393.7L4585.3,1383.4L4587.2,1380.6L4589.2,1378.4L4591.1,1377.4L4592.4,1376.8L4593.7,1375.9L4593.7,1374.0L4594.4,1372.1L4598.3,1369.6L4599.0,1367.8L4599.6,1361.2L4600.3,1359.3L4602.2,1357.8L4610.0,1349.3L4610.7,1346.5L4612.6,1345.0L4614.6,1340.6L4616.5,1332.8L4623.1,1322.5L4625.0,1316.2L4627.0,1312.5L4636.1,1303.1L4641.3,1298.1L4642.6,1295.3L4643.2,1291.2L4644.6,1287.5L4648.5,1280.9L4649.8,1276.9L4651.1,1275.3L4655.6,1274.0L4656.9,1272.5L4657.6,1270.9L4658.2,1269.4L4661.5,1266.5L4664.7,1264.4L4668.7,1263.4L4673.2,1264.4L4672.6,1260.6L4674.5,1258.4L4677.1,1255.9L4678.4,1252.2L4679.1,1251.2L4681.7,1250.0L4682.3,1246.6L4686.2,1239.4L4687.5,1237.5L4688.2,1236.2L4688.2,1235.3L4687.5,1234.1L4686.9,1232.8L4688.2,1230.9L4689.5,1229.7L4690.2,1228.1L4690.8,1225.6L4691.5,1223.8L4692.8,1221.9L4694.7,1220.6L4696.0,1220.0L4696.7,1217.5L4698.0,1213.4L4699.3,1211.6L4705.8,1202.5L4710.3,1197.2L4715.6,1193.1L4727.9,1189.4L4731.2,1187.5L4733.8,1185.6L4736.4,1184.1L4742.9,1181.9L4756.6,1179.7L4764.4,1178.5L4767.7,1177.2L4772.2,1173.8L4774.8,1173.1L4776.8,1173.1L4779.4,1173.8L4780.7,1175.3L4781.3,1177.2L4782.7,1178.1L4784.6,1177.2L4782.7,1173.8L4778.1,1170.0L4776.1,1168.8L4776.8,1166.9L4778.1,1166.0L4779.4,1165.3L4781.3,1161.6L4783.3,1157.8L4787.9,1154.1L4795.0,1151.0L4802.2,1149.4L4810.0,1150.0L4812.6,1152.2L4819.8,1161.3L4822.4,1166.0L4825.0,1165.3L4826.9,1165.0L4828.3,1165.3L4827.6,1166.9L4826.9,1167.8L4826.9,1169.4L4830.2,1171.9L4832.2,1173.5L4834.8,1174.4L4866.0,1181.6L4868.6,1182.8L4867.3,1185.0L4867.3,1186.9L4867.3,1190.3L4869.3,1196.0L4871.2,1198.4L4872.5,1199.1L4877.1,1198.4L4879.7,1198.4L4882.3,1199.4L4884.9,1200.6L4886.9,1202.2L4872.5,1208.8L4868.6,1211.9ZM4806.8,1749.2L4810.0,1751.7L4811.3,1753.2L4811.3,1754.8L4807.4,1756.1L4802.2,1754.2L4797.6,1751.1L4795.0,1748.6L4795.7,1747.0L4795.7,1745.1L4795.0,1743.6L4793.7,1742.3L4807.4,1742.3L4807.4,1743.6L4806.1,1745.8L4806.1,1747.6L4806.8,1749.2ZM4232.9,1290.9L4238.1,1290.0L4243.3,1294.0L4246.5,1302.2L4245.9,1307.8L4243.3,1310.6L4238.1,1307.8L4234.8,1306.8L4229.6,1307.5L4224.4,1310.3L4221.8,1314.0L4219.2,1315.3L4216.6,1314.0L4214.6,1314.0L4213.3,1313.4L4212.7,1311.8L4214.0,1309.7L4214.6,1308.7L4214.6,1307.5L4214.6,1305.9L4214.0,1303.1L4213.3,1300.6L4212.7,1299.0L4214.0,1298.7L4219.2,1296.2L4226.3,1300.6L4230.9,1300.0L4231.6,1294.4L4232.9,1290.9ZM4460.2,1460.9L4463.5,1466.5L4464.1,1469.0L4463.5,1470.9L4462.2,1469.6L4460.9,1468.7L4458.9,1468.4L4456.3,1469.6L4454.3,1469.9L4453.0,1470.5L4452.4,1471.5L4451.7,1474.0L4447.8,1476.5L4444.6,1476.8L4441.3,1475.8L4438.1,1472.7L4438.7,1470.9L4440.7,1473.0L4443.9,1473.7L4446.5,1472.7L4449.1,1470.9L4447.2,1470.5L4445.9,1469.6L4445.2,1468.7L4443.9,1467.1L4443.3,1468.0L4442.6,1465.9L4442.6,1463.4L4443.9,1463.4L4445.2,1463.7L4450.4,1460.5L4453.7,1459.6L4453.0,1462.4L4452.4,1463.4L4455.0,1462.4L4457.6,1462.7L4458.9,1462.7L4460.2,1460.9ZM4428.9,1460.9L4431.5,1454.3L4433.5,1452.1L4436.1,1454.6L4434.8,1455.5L4433.5,1457.7L4431.5,1463.4L4431.5,1464.6L4432.2,1465.9L4431.5,1466.8L4429.6,1467.1L4428.3,1467.1L4427.0,1467.4L4425.7,1468.4L4423.1,1468.4L4423.1,1467.1L4424.4,1466.2L4425.7,1465.9L4427.0,1465.9L4428.9,1465.2L4428.9,1464.0L4428.9,1460.9ZM4446.5,1456.5L4445.9,1454.3L4444.6,1452.4L4441.3,1449.6L4445.2,1446.8L4447.8,1448.0L4449.8,1449.6L4450.4,1451.8L4449.1,1453.0L4449.8,1455.5L4448.5,1456.8L4447.2,1457.4L4446.5,1456.5ZM4787.9,1635.5L4787.2,1633.0L4794.4,1632.0L4795.7,1633.6L4795.0,1636.1L4794.4,1637.4L4794.4,1638.3L4794.4,1639.2L4794.4,1640.2L4792.4,1639.9L4789.8,1638.9L4787.9,1635.5ZM4527.9,1489.0L4537.1,1479.9L4544.9,1471.2L4546.2,1470.5L4540.3,1480.2L4537.1,1483.0L4535.1,1485.2L4532.5,1487.7L4530.6,1489.0L4527.3,1491.5L4525.3,1492.4L4527.9,1489.0Z";
+
+    // ---------- scenes ----------
+    const SC = [
+      ["sc001", 362.292, 367.70, "paper"], ["sc002", 367.70, 370.08, "face"], ["sc003", 370.08, 376.52, "paper"],
+      ["sc004", 376.52, 387.84, "face"], ["sc005", 387.84, 394.70, "night"], ["sc006", 394.70, 406.60, "face"],
+      ["sc007", 406.60, 412.62, "face"], ["sc008", 412.62, 416.42, "map"], ["sc009", 416.42, 422.27, "map"],
+      ["sc010", 422.27, 434.75, "blue"], ["sc011", 434.75, 444.75, "night"], ["sc012", 444.75, 453.63, "night"],
+      ["sc013", 453.63, 455.65, "face"], ["sc014", 455.65, 462.67, "paper"], ["sc015", 462.67, 464.93, "face"],
+      ["sc016", 464.93, 472.667, "map"],
+    ];
+    const GROUND = { paper: [0.3, 0.14, 0.22], blue: [0.5, 0.25, 0.3], night: [0.9, 0.42, 0.4], map: [0.8, 0.3, 0.32], face: [0, 0, 0] };
+    const EARLY = { sc003: 0.45, sc008: 0.45, sc010: 0.45, sc014: 0.45 };   // slides: incoming scene visible during the slide
+    SC.forEach((s, i) => {
+      const el = $(s[0]), a = s[1] - (EARLY[s[0]] || 0);
+      if (i === 0) gsap.set(el, { autoAlpha: 1 });
+      else tl.fromTo(el, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.001, immediateRender: false }, S(a) - 0.002);
+      if (s[2] < SEG_END - 0.01) tl.set(el, { autoAlpha: 0 }, S(s[2]) + 0.05);
+    });
+    gsap.set([$("vig"), $("dust"), $("grain")], { opacity: (i) => GROUND.paper[i] });
+    SC.forEach((s, i) => { if (i > 0) { const v = GROUND[s[3]]; tl.set([$("vig"), $("dust"), $("grain")], { opacity: (k) => v[k] }, S(s[1])); } });
+
+    // ---------- helpers ----------
+    const rise = (el, t, o) => { o = o || {}; const d = o.dur || 0.6;
+      tl.fromTo(el, { opacity: 0, y: o.y == null ? 16 : o.y }, { opacity: 1, y: 0, duration: d, ease: C(E.out, d), immediateRender: true }, t); };
+    const pop = (el, t, o) => { o = o || {}; const d = o.dur || 0.8;
+      tl.fromTo(el, { opacity: 0, scale: o.from == null ? 0.6 : o.from }, { opacity: 1, scale: 1, duration: d, ease: C(E.out, d), immediateRender: true }, t); };
+    function el(parent, tag, attrs) { const n = document.createElementNS(NS, tag); for (const k in attrs) n.setAttribute(k, attrs[k]); parent.appendChild(n); return n; }
+    function ink(parent, d, t, dur, o) {
+      o = o || {};
+      const p = el(parent, "path", { d: d, fill: "none", stroke: o.color || INK, "stroke-width": o.width || 5, "stroke-linecap": "round", "stroke-linejoin": "round" });
+      if (o.opacity != null) p.setAttribute("opacity", o.opacity);
+      if (o.filter) p.setAttribute("filter", o.filter);
+      const len = (o.len || p.getTotalLength()) || 1;
+      p.setAttribute("stroke-dasharray", len + " " + len); p.setAttribute("stroke-dashoffset", len);
+      if (t == null) { p.setAttribute("stroke-dashoffset", 0); return p; }
+      tl.fromTo(p, { attr: { "stroke-dashoffset": len } }, { attr: { "stroke-dashoffset": 0 }, duration: dur, ease: o.ease || C(E.out, dur), immediateRender: true }, t);
+      return p;
+    }
+    const whipN = { n: 0 };
+    function whip(a, b, t, o) {
+      o = Object.assign({ dir: 1, vertical: false, flash: false, dur: 0.32 }, o);
+      const k = ++whipN.n, ba = FX.whipDefs(defs, SEG + "-wa" + k), bb = FX.whipDefs(defs, SEG + "-wb" + k), h = o.dur / 2;
+      const A = $(a + "-shot"), B = $(b + "-shot");
+      tl.set(A, { filter: "url(#" + SEG + "-wa" + k + ")" }, t - h - 0.01); tl.set(A, { filter: "none" }, t + 0.06);
+      tl.set(B, { filter: "url(#" + SEG + "-wb" + k + ")" }, t - 0.001); tl.set(B, { filter: "none" }, t + h + 0.02);
+      FX.whip(tl, A, B, t, { dir: o.dir, vertical: o.vertical, dur: o.dur, blurA: ba, blurB: bb });
+      if (o.flash) tl.fromTo($("flash"), { opacity: 0 }, { opacity: 0.85, duration: 0.08, yoyo: true, repeat: 1, ease: "power2.in", immediateRender: false }, t - 0.08);
+    }
+    function slide(a, b, t, o) {
+      o = Object.assign({ axis: "x", from: 1, d: 0.45 }, o);
+      const A = $(a + "-shot"), B = $(b + "-shot"), dist = (o.axis === "x" ? 1980 : 1140) * o.from;
+      tl.fromTo(B, { [o.axis]: dist, boxShadow: "0 0 80px rgba(0,0,0,0.5)" }, { [o.axis]: 0, duration: o.d, ease: C(E.inOut, o.d), immediateRender: false }, t - o.d);
+      tl.set(B, { boxShadow: "none" }, t);
+      tl.fromTo(A, { [o.axis]: 0 }, { [o.axis]: -dist * 0.12, duration: o.d, ease: E.in, immediateRender: false }, t - o.d);
+    }
+    const FR = { W: 1.0, M: 1.25, C: 1.5 };
+    // face cam: list of [start, framing] pieces inside one scene; slow 2.5 % push inside each piece
+    function face(id, pieces, end) {
+      const fw = $(id + "-fw");
+      gsap.set(fw, { scale: FR[pieces[0][1]] });
+      pieces.forEach((p, i) => {
+        const a = p[0], b = i + 1 < pieces.length ? pieces[i + 1][0] : end, s0 = FR[p[1]];
+        tl.fromTo(fw, { scale: s0 }, { scale: s0 * 1.025, duration: b - a, ease: "none", immediateRender: i === 0 }, S(a));
+      });
+    }
+    function push(id, a, b, s0, s1, o) {
+      o = o || {};
+      const vw = $(id + "-vw");
+      gsap.set(vw, { scale: s0 });
+      tl.fromTo(vw, { scale: s0 }, { scale: s1, duration: b - a, ease: o.ease || "none", immediateRender: false }, S(a));
+    }
+    const at = (px, py, s) => ({ x: 960 - px * s, y: 540 - py * s, scale: s });
+    // needle rotation: an HTML element rotated by GSAP (proxy + onUpdate on an svg <g> gave wrong angles in snapshots)
+    function rotor(node, a0) {
+      gsap.set(node, { rotation: a0 });
+      let last = a0;
+      return { to(t, d, a, ease) { tl.fromTo(node, { rotation: last }, { rotation: a, duration: d, ease: ease || C(E.inOut, d), immediateRender: false }, t); last = a; } };
+    }
+    // the "is it working?" gauge (ink on paper): arc, ticks, ✗ (left end) and ✓ (right end), ice needle
+    function gauge(svg, cx, cy, r, t, o) {
+      o = o || {};
+      const w = o.w || 6, dur = o.dur || 1.0, parts = [];
+      const arc = `M${cx - r} ${cy} A${r} ${r} 0 0 1 ${cx + r} ${cy + 1}`;
+      parts.push(ink(svg, arc, t, dur, { width: w, color: INK }));
+      for (let i = 0; i <= 10; i++) {
+        const a = Math.PI + (i / 10) * Math.PI, r1 = r - (i % 5 === 0 ? r * 0.16 : r * 0.09), r2 = r - 4;
+        const d = `M${(cx + Math.cos(a) * r1).toFixed(1)} ${(cy + Math.sin(a) * r1).toFixed(1)} L${(cx + Math.cos(a) * r2 + 0.6).toFixed(1)} ${(cy + Math.sin(a) * r2 + 0.6).toFixed(1)}`;
+        parts.push(ink(svg, d, t == null ? null : t + 0.3 + i * 0.05, 0.25, { width: Math.max(3, w * 0.6), color: INKS }));
+      }
+      const g = r * 0.13, xl = cx - r * 0.98, xr = cx + r * 0.98, yy = cy + r * 0.24;
+      parts.push(ink(svg, `M${xl - g} ${yy - g} L${xl + g} ${yy + g + 1}`, t == null ? null : t + 0.9, 0.25, { width: w, color: INK }));
+      parts.push(ink(svg, `M${xl + g} ${yy - g} L${xl - g} ${yy + g + 1}`, t == null ? null : t + 1.1, 0.25, { width: w, color: INK }));
+      parts.push(ink(svg, `M${xr - g} ${yy} L${xr - g * 0.25} ${yy + g * 0.8} L${xr + g * 1.1} ${yy - g}`, t == null ? null : t + 1.2, 0.35, { width: w, color: INK }));
+      const nw = r * 0.16, nh = r * 0.96, py = r * 0.88, ng = document.createElement("div");
+      ng.style.cssText = "position:absolute;left:" + (cx - nw / 2) + "px;top:" + (cy - py) + "px;width:" + nw + "px;height:" + nh + "px;transform-origin:50% " + py + "px";
+      ng.innerHTML = '<svg viewBox="0 0 ' + nw + ' ' + nh + '" width="' + nw + '" height="' + nh + '" style="position:absolute;left:0;top:0;overflow:visible">' +
+        '<path d="M' + (nw / 2 - r * 0.035) + ' ' + py + ' L' + (nw / 2) + ' ' + (r * 0.02) + ' L' + (nw / 2 + r * 0.035) + ' ' + py + ' Z" fill="' + ICED + '"/>' +
+        '<circle cx="' + (nw / 2) + '" cy="' + py + '" r="' + (r * 0.07) + '" fill="' + INK + '"/></svg>';
+      svg.parentNode.appendChild(ng);
+      const rot = rotor(ng, o.a0 || -70);
+      return { ng, rot, parts };
+    }
+    // a GPU floorplan (die, 6 HBM stacks, SM grid split by an L2 band) in a 1920x1080 drawing space
+    function floorplan(svg, t0, o) {
+      o = o || {};
+      const col = o.color || BONE, wDie = 4, out = { die: [], hbm: [], cells: [], l2: [] };
+      const D = (x, y, w, h, j) => `M${x} ${y + (j || 0)} L${x + w} ${y + 0.6} L${x + w + 0.6} ${y + h} L${x} ${y + h + 0.5} Z`;
+      const draw = (d, t, dur, w, op) => ink(svg, d, t, dur, { width: w, color: col, opacity: op, ease: C(E.out, dur || 0.5) });
+      out.die.push(draw(D(330, 190, 800, 670), t0 == null ? null : t0, 1.0, wDie, 0.95));
+      [[170, 200], [170, 425], [170, 650], [1170, 200], [1170, 425], [1170, 650]].forEach((p, i) =>
+        out.hbm.push(draw(D(p[0], p[1], 120, 200, 0.5), t0 == null ? null : t0 + 0.8 + i * 0.12, 0.6, 3.5, 0.9)));
+      out.l2.push(draw(D(360, 505, 740, 40), t0 == null ? null : t0 + 1.9, 0.7, 3, 0.85));
+      const cols = 8, rows = 3, cw = 84, ch = 86, gx = 8.6, gy = 10, x0 = 362;
+      let k = 0;
+      [[214], [560]].forEach((band) => {
+        for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) {
+          const x = x0 + c * (cw + gx), y = band[0] + r * (ch + gy);
+          const tt = t0 == null ? null : t0 + 1.4 + ((k * 7) % 48) * 0.085;
+          out.cells.push(draw(D(x, y, cw, ch, 0.4), tt, 0.4, 2.4, 0.8)); k++;
+        }
+      });
+      return out;
+    }
+
+    FX.grain($("grain"), 4401);
+    FX.dust($("dust"), 4402, 2);
+    const PEN = FX.markupDefs(defs, SEG + "-pen", { boil: 4 });
+    defs.setAttribute("viewBox", "0 0 1 1");
+
+    /* ===== sc001 · the undecided gauge ===== */
+    (function () {
+      const svg = $("sc001-svg");
+      const G = gauge(svg, 960, 760, 430, S(362.40), { w: 7, dur: 1.0, a0: -78 });
+      gsap.set(G.ng, { opacity: 0 });
+      tl.fromTo(G.ng, { opacity: 0 }, { opacity: 1, duration: 0.25, ease: "none", immediateRender: false }, S(363.6));
+      // the needle hunts: it can't settle until "working" is defined
+      [[363.7, 38, 0.9], [364.7, -46, 0.8], [365.55, 62, 0.75], [366.35, -24, 0.6], [366.95, 30, 0.55], [367.45, -8, 0.5]].forEach((k) => G.rot.to(S(k[0]), k[2], k[1]));
+      push("sc001", 362.292, 367.70, 1.0, 1.06, { ease: E.cam });
+    })();
+
+    /* ===== sc002 · FACE M (hard cut) ===== */
+    face("sc002", [[367.70, "M"]], 370.08);
+
+    /* ===== sc003 · three people, three readings (paper slides in) ===== */
+    slide("sc002", "sc003", S(370.08), { axis: "x" });
+    (function () {
+      const final = [-52, 8, 58], cue = [370.08, 370.42, 370.76];
+      [1, 2, 3].forEach((n, i) => {
+        const card = $("sc003-c" + n);
+        const ic = document.createElement("div");
+        ic.className = "n4-ic";
+        ic.style.cssText = "left:160px;top:360px;width:120px;height:150px;background:" + INK + ";-webkit-mask-image:url('assets/nvidia/shared/icons/person.svg');mask-image:url('assets/nvidia/shared/icons/person.svg')";
+        card.appendChild(ic);
+        const svg = el(card, "svg", { viewBox: "0 0 440 560", width: 440, height: 560 });
+        svg.style.cssText = "position:absolute;left:0;top:0;overflow:visible";
+        const G = gauge(svg, 220, 270, 160, null, { w: 6, a0: [-20, 30, -60][i] });
+        gsap.set(card, { opacity: 0 });
+        tl.fromTo(card, { opacity: 0, y: 40, rotation: [-3, 2, -2][i] }, { opacity: 1, y: 0, rotation: [-1.5, 1, -1][i], duration: 0.9, ease: C(E.out, 0.9), immediateRender: false }, S(cue[i]));
+        // swing, then settle on a different reading each (on "a different answer")
+        G.rot.to(S(371.4 + i * 0.25), 0.9, [40, -45, 25][i]);
+        G.rot.to(S(372.6 + i * 0.25), 0.8, [-30, 50, -10][i]);
+        G.rot.to(S(374.4 + i * 0.3), 1.1, final[i]);
+      });
+      push("sc003", 370.08, 376.52, 1.04, 1.0, { ease: E.cam });
+    })();
+
+    /* ===== sc004 · FACE W → M (hard cut at the 376.52 join; punch on "analyze") ===== */
+    face("sc004", [[376.52, "W"], [381.38, "M"]], 387.84);
+
+    /* ===== sc005 · THE SCOREBOARD, full intro, row 4 empty ===== */
+    whip("sc004", "sc005", S(387.84), { dir: 1 });
+    (function () {
+      const sb = NV.scoreboard($("sb"), { prefix: SEG + "-sb", gate: [S(387.6), S(394.9)] });
+      sb.intro(tl, S(387.98), { rows: [S(388.30), S(388.70), S(389.10), S(389.50)] });
+      push("sc005", 387.84, 392.30, 1.0, 1.02, { ease: "none" });
+      // "there's a fourth row at the bottom and it's empty": rows 1–3 step back, camera leans in, pen box round row 4
+      tl.to(sb.rows.slice(0, 3), { opacity: 0.32, duration: 0.6, ease: C(E.out, 0.6) }, S(392.40));
+      tl.to($("sc005-vw"), { scale: 1.07, duration: 1.6, ease: E.cam }, S(392.30));
+      const box = FX.markup.pen(tl, $("sc005-svg"), S(392.62), { points: [[110, 752], [1812, 746], [1816, 916], [104, 922], [112, 740]], jitter: 5, seed: 7, dur: 1.0, width: 6, color: ICEL, blend: "normal", filter: PEN });
+      box.style.opacity = 1;
+    })();
+
+    /* ===== sc006 · FACE M → C + compact scoreboard (flash whip) ===== */
+    whip("sc005", "sc006", S(394.70), { dir: 1, flash: true });
+    face("sc006", [[394.70, "M"], [403.25, "C"]], 406.60);
+    (function () {
+      const sbc = NV.scoreboard($("sbc"), { prefix: SEG + "-sbc", compact: true, gate: [S(394.5), S(406.7)] });
+      const card = $("sbc");
+      gsap.set(card, { clipPath: "inset(0% 100% 0% 0%)" });
+      tl.fromTo(card, { clipPath: "inset(0% 100% 0% 0%)", x: -30 }, { clipPath: "inset(0% 0% 0% 0%)", x: 0, duration: 0.9, ease: C(E.out, 0.9), immediateRender: false }, S(395.00));
+      const r4 = sbc.rows[3];
+      const glow = (t) => {
+        tl.fromTo(r4, { boxShadow: "0 0 0 0px rgba(159,220,240,0)" }, { boxShadow: "0 0 0 4px rgba(159,220,240,0.95)", duration: 0.35, ease: C(E.out, 0.35), immediateRender: false }, t);
+        tl.to(r4, { boxShadow: "0 0 0 0px rgba(159,220,240,0)", duration: 0.9, ease: "power1.inOut" }, t + 1.4);
+      };
+      glow(S(396.24));        // "blank"
+      glow(S(404.88));        // "fill that in"
+      tl.to(card, { clipPath: "inset(0% 100% 0% 0%)", x: -30, duration: 0.6, ease: E.in }, S(405.70));   // "Let's get started"
+    })();
+
+    /* ===== sc007 · FACE W → M (hard cut at the 406.60 join; punch on "NVIDIA") ===== */
+    face("sc007", [[406.60, "W"], [409.92, "M"]], 412.62);
+
+    /* ===== sc008 · the United States (map slides up) ===== */
+    slide("sc007", "sc008", S(412.62), { axis: "y" });
+    (function () {
+      const cam = $("sc008-cam");
+      gsap.set(cam, at(3196, 1720, 0.335));
+      tl.fromTo(cam, at(3196, 1720, 0.335), Object.assign(at(3150, 1700, 0.36), { duration: 4.0, ease: E.cam, immediateRender: false }), S(412.30));
+      pop($("sc008-chip"), S(413.68), { from: 0.4, dur: 0.9 });
+      tl.fromTo($("sc008-fill"), { opacity: 0 }, { opacity: 0.9, duration: 0.8, ease: C(E.out, 0.8), immediateRender: false }, S(414.50));
+      rise($("sc008-us"), T(415.08), { dur: 0.6, y: 18 });
+      tl.to($("sc008-chip"), { x: -260, y: 40, duration: 0.6, ease: E.in }, S(415.90));
+    })();
+
+    /* ===== sc009 · Taiwan · zoom box on Hsinchu (whip west) ===== */
+    whip("sc008", "sc009", S(416.42), { dir: -1 });
+    (function () {
+      const cam = $("sc009-cam"), A = at(4180, 1480, 0.8), B = at(4330, 1430, 0.95);
+      gsap.set(cam, A);
+      tl.fromTo(cam, A, Object.assign({}, B, { duration: 1.3, ease: E.cam, immediateRender: false }), S(416.42));
+      // Taiwan outline (neutral) in the map's own pixel space
+      const tw = $("sc009-tw");
+      ink(tw, TAIWAN_D, S(416.55), 1.0, { width: 3.2, color: BONE, opacity: 0.85, ease: C(E.out, 1.0) });
+      // label: centre of the island, constant screen size (camera is still from 417.72 on)
+      const lab = $("sc009-twl");
+      const sx = 960 + (4760 - 4330) * 0.95, sy = 540 + (1520 - 1430) * 0.95;
+      gsap.set(lab, { left: sx + 40, top: sy - 36 });
+      rise(lab, T(416.56), { dur: 0.6 });
+      // zoom box on Hsinchu Science Park (TSMC Fab 12A) → inset of the Esri aerial
+      const hx = 960 + (4699 - 4330) * 0.95, hy = 540 + (1237 - 1430) * 0.95, bs = 22;
+      const svg = $("sc009-svg");
+      const sq = el(svg, "rect", { x: hx - bs, y: hy - bs, width: bs * 2, height: bs * 2, fill: "none", stroke: BONE, "stroke-width": 4 });
+      gsap.set(sq, { opacity: 0 });
+      tl.fromTo(sq, { opacity: 0 }, { opacity: 1, duration: 0.2, ease: "none", immediateRender: false }, S(417.55));
+      const inset = $("sc009-inset"), iL = 200, iT = 300, iW = 732, iH = 492;
+      ink(svg, `M${hx - bs} ${hy - bs} L${iL + iW} ${iT}`, S(417.70), 0.45, { width: 2.5, color: BONE, opacity: 0.8, len: 1200 });
+      ink(svg, `M${hx - bs} ${hy + bs} L${iL + iW} ${iT + iH + 1}`, S(417.75), 0.45, { width: 2.5, color: BONE, opacity: 0.8, len: 1200 });
+      gsap.set(inset, { opacity: 0 });
+      tl.fromTo(inset, { opacity: 0, scale: 0.2, x: (hx - (iL + iW / 2)) * 0.8, y: (hy - (iT + iH / 2)) * 0.8, transformOrigin: "50% 50%" },
+        { opacity: 1, scale: 1, x: 0, y: 0, duration: 1.0, ease: C(E.out, 1.0), immediateRender: false }, S(417.85));
+      const acam = $("sc009-acam"), aA = { x: 360 - 2150 * 0.42, y: 240 - 1930 * 0.42, scale: 0.42 }, aB = { x: 360 - 2150 * 0.52, y: 240 - 1930 * 0.52, scale: 0.52 };
+      gsap.set(acam, aA);
+      tl.fromTo(acam, aA, Object.assign({}, aB, { duration: 4.4, ease: "none", immediateRender: false }), S(417.85));
+      const pin = document.createElement("div");
+      pin.style.cssText = "position:absolute;left:342px;top:222px;width:36px;height:36px;border-radius:50%;background:" + VOLT + ";box-shadow:0 0 0 6px rgba(134,194,50,0.35),0 0 24px rgba(134,194,50,0.6);opacity:0";
+      inset.appendChild(pin);
+      pop(pin, S(418.70), { from: 0.2, dur: 0.6 });
+      rise($("sc009-tag"), S(418.80), { dur: 0.6 });
+      FX.focusHunt(tl, acam, S(418.85), { dur: 0.7 });
+      // "how does the United States get to decide…": an ice pen arc reaches in from the east (America)
+      const arc = FX.markup.pen(tl, svg, S(419.05), { points: [[1910, 160], [1720, 120], [1520, 170], [hx + 30, hy - 30]], jitter: 4, seed: 11, dur: 1.1, width: 6, color: ICEL, blend: "normal", filter: PEN });
+      const head = FX.markup.pen(tl, svg, S(420.10), { points: [[hx + 30, hy - 66], [hx + 28, hy - 28], [hx + 66, hy - 32]], jitter: 2, seed: 12, dur: 0.3, width: 6, color: ICEL, blend: "normal", filter: PEN });
+      void arc; void head;
+    })();
+
+    /* ===== sc010 · chip design on blueprint (slide up) ===== */
+    slide("sc009", "sc010", S(422.27), { axis: "y" });
+    (function () {
+      const svg = $("sc010-svg");
+      floorplan(svg, S(424.29));
+      // title block: frame lines
+      ink(svg, "M1400 180 L1810 181 L1811 960 L1400 959 Z", S(423.2), 1.2, { width: 3, color: BONE, opacity: 0.55 });
+      ink(svg, "M1400 870 L1810 871", S(423.9), 0.5, { width: 2.5, color: BONE, opacity: 0.55, len: 420 });
+      // camera: on the drawing, then pans to the title block for NVIDIA / worth
+      const vw = $("sc010-vw"), A = { x: -120, y: -60, scale: 1.12 }, B = { x: -350, y: -40, scale: 1.12 }, Cc = { x: -470, y: -90, scale: 1.16 };
+      gsap.set(vw, A);
+      tl.fromTo(vw, A, Object.assign({}, B, { duration: 6.0, ease: "none", immediateRender: false }), S(422.27));
+      tl.to(vw, Object.assign({}, Cc, { duration: 1.6, ease: E.cam }), S(430.40));
+      tl.to(vw, { x: -490, y: -95, scale: 1.17, duration: 2.7, ease: "none" }, S(432.05));
+      // NVIDIA logo stamps into the title block on "NVIDIA"
+      const logo = $("sc010-logo"), bar = $("sc010-bar");
+      gsap.set(logo, { opacity: 0 });
+      tl.fromTo(logo, { opacity: 0, scale: 1.4 }, { opacity: 1, scale: 1, duration: 0.5, ease: C(E.out, 0.5), immediateRender: false }, S(430.93));
+      // "worth so much": a volt market-value bar rises from the baseline (no figure — he gives none)
+      gsap.set(bar, { scaleY: 0 });
+      tl.fromTo(bar, { scaleY: 0 }, { scaleY: 1, duration: 1.3, ease: C(E.out, 1.3), immediateRender: false }, S(432.35));
+      tl.fromTo(logo, { y: 560 }, { y: 0, duration: 1.3, ease: C(E.out, 1.3), immediateRender: false }, S(432.35));
+      gsap.set(logo, { y: 560 });
+      rise($("sc010-mv"), T(433.65), { dur: 0.5 });
+    })();
+
+    /* ===== sc011 · NVIDIA HQ · IP · US control (flash whip) ===== */
+    whip("sc010", "sc011", S(434.75), { dir: 1, flash: true });
+    (function () {
+      push("sc011", 434.75, 444.75, 1.0, 1.08, { ease: E.cam });
+      rise($("sc011-tag"), T(436.57), { dur: 0.6 });
+      const card = $("sc011-card");
+      floorplan($("sc011-svg"), null);
+      gsap.set(card, { opacity: 0 });
+      tl.fromTo(card, { opacity: 0, x: 700, rotation: 8 }, { opacity: 1, x: 0, rotation: -3, duration: 1.0, ease: C(E.out, 1.0), immediateRender: false }, S(438.53));
+      const lock = $("sc011-lock");
+      tl.fromTo(lock, { opacity: 0, y: -200, scale: 1.3 }, { opacity: 1, y: 0, scale: 1, duration: 0.7, ease: C(E.out, 0.7), immediateRender: false }, S(441.65));
+      tl.to(card, { borderColor: ICE, duration: 0.3, ease: "none" }, S(441.95));
+      tl.fromTo(card, { boxShadow: "0 30px 60px rgba(0,0,0,0.55), 0 0 0 0 rgba(42,159,201,0)" }, { boxShadow: "0 30px 60px rgba(0,0,0,0.55), 0 0 0 10px rgba(42,159,201,0.45)", duration: 0.5, ease: C(E.out, 0.5), immediateRender: false }, S(441.95));
+    })();
+
+    /* ===== sc012 · the toolbox: American / Western (hard cut on action) ===== */
+    (function () {
+      push("sc012", 444.75, 453.63, 1.0, 1.04, { ease: E.cam });
+      const mon = $("sc012-mon");
+      tl.fromTo(mon, { scaleY: 0.012, opacity: 0.9 }, { scaleY: 1, opacity: 1, duration: 0.3, ease: "power2.out", immediateRender: true }, S(444.75));
+      rise($("sc012-ha"), T(445.73), { dur: 0.6 });
+      ["r1", "r2", "r3", "r4"].forEach((r, i) => rise($("sc012-" + r), T(445.73) + 0.12 + i * 0.1, { dur: 0.6, y: 12 }));
+      rise($("sc012-hb"), T(446.29), { dur: 0.6 });
+      ["r5", "r6"].forEach((r, i) => rise($("sc012-" + r), T(446.29) + 0.12 + i * 0.1, { dur: 0.6, y: 12 }));
+      // flags stamp on: American ones on "American made", the Dutch flag on "Western made"
+      const fl = (r) => $("sc012-" + r).querySelector(".fl");
+      ["r1", "r2", "r3", "r5", "r6"].forEach((r, i) => { gsap.set(fl(r), { opacity: 0 }); pop(fl(r), S(450.85) + i * 1 / 12, { from: 1.6, dur: 0.4 }); });
+      gsap.set(fl("r4"), { opacity: 0 }); pop(fl("r4"), S(452.29), { from: 1.6, dur: 0.4 });
+      rise($("sc012-k"), T(449.49), { dur: 0.5 });
+    })();
+
+    /* ===== sc013 · FACE C (whip) ===== */
+    whip("sc012", "sc013", S(453.63), { dir: -1 });
+    face("sc013", [[453.63, "C"]], 455.65);
+
+    /* ===== sc014 · American technology → the government's say (paper slides in) ===== */
+    slide("sc013", "sc014", S(455.65), { axis: "x" });
+    (function () {
+      const svg = $("sc014-svg");
+      push("sc014", 455.65, 462.67, 1.0, 1.03, { ease: E.cam });
+      pop($("sc014-chip"), S(455.70), { from: 0.5, dur: 0.8 });
+      pop($("sc014-fac"), S(457.20), { from: 0.6, dur: 0.8 });
+      pop($("sc014-usf"), S(457.40), { from: 1.5, dur: 0.4 });
+      rise($("sc014-l1"), T(457.25), { dur: 0.6 });
+      FX.markup.pen(tl, svg, S(457.55), { points: [[430, 492], [550, 486], [660, 491]], jitter: 4, seed: 21, dur: 0.6, width: 6, color: INK, filter: PEN });
+      FX.markup.pen(tl, svg, S(458.10), { points: [[634, 466], [664, 491], [632, 516]], jitter: 2, seed: 22, dur: 0.25, width: 6, color: INK, filter: PEN });
+      // the gate: the Commerce Department seal
+      pop($("sc014-seal"), S(458.69), { from: 1.4, dur: 0.7 });
+      rise($("sc014-l2"), T(458.65), { dur: 0.6 });
+      FX.markup.pen(tl, svg, S(459.20), { points: [[880, 492], [960, 486], [1040, 491]], jitter: 4, seed: 23, dur: 0.45, width: 6, color: INK, filter: PEN });
+      // who buys it: A passes, B is stopped
+      pop($("sc014-pa"), S(460.77), { from: 0.6, dur: 0.7 });
+      FX.markup.pen(tl, svg, S(460.80), { points: [[1290, 440], [1420, 360], [1570, 300]], jitter: 4, seed: 24, dur: 0.55, width: 6, color: ICED, filter: PEN });
+      FX.markup.pen(tl, svg, S(461.30), { points: [[1536, 288], [1572, 300], [1550, 334]], jitter: 2, seed: 25, dur: 0.2, width: 6, color: ICED, filter: PEN });
+      pop($("sc014-pb"), S(461.65), { from: 0.6, dur: 0.7 });
+      FX.markup.pen(tl, svg, S(461.65), { points: [[1290, 545], [1360, 600], [1440, 640]], jitter: 4, seed: 26, dur: 0.35, width: 6, color: INKS, filter: PEN });
+      FX.markup.pen(tl, svg, S(461.98), { points: [[1450, 600], [1500, 650], [1530, 690]], jitter: 3, seed: 27, dur: 0.14, width: 8, color: INK, filter: PEN });
+      FX.markup.pen(tl, svg, S(462.14), { points: [[1530, 602], [1490, 650], [1452, 692]], jitter: 3, seed: 28, dur: 0.14, width: 8, color: INK, filter: PEN });
+    })();
+
+    /* ===== sc015 · FACE M (hard cut) ===== */
+    face("sc015", [[462.67, "M"]], 464.93);
+
+    /* ===== sc016 · every chip on the planet is under American law (whip) ===== */
+    whip("sc015", "sc016", S(464.93), { dir: 1 });
+    (function () {
+      const K = 22.7556, P = (lon, lat) => [(lon + 180) * K, (90 - lat) * K];
+      const cam = $("sc016-cam"), A = at(4180, 1800, 0.30), B = at(4150, 1760, 0.318);
+      gsap.set(cam, A);
+      tl.fromTo(cam, A, Object.assign({}, B, { duration: 7.8, ease: "none", immediateRender: false }), S(464.93));
+      const svg = $("sc016-map");
+      rise($("sc016-tag"), S(465.05), { dur: 0.7 });
+      const dc = P(-77.04, 38.9);
+      const fabs = [[121.0, 24.8], [127.0, 37.0], [130.7, 32.9], [121.5, 31.2], [103.8, 1.35], [100.3, 5.4], [34.8, 31.6],
+        [13.7, 51.05], [-6.5, 53.4], [-112.0, 33.4], [-97.7, 30.3], [-73.8, 43.0]];
+      const pins = fabs.map((f, i) => {
+        const [x, y] = P(f[0], f[1]);
+        const g = el(svg, "g", {});
+        const halo = el(g, "circle", { cx: x, cy: y, r: 46, fill: "rgba(134,194,50,0.25)" });
+        const dot = el(g, "circle", { cx: x, cy: y, r: 22, fill: VOLT, stroke: "#0f1318", "stroke-width": 6 });
+        gsap.set(g, { opacity: 0 });
+        tl.fromTo(g, { opacity: 0 }, { opacity: 1, duration: 0.15, ease: "none", immediateRender: false }, S(466.37) + Math.floor(i * 1.0) / 12);
+        tl.fromTo(halo, { attr: { r: 0 } }, { attr: { r: 46 }, duration: 0.6, ease: C(E.out, 0.6), immediateRender: false }, S(466.37) + i / 12);
+        return { x, y, dot, halo, d: Math.hypot(x - dc[0], y - dc[1]) };
+      });
+      // Washington, D.C.: source of the rings
+      const src = el(svg, "circle", { cx: dc[0], cy: dc[1], r: 26, fill: ICE, stroke: ICEL, "stroke-width": 6 });
+      gsap.set(src, { opacity: 0 });
+      tl.fromTo(src, { opacity: 0, attr: { r: 0 } }, { opacity: 1, attr: { r: 26 }, duration: 0.5, ease: C(E.out, 0.5), immediateRender: false }, S(468.20));
+      const lab = $("sc016-dc");
+      gsap.set(lab, { left: 960 + (dc[0] - 4150) * 0.318 - 290, top: 540 + (dc[1] - 1760) * 0.318 + 24 });
+      rise(lab, S(468.40), { dur: 0.5 });
+      // rings spread from Washington over every fab; each pin turns ice as a ring reaches it
+      const RMAX = 5200, RD = 2.2;
+      [468.45, 468.95, 469.45].forEach((t0, k) => {
+        const ring = el(svg, "circle", { cx: dc[0], cy: dc[1], r: 10, fill: "none", stroke: ICEL, "stroke-width": 16 - k * 3 });
+        gsap.set(ring, { opacity: 0 });
+        tl.fromTo(ring, { attr: { r: 10 }, opacity: 0.95 }, { attr: { r: RMAX }, opacity: 0, duration: RD, ease: "power1.out", immediateRender: false }, S(t0));
+      });
+      const inv = (f) => { let lo = 0, hi = 1; for (let i = 0; i < 30; i++) { const m = (lo + hi) / 2; (1 - Math.pow(1 - m, 2)) < f ? lo = m : hi = m; } return lo; };
+      pins.forEach((p) => {
+        const tt = S(468.45) + inv(p.d / RMAX) * RD;
+        tl.to(p.dot, { attr: { fill: ICEL }, duration: 0.15, ease: "none" }, tt);
+        tl.to(p.halo, { attr: { fill: "rgba(159,220,240,0.28)" }, duration: 0.15, ease: "none" }, tt);
+      });
+      // "you kinda need American stuff to make chips": thin ice lines Washington → every fab
+      pins.forEach((p, i) => {
+        const mx = (dc[0] + p.x) / 2, my = Math.min(dc[1], p.y) - 0.18 * Math.abs(p.x - dc[0]) - 60;
+        ink(svg, `M${dc[0]} ${dc[1]} Q${mx} ${my} ${p.x} ${p.y}`, S(469.95) + (i % 6) / 12, 0.9, { width: 7, color: ICEL, opacity: 0.6 });
+      });
+    })();
+
+    FX.mount(tl, DURATION);
+    window.__timelines[SEG] = tl;
+  })();
+  </script>
+</template>
+</body>
+</html>

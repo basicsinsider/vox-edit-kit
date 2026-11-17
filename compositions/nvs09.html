@@ -1,0 +1,415 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8" /></head>
+<body>
+<template>
+  <style>
+    #root { position: absolute; inset: 0; overflow: hidden; background: var(--night); }
+    .n9-scene { position: absolute; inset: 0; overflow: hidden; visibility: hidden; opacity: 0; }
+    .n9-shot { position: absolute; inset: 0; overflow: hidden; transform-origin: 50% 50%; background: var(--night); }
+    .n9-full { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; object-fit: cover; }
+    .n9-fcw { position: absolute; inset: 0; transform-origin: 1050px 110px; }
+    .n9-vw { position: absolute; inset: 0; transform-origin: 50% 50%; }
+    .n9-hall { position: absolute; inset: -40px;
+      background: radial-gradient(ellipse 70% 62% at 50% 46%, color-mix(in srgb, var(--ash-dark) 55%, var(--night)) 0%, var(--night) 72%); }
+    .n9-p1, .n9-p2 { position: absolute; inset: 0; background-size: cover; background-position: center; pointer-events: none; }
+    .n9-p2 { opacity: 0.9; mix-blend-mode: multiply; }
+    .n9-credit { position: absolute; right: 30px; bottom: 20px; font-size: 13px; letter-spacing: 0.08em; color: rgba(240,239,232,0.62); z-index: 5; }
+    .n9-credit.ink { color: rgba(20,24,27,0.62); }
+    .n9-ic { position: absolute; -webkit-mask-size: contain; mask-size: contain; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+      -webkit-mask-position: center; mask-position: center; }
+    .n9-w { display: inline-block; white-space: pre; opacity: 0; }
+    #nvs09-flash { position: absolute; inset: 0; background: var(--bone); opacity: 0; pointer-events: none; z-index: 7; }
+    #nvs09-grain, #nvs09-dust, #nvs09-vig { z-index: 8; }
+
+    /* sc001 map */
+    #nvs09-sc001-shot { background: #0d1015; }
+    #nvs09-sc001-cam { position: absolute; left: 0; top: 0; width: 6383px; height: 4368px; transform-origin: 0 0; }
+    #nvs09-sc001-base { position: absolute; left: 0; top: 0; width: 6383px; height: 4368px; }
+    .n9-mapov { position: absolute; left: 0; top: 0; width: 6383px; height: 4368px; }
+    #nvs09-sc001-svg { position: absolute; left: 0; top: 0; width: 6383px; height: 4368px; overflow: visible; }
+    .n9-pt { position: absolute; width: 0; height: 0; transform-origin: 0 0; }
+
+    /* sc003 scoreboard */
+    #nvs09-sb { top: 170px; }
+
+    /* sc006 collage */
+    #nvs09-sc006-doc { position: absolute; left: 680px; top: 120px; width: 560px; height: 724px; transform-origin: 280px 362px;
+      background: #fbfaf5; box-shadow: 0 26px 60px rgba(20,24,27,0.38); }
+    #nvs09-sc006-doc img { position: absolute; left: 0; top: 0; width: 560px; height: 724px; filter: grayscale(1) contrast(1.08); mix-blend-mode: multiply; }
+    #nvs09-sc006-docsvg { position: absolute; left: 0; top: 0; width: 560px; height: 724px; overflow: visible; }
+    .n9-pres { position: absolute; top: 330px; width: 600px; height: 750px; transform-origin: 50% 100%; }
+    .n9-pres img { position: absolute; left: 0; top: 0; width: 600px; height: 750px; filter: saturate(0.4) contrast(1.06) drop-shadow(0 18px 30px rgba(20,24,27,0.35)); }
+    .n9-tag { position: absolute; bottom: 96px; padding: 12px 22px 8px; background: var(--ink); color: var(--paper); font-size: 26px; white-space: nowrap; }
+    .n9-tag::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 8px; background: var(--ice); }
+    #nvs09-sc006-mk { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; pointer-events: none; }
+
+    /* sc009 lead chart */
+    #nvs09-sc009-vw { transform-origin: 1100px 560px; }
+    .n9-lane { position: absolute; left: 96px; font-size: 52px; line-height: 1; }
+    .n9-track { position: absolute; left: 400px; width: 1424px; height: 0; border-top: 2px dashed rgba(195,199,200,0.28); }
+    .n9-bar { position: absolute; left: 400px; height: 112px; transform-origin: 0 50%; }
+    #nvs09-sc009-us { top: 330px; width: 1380px; background: linear-gradient(180deg, #33aed6 0%, var(--ice) 55%, #1f86ab 100%); }
+    #nvs09-sc009-cn { top: 560px; width: 150px; background: linear-gradient(180deg, #e8434f 0%, var(--red) 55%, #b5222e 100%); }
+    #nvs09-sc009-ax { position: absolute; left: 400px; top: 196px; font-size: 24px; color: var(--ash-light); white-space: nowrap; }
+    #nvs09-sc009-ax i { display: inline-block; width: 14px; height: 14px; margin-right: 14px; background: var(--ash-light); vertical-align: 1px; }
+    #nvs09-sc009-lead { position: absolute; left: 550px; width: 1230px; top: 800px; text-align: center; font-size: 76px; line-height: 1; white-space: nowrap; }
+    #nvs09-sc009-svg { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; pointer-events: none; }
+  </style>
+
+  <div id="root" data-composition-id="nvs09" data-vo-start="864.75" data-duration="70.25" data-width="1920" data-height="1080">
+    <svg id="nvs09-defs" width="0" height="0" style="position:absolute"></svg>
+
+    <!-- sc001 · 864.75–877.50 · China map: the ban line, small chips by plane, big chips by ship, chips pile up -->
+    <div class="n9-scene" id="nvs09-sc001"><div class="n9-shot" id="nvs09-sc001-shot">
+      <div id="nvs09-sc001-cam">
+        <img id="nvs09-sc001-base" src="assets/maps/kit/china_night.jpg" alt="" />
+        <img class="n9-mapov" id="nvs09-sc001-fill" src="assets/nvidia/nvs09/derived/china_fill.svg" alt="" />
+        <img class="n9-mapov" id="nvs09-sc001-edge" src="assets/nvidia/nvs09/derived/china_stroke.svg" alt="" />
+        <svg id="nvs09-sc001-svg" viewBox="0 0 6383 4368"></svg>
+        <div id="nvs09-sc001-pts"></div>
+      </div>
+      <div class="n9-credit t-label">Relief: AWS Terrain Tiles · Natural Earth</div>
+    </div></div>
+
+    <!-- sc002 · 877.50–880.80 · FACE M -->
+    <div class="n9-scene" id="nvs09-sc002"><div class="n9-shot" id="nvs09-sc002-shot">
+      <div class="n9-fcw" id="nvs09-sc002-fw"><video id="nvs09-sc002-v" class="n9-full" src="assets/facecam/nvidia_facecam_master.mp4" muted playsinline data-start="12.75" data-duration="3.40" data-media-start="877.50"></video></div>
+    </div></div>
+
+    <!-- sc003 · 880.80–891.18 · THE SCOREBOARD, row 1 stamped ✗ -->
+    <div class="n9-scene" id="nvs09-sc003"><div class="n9-shot" id="nvs09-sc003-shot">
+      <div class="n9-hall"></div>
+      <div class="n9-vw" id="nvs09-sc003-vw" style="transform-origin:960px 300px"><div id="nvs09-sb"></div></div>
+    </div></div>
+
+    <!-- sc004 · 891.18–897.98 · FACE W -->
+    <div class="n9-scene" id="nvs09-sc004"><div class="n9-shot" id="nvs09-sc004-shot">
+      <div class="n9-fcw" id="nvs09-sc004-fw"><video id="nvs09-sc004-v" class="n9-full" src="assets/facecam/nvidia_facecam_master.mp4" muted playsinline data-start="26.43" data-duration="6.85" data-media-start="891.18"></video></div>
+    </div></div>
+
+    <!-- sc005 · 897.98–905.45 · FACE C (framing jump on the 897.98 join) -->
+    <div class="n9-scene" id="nvs09-sc005"><div class="n9-shot" id="nvs09-sc005-shot">
+      <div class="n9-fcw" id="nvs09-sc005-fw"><video id="nvs09-sc005-v" class="n9-full" src="assets/facecam/nvidia_facecam_master.mp4" muted playsinline data-start="33.23" data-duration="7.32" data-media-start="897.98"></video></div>
+    </div></div>
+
+    <!-- sc006 · 905.45–913.08 · the 2022 rule between Biden and Trump -->
+    <div class="n9-scene" id="nvs09-sc006"><div class="n9-shot" id="nvs09-sc006-shot" style="background:var(--paper)">
+      <div class="n9-p1" style="background-image:url('assets/textures/paper_cream_01.jpg')"></div>
+      <div class="n9-p2" style="background-image:url('assets/textures/paper_fiber_01.jpg'); opacity:0.45"></div>
+      <div class="n9-vw" id="nvs09-sc006-vw">
+        <div id="nvs09-sc006-doc"><img src="assets/nvidia/shared/docs/bis_rule_2022-10-07_p1.png" alt="" /><svg id="nvs09-sc006-docsvg" viewBox="0 0 560 724"></svg></div>
+        <div class="n9-pres" id="nvs09-sc006-bi" style="left:60px"><img src="assets/nvidia/shared/people/biden_cut.png" alt="" /></div>
+        <div class="n9-pres" id="nvs09-sc006-tr" style="left:1260px"><img src="assets/nvidia/shared/people/trump_cut.png" alt="" /></div>
+        <div class="n9-tag t-label" id="nvs09-sc006-tb" style="left:110px"><span class="n9-w">Joe Biden</span></div>
+        <div class="n9-tag t-label" id="nvs09-sc006-tt" style="right:110px"><span class="n9-w">Donald Trump</span></div>
+        <svg id="nvs09-sc006-mk" viewBox="0 0 1920 1080"></svg>
+      </div>
+      <div class="n9-credit t-label ink" style="top:22px;bottom:auto">Federal Register 87 FR 62186 · Portraits: The White House (public domain)</div>
+    </div></div>
+
+    <!-- sc007 · 913.08–918.10 · FACE W -->
+    <div class="n9-scene" id="nvs09-sc007"><div class="n9-shot" id="nvs09-sc007-shot">
+      <div class="n9-fcw" id="nvs09-sc007-fw"><video id="nvs09-sc007-v" class="n9-full" src="assets/facecam/nvidia_facecam_master.mp4" muted playsinline data-start="48.33" data-duration="5.12" data-media-start="913.08"></video></div>
+    </div></div>
+
+    <!-- sc008 · 918.10–921.95 · FACE M -->
+    <div class="n9-scene" id="nvs09-sc008"><div class="n9-shot" id="nvs09-sc008-shot">
+      <div class="n9-fcw" id="nvs09-sc008-fw"><video id="nvs09-sc008-v" class="n9-full" src="assets/facecam/nvidia_facecam_master.mp4" muted playsinline data-start="53.35" data-duration="3.95" data-media-start="918.10"></video></div>
+    </div></div>
+
+    <!-- sc009 · 921.95–935.00 · the lead: US far ahead, a few chips into China barely move it -->
+    <div class="n9-scene" id="nvs09-sc009"><div class="n9-shot" id="nvs09-sc009-shot">
+      <div class="n9-hall"></div>
+      <div class="n9-vw" id="nvs09-sc009-vw">
+        <div id="nvs09-sc009-ax" class="t-label"><i></i>AI computing power</div>
+        <div class="n9-track" style="top:386px"></div>
+        <div class="n9-track" style="top:616px"></div>
+        <div class="n9-lane t-display clean" id="nvs09-sc009-lus" style="top:360px"><span class="n9-w">US</span></div>
+        <div class="n9-lane t-display clean" id="nvs09-sc009-lcn" style="top:590px">CHINA</div>
+        <div class="n9-bar" id="nvs09-sc009-us"></div>
+        <div class="n9-bar" id="nvs09-sc009-cn"></div>
+        <div id="nvs09-sc009-chips"></div>
+        <svg id="nvs09-sc009-svg" viewBox="0 0 1920 1080"></svg>
+        <div id="nvs09-sc009-lead" class="t-display halate"><span class="n9-w">THE LEAD</span></div>
+      </div>
+    </div></div>
+
+    <div id="nvs09-flash"></div>
+    <div id="nvs09-grain" class="tx tx-grain" style="background-image:url('assets/textures/grain_01_norm.jpg')"></div>
+    <div id="nvs09-dust" class="tx tx-dust" style="background-image:url('assets/textures/dust_02.jpg')"></div>
+    <div id="nvs09-vig" class="vignette"></div>
+    <audio id="nvs09-vo" class="temp-vo" src="vo_nv.mp3" data-start="0" data-duration="70.25" data-media-start="864.75" data-volume="1"></audio>
+  </div>
+
+  <script>
+  (function () {
+    const SEG = "nvs09", SEG_START = 864.75, SEG_END = 935.00, DURATION = 70.25;
+    const T = (s) => +(s - SEG_START).toFixed(3);   // TEXT cues (audited): literal master word start − 0.06
+    const S = (s) => +(s - SEG_START).toFixed(3);   // STRUCTURAL cues (cuts, camera, objects)
+    const tl = gsap.timeline({ paused: true });
+    const $ = (id) => document.getElementById(SEG + "-" + id);
+    const NS = "http://www.w3.org/2000/svg";
+    const defs = $("defs");
+    const E = FX.ease;
+    const C = (e, d) => FX.choppy(e, d, 12);
+    const INK = "#14181b", BONE = "#f0efe8", VOLT = "#86c232", VOLTL = "#c9ec8f", ICE = "#2a9fc9", ICED = "#115973", ICEL = "#9fdcf0", RED = "#dc2f3c";
+
+    // ---------- scenes ----------
+    const SC = [
+      ["sc001", 864.75, 877.50, "map"], ["sc002", 877.50, 880.80, "face"], ["sc003", 880.80, 891.18, "night"],
+      ["sc004", 891.18, 897.98, "face"], ["sc005", 897.98, 905.45, "face"], ["sc006", 905.45, 913.08, "paper"],
+      ["sc007", 913.08, 918.10, "face"], ["sc008", 918.10, 921.95, "face"], ["sc009", 921.95, 935.00, "night"],
+    ];
+    const GROUND = { paper: [0.3, 0.14, 0.22], night: [0.9, 0.42, 0.4], map: [0.8, 0.3, 0.3], face: [0, 0, 0] };
+    const EARLY = { sc006: 0.45 };   // slide: the incoming scene is visible while it slides in
+    SC.forEach((s, i) => {
+      const el = $(s[0]), a = s[1] - (EARLY[s[0]] || 0);
+      if (i === 0) gsap.set(el, { autoAlpha: 1 });
+      else tl.fromTo(el, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.001, immediateRender: false }, S(a) - 0.002);
+      if (s[2] < SEG_END) tl.set(el, { autoAlpha: 0 }, S(s[2]) + 0.05);
+    });
+    const TXL = [$("grain"), $("dust"), $("vig")];
+    gsap.set(TXL, { opacity: (i) => GROUND.map[i] });
+    SC.forEach((s, i) => { if (i > 0) { const v = GROUND[s[3]]; tl.set(TXL, { opacity: (k) => v[k] }, S(s[1])); } });
+
+    // ---------- helpers ----------
+    const rise = (el, t, o) => { o = o || {}; const d = o.dur || 0.6;
+      tl.fromTo(el, { opacity: 0, y: o.y == null ? 16 : o.y }, { opacity: 1, y: 0, duration: d, ease: C(E.out, d), immediateRender: true }, t); };
+    const W = (id) => Array.from($(id).querySelectorAll(".n9-w"));
+    function words(id, cues, o) { const ws = W(id); cues.forEach((c, i) => rise(ws[i], c, o)); }
+    function el(parent, tag, attrs) { const n = document.createElementNS(NS, tag); for (const k in attrs) n.setAttribute(k, attrs[k]); parent.appendChild(n); return n; }
+    function icon(name, color, w, h) {
+      const d = document.createElement("div"); d.className = "n9-ic";
+      const u = "url('assets/nvidia/shared/icons/" + name + ".svg')";
+      d.style.cssText += "width:" + w + "px;height:" + h + "px;background:" + color + ";-webkit-mask-image:" + u + ";mask-image:" + u + ";";
+      return d;
+    }
+    const whipN = { n: 0 };
+    function whip(a, b, t, o) {
+      o = Object.assign({ dir: 1, vertical: false, flash: false, dur: 0.32 }, o);
+      const k = ++whipN.n, ba = FX.whipDefs(defs, SEG + "-wa" + k), bb = FX.whipDefs(defs, SEG + "-wb" + k), h = o.dur / 2;
+      const A = $(a + "-shot"), B = $(b + "-shot");
+      tl.set(A, { filter: "url(#" + SEG + "-wa" + k + ")" }, t - h - 0.01); tl.set(A, { filter: "none" }, t + 0.06);
+      tl.set(B, { filter: "url(#" + SEG + "-wb" + k + ")" }, t - 0.001); tl.set(B, { filter: "none" }, t + h + 0.02);
+      FX.whip(tl, A, B, t, { dir: o.dir, vertical: o.vertical, dur: o.dur, blurA: ba, blurB: bb });
+      if (o.flash) tl.fromTo($("flash"), { opacity: 0 }, { opacity: 0.85, duration: 0.08, yoyo: true, repeat: 1, ease: "power2.in", immediateRender: false }, t - 0.08);
+    }
+    function slide(a, b, t, o) {
+      o = Object.assign({ axis: "y", from: 1, d: 0.45 }, o);
+      const A = $(a + "-shot"), B = $(b + "-shot"), dist = (o.axis === "x" ? 1980 : 1140) * o.from;
+      tl.fromTo(B, { [o.axis]: dist, boxShadow: "0 0 80px rgba(0,0,0,0.5)" }, { [o.axis]: 0, duration: o.d, ease: C(E.inOut, o.d), immediateRender: false }, t - o.d);
+      tl.set(B, { boxShadow: "none" }, t);
+      tl.fromTo(A, { [o.axis]: 0 }, { [o.axis]: -dist * 0.12, duration: o.d, ease: E.in, immediateRender: false }, t - o.d);
+    }
+    const FR = { W: [1.0, 1.03], M: [1.25, 1.285], C: [1.44, 1.48] };
+    function face(id, a, b, k) {
+      const fw = $(id + "-fw");
+      gsap.set(fw, { scale: FR[k][0] });
+      tl.fromTo(fw, { scale: FR[k][0] }, { scale: FR[k][1], duration: b - a, ease: "none", immediateRender: false }, S(a));
+    }
+    function push(id, a, b, s0, s1, o) {
+      o = o || {};
+      const vw = $(id + "-vw");
+      if (o.origin) gsap.set(vw, { transformOrigin: o.origin });
+      gsap.set(vw, { scale: s0 });
+      tl.fromTo(vw, { scale: s0 }, { scale: s1, duration: b - a, ease: o.ease || "none", immediateRender: false }, S(a));
+    }
+
+    FX.grain($("grain"), 909);
+    FX.dust($("dust"), 910, 2);
+
+    /* ===== sc001 · China map: the ban, small chips, big chips ===== */
+    (function () {
+      const cam = $("sc001-cam"), svg = $("sc001-svg"), pts = $("sc001-pts");
+      const fill = $("sc001-fill"), edge = $("sc001-edge");
+      gsap.set(fill, { opacity: 0 }); gsap.set(edge, { opacity: 0 });
+      // counter-scaled screen-size items (labels, carriers, chips)
+      const items = [];
+      function pin(x, y) { const o = document.createElement("div"); o.className = "n9-pt"; o.style.left = x + "px"; o.style.top = y + "px"; pts.appendChild(o); items.push(o); return o; }
+      function label(x, y, html, size, cls, color) {
+        const o = pin(x, y), d = document.createElement("div");
+        d.className = cls;
+        d.innerHTML = html;
+        d.style.cssText = "position:absolute;white-space:nowrap;line-height:1;left:-600px;width:1200px;text-align:center;top:" + (-size * 0.5) + "px;font-size:" + size + "px;color:" + color +
+          ";text-shadow:0 2px 4px rgba(0,0,0,0.8),0 0 16px rgba(0,0,0,0.6);";
+        o.appendChild(d); return d;
+      }
+      // camera: s 0.45 → 0.50, centre (4000,3150) → (4060,3090)
+      const st = { cx: 4000, cy: 3150, s: 0.45 }, en = { cx: 4060, cy: 3090, s: 0.5 };
+      const apply = (k) => {
+        const e = E.cam(k), s = st.s + (en.s - st.s) * e, cx = st.cx + (en.cx - st.cx) * e, cy = st.cy + (en.cy - st.cy) * e;
+        gsap.set(cam, { x: 960 - cx * s, y: 540 - cy * s, scale: s });
+        const inv = "scale(" + (1 / s).toFixed(4) + ")";
+        items.forEach((o) => { o.style.transform = inv; });
+      };
+      apply(0);
+      const pr = { v: 0 };
+      tl.fromTo(pr, { v: 0 }, { v: 1, duration: S(877.50) - S(864.75) + 0.1, ease: "none", immediateRender: false, onUpdate: () => apply(pr.v) }, S(864.75));
+
+      // CHINA fills red on "China"
+      tl.fromTo(fill, { opacity: 0 }, { opacity: 0.42, duration: 0.9, ease: C(E.out, 0.9), immediateRender: true }, S(869.90));
+      tl.fromTo(edge, { opacity: 0 }, { opacity: 0.85, duration: 0.9, ease: C(E.out, 0.9), immediateRender: true }, S(869.90));
+      const cn = label(3150, 2760, "CHINA", 78, "t-display", BONE);
+      cn.style.letterSpacing = "0.06em";
+      rise(cn, T(869.98), { dur: 0.8, y: 10 });
+
+      // the ban: an ice pen line offshore round the coast, on "the chip ban"
+      const bar = FX.markup.pen(tl, svg, S(867.70), { points: [[5150, 1950], [4990, 2500], [4720, 2950], [4385, 3290], [4255, 3500], [4010, 3800], [3700, 4060], [3420, 4300]],
+        jitter: 14, seed: 9, dur: 1.3, width: 16, color: ICEL, blend: "normal", ease: "sine.inOut" });
+      gsap.set(bar, { opacity: 0 }); tl.set(bar, { opacity: 1 }, S(867.70));
+      const ban = label(5250, 3000, '<span class="n9-w">CHIP </span><span class="n9-w">BAN</span>', 30, "t-label", ICEL);
+      Array.from(ban.querySelectorAll(".n9-w")).forEach((w, i) => rise(w, [T(867.90), T(868.22)][i], { dur: 0.5, y: 6 }));
+      // sample the barrier for crossing points
+      const BL = bar.getTotalLength(), BP = [];
+      for (let i = 0; i <= 160; i++) { const p = bar.getPointAtLength(BL * i / 160); BP.push([p.x, p.y]); }
+
+      // routes
+      function route(d, t0, dur, carrier, tag, ringT) {
+        const p = el(svg, "path", { d: d, fill: "none", stroke: VOLT, "stroke-width": 12, "stroke-linecap": "round", "stroke-dasharray": "34 30", opacity: 0.9 });
+        const L = p.getTotalLength(), P = [];
+        for (let i = 0; i <= 200; i++) { const q = p.getPointAtLength(L * i / 200); P.push([q.x, q.y]); }
+        // reveal mask: a solid stroke drawn on top in the same path acts as the trace head (we fade the dashed path in behind the carrier)
+        const msk = el(svg, "path", { d: d, fill: "none", stroke: VOLTL, "stroke-width": 5, "stroke-linecap": "round", opacity: 0.55 });
+        msk.setAttribute("stroke-dasharray", L + " " + L); msk.setAttribute("stroke-dashoffset", L);
+        p.setAttribute("stroke-dasharray", "34 30"); gsap.set(p, { opacity: 0 });
+        // crossing index (closest approach to the barrier)
+        let best = 1e9, ci = 0;
+        P.forEach((q, i) => BP.forEach((b) => { const dd = (q[0] - b[0]) ** 2 + (q[1] - b[1]) ** 2; if (dd < best) { best = dd; ci = i; } }));
+        const o = pin(P[0][0], P[0][1]);
+        o.appendChild(carrier); if (tag) o.appendChild(tag);
+        gsap.set(o, { opacity: 0 });
+        const pos = { k: 0 };
+        const place = () => { const i = Math.min(200, Math.round(pos.k * 200)), q = P[i]; o.style.left = q[0].toFixed(1) + "px"; o.style.top = q[1].toFixed(1) + "px";
+          msk.setAttribute("stroke-dashoffset", (L * (1 - pos.k)).toFixed(1)); };
+        tl.set(o, { opacity: 1 }, t0);
+        tl.fromTo(pos, { k: 0 }, { k: 1, duration: dur, ease: E.inOut, immediateRender: false, onUpdate: place }, t0);
+        tl.fromTo(p, { opacity: 0 }, { opacity: 0.55, duration: dur, ease: "none", immediateRender: true }, t0);
+        // breach ring where it crosses the ban
+        const ring = el(svg, "circle", { cx: P[ci][0], cy: P[ci][1], r: 20, fill: "none", stroke: VOLTL, "stroke-width": 10 });
+        gsap.set(ring, { opacity: 0 });
+        tl.fromTo(ring, { attr: { r: 20 }, opacity: 0.95 }, { attr: { r: 260 }, opacity: 0, duration: 0.9, ease: "power2.out", immediateRender: false }, ringT);
+        tl.set(carrier, { opacity: 1 }, t0);
+        return { P, o, dur };
+      }
+      // small chips: plane from the Pacific → Shanghai, carrying a graphics card
+      const plane = icon("plane", BONE, 96, 96); plane.style.left = "-48px"; plane.style.top = "-48px"; plane.style.transform = "rotate(-100deg)";
+      const card = icon("gpu_card", VOLT, 96, 66); card.style.left = "44px"; card.style.top = "-92px";
+      const r1 = route("M6700 3150 C6100 2700 5300 2560 4560 2650", S(872.06), 1.45, plane, card, S(872.06) + 1.45 * 0.62);
+      // big chips: ship from the South China Sea → Shenzhen / Hong Kong, carrying a server rack
+      const ship = icon("ferry", BONE, 120, 96); ship.style.left = "-60px"; ship.style.top = "-60px";
+      const rack = icon("server_rack", VOLT, 62, 104); rack.style.left = "62px"; rack.style.top = "-124px";
+      const r2 = route("M4700 4600 C4520 4250 4120 4000 3870 3700", S(873.26), 1.5, ship, rack, S(873.26) + 1.5 * 0.5);
+
+      // "you're not really keeping anything out": chips stream along both routes and pile up inside China
+      const dots = [];
+      [[r1, [S(874.70), S(875.05), S(875.40)]], [r2, [S(874.85), S(875.20), S(875.55)]]].forEach((rr) => {
+        rr[1].forEach((t0) => {
+          const c = el(svg, "rect", { x: -26, y: -26, width: 52, height: 52, rx: 8, fill: VOLT, stroke: VOLTL, "stroke-width": 6 });
+          gsap.set(c, { opacity: 0 });
+          const k = { v: 0 };
+          tl.set(c, { opacity: 1 }, t0);
+          tl.fromTo(k, { v: 0 }, { v: 1, duration: 1.2, ease: E.inOut, immediateRender: false,
+            onUpdate: () => { const q = rr[0].P[Math.min(200, Math.round(k.v * 200))]; c.setAttribute("transform", "translate(" + q[0].toFixed(1) + " " + q[1].toFixed(1) + ")"); } }, t0);
+          tl.to(c, { opacity: 0, duration: 0.15 }, t0 + 1.2);
+          dots.push(c);
+        });
+      });
+      const PILE = [[4300, 2700], [3950, 2750], [4150, 2900], [3800, 2950], [4000, 3100], [4200, 3150], [3600, 3150], [3900, 3350], [3700, 3400],
+                    [4100, 3350], [4350, 2500], [3500, 3300], [3750, 3200], [4050, 2600]];
+      PILE.forEach((q, i) => {
+        const c = el(svg, "rect", { x: q[0] - 24, y: q[1] - 24, width: 48, height: 48, rx: 7, fill: VOLT, stroke: VOLTL, "stroke-width": 5 });
+        gsap.set(c, { opacity: 0 });
+        tl.fromTo(c, { opacity: 0 }, { opacity: 0.95, duration: 1 / 12, ease: "steps(1)", immediateRender: true }, S(875.30) + Math.floor(i * 1.6) / 12);
+      });
+      // carriers fade once delivered
+      tl.to([r1.o, r2.o], { opacity: 0, duration: 0.4 }, S(876.20));
+    })();
+
+    /* ===== sc002 · FACE M (hard cut on the map push) ===== */
+    face("sc002", 877.50, 880.80, "M");
+
+    /* ===== sc003 · THE SCOREBOARD — built, results empty; row 1 ✗ on "not" ===== */
+    whip("sc002", "sc003", S(880.80), { dir: 1 });
+    const sb = NV.scoreboard($("sb"), { prefix: SEG + "-sb", gate: [S(880.4), S(891.4)] });
+    push("sc003", 880.80, 891.18, 1.0, 1.035, { ease: E.cam });
+    sb.markRow(tl, 1, "x", T(888.78));
+
+    /* ===== sc004 · FACE W (hard cut on the board push) ===== */
+    face("sc004", 891.18, 897.98, "W");
+
+    /* ===== sc005 · FACE C (framing jump exactly on the 897.98 join) ===== */
+    face("sc005", 897.98, 905.45, "C");
+
+    /* ===== sc006 · the 2022 rule between two presidents (slides up) ===== */
+    slide("sc005", "sc006", S(905.45), { axis: "y" });
+    (function () {
+      const doc = $("sc006-doc"), bi = $("sc006-bi"), tr = $("sc006-tr"), dsvg = $("sc006-docsvg"), mk = $("sc006-mk");
+      gsap.set(doc, { rotation: -2 });
+      tl.fromTo(doc, { y: 260, rotation: 4 }, { y: 0, rotation: -2, duration: 1.2, ease: C(E.out, 1.2), immediateRender: true }, S(905.30));
+      // pen circle round the rule's title on "ban"
+      const c1 = FX.markup.circle(tl, dsvg, S(907.45), { cx: 118, cy: 172, rx: 120, ry: 58, rot: -3, color: ICED, width: 6, dur: 0.7, seed: 4 });
+      c1.style.mixBlendMode = "multiply"; gsap.set(c1, { opacity: 0 }); tl.set(c1, { opacity: 1 }, S(907.45));
+      // presidents pop in, 12 fps stop-motion
+      gsap.set([bi, tr], { opacity: 0 });
+      tl.fromTo(bi, { opacity: 0, scale: 1.12, rotation: -3 }, { opacity: 1, scale: 1, rotation: -1, duration: 3 / 12, ease: "steps(3)", immediateRender: true }, S(909.53));
+      tl.fromTo(tr, { opacity: 0, scale: 1.12, rotation: 3 }, { opacity: 1, scale: 1, rotation: 1, duration: 3 / 12, ease: "steps(3)", immediateRender: true }, S(909.77));
+      W("sc006-tb").concat(W("sc006-tt")).forEach((w) => gsap.set(w, { opacity: 1 }));
+      rise($("sc006-tb"), T(909.53), { dur: 0.5, y: 8 });
+      rise($("sc006-tt"), T(909.77), { dur: 0.5, y: 8 });
+      // "who don't agree on much" — they lean apart
+      tl.to(bi, { x: -16, rotation: -3, duration: 0.6, ease: C(E.inOut, 0.6) }, S(910.45));
+      tl.to(tr, { x: 16, rotation: 3, duration: 0.6, ease: C(E.inOut, 0.6) }, S(910.45));
+      // "are keeping this policy in place" — both arrows to the rule
+      const a1 = FX.markup.arrow(tl, mk, S(911.45), { x1: 560, y1: 520, x2: 700, y2: 440, bend: -40, head: 26, color: ICED, width: 7, dur: 0.55 });
+      const a2 = FX.markup.arrow(tl, mk, S(911.70), { x1: 1360, y1: 520, x2: 1222, y2: 440, bend: 40, head: 26, color: ICED, width: 7, dur: 0.55 });
+      [a1, a2].forEach((pp, i) => pp.forEach((p) => { p.style.mixBlendMode = "multiply"; gsap.set(p, { opacity: 0 }); tl.set(p, { opacity: 1 }, S([911.45, 911.70][i])); }));
+      push("sc006", 905.45, 913.08, 1.0, 1.04, { ease: E.cam, origin: "960px 470px" });
+    })();
+
+    /* ===== sc007 · FACE W (hard cut, starts on the 913.08 join) ===== */
+    face("sc007", 913.08, 918.10, "W");
+
+    /* ===== sc008 · FACE M (punch-in on "Maybe") ===== */
+    face("sc008", 918.10, 921.95, "M");
+
+    /* ===== sc009 · the lead (light-flash whip) — B-roll to the end, camera still drifting ===== */
+    whip("sc008", "sc009", S(921.95), { dir: 1, flash: true });
+    (function () {
+      const us = $("sc009-us"), cn = $("sc009-cn"), svg = $("sc009-svg");
+      gsap.set(us, { scaleX: 0 }); gsap.set(cn, { scaleX: 0 });
+      rise($("sc009-ax"), S(922.05), { dur: 0.6, y: 6 });
+      rise($("sc009-lcn"), S(922.15), { dur: 0.6, y: 8 });
+      tl.fromTo(cn, { scaleX: 0 }, { scaleX: 1, duration: 0.9, ease: C(E.out, 0.9), immediateRender: true }, S(922.25));
+      tl.fromTo(us, { scaleX: 0 }, { scaleX: 1, duration: 1.5, ease: C(E.out, 1.5), immediateRender: true }, S(922.40));
+      words("sc009-lus", [T(924.17)], { dur: 0.6, y: 8 });
+      // THE LEAD bracket between the two ends
+      const br = FX.markup.pen(tl, svg, S(923.25), { points: [[552, 738], [554, 770], [1160, 772], [1778, 768], [1780, 470]], jitter: 5, seed: 6, dur: 0.6, width: 5, color: ICEL, blend: "normal" });
+      gsap.set(br, { opacity: 0 }); tl.set(br, { opacity: 1 }, S(923.25));
+      words("sc009-lead", [T(923.45)], { dur: 0.8, y: 12 });
+      // "some chips flowing into China" — five chips drop into China's bar, it barely moves
+      const box = $("sc009-chips");
+      for (let i = 0; i < 5; i++) {
+        const c = icon("chip", VOLT, 64, 64); c.style.left = (500 + i * 9) + "px"; c.style.top = "584px";
+        c.style.filter = "drop-shadow(0 0 10px rgba(201,236,143,0.55))";
+        box.appendChild(c);
+        gsap.set(c, { opacity: 0 });
+        const t0 = S(929.85) + i * 0.32;
+        tl.fromTo(c, { opacity: 1, y: 560, x: -40 }, { y: 0, x: 0, duration: 0.55, ease: C(E.in, 0.55), immediateRender: false }, t0);
+        tl.set(c, { opacity: 0 }, t0 + 0.55);
+        tl.to(cn, { width: 150 + (i + 1) * 9, duration: 1 / 12, ease: "steps(1)" }, t0 + 0.55);
+      }
+      // "don't really change what you're trying to achieve" — circle THE LEAD
+      const c9 = FX.markup.circle(tl, svg, S(932.45), { cx: 1165, cy: 830, rx: 300, ry: 82, rot: -2, color: ICEL, width: 6, dur: 0.75, seed: 8 });
+      gsap.set(c9, { opacity: 0 }); tl.set(c9, { opacity: 1 }, S(932.45));
+      push("sc009", 921.95, 935.00, 1.0, 1.06, { ease: "none" });
+    })();
+
+    FX.mount(tl, DURATION);
+    window.__timelines = window.__timelines || {};
+    window.__timelines[SEG] = tl;
+  })();
+  </script>
+</template>
+</body>
+</html>

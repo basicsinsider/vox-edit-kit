@@ -1,0 +1,705 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8" /></head>
+<body>
+<template>
+  <style>
+    #root { position: absolute; inset: 0; overflow: hidden; background: var(--night); }
+    .n3-scene { position: absolute; inset: 0; overflow: hidden; visibility: hidden; opacity: 0; }
+    .n3-shot { position: absolute; inset: 0; overflow: hidden; transform-origin: 50% 50%; background: var(--night); }
+    .n3-paper { background: var(--paper); }
+    .n3-abs { position: absolute; }
+    .n3-full { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; object-fit: cover; }
+    .n3-fcw { position: absolute; inset: 0; transform-origin: 1000px 100px; }
+    .n3-vw { position: absolute; inset: 0; transform-origin: 50% 50%; }
+    .n3-p1, .n3-p2 { position: absolute; inset: 0; background-size: cover; background-position: center; pointer-events: none; }
+    .n3-p2 { opacity: 0.9; mix-blend-mode: multiply; }
+    .n3-mk { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; pointer-events: none; }
+    .n3-ico { position: absolute; }
+    .n3-ico svg { position: absolute; left: 0; top: 0; width: 100%; height: 100%; overflow: visible; }
+    .n3-credit { position: absolute; right: 30px; bottom: 20px; font-size: 13px; letter-spacing: 0.08em; color: rgba(240,239,232,0.66); z-index: 5; white-space: nowrap; }
+    .n3-credit.ink { color: rgba(20,24,27,0.66); }
+    .n3-lab { position: absolute; font-size: 26px; white-space: nowrap; text-align: center; }
+    .n3-ink { color: var(--ink); }
+    .n3-scrim-b { position: absolute; left: 0; right: 0; bottom: 0; height: 380px; pointer-events: none;
+      background: linear-gradient(0deg, rgba(8,10,12,0.86) 0%, rgba(8,10,12,0.55) 45%, rgba(8,10,12,0) 100%); }
+    #nvs03-flash { position: absolute; inset: 0; background: var(--bone); opacity: 0; pointer-events: none; z-index: 7; }
+    #nvs03-grain, #nvs03-dust, #nvs03-vig { z-index: 8; }
+
+    /* sc002 scale */
+    #nvs03-sc002-lus, #nvs03-sc002-lcn { width: 400px; margin-left: -200px; font-size: 28px; }
+
+    /* sc005 / sc007 diagrams */
+    .n3-pkg { position: absolute; width: 130px; height: 104px; background: #cdbf9f; border: 5px solid var(--ink); border-radius: 6px; box-shadow: 0 10px 18px rgba(20,24,27,0.25); }
+    .n3-pkg::before { content: ""; position: absolute; left: 50%; top: 0; bottom: 0; width: 16px; margin-left: -8px; background: rgba(20,24,27,0.35); }
+    .n3-pkg::after { content: ""; position: absolute; left: 0; right: 0; top: 30px; height: 5px; background: var(--ink); opacity: 0.6; }
+    #nvs03-sc005-counter { position: absolute; left: 250px; top: 636px; width: 600px; height: 26px; background: var(--ink); border-radius: 4px; }
+    #nvs03-sc005-cfront { position: absolute; left: 280px; top: 662px; width: 540px; height: 190px; background: var(--paper-2); border: 5px solid var(--ink); border-top: none; }
+
+    /* sc009 China map */
+    #nvs03-sc009-stage { position: absolute; inset: 0; perspective: 1500px; overflow: hidden; background: #0d1015; }
+    #nvs03-sc009-tilt { position: absolute; inset: 0; transform-origin: 50% 62%; }
+    #nvs03-sc009-cam { position: absolute; left: 0; top: 0; width: 6383px; height: 4368px; transform-origin: 0 0; }
+    #nvs03-sc009-cam > img { position: absolute; left: 0; top: 0; width: 6383px; height: 4368px; }
+    .n3-badge { position: absolute; width: 150px; height: 150px; border-radius: 50%; background: var(--bone); box-shadow: 0 16px 34px rgba(0,0,0,0.55); }
+    .n3-badge img { position: absolute; left: 27px; top: 27px; width: 96px; height: 96px; object-fit: contain; }
+
+    /* sc010 cards */
+    .n3-card { position: absolute; width: 400px; height: 440px; background: #f3f0e6; box-shadow: 0 22px 44px rgba(20,24,27,0.30); }
+    .n3-card .band { position: absolute; left: 0; right: 0; top: 0; height: 16px; }
+    .n3-card .n3-lab { left: 0; width: 400px; top: 360px; font-size: 26px; }
+    .n3-doc { position: absolute; width: 190px; height: 150px; background: #faf8f1; border: 3px solid var(--ink); box-shadow: 0 12px 22px rgba(20,24,27,0.3); }
+    .n3-doc i { position: absolute; left: 18px; height: 6px; background: rgba(20,24,27,0.35); border-radius: 3px; }
+    .n3-doc .n3-lab { left: 0; width: 190px; top: 104px; font-size: 22px; letter-spacing: 0.1em; }
+
+    /* sc012 world */
+    #nvs03-sc012-cam { position: absolute; left: 0; top: 0; width: 7537px; height: 2949px; transform-origin: 0 0; }
+    #nvs03-sc012-cam > img { position: absolute; left: 0; top: 0; width: 7537px; height: 2949px; }
+    .n3-wto { position: absolute; left: 0; top: 0; width: 360px; height: 128px; background: var(--bone); border-radius: 8px; box-shadow: 0 14px 30px rgba(0,0,0,0.55); }
+    .n3-wto img { position: absolute; left: 20px; top: 14px; width: 320px; height: 100px; object-fit: contain; }
+
+    /* sc015 triptych */
+    .n3-pan { position: absolute; top: 120px; width: 620px; height: 840px; overflow: hidden; background: #111417; box-shadow: 0 24px 60px rgba(0,0,0,0.6); }
+    .n3-pan img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    #nvs03-sc015-ring { position: absolute; left: 760px; top: 340px; width: 400px; height: 400px; }
+    #nvs03-sc015-wrap { position: absolute; inset: 0; border-radius: 50%; overflow: hidden; box-shadow: 0 0 0 6px var(--bone), 0 24px 60px rgba(0,0,0,0.7); background: #0b0d0f; }
+    #nvs03-sc015-wrap img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+
+    /* sc016 Taiwan strait */
+    #nvs03-sc016-stage { position: absolute; inset: 0; perspective: 1500px; overflow: hidden; background: #0a131c; }
+    #nvs03-sc016-tilt { position: absolute; inset: 0; transform-origin: 50% 60%; }
+    #nvs03-sc016-cam { position: absolute; left: 0; top: 0; width: 6398px; height: 4950px; transform-origin: 0 0; }
+    #nvs03-sc016-cam > img { position: absolute; left: 0; top: 0; width: 6398px; height: 4950px; }
+  </style>
+
+  <div id="root" data-composition-id="nvs03" data-vo-start="229.500" data-duration="132.792" data-width="1920" data-height="1080">
+    <svg id="nvs03-defs" width="0" height="0" style="position:absolute"></svg>
+
+    <!-- sc001 · 229.50–235.12 · FACE M · is this ban even fair? -->
+    <div class="n3-scene" id="nvs03-sc001"><div class="n3-shot" id="nvs03-sc001-shot">
+      <div class="n3-fcw" id="nvs03-sc001-fw"><video id="nvs03-sc001-v" class="n3-full" src="assets/facecam/nvidia_facecam_master.mp4" muted playsinline data-start="0" data-duration="5.70" data-media-start="229.500"></video></div>
+    </div></div>
+
+    <!-- sc002 · 235.12–243.44 · balance scale (ref ast_0659daaead12498d) -->
+    <div class="n3-scene" id="nvs03-sc002"><div class="n3-shot n3-paper" id="nvs03-sc002-shot">
+      <div class="n3-p1" style="background-image:url('assets/textures/paper_cream_01.jpg')"></div>
+      <div class="n3-p2" style="background-image:url('assets/textures/paper_fiber_01.jpg'); opacity:0.45"></div>
+      <div class="n3-vw" id="nvs03-sc002-vw"><div style="position:absolute;inset:0;top:66px">
+        <svg id="nvs03-sc002-svg" class="n3-mk" viewBox="0 0 1920 1080"></svg>
+        <div class="n3-lab t-label n3-ink" id="nvs03-sc002-lus" style="opacity:0">United States</div>
+        <div class="n3-lab t-label n3-ink" id="nvs03-sc002-lcn" style="opacity:0">China</div>
+        <svg id="nvs03-sc002-mk" class="n3-mk" viewBox="0 0 1920 1080"></svg>
+      </div></div>
+    </div></div>
+
+    <!-- sc003 · 243.44–247.37 · FACE W -->
+    <div class="n3-scene" id="nvs03-sc003"><div class="n3-shot" id="nvs03-sc003-shot">
+      <div class="n3-fcw" id="nvs03-sc003-fw"><video id="nvs03-sc003-v" class="n3-full" src="assets/facecam/nvidia_facecam_master.mp4" muted playsinline data-start="13.940" data-duration="3.98" data-media-start="243.440"></video></div>
+    </div></div>
+
+    <!-- sc004 · 247.37–252.88 · FACE M (join 247.37) -->
+    <div class="n3-scene" id="nvs03-sc004"><div class="n3-shot" id="nvs03-sc004-shot">
+      <div class="n3-fcw" id="nvs03-sc004-fw"><video id="nvs03-sc004-v" class="n3-full" src="assets/facecam/nvidia_facecam_master.mp4" muted playsinline data-start="17.870" data-duration="5.60" data-media-start="247.370"></video></div>
+    </div></div>
+
+    <!-- sc005 · 252.88–261.22 · shop-counter diagram -->
+    <div class="n3-scene" id="nvs03-sc005"><div class="n3-shot n3-paper" id="nvs03-sc005-shot">
+      <div class="n3-p1" style="background-image:url('assets/textures/paper_lined_01_hires.jpg')"></div>
+      <div class="n3-p2" style="background-image:url('assets/textures/paper_cream_02.jpg'); opacity:0.5"></div>
+      <div class="n3-vw" id="nvs03-sc005-vw">
+        <div id="nvs03-sc005-cfront"></div><div id="nvs03-sc005-counter"></div>
+        <div id="nvs03-sc005-icons"></div>
+        <div class="n3-pkg" id="nvs03-sc005-pkg" style="left:620px;top:532px"></div>
+        <svg id="nvs03-sc005-mk" class="n3-mk" viewBox="0 0 1920 1080"></svg>
+      </div>
+    </div></div>
+
+    <!-- sc006 · 261.22–266.40 · FACE C (join 261.22) -->
+    <div class="n3-scene" id="nvs03-sc006"><div class="n3-shot" id="nvs03-sc006-shot">
+      <div class="n3-fcw" id="nvs03-sc006-fw"><video id="nvs03-sc006-v" class="n3-full" src="assets/facecam/nvidia_facecam_master.mp4" muted playsinline data-start="31.720" data-duration="5.25" data-media-start="261.220"></video></div>
+    </div></div>
+
+    <!-- sc007 · 266.40–271.20 · country diagram -->
+    <div class="n3-scene" id="nvs03-sc007"><div class="n3-shot n3-paper" id="nvs03-sc007-shot">
+      <div class="n3-p1" style="background-image:url('assets/textures/paper_cream_01.jpg')"></div>
+      <div class="n3-p2" style="background-image:url('assets/textures/paper_stained_01_hires.jpg'); opacity:0.3"></div>
+      <div class="n3-vw" id="nvs03-sc007-vw">
+        <div id="nvs03-sc007-sil"></div>
+        <svg id="nvs03-sc007-mk" class="n3-mk" viewBox="0 0 1920 1080"></svg>
+        <div id="nvs03-sc007-chipw"></div>
+      </div>
+      <div class="n3-credit t-label ink">Outlines: Natural Earth (PD)</div>
+    </div></div>
+
+    <!-- sc008 · 271.20–274.32 · FACE W (join 271.20) -->
+    <div class="n3-scene" id="nvs03-sc008"><div class="n3-shot" id="nvs03-sc008-shot">
+      <div class="n3-fcw" id="nvs03-sc008-fw"><video id="nvs03-sc008-v" class="n3-full" src="assets/facecam/nvidia_facecam_master.mp4" muted playsinline data-start="41.700" data-duration="3.17" data-media-start="271.200"></video></div>
+    </div></div>
+
+    <!-- sc009 · 274.32–283.04 · China relief, Google / Facebook / YouTube banned (ref ast_d02865717c824c47) -->
+    <div class="n3-scene" id="nvs03-sc009"><div class="n3-shot" id="nvs03-sc009-shot" style="background:#0d1015">
+      <div id="nvs03-sc009-stage"><div id="nvs03-sc009-tilt"><div id="nvs03-sc009-cam">
+        <img src="assets/maps/kit/china_night.jpg" alt="" style="filter:brightness(1.1) contrast(1.05)" />
+        <img id="nvs03-sc009-fill" src="assets/nvidia/nvs03/derived/china_fill.svg" alt="" style="opacity:0" />
+      </div></div></div>
+      <div class="n3-scrim-b"></div>
+      <svg id="nvs03-sc009-mk" class="n3-mk" viewBox="0 0 1920 1080"></svg>
+      <div id="nvs03-sc009-badges"></div>
+      <div id="nvs03-sc009-strip"></div>
+      <div class="n3-credit t-label">Relief: AWS Terrain Tiles (PD) · borders: Natural Earth (PD) · logos © Google, Meta, YouTube</div>
+    </div></div>
+
+    <!-- sc010 · 283.04–293.03 · partnership / trade secrets diagram -->
+    <div class="n3-scene" id="nvs03-sc010"><div class="n3-shot n3-paper" id="nvs03-sc010-shot">
+      <div class="n3-p1" style="background-image:url('assets/textures/paper_cream_02.jpg')"></div>
+      <div class="n3-p2" style="background-image:url('assets/textures/paper_fiber_01.jpg'); opacity:0.45"></div>
+      <div class="n3-vw" id="nvs03-sc010-vw">
+        <svg id="nvs03-sc010-mk" class="n3-mk" viewBox="0 0 1920 1080"></svg>
+        <div class="n3-lab t-label" id="nvs03-sc010-cn" style="left:640px;top:150px;padding:0 14px;background:#e9e3d2;color:var(--red-dark);font-size:28px;opacity:0">China</div>
+        <div class="n3-card" id="nvs03-sc010-fc" style="left:140px;top:250px"><div class="band" style="background:var(--ash-dark)"></div><div class="n3-ico" id="nvs03-sc010-fci" style="left:110px;top:90px;width:180px;height:180px;color:var(--ink)"></div><div class="n3-lab t-label n3-ink" id="nvs03-sc010-fcl" style="opacity:0">Foreign company</div></div>
+        <div class="n3-card" id="nvs03-sc010-cc" style="left:1330px;top:250px"><div class="band" style="background:var(--red-dark)"></div><div class="n3-ico" id="nvs03-sc010-cci" style="left:110px;top:90px;width:180px;height:180px;color:var(--red-dark)"></div><div class="n3-lab t-label" id="nvs03-sc010-ccl" style="color:var(--red-dark);opacity:0">Chinese company</div></div>
+        <div class="n3-lab t-label n3-ink" id="nvs03-sc010-pl" style="left:804px;top:784px;width:880px;font-size:30px;opacity:0">Partnership</div>
+        <div class="n3-doc" id="nvs03-sc010-d1"><i style="top:20px;width:150px"></i><i style="top:40px;width:120px"></i><i style="top:60px;width:140px"></i><i style="top:80px;width:90px"></i><div class="n3-lab t-label n3-ink">Trade secrets</div></div>
+        <div class="n3-doc" id="nvs03-sc010-d2"><div class="n3-ico" id="nvs03-sc010-d2i" style="left:58px;top:14px;width:74px;height:74px;color:var(--ink)"></div><div class="n3-lab t-label n3-ink">Technology</div></div>
+      </div>
+    </div></div>
+
+    <!-- sc011 · 293.03–296.15 · FACE C -->
+    <div class="n3-scene" id="nvs03-sc011"><div class="n3-shot" id="nvs03-sc011-shot">
+      <div class="n3-fcw" id="nvs03-sc011-fw"><video id="nvs03-sc011-v" class="n3-full" src="assets/facecam/nvidia_facecam_master.mp4" muted playsinline data-start="63.530" data-duration="3.17" data-media-start="293.030"></video></div>
+    </div></div>
+
+    <!-- sc012 · 296.15–314.47 · world: China → US → Germany, UK, France → global south → WTO -->
+    <div class="n3-scene" id="nvs03-sc012" style="background:#0d1015"><div class="n3-shot" id="nvs03-sc012-shot" style="background:#0d1015">
+      <div id="nvs03-sc012-cam">
+        <img src="assets/nvidia/nvs03/derived/world_crop.jpg" alt="" style="filter:brightness(1.12) contrast(1.05)" />
+        <img id="nvs03-sc012-gs" src="assets/nvidia/nvs03/derived/w_gs.svg" alt="" style="opacity:0" />
+        <img id="nvs03-sc012-cn" src="assets/nvidia/nvs03/derived/w_china.svg" alt="" style="opacity:0" />
+        <img id="nvs03-sc012-us" src="assets/nvidia/nvs03/derived/w_us.svg" alt="" style="opacity:0" />
+        <img id="nvs03-sc012-de" src="assets/nvidia/nvs03/derived/w_de.svg" alt="" style="opacity:0" />
+        <img id="nvs03-sc012-uk" src="assets/nvidia/nvs03/derived/w_uk.svg" alt="" style="opacity:0" />
+        <img id="nvs03-sc012-fr" src="assets/nvidia/nvs03/derived/w_fr.svg" alt="" style="opacity:0" />
+        <svg id="nvs03-sc012-svg" style="position:absolute;left:0;top:0;width:7537px;height:2949px;overflow:visible" viewBox="0 0 7537 2949"></svg>
+      </div>
+      <div class="n3-credit t-label">Night relief: AWS Terrain Tiles (PD) · borders: Natural Earth (PD) · WTO logo © WTO</div>
+    </div></div>
+
+    <!-- sc013 · 314.47–319.62 · FACE C -->
+    <div class="n3-scene" id="nvs03-sc013"><div class="n3-shot" id="nvs03-sc013-shot">
+      <div class="n3-fcw" id="nvs03-sc013-fw"><video id="nvs03-sc013-v" class="n3-full" src="assets/facecam/nvidia_facecam_master.mp4" muted playsinline data-start="84.970" data-duration="5.20" data-media-start="314.470"></video></div>
+    </div></div>
+
+    <!-- sc014 · 319.62–323.11 · FACE W (join 319.62) -->
+    <div class="n3-scene" id="nvs03-sc014"><div class="n3-shot" id="nvs03-sc014-shot">
+      <div class="n3-fcw" id="nvs03-sc014-fw"><video id="nvs03-sc014-v" class="n3-full" src="assets/facecam/nvidia_facecam_master.mp4" muted playsinline data-start="90.120" data-duration="3.54" data-media-start="319.620"></video></div>
+    </div></div>
+
+    <!-- sc015 · 323.11–343.91 · uranium triptych → curve cut → AI chips -->
+    <div class="n3-scene" id="nvs03-sc015"><div class="n3-shot" id="nvs03-sc015-shot" style="background:radial-gradient(ellipse 70% 70% at 50% 45%, #1b2024 0%, #0d1012 70%)">
+      <div class="n3-vw" id="nvs03-sc015-vw">
+        <div class="n3-pan" id="nvs03-sc015-pl" style="left:96px"><img id="nvs03-sc015-plimg" src="assets/nvidia/shared/hardware/cooling_tower_1.jpg" alt="" style="filter:saturate(0.35) contrast(1.05) brightness(0.9);object-position:50% 50%" /></div>
+        <div class="n3-pan" id="nvs03-sc015-pr" style="left:1204px"><div id="nvs03-sc015-wv" style="position:absolute;inset:-12px"><img id="nvs03-sc015-primg" src="assets/nvidia/shared/hardware/mushroom_cloud_trinity_1945.jpg" alt="" style="filter:grayscale(1) contrast(1.15) brightness(0.95);object-position:50% 40%" /></div></div>
+        <div class="n3-ico" id="nvs03-sc015-ok" style="left:306px;top:440px;width:200px;height:200px;color:var(--volt-light);opacity:0"></div>
+        <div class="n3-ico" id="nvs03-sc015-no" style="left:1414px;top:440px;width:200px;height:200px;color:var(--bone);opacity:0"></div>
+        <div id="nvs03-sc015-ring"><div id="nvs03-sc015-wrap">
+          <img id="nvs03-sc015-pel" src="assets/nvidia/shared/hardware/uranium_pellets_1.jpg" alt="" style="filter:saturate(0.5) contrast(1.05);object-position:52% 50%" />
+          <img id="nvs03-sc015-die" src="assets/nvidia/shared/hardware/gpu_die_ad102_closeup.jpg" alt="" style="opacity:0;filter:saturate(0.6) contrast(1.05);object-position:50% 30%" />
+        </div></div>
+        <div class="n3-ico" id="nvs03-sc015-lock" style="left:1060px;top:300px;width:120px;height:120px;color:var(--ice-light);opacity:0;filter:drop-shadow(0 6px 12px rgba(0,0,0,0.6))"></div>
+        <div class="n3-lab t-label clean" id="nvs03-sc015-l1" style="left:560px;top:830px;width:800px;font-size:30px;opacity:0">Enriched uranium</div>
+        <div class="n3-lab t-label clean" id="nvs03-sc015-l2" style="left:560px;top:830px;width:800px;font-size:30px;color:var(--volt-light);opacity:0">AI chips</div>
+      </div>
+      <div class="n3-credit t-label" id="nvs03-sc015-cr1">Photos: C. David, CC BY-SA 4.0 · NRC, CC BY 2.0 · Trinity 1945, CTBTO, CC BY 2.0</div>
+    </div></div>
+
+    <!-- sc016 · 343.91–351.83 · Taiwan Strait, tilted terrain (ref ast_4f6fcd9750634ef3) -->
+    <div class="n3-scene" id="nvs03-sc016"><div class="n3-shot" id="nvs03-sc016-shot" style="background:#0a131c">
+      <div id="nvs03-sc016-stage"><div id="nvs03-sc016-tilt"><div id="nvs03-sc016-cam">
+        <img src="assets/maps/kit/east_asia_satdesat.jpg" alt="" style="filter:brightness(1.05) contrast(1.08)" />
+        <img id="nvs03-sc016-cn" src="assets/nvidia/nvs03/derived/ea_china.svg" alt="" style="opacity:0" />
+        <img id="nvs03-sc016-tw" src="assets/nvidia/nvs03/derived/ea_taiwan.svg" alt="" style="opacity:0" />
+        <svg id="nvs03-sc016-svg" style="position:absolute;left:0;top:0;width:6398px;height:4950px;overflow:visible" viewBox="0 0 6398 4950"></svg>
+      </div></div></div>
+      <div class="n3-credit t-label">Imagery: Esri, Maxar, Earthstar Geographics · borders: Natural Earth (PD)</div>
+    </div></div>
+
+    <!-- sc017 · 351.83–358.94 · FACE M -->
+    <div class="n3-scene" id="nvs03-sc017"><div class="n3-shot" id="nvs03-sc017-shot">
+      <div class="n3-fcw" id="nvs03-sc017-fw"><video id="nvs03-sc017-v" class="n3-full" src="assets/facecam/nvidia_facecam_master.mp4" muted playsinline data-start="122.330" data-duration="7.16" data-media-start="351.830"></video></div>
+    </div></div>
+
+    <!-- sc018 · 358.94–362.292 · FACE C -->
+    <div class="n3-scene" id="nvs03-sc018"><div class="n3-shot" id="nvs03-sc018-shot">
+      <div class="n3-fcw" id="nvs03-sc018-fw"><video id="nvs03-sc018-v" class="n3-full" src="assets/facecam/nvidia_facecam_master.mp4" muted playsinline data-start="129.440" data-duration="3.352" data-media-start="358.940"></video></div>
+    </div></div>
+
+    <div id="nvs03-flash"></div>
+    <div id="nvs03-grain" class="tx tx-grain" style="background-image:url('assets/textures/grain_01_norm.jpg')"></div>
+    <div id="nvs03-dust" class="tx tx-dust" style="background-image:url('assets/textures/dust_02.jpg')"></div>
+    <div id="nvs03-vig" class="vignette"></div>
+    <audio id="nvs03-vo" class="temp-vo" src="vo_nv.mp3" data-start="0" data-duration="132.792" data-media-start="229.500" data-volume="1"></audio>
+  </div>
+
+  <script>
+  (function () {
+    const SEG = "nvs03", SEG_START = 229.500, SEG_END = 362.292, DURATION = 132.792;
+    const T = (s) => +(s - SEG_START).toFixed(3);   // TEXT cues (audited): literal master word start − 0.06
+    const S = (s) => +(s - SEG_START).toFixed(3);   // STRUCTURAL cues (cuts, camera, objects)
+    const tl = gsap.timeline({ paused: true });
+    const $ = (id) => document.getElementById(SEG + "-" + id);
+    const NS = "http://www.w3.org/2000/svg";
+    const defs = $("defs");
+    const E = FX.ease;
+    const C = (e, d) => FX.choppy(e, d, 12);
+    const ICONS = {"person": "<circle cx=\"128\" cy=\"52\" r=\"34\"/><path d=\"M76 244 V140 C76 112 96 96 128 96 C160 96 180 112 180 140 V244 H144 V184 H112 V244 Z\"/>", "chip": "<path fill-rule=\"evenodd\" d=\"M56 48 H200 a8 8 0 0 1 8 8 V200 a8 8 0 0 1 -8 8 H56 a8 8 0 0 1 -8 -8 V56 a8 8 0 0 1 8 -8 Z M88 88 V168 H168 V88 Z\"/><path d=\"M72 20 h12 v28 h-12 Z M72 208 h12 v28 h-12 Z M20 72 v12 h28 v-12 Z M208 72 v12 h28 v-12 Z M100 20 h12 v28 h-12 Z M100 208 h12 v28 h-12 Z M20 100 v12 h28 v-12 Z M208 100 v12 h28 v-12 Z M128 20 h12 v28 h-12 Z M128 208 h12 v28 h-12 Z M20 128 v12 h28 v-12 Z M208 128 v12 h28 v-12 Z M156 20 h12 v28 h-12 Z M156 208 h12 v28 h-12 Z M20 156 v12 h28 v-12 Z M208 156 v12 h28 v-12 Z M184 20 h12 v28 h-12 Z M184 208 h12 v28 h-12 Z M20 184 v12 h28 v-12 Z M208 184 v12 h28 v-12 Z\"/><path d=\"M104 104 H152 V152 H104 Z\"/>", "ban": "<path fill-rule=\"evenodd\" d=\"M128 16 a112 112 0 1 1 -0.01 0 Z M128 44 a84 84 0 1 0 0.01 0 Z\"/><path d=\"M58 78 L78 58 L198 178 L178 198 Z\"/>", "lock": "<path fill-rule=\"evenodd\" d=\"M76 112 V80 a52 52 0 0 1 104 0 V112 H156 V80 a28 28 0 0 0 -56 0 V112 Z\"/><path fill-rule=\"evenodd\" d=\"M56 112 H200 a12 12 0 0 1 12 12 V228 a12 12 0 0 1 -12 12 H56 a12 12 0 0 1 -12 -12 V124 a12 12 0 0 1 12 -12 Z M128 156 a16 16 0 0 0 -8 30 V208 H136 V186 a16 16 0 0 0 -8 -30 Z\"/>", "check": "<path d=\"M20 136 L48 108 L100 160 L208 52 L236 80 L100 216 Z\"/>", "cross": "<path d=\"M52 24 L128 100 L204 24 L232 52 L156 128 L232 204 L204 232 L128 156 L52 232 L24 204 L100 128 L24 52 Z\"/>", "factory": "<path fill-rule=\"evenodd\" d=\"M16 236 V120 L72 88 V120 L128 88 V120 L184 88 V40 H216 V236 Z M40 156 V180 H72 V156 Z M96 156 V180 H128 V156 Z M152 156 V180 H184 V156 Z M100 236 V204 H132 V236 Z\"/><path d=\"M12 236 H244 V244 H12 Z\"/>"};
+    const SIL = {"us": {"d": "M485.0,41.9L488.1,41.9L492.0,41.9L495.8,41.9L499.7,41.8L503.5,41.8L507.4,41.8L511.3,41.8L515.2,41.8L517.0,40.1L519.5,39.5L522.3,39.2L524.2,38.1L525.0,35.6L526.8,34.4L528.2,32.7L528.4,29.4L530.1,27.9L530.7,25.4L532.6,23.5L534.3,21.7L536.1,20.0L537.8,18.2L539.8,19.3L541.5,20.6L544.1,20.0L546.4,19.3L549.7,20.1L551.9,21.7L552.1,24.8L552.1,28.7L552.2,32.6L552.6,35.3L555.2,36.0L555.4,38.8L557.1,40.3L558.8,41.5L560.0,43.6L558.2,45.1L555.7,45.6L553.2,46.3L551.1,47.5L548.6,46.8L546.1,47.7L544.0,48.7L542.3,47.3L540.6,48.7L539.6,50.8L537.9,52.3L535.6,53.0L534.2,51.4L533.2,53.4L530.9,54.2L528.4,54.8L527.1,56.6L525.6,58.1L524.3,60.4L522.9,62.1L523.9,64.7L522.1,66.0L520.6,67.5L522.6,68.4L524.4,69.9L525.6,71.9L528.1,73.6L530.7,72.8L529.8,70.6L531.3,72.4L529.4,74.3L526.6,74.6L524.3,75.6L522.0,74.5L520.1,75.6L519.0,73.6L517.0,74.8L516.1,77.1L513.0,77.6L510.0,77.7L507.5,77.1L504.9,78.0L501.9,78.2L499.6,79.2L497.0,80.1L494.9,81.1L493.2,82.5L493.1,79.2L492.4,82.1L491.1,83.9L489.4,85.4L491.6,86.3L491.7,89.3L491.0,92.6L491.4,89.8L490.5,92.0L489.5,94.1L488.1,95.7L485.9,97.1L484.7,98.9L482.9,100.8L482.4,98.2L480.0,97.4L477.6,95.8L477.7,92.8L479.9,91.8L481.8,90.4L479.8,91.7L477.5,93.0L476.7,95.2L478.0,97.0L478.7,99.7L480.3,101.9L481.6,103.7L480.6,105.7L479.7,108.2L478.3,109.8L477.1,111.8L475.4,113.9L474.1,115.7L473.2,117.8L472.9,115.1L473.9,113.0L475.4,111.5L473.9,109.9L473.5,107.2L470.7,106.1L469.9,103.7L472.4,104.3L470.3,103.0L469.5,100.8L471.4,99.2L471.9,96.5L474.1,95.6L471.9,94.7L470.5,96.6L468.5,97.5L468.1,100.2L467.2,102.3L467.7,105.0L466.0,103.4L466.9,105.9L468.8,107.0L466.3,107.6L464.5,106.3L462.5,105.1L460.6,106.2L461.5,103.8L462.6,101.8L461.3,103.7L459.7,105.4L462.0,106.2L463.7,107.9L466.2,108.4L468.0,109.6L470.2,110.9L469.3,113.1L467.0,112.2L465.3,110.8L463.6,109.1L461.6,108.1L463.5,109.2L465.0,111.1L466.7,112.5L468.6,113.7L470.2,115.3L468.1,117.0L466.3,115.5L467.7,117.2L469.4,118.6L466.6,118.3L464.5,117.1L462.1,116.4L464.8,117.5L466.3,119.1L467.7,120.8L469.9,119.9L472.6,120.3L473.9,123.5L474.5,125.9L476.8,130.2L475.1,128.5L474.3,126.3L473.6,123.7L473.8,126.5L470.6,126.3L468.9,127.7L467.1,129.1L465.5,127.7L466.8,129.7L469.7,129.9L472.0,131.0L474.1,129.9L475.2,131.8L473.5,133.3L471.8,134.7L469.0,135.1L467.0,134.0L464.5,134.5L462.3,133.7L464.4,135.0L467.5,135.8L466.6,137.9L464.4,138.9L462.4,137.5L463.8,139.2L466.9,139.4L469.4,138.7L468.3,140.6L466.1,141.6L462.1,141.9L460.1,143.0L458.6,141.3L457.6,144.0L455.7,145.5L454.4,147.2L453.1,149.5L449.9,149.5L447.2,150.1L444.7,151.5L443.2,153.1L441.7,155.9L440.0,157.5L437.6,158.3L436.4,160.0L434.3,161.6L432.0,162.5L429.7,163.2L428.4,165.3L427.1,163.5L426.6,166.5L425.0,168.5L422.8,169.3L421.7,171.3L420.5,173.4L420.3,176.3L419.3,178.5L419.9,180.9L420.2,183.6L420.9,186.9L421.6,189.4L422.7,192.2L424.0,194.8L425.2,196.8L426.5,198.9L428.2,201.4L428.0,204.2L429.3,207.7L427.8,205.2L428.0,201.9L426.1,200.6L426.6,203.2L428.5,206.9L430.0,210.0L431.8,214.6L433.0,216.7L433.4,220.5L432.9,223.2L432.5,228.4L430.8,229.9L430.3,232.5L428.2,233.5L426.1,234.4L423.2,234.7L422.7,232.1L421.6,229.9L420.4,227.8L418.2,226.9L416.4,224.8L415.8,222.1L416.4,219.4L414.5,221.0L413.8,218.2L412.0,216.5L409.8,215.5L408.9,213.1L407.2,211.5L409.1,210.2L410.5,208.4L408.7,207.2L408.0,209.7L406.2,208.4L406.8,205.9L407.6,203.0L408.1,200.4L407.3,197.5L406.1,195.4L403.9,194.5L402.2,192.8L400.8,191.2L399.0,189.7L397.6,187.9L395.4,186.9L392.9,186.4L390.9,187.5L389.1,188.7L387.1,189.7L384.4,190.1L381.9,190.5L381.3,188.0L379.4,186.7L378.0,184.5L374.9,184.4L372.0,183.7L374.2,182.7L371.5,182.4L369.0,183.3L365.4,183.6L364.2,181.7L363.3,183.8L361.1,184.6L362.3,182.9L360.7,184.2L358.2,185.1L356.9,183.3L356.4,180.8L355.1,182.8L352.7,183.5L349.7,183.9L347.2,183.1L344.7,184.1L342.4,184.9L339.9,185.6L337.6,184.9L335.4,183.7L332.8,185.3L334.5,187.0L337.5,186.4L339.8,185.7L338.3,187.3L340.0,188.6L341.6,187.1L343.2,188.5L341.3,189.7L339.5,190.9L341.2,192.5L343.1,193.7L345.2,194.7L343.6,196.5L341.8,194.7L339.4,194.1L337.6,192.5L335.1,191.6L336.4,193.5L335.5,195.8L333.5,194.2L331.1,194.8L329.0,195.8L326.9,194.9L324.3,194.5L324.6,191.8L321.6,191.9L320.6,189.8L318.4,189.0L316.2,189.9L315.0,191.8L312.0,191.5L309.6,190.8L307.4,190.0L304.7,189.6L301.4,189.8L300.3,187.7L298.6,189.3L296.7,190.7L291.6,192.7L291.2,190.1L288.0,189.9L289.1,192.3L287.6,195.1L286.0,197.1L284.2,198.3L282.0,199.6L279.0,200.1L277.4,201.6L275.4,200.6L272.9,199.9L274.0,202.0L272.2,203.7L270.3,204.9L267.5,205.3L267.1,208.4L264.3,208.1L266.3,209.6L265.3,212.0L263.9,213.7L261.9,212.3L263.4,214.2L263.6,217.3L264.4,219.7L264.9,222.4L265.8,224.4L267.5,226.0L265.5,227.0L262.9,226.2L260.3,225.6L257.4,225.5L255.6,224.3L253.0,223.8L251.0,222.5L248.4,222.1L247.3,219.0L245.8,216.9L245.2,214.3L244.6,211.7L243.1,210.1L241.1,208.7L240.0,206.8L238.1,204.9L236.6,203.0L235.5,200.8L234.6,198.7L233.4,196.7L232.2,194.7L230.2,193.5L228.5,192.2L226.8,190.7L224.8,189.6L222.2,189.2L218.9,189.2L215.4,189.5L213.3,190.6L212.2,192.7L211.2,195.2L209.6,196.8L206.6,196.6L204.2,195.4L201.7,194.2L199.6,193.2L197.9,191.9L196.0,190.7L194.8,188.4L194.4,185.7L193.1,183.8L192.0,181.6L190.0,180.0L187.7,179.1L185.9,177.6L183.8,175.9L182.2,174.5L180.2,173.4L178.6,171.4L176.6,170.2L173.4,170.2L170.4,170.2L167.4,170.1L164.3,170.1L161.3,170.1L160.1,172.0L159.3,174.5L155.9,174.5L152.8,174.5L149.7,174.5L146.4,174.5L143.1,174.5L139.8,174.5L136.5,174.5L133.0,174.5L130.7,173.9L128.2,173.1L124.2,171.8L120.3,170.6L116.3,169.4L112.3,168.2L108.3,166.9L104.4,165.7L100.4,164.5L96.4,163.3L95.2,161.2L92.3,161.4L89.5,161.6L86.6,161.9L83.7,162.1L80.9,162.3L78.0,162.5L75.2,162.7L73.3,161.5L72.4,159.2L71.4,156.7L69.9,155.0L67.9,153.7L65.8,152.4L64.0,151.1L61.1,150.9L60.2,148.4L57.2,148.4L54.6,147.6L52.9,146.2L51.1,145.0L48.3,144.7L45.7,144.1L41.7,144.2L39.5,143.0L39.8,140.2L39.3,137.4L37.1,136.5L36.0,134.4L34.6,132.8L32.8,131.3L31.3,129.5L29.7,127.8L27.8,126.5L26.9,124.4L28.2,122.6L27.5,119.9L24.7,119.5L22.9,118.0L22.2,115.5L21.6,113.0L23.9,113.9L25.8,115.1L24.8,113.1L23.1,111.6L23.8,109.3L27.0,109.4L29.7,108.9L26.5,109.0L23.5,108.7L21.6,110.1L18.7,110.0L17.2,108.4L16.0,106.4L14.2,104.8L12.7,103.3L10.9,102.0L10.0,99.8L9.0,97.5L9.2,94.6L8.5,92.3L7.0,90.6L5.2,89.1L3.5,87.9L3.5,84.9L4.7,83.0L5.8,80.9L6.1,77.9L6.0,74.8L4.4,73.2L3.7,70.1L2.9,67.9L3.1,65.0L1.9,63.2L2.7,61.0L3.2,58.4L5.5,57.7L4.9,55.2L5.5,52.7L5.9,49.7L6.8,47.6L6.2,45.1L6.7,42.5L7.3,40.1L7.3,37.1L7.4,34.0L7.5,31.0L10.8,30.4L13.6,30.9L10.8,29.7L8.1,29.9L6.4,28.4L8.0,27.0L6.3,25.1L8.1,23.1L6.1,22.1L4.8,19.9L3.6,17.6L2.7,15.3L0.8,13.7L0.0,11.3L0.8,9.1L3.1,10.0L5.9,10.7L8.8,11.3L11.8,11.5L15.0,11.2L17.5,12.0L19.6,13.0L18.9,15.3L16.5,17.0L15.2,18.9L17.9,18.5L18.6,16.2L20.2,14.4L20.0,17.1L21.0,19.1L19.2,20.4L16.8,20.9L19.4,21.5L21.1,20.2L23.1,19.1L22.5,16.3L23.1,13.8L22.8,11.0L21.5,9.2L19.7,7.9L22.1,7.2L21.0,5.3L18.9,4.2L22.2,3.2L26.5,3.2L30.7,3.2L35.0,3.2L39.2,3.2L43.5,3.2L47.8,3.2L52.0,3.2L56.3,3.2L60.6,3.2L64.8,3.2L69.1,3.2L73.4,3.2L77.6,3.2L81.9,3.2L86.1,3.2L90.4,3.2L94.7,3.2L98.9,3.2L103.2,3.2L107.5,3.2L111.7,3.2L116.0,3.2L120.3,3.2L124.5,3.2L128.8,3.2L133.1,3.2L137.3,3.2L141.6,3.2L145.8,3.2L150.1,3.2L154.4,3.2L158.6,3.2L162.9,3.2L167.1,3.2L171.4,3.2L175.7,3.2L179.9,3.2L184.2,3.2L188.5,3.2L192.7,3.2L197.0,3.2L200.5,3.2L205.5,3.2L209.8,3.2L214.1,3.2L218.3,3.2L222.6,3.2L226.5,3.2L231.1,3.2L235.4,3.2L239.6,3.2L243.9,3.2L248.2,3.2L252.4,3.2L256.7,3.2L260.9,3.2L265.2,3.2L269.5,3.2L273.7,3.2L278.0,3.2L282.3,3.2L286.5,3.2L286.7,0.1L289.7,0.0L290.6,2.8L292.2,5.8L295.1,5.9L297.6,6.6L299.8,7.5L302.9,7.5L305.2,6.7L308.1,6.9L311.1,7.6L312.8,9.4L315.8,9.4L317.8,10.6L320.3,11.5L322.6,12.3L325.1,11.7L327.8,10.6L329.5,12.0L335.0,11.7L337.5,12.9L340.7,12.8L344.1,12.6L347.4,11.3L349.9,10.3L352.5,9.8L356.4,11.3L360.0,12.8L363.7,14.2L367.4,15.6L370.4,16.9L373.4,18.1L376.7,19.4L379.1,20.4L381.5,21.4L383.9,22.4L386.3,23.4L387.3,25.8L389.2,27.6L392.0,27.3L393.9,28.8L394.8,31.1L398.2,31.0L400.2,32.1L398.9,34.0L402.7,35.7L407.0,37.6L409.0,38.7L409.6,41.1L410.6,45.2L411.5,49.2L412.4,53.3L412.9,56.0L411.6,58.4L410.4,60.8L409.7,63.2L408.8,65.4L406.6,66.9L404.2,67.8L403.3,69.9L404.0,72.5L407.4,74.1L411.6,73.5L414.4,72.2L417.2,70.9L420.0,69.6L422.6,68.8L426.4,68.2L430.1,67.6L432.8,66.9L435.8,65.9L438.8,64.8L441.7,63.7L444.2,62.4L443.0,60.6L442.6,58.0L443.9,56.0L446.5,55.2L450.9,55.2L455.4,55.2L459.9,55.2L464.4,55.2L466.0,53.4L467.7,51.3L469.3,49.9L471.1,48.7L473.5,47.7L475.4,45.9L477.8,44.4L481.0,42.6L483.3,41.8ZM512.1,80.1L509.8,81.1L507.4,82.0L504.5,82.9L501.5,83.1L498.6,83.8L495.6,84.4L492.9,85.0L493.6,82.7L496.2,81.5L499.3,81.6L502.6,81.0L505.4,80.8L507.6,79.6L505.8,81.2L508.1,80.4L511.2,80.3Z", "w": 560.0, "h": 234.69366009589763}, "china": {"d": "M35.5,153.5L32.8,153.6L30.2,153.2L28.0,152.7L26.2,151.8L25.0,150.3L22.8,150.8L21.1,149.7L19.3,148.6L19.9,146.3L19.1,143.9L17.2,142.8L15.1,142.2L13.3,141.1L10.8,141.3L9.0,140.3L6.7,139.7L8.2,138.6L10.8,138.7L12.3,137.6L11.2,136.0L10.8,133.7L10.0,131.7L10.2,129.0L8.8,127.5L6.0,126.5L3.5,127.0L1.3,126.5L0.4,124.7L0.0,122.1L1.6,119.7L2.2,117.6L2.7,115.2L4.6,114.2L7.2,113.6L9.2,112.3L10.4,110.7L12.6,111.2L15.8,109.9L17.3,111.2L19.0,112.6L20.8,111.8L24.0,111.6L25.4,110.0L26.2,108.2L27.5,106.5L30.8,106.6L33.6,106.6L35.8,106.1L38.7,105.7L40.0,104.4L41.6,102.7L44.1,101.7L46.5,100.6L48.9,100.0L50.9,99.2L52.7,98.2L55.8,97.9L56.4,95.4L55.6,93.0L56.3,91.1L58.7,90.7L57.4,89.3L59.5,88.4L60.1,86.2L59.3,83.7L58.3,81.8L57.1,80.0L57.0,77.2L57.7,75.3L56.1,74.1L53.1,73.8L54.8,72.4L57.3,72.2L60.2,71.3L62.9,71.2L67.4,70.1L69.5,70.8L72.9,70.7L74.9,71.4L76.7,69.7L74.4,68.4L75.1,65.5L75.9,62.9L77.0,61.2L78.4,57.8L79.7,56.0L80.2,53.7L82.5,54.2L87.5,55.7L90.6,55.5L93.6,55.6L94.8,57.1L97.1,56.2L98.7,55.2L101.1,54.8L102.5,53.5L101.8,51.3L101.2,47.7L102.9,44.0L105.4,43.3L107.8,43.0L110.1,42.5L111.7,41.0L112.1,38.1L114.8,37.4L117.3,37.9L120.0,37.1L121.3,38.7L122.2,40.5L123.0,42.4L125.2,43.1L127.2,44.1L128.4,45.6L131.3,47.1L133.7,46.7L135.8,47.3L137.5,48.6L139.8,48.0L141.2,49.6L142.6,50.9L143.4,52.9L145.5,55.4L147.1,56.4L148.0,58.4L147.4,61.1L148.0,63.4L145.5,66.1L144.9,68.3L146.1,69.9L148.4,70.7L150.8,71.6L153.6,72.0L156.2,71.9L158.3,72.5L161.3,72.4L164.2,72.4L167.0,72.7L169.4,73.0L172.4,75.0L174.7,75.4L176.2,76.6L178.5,77.3L181.2,78.5L185.2,78.6L184.7,80.9L187.0,82.2L187.9,84.2L189.1,86.1L193.0,90.1L194.5,91.8L197.6,91.6L200.6,91.4L203.5,91.7L206.2,91.9L209.7,92.3L213.1,92.6L216.6,93.0L220.1,93.3L224.3,92.3L228.1,92.7L231.5,93.2L234.9,93.6L237.5,93.5L240.6,95.7L244.8,97.0L247.8,97.5L250.7,98.1L253.5,99.1L256.0,100.1L259.6,99.7L262.9,99.2L263.7,101.1L266.4,101.2L268.9,100.3L271.2,99.4L274.5,98.1L278.4,96.9L282.2,95.6L285.8,95.2L289.5,94.8L293.1,94.3L297.2,94.4L299.7,94.7L303.3,94.5L306.9,93.4L309.0,92.7L313.2,91.5L314.9,90.1L316.5,88.3L318.0,86.9L321.1,85.8L323.3,85.1L324.8,83.9L326.1,82.6L324.9,81.2L322.9,79.7L321.6,78.1L322.5,76.4L324.5,72.8L326.3,71.9L330.0,71.9L331.5,73.0L335.0,74.1L339.3,74.5L342.4,73.7L344.5,72.9L347.3,70.8L349.5,68.9L351.8,69.4L355.1,69.2L357.7,68.8L360.7,66.9L362.7,66.0L363.8,63.1L365.5,61.8L367.5,60.9L371.9,61.0L372.7,59.2L375.0,59.6L377.0,58.9L379.1,58.3L381.8,58.2L384.6,57.7L386.7,58.3L389.0,58.8L391.6,58.8L393.9,58.1L393.0,55.7L391.7,53.7L389.1,52.0L387.3,50.8L384.3,49.1L383.0,47.7L380.2,47.0L377.6,47.0L373.8,48.8L372.0,49.9L369.9,48.6L367.8,48.0L365.0,48.4L362.3,48.3L360.6,49.5L357.4,48.0L356.7,46.0L358.8,45.1L361.0,40.5L362.9,36.9L364.7,34.3L366.6,31.5L369.8,32.7L373.3,33.2L375.8,34.1L378.0,33.4L379.8,32.3L381.7,31.4L383.3,30.3L385.8,30.0L388.5,29.5L389.2,27.4L388.8,25.0L390.6,23.7L391.4,21.7L392.8,20.2L394.1,18.6L395.2,16.9L397.6,14.8L399.3,14.0L400.9,12.9L400.4,10.4L401.0,8.3L398.8,7.5L396.5,7.9L395.1,6.5L397.0,5.7L398.7,4.3L400.4,3.4L401.9,2.2L404.7,2.1L407.3,1.7L410.9,0.7L413.3,0.4L419.2,0.4L421.7,0.1L424.4,0.0L427.6,0.2L429.8,1.3L431.8,2.1L434.3,2.6L436.1,3.5L438.1,2.6L441.1,3.6L443.2,4.4L444.7,5.5L446.7,6.3L447.4,8.3L448.9,9.6L449.8,11.5L451.5,15.1L452.6,16.8L453.0,19.2L453.9,20.9L455.4,22.0L456.7,23.5L457.6,25.2L457.9,27.6L459.3,28.9L458.8,31.1L460.3,32.4L462.2,33.5L464.7,33.9L467.7,33.5L469.7,34.5L471.9,35.3L474.4,35.6L476.7,36.1L478.5,37.0L480.0,38.4L481.7,39.5L484.4,39.7L484.8,42.0L486.5,43.0L486.2,45.5L487.3,47.6L488.2,49.5L492.1,49.2L494.3,49.6L497.2,49.6L499.9,49.2L502.2,48.5L504.1,47.4L505.9,46.5L508.3,46.1L510.5,45.7L512.5,44.8L515.1,44.1L517.4,43.7L519.3,44.6L518.8,46.9L520.0,48.7L519.4,50.8L517.6,51.8L515.8,52.6L515.3,54.8L514.2,56.9L513.4,59.0L512.9,61.1L511.7,62.8L510.7,64.6L509.5,66.3L508.4,67.9L506.6,69.1L506.4,71.6L500.5,71.3L496.8,70.5L494.2,70.8L492.5,72.6L490.0,73.4L488.3,74.4L489.9,77.9L490.8,80.6L490.0,82.8L490.7,85.6L490.0,87.9L489.2,89.9L487.3,90.9L484.2,91.4L482.2,90.7L480.1,89.9L478.3,91.0L477.8,93.1L476.3,94.6L473.6,94.9L472.5,96.8L470.7,97.9L468.0,97.9L465.2,97.8L463.1,98.4L464.2,100.2L465.6,101.6L464.2,103.4L462.1,102.6L459.5,102.8L457.1,102.4L455.3,101.4L453.9,100.0L451.7,100.9L450.6,102.4L449.3,104.0L447.2,105.8L445.9,107.2L443.5,107.8L442.0,109.0L439.8,109.6L437.8,110.5L436.2,111.4L434.4,112.6L432.2,114.2L430.6,116.2L428.3,116.5L425.9,116.2L424.2,117.4L421.9,118.0L419.3,118.5L417.3,119.3L415.4,120.1L413.6,121.5L412.3,123.1L410.6,124.1L408.3,124.8L405.8,125.4L404.1,124.5L406.3,123.8L408.7,123.0L409.5,121.1L411.4,120.2L408.1,120.6L406.8,119.2L408.0,117.7L409.2,115.8L410.9,114.8L412.2,113.4L413.7,111.9L413.1,109.8L411.0,108.2L408.4,107.9L406.4,107.1L404.3,107.7L402.8,108.8L401.4,110.1L400.0,111.4L398.9,113.3L396.8,114.0L394.4,114.6L392.4,115.7L390.5,116.7L389.0,118.2L388.5,120.5L386.9,121.7L384.8,122.2L382.3,122.6L380.4,123.3L378.6,121.9L376.2,122.3L374.3,125.2L375.0,128.4L376.4,129.9L378.3,130.8L381.4,131.2L384.3,130.8L386.1,132.2L387.7,133.6L386.4,135.1L385.8,137.4L387.3,138.9L390.1,139.6L392.9,139.4L393.9,137.5L396.5,136.3L398.0,134.8L399.9,134.0L402.2,133.6L403.9,134.6L406.0,135.7L407.8,136.8L411.4,136.7L414.0,136.8L416.8,137.2L416.0,139.5L415.6,141.8L413.4,141.2L410.1,141.6L408.7,142.9L406.2,143.1L404.1,143.9L401.4,143.9L402.9,145.3L400.7,145.9L400.2,148.2L398.0,148.8L396.7,147.3L397.4,149.3L395.3,150.4L394.1,151.9L392.0,152.7L391.0,154.5L389.6,155.9L388.1,157.3L387.9,160.0L390.4,160.3L391.8,161.5L394.0,162.3L395.9,163.2L397.4,164.5L398.1,166.5L399.2,168.5L400.2,170.7L401.2,172.4L401.9,174.5L402.3,176.7L403.5,178.4L405.7,179.4L406.9,180.9L408.4,182.5L410.2,183.5L411.2,185.3L408.5,185.4L406.1,184.2L404.1,184.9L402.1,183.3L399.7,182.6L397.4,183.5L394.8,183.1L393.8,181.0L391.8,180.2L392.8,181.8L394.3,183.1L396.4,184.1L398.4,183.5L401.2,183.4L402.5,185.3L404.6,185.9L406.1,187.5L408.0,188.6L410.0,189.9L411.5,191.9L409.6,193.1L407.3,193.6L405.3,194.5L403.5,195.4L402.4,197.1L400.1,196.8L398.2,197.8L396.1,198.6L398.2,198.0L400.1,197.1L400.7,199.5L402.7,198.7L404.5,197.7L407.0,197.8L408.4,199.3L410.2,200.6L412.4,201.2L410.7,202.5L409.2,204.0L407.1,204.7L409.3,204.2L411.2,203.3L411.3,205.9L410.0,207.4L408.4,206.3L406.9,207.4L408.6,208.4L408.5,211.1L406.0,211.0L407.8,212.0L408.6,213.9L406.8,214.8L404.7,214.1L403.8,216.0L402.5,217.4L400.1,217.0L402.1,217.9L401.2,219.6L399.9,221.0L399.2,222.9L397.4,223.7L396.9,226.0L395.1,227.0L395.9,228.8L393.9,229.9L395.1,228.2L393.1,227.6L391.1,228.2L392.9,229.4L391.2,230.6L393.6,230.9L391.9,232.0L390.8,233.8L388.3,233.6L389.8,234.8L392.1,234.1L391.5,236.3L390.4,237.9L391.8,239.4L389.4,238.4L387.4,239.2L389.0,240.5L387.3,241.4L385.2,242.0L386.1,243.9L383.7,243.3L383.2,245.7L381.0,246.3L379.2,245.5L377.6,246.7L378.6,248.5L377.0,249.8L376.1,251.5L374.6,252.7L372.8,251.9L371.6,253.7L370.2,255.2L368.2,255.8L366.4,256.9L365.4,258.7L364.4,260.4L362.3,261.0L360.0,261.7L358.1,260.9L355.7,260.5L357.0,262.3L354.7,261.6L352.4,262.1L351.4,263.7L350.1,262.2L348.0,262.8L345.9,263.5L343.5,263.9L341.8,262.7L340.6,261.1L340.0,259.2L342.3,258.9L339.9,259.1L338.1,260.7L339.3,262.4L339.9,264.7L339.5,266.9L337.8,265.5L336.8,263.6L337.8,265.7L337.2,268.0L336.0,266.6L335.4,268.9L333.0,269.3L331.4,270.3L330.2,268.9L329.2,270.9L327.1,270.1L325.4,271.1L323.7,272.4L321.1,272.8L318.5,272.4L316.9,273.6L315.3,274.7L313.4,273.5L312.9,275.6L311.3,276.6L312.4,278.1L313.0,280.3L313.6,282.3L311.5,283.1L309.1,283.4L308.4,281.2L307.7,279.2L307.0,277.0L307.8,275.1L309.0,273.4L307.8,272.0L306.0,271.0L305.2,272.9L303.0,273.4L302.0,271.7L300.0,271.1L298.2,270.1L296.7,268.9L297.2,271.1L295.2,271.7L293.2,272.3L291.2,271.5L288.8,271.7L286.7,271.0L284.7,270.1L283.1,268.8L281.4,267.8L280.9,265.6L280.5,263.3L282.1,262.0L280.5,260.7L278.2,261.2L276.3,260.0L273.7,259.9L271.7,259.1L270.6,257.5L267.7,257.9L265.7,259.0L264.8,261.3L262.6,261.9L260.4,261.4L258.7,262.5L256.3,262.3L254.5,263.4L253.2,261.8L251.5,263.1L250.3,264.7L248.8,263.6L247.0,262.6L244.8,263.1L243.6,264.6L240.8,264.7L238.6,265.1L237.9,267.1L238.8,269.0L239.4,271.0L239.2,273.7L238.1,275.4L235.4,275.4L234.6,273.5L234.3,271.2L231.7,271.3L230.2,272.7L227.6,272.4L225.3,272.0L224.0,270.3L223.4,267.9L220.6,267.5L217.8,267.4L218.1,265.1L219.1,263.2L219.6,261.0L219.0,258.9L216.4,258.8L215.1,257.1L214.2,255.3L213.5,253.2L214.8,250.7L212.1,250.6L209.4,250.4L206.6,251.2L204.9,252.3L205.2,249.9L204.6,247.9L203.6,246.3L204.5,244.4L205.1,242.2L206.7,241.1L208.2,239.6L209.5,237.9L211.1,236.8L213.3,235.7L212.2,233.7L213.1,231.9L213.7,229.7L213.6,227.0L213.2,224.3L213.2,221.4L211.7,220.3L209.3,219.6L208.5,217.6L207.8,215.5L206.3,214.1L204.7,213.0L202.8,214.0L201.4,215.3L199.7,214.1L197.6,213.2L195.7,212.1L194.9,209.9L193.6,208.5L192.5,206.7L190.6,205.7L188.3,206.5L186.4,207.4L184.4,208.3L182.4,207.6L180.0,207.0L177.1,207.0L175.9,209.0L173.7,209.9L171.8,210.8L169.6,211.5L167.6,212.2L166.2,213.4L164.7,214.9L162.4,216.0L161.8,218.0L159.7,218.6L157.3,218.9L155.3,219.6L153.2,218.7L151.8,217.4L149.8,216.7L148.0,217.6L145.8,216.8L143.5,216.2L141.9,215.1L139.3,214.6L137.3,215.7L135.3,216.6L134.0,218.1L132.6,219.6L131.0,220.9L130.5,223.0L128.8,221.9L129.6,218.6L128.6,216.8L125.8,217.3L123.5,217.7L121.1,218.2L119.1,218.8L116.7,218.6L114.4,218.1L112.5,217.2L110.4,216.6L109.1,218.1L107.0,217.2L105.2,218.3L104.3,216.4L102.8,215.0L100.4,214.8L97.8,214.8L98.2,212.3L95.9,212.7L94.1,211.8L92.1,211.1L90.7,209.9L89.8,208.0L88.4,206.5L85.9,206.8L83.6,206.2L82.0,204.8L80.6,203.5L78.4,203.2L77.1,201.7L75.3,200.7L73.4,199.9L72.1,198.4L70.6,197.2L68.2,196.8L66.0,197.3L65.1,199.2L62.7,198.6L60.9,197.5L59.3,196.4L57.0,195.6L55.9,193.9L53.7,192.8L51.6,192.0L49.4,191.6L48.0,190.1L46.9,188.5L44.7,189.2L43.5,187.8L43.1,185.5L42.7,182.9L41.6,181.5L40.7,179.2L42.6,178.3L44.5,179.8L46.7,179.2L49.4,178.1L49.2,175.7L48.9,173.3L46.8,172.8L45.0,171.4L44.0,168.4L43.3,166.3L44.9,164.9L44.0,162.7L42.4,161.5L40.1,161.2L39.0,159.0L37.5,156.0L37.1,153.5ZM318.3,288.1L316.7,289.2L315.4,290.8L314.4,292.6L313.9,294.8L313.1,296.8L311.0,297.5L309.9,299.2L307.4,299.9L305.3,300.8L303.1,299.9L301.0,299.3L299.3,298.2L298.6,296.3L298.2,294.1L298.0,291.6L299.4,290.3L301.1,289.1L302.8,288.2L303.6,286.3L306.0,286.6L307.4,285.4L309.5,286.2L311.0,284.9L313.1,285.6L314.8,284.5L317.1,285.4L318.2,287.6Z", "w": 520.0, "h": 300.8074265975819}};
+    const INK = "#14181b", BONE = "#f0efe8", RED = "#dc2f3c", REDD = "#7e151e", REDL = "#f6a4a9", ICE = "#2a9fc9", ICED = "#115973", ICEL = "#9fdcf0",
+          VOLT = "#86c232", VOLTD = "#3f6410", VOLTL = "#c9ec8f", ASH = "#888e92", ASHD = "#33393d", ASHL = "#c3c7c8", YEL = "#f5d033";
+
+    // ---------- scenes ----------
+    const SC = [
+      ["sc001", 229.50, 235.12, "face"], ["sc002", 235.12, 243.44, "paper"], ["sc003", 243.44, 247.37, "face"], ["sc004", 247.37, 252.88, "face"],
+      ["sc005", 252.88, 261.22, "paper"], ["sc006", 261.22, 266.40, "face"], ["sc007", 266.40, 271.20, "paper"], ["sc008", 271.20, 274.32, "face"],
+      ["sc009", 274.32, 283.04, "map"], ["sc010", 283.04, 293.03, "paper"], ["sc011", 293.03, 296.15, "face"], ["sc012", 296.15, 314.47, "map"],
+      ["sc013", 314.47, 319.62, "face"], ["sc014", 319.62, 323.11, "face"], ["sc015", 323.11, 343.91, "night"], ["sc016", 343.91, 351.83, "map"],
+      ["sc017", 351.83, 358.94, "face"], ["sc018", 358.94, 362.292, "face"],
+    ];
+    const GROUND = { paper: [0.32, 0.16, 0.26], night: [1, 0.42, 0.36], map: [0.8, 0.3, 0.3], face: [0, 0, 0] };
+    const EARLY = { sc005: 0.45, sc007: 0.45, sc010: 0.45 };   // slides: incoming scene visible during the slide
+    function ground(kind, t) { const v = GROUND[kind]; tl.set([$("vig"), $("dust"), $("grain")], { opacity: (i) => v[i] }, t); }
+    SC.forEach((s, i) => {
+      const el = $(s[0]), a = s[1] - (EARLY[s[0]] || 0);
+      if (i === 0) gsap.set(el, { autoAlpha: 1 });
+      else tl.fromTo(el, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.001, immediateRender: false }, S(a) - 0.002);
+      if (s[2] < SEG_END) tl.set(el, { autoAlpha: 0 }, S(s[2]) + 0.05);
+    });
+    gsap.set([$("vig"), $("dust"), $("grain")], { opacity: GROUND.face });
+    SC.forEach((s, i) => { if (i > 0) ground(s[3], S(s[1])); });
+
+    // ---------- helpers ----------
+    const rise = (el, t, o) => { o = o || {}; const d = o.dur || 0.6;
+      tl.fromTo(el, { opacity: 0, y: o.y == null ? 16 : o.y }, { opacity: 1, y: 0, duration: d, ease: C(E.out, d), immediateRender: true }, t); };
+    const pop = (el, t, o) => { o = o || {}; const d = o.dur || 0.8;
+      tl.fromTo(el, { opacity: 0, scale: o.from == null ? 0.6 : o.from }, { opacity: 1, scale: 1, duration: d, ease: C(E.out, d), immediateRender: true }, t); };
+    const stop = (el, t) => tl.fromTo(el, { opacity: 0, scale: 1.25 }, { opacity: 1, scale: 1, duration: 2 / 12, ease: "steps(2)", immediateRender: true }, t);
+    function el(parent, tag, attrs) { const n = document.createElementNS(NS, tag); for (const k in attrs) n.setAttribute(k, attrs[k]); parent.appendChild(n); return n; }
+    function ink(parent, d, t, dur, o) {
+      o = o || {};
+      const p = el(parent, "path", { d: d, fill: "none", stroke: o.color || INK, "stroke-width": o.width || 5, "stroke-linecap": "round", "stroke-linejoin": "round" });
+      if (o.opacity != null) p.setAttribute("opacity", o.opacity);
+      const len = p.getTotalLength() || 1;
+      p.setAttribute("stroke-dasharray", len + " " + len); p.setAttribute("stroke-dashoffset", len);
+      tl.fromTo(p, { attr: { "stroke-dashoffset": len } }, { attr: { "stroke-dashoffset": 0 }, duration: dur, ease: o.ease || C(E.out, dur), immediateRender: true }, t);
+      return p;
+    }
+    function icoDiv(parent, name, x, y, size, color) {
+      const d = document.createElement("div"); d.className = "n3-ico";
+      d.style.cssText = "left:" + x + "px;top:" + y + "px;width:" + size + "px;height:" + size + "px;color:" + color + ";";
+      d.innerHTML = '<svg viewBox="0 0 256 256" fill="currentColor">' + ICONS[name] + "</svg>";
+      parent.appendChild(d); return d;
+    }
+    function fillIco(id, name) { $(id).innerHTML = '<svg viewBox="0 0 256 256" fill="currentColor">' + ICONS[name] + "</svg>"; }
+    const whipN = { n: 0 };
+    function whip(a, b, t, o) {
+      o = Object.assign({ dir: 1, vertical: false, flash: false, dur: 0.32 }, o);
+      const k = ++whipN.n, ba = FX.whipDefs(defs, SEG + "-wa" + k), bb = FX.whipDefs(defs, SEG + "-wb" + k), h = o.dur / 2;
+      const A = $(a + "-shot"), B = $(b + "-shot");
+      tl.set(A, { filter: "url(#" + SEG + "-wa" + k + ")" }, t - h - 0.01); tl.set(A, { filter: "none" }, t + 0.06);
+      tl.set(B, { filter: "url(#" + SEG + "-wb" + k + ")" }, t - 0.001); tl.set(B, { filter: "none" }, t + h + 0.02);
+      FX.whip(tl, A, B, t, { dir: o.dir, vertical: o.vertical, dur: o.dur, blurA: ba, blurB: bb });
+      if (o.flash) tl.fromTo($("flash"), { opacity: 0 }, { opacity: 0.85, duration: 0.08, yoyo: true, repeat: 1, ease: "power2.in", immediateRender: false }, t - 0.08);
+    }
+    function slide(a, b, t, o) {
+      o = Object.assign({ axis: "x", from: 1, d: 0.45 }, o);
+      const A = $(a + "-shot"), B = $(b + "-shot"), dist = (o.axis === "x" ? 1980 : 1140) * o.from;
+      tl.fromTo(B, { [o.axis]: dist, boxShadow: "0 0 80px rgba(0,0,0,0.5)" }, { [o.axis]: 0, duration: o.d, ease: C(E.inOut, o.d), immediateRender: false }, t - o.d);
+      tl.set(B, { boxShadow: "none" }, t);
+      tl.fromTo(A, { [o.axis]: 0 }, { [o.axis]: -dist * 0.12, duration: o.d, ease: E.in, immediateRender: false }, t - o.d);
+    }
+    const FR = { W: [1.0, 1.03], M: [1.25, 1.285], C: [1.52, 1.56] };
+    function face(id, a, b, k) {
+      const fw = $(id + "-fw");
+      gsap.set(fw, { scale: FR[k][0] });
+      tl.fromTo(fw, { scale: FR[k][0] }, { scale: FR[k][1], duration: b - a, ease: "none", immediateRender: false }, S(a));
+    }
+    function push(id, a, b, s0, s1, o) {
+      o = o || {};
+      const vw = $(id + "-vw");
+      if (o.origin) gsap.set(vw, { transformOrigin: o.origin });
+      gsap.set(vw, { scale: s0 });
+      tl.fromTo(vw, { scale: s0 }, { scale: s1, duration: b - a, ease: o.ease || "none", immediateRender: false }, S(a));
+    }
+    // map label inside a camera (counter-scaled by the camera driver)
+    function mlab(cam, x, y, text, o) {
+      o = Object.assign({ size: 56, kind: "country" }, o);
+      const outer = document.createElement("div");
+      outer.style.cssText = "position:absolute;left:" + x + "px;top:" + y + "px;width:0;height:0;transform-origin:0 0;";
+      const inner = document.createElement("div");
+      inner.className = o.kind === "place" ? "t-label" : "t-display";
+      inner.textContent = text;
+      inner.style.cssText = "position:absolute;white-space:nowrap;line-height:1;left:-800px;width:1600px;text-align:center;top:" + (-o.size * 0.5) + "px;font-size:" + o.size + "px;color:" + (o.color || BONE) +
+        ";text-shadow:0 2px 4px rgba(0,0,0,0.8),0 0 16px rgba(0,0,0,0.6);" + (o.kind === "place" ? "" : "text-transform:uppercase;letter-spacing:0.04em;") + "opacity:0;";
+      outer.appendChild(inner); cam.appendChild(outer);
+      return { outer, inner };
+    }
+    // camera path through keys [t, cx, cy, s]; labels/badges in `counters` keep constant screen size
+    function camPath(cam, keys, counters) {
+      const apply = (cx, cy, s) => {
+        gsap.set(cam, { x: 960 - cx * s, y: 540 - cy * s, scale: s });
+        const inv = "scale(" + (1 / s).toFixed(4) + ")";
+        counters.forEach((l) => { l.style.transform = inv; });
+      };
+      apply(keys[0][1], keys[0][2], keys[0][3]);
+      for (let i = 0; i < keys.length - 1; i++) {
+        const A = keys[i], B = keys[i + 1], pr = { v: 0 };
+        tl.fromTo(pr, { v: 0 }, { v: 1, duration: B[0] - A[0], ease: "none", immediateRender: false, onUpdate: () => {
+          const e = E.cam(pr.v);
+          apply(A[1] + (B[1] - A[1]) * e, A[2] + (B[2] - A[2]) * e, A[3] + (B[3] - A[3]) * e);
+        } }, S(A[0]));
+      }
+    }
+
+    FX.grain($("grain"), 3301);
+    FX.dust($("dust"), 3302, 2);
+    const PEN = FX.markupDefs(defs, SEG + "-pen", { boil: 4 });
+    defs.setAttribute("viewBox", "0 0 1 1");
+
+    /* ===== sc001 · FACE M — lands from a whip smear (hides the 229.53 take join) ===== */
+    face("sc001", 229.50, 235.12, "M");
+    (function () {
+      const sh = $("sc001-shot"), bb = FX.whipDefs(defs, SEG + "-win"), sb = { v: 90 };
+      gsap.set(sh, { x: 385, scale: 1.18, filter: "url(#" + SEG + "-win)" }); bb.setAttribute("stdDeviation", "90 0");
+      tl.fromTo(sh, { x: 385, scale: 1.18 }, { x: 0, scale: 1, duration: 0.18, ease: "power3.out", immediateRender: true }, 0);
+      tl.fromTo(sb, { v: 90 }, { v: 0, duration: 0.18, ease: "power2.out", immediateRender: true, onUpdate: () => bb.setAttribute("stdDeviation", sb.v.toFixed(2) + " 0") }, 0);
+      tl.set(sh, { filter: "none" }, 0.2);
+    })();
+
+    /* ===== sc002 · balance scale (whip →) ===== */
+    whip("sc001", "sc002", S(235.12), { dir: 1 });
+    (function () {
+      const svg = $("sc002-svg");
+      // defs: grey flags, circle clips
+      const dd = el(svg, "defs", {});
+      dd.innerHTML = '<filter id="nvs03-gray" color-interpolation-filters="sRGB"><feColorMatrix type="saturate" values="0"/><feComponentTransfer><feFuncR type="linear" slope="0.9" intercept="0.05"/><feFuncG type="linear" slope="0.9" intercept="0.05"/><feFuncB type="linear" slope="0.9" intercept="0.05"/></feComponentTransfer></filter>' +
+        '<clipPath id="nvs03-clipm"><circle cx="0" cy="0" r="92"/></clipPath>';
+      const PX = 960, PY = 440, ARM = 480;
+      // stand
+      const st = el(svg, "g", {});
+      st.innerHTML =
+        '<path d="M820 912 C820 890 880 878 960 878 C1040 878 1100 890 1100 912 L1100 926 L820 926 Z" fill="' + ASHD + '"/>' +
+        '<path d="M870 880 C880 852 920 846 960 846 C1000 846 1040 852 1050 880 Z" fill="#4a5156"/>' +
+        '<rect x="946" y="470" width="28" height="380" fill="' + ASHD + '"/><rect x="952" y="470" width="6" height="380" fill="#6b7277"/>' +
+        '<path d="M960 300 L974 340 L960 352 L946 340 Z" fill="' + ASHD + '"/><rect x="954" y="350" width="12" height="80" fill="' + ASHD + '"/>';
+      // gauge (behind the beam)
+      const gg = el(svg, "g", {});
+      let gd = '<path d="M850 432 A110 110 0 0 1 1070 432 L1040 432 A80 80 0 0 0 880 432 Z" fill="#dcd8cb" stroke="' + INK + '" stroke-width="3"/>';
+      for (let k = -6; k <= 6; k++) { const a = (k * 12 - 90) * Math.PI / 180, r1 = 84, r2 = k % 3 === 0 ? 104 : 96;
+        gd += '<path d="M' + (PX + r1 * Math.cos(a)).toFixed(1) + ' ' + (432 + r1 * Math.sin(a)).toFixed(1) + ' L' + (PX + r2 * Math.cos(a)).toFixed(1) + ' ' + (432 + r2 * Math.sin(a)).toFixed(1) + '" stroke="' + INK + '" stroke-width="' + (k === 0 ? 4 : 2) + '"/>'; }
+      gg.innerHTML = gd;
+      const needle = el(svg, "path", { d: "M957 440 L960 334 L963 440 Z", fill: REDD });
+      // beam
+      const beam = el(svg, "g", {});
+      beam.innerHTML = '<path d="M' + (PX - ARM) + ' 434 C' + (PX - 200) + ' 430 ' + (PX - 120) + ' 446 ' + PX + ' 446 C' + (PX + 120) + ' 446 ' + (PX + 200) + ' 430 ' + (PX + ARM) + ' 434 L' + (PX + ARM) + ' 448 C' + (PX + 200) + ' 446 ' + (PX + 120) + ' 462 ' + PX + ' 462 C' + (PX - 120) + ' 462 ' + (PX - 200) + ' 446 ' + (PX - ARM) + ' 448 Z" fill="' + ASHD + '"/>' +
+        '<circle cx="' + PX + '" cy="448" r="22" fill="#4a5156" stroke="' + INK + '" stroke-width="3"/><circle cx="' + PX + '" cy="448" r="7" fill="' + ASHL + '"/>' +
+        '<circle cx="' + (PX - ARM) + '" cy="441" r="14" fill="#4a5156"/><circle cx="' + (PX + ARM) + '" cy="441" r="14" fill="#4a5156"/>';
+      // pans with medallions
+      function star(n, r1, r2) { let d = ""; for (let i = 0; i < n * 2; i++) { const r = i % 2 ? r2 : r1, a = i * Math.PI / n - Math.PI / 2; d += (i ? "L" : "M") + (r * Math.cos(a)).toFixed(1) + " " + (r * Math.sin(a)).toFixed(1); } return d + "Z"; }
+      function pan(flag, col, sx, sy) {
+        const g = el(svg, "g", {});
+        const m = el(g, "g", {});
+        m.innerHTML = '<path d="' + star(12, 150, 112) + '" transform="translate(' + sx + ',' + (sy - 150) + ')" fill="' + col + '" opacity="0.92"/>' +
+          '<circle cx="0" cy="-150" r="104" fill="' + BONE + '" stroke="' + col + '" stroke-width="12"/>' +
+          '<g transform="translate(0,-150)"><image href="' + flag + '" x="-150" y="-100" width="300" height="200" preserveAspectRatio="xMidYMid slice" clip-path="url(#nvs03-clipm)" filter="url(#nvs03-gray)"/></g>' +
+          '<circle cx="0" cy="-150" r="92" fill="none" stroke="' + INK + '" stroke-width="3" opacity="0.6"/>';
+        const p = el(g, "g", {});
+        p.innerHTML = '<path d="M-6 0 L6 0 L4 -40 L-4 -40 Z" fill="' + ASHD + '"/><path d="M-176 -46 C-120 -30 120 -30 176 -46 C150 -24 -150 -24 -176 -46 Z" fill="' + ASHD + '"/><ellipse cx="0" cy="-46" rx="176" ry="12" fill="#5a6166"/>';
+        g.insertBefore(p, m);
+        return { g, m };
+      }
+      const L = pan("assets/nvidia/shared/logos/flag_us.svg", ICE, -26, -26), R = pan("assets/nvidia/shared/logos/flag_china.svg", RED, 26, -26);
+      // the chip on the US pan
+      const chip = el(L.g, "g", {});
+      chip.innerHTML = '<g transform="translate(96,-166) scale(0.46)"><rect x="40" y="40" width="176" height="176" fill="' + VOLT + '"/><g fill="' + VOLTD + '">' + ICONS.chip + '</g></g>';
+      const lus = $("sc002-lus"), lcn = $("sc002-lcn");
+      const ang = { a: 4 }, mdy = { l: -260, r: -260 };
+      function setBeam() {
+        const a = ang.a * Math.PI / 180, ca = Math.cos(a), sa = Math.sin(a);
+        beam.setAttribute("transform", "rotate(" + ang.a.toFixed(3) + " " + PX + " 448)");
+        needle.setAttribute("transform", "rotate(" + (ang.a * 4).toFixed(3) + " " + PX + " 440)");
+        const lx = PX - ARM * ca, ly = 441 - ARM * sa, rx = PX + ARM * ca, ry = 441 + ARM * sa;
+        L.g.setAttribute("transform", "translate(" + lx.toFixed(1) + "," + ly.toFixed(1) + ")");
+        R.g.setAttribute("transform", "translate(" + rx.toFixed(1) + "," + ry.toFixed(1) + ")");
+        L.m.setAttribute("transform", "translate(0," + mdy.l.toFixed(1) + ")");
+        R.m.setAttribute("transform", "translate(0," + mdy.r.toFixed(1) + ")");
+        lus.style.left = lx.toFixed(1) + "px"; lus.style.top = (ly + 26).toFixed(1) + "px";
+        lcn.style.left = rx.toFixed(1) + "px"; lcn.style.top = (ry + 26).toFixed(1) + "px";
+      }
+      setBeam();
+      gsap.set([L.m, R.m, chip], { opacity: 0 });
+      // medallions drop onto the pans (12 fps), the chip lands on the US pan
+      tl.fromTo(mdy, { l: -260 }, { l: 0, duration: 0.5, ease: C(E.out, 0.5), immediateRender: false, onUpdate: setBeam }, S(235.25));
+      tl.fromTo(L.m, { opacity: 0 }, { opacity: 1, duration: 1 / 12, immediateRender: true }, S(235.25));
+      tl.fromTo(mdy, { r: -260 }, { r: 0, duration: 0.5, ease: C(E.out, 0.5), immediateRender: false, onUpdate: setBeam }, S(235.45));
+      tl.fromTo(R.m, { opacity: 0 }, { opacity: 1, duration: 1 / 12, immediateRender: true }, S(235.45));
+      stop(chip, S(236.10));
+      rise(lus, T(235.54), { dur: 0.5, y: 8 });
+      // "free and fair trade" — the beam settles level
+      tl.fromTo(ang, { a: 4 }, { a: 0, duration: 1.4, ease: C(E.out, 1.4), immediateRender: false, onUpdate: setBeam }, S(237.22));
+      // "banning China from buying American stuff"
+      rise(lcn, T(241.30), { dur: 0.5, y: 8 });
+      const mk = $("sc002-mk");
+      const arr = FX.markup.pen(tl, mk, S(240.88), { points: [[640, 300], [800, 236], [960, 214], [1120, 236], [1290, 292]], color: INK, width: 6, dur: 0.75, filter: PEN, seed: 31 });
+      const head = FX.markup.pen(tl, mk, S(241.58), { points: [[1252, 254], [1292, 294], [1238, 306]], color: INK, width: 6, dur: 0.2, filter: PEN, seed: 32 });
+      const ban = el(mk, "g", {});
+      ban.innerHTML = '<g transform="translate(890,150) scale(0.55)"><circle cx="128" cy="128" r="100" fill="' + BONE + '"/><g fill="' + ICED + '">' + ICONS.ban + '</g></g>';
+      ban.style.transformOrigin = "960px 220px";
+      tl.fromTo(ban, { opacity: 0, scale: 1.6 }, { opacity: 1, scale: 1, duration: 3 / 12, ease: "steps(3)", immediateRender: true }, S(241.86));
+      // the beam tips to the US side (cut on this motion)
+      tl.to(ang, { a: -7, duration: 1.3, ease: C(E.inOut, 1.3), onUpdate: setBeam }, S(242.20));
+      push("sc002", 235.12, 243.44, 1.0, 1.045, { ease: E.cam, origin: "960px 470px" });
+    })();
+
+    /* ===== sc003 · FACE W (hard cut on the tipping beam) ===== */
+    face("sc003", 243.44, 247.37, "W");
+    /* ===== sc004 · FACE M (framing change exactly on the 247.37 join) ===== */
+    face("sc004", 247.37, 252.88, "M");
+
+    /* ===== sc005 · shop-counter diagram (paper slides in) ===== */
+    slide("sc004", "sc005", S(252.88), { axis: "x" });
+    (function () {
+      const box = $("sc005-icons"), mk = $("sc005-mk"), pkg = $("sc005-pkg");
+      const seller = icoDiv(box, "person", 310, 380, 260, INK);
+      const buyers = [icoDiv(box, "person", 1150, 410, 240, INK), icoDiv(box, "person", 1280, 410, 240, ASHD), icoDiv(box, "person", 1410, 410, 240, "#5a6166"), icoDiv(box, "person", 1540, 410, 240, ASH)];
+      gsap.set([seller, pkg].concat(buyers), { opacity: 0 });
+      stop(seller, S(252.86));
+      stop(pkg, S(253.00));
+      stop(buyers[0], S(254.30));
+      // "doesn't want to sell me something" — the sale arrow, the package starts across, ✗
+      const arr = FX.markup.pen(tl, mk, S(254.10), { points: [[800, 470], [930, 440], [1060, 440], [1170, 470]], color: INK, width: 6, dur: 0.6, filter: PEN, seed: 51 });
+      FX.markup.pen(tl, mk, S(254.62), { points: [[1130, 444], [1172, 470], [1126, 494]], color: INK, width: 6, dur: 0.15, filter: PEN, seed: 52 });
+      tl.fromTo(pkg, { x: 0 }, { x: 270, duration: 0.6, ease: C(E.out, 0.6), immediateRender: false }, S(254.40));
+      const x1 = FX.markup.pen(tl, mk, S(254.95), { points: [[935, 400], [1025, 500]], color: REDD, width: 9, dur: 0.16, filter: PEN, seed: 53 });
+      const x2 = FX.markup.pen(tl, mk, S(255.15), { points: [[1027, 398], [933, 502]], color: REDD, width: 9, dur: 0.16, filter: PEN, seed: 54 });
+      tl.to(pkg, { x: 0, duration: 0.7, ease: C(E.inOut, 0.7) }, S(255.60));
+      // "not based on discrimination … race or gender" — a line of different buyers, same treatment
+      [257.62, 258.40, 260.20].forEach((t, i) => tl.fromTo(buyers[i + 1], { opacity: 0, x: 40 }, { opacity: 1, x: 0, duration: 0.5, ease: C(E.out, 0.5), immediateRender: true }, S(t)));
+      push("sc005", 252.88, 261.22, 1.12, 1.17, { ease: E.cam, origin: "975px 600px" });
+    })();
+
+    /* ===== sc006 · FACE C (light-flash whip, starts on the 261.22 join) ===== */
+    whip("sc005", "sc006", S(261.22), { dir: 1, flash: true });
+    face("sc006", 261.22, 266.40, "C");
+
+    /* ===== sc007 · country-scale diagram (paper slides up) ===== */
+    slide("sc006", "sc007", S(266.40), { axis: "y" });
+    (function () {
+      const box = $("sc007-sil");
+      function sil(k, x, y, fill, stroke) {
+        const s = SIL[k], d = document.createElement("div");
+        d.style.cssText = "position:absolute;left:" + x + "px;top:" + y + "px;width:" + s.w.toFixed(0) + "px;height:" + s.h.toFixed(0) + "px;";
+        d.innerHTML = '<svg viewBox="0 0 ' + s.w.toFixed(1) + " " + s.h.toFixed(1) + '" style="position:absolute;inset:0;overflow:visible"><path d="' + s.d + '" fill="' + fill + '" fill-opacity="0.85" stroke="' + stroke + '" stroke-width="4" stroke-linejoin="round"/></svg>';
+        box.appendChild(d); return d;
+      }
+      const us = sil("us", 150, 430, ICE, ICED), cn = sil("china", 1240, 370, RED, REDD);
+      gsap.set([us, cn], { opacity: 0 });
+      stop(us, S(266.40)); stop(cn, S(266.70));
+      const cw = $("sc007-chipw");
+      const chip = icoDiv(cw, "chip", 380, 470, 120, VOLTD);
+      gsap.set(chip, { opacity: 0 });
+      stop(chip, S(266.90));
+      const mk = $("sc007-mk");
+      FX.markup.pen(tl, mk, S(267.40), { points: [[720, 520], [900, 470], [1080, 470], [1230, 520]], color: INK, width: 6, dur: 0.6, filter: PEN, seed: 71 });
+      FX.markup.pen(tl, mk, S(267.92), { points: [[1186, 492], [1232, 520], [1182, 546]], color: INK, width: 6, dur: 0.15, filter: PEN, seed: 72 });
+      tl.fromTo(chip, { x: 0 }, { x: 420, duration: 0.6, ease: C(E.out, 0.6), immediateRender: false }, S(267.60));
+      FX.markup.pen(tl, mk, S(268.05), { points: [[930, 420], [1030, 530]], color: REDD, width: 9, dur: 0.16, filter: PEN, seed: 73 });
+      FX.markup.pen(tl, mk, S(268.25), { points: [[1032, 418], [928, 532]], color: REDD, width: 9, dur: 0.16, filter: PEN, seed: 74 });
+      tl.to(chip, { x: 0, duration: 0.7, ease: C(E.inOut, 0.7) }, S(268.70));
+      push("sc007", 266.40, 271.20, 1.0, 1.05, { ease: E.cam, origin: "960px 520px" });
+    })();
+
+    /* ===== sc008 · FACE W (hard cut, 271.20 join) ===== */
+    face("sc008", 271.20, 274.32, "W");
+
+    /* ===== sc009 · China relief: Google, Facebook, YouTube banned (whip →) ===== */
+    whip("sc008", "sc009", S(274.32), { dir: 1 });
+    (function () {
+      const cam = $("sc009-cam");
+      gsap.set($("sc009-tilt"), { rotationX: 26 });
+      const lab = mlab(cam, 2900, 2250, "China", { size: 96 });
+      camPath(cam, [[274.32, 3330, 2330, 0.36], [283.04, 3400, 2380, 0.41]], [lab.outer]);
+      tl.fromTo($("sc009-fill"), { opacity: 0 }, { opacity: 1, duration: 0.9, ease: C(E.out, 0.9), immediateRender: true }, S(274.30));
+      rise(lab.inner, T(274.26), { dur: 0.6, y: 10 });
+      // logo badges fly in from the Pacific and stop at the coast with a ✗
+      const bx = $("sc009-badges"), mk = $("sc009-mk");
+      const LG = [["google", 276.90, 230], ["facebook", 277.38, 440], ["youtube", 277.94, 650]];
+      LG.forEach((q, i) => {
+        const b = document.createElement("div"); b.className = "n3-badge";
+        b.style.left = "1620px"; b.style.top = q[2] + "px";
+        b.innerHTML = '<img src="assets/nvidia/shared/logos/' + q[0] + '.svg" alt="" />';
+        bx.appendChild(b);
+        gsap.set(b, { opacity: 0 });
+        tl.fromTo(b, { opacity: 0, x: 420 }, { opacity: 1, x: 0, duration: 0.7, ease: C(E.out, 0.7), immediateRender: true }, T(q[1]));
+        const y = q[2] + 75;
+        FX.markup.pen(tl, mk, S(278.15) + i * 0.12, { points: [[1600, y], [1500, y - 6], [1400, y + 2]], color: REDL, width: 7, dur: 0.35, blend: "normal", seed: 90 + i });
+        FX.markup.pen(tl, mk, S(278.55) + i * 0.12, { points: [[1380, y - 34], [1446, y + 32]], color: RED, width: 10, dur: 0.12, blend: "normal", seed: 95 + i });
+        FX.markup.pen(tl, mk, S(278.70) + i * 0.12, { points: [[1446, y - 34], [1380, y + 32]], color: RED, width: 10, dur: 0.12, blend: "normal", seed: 99 + i });
+      });
+      // year strip: 2009 / 2010 (the blocks) … 2022 (the US chip ban)
+      const sp = $("sc009-strip"), X = (yr) => 220 + (yr - 2008) * 100;
+      const ax = el(mk, "path", { d: "M" + X(2008) + " 952 L" + X(2023.5) + " 951", stroke: BONE, "stroke-width": 3, opacity: 0.8, fill: "none" });
+      gsap.set(ax, { opacity: 0 });
+      tl.fromTo(ax, { opacity: 0 }, { opacity: 0.8, duration: 0.3, immediateRender: true }, S(278.40));
+      function dot(yr, col, r) { const c = el(mk, "circle", { cx: X(yr), cy: 952, r: r, fill: col }); gsap.set(c, { opacity: 0 }); return c; }
+      function ylab(yr, txt, top, col, size) { const d = document.createElement("div"); d.className = "n3-lab t-label"; d.style.cssText = "left:" + (X(yr) - 200) + "px;width:400px;top:" + top + "px;font-size:" + size + "px;color:" + col + ";opacity:0"; d.textContent = txt; sp.appendChild(d); return d; }
+      const d9 = dot(2009, REDL, 11), d10 = dot(2010, REDL, 11), d22 = dot(2022, ICEL, 14);
+      const l9 = ylab(2009, "2009", 978, REDL, 24), l10 = ylab(2010, "2010", 978, REDL, 24);
+      stop(d9, T(278.58)); stop(d10, T(278.58) + 0.08);
+      rise(l9, T(278.58), { dur: 0.4, y: 6 }); rise(l10, T(278.58), { dur: 0.4, y: 6 });
+      stop(d22, T(280.82));
+      rise(ylab(2022, "US chip ban", 880, ICEL, 26), T(280.82), { dur: 0.5, y: 6 });
+      rise(ylab(2022, "2022", 978, ICEL, 24), T(280.82), { dur: 0.5, y: 6 });
+      // the 13-year gap draws between them
+      ink(mk, "M" + (X(2010) + 18) + " 952 L" + (X(2022) - 20) + " 953", S(280.95), 0.8, { color: ICEL, width: 6, opacity: 0.9 });
+    })();
+
+    /* ===== sc010 · partnership, trade secrets, technology (paper slides in) ===== */
+    slide("sc009", "sc010", S(283.04), { axis: "x" });
+    (function () {
+      const mk = $("sc010-mk"), fc = $("sc010-fc"), cc = $("sc010-cc"), d1 = $("sc010-d1"), d2 = $("sc010-d2");
+      fillIco("sc010-fci", "factory"); fillIco("sc010-cci", "factory"); fillIco("sc010-d2i", "chip");
+      gsap.set([cc, d1, d2, $("sc010-cn")], { opacity: 0 });
+      gsap.set(d1, { left: 245, top: 300, rotation: -4 }); gsap.set(d2, { left: 245, top: 330, rotation: 3 });
+      rise($("sc010-fcl"), T(283.54), { dur: 0.5, y: 8 });
+      // "inside of China" — the red box
+      ink(mk, "M620 172 L1822 170 L1824 912 L622 914 L620 168", S(285.50), 1.0, { color: REDD, width: 5, ease: C(E.inOut, 1.0) });
+      rise($("sc010-cn"), T(286.34), { dur: 0.5, y: 6 });
+      // the foreign company is let in
+      tl.to(fc, { x: 620, duration: 0.9, ease: C(E.inOut, 0.9) }, S(286.70));
+      tl.to([d1, d2], { x: 620, duration: 0.9, ease: C(E.inOut, 0.9) }, S(286.70));
+      // "forming a partnership with the Chinese company"
+      stop(cc, S(287.80));
+      ink(mk, "M772 728 L774 760 L1716 758 L1718 726", S(288.20), 0.6, { color: INK, width: 5 });
+      rise($("sc010-pl"), T(288.34), { dur: 0.5, y: 8 });
+      rise($("sc010-ccl"), T(289.30), { dur: 0.5, y: 8 });
+      // trade secrets → technology, handed over
+      tl.fromTo(d1, { opacity: 0 }, { opacity: 1, duration: 1 / 12, immediateRender: true }, T(291.14));
+      tl.to(d1, { x: 1105, y: 0, rotation: -6, duration: 0.6, ease: C(E.inOut, 0.6) }, S(291.30));
+      tl.fromTo(d2, { opacity: 0 }, { opacity: 1, duration: 1 / 12, immediateRender: true }, T(292.18));
+      tl.to(d2, { x: 1290, y: 14, rotation: 5, duration: 0.25, ease: C(E.out, 0.25) }, S(292.24));
+      push("sc010", 283.04, 293.03, 1.0, 1.04, { ease: E.cam, origin: "1220px 540px" });
+    })();
+
+    /* ===== sc011 · FACE C (hard cut) ===== */
+    face("sc011", 293.03, 296.15, "C");
+
+    /* ===== sc012 · the world: IP theft called out; global south; WTO (vertical whip) ===== */
+    whip("sc011", "sc012", S(296.15), { dir: 1, vertical: true });
+    (function () {
+      const cam = $("sc012-cam"), svg = $("sc012-svg");
+      const L = {
+        cn: mlab(cam, 6307, 778, "China", { size: 76 }), us: mlab(cam, 800, 690, "United States", { size: 60 }),
+        de: mlab(cam, 3800, 352, "Germany", { size: 44 }), uk: mlab(cam, 3420, 300, "UK", { size: 44 }), fr: mlab(cam, 3545, 485, "France", { size: 44 }),
+        gs: mlab(cam, 4041, 1690, "Global south", { size: 56 }),
+      };
+      // WTO card at Geneva (counter-scaled)
+      const wo = document.createElement("div"); wo.style.cssText = "position:absolute;left:3663px;top:486px;width:0;height:0;transform-origin:0 0;";
+      wo.innerHTML = '<div style="position:absolute;left:-14px;top:-14px;width:28px;height:28px;border-radius:50%;background:' + BONE + ';box-shadow:0 0 0 6px rgba(240,239,232,0.3)"></div>' +
+        '<div class="n3-wto" style="left:34px;top:-64px"><img src="assets/nvidia/shared/logos/wto.svg" alt="" /></div>';
+      cam.appendChild(wo);
+      const woIn = wo; gsap.set(wo.children, { opacity: 0 });
+      camPath(cam, [
+        [296.15, 5950, 900, 0.60], [300.55, 6120, 860, 0.66], [302.00, 1800, 860, 0.55], [303.35, 1850, 860, 0.57],
+        [304.45, 3600, 400, 2.0], [307.55, 3590, 410, 2.1], [309.00, 3500, 1660, 0.42], [311.60, 3480, 1640, 0.43],
+        [312.75, 3600, 1300, 0.44], [314.47, 3600, 1290, 0.455],
+      ], Object.values(L).map((l) => l.outer).concat([wo]));
+      const fade = (id, t, d) => tl.fromTo($(id), { opacity: 0 }, { opacity: 1, duration: d || 0.7, ease: C(E.out, d || 0.7), immediateRender: true }, t);
+      fade("sc012-cn", S(297.20), 1.0);
+      rise(L.cn.inner, T(299.45), { dur: 0.6, y: 10 });
+      fade("sc012-us", S(301.05));
+      rise(L.us.inner, T(301.05), { dur: 0.6, y: 10 });
+      fade("sc012-de", T(304.49), 0.5); rise(L.de.inner, T(304.49), { dur: 0.5, y: 8 });
+      fade("sc012-uk", T(305.21), 0.5); rise(L.uk.inner, T(305.21), { dur: 0.5, y: 8 });
+      fade("sc012-fr", T(305.77), 0.5); rise(L.fr.inner, T(305.77), { dur: 0.5, y: 8 });
+      fade("sc012-gs", S(309.21), 0.8); rise(L.gs.inner, T(309.21), { dur: 0.6, y: 10 });
+      tl.to([L.de.inner, L.uk.inner, L.fr.inner], { opacity: 0, duration: 0.3 }, S(307.70));
+      // WTO pinned at Geneva, then arrows from the global south
+      stop(wo.children[0], S(312.70));
+      tl.fromTo(wo.children[1], { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.5, ease: C(E.out, 0.5), immediateRender: true }, T(312.81));
+      [[1911, 2075, 3560, 640, -260], [4041, 1693, 3700, 690, 120], [5680, 1201, 3830, 600, 260]].forEach((q, i) => {
+        const ps = FX.markup.arrow(tl, svg, S(313.00) + i * 0.1, { x1: q[0], y1: q[1], x2: q[2], y2: q[3], bend: q[4], head: 60, color: BONE, width: 11, dur: 0.55 });
+        ps.forEach((p) => { gsap.set(p, { opacity: 0 }); tl.set(p, { opacity: 0.9 }, S(313.00) + i * 0.1); });
+      });
+    })();
+
+    /* ===== sc013 · FACE C (hard cut) ===== */
+    face("sc013", 314.47, 319.62, "C");
+    /* ===== sc014 · FACE W (framing change on the 319.62 join) ===== */
+    face("sc014", 319.62, 323.11, "W");
+
+    /* ===== sc015 · uranium triptych → cutting the curve → AI chips (light-flash whip) ===== */
+    whip("sc014", "sc015", S(323.11), { dir: -1, flash: true });
+    (function () {
+      const pl = $("sc015-pl"), pr = $("sc015-pr"), ring = $("sc015-ring"), wrap = $("sc015-wrap");
+      fillIco("sc015-lock", "lock"); fillIco("sc015-ok", "check"); fillIco("sc015-no", "cross");
+      FX.weave($("sc015-wv"), { amp: 1.4, flicker: 0.05, seed: 315, from: S(327.3), to: S(343.95) });
+      gsap.set([pl, pr], { clipPath: "inset(0% 0% 100% 0%)" });
+      // centre: uranium pellets (already there as the scene lands)
+      tl.fromTo(ring, { scale: 0.85 }, { scale: 1, duration: 0.8, ease: C(E.out, 0.8), immediateRender: true }, S(323.11));
+      // "nuclear energy" — the power plant wipes in left
+      tl.fromTo(pl, { clipPath: "inset(0% 0% 100% 0%)" }, { clipPath: "inset(0% 0% 0% 0%)", duration: 0.8, ease: C(E.out, 0.8), immediateRender: true }, S(323.30));
+      tl.fromTo($("sc015-plimg"), { scale: 1.12 }, { scale: 1.0, duration: 4.0, ease: E.cam, immediateRender: true }, S(323.30));
+      // "nuclear bomb" — Trinity, right
+      tl.fromTo(pr, { clipPath: "inset(0% 0% 100% 0%)" }, { clipPath: "inset(0% 0% 0% 0%)", duration: 0.8, ease: C(E.out, 0.8), immediateRender: true }, S(327.75));
+      tl.fromTo($("sc015-primg"), { scale: 1.12 }, { scale: 1.0, duration: 4.0, ease: E.cam, immediateRender: true }, S(327.75));
+      // "export … enriched uranium … heavily controlled"
+      tl.to([pl, pr], { opacity: 0.32, duration: 0.8, ease: "power1.inOut" }, S(330.20));
+      tl.to(ring, { scale: 1.2, duration: 1.2, ease: C(E.inOut, 1.2) }, S(330.70));
+      rise($("sc015-l1"), T(332.25), { dur: 0.6, y: 10 });
+      stop($("sc015-lock"), S(333.80));
+      // cutting the curve: pellets → GPU die (same circle), lock and label swap at the cut
+      const mid = FX.curveCut(tl, wrap, $("sc015-pel"), $("sc015-die"), S(334.75), 0.72, { from: 1, to: 1.3 });
+      tl.set([$("sc015-lock"), $("sc015-l1")], { opacity: 0 }, mid);
+      tl.to(wrap, { scale: 1.0, duration: 1.4, ease: E.cam }, mid + 0.1);
+      rise($("sc015-l2"), T(335.05), { dur: 0.5, y: 8 });
+      tl.to([pl, pr], { opacity: 0.18, duration: 0.6 }, mid);
+      // good things / bad things with AI
+      pop($("sc015-ok"), S(339.85), { dur: 0.6, from: 0.6 });
+      pop($("sc015-no"), S(342.25), { dur: 0.5, from: 0.6 });
+      push("sc015", 323.11, 343.91, 1.0, 1.05, { ease: "none" });
+    })();
+
+    /* ===== sc016 · Taiwan Strait, tilted terrain (whip →) ===== */
+    whip("sc015", "sc016", S(343.91), { dir: 1 });
+    (function () {
+      const cam = $("sc016-cam"), svg = $("sc016-svg");
+      gsap.set($("sc016-tilt"), { rotationX: 30 });
+      const P = (lon, lat) => [(lon - 100) * 127.95, (48 - lat) * 150];
+      const cnp = P(116.6, 26.4), twp = P(123.7, 23.4);
+      const Lc = mlab(cam, cnp[0], cnp[1], "China", { size: 84 }), Lt = mlab(cam, twp[0], twp[1], "Taiwan", { size: 64 });
+      camPath(cam, [[343.91, 2470, 3470, 0.92], [351.83, 2560, 3540, 1.06]], [Lc.outer, Lt.outer]);
+      tl.fromTo($("sc016-cn"), { opacity: 0 }, { opacity: 1, duration: 0.8, ease: C(E.out, 0.8), immediateRender: true }, S(345.61));
+      rise(Lc.inner, T(345.61), { dur: 0.6, y: 10 });
+      // "invading" — three arrows across the strait
+      [[[118.9, 25.5], [120.9, 25.05]], [[118.3, 24.7], [120.3, 24.25]], [[117.9, 23.9], [119.95, 23.45]]].forEach((q, i) => {
+        const a = P(q[0][0], q[0][1]), b = P(q[1][0], q[1][1]);
+        const ps = FX.markup.arrow(tl, svg, S(349.53) + i * 0.12, { x1: a[0], y1: a[1], x2: b[0], y2: b[1], bend: -40, head: 46, color: RED, width: 16, dur: 0.5 });
+        ps.forEach((p) => { gsap.set(p, { opacity: 0 }); tl.set(p, { opacity: 1 }, S(349.53) + i * 0.12); });
+      });
+      // "a US ally, Taiwan"
+      tl.fromTo($("sc016-tw"), { opacity: 0 }, { opacity: 1, duration: 0.5, ease: C(E.out, 0.5), immediateRender: true }, S(350.25));
+      rise(Lt.inner, T(351.05), { dur: 0.25, y: 8 });
+    })();
+
+    /* ===== sc017 · FACE M (hard cut) ===== */
+    face("sc017", 351.83, 358.94, "M");
+    /* ===== sc018 · FACE C punch-in on "The main question" — pushes on into nvs04 ===== */
+    face("sc018", 358.94, 362.292, "C");
+
+    FX.mount(tl, DURATION);
+    window.__timelines = window.__timelines || {};
+    window.__timelines[SEG] = tl;
+  })();
+  </script>
+</template>
+</body>
+</html>

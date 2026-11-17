@@ -1,0 +1,762 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8" /></head>
+<body>
+<template>
+  <style>
+    #root { position: absolute; inset: 0; overflow: hidden; background: var(--night); }
+    .n10-scene { position: absolute; inset: 0; overflow: hidden; visibility: hidden; opacity: 0; }
+    .n10-shot { position: absolute; inset: 0; overflow: hidden; transform-origin: 50% 50%; background: var(--night); }
+    .n10-paper { background: var(--paper); }
+    .n10-abs { position: absolute; }
+    .n10-cam { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 960px 540px; }
+    .n10-p1, .n10-p2 { position: absolute; inset: 0; background-size: cover; background-position: center; pointer-events: none; }
+    .n10-p2 { opacity: 0.9; mix-blend-mode: multiply; }
+    .n10-mk { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; pointer-events: none; }
+    .n10-w { display: inline-block; white-space: pre; opacity: 0; }
+    .n10-credit { position: absolute; right: 30px; bottom: 20px; font-size: 14px; letter-spacing: 0.08em; color: rgba(240,239,232,0.68); z-index: 5; }
+    .n10-credit.ink { color: rgba(20,24,27,0.62); }
+    .n10-hall { position: absolute; inset: -40px; background: radial-gradient(ellipse 70% 62% at 50% 46%, #1d2427 0%, #111517 55%, var(--night) 100%); }
+    .n10-bp { position: absolute; inset: 0; background-color: #0b1215;
+      background-image: linear-gradient(rgba(159,220,240,0.11) 2px, transparent 2px), linear-gradient(90deg, rgba(159,220,240,0.11) 2px, transparent 2px),
+        linear-gradient(rgba(159,220,240,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(159,220,240,0.05) 1px, transparent 1px);
+      background-size: 200px 200px, 200px 200px, 40px 40px, 40px 40px; background-position: -40px -20px, -40px -20px, -40px -20px, -40px -20px; }
+    .n10-bpglow { position: absolute; inset: 0; background: radial-gradient(ellipse 60% 55% at 55% 48%, rgba(42,159,201,0.13) 0%, rgba(13,16,18,0) 70%), radial-gradient(ellipse 100% 100% at 50% 50%, rgba(0,0,0,0) 55%, rgba(0,0,0,0.55) 100%); }
+    .n10-tag { position: absolute; padding: 8px 16px 4px; font-size: 24px; color: var(--bone); background: var(--ink); white-space: nowrap; }
+    .n10-ptag { position: absolute; padding: 9px 18px 5px; font-size: 24px; color: var(--ink); background: #f3f0e6; border: 2px solid rgba(20,24,27,0.75); border-radius: 6px; box-shadow: 0 6px 12px rgba(20,24,27,0.25); white-space: nowrap; }
+    .n10-card { position: absolute; background: #f3f0e6; box-shadow: 0 18px 34px rgba(20,24,27,0.32); }
+    .n10-photo { position: absolute; background: #f3f0e6; padding: 14px; box-shadow: 0 18px 34px rgba(20,24,27,0.35); }
+    .n10-photo img { display: block; width: 100%; height: 100%; object-fit: cover; filter: saturate(0.55) contrast(1.05); }
+    .n10-tape { position: absolute; width: 120px; height: 36px; background: rgba(236,232,214,0.62); box-shadow: 0 1px 3px rgba(0,0,0,0.12); }
+    .n10-pg { position: absolute; width: 210px; height: 270px; background: #f6f3ea; box-shadow: 0 10px 20px rgba(20,24,27,0.25); }
+    .n10-pg i { position: absolute; left: 22px; height: 7px; border-radius: 3px; background: rgba(20,24,27,0.3); }
+    .n10-pg b { position: absolute; left: 22px; top: 24px; width: 120px; height: 16px; border-radius: 3px; background: rgba(20,24,27,0.62); }
+
+    /* sc001 desk */
+    #nvs10-sc001-pen { position: absolute; left: 140px; top: -120px; width: 44px; height: 640px; border-radius: 22px 22px 6px 6px; transform: rotate(32deg);
+      background: linear-gradient(90deg, #0b0d0e, #3a4146 45%, #14181b 70%, #050607); box-shadow: 18px 22px 30px rgba(20,24,27,0.35); }
+    #nvs10-sc001-pen::after { content: ""; position: absolute; left: 13px; bottom: -40px; width: 18px; height: 46px; background: linear-gradient(90deg, #555c60, #c3c7c8, #555c60); clip-path: polygon(0 0, 100% 0, 50% 100%); }
+    #nvs10-sc001-card { left: 640px; top: 250px; width: 700px; height: 520px; }
+    #nvs10-sc001-card .in { position: absolute; left: 22px; top: 22px; right: 22px; bottom: 22px; background: radial-gradient(ellipse 70% 70% at 50% 45%, #232a2e 0%, #121618 70%, #0b0d0e 100%); overflow: hidden; }
+    #nvs10-sc001-chip { position: absolute; left: 75px; top: 92px; width: 506px; }
+    #nvs10-sc001-globe { left: 1380px; top: 160px; width: 330px; height: 330px; }
+    #nvs10-sc001-cal { position: absolute; left: 1420px; top: 560px; width: 300px; height: 360px; background: #ece9df; box-shadow: 0 22px 36px rgba(20,24,27,0.35); }
+    #nvs10-sc001-cal .band { position: absolute; left: 0; top: 0; width: 300px; height: 70px; background: var(--ash-dark); }
+    #nvs10-sc001-cal .ring { position: absolute; top: -18px; width: 18px; height: 44px; border-radius: 9px; background: linear-gradient(90deg, #5c625e, #c3c7c1, #5c625e); }
+    .n10-mo { position: absolute; left: 0; top: 120px; width: 300px; text-align: center; font-size: 120px; line-height: 1; color: var(--ink); }
+    #nvs10-sc001-sticky { position: absolute; left: 600px; top: 180px; padding: 22px 34px 12px; background: var(--yellow); color: var(--ink); font-size: 76px; line-height: 1;
+      box-shadow: 0 10px 18px rgba(20,24,27,0.28); transform: rotate(-4deg); }
+
+    /* sc003 / sc004 blueprint */
+    #nvs10-sc003-pan { position: absolute; left: 700px; top: 96px; width: 520px; height: 800px; border-radius: 30px; overflow: hidden; background: #000;
+      box-shadow: 0 0 0 2px rgba(159,220,240,0.35), 0 30px 60px rgba(0,0,0,0.6); }
+    #nvs10-sc003-pan img { position: absolute; left: -652px; top: -146px; width: 1824px; height: 1026px; }
+    #nvs10-sc003-pan::after { content: ""; position: absolute; inset: 0; border-radius: 30px; box-shadow: inset 0 0 60px 20px rgba(0,0,0,0.75); }
+    .n10-cut { position: absolute; }
+    .n10-cut img { display: block; width: 100%; height: 100%; }
+
+    /* sc005 */
+    #nvs10-sc005-num { position: absolute; left: 1290px; top: 210px; font-size: 150px; line-height: 1; color: var(--ink); }
+    #nvs10-sc005-homes { position: absolute; left: 1296px; top: 372px; font-size: 64px; line-height: 1; color: var(--ink); }
+    .n10-hlb { position: absolute; left: -14px; right: -14px; top: 30%; bottom: 6%; background: var(--yellow); mix-blend-mode: multiply; transform-origin: 0 50%; transform: scaleX(0); }
+
+    /* sc006 */
+    #nvs10-sc006-card { left: 470px; top: 210px; width: 980px; height: 620px; transform: rotate(-1.5deg); }
+    #nvs10-sc006-card .in { position: absolute; left: 20px; top: 20px; right: 20px; bottom: 20px; background: radial-gradient(ellipse 70% 70% at 50% 45%, #22292c 0%, #121618 75%); overflow: hidden; }
+
+    /* sc007 2.5D */
+    #nvs10-sc007-stage { position: absolute; inset: 0; perspective: 1200px; perspective-origin: 50% 45%; }
+    #nvs10-sc007-cam { position: absolute; inset: 0; transform-style: preserve-3d; }
+    .n10-plane { position: absolute; inset: 0; }
+    .n10-plane img { position: absolute; }
+
+    /* sc008 */
+    #nvs10-sc008-bg { position: absolute; inset: -60px; background: url('assets/textures/paper_blueprint_01_hires.jpg') center / cover; filter: saturate(0.35) brightness(0.42) hue-rotate(-8deg); }
+
+    /* sc010 map */
+    #nvs10-sc010-cam { position: absolute; left: 0; top: 0; width: 3600px; height: 2500px; transform-origin: 0 0; }
+    #nvs10-sc010-cam > img { position: absolute; left: 0; top: 0; width: 3600px; height: 2500px; }
+    #nvs10-sc010-box { position: absolute; left: 1060px; top: 176px; width: 764px; height: 573px; background: #f0efe8; padding: 10px; box-sizing: border-box; box-shadow: 0 30px 60px rgba(0,0,0,0.6); }
+    #nvs10-sc010-box .in { position: relative; width: 100%; height: 100%; overflow: hidden; }
+    #nvs10-sc010-box img { position: absolute; left: -8px; top: -7px; width: 760px; height: 570px; }
+    .n10-pin { position: absolute; width: 0; height: 0; }
+    .n10-pin i { position: absolute; left: -13px; top: -13px; width: 26px; height: 26px; border-radius: 50%; background: var(--volt); border: 4px solid var(--night); box-shadow: 0 0 0 3px var(--volt-light), 0 0 18px rgba(134,194,50,0.7); }
+    .n10-maplab { position: absolute; font-size: 28px; color: var(--bone); white-space: nowrap; }
+
+    /* sc011 bars */
+    .n10-bar { position: absolute; height: 120px; transform-origin: 0 50%; }
+    .n10-bar::after { content: ""; position: absolute; inset: 0; background: url('assets/textures/paper_fiber_01.jpg') center / cover; mix-blend-mode: multiply; opacity: 0.55; }
+    .n10-seg { position: absolute; top: 0; height: 120px; background: var(--red); }
+    .n10-seg::after { content: ""; position: absolute; inset: 0; background: url('assets/textures/paper_fiber_01.jpg') center / cover; mix-blend-mode: multiply; opacity: 0.5; }
+
+    /* sc012 grids */
+    .n10-cell { position: absolute; width: 48px; height: 48px; box-sizing: border-box; }
+    #nvs10-flash { position: absolute; inset: 0; background: var(--bone); opacity: 0; pointer-events: none; z-index: 7; }
+    #nvs10-grain, #nvs10-dust, #nvs10-vig { z-index: 8; }
+  </style>
+
+  <div id="root" data-composition-id="nvs10" data-vo-start="935.000" data-duration="111.000" data-width="1920" data-height="1080">
+    <svg id="nvs10-defs" width="0" height="0" style="position:absolute">
+      <defs>
+        <symbol id="nvs10-s-chip" viewBox="0 0 256 256"><path fill-rule="evenodd" d="M56 48 H200 a8 8 0 0 1 8 8 V200 a8 8 0 0 1 -8 8 H56 a8 8 0 0 1 -8 -8 V56 a8 8 0 0 1 8 -8 Z M88 88 V168 H168 V88 Z"/><path d="M72 20 h12 v28 h-12 Z M72 208 h12 v28 h-12 Z M20 72 v12 h28 v-12 Z M208 72 v12 h28 v-12 Z M100 20 h12 v28 h-12 Z M100 208 h12 v28 h-12 Z M20 100 v12 h28 v-12 Z M208 100 v12 h28 v-12 Z M128 20 h12 v28 h-12 Z M128 208 h12 v28 h-12 Z M20 128 v12 h28 v-12 Z M208 128 v12 h28 v-12 Z M156 20 h12 v28 h-12 Z M156 208 h12 v28 h-12 Z M20 156 v12 h28 v-12 Z M208 156 v12 h28 v-12 Z M184 20 h12 v28 h-12 Z M184 208 h12 v28 h-12 Z M20 184 v12 h28 v-12 Z M208 184 v12 h28 v-12 Z"/><path d="M104 104 H152 V152 H104 Z"/></symbol>
+        <symbol id="nvs10-s-rack" viewBox="0 0 256 256"><path fill-rule="evenodd" d="M68 16 H188 a8 8 0 0 1 8 8 V228 H60 V24 a8 8 0 0 1 8 -8 Z M84 48 H172 V60 H84 Z M84 72 H172 V84 H84 Z M84 96 H172 V108 H84 Z M84 120 H172 V132 H84 Z M84 144 H172 V156 H84 Z M84 168 H172 V180 H84 Z M84 192 H172 V204 H84 Z"/><path d="M60 232 H84 V244 H60 Z M172 232 H196 V244 H172 Z"/></symbol>
+        <symbol id="nvs10-s-house" viewBox="0 0 256 256"><path fill-rule="evenodd" d="M128 28 L236 120 L220 138 L208 128 V228 H48 V128 L36 138 L20 120 Z M108 228 V164 H148 V228 Z M72 140 V172 H100 V140 Z"/><path d="M172 44 H200 V88 L172 64 Z"/></symbol>
+        <symbol id="nvs10-s-suit" viewBox="0 0 256 256"><path fill-rule="evenodd" d="M96 40 a12 12 0 0 1 12 -12 H148 a12 12 0 0 1 12 12 V64 H144 V44 H112 V64 H96 Z"/><path fill-rule="evenodd" d="M40 64 H216 a16 16 0 0 1 16 16 V204 a16 16 0 0 1 -16 16 H40 a16 16 0 0 1 -16 -16 V80 a16 16 0 0 1 16 -16 Z M72 80 V204 H84 V80 Z M172 80 V204 H184 V80 Z"/><path d="M48 220 h20 v16 h-20 Z M188 220 h20 v16 h-20 Z"/></symbol>
+        <symbol id="nvs10-s-bolt" viewBox="0 0 256 256"><path d="M152 12 L56 148 H120 L100 244 L204 100 H138 Z"/></symbol>
+      </defs>
+    </svg>
+
+    <!-- sc001 · 935.00–952.54 · build an AI company … feed it to these chips … practice for months … training · grid-paper collage (ref ast_c5efacef3dbd4abf) -->
+    <div class="n10-scene" id="nvs10-sc001"><div class="n10-shot n10-paper" id="nvs10-sc001-shot">
+      <div class="n10-p1" style="background-image:url('assets/textures/paper_cream_01.jpg')"></div>
+      <div class="n10-p2" style="background-image:url('assets/textures/paper_graph_01_hires.jpg'); filter:saturate(0.2); opacity:0.62"></div>
+      <div class="n10-cam" id="nvs10-sc001-cam">
+        <div class="n10-tape" style="left:1560px; top:-10px; width:300px; height:150px; transform:rotate(8deg); background:rgba(225,222,206,0.55)"></div>
+        <div id="nvs10-sc001-pages"></div>
+        <div class="n10-card" id="nvs10-sc001-card"><div class="in"><img id="nvs10-sc001-chip" src="assets/nvidia/shared/hardware/cutouts/h100_sxm_cutout.png" alt=""></div></div>
+        <div class="n10-card" id="nvs10-sc001-globe"><svg id="nvs10-sc001-gsv" viewBox="0 0 330 330" style="position:absolute; inset:0; width:330px; height:330px"></svg></div>
+        <div id="nvs10-sc001-cal"><div class="band"></div><div class="ring" style="left:60px"></div><div class="ring" style="left:222px"></div><div id="nvs10-sc001-mos"></div></div>
+        <svg id="nvs10-sc001-svg" class="n10-mk" viewBox="0 0 1920 1080"></svg>
+        <div id="nvs10-sc001-pen"></div>
+        <div class="t-display" id="nvs10-sc001-sticky"><span class="n10-w">TRAINING</span></div>
+      </div>
+      <div class="n10-credit ink t-label">Image: NVIDIA</div>
+    </div></div>
+
+    <!-- sc002 · 952.54–964.06 · a lot of chips, insanely a lot … working together in a cluster … how big this system is · night isotype -->
+    <div class="n10-scene" id="nvs10-sc002"><div class="n10-shot" id="nvs10-sc002-shot">
+      <div class="n10-hall"></div>
+      <div class="n10-cam" id="nvs10-sc002-cam"><svg id="nvs10-sc002-svg" class="n10-mk" viewBox="0 0 1920 1080"></svg></div>
+      <div class="n10-abs t-label clean" id="nvs10-sc002-lab" style="left:249px; top:92px; font-size:30px; color:var(--volt-light)"><span class="n10-w">CLUSTER</span></div>
+    </div></div>
+
+    <!-- sc003 · 964.06–971.26 · NVIDIA's newest system … a rack … the size of a refrigerator · blueprint (ref ast_b79f39f3b42f48f8) -->
+    <div class="n10-scene" id="nvs10-sc003"><div class="n10-shot" id="nvs10-sc003-shot">
+      <div class="n10-cam" id="nvs10-sc003-cam">
+        <div class="n10-bp"></div><div class="n10-bpglow"></div>
+        <svg id="nvs10-sc003-svg" class="n10-mk" viewBox="0 0 1920 1080"></svg>
+        <div id="nvs10-sc003-pw" class="n10-abs" style="left:0; top:0; width:1920px; height:1080px">
+          <div id="nvs10-sc003-pan"><img src="assets/nvidia/shared/hardware/gb300_nvl72_rack_render_2.jpg" alt=""></div>
+          <div class="n10-abs t-label clean" id="nvs10-sc003-tag" style="left:700px; width:520px; top:928px; text-align:center; font-size:26px"><span class="n10-w">NVIDIA GB300 NVL72</span></div>
+        </div>
+        <div class="n10-cut" id="nvs10-sc003-rack" style="left:1010px; top:150px; width:226px; height:760px"><img src="assets/nvidia/shared/hardware/cutouts/gb200_nvl72_rack_front_cutout.png" alt="" style="filter:drop-shadow(0 20px 30px rgba(0,0,0,0.6))"></div>
+        <div class="n10-cut" id="nvs10-sc003-fridge" style="left:1400px; top:316px; width:282px; height:594px"><img src="assets/nvidia/shared/hardware/cutouts/refrigerator_cutout.png" alt="" style="filter:saturate(0.4) brightness(0.92) drop-shadow(0 20px 30px rgba(0,0,0,0.6))"></div>
+        <div class="n10-abs t-label clean" id="nvs10-sc003-fl" style="left:1340px; width:402px; top:258px; text-align:center; font-size:26px; color:var(--sky)"><span class="n10-w">REFRIGERATOR</span></div>
+      </div>
+      <div class="n10-credit t-label">Images: NVIDIA · rack: Pokiiri, CC BY-SA 4.0 · fridge: Kskhh, CC BY-SA 4.0</div>
+    </div></div>
+
+    <!-- sc004 · 971.26–976.54 · one rack weighs 3,000 pounds … like a small car · balance on the blueprint -->
+    <div class="n10-scene" id="nvs10-sc004"><div class="n10-shot" id="nvs10-sc004-shot">
+      <div class="n10-cam" id="nvs10-sc004-cam">
+        <div class="n10-bp" style="background-position:0 0, 0 0, 0 0, 0 0"></div><div class="n10-bpglow"></div>
+        <svg id="nvs10-sc004-svg" class="n10-mk" viewBox="0 0 1920 1080"></svg>
+        <div class="n10-cut" id="nvs10-sc004-rack"><img src="assets/nvidia/shared/hardware/cutouts/gb200_nvl72_rack_front_cutout.png" alt="" style="filter:drop-shadow(0 16px 22px rgba(0,0,0,0.6))"></div>
+        <div class="n10-abs" id="nvs10-sc004-car" style="width:420px; height:236px; background:#f0efe8; padding:8px; box-sizing:border-box; box-shadow:0 18px 30px rgba(0,0,0,0.6)"><img src="assets/nvidia/shared/hardware/car_vw_up_side.jpg" alt="" style="display:block; width:100%; height:100%; object-fit:cover; filter:saturate(0.5)"></div>
+        <div class="n10-abs" id="nvs10-sc004-wt" style="left:0; width:1920px; text-align:center; top:110px; white-space:nowrap">
+          <span class="t-display halate yellow" id="nvs10-sc004-num" style="font-size:150px; line-height:1; opacity:0">0</span><span class="t-display clean n10-w" style="font-size:72px; margin-left:22px">LB</span>
+        </div>
+      </div>
+      <div class="n10-credit t-label">rack: Pokiiri, CC BY-SA 4.0 · car: Overlaet, CC BY-SA 3.0</div>
+    </div></div>
+
+    <!-- sc005 · 976.54–985.50 · the same electricity as 100 homes here in the United States · isotype R5 -->
+    <div class="n10-scene" id="nvs10-sc005"><div class="n10-shot n10-paper" id="nvs10-sc005-shot">
+      <div class="n10-p1" style="background-image:url('assets/textures/paper_cream_02.jpg')"></div>
+      <div class="n10-p2" style="background-image:url('assets/textures/paper_stained_01_hires.jpg'); opacity:0.5"></div>
+      <div class="n10-cam" id="nvs10-sc005-cam">
+        <div class="n10-photo" id="nvs10-sc005-photo" style="left:1290px; top:520px; width:520px; height:360px; transform:rotate(2deg)"><img src="assets/nvidia/shared/places/suburban_tract_cincinnati_aerial.jpg" alt=""><div class="n10-tape" style="left:200px; top:-18px; transform:rotate(-3deg)"></div></div>
+        <svg id="nvs10-sc005-svg" class="n10-mk" viewBox="0 0 1920 1080"></svg>
+        <div id="nvs10-sc005-num" class="t-display"><span style="position:relative; display:inline-block"><span class="n10-hlb" id="nvs10-sc005-hl"></span><span id="nvs10-sc005-n" style="position:relative">0</span></span></div>
+        <div id="nvs10-sc005-homes" class="t-display"><span class="n10-w">HOMES</span></div>
+      </div>
+    </div></div>
+
+    <!-- sc006 · 985.50–994.46 · cool these racks with liquid … plumbing … a bunch of other stuff · isometric (ref ast_91abea88b76c4b43) -->
+    <div class="n10-scene" id="nvs10-sc006"><div class="n10-shot n10-paper" id="nvs10-sc006-shot">
+      <div class="n10-p1" style="background-image:url('assets/textures/paper_cream_01.jpg')"></div>
+      <div class="n10-p2" style="background-image:url('assets/textures/paper_graph_01_hires.jpg'); filter:saturate(0.2); opacity:0.6"></div>
+      <div class="n10-cam" id="nvs10-sc006-cam">
+        <div class="n10-photo" id="nvs10-sc006-sub" style="left:110px; top:640px; width:340px; height:240px; transform:rotate(-3deg)"><img src="assets/nvidia/shared/places/substation_750kv.jpg" alt=""></div>
+        <div class="n10-photo" id="nvs10-sc006-tow" style="left:1456px; top:630px; width:340px; height:240px; transform:rotate(3deg)"><img src="assets/nvidia/shared/hardware/cooling_towers_2.jpg" alt=""></div>
+        <div class="n10-card" id="nvs10-sc006-card"><div class="in"><svg id="nvs10-sc006-iso" viewBox="0 0 940 580" style="position:absolute; inset:0; width:940px; height:580px"></svg></div></div>
+        <div class="n10-photo" id="nvs10-sc006-hose" style="left:96px; top:150px; width:400px; height:268px; transform:rotate(-4deg)"><img src="assets/nvidia/shared/hardware/liquid_cooling_hoses_closeup.jpg" alt="" style="filter:saturate(0.7)"><div class="n10-tape" style="left:140px; top:-18px; transform:rotate(4deg)"></div></div>
+        <svg id="nvs10-sc006-svg" class="n10-mk" viewBox="0 0 1920 1080"></svg>
+        <div class="n10-ptag t-label" id="nvs10-sc006-t1" style="left:300px; top:474px"><span class="n10-w">LIQUID COOLING</span></div>
+        <div class="n10-ptag t-label" id="nvs10-sc006-t2" style="left:640px; top:880px"><span class="n10-w">PLUMBING</span></div>
+      </div>
+      <div class="n10-credit ink t-label">Photos: ServeTheHome · Novoklimov, CC BY 4.0 · Vsatinet, CC BY-SA 4.0</div>
+    </div></div>
+
+    <!-- sc007 · 994.46–998.90 · an AI company, especially a frontier AI company · 2.5D aisle (xAI Colossus hall) -->
+    <div class="n10-scene" id="nvs10-sc007"><div class="n10-shot" id="nvs10-sc007-shot">
+      <div id="nvs10-sc007-stage"><div id="nvs10-sc007-cam"></div></div>
+      <div class="n10-abs" style="left:0; right:0; bottom:0; height:320px; background:linear-gradient(180deg, rgba(13,16,18,0), rgba(13,16,18,0.55))"></div>
+      <div class="n10-tag t-label" id="nvs10-sc007-tag" style="left:96px; top:944px; text-transform:none">xAI COLOSSUS · MEMPHIS</div>
+      <div class="n10-credit t-label">Photo: ServeTheHome / Supermicro</div>
+    </div></div>
+
+    <!-- sc008 · 998.90–1003.66 · needs like thousands of these racks · blueprint floor plan -->
+    <div class="n10-scene" id="nvs10-sc008"><div class="n10-shot" id="nvs10-sc008-shot">
+      <div id="nvs10-sc008-bg"></div>
+      <div class="n10-cam" id="nvs10-sc008-cam"><svg id="nvs10-sc008-svg" class="n10-mk" viewBox="0 0 1920 1080"></svg></div>
+    </div></div>
+
+    <!-- sc009 · 1003.66–1014.65 · why it's so hard to smuggle in the numbers that China actually needs … massive · paper scale gag -->
+    <div class="n10-scene" id="nvs10-sc009"><div class="n10-shot n10-paper" id="nvs10-sc009-shot">
+      <div class="n10-p1" style="background-image:url('assets/textures/paper_cream_02.jpg')"></div>
+      <div class="n10-p2" style="background-image:url('assets/textures/paper_fiber_01.jpg'); opacity:0.5"></div>
+      <div class="n10-cam" id="nvs10-sc009-cam" style="transform-origin:0 0">
+        <svg id="nvs10-sc009-field" class="n10-mk" viewBox="0 0 1920 1080"></svg>
+        <img id="nvs10-sc009-gpu" src="assets/nvidia/shared/hardware/cutouts/rtx4090_fe_cutout.png" alt="" style="position:absolute; left:330px; top:300px; width:300px">
+        <svg id="nvs10-sc009-svg" class="n10-mk" viewBox="0 0 1920 1080"></svg>
+      </div>
+      <div class="n10-abs t-display" id="nvs10-sc009-cn" style="left:1290px; top:500px; padding:14px 22px 4px; font-size:96px; color:var(--red-dark); background:rgba(232,230,220,0.92); white-space:nowrap"><span class="n10-w">CHINA</span></div>
+      <div class="n10-credit ink t-label">card: ZMASLO, CC BY 3.0</div>
+    </div></div>
+
+    <!-- sc010 · 1014.65–1023.61 · a single data center in Memphis … 800,000 homes · US night map + zoom box (ref ast_671f213364e14029) -->
+    <div class="n10-scene" id="nvs10-sc010"><div class="n10-shot" id="nvs10-sc010-shot" style="background:#1b1f27">
+      <div id="nvs10-sc010-cam">
+        <img src="assets/nvidia/nvs10/derived/us_night_memphis.jpg" alt="">
+        <img id="nvs10-sc010-tn" src="assets/nvidia/nvs10/derived/tennessee_fill.svg" alt="" style="mix-blend-mode:screen">
+        <img src="assets/nvidia/nvs10/derived/us_memphis_overlay.svg" alt="">
+      </div>
+      <div class="n10-abs" style="inset:0; background:radial-gradient(ellipse 80% 80% at 45% 50%, rgba(0,0,0,0) 50%, rgba(0,0,0,0.5) 100%)"></div>
+      <svg id="nvs10-sc010-svg" class="n10-mk" viewBox="0 0 1920 1080"></svg>
+      <div class="n10-pin" id="nvs10-sc010-pin"><i></i><div class="n10-maplab t-label clean" style="left:-240px; top:22px; width:220px; text-align:right"><span class="n10-w">MEMPHIS</span></div></div>
+      <div id="nvs10-sc010-box"><div class="in"><img src="assets/nvidia/nvs10/derived/colossus_aerial_inset.jpg" alt="">
+        <div class="n10-pin" id="nvs10-sc010-bpin" style="left:392px; top:293px"><i></i></div>
+        <div class="n10-tag t-label" id="nvs10-sc010-btag" style="left:430px; top:250px; font-size:24px; text-transform:none">xAI COLOSSUS</div></div></div>
+      <div class="n10-abs" id="nvs10-sc010-k" style="left:96px; top:780px; white-space:nowrap">
+        <span class="t-display halate yellow" id="nvs10-sc010-num" style="font-size:150px; line-height:1; opacity:0">0</span><span class="t-display clean n10-w" style="font-size:72px; margin-left:24px">HOMES</span>
+      </div>
+      <div class="n10-credit t-label">Imagery: Esri, Maxar, Earthstar Geographics · relief: AWS Terrain Tiles · Natural Earth</div>
+    </div></div>
+
+    <!-- sc011 · 1023.61–1035.45 · more computing power than everything China has smuggled … combined · paper bars R6 -->
+    <div class="n10-scene" id="nvs10-sc011"><div class="n10-shot n10-paper" id="nvs10-sc011-shot">
+      <div class="n10-p1" style="background-image:url('assets/textures/paper_cream_01.jpg')"></div>
+      <div class="n10-p2" style="background-image:url('assets/textures/paper_stained_01_hires.jpg'); opacity:0.45"></div>
+      <div class="n10-cam" id="nvs10-sc011-cam">
+        <div class="n10-abs t-serif" id="nvs10-sc011-title" style="left:96px; top:150px; font-size:84px; line-height:1; color:var(--ink)"><span class="n10-w">Computing </span><span class="n10-w t-serif-i" style="color:var(--volt-dark)">power</span></div>
+        <div class="n10-abs" style="left:96px; top:268px; width:1728px; height:3px; background:rgba(20,24,27,0.55)"></div>
+        <div class="n10-abs t-label" id="nvs10-sc011-l1" style="left:96px; top:380px; font-size:28px; color:var(--ink)">MEMPHIS DATA CENTER</div>
+        <div class="n10-bar" id="nvs10-sc011-b1" style="left:96px; top:430px; width:1500px; background:var(--volt)"></div>
+        <div class="n10-abs t-label" id="nvs10-sc011-l2" style="left:96px; top:660px; font-size:28px; color:var(--ink)"><span class="n10-w">EVERYTHING </span><span class="n10-w">CHINA </span><span class="n10-w">HAS </span><span class="n10-w">SMUGGLED</span></div>
+        <div class="n10-abs" id="nvs10-sc011-b2" style="left:96px; top:710px; width:1300px; height:120px"></div>
+        <svg id="nvs10-sc011-svg" class="n10-mk" viewBox="0 0 1920 1080"></svg>
+      </div>
+    </div></div>
+
+    <!-- sc012 · 1035.45–1046.00 · just one data center … China's biggest data center … about 7% · night isotype grids -->
+    <div class="n10-scene" id="nvs10-sc012"><div class="n10-shot" id="nvs10-sc012-shot">
+      <div class="n10-hall"></div>
+      <div class="n10-cam" id="nvs10-sc012-cam">
+        <div class="n10-abs t-label clean" id="nvs10-sc012-l1" style="left:230px; top:166px; width:536px; text-align:center; font-size:30px; color:var(--volt-light)">MEMPHIS</div>
+        <div class="n10-abs t-label clean" id="nvs10-sc012-l2" style="left:1154px; top:166px; width:536px; text-align:center; font-size:30px; color:var(--red-light)"><span class="n10-w">CHINA'S </span><span class="n10-w">BIGGEST</span></div>
+        <div class="n10-abs" id="nvs10-sc012-g1" style="left:230px; top:226px; width:536px; height:536px"></div>
+        <div class="n10-abs" id="nvs10-sc012-g2" style="left:1154px; top:226px; width:536px; height:536px"></div>
+        <div class="n10-abs t-display halate yellow" id="nvs10-sc012-pct" style="left:1154px; width:536px; top:808px; text-align:center; font-size:150px; line-height:1"><span class="n10-w">7%</span></div>
+      </div>
+    </div></div>
+
+    <div id="nvs10-flash"></div>
+    <div id="nvs10-grain" class="tx tx-grain" style="background-image:url('assets/textures/grain_01_norm.jpg')"></div>
+    <div id="nvs10-dust" class="tx tx-dust" style="background-image:url('assets/textures/dust_02.jpg')"></div>
+    <div id="nvs10-vig" class="vignette"></div>
+    <audio id="nvs10-vo" class="temp-vo" src="vo_nv.mp3" data-start="0" data-duration="111.000" data-media-start="935.000" data-volume="1"></audio>
+  </div>
+
+  <script>
+  (function () {
+    const SEG = "nvs10", SEG_START = 935.000, SEG_END = 1046.000, DURATION = 111.000;
+    const T = (s) => +(s - SEG_START).toFixed(3);   // TEXT cues (audited): literal master word start − 0.06
+    const S = (s) => +(s - SEG_START).toFixed(3);   // STRUCTURAL cues (cuts, camera, objects)
+    const tl = gsap.timeline({ paused: true });
+    const $ = (id) => document.getElementById(SEG + "-" + id);
+    const NS = "http://www.w3.org/2000/svg";
+    const defs = $("defs");
+    const E = FX.ease;
+    const C = (e, d) => FX.choppy(e, d, 12);
+    const INK = "#14181b", BONE = "#f0efe8", VOLT = "#86c232", VOLTD = "#3f6410", VOLTL = "#c9ec8f", RED = "#dc2f3c", REDD = "#7e151e", REDL = "#f6a4a9",
+      ICE = "#2a9fc9", ICED = "#115973", SKY = "#9fdcf0", ASH = "#888e92", ASHD = "#33393d", ASHL = "#c3c7c8";
+
+    // ---------- scenes ----------
+    const SC = [
+      ["sc001", 935.000, 952.540, "paper"], ["sc002", 952.540, 964.060, "night"], ["sc003", 964.060, 971.260, "night"],
+      ["sc004", 971.260, 976.540, "night"], ["sc005", 976.540, 985.500, "paper"], ["sc006", 985.500, 994.460, "paper"],
+      ["sc007", 994.460, 998.900, "photo"], ["sc008", 998.900, 1003.660, "night"], ["sc009", 1003.660, 1014.650, "paper"],
+      ["sc010", 1014.650, 1023.610, "map"], ["sc011", 1023.610, 1035.450, "paper"], ["sc012", 1035.450, 1046.000, "night"],
+    ];
+    const GROUND = { paper: [0.32, 0.16, 0.26], night: [0.9, 0.4, 0.36], photo: [0.6, 0.3, 0.3], map: [0.7, 0.3, 0.32] };
+    const EARLY = { sc005: 0.45, sc011: 0.45 };   // paper slides: the incoming scene is visible during the slide
+    SC.forEach((s, i) => {
+      const el = $(s[0]), a = s[1] - (EARLY[s[0]] || 0);
+      if (i === 0) gsap.set(el, { autoAlpha: 1 });
+      else tl.fromTo(el, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.001, immediateRender: false }, S(a) - 0.002);
+      if (s[2] < SEG_END) tl.set(el, { autoAlpha: 0 }, S(s[2]) + 0.05);
+    });
+    gsap.set([$("vig"), $("dust"), $("grain")], { opacity: 0 });
+    SC.forEach((s) => { const v = GROUND[s[3]]; tl.set([$("vig"), $("dust"), $("grain")], { opacity: (i) => v[i] }, S(s[1])); });
+
+    // ---------- helpers ----------
+    const rise = (el, t, o) => { o = o || {}; const d = o.dur || 0.6;
+      tl.fromTo(el, { opacity: 0, y: o.y == null ? 16 : o.y }, { opacity: 1, y: 0, duration: d, ease: C(E.out, d), immediateRender: true }, t); };
+    const pop = (el, t, o) => { o = o || {}; const d = o.dur || 0.8;
+      tl.fromTo(el, { opacity: 0, scale: o.from == null ? 0.6 : o.from }, { opacity: 1, scale: 1, duration: d, ease: C(E.out, d), immediateRender: true }, t); };
+    const W = (id) => Array.from($(id).querySelectorAll(".n10-w"));
+    function words(id, cues, o) { const ws = W(id); cues.forEach((c, i) => rise(ws[i], c, o)); }
+    function el(parent, tag, attrs) { const n = document.createElementNS(NS, tag); for (const k in attrs) n.setAttribute(k, attrs[k]); parent.appendChild(n); return n; }
+    function ink(parent, d, t, dur, o) {
+      o = o || {};
+      const p = el(parent, "path", { d: d, fill: "none", stroke: o.color || INK, "stroke-width": o.width || 5, "stroke-linecap": "round", "stroke-linejoin": "round" });
+      if (o.filter) p.setAttribute("filter", o.filter);
+      if (o.dasharr) p.setAttribute("stroke-dasharray", o.dasharr);
+      const len = p.getTotalLength() || 1;
+      p._len = len;
+      if (o.dasharr) {   // dashed line: reveal with a growing mask-free trick (opacity + clip by dashoffset on a copy is overkill): fade + draw via clip
+        gsap.set(p, { opacity: 0 }); tl.fromTo(p, { opacity: 0 }, { opacity: o.opacity == null ? 1 : o.opacity, duration: dur, ease: C(E.out, dur), immediateRender: true }, t);
+      } else {
+        p.setAttribute("stroke-dasharray", len + " " + len); p.setAttribute("stroke-dashoffset", len);
+        gsap.set(p, { opacity: 0 }); tl.set(p, { opacity: o.opacity == null ? 1 : o.opacity }, t);
+        tl.fromTo(p, { attr: { "stroke-dashoffset": len } }, { attr: { "stroke-dashoffset": 0 }, duration: dur, ease: o.ease || C(E.out, dur), immediateRender: true }, t);
+      }
+      return p;
+    }
+    const whipN = { n: 0 };
+    function whip(a, b, t, o) {
+      o = Object.assign({ dir: 1, vertical: false, flash: false, dur: 0.32 }, o);
+      const k = ++whipN.n, ba = FX.whipDefs(defs, SEG + "-wa" + k), bb = FX.whipDefs(defs, SEG + "-wb" + k), h = o.dur / 2;
+      const A = $(a + "-shot"), B = $(b + "-shot");
+      tl.set(A, { filter: "url(#" + SEG + "-wa" + k + ")" }, t - h - 0.01); tl.set(A, { filter: "none" }, t + 0.06);
+      tl.set(B, { filter: "url(#" + SEG + "-wb" + k + ")" }, t - 0.001); tl.set(B, { filter: "none" }, t + h + 0.02);
+      FX.whip(tl, A, B, t, { dir: o.dir, vertical: o.vertical, dur: o.dur, blurA: ba, blurB: bb });
+      if (o.flash) tl.fromTo($("flash"), { opacity: 0 }, { opacity: 0.85, duration: 0.08, yoyo: true, repeat: 1, ease: "power2.in", immediateRender: false }, t - 0.08);
+    }
+    function slide(a, b, t, o) {
+      o = Object.assign({ from: 1, d: 0.45 }, o);
+      const A = $(a + "-shot"), B = $(b + "-shot"), dist = 1980 * o.from;
+      tl.fromTo(B, { x: dist, boxShadow: "0 0 80px rgba(0,0,0,0.5)" }, { x: 0, duration: o.d, ease: C(E.inOut, o.d), immediateRender: false }, t - o.d);
+      tl.set(B, { boxShadow: "none" }, t);
+      tl.fromTo(A, { x: 0 }, { x: -dist * 0.12, duration: o.d, ease: E.in, immediateRender: false }, t - o.d);
+    }
+    const use = (parent, sym, x, y, w, color, extra) => { const u = el(parent, "use", Object.assign({ href: "#" + SEG + "-s-" + sym, x: x, y: y, width: w, height: w, fill: color }, extra || {})); return u; };
+
+    FX.grain($("grain"), 1010);
+    FX.dust($("dust"), 1011, 2);
+    const PEN = FX.markupDefs(defs, SEG + "-pen", { boil: 4 });
+    defs.setAttribute("viewBox", "0 0 1 1");
+
+    /* ===== sc001 · grid-paper collage: information → chips → months → TRAINING ===== */
+    (function () {
+      const cam = $("sc001-cam"), svg = $("sc001-svg");
+      tl.fromTo(cam, { scale: 1.06, x: 30, y: 10 }, { scale: 1.0, x: 0, y: 0, duration: 16.9, ease: "sine.inOut", immediateRender: false }, S(935.00));
+      tl.to(cam, { scale: 1.12, x: -40, duration: 0.5, ease: E.in }, S(952.08));
+      // the chip polaroid lands (12 fps stop motion)
+      tl.fromTo($("sc001-card"), { opacity: 0, y: -60, rotation: -9, scale: 1.12 }, { opacity: 1, y: 0, rotation: -2, scale: 1, duration: 0.9, ease: C(E.out, 0.9), immediateRender: true }, S(935.15));
+      FX.focusHunt(tl, $("sc001-card"), S(936.10), { dur: 0.7 });
+      // pages of "information"
+      const host = $("sc001-pages"), PG = [
+        [120, 300, -8, 940.79], [180, 350, 4, 941.35], [250, 420, -3, 941.83],                       // a lot of information
+        [96, 640, 7, 944.31], [330, 700, -6, 944.47], [560, 760, 3, 944.63], [1130, 790, -5, 944.79], [380, 110, 5, 944.95], [1110, 90, -7, 945.11], // even more
+      ];
+      const pages = PG.map((p, i) => {
+        const d = document.createElement("div"); d.className = "n10-pg";
+        let h = "<b></b>";
+        for (let r = 0; r < 9; r++) h += '<i style="top:' + (64 + r * 21) + "px; width:" + (166 - ((r * 37 + i * 23) % 70)) + 'px"></i>';
+        d.innerHTML = h; d.style.left = p[0] + "px"; d.style.top = p[1] + "px"; host.appendChild(d);
+        tl.fromTo(d, { opacity: 0, x: -260, rotation: p[2] - 14 }, { opacity: 1, x: 0, rotation: p[2], duration: 0.6, ease: C(E.out, 0.6), immediateRender: true }, S(p[3]));
+        return d;
+      });
+      // the whole internet: a wire globe with a network drawing on
+      const g = $("sc001-gsv");
+      el(g, "circle", { cx: 165, cy: 165, r: 120, fill: "#e7e3d6", stroke: INK, "stroke-width": 4 });
+      [36, 76, 110].forEach((rx) => el(g, "ellipse", { cx: 165, cy: 165, rx: rx, ry: 120, fill: "none", stroke: INK, "stroke-width": 2, "stroke-opacity": 0.55 }));
+      [-80, -40, 0, 40, 80].forEach((dy) => { const w = Math.sqrt(120 * 120 - dy * dy); el(g, "path", { d: "M" + (165 - w) + " " + (165 + dy) + " L" + (165 + w) + " " + (165 + dy + 0.5), stroke: INK, "stroke-width": 2, "stroke-opacity": 0.55 }); });
+      const NODES = [[110, 95], [200, 80], [245, 150], [210, 230], [130, 240], [85, 170], [165, 160], [150, 115], [235, 200]];
+      const LINKS = [[0, 1], [1, 2], [2, 8], [8, 3], [3, 4], [4, 5], [5, 0], [6, 0], [6, 2], [6, 4], [7, 1], [7, 5], [6, 3]];
+      const net = el(g, "g", {});
+      LINKS.forEach((l, i) => { const a = NODES[l[0]], b = NODES[l[1]];
+        const p = el(net, "path", { d: "M" + a[0] + " " + a[1] + " Q" + ((a[0] + b[0]) / 2 + 6) + " " + ((a[1] + b[1]) / 2 - 8) + " " + b[0] + " " + b[1], fill: "none", stroke: VOLTD, "stroke-width": 4, "stroke-linecap": "round" });
+        const len = p.getTotalLength(); p.setAttribute("stroke-dasharray", len + " " + len);
+        tl.fromTo(p, { attr: { "stroke-dashoffset": len } }, { attr: { "stroke-dashoffset": 0 }, duration: 0.35, ease: C(E.out, 0.35), immediateRender: true }, S(943.25) + i * 0.06); });
+      NODES.forEach((n, i) => { const c = el(net, "circle", { cx: n[0], cy: n[1], r: 9, fill: VOLTD, stroke: "#e7e3d6", "stroke-width": 3 });
+        tl.fromTo(c, { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, S(943.25) + i * 0.08); });
+      tl.fromTo($("sc001-globe"), { opacity: 0, y: -40, rotation: 10, scale: 1.1 }, { opacity: 1, y: 0, rotation: 4, scale: 1, duration: 0.8, ease: C(E.out, 0.8), immediateRender: true }, S(942.97));
+      // feed it to these chips: pen arrows, then every page slides into the chip card
+      const a1 = FX.markup.arrow(tl, svg, S(946.81), { x1: 470, y1: 470, x2: 690, y2: 500, bend: -40, head: 26, dur: 0.45, color: VOLTD, width: 6, filter: PEN });
+      const a2 = FX.markup.arrow(tl, svg, S(946.95), { x1: 1390, y1: 360, x2: 1300, y2: 400, bend: 30, head: 26, dur: 0.4, color: VOLTD, width: 6, filter: PEN });
+      [a1, a2].forEach((a) => { gsap.set(a, { opacity: 0 }); tl.set(a, { opacity: 1 }, S(946.81)); tl.to(a, { opacity: 0, duration: 0.3 }, S(949.20)); });
+      pages.forEach((d, i) => { const p = PG[i];
+        tl.to(d, { x: 900 - p[0], y: 470 - p[1], scale: 0.12, rotation: 0, opacity: 0, duration: 0.7, ease: C(E.inOut, 0.7) }, S(947.40) + i * 0.13); });
+      tl.to($("sc001-globe"), { x: -330, y: 300, scale: 0.18, rotation: 0, opacity: 0, duration: 0.7, ease: C(E.inOut, 0.7) }, S(948.55));
+      // the chip takes it in: volt rim light
+      const chip = $("sc001-chip");
+      tl.fromTo(chip, { filter: "drop-shadow(0 0 0px rgba(134,194,50,0))" }, { filter: "drop-shadow(0 0 26px rgba(134,194,50,0.85))", duration: 1.2, ease: C(E.out, 1.2), immediateRender: true }, S(947.80));
+      // practice for months: desk calendar flips JAN → JUN
+      const cal = $("sc001-cal"), mos = $("sc001-mos"), M = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN"];
+      M.forEach((m, i) => { const d = document.createElement("div"); d.className = "n10-mo t-display"; d.textContent = m; mos.appendChild(d);
+        gsap.set(d, { opacity: 0 });
+        const ton = S(950.57) + i * 0.2;
+        tl.set(d, { opacity: 1 }, ton);
+        if (i < M.length - 1) tl.set(d, { opacity: 0 }, ton + 0.2); });
+      tl.fromTo(cal, { opacity: 0, y: 80, rotation: 6 }, { opacity: 1, y: 0, rotation: 3, duration: 0.7, ease: C(E.out, 0.7), immediateRender: true }, S(949.53));
+      // TRAINING sticky slaps on (the plan's hand-lettered label)
+      const st = $("sc001-sticky");
+      gsap.set(st, { opacity: 0 });
+      tl.fromTo(st, { opacity: 0, scale: 1.45, rotation: -12 }, { opacity: 1, scale: 1, rotation: -4, duration: 0.25, ease: "steps(3)", immediateRender: true }, T(951.84));
+      W("sc001-sticky").forEach((w) => tl.set(w, { opacity: 1 }, T(951.84)));
+    })();
+
+    /* ===== sc002 · one chip → insanely a lot → working together → CLUSTER → dive (whip →) ===== */
+    whip("sc001", "sc002", S(952.54), { dir: 1 });
+    (function () {
+      const svg = $("sc002-svg"), cam = $("sc002-cam");
+      const COLS = 37, ROWS = 21, P = 48, X0 = 960 - ((COLS - 1) * P) / 2, Y0 = 540 - ((ROWS - 1) * P) / 2, CI = 18, CJ = 10, SZ = 36;
+      const links = el(svg, "g", {}), rings = [];
+      for (let j = 0; j < ROWS; j++) { const y = Y0 + j * P; const p = el(links, "path", { d: "M" + X0 + " " + y + " L" + (X0 + (COLS - 1) * P) + " " + (y + 0.4), stroke: VOLTL, "stroke-width": 2.2, "stroke-opacity": 0.55, fill: "none" });
+        const len = p.getTotalLength(); p.setAttribute("stroke-dasharray", len + " " + len);
+        tl.fromTo(p, { attr: { "stroke-dashoffset": len } }, { attr: { "stroke-dashoffset": 0 }, duration: 0.8, ease: C(E.out, 0.8), immediateRender: true }, S(959.76) + Math.abs(j - CJ) * 0.03); }
+      for (let i = 0; i < COLS; i++) { const x = X0 + i * P; const p = el(links, "path", { d: "M" + x + " " + Y0 + " L" + (x + 0.4) + " " + (Y0 + (ROWS - 1) * P), stroke: VOLTL, "stroke-width": 2.2, "stroke-opacity": 0.55, fill: "none" });
+        const len = p.getTotalLength(); p.setAttribute("stroke-dasharray", len + " " + len);
+        tl.fromTo(p, { attr: { "stroke-dashoffset": len } }, { attr: { "stroke-dashoffset": 0 }, duration: 0.8, ease: C(E.out, 0.8), immediateRender: true }, S(959.90) + Math.abs(i - CI) * 0.012); }
+      for (let j = 0; j < ROWS; j++) for (let i = 0; i < COLS; i++) {
+        const r = Math.max(Math.abs(i - CI), Math.abs(j - CJ));
+        if (!rings[r]) rings[r] = el(svg, "g", {});
+        use(rings[r], "chip", X0 + i * P - SZ / 2, Y0 + j * P - SZ / 2, SZ, VOLT);
+      }
+      // centre chip alone, then rings at 12 fps
+      gsap.set(rings, { opacity: 0 });
+      tl.set(rings[0], { opacity: 1 }, S(952.56));
+      tl.fromTo(rings[0], { scale: 0.6, svgOrigin: "960 540" }, { scale: 1, svgOrigin: "960 540", duration: 0.8, ease: C(E.out, 0.8), immediateRender: false }, S(952.60));
+      rings.forEach((g, r) => { if (r) tl.set(g, { opacity: 1 }, S(956.50) + Math.floor(Math.pow(r, 0.85) * 1.4) / 12); });
+      gsap.set(cam, { transformOrigin: "960px 540px" });
+      tl.fromTo(cam, { scale: 5.2 }, { scale: 4.6, duration: 3.9, ease: "none", immediateRender: false }, S(952.54));
+      tl.to(cam, { scale: 0.78, duration: 3.2, ease: E.cam }, S(956.44));
+      // the cluster box + label
+      const bw = (COLS - 1) * P + SZ + 36, bh = (ROWS - 1) * P + SZ + 36;
+      const box = ink(svg, "M" + (960 - bw / 2) + " " + (540 - bh / 2) + " L" + (960 + bw / 2) + " " + (540 - bh / 2 + 1) + " L" + (960 + bw / 2 - 1) + " " + (540 + bh / 2) + " L" + (960 - bw / 2) + " " + (540 + bh / 2 - 1) + " Z", S(960.70), 0.7, { color: VOLTL, width: 4 });
+      words("sc002-lab", [T(960.88)], { dur: 0.4, y: 8 });
+      // dive into the centre chip (into the cut)
+      tl.to(cam, { scale: 9, duration: 1.5, ease: E.in }, S(962.56));
+      tl.to($("sc002-lab"), { opacity: 0, duration: 0.3 }, S(962.56));
+    })();
+
+    /* ===== sc003 · the rack: GB300 NVL72 render, then rack vs a home fridge (hard cut on action) ===== */
+    (function () {
+      const cam = $("sc003-cam"), svg = $("sc003-svg");
+      tl.fromTo(cam, { scale: 1.18 }, { scale: 1.0, duration: 1.4, ease: E.cam, immediateRender: false }, S(964.06));
+      tl.to(cam, { scale: 1.03, duration: 5.8, ease: "none" }, S(965.46));
+      // schematic lines around the render panel (blueprint overlay, ref b79f39f3)
+      const SK = { color: SKY, width: 2.5, opacity: 0.7 };
+      ink(svg, "M640 96 L640 897", S(964.30), 0.7, SK); ink(svg, "M622 96 L658 96 M622 896 L658 897", S(964.30), 0.4, SK);
+      ink(svg, "M1280 140 C1420 140 1520 160 1600 230 L1700 230", S(964.50), 0.8, SK);
+      ink(svg, "M1700 230 L1700 860 M1690 860 L1780 860", S(964.80), 0.7, Object.assign({}, SK, { opacity: 0.45 }));
+      ink(svg, "M300 300 L640 300 M300 520 L640 520 M300 740 L640 740", S(964.65), 0.8, Object.assign({}, SK, { opacity: 0.4 }));
+      [300, 520, 740].forEach((y, i) => { const c = el(svg, "circle", { cx: 300, cy: y, r: 8, fill: "none", stroke: SKY, "stroke-width": 2.5, opacity: 0 });
+        tl.to(c, { opacity: 0.6, duration: 0.2 }, S(965.2) + i * 0.1); });
+      tl.fromTo($("sc003-pan"), { opacity: 0, scale: 0.92 }, { opacity: 1, scale: 1, duration: 1.0, ease: C(E.out, 1.0), immediateRender: true }, S(964.08));
+      words("sc003-tag", [T(964.00)], { dur: 0.5, y: 10 });
+      // "size of a refrigerator": the panel slides out left, the comparison stands up
+      tl.to($("sc003-pw"), { x: -1500, duration: 0.7, ease: C(E.in, 0.7) }, S(967.95));
+      tl.to(svg, { opacity: 0, duration: 0.4 }, S(967.95));
+      gsap.set([$("sc003-rack"), $("sc003-fridge")], { opacity: 0 });
+      tl.fromTo($("sc003-rack"), { opacity: 0, x: 400 }, { opacity: 1, x: 0, duration: 0.9, ease: C(E.out, 0.9), immediateRender: true }, S(968.30));
+      tl.fromTo($("sc003-fridge"), { opacity: 0, y: 140 }, { opacity: 1, y: 0, duration: 0.9, ease: C(E.out, 0.9), immediateRender: true }, S(968.55));
+      const sv2 = el($("sc003-svg").parentNode, "svg", { class: "n10-mk", viewBox: "0 0 1920 1080" });
+      $("sc003-svg").parentNode.insertBefore(sv2, $("sc003-rack"));
+      ink(sv2, "M880 910 C1200 912 1500 908 1800 911", S(968.40), 0.6, { color: SKY, width: 3, opacity: 0.8 });   // floor line
+      ink(sv2, "M960 150 L961 910 M944 150 L976 150 M944 910 L976 910", S(968.95), 0.6, { color: SKY, width: 3, opacity: 0.8 });   // rack height
+      ink(sv2, "M1730 316 L1731 910 M1714 316 L1746 316 M1714 910 L1746 910", S(969.25), 0.6, { color: SKY, width: 3, opacity: 0.8 });   // fridge height
+      ink(sv2, "M1260 150 L1720 150", S(969.55), 0.6, { color: SKY, width: 2, opacity: 0.4, dasharr: "10 10" });
+      words("sc003-fl", [T(969.04)], { dur: 0.5, y: 10 });
+      tl.to(cam, { x: -60, duration: 0.5, ease: E.in }, S(970.80));
+    })();
+
+    /* ===== sc004 · 3,000 LB balanced by a small car (whip ←) ===== */
+    whip("sc003", "sc004", S(971.26), { dir: -1 });
+    (function () {
+      const svg = $("sc004-svg"), cam = $("sc004-cam"), rack = $("sc004-rack"), car = $("sc004-car");
+      const PX = 960, PY = 640, L = 540, AT = 440;
+      const stand = el(svg, "g", {});
+      el(stand, "path", { d: "M960 656 L880 905 L1040 905 Z", fill: "rgba(159,220,240,0.08)", stroke: SKY, "stroke-width": 4, "stroke-opacity": 0.85 });
+      el(stand, "path", { d: "M760 907 L1160 905", stroke: SKY, "stroke-width": 4, "stroke-opacity": 0.85 });
+      const beam = el(svg, "path", { d: "", stroke: BONE, "stroke-width": 12, "stroke-linecap": "round" });
+      const pivot = el(svg, "circle", { cx: PX, cy: PY, r: 15, fill: "#0b1215", stroke: BONE, "stroke-width": 5 });
+      const RW = 126, RH = 424, CW = 420, CH = 236;
+      gsap.set(rack, { width: RW, height: RH });
+      function draw(deg) {
+        const a = (deg * Math.PI) / 180, c = Math.cos(a), s = Math.sin(a);
+        beam.setAttribute("d", "M" + (PX - L * c).toFixed(1) + " " + (PY - L * s).toFixed(1) + " L" + (PX + L * c).toFixed(1) + " " + (PY + L * s).toFixed(1));
+        const lx = PX - AT * c, ly = PY - AT * s - 6, rx = PX + AT * c, ry = PY + AT * s - 6;
+        rack.style.left = (lx - RW / 2).toFixed(1) + "px"; rack.style.top = (ly - RH).toFixed(1) + "px";
+        car.style.left = (rx - CW / 2).toFixed(1) + "px"; car.style.top = (ry - CH).toFixed(1) + "px";
+      }
+      const st = { a: 0 };
+      draw(0);
+      // rack drops on the left pan → beam tips (12 fps); the car lands → beam levels
+      tl.fromTo(rack, { opacity: 0, y: -240 }, { opacity: 1, y: 0, duration: 0.55, ease: C("power2.in", 0.55), immediateRender: true }, S(971.30));
+      tl.fromTo(st, { a: 0 }, { a: -13, duration: 0.9, ease: C(E.out, 0.9), immediateRender: false, onUpdate: () => draw(st.a) }, S(971.85));
+      gsap.set(car, { opacity: 0 });
+      tl.fromTo(car, { opacity: 0, y: -260 }, { opacity: 1, y: 0, duration: 0.45, ease: C("power2.in", 0.45), immediateRender: true }, S(974.70));
+      tl.to(st, { a: 0, duration: 0.9, ease: C(E.inOut, 0.9), onUpdate: () => draw(st.a) }, S(975.15));
+      // 3,000 LB (the key number)
+      const num = $("sc004-num");
+      tl.set(num, { opacity: 1 }, T(972.72));
+      FX.text.count(tl, num, T(972.72), 0, 3000, 0.8, (v) => Math.round(v).toLocaleString("en-US"));
+      W("sc004-wt").forEach((w) => rise(w, T(973.52), { dur: 0.4, y: 10 }));
+      tl.fromTo(cam, { scale: 1.06 }, { scale: 1.0, duration: 5.28, ease: E.cam, immediateRender: false }, S(971.26));
+    })();
+
+    /* ===== sc005 · 100 homes (paper slide ←) ===== */
+    slide("sc004", "sc005", S(976.54));
+    (function () {
+      const svg = $("sc005-svg"), cam = $("sc005-cam");
+      tl.fromTo(cam, { scale: 1.0 }, { scale: 1.04, duration: 8.5, ease: "none", immediateRender: false }, S(976.54));
+      const r = use(svg, "rack", 110, 360, 330, INK);
+      gsap.set(r, { opacity: 0 }); tl.fromTo(r, { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.7, ease: C(E.out, 0.7), immediateRender: true }, S(976.60));
+      ink(svg, "M400 650 C450 680 470 600 520 610 C560 618 560 560 600 560", S(978.08), 0.6, { color: VOLTD, width: 9 });
+      const bolt = use(svg, "bolt", 440, 560, 70, VOLTD); gsap.set(bolt, { opacity: 0 }); tl.fromTo(bolt, { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, S(978.40));
+      const X0 = 620, Y0 = 220, P = 64, HS = 52, houses = [];
+      for (let j = 0; j < 10; j++) for (let i = 0; i < 10; i++) houses.push(use(svg, "house", X0 + i * P, Y0 + j * P, HS, ASHL));
+      gsap.set(houses, { opacity: 0 });
+      houses.forEach((h, k) => tl.set(h, { opacity: 1 }, S(978.30) + Math.floor(k / 20) / 12));
+      // light up row by row on "100 homes"
+      for (let j = 0; j < 10; j++) tl.set(houses.slice(j * 10, j * 10 + 10), { attr: { fill: ICED } }, S(979.20) + j * (1 / 12));
+      const n = $("sc005-n");
+      tl.fromTo($("sc005-num"), { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, T(980.16));
+      FX.text.count(tl, n, T(980.16), 0, 100, 0.7);
+      tl.fromTo($("sc005-hl"), { scaleX: 0 }, { scaleX: 1, duration: 0.45, ease: C(E.out, 0.45), immediateRender: true }, T(980.16) + 0.5);
+      words("sc005-homes", [T(980.88)], { dur: 0.45, y: 10 });
+      // "here in the United States": a pinned aerial of US tract housing
+      tl.fromTo($("sc005-photo"), { opacity: 0, y: 160, rotation: 9 }, { opacity: 1, y: 0, rotation: 2, duration: 0.8, ease: C(E.out, 0.8), immediateRender: true }, S(981.62));
+      tl.to(cam, { scale: 1.08, x: -40, duration: 0.5, ease: E.in }, S(985.00));
+    })();
+
+    /* ===== sc006 · liquid cooling isometric (whip ↑) ===== */
+    whip("sc005", "sc006", S(985.50), { dir: 1, vertical: true });
+    (function () {
+      const cam = $("sc006-cam"), iso = $("sc006-iso"), svg = $("sc006-svg");
+      tl.fromTo(cam, { scale: 1.05 }, { scale: 1.0, duration: 8.96, ease: E.cam, immediateRender: false }, S(985.50));
+      tl.fromTo($("sc006-card"), { opacity: 0, y: 70, rotation: 3 }, { opacity: 1, y: 0, rotation: -1.5, duration: 0.8, ease: C(E.out, 0.8), immediateRender: true }, S(985.52));
+      const U = 50, OX = 430, OY = 168;
+      const pt = (x, y, z) => [OX + (x - y) * U * 0.866, OY + (x + y) * U * 0.5 - z * U];
+      const poly = (pts) => "M" + pts.map((q) => q[0].toFixed(1) + " " + q[1].toFixed(1)).join(" L") + " Z";
+      // floor grid
+      const fl = el(iso, "g", { stroke: BONE, "stroke-opacity": 0.13, "stroke-width": 1.5 });
+      for (let k = -1; k <= 9; k++) { const a = pt(k, -1, 0), b = pt(k, 7, 0); el(fl, "path", { d: "M" + a[0] + " " + a[1] + " L" + b[0] + " " + b[1] }); }
+      for (let k = -1; k <= 7; k++) { const a = pt(-1, k, 0), b = pt(9, k, 0); el(fl, "path", { d: "M" + a[0] + " " + a[1] + " L" + b[0] + " " + b[1] }); }
+      const ROWY = [0.2, 2.4, 4.6], D = 0.7, H = 2.0, racks = el(iso, "g", {}), groups = [];
+      ROWY.forEach((y0, ri) => {
+        const rg = el(racks, "g", {}); groups.push(rg);
+        for (let x = 0; x < 8; x++) {
+          const g = el(rg, "g", {});
+          el(g, "path", { d: poly([pt(x, y0 + D, 0), pt(x + 1, y0 + D, 0), pt(x + 1, y0 + D, H), pt(x, y0 + D, H)]), fill: "#242c2f", stroke: BONE, "stroke-width": 2 });
+          el(g, "path", { d: poly([pt(x + 1, y0, 0), pt(x + 1, y0 + D, 0), pt(x + 1, y0 + D, H), pt(x + 1, y0, H)]), fill: "#1a2023", stroke: BONE, "stroke-width": 2 });
+          el(g, "path", { d: poly([pt(x, y0, H), pt(x + 1, y0, H), pt(x + 1, y0 + D, H), pt(x, y0 + D, H)]), fill: "#3a4a2a", stroke: BONE, "stroke-width": 2 });
+          for (let s = 1; s < 6; s++) { const a = pt(x + 0.15, y0 + D, s * 0.32), b = pt(x + 0.85, y0 + D, s * 0.32); el(g, "path", { d: "M" + a[0] + " " + a[1] + " L" + b[0] + " " + (b[1] + 0.3), stroke: VOLT, "stroke-width": 2, "stroke-opacity": 0.75 }); }
+        }
+      });
+      groups.forEach((g, i) => tl.fromTo(g, { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, S(985.80) + i * 0.17));
+      // heat rising off the racks ("cool the servers")
+      const heat = el(iso, "g", { opacity: 0 });
+      [[1.5, 0.2], [4.5, 0.2], [2.5, 2.4], [6, 2.4], [3.5, 4.6], [6.5, 4.6]].forEach((q) => { const b = pt(q[0], q[1] + 0.35, H + 0.2);
+        el(heat, "path", { d: "M" + b[0] + " " + b[1] + " c -10 -16 10 -24 0 -40 c -10 -16 10 -24 0 -40", fill: "none", stroke: ASHL, "stroke-width": 3, "stroke-linecap": "round" }); });
+      tl.fromTo(heat, { opacity: 0, y: 10 }, { opacity: 0.8, y: -6, duration: 0.8, ease: C(E.out, 0.8), immediateRender: true }, S(986.96));
+      tl.to(heat, { opacity: 0, duration: 0.5, ease: C("none", 0.5) }, S(989.60));
+      // coolant pipes along every row + a manifold to the pump (ice, "with liquid")
+      ROWY.forEach((y0, ri) => {
+        let d = ""; const a = pt(-0.8, y0 + D + 0.25, 0.05), b = pt(8.2, y0 + D + 0.25, 0.05);
+        d = "M" + a[0] + " " + a[1] + " L" + b[0] + " " + b[1];
+        for (let x = 0; x < 8; x++) { const p0 = pt(x + 0.5, y0 + D + 0.25, 0.05), p1 = pt(x + 0.5, y0 + D, 1.1); d += " M" + p0[0] + " " + p0[1] + " L" + p1[0] + " " + p1[1]; }
+        ink(iso, d, S(989.36) + ri * 0.12, 0.8, { color: SKY, width: 4 });
+      });
+      const m0 = pt(8.2, 0.2 + D + 0.25, 0.05), m1 = pt(8.2, 4.6 + D + 0.25, 0.05), pmp = pt(8.2, 6.0, 0.05);
+      ink(iso, "M" + m0[0] + " " + m0[1] + " L" + m1[0] + " " + m1[1] + " L" + pmp[0] + " " + pmp[1], S(989.50), 0.7, { color: SKY, width: 5 });
+      // pump (plumbing)
+      const pg = el(iso, "g", {});
+      el(pg, "path", { d: poly([pt(7.7, 6.0, 0), pt(8.7, 6.0, 0), pt(8.7, 6.8, 0), pt(7.7, 6.8, 0)]), fill: "#16323d", stroke: SKY, "stroke-width": 3 });
+      const pc = pt(8.2, 6.4, 0.55); el(pg, "circle", { cx: pc[0], cy: pc[1], r: 26, fill: "#16323d", stroke: SKY, "stroke-width": 4 });
+      el(pg, "path", { d: "M" + (pc[0] - 12) + " " + pc[1] + " L" + (pc[0] + 12) + " " + (pc[1] + 0.5) + " M" + pc[0] + " " + (pc[1] - 12) + " L" + (pc[0] + 0.5) + " " + (pc[1] + 12), stroke: SKY, "stroke-width": 3 });
+      tl.fromTo(pg, { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, S(990.82));
+      // the real hoses (xAI Colossus) + tags
+      tl.fromTo($("sc006-hose"), { opacity: 0, x: -200, rotation: -12 }, { opacity: 1, x: 0, rotation: -4, duration: 0.8, ease: C(E.out, 0.8), immediateRender: true }, S(988.32));
+      rise($("sc006-t1"), T(989.36), { dur: 0.45, y: 10 }); W("sc006-t1").forEach((w) => tl.set(w, { opacity: 1 }, T(989.36)));
+      const s1 = FX.markup.pen(tl, svg, S(989.70), { points: [[560, 500], [640, 520], [720, 470]], width: 5, color: INK, filter: PEN, dur: 0.5 });
+      rise($("sc006-t2"), T(990.88), { dur: 0.45, y: 10 }); W("sc006-t2").forEach((w) => tl.set(w, { opacity: 1 }, T(990.88)));
+      const pcs = { x: 470 + 20 + pc[0], y: 210 + 20 + pc[1] };
+      FX.markup.pen(tl, svg, S(991.20), { points: [[780, 884], [880, 850], [pcs.x - 30, pcs.y + 26]], width: 5, color: INK, filter: PEN, dur: 0.5 });
+      // "a bunch of other stuff": power + cooling-tower cards
+      tl.fromTo($("sc006-sub"), { opacity: 0, y: 160, rotation: 8 }, { opacity: 1, y: 0, rotation: -3, duration: 0.7, ease: C(E.out, 0.7), immediateRender: true }, S(991.98));
+      tl.fromTo($("sc006-tow"), { opacity: 0, y: 160, rotation: -8 }, { opacity: 1, y: 0, rotation: 3, duration: 0.7, ease: C(E.out, 0.7), immediateRender: true }, S(992.30));
+    })();
+
+    /* ===== sc007 · 2.5D: the xAI Colossus compute hall (light-flash whip) ===== */
+    whip("sc006", "sc007", S(994.46), { dir: 1, flash: true });
+    (function () {
+      const cam = $("sc007-cam"), P = 1200, K = 1.6, OY = -150;
+      const L = [["backdrop.jpg", 0, 0, 1199, 800, -500], ["far_racks.png", 383, 0, 400, 567, -150], ["left_row.png", 0, 0, 389, 800, 150], ["right_row.png", 777, 0, 422, 800, 150]];
+      L.forEach((l) => {
+        const pl = document.createElement("div"); pl.className = "n10-plane";
+        const im = document.createElement("img"); im.src = "assets/nvidia/shared/places/layers_datacenter_aisle/" + l[0];
+        im.style.left = (l[1] * K - 0).toFixed(1) + "px"; im.style.top = (l[2] * K + OY).toFixed(1) + "px"; im.style.width = (l[3] * K).toFixed(1) + "px"; im.style.height = (l[4] * K).toFixed(1) + "px";
+        im.style.filter = l[5] < -400 ? "saturate(0.6) blur(2px) brightness(0.92)" : "saturate(0.6) brightness(0.95)";
+        if (l[5] > 0) im.style.webkitMaskImage = im.style.maskImage = l[0] === "left_row.png" ? "linear-gradient(90deg, #000 88%, transparent)" : "linear-gradient(270deg, #000 88%, transparent)";
+        pl.appendChild(im); cam.appendChild(pl);
+        gsap.set(pl, { z: l[5], scale: (P - l[5]) / P });
+      });
+      tl.fromTo(cam, { z: 0, x: -24, rotationY: -1.2 }, { z: 95, x: 24, rotationY: 1.2, duration: 4.6, ease: "sine.inOut", immediateRender: false }, S(994.46));
+      tl.fromTo($("sc007-tag"), { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.6, ease: C(E.out, 0.6), immediateRender: true }, S(995.00));
+    })();
+
+    /* ===== sc008 · thousands of racks: blueprint floor plan fills (hard cut on action) ===== */
+    (function () {
+      const svg = $("sc008-svg"), cam = $("sc008-cam");
+      // six halls (2 × 3), each 14 rows × 30 racks
+      const RW = 14, RH = 8, GX = 3, ROWGAP = 22, HALLS = [], rowsG = [];
+      const hallW = 30 * (RW + GX), hallH = 14 * (RH + ROWGAP);
+      const H0X = 960 - (3 * hallW + 2 * 60) / 2, H0Y = 540 - (2 * hallH + 60) / 2;
+      const walls = el(svg, "g", { fill: "none", stroke: BONE, "stroke-width": 3, "stroke-opacity": 0.8 });
+      let first = null;
+      for (let hy = 0; hy < 2; hy++) for (let hx = 0; hx < 3; hx++) {
+        const ox = H0X + hx * (hallW + 60), oy = H0Y + hy * (hallH + 60);
+        el(walls, "rect", { x: ox - 12, y: oy - 12, width: hallW + 18, height: hallH + 2, rx: 4 });
+        for (let r = 0; r < 14; r++) {
+          const g = el(svg, "g", {}), y = oy + r * (RH + ROWGAP) + 4;
+          for (let c = 0; c < 30; c++) {
+            const rc = el(g, "rect", { x: ox + c * (RW + GX), y: y, width: RW, height: RH, fill: VOLT, "fill-opacity": 0.85 });
+            if (hx === 1 && hy === 0 && r === 13 && c === 15) first = rc;
+          }
+          const cx = ox + 15 * (RW + GX), cy = y;
+          rowsG.push([g, Math.hypot(cx - 960, (cy - 540) * 1.6)]);
+        }
+      }
+      // first rack alone (highlighted), then rows fill outward at 12 fps
+      const fx = +first.getAttribute("x") + RW / 2, fy = +first.getAttribute("y") + RH / 2;
+      const one = el(svg, "rect", { x: fx - RW / 2 - 3, y: fy - RH / 2 - 3, width: RW + 6, height: RH + 6, fill: "none", stroke: VOLTL, "stroke-width": 2 });
+      rowsG.sort((a, b) => a[1] - b[1]);
+      gsap.set(rowsG.map((r) => r[0]), { opacity: 0 });
+      gsap.set(walls, { opacity: 0 });
+      const single = el(svg, "rect", { x: fx - RW / 2, y: fy - RH / 2, width: RW, height: RH, fill: VOLTL });
+      rowsG.forEach((r, i) => tl.set(r[0], { opacity: 1 }, S(998.94) + Math.floor(i / 3) / 12));
+      tl.fromTo(walls, { opacity: 0 }, { opacity: 1, duration: 0.5, ease: C("none", 0.5), immediateRender: true }, S(999.30));
+      tl.to([one, single], { opacity: 0, duration: 0.3 }, S(1000.60));
+      gsap.set(cam, { transformOrigin: fx + "px " + fy + "px" });
+      tl.fromTo(cam, { scale: 7, x: 960 - fx, y: 540 - fy }, { scale: 6.4, x: 960 - fx, y: 540 - fy, duration: 0.5, ease: "none", immediateRender: false }, S(998.90));
+      tl.to(cam, { scale: 1, x: 0, y: 0, duration: 2.6, ease: E.cam }, S(999.40));
+      tl.to(cam, { scale: 0.97, duration: 1.66, ease: "none" }, S(1002.00));
+    })();
+
+    /* ===== sc009 · one card in a suitcase vs the numbers China needs (whip ←) ===== */
+    whip("sc008", "sc009", S(1003.66), { dir: -1 });
+    (function () {
+      const svg = $("sc009-svg"), field = $("sc009-field"), cam = $("sc009-cam");
+      field.setAttribute("viewBox", "0 0 1920 1080");
+      const suit = use(svg, "suit", 300, 420, 340, INK);
+      tl.fromTo(suit, { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, S(1003.70));
+      // the card drops into the suitcase (behind it)
+      const gpu = $("sc009-gpu");
+      tl.fromTo(gpu, { opacity: 0, y: -340, rotation: -12 }, { opacity: 1, y: -120, rotation: -4, duration: 0.8, ease: C(E.out, 0.8), immediateRender: true }, S(1004.10));
+      tl.to(gpu, { y: 210, rotation: 0, duration: 0.6, ease: C(E.in, 0.6) }, S(1005.40));
+      tl.set(gpu, { opacity: 0 }, S(1006.00));
+      tl.fromTo(suit, { y: 0 }, { y: 8, duration: 1 / 12, yoyo: true, repeat: 1, ease: "none", immediateRender: false }, S(1006.00));
+      // smuggle → CHINA (red dashed route)
+      const route = ink(svg, "M660 590 C820 520 1000 520 1240 560", S(1007.84), 0.7, { color: REDD, width: 7, filter: PEN });
+      const head = ink(svg, "M1214 532 L1250 562 L1210 590", S(1008.48), 0.2, { color: REDD, width: 7, filter: PEN });
+      words("sc009-cn", [T(1009.60)], { dur: 0.45, y: 12 });
+      // the numbers China needs: an endless field of racks, camera pulls far back
+      const RACKS = [];
+      for (let c = 0; c < 48; c++) { const g = el(field, "g", {}); RACKS.push(g);
+        for (let r = 0; r < 40; r++) use(g, "rack", 900 + c * 110, -1440 + r * 100, 92, ASHD); }
+      gsap.set(RACKS, { opacity: 0 });
+      RACKS.forEach((g, c) => tl.set(g, { opacity: 1 }, S(1008.72) + Math.floor(c / 1.5) / 12));
+      tl.fromTo(cam, { scale: 1.0, x: 0, y: 0 }, { scale: 1.0, x: 0, y: 0, duration: 0.01, immediateRender: false }, S(1003.66));
+      tl.to(cam, { scale: 0.32, x: 0, y: 367, duration: 4.0, ease: E.cam }, S(1008.72));
+      tl.to(cam, { scale: 0.3, x: 10, y: 372, duration: 2.0, ease: "none" }, S(1012.72));
+      tl.to($("sc009-cn"), { x: -26, y: -400, scale: 1.2, duration: 4.0, ease: E.cam }, S(1008.72));
+    })();
+
+    /* ===== sc010 · Memphis: map push, pin, zoom box, 800,000 HOMES (hard cut on action) ===== */
+    (function () {
+      const cam = $("sc010-cam"), pin = $("sc010-pin"), svg = $("sc010-svg"), MX = 1830, MY = 1375;
+      const st = { s: 0.6, x: -138, y: -240 };
+      const apply = () => { cam.style.transform = "translate(" + st.x.toFixed(1) + "px," + st.y.toFixed(1) + "px) scale(" + st.s.toFixed(4) + ")";
+        pin.style.left = (st.x + MX * st.s).toFixed(1) + "px"; pin.style.top = (st.y + MY * st.s).toFixed(1) + "px"; };
+      apply();
+      tl.fromTo(st, { s: 0.6, x: -138, y: -240 }, { s: 0.92, x: -810, y: -680, duration: 3.6, ease: E.cam, immediateRender: false, onUpdate: apply }, S(1014.65));
+      tl.to(st, { s: 0.95, x: -850, y: -720, duration: 5.36, ease: "none", onUpdate: apply }, S(1018.25));
+      tl.fromTo($("sc010-tn"), { opacity: 0 }, { opacity: 1, duration: 0.8, ease: C("none", 0.8), immediateRender: true }, S(1016.60));
+      tl.fromTo(pin.querySelector("i"), { scale: 0 }, { scale: 1, duration: 0.5, ease: C(E.out, 0.5), immediateRender: true }, T(1017.55));
+      words("sc010-pin", [T(1017.55)], { dur: 0.45, y: 8 });
+      // zoom box: lines from the pin to the card, card pops (ref 671f)
+      const box = $("sc010-box");
+      const pX = -850 + MX * 0.95, pY = -720 + MY * 0.95;   // pin at the end of the push (≈ 888, 586)
+      const l1 = ink(svg, "M" + (pX + 16) + " " + (pY - 16) + " L1060 176", S(1018.20), 0.35, { color: BONE, width: 2.5, opacity: 0.75 });
+      const l2 = ink(svg, "M" + (pX + 16) + " " + (pY + 16) + " L1060 749", S(1018.24), 0.35, { color: BONE, width: 2.5, opacity: 0.75 });
+      tl.fromTo(box, { opacity: 0, scale: 0.3, transformOrigin: "0% 70%" }, { opacity: 1, scale: 1, duration: 0.8, ease: C(E.out, 0.8), immediateRender: true }, S(1018.25));
+      FX.focusHunt(tl, box.querySelector("img"), S(1019.05), { dur: 0.6 });
+      tl.fromTo($("sc010-bpin"), { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: true }, S(1018.75));
+      tl.fromTo($("sc010-btag"), { opacity: 0, x: -10 }, { opacity: 1, x: 0, duration: 0.5, ease: C(E.out, 0.5), immediateRender: true }, S(1018.80));
+      tl.fromTo(box.querySelector("img"), { scale: 1.0 }, { scale: 1.06, duration: 5.3, ease: "none", immediateRender: false }, S(1018.25));
+      // 800,000 HOMES (the key number)
+      const num = $("sc010-num");
+      tl.set(num, { opacity: 1 }, T(1020.27));
+      FX.text.count(tl, num, T(1020.27), 0, 800000, 0.9, (v) => (Math.round(v / 1000) * 1000).toLocaleString("en-US"));
+      W("sc010-k").forEach((w) => rise(w, T(1021.39), { dur: 0.4, y: 10 }));
+    })();
+
+    /* ===== sc011 · bars: one site vs everything smuggled (paper slide ←) ===== */
+    slide("sc010", "sc011", S(1023.61));
+    (function () {
+      const cam = $("sc011-cam"), svg = $("sc011-svg");
+      tl.fromTo(cam, { scale: 1.0 }, { scale: 1.035, duration: 11.84, ease: "none", immediateRender: false }, S(1023.61));
+      tl.fromTo($("sc011-l1"), { opacity: 0, x: -12 }, { opacity: 1, x: 0, duration: 0.5, ease: C(E.out, 0.5), immediateRender: true }, S(1024.19));
+      tl.fromTo($("sc011-b1"), { scaleX: 0 }, { scaleX: 1, duration: 1.4, ease: C(E.out, 1.4), immediateRender: true }, S(1024.25));
+      words("sc011-title", [T(1025.23), T(1025.79)], { dur: 0.45, y: 10 });
+      words("sc011-l2", [T(1026.59), T(1027.55), T(1027.87), T(1028.11)], { dur: 0.4, y: 8 });
+      // the smuggled bar: many small pieces (chips, by suitcase, by server), then combined
+      const host = $("sc011-b2"), N = 16, segs = [];
+      let x = 0; const widths = [60, 90, 40, 110, 70, 50, 95, 65, 45, 85, 75, 55, 100, 60, 80, 70];
+      const tot = widths.reduce((a, b) => a + b, 0), scale = 1150 / tot;
+      widths.forEach((w, i) => { const d = document.createElement("div"); d.className = "n10-seg"; const ww = Math.round(w * scale);
+        d.style.left = (x + i * 14) + "px"; d.style.width = ww + "px"; d._x = x; host.appendChild(d); segs.push(d); x += ww; });
+      segs.forEach((d, i) => tl.fromTo(d, { opacity: 0, y: -30 }, { opacity: 1, y: 0, duration: 0.25, ease: C(E.out, 0.25), immediateRender: true }, S(1028.20) + i * 0.12));
+      // "combine all of that": the pieces slide together into one bar
+      segs.forEach((d, i) => tl.to(d, { x: -i * 14, duration: 0.7, ease: C(E.inOut, 0.7) }, S(1032.99)));
+      ink(svg, "M" + (96 + 1150 + 20) + " 700 L" + (96 + 1150 + 40) + " 702 L" + (96 + 1150 + 41) + " 840 L" + (96 + 1150 + 20) + " 841", S(1033.60), 0.4, { color: REDD, width: 5, filter: PEN });
+      // "just one data center": pen circle round the single volt bar
+      const c = FX.markup.circle(tl, svg, S(1034.45), { cx: 846, cy: 490, rx: 775, ry: 104, rot: -1, dur: 0.5, color: INK, width: 6, filter: PEN });
+      gsap.set(c, { opacity: 0 }); tl.set(c, { opacity: 1 }, S(1034.45));
+    })();
+
+    /* ===== sc012 · 100 cells vs 7 (light-flash whip) ===== */
+    whip("sc011", "sc012", S(1035.45), { dir: 1, flash: true });
+    (function () {
+      const cam = $("sc012-cam"), g1 = $("sc012-g1"), g2 = $("sc012-g2");
+      tl.fromTo(cam, { scale: 1.0 }, { scale: 1.06, duration: 10.55, ease: "none", immediateRender: false }, S(1035.45));
+      const c1 = [], c2 = [];
+      for (let j = 0; j < 10; j++) for (let i = 0; i < 10; i++) {
+        const a = document.createElement("div"); a.className = "n10-cell"; a.style.left = i * 54 + "px"; a.style.top = j * 54 + "px"; a.style.background = VOLT; g1.appendChild(a); c1.push(a);
+        const b = document.createElement("div"); b.className = "n10-cell"; b.style.left = i * 54 + "px"; b.style.top = j * 54 + "px"; b.style.border = "2px solid rgba(195,199,200,0.35)"; g2.appendChild(b); c2.push(b);
+      }
+      gsap.set(c1, { opacity: 0 }); gsap.set(c2, { opacity: 0 });
+      tl.fromTo($("sc012-l1"), { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.45, ease: C(E.out, 0.45), immediateRender: true }, S(1035.55));
+      c1.forEach((c, k) => tl.set(c, { opacity: 1 }, S(1035.60) + Math.floor(k / 8) / 12));
+      // compare: the empty grid of China's biggest data center
+      c2.forEach((c, k) => tl.set(c, { opacity: 1 }, S(1039.45) + Math.floor(k / 20) / 12));
+      words("sc012-l2", [T(1040.83), T(1041.39)], { dur: 0.45, y: 8 });
+      // 7 red cells (counted at 12 fps), then 7%
+      for (let k = 0; k < 7; k++) tl.set(c2[90 + k], { background: RED, border: "2px solid " + RED }, S(1043.00) + k / 12);
+      words("sc012-pct", [T(1043.79)], { dur: 0.5, y: 14 });
+      tl.fromTo(g1, { opacity: 1 }, { opacity: 0.88, duration: 0.6, immediateRender: false }, S(1043.20));
+    })();
+
+    FX.mount(tl, DURATION);
+    window.__timelines = window.__timelines || {};
+    window.__timelines[SEG] = tl;
+  })();
+  </script>
+</template>
+</body>
+</html>
