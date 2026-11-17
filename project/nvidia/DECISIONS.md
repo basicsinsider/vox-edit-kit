@@ -13,3 +13,9 @@
 6. Compute-share chart (1051 s): Sam's numbers 60 → ~80 and "about 1 %"; title only, no source label (record differs).
 7. Map tool: the map agent's wrapper is `tools/nv_maps.py` (uses map_kit functions; pearl_river_delta overlay needs scikit-image).
 8. Face cam is 1080p30 (as Paraguay); it is upscaled inside the 4K render.
+9. Motifs approved (`lib/nv_motifs.*`, `project/nvidia/MOTIFS.md`). Chip names A100, H100, A800, H800, H20, RTX 4090 are approved chart
+   labels on THE LINE (true items per RESEARCH). The "1 — 1" tally is used in nvs16 only. Full scoreboard: centre the table vertically in
+   the frame (the demo sits high) — keep ≥ 72 px top/bottom, balanced space.
+10. Jack Kilby / first IC: use `assets/podcast/pd16/kilby_*.jpg`; never the Commons file "Jack_Kilby_First_Integrated_Circuit_1958.jpg"
+    (AI-generated). Morris Chang: `assets/intro/photos/chang_*.jpg`. Liaw photo is 326 px — small card only. Don't caption
+    `huang_supermicro_stage.jpg`. Dwarkesh–Huang podcast frames: see people/SOURCES.md (Huang at the podcast table).

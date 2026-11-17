@@ -25,7 +25,7 @@ want = set(sys.argv[1:])
 import re as _re, glob as _glob
 for _f in sorted(_glob.glob(str(ROOT / "compositions/*.html"))):
     _src = open(_f).read()
-    _m = _re.search(r'data-composition-id="((?:seg|intro|ivs|pys|pd|c\d+s)\d+)"[^>]*data-duration="([\d.]+)"', _src)
+    _m = _re.search(r'data-composition-id="((?:seg|intro|ivs|pys|pd|c\d+s)\d+|nv[a-z]*\d*)"[^>]*data-duration="([\d.]+)"', _src)
     if _m:
         SAMPLES.append((_m.group(1), "compositions/" + _f.split("/")[-1], float(_m.group(2))))
 items = [s for s in SAMPLES if (not want or s[0] in want) and (ROOT / s[1]).exists()]
@@ -40,6 +40,8 @@ total = round(t - GAP, 3)
 
 import os as _os
 PALETTE = _os.environ.get('PALETTE') or ('lib/palette_ivan.css' if any(a.startswith('iv') for a in sys.argv[1:]) else 'lib/palette_paraguay.css' if any(a.startswith('py') for a in sys.argv[1:]) else 'lib/palette_podcast.css' if any(a.startswith('pd') for a in sys.argv[1:]) else 'lib/palette_nvidia.css' if any(a.startswith('nv') for a in sys.argv[1:]) else 'lib/palette.css')  # per-video palette (Ivan = iv*)
+NV_MOTIFS = ('\n    <link rel="stylesheet" href="lib/nv_motifs.css" />\n    <script src="lib/nv_motifs.js"></script>'
+             if any(a.startswith('nv') for a in sys.argv[1:]) else '')  # NVIDIA motifs (MOTIFS.md) for nv* compositions
 html = f'''<!doctype html>
 <html lang="en">
   <head>
@@ -48,7 +50,7 @@ html = f'''<!doctype html>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
     <link rel="stylesheet" href="lib/fx.css" />
     <link rel="stylesheet" href="{PALETTE}" />
-    <script src="lib/fx.js"></script>
+    <script src="lib/fx.js"></script>{NV_MOTIFS}
   </head>
   <body>
     <div id="root" data-composition-id="main" data-start="0" data-duration="{total}" data-width="1920" data-height="1080" data-fps="24">

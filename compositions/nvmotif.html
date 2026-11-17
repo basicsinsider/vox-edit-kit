@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8" /></head>
+<body>
+<template>
+  <style>
+    #root { position: absolute; inset: 0; overflow: hidden; background: var(--night); }
+    .nvd-scene { position: absolute; inset: 0; overflow: hidden; visibility: hidden; opacity: 0; }
+    .nvd-shot { position: absolute; inset: 0; overflow: hidden; transform-origin: 50% 50%; background: var(--night); }
+    .nvd-hall { position: absolute; inset: -40px;
+      background: radial-gradient(ellipse 70% 60% at 50% 42%, color-mix(in srgb, var(--ash-dark) 55%, var(--night)) 0%, var(--night) 70%); }
+    .nvd-face { position: absolute; inset: 0;
+      background: linear-gradient(180deg, var(--ash) 0%, var(--ash-dark) 100%); }
+    .nvd-face .nvd-ph { position: absolute; left: 1060px; top: 250px; width: 600px; height: 830px; border-radius: 300px 300px 0 0;
+      background: color-mix(in srgb, var(--ash-dark) 70%, var(--ash)); }
+    .nvd-face .nvd-pl { position: absolute; right: 96px; bottom: 72px; font-size: 24px; color: var(--ash-light); }
+    #nvmotif-flash { position: absolute; inset: 0; background: var(--bone); opacity: 0; pointer-events: none; z-index: 7; }
+    #nvmotif-grain, #nvmotif-dust, #nvmotif-vig { z-index: 8; }
+  </style>
+
+  <div id="root" data-composition-id="nvmotif" data-duration="40" data-width="1920" data-height="1080">
+    <svg id="nvmotif-defs" width="0" height="0" style="position:absolute"></svg>
+
+    <!-- A · 0–18 · the scoreboard, full frame on night -->
+    <div class="nvd-scene" id="nvmotif-a"><div class="nvd-shot" id="nvmotif-a-shot">
+      <div class="nvd-hall"></div>
+      <div id="nvmotif-sb"></div>
+    </div></div>
+
+    <!-- B · 18–22 · compact scoreboard beside a face-cam placeholder -->
+    <div class="nvd-scene" id="nvmotif-b"><div class="nvd-shot" id="nvmotif-b-shot">
+      <div class="nvd-face"><div class="nvd-ph"></div><div class="nvd-pl t-label">face cam placeholder</div></div>
+      <div id="nvmotif-sbc"></div>
+    </div></div>
+
+    <!-- C · 22–40 · THE LINE on graph paper -->
+    <div class="nvd-scene" id="nvmotif-c"><div class="nvd-shot" id="nvmotif-c-shot">
+      <div id="nvmotif-ln"></div>
+    </div></div>
+
+    <div id="nvmotif-flash"></div>
+    <div id="nvmotif-grain" class="tx tx-grain" style="background-image:url('assets/textures/grain_01_norm.jpg')"></div>
+    <div id="nvmotif-dust" class="tx tx-dust" style="background-image:url('assets/textures/dust_02.jpg')"></div>
+    <div id="nvmotif-vig" class="vignette"></div>
+  </div>
+
+  <script>
+  (function () {
+    const SEG = "nvmotif", DURATION = 40;
+    const S = (s) => +s.toFixed(3);   // demo: local seconds (a real segment uses T(master) / S(master))
+    const tl = gsap.timeline({ paused: true });
+    const $ = (id) => document.getElementById(SEG + "-" + id);
+    const defs = $("defs");
+
+    // ---------- scenes ----------
+    const SC = [["a", 0, 18, "night"], ["b", 18, 22, "face"], ["c", 22, 40, "paper"]];
+    const GROUND = { paper: [0.3, 0.14, 0.22], night: [0.9, 0.42, 0.4], face: [0.4, 0.2, 0.2] };
+    SC.forEach((s, i) => {
+      const el = $(s[0]);
+      if (i === 0) gsap.set(el, { autoAlpha: 1 });
+      else tl.fromTo(el, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.001, immediateRender: false }, S(s[1]));
+      if (s[2] < DURATION) tl.set(el, { autoAlpha: 0 }, S(s[2]) + 0.2);
+    });
+    gsap.set([$("vig"), $("dust"), $("grain")], { opacity: 0 });
+    SC.forEach((s) => { const v = GROUND[s[3]]; tl.set([$("vig"), $("dust"), $("grain")], { opacity: (i) => v[i] }, S(s[1])); });
+    const whipN = { n: 0 };
+    function whip(a, b, t, o) {
+      o = Object.assign({ dir: 1, vertical: false, dur: 0.32 }, o);
+      const k = ++whipN.n, ba = FX.whipDefs(defs, SEG + "-wa" + k), bb = FX.whipDefs(defs, SEG + "-wb" + k), h = o.dur / 2;
+      const A = $(a + "-shot"), B = $(b + "-shot");
+      tl.set(A, { filter: "url(#" + SEG + "-wa" + k + ")" }, t - h - 0.01); tl.set(A, { filter: "none" }, t + 0.06);
+      tl.set(B, { filter: "url(#" + SEG + "-wb" + k + ")" }, t - 0.001); tl.set(B, { filter: "none" }, t + h + 0.02);
+      FX.whip(tl, A, B, t, { dir: o.dir, vertical: o.vertical, dur: o.dur, blurA: ba, blurB: bb });
+    }
+
+    FX.grain($("grain"), 911);
+    FX.dust($("dust"), 912, 2);
+
+    /* ===== A · scoreboard intro, then the four verdicts ===== */
+    const sb = NV.scoreboard($("sb"), { prefix: SEG + "-sb", tally: "", gate: [0, 18.3] });
+    sb.intro(tl, S(0.4));
+    sb.markRow(tl, 1, "x", S(4.0));
+    sb.markRow(tl, 2, "check", S(7.0));
+    sb.setTally(tl, "1 — 1", S(8.4));
+    sb.hideTally(tl, S(10.2));
+    sb.markRow(tl, 3, "x", S(10.6));
+    sb.fillRow4(tl, "The renting loophole", [S(13.0), S(13.25), S(13.6)]);
+    sb.markRow(tl, 4, "q", S(15.6));
+    tl.fromTo($("sb"), { scale: 1 }, { scale: 1.025, duration: 17.6, ease: "none", immediateRender: false, transformOrigin: "50% 50%" }, S(0.4));
+
+    /* ===== B · compact board beside the narrator, row 4 gets its "?" ===== */
+    whip("a", "b", S(18.0), { dir: 1 });
+    const sbc = NV.scoreboard($("sbc"), { prefix: SEG + "-sbc", compact: true, state: { 1: "x", 2: "check", 3: "x" }, row4Text: "The renting loophole", gate: [17.8, 22.3] });
+    gsap.set($("sbc"), { clipPath: "inset(0% 100% 0% 0%)" });
+    tl.fromTo($("sbc"), { clipPath: "inset(0% 100% 0% 0%)", x: -30 }, { clipPath: "inset(0% 0% 0% 0%)", x: 0, duration: 0.9, ease: FX.choppy(FX.ease.out, 0.9, 12), immediateRender: false }, S(18.4));
+    sbc.markRow(tl, 4, "q", S(19.6));
+
+    /* ===== C · THE LINE ===== */
+    whip("b", "c", S(22.0), { dir: 1 });
+    const ln = NV.line($("ln"), { prefix: SEG + "-ln", lineAt: 0.62, gate: [21.8, 40], chips: [
+      { id: "a100", name: "A100", power: 0.80 }, { id: "h100", name: "H100", power: 0.92 },
+      { id: "a800", name: "A800", power: 0.555 }, { id: "h800", name: "H800", power: 0.555 },
+      { id: "h20", name: "H20", power: 0.405 }, { id: "rtx4090", name: "RTX 4090", power: 0.70 } ] });
+    tl.fromTo(ln.cam, { scale: 1.0 }, { scale: 1.035, duration: 18, ease: "none", immediateRender: false }, S(22.0));
+    ln.drawAxis(tl, S(22.4), { bottom: S(22.5), top: S(23.3) });
+    ln.drawLine(tl, S(24.2), { dur: 1.1, tag: S(24.6), cant: S(25.3), can: S(25.6) });
+    ln.addChip(tl, "a100", S(26.2)); ln.addChip(tl, "h100", S(26.6));
+    ln.ban(tl, "a100", S(27.6)); ln.ban(tl, "h100", S(28.0));
+    ln.addChip(tl, "a800", S(29.6)); ln.addChip(tl, "h800", S(30.0));
+    ln.moveLine(tl, 0.47, S(32.0), 1.4);
+    ln.addChip(tl, "h20", S(34.6));
+    ln.addChip(tl, "rtx4090", S(36.4));
+    ln.ban(tl, "rtx4090", S(37.8));
+
+    FX.mount(tl, DURATION);
+    window.__timelines[SEG] = tl;
+  })();
+  </script>
+</template>
+</body>
+</html>

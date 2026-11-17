@@ -54,6 +54,8 @@ if tl.exists():
 total = max([VO_LEN] + [s[2] + s[3] for s in segs])
 import os as _os
 PALETTE = _os.environ.get('PALETTE') or ('lib/palette_ivan.css' if any(a.startswith('iv') for a in sys.argv[1:]) else 'lib/palette_paraguay.css' if any(a.startswith('py') for a in sys.argv[1:]) else 'lib/palette_podcast.css' if any(a.startswith('pd') for a in sys.argv[1:]) else 'lib/palette_nvidia.css' if any(a.startswith('nv') for a in sys.argv[1:]) else 'lib/palette.css')  # per-video palette (Ivan = iv*)
+NV_MOTIFS = ('\n    <link rel="stylesheet" href="lib/nv_motifs.css" />\n    <script src="lib/nv_motifs.js"></script>'
+             if any(a.startswith('nv') for a in sys.argv[1:]) else '')  # NVIDIA motifs (MOTIFS.md) for nv* compositions
 html = f'''<!doctype html>
 <html lang="en">
   <head>
@@ -62,7 +64,7 @@ html = f'''<!doctype html>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
     <link rel="stylesheet" href="lib/fx.css" />
     <link rel="stylesheet" href="{PALETTE}" />
-    <script src="lib/fx.js"></script>
+    <script src="lib/fx.js"></script>{NV_MOTIFS}
   </head>
   <body>
     <div id="root" data-composition-id="main" data-start="0" data-duration="{total:.3f}" data-width="1920" data-height="1080" data-fps="24">
