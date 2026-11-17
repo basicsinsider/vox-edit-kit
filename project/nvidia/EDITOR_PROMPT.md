@@ -34,3 +34,19 @@ Do not stop early: the whole range must be covered with finished scenes, no plac
 
 Final report (≤ 15 lines): scenes built, reference ids used, face-cam % (if any), checks (lint/sync/duration) with their output lines,
 missing or substituted assets, and any helper/gotcha worth adding to MANUAL.
+
+## Lessons from the first wave (read — they are real faults found in nvs01–nvs12)
+- **No black/empty frame at any scene boundary**: nvs06 had a black frame between a face-cam shot and the next scene. Show a scene with
+  `tl.set` at `t − 0.002`, make every clip's `data-duration` reach past the cut, and snapshot EVERY cut at −0.05 s / +0.05 s.
+- Face cam (nvs23): `transform-origin: 1000px 60px` keeps Sam's hair in frame at 1.25–1.46; close-ups above ≈ 1.46 crop his hair.
+- Shared SVG icons use `currentColor`: as `<img>` they render black — colour them with a div (background = colour, `mask-image` = icon)
+  or inline the SVG. Logos to silhouettes: `filter: brightness(0) invert(0.94)` (bone) / `brightness(0)` (ink).
+- `t-label` uppercases everything: brand names with lowercase letters (xAI, DeepSeek, iPhone) need `text-transform:none`.
+- Never name a class `hl` or `tx` (fx.css collisions — it happened again in wave 1).
+- `NV.line`: any camera scale between ≈ 1.01 and 1.3 pushes the "THE LINE" tag/zone labels half off-frame — either stay ≤ 1.01 or punch
+  in far enough (≥ 1.32) that they leave the frame completely. `NV.scoreboard`: after a verdict word keep the board up ≥ 2.4 s (stamp +
+  glow take ≈ 1.9 s); full board `top:170px` centres it. The JOB/LEVEL title card: copy nvs05's sc001 (`compositions/nvs05.html`).
+- Map cameras: at every key check the crop still covers the frame (`cy ± 540/s` inside the image) and fade constant-size labels the
+  camera leaves behind. `paper_lined_01_hires` has a punch hole near the left edge (shift the layer −200 px).
+- Headless timeline dump: use a LOCAL copy of gsap and `chrome-headless-shell --no-sandbox --allow-file-access-from-files --dump-dom`.
+- sfx marker types must exist in `tools/audio/place_sound.py`'s vocabulary (grep it) — unknown names are dropped.
