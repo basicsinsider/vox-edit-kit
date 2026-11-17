@@ -49,3 +49,7 @@ Missing: `assets/nvidia/shared/docs/` has no SOURCES.md (the indictment PNGs are
   --allow-file-access-from-files --virtual-time-budget=8000 --dump-dom` and write results into a `data-` attribute (root needs `--no-sandbox`).
 - Face cam (NVIDIA): transform-origin `1000px 60px` keeps Sam's hair in frame at 1.25/1.55 (origin 250 px cropped his head).
 - `assets/nvidia/shared/icons/*.svg` use `currentColor`: inline the path markup (an `<img>` renders black).
+
+## QA fixes (lead review, 2026-11-17)
+- sc007 cork board: REAL / FAKE cards + barcode sticker pinned from the whip landing (815.29) and the hair-dryer polaroid pinned face-down, flipping over on "hair dryer" (820.45) — no empty board; sfx: two card pin_pops removed, 820.45 retyped card_flip.
+- Checked local 21.5–23.5: the flat grey frame at 22.38 is the peak of the light-flash whip at 797.61 (< 0.12 s, 22.33 blur → 22.45 map) — left as is.

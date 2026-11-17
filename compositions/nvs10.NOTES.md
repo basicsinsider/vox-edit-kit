@@ -47,3 +47,6 @@ Credits on screen for every CC BY / BY-SA and press image.
 - Shared footage (dc_cooling_*) not used: `shared/footage` has no SOURCES.md yet, so no credit could be checked.
 - sfx types are from place_sound's vocabulary; sc006's hero is `air_swell` (a water gurgle would fit better if the sound designer has one).
 - Gotcha for MANUAL: `t-label` uppercases everything — brand names with lowercase letters (xAI) need `text-transform:none`.
+
+## QA fixes (lead review, 2026-11-17)
+- nvs10.sfx.json: marker 1005.40 type `drop` (unknown to place_sound.py) → `paper_slide` (its note contains "drop" → photo_drop sound).

@@ -43,3 +43,6 @@ docs side by side, US map framing kept inside the crop, stray off-frame labels f
 - Counter-scaled map labels stay rendered when the camera leaves them: a label half off-frame reads as a stray letter — fade earlier labels at
   each big camera move.
 - Whip-in on the first frame of a segment hides an EDL take join that sits < 1 frame after the segment start.
+
+## QA fixes (lead review, 2026-11-17)
+- sc015 AI CHIPS circle: RTX 4090 gaming die (AD102) → A100 SXM4 data-center GPU die (hardware/a100_sxm4_board_1.jpg, scaled 2.2 on the die); credit adds "A100 data-center GPU: NVIDIA". Edited in the template, rebuilt with build_nvs03.py.

@@ -150,7 +150,7 @@
     <div class="n8-scene" id="nvs08-sc007"><div class="n8-shot" id="nvs08-sc007-shot" style="background:#101416">
       <div class="n8-vw" id="nvs08-sc007-vw" style="transform-origin:960px 530px">
         <div id="nvs08-sc007-board"></div>
-        <div class="n8-pol" id="nvs08-sc007-hd" style="left:230px;top:320px;width:380px;height:460px;transform:rotate(-5deg)"><div class="ph" style="height:340px;background:#f7f6f1"><img src="assets/nvidia/nvs08/derived/hairdryer_cutout_700.png" alt="" style="object-fit:contain;filter:grayscale(1) contrast(1.1)" /></div><div class="n8-pin" style="left:177px;top:4px"></div></div>
+        <div class="n8-pol" id="nvs08-sc007-hd" style="left:230px;top:320px;width:380px;height:460px;transform:rotate(-5deg)"><div class="ph" style="height:340px;background:#f7f6f1"><img src="assets/nvidia/nvs08/derived/hairdryer_cutout_700.png" alt="" style="object-fit:contain;filter:grayscale(1) contrast(1.1)" /></div><div id="nvs08-sc007-hdbk" style="position:absolute;inset:0;background:#e6e2d6;box-shadow:inset 0 0 0 1px rgba(20,24,27,0.08)"></div><div class="n8-pin" style="left:177px;top:4px"></div></div>
         <div class="n8-card" id="nvs08-sc007-real" style="left:760px;top:370px;width:420px;height:340px;transform:rotate(-1.5deg)"><div class="ic" id="nvs08-sc007-realic" style="color:var(--volt-dark)"></div><div class="lb t-display"><span class="n8-w">REAL </span><span class="n8-w">CHIPS</span></div><div class="n8-pin" style="left:197px;top:-8px"></div></div>
         <div class="n8-card" id="nvs08-sc007-fake" style="left:1290px;top:382px;width:480px;height:340px;transform:rotate(2deg)"><div class="ic" id="nvs08-sc007-fakeic" style="color:var(--ash)"></div><div class="lb t-display"><span class="n8-w">FAKE </span><span class="n8-w">OR </span><span class="n8-w">OLDER </span><span class="n8-w">CHIPS</span></div><div class="n8-pin" style="left:227px;top:-8px"></div></div>
         <svg class="n8-mk" id="nvs08-sc007-svg" viewBox="0 0 1920 1080"></svg>
@@ -449,11 +449,13 @@
       const stk = $("sc007-stk"); stk.innerHTML = ICON.barcode;
       const real = $("sc007-real"), fake = $("sc007-fake"), hd = $("sc007-hd"), wh = $("sc007-wh"), svg = $("sc007-svg");
       push("sc007", 815.29, 828.3, 1.04, 1.0, { ease: E.cam });
-      drop(real, S(815.75), -1.5);
-      gsap.set(stk, { opacity: 0 });
-      tl.set(stk, { opacity: 1 }, S(815.75) + 3 / 12);
-      drop(fake, S(817.45), 2, { spin: 5 });
-      drop(hd, S(820.45), -5);
+      // QA fix: the board is never empty — both cards and the face-down polaroid are pinned when the whip lands (frame 1)
+      gsap.set([real, fake, stk, hd], { opacity: 1 });
+      // "hair dryer": the face-down polaroid flips over (back hidden at the edge-on moment)
+      const hdbk = $("sc007-hdbk");
+      tl.fromTo(hd, { scaleX: 1 }, { scaleX: 0.02, duration: 0.12, ease: "power2.in", immediateRender: false }, S(820.45));
+      tl.set(hdbk, { opacity: 0 }, S(820.57));
+      tl.fromTo(hd, { scaleX: 0.02 }, { scaleX: 1, duration: 0.16, ease: "power2.out", immediateRender: false }, S(820.57));
       FX.focusHunt(tl, hd, S(820.7), { dur: 0.6 });
       // twine: hair dryer → real card
       ink(svg, "M420 334 C560 420 760 320 968 366", S(820.95), 0.6, { color: ASHL, width: 4, opacity: 0.9, ease: C(E.inOut, 0.6) });

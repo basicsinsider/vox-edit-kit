@@ -45,3 +45,6 @@ For the lead / MANUAL
   a safety check, please delete it).
 - A label placed with gsap x/y each frame (constant-size map labels) must not also get `rise()` (it tweens y → overrides the placement).
 - `filter: brightness(0)` turns the YouTube mark into a black blob (the white play triangle goes too): use `grayscale(1) contrast(1.25)`.
+
+## QA fixes (lead review, 2026-11-17)
+- nvs13.sfx.json: marker 1350.3 type `drop` (unknown to place_sound.py) → `dot_slide` (chart column moving).

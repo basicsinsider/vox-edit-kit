@@ -38,3 +38,6 @@ lint 0.8.217: 0 errors in nvs04 (warnings only: nested media start basis, file s
   headless timeline dump — `waitForFunction` hangs on this box; a fixed 12 s wait after `goto` works).
 - Kit `pacific_*` ends at 115°W, so the US West Coast is at its frame edge; use `us_*` for the US + whip-pan to `southeast_asia_*` for Taiwan.
 - Map pins on a world view at scale ≈ 0.3 need r ≈ 60+ (r 22 read as specks).
+
+## QA fixes (lead review, 2026-11-17)
+- sc010 blueprint: floorplan now starts at 421.85 (under the incoming slide) and the title-block frame at 422.40 — no blank blue paper at the cut.

@@ -38,3 +38,6 @@ generator `project/nvidia/gen/nvs09_assets.py`, logged in `assets/nvidia/nvs09/S
 - A quick timeline dump without puppeteer: inline the template into a page with a LOCAL gsap copy (the CDN script does not load in
   `chrome-headless-shell --dump-dom`), run `chrome-headless-shell --headless --no-sandbox --dump-dom`, write results into a body attribute.
 - Scoreboard `markRow` + its glow take ≈ 1.9 s after the cue — plan ≥ 2.4 s of board after the verdict word for the hold rule.
+
+## QA fixes (lead review, 2026-11-17)
+- sc006: BIS 2022 p1 → docs/bis_rule_2022-10-07_threshold_p26.png (reuse limit); pen circle on that page's "3A090 Integrated circuits as follows" heading; credit = 87 FR 62186, p. 62211.

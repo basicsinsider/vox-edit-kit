@@ -69,3 +69,8 @@ southeast_asia_night (+ overlays). Own derived files: `assets/nvidia/nvs01/deriv
 - 2.5D from a portrait layer set: fit s = 1.0 (photo as wide as the frame) instead of 0.62 + side fill — the shrunken planes showed their rectangle edges
   (each plane's scale (P−z)/P doesn't cover the frame); photo-edge cuts in near layers need a mask feather.
 - Face cam (NVIDIA master): transform-origin 960 px 0 px keeps the hair in frame at M/C; at 82–85 s he leans right (origin 1080 px).
+
+## QA fixes (lead review, 2026-11-17)
+- sc013 monitor ("no shortage of these cards"): Seagate/WD hard-drive and SanDisk stalls replaced with GPUs — v3 = hardware/rtx4090_fe_box_1 (boxed RTX 4090 under the HK = US price tags); grid g1 rtx_3090_vs_4090_cards, g2 hk_wanchai_computer_centre_entrance (HK), g3 gpu_rig_8cards_2, g4 rtx4090_fe_press; v1 (Golden Computer Arcade sign) kept; credit line updated.
+- sc013 grid: g1 is already on screen at the v3→v4 switch (49.20) — the 12 fps pop left the monitor empty for 3 frames.
+- sc007 + sc009: BIS rule p1 → docs/bis_rule_2022-10-07_threshold_p26.png (reuse limit); sc007 pen now underlines that page's "Commerce Control List" heading (pdftotext bbox), push origin 900 300; credits = 87 FR 62186, p. 62211.

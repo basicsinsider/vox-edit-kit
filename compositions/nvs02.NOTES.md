@@ -55,3 +55,6 @@ First shot: fresh night graphic (nvs01 ends on a map → no map at my start). La
 - `tools/halftone.py` on a 1080 px portrait crop loses the face (dots too coarse): upscale the crop 2× first, then `--cell 8`.
 - A filter on a title bar distorts its text too — put the torn-edge filter on a background child (`.n2-tbg`), text on top.
 - Pacific kit map at s ≥ 0.4463 (2420 px tall) can't show the US and China together — pan, and anchor the US label right-aligned.
+
+## QA fixes (lead review, 2026-11-17)
+- sc019: OCTOBER 7 odometer tightened (dur 0.6, stagger 0.03): settles by master 187.60 (≤ 0.81 s after "October") and holds; snapshots 76–81 s every 0.5 s checked.

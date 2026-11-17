@@ -51,3 +51,6 @@ maps/kit pacific_satdesat + overlay. Own derived files: `assets/nvidia/nvs07/der
 - Never name a class `hl` (again): a `.hl` boarding-pass label got fx.css's yellow highlighter.
 - A dark ink price tag disappears on a dark desk — on night grounds use the halate yellow number instead.
 - Pans across a paper chart: put the paper layers INSIDE the camera world (two mirrored `_hires` tiles) so the texture moves with it.
+
+## QA fixes (lead review, 2026-11-17)
+- sc008: BIS 2022 p1 → docs/bis_rule_2023-10-17_p1.png (also an interim final rule; reuse limit); highlight re-measured onto that page's own "Interim final rule" (pdftotext 78–149 × 245–254 pt → left 124 top 397 w 124); credit = Federal Register 88 FR 73458, 25 Oct 2023.

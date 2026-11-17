@@ -41,3 +41,6 @@ paper_graph_01, paper_lined_01, newsprint_01, grain/dust.
 - sc004 uses stills instead of the fab footage (both fab clips are already used by nvs02/nvs04).
 - No MANUAL gotchas beyond the known ones; the inline headless dump harness (template body + local gsap + fx.js, seek loop, hold audit
   over `getChildren`) worked in < 10 s.
+
+## QA fixes (lead review, 2026-11-17)
+- nvs20.sfx.json: marker 2056.4 type `drop` (unknown to place_sound.py) → `dot_slide`.

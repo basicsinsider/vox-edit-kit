@@ -51,3 +51,6 @@ Gotchas (for MANUAL)
   cream tile became a photo).
 - Lint 0.8.217 errors (`gsap_non_transform_motion`) on tweening `left/top` of a map pin — tween a proxy {x,y} and write left/top in
   `onUpdate` (as nvs09's routes do).
+
+## QA fixes (lead review, 2026-11-17)
+- sc010: BIS 2022 p1 → docs/bis_rule_2023-10-17_p1.png (reuse limit); pen circle re-placed on that page's title block (45–209 × 167–216 pt); credit = Federal Register 88 FR 73458 (25 Oct 2023).
