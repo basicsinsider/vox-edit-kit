@@ -424,29 +424,34 @@
     (function () {
       const svg = $("sc004-svg");
       // a data hall drawn on "builds": iso outline, volt light
-      const hx = 960, hy = 230;
+      const hx = 960, hy = 170;
       const pts = (a) => a.map((q) => (hx + q[0]) + " " + (hy + q[1])).join(" L");
-      ink(svg, "M" + pts([[-260, 40], [0, -90], [260, 40], [0, 170], [-260, 41]]), S(2200.0), 0.6, { color: VOLTL, width: 4 });
-      ink(svg, "M" + pts([[-260, 41], [-259, 110], [0, 240], [260, 110], [261, 40]]), S(2200.25), 0.5, { color: VOLTL, width: 4 });
-      ink(svg, "M" + pts([[0, 170], [1, 240]]), S(2200.5), 0.25, { color: VOLTL, width: 4 });
-      for (let k = 0; k < 3; k++) ink(svg, "M" + pts([[-170 + k * 90, -2 + k * 45 - 40], [-80 + k * 90, -47 + k * 45 + 46 - 40 + 0.5]]), S(2200.6) + k / 12, 0.2, { color: VOLT, width: 6 });
+      const L = [-200, 30], Tp = [0, -70], R = [200, 30], Bt = [0, 130], H = 55;
+      ink(svg, "M" + pts([L, Tp, R, Bt, [-199, 31]]), S(2200.0), 0.6, { color: VOLTL, width: 4 });
+      ink(svg, "M" + pts([[L[0], L[1] + 1], [L[0] + 1, L[1] + H], [Bt[0], Bt[1] + H], [R[0], R[1] + H], [R[0] + 1, R[1] + 1]]), S(2200.25), 0.5, { color: VOLTL, width: 4 });
+      ink(svg, "M" + pts([Bt, [Bt[0] + 1, Bt[1] + H]]), S(2200.5), 0.25, { color: VOLTL, width: 4 });
+      for (let k = 1; k <= 3; k++) { const f = k / 4;
+        const p1 = [L[0] + f * (Tp[0] - L[0]), L[1] + f * (Tp[1] - L[1])], p2 = [Bt[0] + f * (R[0] - Bt[0]), Bt[1] + f * (R[1] - Bt[1])];
+        const q1 = [p1[0] + (p2[0] - p1[0]) * 0.12, p1[1] + (p2[1] - p1[1]) * 0.12], q2 = [p1[0] + (p2[0] - p1[0]) * 0.88, p1[1] + (p2[1] - p1[1]) * 0.88 + 0.5];
+        ink(svg, "M" + pts([q1, q2]), S(2200.6) + k / 12, 0.25, { color: VOLT, width: 7 }); }
       const cards = [$("sc004-c1"), $("sc004-c2"), $("sc004-c3")];
       const tIn = [S(2201.10), S(2202.62), S(2203.98)];
       cards.forEach((c, i) => {
-        gsap.set(c, { transformPerspective: 1400, opacity: 0 });
+        gsap.set(c, { transformPerspective: 1400, opacity: 0, filter: "brightness(1)" });
         tl.fromTo(c, { opacity: 0, rotationY: -88, y: 40 }, { opacity: 1, rotationY: 0, y: 0, duration: 0.6, ease: C(E.out, 0.6), immediateRender: true }, tIn[i]);
       });
       words("sc004-l1", [T(2201.17), T(2201.65)], { dur: 0.35, y: 6 });
       words("sc004-l2", [T(2202.69), T(2203.09)], { dur: 0.35, y: 6 });
       words("sc004-l3", [T(2204.29), T(2204.77)], { dur: 0.35, y: 6 });
       rise($("sc004-nm"), S(2204.25), { dur: 0.4, y: 6 });
-      tl.to(cards[0], { opacity: 0.42, duration: 0.4, ease: C(E.inOut, 0.4) }, S(2202.62));
-      tl.to(cards[1], { opacity: 0.42, duration: 0.4, ease: C(E.inOut, 0.4) }, S(2203.98));
+      tl.to(cards[0], { filter: "brightness(0.42)", duration: 0.4, ease: C(E.inOut, 0.4) }, S(2202.62));
+      tl.to(cards[1], { filter: "brightness(0.42)", duration: 0.4, ease: C(E.inOut, 0.4) }, S(2203.98));
       // "that we talked about" → push toward his card; "that news just came out" → the ? stamps
       push("sc004", 2198.99, 2205.80, 1.0, 1.025, { origin: "1500px 660px" });
-      tl.to($("sc004-vw"), { scale: 1.16, duration: 1.5, ease: E.cam }, S(2205.80));
+      tl.to($("sc004-vw"), { scale: 1.12, duration: 1.5, ease: E.cam }, S(2205.80));
+      tl.to([cards[0], cards[1]], { y: 760, rotation: (i) => [-6, 4][i], duration: 0.55, ease: E.in, stagger: 0.08 }, S(2205.80));
       tl.fromTo($("sc004-q"), { opacity: 0, scale: 1.8, rotation: -14 }, { opacity: 1, scale: 1, rotation: -8, duration: 3 / 12, ease: "steps(3)", immediateRender: true }, S(2207.55));
-      tl.to($("sc004-vw"), { scale: 1.19, duration: S(2208.59) - S(2207.4), ease: "none" }, S(2207.4));
+      tl.to($("sc004-vw"), { scale: 1.15, duration: S(2208.59) - S(2207.4), ease: "none" }, S(2207.4));
     })();
 
     /* ===== sc005 · the case board (paper slides up) ===== */
@@ -494,7 +499,8 @@
       const tR = tag(1520, 560, 270, -4, '<span class="n22-w">FOR RENT</span>', INK, S(2213.22), [1140, 700]);
       rise(tR.tt.querySelector(".n22-w"), T(2213.33), { dur: 0.35, y: 6 });
       tl.to(tO.tg, { opacity: 0.45, duration: 0.4 }, S(2213.3));
-      const tC = tag(110, 220, 350, -3, '<span class="n22-w">CHINESE </span><span class="n22-w">COMPANY</span>', REDD, S(2214.98), [520, 300]);
+      const tC = tag(96, 190, 360, -3, '<span class="n22-w">CHINESE </span><span class="n22-w">COMPANY</span>', REDD, S(2214.98), [520, 300]);
+      tC.tt.style.fontSize = "26px";
       const cws = Array.from(tC.tt.querySelectorAll(".n22-w"));
       rise(cws[0], T(2215.09), { dur: 0.35, y: 6 }); rise(cws[1], T(2215.49), { dur: 0.35, y: 6 });
       tl.to(tR.tg, { opacity: 0.45, duration: 0.4 }, S(2215.1));

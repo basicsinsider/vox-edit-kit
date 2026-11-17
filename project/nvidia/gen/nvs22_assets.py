@@ -12,9 +12,9 @@ def d_of(cid):
 def write(name, body):
     open(os.path.join(OUT, name), "w").write(HEAD + body + "</svg>")
 # Malaysia: neutral bone fill + bright edge (reference ast_b15cdcc28a634241: one country lit, white border)
-write("sea_malaysia_fill.svg", '<path d="%s" fill="#f0efe8" fill-opacity="0.30" stroke="#f0efe8" stroke-width="7" stroke-linejoin="round"/>' % d_of("c-malaysia"))
+write("sea_malaysia_fill.svg", '<path d="%s" fill="#f0efe8" fill-opacity="0.14" stroke="#f0efe8" stroke-width="7" stroke-linejoin="round"/>' % d_of("c-malaysia"))
 # China: red fill (night maps ~0.5) + red-light stroke (SEGMENTS §2)
-write("sea_china_fill.svg", '<path d="%s" fill="#dc2f3c" fill-opacity="0.5" stroke="#f6a4a9" stroke-width="6" stroke-linejoin="round"/>' % (d_of("c-china") + d_of("c-hong_kong")))
+write("sea_china_fill.svg", '<path d="%s" fill="#dc2f3c" fill-opacity="0.45" stroke="#f6a4a9" stroke-width="6" stroke-linejoin="round"/>' % (d_of("c-china") + d_of("c-hong_kong")))
 # all country borders, thin bone
 cg = re.search(r'<g id="countries">(.*?)</g>', s, re.S).group(1)
 ds = re.findall(r'\bd="([^"]+)"', cg)

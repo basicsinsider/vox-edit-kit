@@ -42,3 +42,18 @@ json.dump({"w": W, "h": H, "k": k, "x0": X0, "y0": Y0, "texas": path("st-texas")
 print("map", W, H, k)
 print("dallas", (3111.1 - X0) * k, (2290.7 - Y0) * k, "san_jose", (438.2 - X0) * k, (1684.0 - Y0) * k)
 
+
+# China: kit china_night.jpg ×(2560/6383) + #c-china from china_overlay.svg in the same pixel space
+kc = 2560 / 6383
+cim = Image.open(K + "china_night.jpg")
+cim.resize((2560, round(cim.size[1] * kc)), Image.LANCZOS).save(OUT + "china_night_2560.jpg", quality=88)
+CH = round(4368 * kc)
+csvg = open(K + "china_overlay.svg").read()
+cd = re.search(r'<path[^>]*id="c-china"[^>]*d="([^"]+)"', csvg).group(1)
+cd = re.sub(r"(-?\d+\.?\d*),(-?\d+\.?\d*)", lambda m: "%.1f,%.1f" % (float(m.group(1)) * kc, float(m.group(2)) * kc), cd)
+open(OUT + "china_mask_2560.svg", "w").write('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2560 %d" width="2560" height="%d"><path fill="#fff" fill-rule="evenodd" d="%s"/></svg>' % (CH, CH, cd))
+open(OUT + "china_outline_2560.svg", "w").write('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2560 %d" width="2560" height="%d"><path fill="none" stroke="#f6a4a9" stroke-width="2.6" stroke-linejoin="round" d="%s"/></svg>' % (CH, CH, cd))
+print("china", 2560, CH)
+
+# TSMC Fab 14B plate: shared places/tsmc_fab14b.jpg (3840 px) resized to 2560
+Image.open("assets/nvidia/shared/places/tsmc_fab14b.jpg").resize((2560, 1707), Image.LANCZOS).save(OUT + "tsmc_fab14b_2560.jpg", quality=88)
