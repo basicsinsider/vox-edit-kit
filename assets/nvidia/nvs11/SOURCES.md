@@ -1,0 +1,12 @@
+# assets/nvidia/nvs11 — sources (nvs11 editor, 2026-11-17)
+Regenerate the derived files: `.venv/bin/python assets/nvidia/nvs11/gen_nvs11_assets.py` (needs the Fortune screenshot at
+`work/nvs11_scratch/dl/fortune_dissent.png` only for the news crop; it keeps the saved crop otherwise).
+
+| file | subject | source URL | licence | author | date | size |
+|---|---|---|---|---|---|---|
+| news/fortune_dc_dissent_2026-06-16.jpg | Fortune article header: "Data center hate is snowballing, and construction setbacks in the first three months of 2026 have already exceeded last year's, report finds" + its protest photo ("Don't let data centers drain us") | https://fortune.com/2026/06/16/data-center-opposition-construction-delays-blocks-report/ (page as served to an anonymous visitor, first-party resources only, JS off, 1600 px viewport @2x, captured 2026-11-17; crop x240–2960, y960–1960) | © Fortune Media; photo © Erik McGregor/LightRocket via Getty Images — fair use (MANUAL §10.9), credited on screen | Sasha Rogelberg (article) | 2026-06-16 | 2720x1000 |
+| derived/fortune_memphis_crop.jpg | crop of shared/news/s08_fortune_memphis.jpg (headline "Memphis warns it may not be able to power Elon Musk's lofty 'Colossus' supercomputer expansion plans" + photo) | https://fortune.com/2025/01/07/memphis-utility-ceo-warns-power-supply-elon-musk-xai-colossus-supercomputer-facility/ | © Fortune Media; photo © Dimitrios Kambouris/Getty Images — fair use | Jessica Mathews | 2025-01-07 | 2720x1000 |
+| derived/pacific_world_night.jpg | Pacific-centred crop of the kit world night relief, 45°E–293°E (=67°W) × 80°N–60°S, 22.756 px/deg (x = (lon(+360 if <0) − 45)·22.756, y = (80 − lat)·22.756) | assets/maps/kit/world_night.jpg | PD (AWS Terrain Tiles + Natural Earth) | map kit | 2026-11-17 | 5643x3185 |
+| derived/pw_china.svg, derived/pw_usa.svg | China / USA outlines in that pixel space (CSS masks for fills) | assets/maps/kit/world_overlay.svg (`#c-china`, `#c-united_states_of_america`) | PD (Natural Earth) | map kit | 2026-11-17 | 5643x3185 |
+| derived/cn_china_fill.svg | China outline in the china_* kit pixel space (CSS mask for the red fill) | assets/maps/kit/china_overlay.svg `#c-china` | PD (Natural Earth) | map kit | 2026-11-17 | 6383x4368 |
+| derived/liang_card.jpg | Liang Wenfeng at Premier Li Qiang's symposium (crop 262,70–532,330 of shared/people/liang_1.jpg; card size only) | see shared/people/SOURCES.md (via The Standard HK) | © CCTV — fair use, credit "CCTV" | CCTV | 2025-01-20 | 270x260 |

@@ -402,7 +402,7 @@
       ["sc025", 218.48, 222.87, "face"], ["sc026", 222.87, 225.19, "face"], ["sc027", 225.19, 229.50, "night"],
     ];
     const GROUND = { paper: [0.32, 0.16, 0.26], night: [1, 0.42, 0.36], map: [0.8, 0.3, 0.3], face: [0, 0, 0] };
-    const EARLY = { sc005: 0.45, sc019: 0.45, sc024: 0.45 };   // slides: incoming scene visible during the slide
+    const EARLY = { sc019: 0.45, sc024: 0.45 };   // slides: incoming scene visible during the slide
     function ground(kind, t) { const v = GROUND[kind]; tl.set([$("vig"), $("dust"), $("grain")], { opacity: (i) => v[i] }, t); }
     SC.forEach((s, i) => {
       const el = $(s[0]), a = s[1] - (EARLY[s[0]] || 0);
@@ -450,7 +450,7 @@
       tl.set(B, { boxShadow: "none" }, t);
       tl.fromTo(A, { [o.axis]: 0 }, { [o.axis]: -dist * 0.12, duration: o.d, ease: E.in, immediateRender: false }, t - o.d);
     }
-    const FR = { W: [1.0, 1.025], M: [1.25, 1.28], C: [1.5, 1.54] };
+    const FR = { W: [1.0, 1.025], M: [1.25, 1.28], C: [1.42, 1.46] };
     function face(id, a, b, k) {
       const fw = $(id + "-fw");
       gsap.set(fw, { scale: FR[k][0] });
@@ -566,23 +566,23 @@
       b1.style.top = (880 - 98.6) + "px"; b1.style.height = "98.6px";
       gsap.set([b1, b2], { scaleY: 0 });
       tl.fromTo(b2, { scaleY: 0 }, { scaleY: 1, duration: 1.3, ease: C(E.out, 1.3), immediateRender: true }, S(124.46));
-      tl.fromTo(b1, { scaleY: 0 }, { scaleY: 1, duration: 0.8, ease: C(E.out, 0.8), immediateRender: true }, S(129.50));
+      tl.fromTo(b1, { scaleY: 0 }, { scaleY: 1, duration: 0.5, ease: C(E.out, 0.5), immediateRender: true }, S(129.50));
       const v2 = $("sc004-v2"), v1 = $("sc004-v1");
       v2.style.top = (880 - 348 - 100) + "px"; v1.style.top = (880 - 98.6 - 100) + "px";
       tl.set(v2, { opacity: 1 }, T(124.46));
       FX.text.count(tl, v2, T(124.46), 0, 60, 1.3, (v) => Math.round(v) + "%");
       tl.set(v1, { opacity: 1 }, T(129.50));
-      FX.text.count(tl, v1, T(129.50), 0, 17, 0.8, (v) => Math.round(v) + "%");
+      FX.text.count(tl, v1, T(129.50), 0, 17, 0.5, (v) => Math.round(v) + "%");
       const hl = $("sc004-hl"); hl.style.top = (880 - 348 - 100 + 22) + "px";
       tl.fromTo(hl, { scaleX: 0 }, { scaleX: 1, duration: 0.45, ease: C(E.out, 0.45), immediateRender: true }, S(125.90));
-      push("sc004", 123.26, 130.84, 1.0, 1.04, { ease: E.cam, origin: "960px 600px" });
+      push("sc004", 123.26, 130.40, 1.0, 1.04, { ease: E.cam, origin: "960px 600px" });
     })();
     words("sc004-title", [T(123.26)], { dur: 0.7, y: 12 });
     words("sc004-l2", [T(123.74)], { dur: 0.5, y: 8 });
     words("sc004-l1", [T(127.10)], { dur: 0.5, y: 8 });
 
-    /* ===== sc005 · converging lines (night, slides up over the chart) ===== */
-    slide("sc004", "sc005", S(130.84), { axis: "y" });
+    /* ===== sc005 · converging lines (night, hard cut on the chart push) ===== */
+    tl.to($("sc004-vw"), { scale: 1.14, duration: 0.44, ease: E.in }, S(130.40));   // hard cut on the push
     (function () {
       const svg = $("sc005-svg");
       // axes
