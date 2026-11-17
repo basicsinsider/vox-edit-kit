@@ -395,7 +395,7 @@
       ["sc016", 1160.610, 1168.530, "paper"], ["sc017", 1168.530, 1174.583, "paper"],
     ];
     const GROUND = { paper: [0.32, 0.16, 0.26], night: [0.9, 0.42, 0.38], map: [0.75, 0.3, 0.3] };
-    const EARLY = { sc004: 0.45, sc007: 0.45, sc011: 0.45, sc015: 0.45, sc017: 0.45 };   // slides: incoming scene visible during the slide
+    const EARLY = { sc004: 0.45, sc007: 0.45, sc011: 0.35, sc015: 0.45, sc017: 0.45 };   // slides: incoming scene visible during the slide
     function ground(kind, t) { const v = GROUND[kind]; tl.set([$("vig"), $("dust"), $("grain")], { opacity: (i) => v[i] }, t); }
     SC.forEach((s, i) => {
       const el = $(s[0]), a = s[1] - (EARLY[s[0]] || 0);
@@ -567,8 +567,8 @@
         }
       });
       // the US companies: dense volt compute
-      tl.fromTo($("sc003-usv"), { opacity: 0 }, { opacity: 0.95, duration: 1.0, ease: C(E.out, 1.0), immediateRender: true }, S(1075.4));
-      rise(lu, T(1075.58), { dur: 0.7, y: 10 });
+      tl.fromTo($("sc003-usv"), { opacity: 0 }, { opacity: 0.95, duration: 0.6, ease: C(E.out, 0.6), immediateRender: true }, S(1075.4));
+      rise(lu, T(1075.58), { dur: 0.5, y: 10 });
     })();
 
     /* ===== sc004 · Caixin: rationing inside China (paper slides up) ===== */
@@ -626,8 +626,8 @@
       gsap.set([tt, bd], { opacity: 0 });
       pop(tt, T(1092.30), { dur: 0.6, from: 0.7 });
       rise(bd, T(1092.86), { dur: 0.7, y: 14 });
-      const ar = FX.markup.arrow(tl, $("sc006-svg"), S(1093.4), { x1: 560, y1: 112, x2: 830, y2: 116, bend: -30, head: 22, color: BONE, width: 5, filter: PEN, dur: 0.5 });
-      gsap.set(ar, { opacity: 0 }); tl.set(ar, { opacity: 1 }, S(1093.4));
+      const ar = FX.markup.arrow(tl, $("sc006-svg"), S(1093.15), { x1: 560, y1: 112, x2: 830, y2: 116, bend: -30, head: 22, color: BONE, width: 5, filter: PEN, dur: 0.4 });
+      gsap.set(ar, { opacity: 0 }); tl.set(ar, { opacity: 1 }, S(1093.15));
     })();
 
     /* ===== sc007 · features off during holidays · computing power saved (paper slides in) ===== */
@@ -733,12 +733,12 @@
         pages[2].appendChild(h); gsap.set(h, { scaleX: 0 });
         tl.fromTo(h, { scaleX: 0 }, { scaleX: 1, duration: 0.45, ease: C(E.inOut, 0.45), immediateRender: true }, S(1119.6) + j * 0.4);
       });
-      stop($("sc010-st"), T(1120.94), { n: 3, from: 1.5 });
+      stop($("sc010-st"), T(1120.94), { n: 2, from: 1.5 });
       push("sc010", 1114.86, 1122.0, 1.0, 1.05, { ease: E.cam, origin: "800px 520px" });
     })();
 
     /* ===== sc011 · two years behind · one twentieth of the compute (paper slides up) ===== */
-    slide("sc010", "sc011", S(1122.00), { axis: "y" });
+    slide("sc010", "sc011", S(1122.00), { axis: "y", d: 0.35 });
     (function () {
       const svg = $("sc011-svg");
       ink(svg, "M200 261 C700 259 1200 263 1720 260", S(1121.7), 1.0, { color: INK, width: 4, opacity: 0.75, ease: C(E.inOut, 1.0) });
@@ -824,7 +824,7 @@
     (function () {
       const box = $("sc015-racks"), SRC = "assets/nvidia/shared/hardware/cutouts/gb200_nvl72_rack_front_cutout.png";
       // three rows; back rows smaller (depth). Row 0 = front.
-      const ROWS = [{ n: 7, h: 560, y: 470, t: S(1153.5) }, { n: 9, h: 420, y: 330, t: S(1158.05) }, { n: 11, h: 320, y: 230, t: S(1159.0) }];
+      const ROWS = [{ n: 7, h: 540, y: 400, t: S(1153.5) }, { n: 9, h: 410, y: 290, t: S(1158.05) }, { n: 11, h: 310, y: 205, t: S(1159.0) }];
       ROWS.slice().reverse().forEach((r) => {
         const w = r.h * 1134 / 3680, gap = w * 0.22, tot = r.n * w + (r.n - 1) * gap, x0 = 960 - tot / 2;
         for (let k = 0; k < r.n; k++) {
@@ -847,13 +847,13 @@
       const A = $("sc016-a"), B = $("sc016-b");
       gsap.set(B, { opacity: 0 });
       tl.fromTo(A, { y: 40 }, { y: 0, duration: 1.2, ease: C(E.out, 1.2), immediateRender: true }, S(1160.61));
-      const u1 = FX.markup.pen(tl, $("sc016-sa"), S(1163.9), { points: [[8, 120], [300, 117], [600, 121]], color: REDD, width: 7, filter: PEN, dur: 0.8, seed: 9 });
+      const u1 = FX.markup.pen(tl, $("sc016-sa"), S(1163.9), { points: [[8, 112], [300, 109], [600, 113]], color: REDD, width: 7, filter: PEN, dur: 0.8, seed: 9 });
       gsap.set(u1, { opacity: 0 }); tl.set(u1, { opacity: 1 }, S(1163.9));
       tl.fromTo(B, { opacity: 0, y: 700, rotation: 6 }, { opacity: 1, y: 0, rotation: 1.2, duration: 0.8, ease: C(E.out, 0.8), immediateRender: true }, S(1165.2));
       tl.to(A, { opacity: 0.55, duration: 0.4 }, S(1165.4));
-      const u2 = FX.markup.pen(tl, $("sc016-sb"), S(1166.95), { points: [[346, 112], [500, 109], [648, 113]], color: REDD, width: 6, filter: PEN, dur: 0.4, seed: 10 });
-      const u3 = FX.markup.pen(tl, $("sc016-sb"), S(1167.35), { points: [[8, 154], [90, 151], [176, 155]], color: REDD, width: 6, filter: PEN, dur: 0.3, seed: 11 });
-      gsap.set([u2, u3], { opacity: 0 }); tl.set(u2, { opacity: 1 }, S(1166.95)); tl.set(u3, { opacity: 1 }, S(1167.35));
+      const u2 = FX.markup.pen(tl, $("sc016-sb"), S(1166.85), { points: [[346, 105], [500, 102], [648, 106]], color: REDD, width: 6, filter: PEN, dur: 0.35, seed: 10 });
+      const u3 = FX.markup.pen(tl, $("sc016-sb"), S(1167.2), { points: [[8, 146], [90, 143], [176, 147]], color: REDD, width: 6, filter: PEN, dur: 0.3, seed: 11 });
+      gsap.set([u2, u3], { opacity: 0 }); tl.set(u2, { opacity: 1 }, S(1166.85)); tl.set(u3, { opacity: 1 }, S(1167.2));
       push("sc016", 1160.61, 1168.53, 1.0, 1.05, { ease: E.cam, origin: "960px 520px" });
     })();
 

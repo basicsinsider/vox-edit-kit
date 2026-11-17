@@ -894,7 +894,14 @@ def build_sfx_and_amb(markers, scenes, act, vo):
         if EPIDEMIC:   # §10.8: SFX −10…−20 dB under the VO by importance (hero/normal vs the rest)
             hero = m.get("level") == "normal" or ty in ("boom_low", "riser", "plane_pass")
             rel = (-16.0 if hero else -19.0) if ty in LOWTYPES else (-16.0 if hero else -22.0)   # −4 dB all round (Krish 2026-11-13: SFX well below the voice)
-        allowed = max(vloc * db(rel), db(floor)) if vloc > db(-30) else db(floor)
+        if EPIDEMIC and VO_LUFS < -27.5:
+            # quiet VO (NVIDIA −29.8 LUFS, local speech peaks ≈ −20 dBFS): the absolute −30/−24 dBFS floors sat ABOVE
+            # vloc·rel and lifted the cap to ≈ 10 dB under the voice. Here: while he speaks the cap is vloc·rel only;
+            # in pauses the floors move down with the VO (−30 + (VO_LUFS + 26)). VOs ≥ −27.5 LUFS keep the old rule.
+            off = VO_LUFS + 26.0
+            allowed = vloc * db(rel) if vloc > db(-30 + off) else db(floor + off)
+        else:
+            allowed = max(vloc * db(rel), db(floor)) if vloc > db(-30) else db(floor)
         pk = np.abs(y).max() * g
         if pk > allowed:
             g *= allowed / pk
