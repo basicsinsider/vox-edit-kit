@@ -790,6 +790,11 @@ on action. Use it whenever the narrator quotes someone or introduces a historic 
 - [ ] Smooth long eases, 12 fps. [ ] Cuts on action; whips, no iris. [ ] No photo/clip used > 2× in a chunk.
 
 ## Changelog
+- 2026-11-17 — Premiere Pro hand-off for the podcast (`tools/premiere_xml_podcast.py`, `project/podcast/premiere/`): built from the edit's
+  own structure instead of splitting a master — V1 = the raw take cut by the EDL (punch-ins as Basic Motion scale 54 %), V2 = the
+  rendered sections at their frames, voice + per-island music/SFX/ambience stems (`pd_islands.py --keep-wav` rebuilds them bit-identically).
+  When the zip won't fit on disk, split it into two zips rooted at the same folder and upload the second into the same gofile folder
+  (guest token from the first upload as `Authorization: Bearer`, `folderId` form field); check both md5s.
 - 2026-11-13 — **Podcast A-roll edit (`project/podcast/`, "TSMC vs UMC", 95:52)**: new workflow for a two-person video podcast with no
   script. Krish's rules: first 5 min a full edit, after that edited sections only where needed (41 sections, 27 % of the runtime), the
   rest stays on the speakers, cut by an EDL (226 word cuts from 5 parallel transcript analysts, `project/podcast/gen/build_edl.py`:
