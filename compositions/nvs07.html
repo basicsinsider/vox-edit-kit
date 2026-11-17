@@ -10,7 +10,7 @@
     .n7-paper { background: var(--paper); }
     .n7-abs { position: absolute; }
     .n7-full { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; object-fit: cover; }
-    .n7-fcw { position: absolute; inset: 0; transform-origin: 955px 90px; }
+    .n7-fcw { position: absolute; inset: 0; transform-origin: 955px 60px; }
     .n7-vw { position: absolute; inset: 0; transform-origin: 50% 50%; }
     .n7-p1, .n7-p2 { position: absolute; inset: -60px; background-size: cover; background-position: center; pointer-events: none; }
     .n7-p2 { opacity: 0.9; mix-blend-mode: multiply; }
@@ -87,7 +87,7 @@
     .n7-stk svg { position: absolute; left: 22%; top: 22%; width: 56%; height: 56%; }
 
     /* sc015 chart */
-    #nvs07-sc015-world { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 0 0; }
+    #nvs07-sc015-world { position: absolute; left: 0; top: 0; width: 3300px; height: 1080px; transform-origin: 0 0; }
     #nvs07-sc015-bar { position: absolute; left: 96px; top: 230px; width: 1728px; height: 96px; }
     .n7-sl { position: absolute; top: 0; height: 96px; background: var(--ice-dark); }
     #nvs07-sc015-lab { position: absolute; left: 96px; top: 172px; font-size: 28px; color: var(--ice-dark); white-space: nowrap; }
@@ -215,7 +215,7 @@
         <img id="nvs07-sc012-flag" src="assets/nvidia/shared/logos/flag_us.svg" alt="" style="position:absolute;left:1060px;top:206px;width:150px;box-shadow:0 6px 12px rgba(0,0,0,0.45)" />
         <div class="n7-stk" id="nvs07-sc012-pl" style="left:1680px;top:150px;width:120px;height:120px"><svg viewBox="0 0 256 256" fill="currentColor"><path d="M128 12 C140 12 144 32 144 52 V100 L240 152 V176 L144 148 V204 L176 228 V244 L128 232 L80 244 V228 L112 204 V148 L16 176 V152 L112 100 V52 C112 32 116 12 128 12 Z"/></svg></div>
         <svg class="n7-mk" id="nvs07-sc012-str" viewBox="0 0 1920 1080"></svg>
-        <div class="n7-ptag dk t-display" id="nvs07-sc012-x2" style="left:1420px;top:700px;font-size:84px">×2</div>
+        <div class="t-display halate yellow" id="nvs07-sc012-x2" style="position:absolute;left:1440px;top:640px;font-size:170px;line-height:1">×2</div>
       </div>
       <div id="nvs07-sc012-lamp"></div><div id="nvs07-sc012-dark"></div>
       <div class="n7-credit t-label">Photos: Yutaka Tsutano (CC BY 2.0) · Wikimedia Commons (CC BY-SA 3.0)</div>
@@ -236,15 +236,16 @@
 
     <!-- sc015 · 761.14–775.25 · resources spread thin · $300 · not a smuggling operation -->
     <div class="n7-scene" id="nvs07-sc015"><div class="n7-shot n7-paper" id="nvs07-sc015-shot">
-      <div class="n7-p1" style="background-image:url('assets/textures/paper_stained_01_hires.jpg')"></div>
-      <div class="n7-p2" style="background-image:url('assets/textures/paper_cream_01.jpg'); opacity:0.5"></div>
       <div id="nvs07-sc015-world">
+        <div class="n7-p1" style="inset:auto;left:-200px;top:-200px;width:1960px;height:1480px;background-image:url('assets/textures/paper_stained_01_hires.jpg')"></div>
+        <div class="n7-p1" style="inset:auto;left:1760px;top:-200px;width:1960px;height:1480px;background-image:url('assets/textures/paper_stained_01_hires.jpg');transform:scaleX(-1)"></div>
+        <div class="n7-p2" style="inset:auto;left:-200px;top:-200px;width:3920px;height:1480px;background-image:url('assets/textures/paper_cream_01.jpg');background-size:1960px 1480px;background-repeat:repeat-x;opacity:0.5"></div>
         <div class="t-label" id="nvs07-sc015-lab">Enforcement resources</div>
         <div id="nvs07-sc015-bar"></div>
         <div id="nvs07-sc015-row"></div>
         <div id="nvs07-sc015-ops"></div>
-        <div class="n7-ptag dk t-display" id="nvs07-sc015-t3" style="left:700px;top:640px;font-size:48px;padding:12px 22px 8px 46px"><span id="nvs07-sc015-t3n">$0</span></div>
-        <svg class="n7-mk" id="nvs07-sc015-mk" viewBox="0 0 1920 1080"></svg>
+        <div class="n7-ptag dk t-display" id="nvs07-sc015-t3" style="left:880px;top:500px;font-size:48px;padding:12px 22px 8px 46px"><span id="nvs07-sc015-t3n">$0</span></div>
+        <svg class="n7-mk" id="nvs07-sc015-mk" viewBox="0 0 3300 1080" style="width:3300px"></svg>
       </div>
     </div></div>
 
@@ -564,44 +565,46 @@
     slide("sc014", "sc015", S(761.14), { axis: "y" });
     (function () {
       const world = $("sc015-world"), bar = $("sc015-bar"), row = $("sc015-row"), ops = $("sc015-ops");
-      const N = 40, W = 1728 / N, sl = [], trv = [];
+      const N = 30, W = 1728 / N, sl = [], trv = [], X = (i) => 96 + i * W + 2, Y = (i) => (i % 2 ? 690 : 630);
       for (let i = 0; i < N; i++) {
         const s = document.createElement("div"); s.className = "n7-sl"; s.style.left = (i * W) + "px"; s.style.width = (W + 0.6) + "px"; bar.appendChild(s); sl.push(s);
-        const t = document.createElement("div"); t.className = "n7-trv"; t.style.left = (104 + i * 43) + "px"; t.style.top = (i % 2 ? 790 : 750) + "px";
-        t.style.width = "44px"; t.style.height = "44px"; t.innerHTML = TRAVELLER; t.querySelector("svg").style.cssText = "width:44px;height:44px"; row.appendChild(t); trv.push(t);
+        const t = document.createElement("div"); t.className = "n7-trv"; t.style.left = X(i) + "px"; t.style.top = Y(i) + "px";
+        t.style.width = "54px"; t.style.height = "54px"; t.innerHTML = TRAVELLER; t.querySelector("svg").style.cssText = "width:54px;height:54px"; row.appendChild(t); trv.push(t);
       }
       // bar grows, label on "resources"
       gsap.set(bar, { scaleX: 0, transformOrigin: "0 50%" });
       tl.fromTo(bar, { scaleX: 0 }, { scaleX: 1, duration: 1.2, ease: C(E.out, 1.2), immediateRender: true }, S(761.40));
       gsap.set($("sc015-lab"), { opacity: 0 });
       rise($("sc015-lab"), T(762.90), { dur: 0.6, y: 8 });
-      // travellers appear on "individual people", the bar breaks into slivers that fall onto them
-      trv.forEach((t, i) => { gsap.set(t, { opacity: 0 }); tl.fromTo(t, { opacity: 0 }, { opacity: 1, duration: 1 / 12, ease: "steps(1)", immediateRender: true }, S(763.80) + Math.floor(i / 5) / 12); });
+      // travellers appear on "individual people", the bar breaks into slivers that drop onto them (spread thin)
+      trv.forEach((t, i) => { gsap.set(t, { opacity: 0 }); tl.fromTo(t, { opacity: 0 }, { opacity: 1, duration: 1 / 12, ease: "steps(1)", immediateRender: true }, S(763.80) + Math.floor(((i * 7) % N) / 4) / 12); });
       sl.forEach((s, i) => {
-        const tx = 104 + i * 43 + 13 - 96 - i * W, ty = (i % 2 ? 790 : 750) - 288;
-        tl.to(s, { x: tx, y: ty, scaleY: 0.12, scaleX: 0.85, duration: 0.75, ease: C(E.inOut, 0.75) }, S(764.55) + Math.floor((i * 7) % N / 4) / 12);
+        tl.to(s, { x: 2, y: Y(i) - 292, scaleY: 0.14, scaleX: 0.8, duration: 0.8, ease: C(E.inOut, 0.8) }, S(764.55) + Math.floor(((i * 11) % N) / 4) / 12);
       });
-      // ghost "dedicated smuggling operation": pallets of 8-GPU server boxes
+      // ghost "dedicated smuggling operation": pallets of 8-GPU server boxes, off to the right of the sheet
       const srv = [];
       for (let r = 0; r < 4; r++) for (let c = 0; c < 4; c++) {
-        const d = document.createElement("div"); d.className = "n7-srv"; d.style.left = (1290 + c * 128) + "px"; d.style.top = (300 + r * 100) + "px"; d.innerHTML = SERVER; ops.appendChild(d); srv.push(d);
+        const d = document.createElement("div"); d.className = "n7-srv"; d.style.left = (2340 + c * 128) + "px"; d.style.top = (330 + r * 100) + "px"; d.innerHTML = SERVER; ops.appendChild(d); srv.push(d);
       }
       gsap.set(srv, { opacity: 0 });
       srv.forEach((d, i) => tl.fromTo(d, { opacity: 0, y: -30 }, { opacity: 0.62, y: 0, duration: 1 / 12, ease: "steps(1)", immediateRender: true }, S(772.92) + Math.floor((15 - i) / 2) / 12));
-      // camera: hold, push to one traveller for "$300", pull back for the operation, then push into it (→ nvs08)
-      const hero = 13, hx = 104 + hero * 43 + 22, hy = 772;
-      const z0 = at(960, 540, 1.0), z1 = at(hx + 90, hy - 40, 2.2), z2 = at(1040, 540, 1.0), z3 = at(1500, 500, 1.3);
+      // camera: push to one traveller for "$300", pan right to the operation, then push into it (→ nvs08's big fish)
+      const hx = X(13) + 27, hy = Y(13);
+      const z0 = at(960, 540, 1.0), z1 = at(hx + 80, hy - 60, 2.2), z2 = at(2596, 560, 1.3), z3 = at(2596, 560, 1.6);
       gsap.set(world, z0);
       tl.fromTo(world, z0, Object.assign({ duration: 1.4, ease: E.cam, immediateRender: false }, z1), S(768.90));
-      tl.to(world, Object.assign({ duration: 0.9, ease: E.inOut }, z2), S(772.70));
+      tl.to(world, Object.assign({ duration: 0.9, ease: E.inOut }, z2), S(772.60));
       tl.to(world, Object.assign({ duration: S(775.25) - S(774.85), ease: E.in }, z3), S(774.85));
+      // the one person: everyone else steps back
+      tl.to(trv.filter((t, i) => i !== 13), { opacity: 0.32, duration: 0.5, ease: "power1.inOut" }, S(769.60));
+      tl.to(sl.filter((t, i) => i !== 13), { opacity: 0.4, duration: 0.5, ease: "power1.inOut" }, S(769.60));
       const t3 = $("sc015-t3"), n3 = $("sc015-t3n");
       gsap.set(t3, { opacity: 0, rotation: -4 });
       tl.fromTo(t3, { opacity: 0, scale: 1.3 }, { opacity: 1, scale: 1, duration: 2 / 12, ease: "steps(2)", immediateRender: true }, T(770.50));
       FX.text.count(tl, n3, T(770.50), 0, 300, 0.6, (v) => "$" + Math.round(v));
       // pen cross over the operation
-      FX.markup.pen(tl, $("sc015-mk"), S(773.70), { points: [[1290, 300], [1550, 520], [1790, 720]], dur: 0.32, width: 9, color: INK, filter: PEN, seed: 11 });
-      FX.markup.pen(tl, $("sc015-mk"), S(774.06), { points: [[1790, 310], [1540, 515], [1296, 716]], dur: 0.32, width: 9, color: INK, filter: PEN, seed: 12 });
+      FX.markup.pen(tl, $("sc015-mk"), S(773.70), { points: [[2340, 330], [2600, 550], [2846, 752]], dur: 0.32, width: 9, color: INK, filter: PEN, seed: 11 });
+      FX.markup.pen(tl, $("sc015-mk"), S(774.06), { points: [[2850, 340], [2590, 545], [2346, 746]], dur: 0.32, width: 9, color: INK, filter: PEN, seed: 12 });
     })();
 
     FX.mount(tl, DURATION);
