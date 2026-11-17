@@ -679,7 +679,7 @@
         const p = div(row, "n15-plate", "left:" + X[i] + "px;top:430px");
         img(p, LOGO(n), "left:80px;top:46px;width:140px;height:120px;filter:brightness(0) invert(0.94)");
         gsap.set(p, { opacity: 0 });
-        tl.fromTo(p, { opacity: 0, y: 70 }, { opacity: 1, y: 0, duration: 0.7, ease: C(E.out, 0.7), immediateRender: true }, S(1514.42) + i * 0.12);
+        tl.fromTo(p, { opacity: 0, y: 70 }, { opacity: 1, y: 0, duration: 0.7, ease: C(E.out, 0.7), immediateRender: true }, S(1514.25) + i * 0.08);
         plates.push(p);
       });
       // "hate each other": they jolt apart, sparks between them
@@ -696,10 +696,10 @@
       const svg = $("sc011-svg"), lay = $("sc011-l");
       const P = [[700, 390, "anthropic"], [1220, 390, "openai"], [960, 760, "google"]];
       P.forEach((q, i) => {
-        const c = FX.markup.circle(tl, svg, S(1519.95) + i * 0.15, { cx: q[0], cy: q[1], rx: 118, ry: 112, rot: -8, color: INK, width: 6, filter: PEN, dur: 0.5, seed: 30 + i });
-        gsap.set(c, { opacity: 0 }); tl.set(c, { opacity: 1 }, S(1519.95) + i * 0.15); c.style.mixBlendMode = "multiply";
+        const c = FX.markup.circle(tl, svg, S(1519.6) + i * 0.12, { cx: q[0], cy: q[1], rx: 118, ry: 112, rot: -8, color: INK, width: 6, filter: PEN, dur: 0.5, seed: 30 + i });
+        gsap.set(c, { opacity: 0 }); tl.set(c, { opacity: 1 }, S(1519.6) + i * 0.12); c.style.mixBlendMode = "multiply";
         const im = img(lay, LOGO(q[2]), "left:" + (q[0] - 62) + "px;top:" + (q[1] - 52) + "px;width:124px;height:104px;filter:brightness(0)");
-        gsap.set(im, { opacity: 0 }); pop(im, S(1520.05) + i * 0.15, { from: 1.3, n: 2, to: 0.9 });
+        gsap.set(im, { opacity: 0 }); pop(im, S(1519.7) + i * 0.12, { from: 1.3, n: 2, to: 0.9 });
       });
       // links on "working together"
       pen(svg, S(1520.79), { points: [[818, 392], [1102, 388]], jitter: 4, seed: 41, dur: 0.45, width: 6, color: ICED });
@@ -773,12 +773,14 @@
       const pins = [];
       CARDS.forEach((q, i) => {
         const c = div(box, "n15-pcard", "left:" + q[0] + "px;top:" + q[1] + "px;background-image:url('assets/textures/paper_cream_01.jpg')");
-        img(c, LOGO(q[3]), "left:110px;top:56px;width:160px;height:130px;filter:brightness(0);opacity:0.88");
-        div(c, "t-label n15-ink", "position:absolute;left:0;width:380px;top:222px;text-align:center;font-size:34px;text-transform:none", q[4]);
-        gsap.set(c, { opacity: 0, rotation: q[2] });
-        tl.fromTo(c, { opacity: 0, scale: 1.08, y: -30 }, { opacity: 1, scale: 1, y: 0, duration: 2 / 12, ease: "steps(2)", immediateRender: true }, q[5]);
-        const p = div(top, "n15-pin", "left:" + (q[0] + 177) + "px;top:" + (q[1] + 10) + "px");
-        gsap.set(p, { opacity: 0 }); tl.set(p, { opacity: 1 }, q[5] + 2 / 12);
+        const face = div(c, "", "position:absolute;inset:0");
+        img(face, LOGO(q[3]), "left:110px;top:56px;width:160px;height:130px;filter:brightness(0);opacity:0.88");
+        div(face, "t-label n15-ink", "position:absolute;left:0;width:380px;top:222px;text-align:center;font-size:34px;text-transform:none", q[4]);
+        gsap.set(c, { rotation: q[2] });
+        gsap.set(face, { opacity: 0 });
+        tl.fromTo(face, { opacity: 0, scale: 1.12 }, { opacity: 1, scale: 1, duration: 2 / 12, ease: "steps(2)", immediateRender: true }, q[5]);
+        tl.fromTo(c, { y: -18 }, { y: 0, duration: 2 / 12, ease: "steps(2)", immediateRender: false }, q[5]);
+        div(top, "n15-pin", "left:" + (q[0] + 177) + "px;top:" + (q[1] + 10) + "px");
         pins.push([q[0] + 190, q[1] + 23]);
       });
       // strings on "working together"

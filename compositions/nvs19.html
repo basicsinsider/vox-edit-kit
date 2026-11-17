@@ -45,12 +45,9 @@
     #nvs19-sc003-eng img { position: absolute; left: 0; top: 0; width: 720px; height: 540px; filter: grayscale(1) sepia(0.35) contrast(1.05) brightness(1.02); mix-blend-mode: multiply; }
 
     /* sc004 wafer chart */
-    #nvs19-sc004-wafer { position: absolute; left: 320px; top: 160px; width: 800px; height: 800px; border-radius: 50%;
-      background: radial-gradient(circle at 42% 38%, #343b40 0%, #22282c 55%, #181c1f 100%);
-      box-shadow: 0 0 0 3px rgba(195,199,200,0.18), 0 40px 90px rgba(0,0,0,0.6), inset 0 0 40px rgba(0,0,0,0.5); }
-    #nvs19-sc004-notch { position: absolute; left: 704px; top: 944px; width: 32px; height: 32px; border-radius: 50%; background: #0f1215; }
-    .n19-die { position: absolute; width: 46px; height: 46px; background: #2b3135; border: 1px solid #3c4348; box-sizing: border-box; }
-    .n19-lit { position: absolute; width: 46px; height: 46px; background: var(--volt); box-shadow: 0 0 16px rgba(134,194,50,0.65); opacity: 0; }
+    #nvs19-sc004-wg { position: absolute; inset: 0; transform-origin: 960px 560px; }
+    .n19-die { position: absolute; width: 54px; height: 54px; border-radius: 4px; background: #3a4247; border: 2px solid #2a3034; box-sizing: border-box; }
+    .n19-lit { position: absolute; width: 54px; height: 54px; border-radius: 4px; background: var(--volt); border: 2px solid var(--volt-light); box-sizing: border-box; filter: drop-shadow(0 0 7px rgba(134,194,50,0.6)); opacity: 0; }
     .n19-sw { position: absolute; width: 34px; height: 34px; }
 
     /* sc005 wafer photo */
@@ -123,11 +120,15 @@
     </div></div>
 
     <!-- sc004 · 1910.70–1919.90 · 10 % → 30 % · 100 made, 30 work · THE WAFER CHART -->
-    <div class="n19-scene" id="nvs19-sc004"><div class="n19-shot" id="nvs19-sc004-shot" style="background:radial-gradient(ellipse 80% 80% at 38% 50%, #1a1f23 0%, #0c0f11 75%)">
-      <div class="n19-vw" id="nvs19-sc004-vw" style="transform-origin:900px 560px">
-        <div id="nvs19-sc004-wafer"></div>
-        <div id="nvs19-sc004-notch"></div>
-        <div id="nvs19-sc004-dies"></div>
+    <div class="n19-scene" id="nvs19-sc004"><div class="n19-shot" id="nvs19-sc004-shot" style="background:radial-gradient(ellipse 72% 62% at 50% 46%, color-mix(in srgb, var(--ash-dark) 52%, var(--night)) 0%, var(--night) 74%)">
+      <div class="n19-vw" id="nvs19-sc004-vw" style="transform-origin:960px 560px">
+        <div id="nvs19-sc004-wg">
+          <svg class="n19-mk" viewBox="0 0 1920 1080">
+            <defs><radialGradient id="nvs19-wg" cx="42%" cy="38%" r="70%"><stop offset="0" stop-color="#2c3438"/><stop offset="1" stop-color="#181d20"/></radialGradient></defs>
+            <path d="M944 1007 A448 448 0 1 1 976 1007 L960 990 Z" fill="url(#nvs19-wg)" stroke="#c3c7c8" stroke-width="4" stroke-opacity="0.75" stroke-linejoin="round" />
+          </svg>
+          <div id="nvs19-sc004-dies"></div>
+        </div>
         <div class="n19-abs t-label" id="nvs19-sc004-ti" style="left:1264px;top:236px;font-size:30px;color:var(--ash-light)">Yield</div>
         <div class="n19-abs t-display clean" id="nvs19-sc004-pc" style="left:1250px;top:286px;font-size:220px;line-height:1">10%</div>
         <div class="n19-abs" id="nvs19-sc004-lg1" style="left:1266px;top:620px;width:560px;height:50px">
@@ -428,7 +429,7 @@
     whip("sc003", "sc004", S(1910.70), { dir: 1 });
     (function () {
       const box = $("sc004-dies"), lit = [];
-      const PITCH = 54, X0 = 720 - 266, Y0 = 560 - 266;
+      const PITCH = 62, X0 = 654, Y0 = 254;   // nvs18's wafer chart geometry (centre 960,560 · r 448 · die 54 · pitch 62)
       for (let k = 0; k < 100; k++) {
         const x = X0 + (k % 10) * PITCH, y = Y0 + Math.floor(k / 10) * PITCH;
         const d = document.createElement("div"); d.className = "n19-die"; d.style.left = x + "px"; d.style.top = y + "px"; box.appendChild(d);
@@ -438,6 +439,8 @@
       const r = FX.rng(1919), ord = lit.map((_, i) => i);
       for (let i = ord.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); const t = ord[i]; ord[i] = ord[j]; ord[j] = t; }
       gsap.set([$("sc004-ti"), $("sc004-pc"), $("sc004-lg1"), $("sc004-lg2")], { opacity: 0 });
+      // opens on nvs18's framing (wafer centred), then slides left to make room for the number
+      tl.fromTo($("sc004-wg"), { x: 0, scale: 1 }, { x: -300, scale: 0.86, duration: 1.0, ease: C(E.inOut, 1.0), immediateRender: true }, S(1910.85));
       rise($("sc004-ti"), T(1911.24), { dur: 0.5, y: 8 });
       // 10 %
       ord.slice(0, 10).forEach((i, n) => tl.fromTo(lit[i], { opacity: 0 }, { opacity: 1, duration: 1 / 12, ease: "steps(1)", immediateRender: true }, S(1912.0) + n / 24));
@@ -448,11 +451,11 @@
       $("sc004-pc").textContent = "10%";
       // 100 made: every die outline pulses
       rise($("sc004-lg1"), T(1917.00), { dur: 0.5, y: 6 });
-      tl.fromTo(box.querySelectorAll(".n19-die"), { borderColor: "#3c4348" }, { borderColor: "#aab2b6", duration: 2 / 12, ease: "steps(2)", yoyo: true, repeat: 1, stagger: { each: 0.004, from: "start" }, immediateRender: false }, S(1917.1));
+      tl.fromTo(box.querySelectorAll(".n19-die"), { borderColor: "#2a3034" }, { borderColor: "#aab2b6", duration: 2 / 12, ease: "steps(2)", yoyo: true, repeat: 1, stagger: { each: 0.004, from: "start" }, immediateRender: false }, S(1917.1));
       // only 30 work: the rest sink
       rise($("sc004-lg2"), T(1918.20), { dur: 0.5, y: 6 });
       tl.to(box.querySelectorAll(".n19-die"), { opacity: 0.55, duration: 3 / 12, ease: "steps(3)" }, S(1918.4));
-      push("sc004", 1910.7, 1919.45, 1.0, 1.05, { ease: E.cam });
+      push("sc004", 1911.9, 1919.45, 1.0, 1.04, { ease: E.cam, origin: "900px 560px" });
       exitPush("sc004", S(1919.45), 1.25, 0.45);
     })();
 
@@ -701,7 +704,7 @@
         ink(svg, "M" + (x1 - tx * h + nx * h * 0.6).toFixed(1) + " " + (y1 - ty * h + ny * h * 0.6).toFixed(1) + " L" + x1.toFixed(1) + " " + y1.toFixed(1) + " L" + (x1 - tx * h - nx * h * 0.6).toFixed(1) + " " + (y1 - ty * h - ny * h * 0.6).toFixed(1), t + dur * 0.9, 0.15, { color: REDL, width: 6 });
       };
       arc(0, S(1984.2), 0.8); arc(1, S(1986.2), 0.6); arc(2, S(1988.3), 0.8); arc(3, S(1990.1), 0.6);
-      pop($("sc011-logo"), S(1981.25), { dur: 0.9, from: 0.7 });
+      pop($("sc011-logo"), S(1980.85), { dur: 0.9, from: 0.7 });
       // the wheel spins up once the loop is closed
       tl.fromTo(spin, { opacity: 0 }, { opacity: 1, duration: 0.4, immediateRender: true }, S(1984.0));
       tl.fromTo(spin, { rotation: 0 }, { rotation: 140, duration: 7.333, ease: "power2.in", immediateRender: false, svgOrigin: CX + " " + CY }, S(1984.0));
