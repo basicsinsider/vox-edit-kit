@@ -389,12 +389,12 @@
     // ---------- scenes: [key, master start, master end, ground] ----------
     const SC = [
       ["sc001", 1698.2083, 1702.54, "night"], ["wf", 1702.54, 1715.99, "paper"], ["sc003", 1715.99, 1720.23, "night"],
-      ["sc004", 1720.23, 1726.39, "night"], ["wf", 1726.39, 1736.87, "paper"], ["sc006", 1736.87, 1745.19, "night"],
+      ["sc004", 1720.23, 1726.50, "night"], ["wf", 1726.50, 1736.87, "paper"], ["sc006", 1736.87, 1745.19, "night"],
       ["sc007", 1745.19, 1750.07, "paper"], ["sc008", 1750.07, 1752.79, "night"], ["sc009", 1752.79, 1771.70, "night"],
       ["sc010", 1771.70, 1783.46, "paper"], ["sc011", 1783.46, 1789.38, "night"], ["ln", 1789.38, 1801.46, "paper"],
       ["sc013", 1801.46, 1809.40, "night"], ["sc014", 1809.40, 1820.20, "paper"], ["sc015", 1820.20, 1822.1667, "night"],
     ];
-    const WHIP_OUT = { "sc001@1702.54": 1, "sc003@1720.23": 1, "sc004@1726.39": 1, "sc006@1745.19": 1, "sc008@1752.79": 1,
+    const WHIP_OUT = { "sc001@1702.54": 1, "sc003@1720.23": 1, "sc004@1726.5": 1, "sc006@1745.19": 1, "sc008@1752.79": 1,
       "sc009@1771.7": 1, "sc010@1783.46": 1, "ln@1801.46": 1, "sc014@1820.2": 1 };
     const GROUND = { paper: [0.22, 0.14, 0.3], night: [0.4, 0.42, 0.9] };   // [vignette, dust, grain]
     function ground(kind, t) { const v = GROUND[kind]; tl.set([$("vig"), $("dust"), $("grain")], { opacity: (i) => v[i] }, t); }
@@ -457,7 +457,7 @@
       const svg = $("sc001-arcs"), box = $("sc001-chips");
       const arcs = [[[1990, 250], [1650, 180], [1300, 390]], [[1990, 560], [1720, 520], [1446, 702]], [[1990, 860], [1600, 900], [1236, 724]]];
       arcs.forEach((a, i) => {
-        const [p0, p1, p2] = a, t0 = S(1700.50) + i * 0.32, d = 1.3;
+        const [p0, p1, p2] = a, t0 = S(1700.40) + i * 0.25, d = 1.1;
         const p = document.createElementNS(NS, "path");
         p.setAttribute("d", `M${p0[0]} ${p0[1]} Q${p1[0]} ${p1[1]} ${p2[0]} ${p2[1]}`);
         p.setAttribute("fill", "none"); p.setAttribute("stroke", "#c9ec8f"); p.setAttribute("stroke-width", "3"); p.setAttribute("stroke-linecap", "round");
@@ -516,8 +516,8 @@
       for (let i = 0; i < 95; i++) tl.set(fills[94 - i], { opacity: 0 }, S(1714.01) + Math.floor(i / (95 / steps)) / 12);
       tl.fromTo(cnt, { v: 95 }, { v: 0, duration: fd, ease: C("none", fd), immediateRender: false, onUpdate: fmt }, T(1714.01));   // "0%" 1714.07
       // second window (1726.39–1736.87): closer framing, ghost (smuggled) squares flicker back, pen "?"
-      tl.set(cam, { scale: 1.05, x: 20, y: 10 }, S(1726.39) - 0.003);
-      tl.fromTo(cam, { scale: 1.05, x: 20, y: 10 }, { scale: 1.08, x: 0, y: 20, duration: S(1734.9) - S(1726.39), ease: "none", immediateRender: false }, S(1726.39));
+      tl.set(cam, { scale: 1.05, x: 20, y: 10 }, S(1726.50) - 0.003);
+      tl.fromTo(cam, { scale: 1.05, x: 20, y: 10 }, { scale: 1.08, x: 0, y: 20, duration: S(1734.9) - S(1726.50), ease: "none", immediateRender: false }, S(1726.50));
       const r = FX.rng(1717), pick = [];
       while (pick.length < 17) { const k = Math.floor(r() * 100); if (pick.indexOf(k) < 0) pick.push(k); }
       gsap.set(ghosts, { opacity: 0 });
@@ -551,7 +551,7 @@
       const cam = $("sc004-cam"), svg = $("sc004-svg");
       const A = { scale: 0.4, x: 0, y: -1600 }, B = { scale: 0.4, x: 0, y: -300 };
       gsap.set(cam, A);
-      tl.fromTo(cam, A, Object.assign({}, B, { duration: 1.9, ease: E.cam, immediateRender: false }), S(1724.10));
+      tl.fromTo(cam, A, Object.assign({}, B, { duration: 1.5, ease: E.cam, immediateRender: false }), S(1724.10));
       rise($("sc004-my"), T(1722.33), { dur: 0.7 });                      // "Southeast" 1722.39
       gsap.set([$("sc004-sgd")], { scale: 0 });
       tl.fromTo($("sc004-sgd"), { scale: 0 }, { scale: 1, duration: 0.5, ease: C(E.out, 0.5), immediateRender: false }, S(1723.40));
@@ -562,16 +562,16 @@
         p.setAttribute("d", r[0]); p.setAttribute("fill", "none"); p.setAttribute("stroke", "#86c232"); p.setAttribute("stroke-width", i ? "10" : "16");
         p.setAttribute("stroke-linecap", "round"); p.setAttribute("pathLength", "100"); p.setAttribute("stroke-dasharray", "100 100"); p.setAttribute("stroke-dashoffset", "100");
         p.setAttribute("opacity", i ? "0.7" : "1"); svg.appendChild(p);
-        tl.fromTo(p, { attr: { "stroke-dashoffset": 100 } }, { attr: { "stroke-dashoffset": 0 }, duration: 1.8, ease: E.cam, immediateRender: false }, S(1724.17) + r[1]);  // "rerouted" 1724.23
+        tl.fromTo(p, { attr: { "stroke-dashoffset": 100 } }, { attr: { "stroke-dashoffset": 0 }, duration: 1.4, ease: E.cam, immediateRender: false }, S(1724.17) + r[1]);  // "rerouted" 1724.23
       });
       gsap.set($("sc004-szd"), { scale: 0 });
-      tl.fromTo($("sc004-szd"), { scale: 0 }, { scale: 1, duration: 0.4, ease: C(E.out, 0.4), immediateRender: false }, S(1725.9));
+      tl.fromTo($("sc004-szd"), { scale: 0 }, { scale: 1, duration: 0.4, ease: C(E.out, 0.4), immediateRender: false }, S(1725.5));
       tl.fromTo([$("sc004-fill"), $("sc004-edge")], { opacity: 0 }, { opacity: (i) => (i ? 1 : 0.5), duration: 0.6, ease: C(E.out, 0.6), immediateRender: false }, S(1725.4));
-      rise($("sc004-cn"), T(1725.61), { dur: 0.6 });                      // "China" 1725.67
+      rise($("sc004-cn"), T(1725.61), { dur: 0.4 });                      // "China" 1725.67
     })();
 
     /* ===== waffle again (vertical whip in) ===== */
-    whip("sc004", "wf", S(1726.39), { vertical: true, dir: 1 });
+    whip("sc004", "wf", S(1726.50), { vertical: true, dir: 1 });
 
     /* ===== sc006 · Huawei racks reveal ===== */
     (function () {
@@ -796,7 +796,7 @@
       rise($("sc014-q4"), T(1815.48));                                     // "We're" 1815.54
       rise($("sc014-q5"), T(1817.24));                                     // "so" 1817.30
       rise($("sc014-q6"), T(1818.44));                                     // "to" 1818.50
-      rise($("sc014-at"), T(1819.24), { y: 8 });                           // "technology" 1819.30
+      rise($("sc014-at"), T(1819.24), { y: 8, dur: 0.4 });                           // "technology" 1819.30
       const U = [["u1", S(1811.08)], ["u2", S(1812.84)], ["u3", S(1814.36)]];   // "best" 1811.14 · "second" 1812.90 · "third" 1814.42
       U.forEach(([k, t]) => {
         const p = $("sc014-" + k).querySelector("path");
