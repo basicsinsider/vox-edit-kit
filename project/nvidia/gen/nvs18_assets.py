@@ -72,7 +72,12 @@ def slim():
     json.dump(j, open(OUT + "china_crop.json", "w"))
     print({k: len(j[k]) for k in ["china", "taiwan", "hong_kong"]})
 
+def huawei_plates():
+    for src, dst in [("assets/nvidia/shared/places/huawei_hq_bantian_1.jpg", "huawei_hq_bantian_1920.jpg"),
+                     ("assets/nvidia/shared/places/huawei_store_1.jpg", "huawei_store_1920.jpg")]:
+        im = Image.open(src).convert("RGB"); im.thumbnail((1920, 1920)); im.save(OUT + dst, quality=88)
+
 if __name__ == "__main__":
     import sys
     if "slim" in sys.argv: slim()
-    else: china_crop(); cranes_fg(); slim()
+    else: china_crop(); cranes_fg(); slim(); huawei_plates()

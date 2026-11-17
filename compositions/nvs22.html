@@ -195,7 +195,7 @@
       <div class="n22-vw" id="nvs22-sc009-vw" style="transform-origin:960px 140px">
         <div class="n22-abs" style="left:740px;top:126px;width:440px;height:30px;background:var(--ink);border-radius:6px;box-shadow:0 8px 16px rgba(20,24,27,0.35);z-index:2"></div>
         <div class="n22-abs" id="nvs22-sc009-rc" style="left:780px;top:140px;width:360px;height:520px;background:#f8f5ee;box-shadow:0 14px 26px rgba(20,24,27,0.25);clip-path:inset(0% 0% 100% 0%)">
-          <div class="n22-abs t-display n22-ink" style="left:0;width:360px;top:40px;text-align:center;font-size:72px">RENT</div>
+          <div class="n22-abs t-display n22-ink" id="nvs22-sc009-rent" style="left:0;width:360px;top:40px;text-align:center;font-size:72px">RENT</div>
           <div class="n22-abs" style="left:40px;top:136px;width:280px;height:3px;background:var(--ink)"></div>
           <div id="nvs22-sc009-lines"></div>
           <div class="n22-abs" style="left:0;bottom:0;width:360px;height:20px;background:linear-gradient(135deg, var(--paper) 25%, transparent 25%) -10px 0/20px 20px, linear-gradient(225deg, var(--paper) 25%, transparent 25%) -10px 0/20px 20px"></div>
@@ -299,7 +299,7 @@
       const A = $(a + "-shot"), B = $(b + "-shot");
       tl.set(A, { filter: "url(#" + SEG + "-wa" + k + ")" }, t - h - 0.01); tl.set(A, { filter: "none" }, t + 0.06);
       tl.set(B, { filter: "url(#" + SEG + "-wb" + k + ")" }, t - 0.001); tl.set(B, { filter: "none" }, t + h + 0.02);
-      FX.whip(tl, A, B, t, { dir: o.dir, vertical: o.vertical, dur: o.dur, blurA: ba, blurB: bb });
+      FX.whip(tl, A, B, t, { dir: o.dir, vertical: o.vertical, dur: o.dur, blurA: ba, blurB: bb, dist: o.vertical ? 360 : 700 });
       if (o.flash) tl.fromTo($("flash"), { opacity: 0 }, { opacity: 0.85, duration: 0.08, yoyo: true, repeat: 1, ease: "power2.in", immediateRender: false }, t - 0.08);
     }
     function slide(a, b, t, o) {
@@ -427,18 +427,24 @@
       const hx = 960, hy = 170;
       const pts = (a) => a.map((q) => (hx + q[0]) + " " + (hy + q[1])).join(" L");
       const L = [-200, 30], Tp = [0, -70], R = [200, 30], Bt = [0, 130], H = 55;
-      ink(svg, "M" + pts([L, Tp, R, Bt, [-199, 31]]), S(2200.0), 0.6, { color: VOLTL, width: 4 });
-      ink(svg, "M" + pts([[L[0], L[1] + 1], [L[0] + 1, L[1] + H], [Bt[0], Bt[1] + H], [R[0], R[1] + H], [R[0] + 1, R[1] + 1]]), S(2200.25), 0.5, { color: VOLTL, width: 4 });
-      ink(svg, "M" + pts([Bt, [Bt[0] + 1, Bt[1] + H]]), S(2200.5), 0.25, { color: VOLTL, width: 4 });
+      ink(svg, "M" + pts([L, Tp, R, Bt, [-199, 31]]), S(2199.05), 0.6, { color: VOLTL, width: 4 });
+      ink(svg, "M" + pts([[L[0], L[1] + 1], [L[0] + 1, L[1] + H], [Bt[0], Bt[1] + H], [R[0], R[1] + H], [R[0] + 1, R[1] + 1]]), S(2199.30), 0.5, { color: VOLTL, width: 4 });
+      ink(svg, "M" + pts([Bt, [Bt[0] + 1, Bt[1] + H]]), S(2199.55), 0.25, { color: VOLTL, width: 4 });
       for (let k = 1; k <= 3; k++) { const f = k / 4;
         const p1 = [L[0] + f * (Tp[0] - L[0]), L[1] + f * (Tp[1] - L[1])], p2 = [Bt[0] + f * (R[0] - Bt[0]), Bt[1] + f * (R[1] - Bt[1])];
         const q1 = [p1[0] + (p2[0] - p1[0]) * 0.12, p1[1] + (p2[1] - p1[1]) * 0.12], q2 = [p1[0] + (p2[0] - p1[0]) * 0.88, p1[1] + (p2[1] - p1[1]) * 0.88 + 0.5];
-        ink(svg, "M" + pts([q1, q2]), S(2200.6) + k / 12, 0.25, { color: VOLT, width: 7 }); }
+        ink(svg, "M" + pts([q1, q2]), S(2200.03) + k / 12, 0.25, { color: VOLT, width: 7 }); }
       const cards = [$("sc004-c1"), $("sc004-c2"), $("sc004-c3")];
       const tIn = [S(2201.10), S(2202.62), S(2203.98)];
       cards.forEach((c, i) => {
+        const back = div($("sc004-vw"), "n22-card", "left:" + [200, 740, 1280][i] + "px;background:#262d33;border:3px solid rgba(240,239,232,0.22);box-sizing:border-box;" +
+          "background-image:repeating-linear-gradient(45deg, rgba(240,239,232,0.05) 0 14px, transparent 14px 28px)");
+        gsap.set(back, { transformPerspective: 1400, opacity: 0 });
+        tl.fromTo(back, { opacity: 0, y: 90 }, { opacity: 1, y: 0, duration: 0.6, ease: C(E.out, 0.6), immediateRender: true }, S(2198.95) + i * 0.08);
+        tl.to(back, { rotationY: 90, duration: 0.22, ease: E.in }, tIn[i] - 0.2);
+        tl.set(back, { opacity: 0 }, tIn[i] + 0.03);
         gsap.set(c, { transformPerspective: 1400, opacity: 0, filter: "brightness(1)" });
-        tl.fromTo(c, { opacity: 0, rotationY: -88, y: 40 }, { opacity: 1, rotationY: 0, y: 0, duration: 0.6, ease: C(E.out, 0.6), immediateRender: true }, tIn[i]);
+        tl.fromTo(c, { opacity: 0, rotationY: -90 }, { opacity: 1, rotationY: 0, duration: 0.4, ease: C(E.out, 0.4), immediateRender: true }, tIn[i] + 0.02);
       });
       words("sc004-l1", [T(2201.17), T(2201.65)], { dur: 0.35, y: 6 });
       words("sc004-l2", [T(2202.69), T(2203.09)], { dur: 0.35, y: 6 });
@@ -535,8 +541,8 @@
       push("sc005", 2208.14, 2222.19, 1.0, 1.06, { origin: "800px 560px" });
     })();
 
-    /* ===== sc006 · law books + stamps (vertical whip ↓) ===== */
-    whip("sc005", "sc006", S(2222.19), { dir: 1, vertical: true });
+    /* ===== sc006 · law books + stamps (whip →) ===== */
+    whip("sc005", "sc006", S(2222.19), { dir: 1 });
     (function () {
       const sh = $("sc006-shelf"), bk = $("sc006-books");
       for (let i = 0; i < 22; i++) {
@@ -559,7 +565,7 @@
         const st = div(book, "", "position:absolute;left:123px;top:340px;width:120px;height:120px;border-radius:50%;border:6px solid " + BONE + ";box-sizing:border-box");
         div(st, "n22-ico", "left:22px;top:24px;width:64px;height:64px;background:" + BONE + ";-webkit-mask-image:" + ICO("check") + ";mask-image:" + ICO("check"));
         gsap.set(book, { opacity: 0 });
-        tl.fromTo(book, { opacity: 0, y: 140 }, { opacity: 1, y: 0, duration: 0.7, ease: C(E.out, 0.7), immediateRender: true }, S(2222.35) + i * 0.14);
+        tl.fromTo(book, { opacity: 0, y: 140 }, { opacity: 1, y: 0, duration: 0.7, ease: C(E.out, 0.7), immediateRender: true }, S(2221.95) + i * 0.1);
         gsap.set(fl, { opacity: 0 });
         pop(fl, b[5][0], { from: 1.3, n: 2 });
         const ws = Array.from(ti.querySelectorAll(".n22-w"));
@@ -575,7 +581,7 @@
     (function () {
       const page = $("sc007-page"), hole = $("sc007-hole"), svg = $("sc007-svg");
       gsap.set(page, { opacity: 0 });
-      tl.fromTo(page, { opacity: 0, y: 220, rotation: 2 }, { opacity: 1, y: 0, rotation: -2, duration: 0.9, ease: C(E.out, 0.9), immediateRender: true }, S(2230.55));
+      tl.fromTo(page, { opacity: 0.4, y: 220, rotation: 2 }, { opacity: 1, y: 0, rotation: -2, duration: 0.9, ease: C(E.out, 0.9), immediateRender: true }, S(2230.0));
       gsap.set(hole, { opacity: 0, scale: 0.1 });
       tl.fromTo(hole, { opacity: 1, scale: 0.1, rotation: -20 }, { opacity: 1, scale: 1, rotation: 0, duration: 4 / 12, ease: "steps(4)", immediateRender: false }, S(2234.30));
       tl.set(hole, { opacity: 1 }, S(2234.30));
@@ -621,7 +627,8 @@
       const rc = $("sc009-rc"), ln = $("sc009-lines"), st = $("sc009-stacks"), svg = $("sc009-svg");
       for (let r = 0; r < 7; r++) div(ln, "", "position:absolute;left:40px;top:" + (170 + r * 42) + "px;width:" + (150 + (r * 47) % 90) + "px;height:12px;border-radius:6px;background:rgba(20,24,27,0.38);filter:blur(1.5px)"),
         div(ln, "", "position:absolute;right:40px;top:" + (170 + r * 42) + "px;width:60px;height:12px;border-radius:6px;background:rgba(20,24,27,0.38);filter:blur(1.5px)");
-      tl.fromTo(rc, { clipPath: "inset(0% 0% 100% 0%)" }, { clipPath: "inset(0% 0% 0% 0%)", duration: 1.0, ease: "steps(10)", immediateRender: true }, S(2247.33));
+      tl.fromTo(rc, { clipPath: "inset(0% 0% 100% 0%)" }, { clipPath: "inset(0% 0% 0% 0%)", duration: 1.7, ease: "steps(17)", immediateRender: true }, S(2246.50));
+      gsap.set($("sc009-rent"), { opacity: 0 }); pop($("sc009-rent"), T(2247.33), { from: 1.2, n: 2 });
       const H = [90, 150, 230, 320, 430], X = [190, 520, 850, 1180, 1510];
       H.forEach((h, c) => {
         const n = Math.round(h / 15);
@@ -642,10 +649,10 @@
     whip("sc009", "sc010", S(2250.62), { dir: -1 });
     (function () {
       const svg = $("sc010-svg"), b1 = $("sc010-b1"), b2 = $("sc010-b2");
-      ink(svg, "M540 861 L1380 860", S(2250.85), 0.7, { color: BONE, width: 4 });
+      ink(svg, "M540 861 L1380 860", S(2250.45), 0.7, { color: BONE, width: 4 });
       [[620, 340], [1040, 340]].forEach((q, i) => {
         const o = el(svg, "rect", { x: q[0], y: q[1], width: 260, height: 520, fill: "none", stroke: "rgba(240,239,232,0.4)", "stroke-width": 3, "stroke-dasharray": "12 10" });
-        gsap.set(o, { opacity: 0 }); tl.fromTo(o, { opacity: 0 }, { opacity: 1, duration: 2 / 12, ease: "steps(2)", immediateRender: true }, S(2252.30) + i * 0.1);
+        gsap.set(o, { opacity: 0 }); tl.fromTo(o, { opacity: 0 }, { opacity: 1, duration: 2 / 12, ease: "steps(2)", immediateRender: true }, S(2250.75) + i * 0.1);
       });
       gsap.set([b1, b2], { scaleY: 0 });
       tl.fromTo(b1, { scaleY: 0 }, { scaleY: 1, duration: 1.4, ease: C(E.out, 1.4), immediateRender: true }, S(2253.40));
@@ -668,8 +675,8 @@
     /* ===== sc011 · B-roll pipes (hard cut on action) ===== */
     push("sc011", 2260.55, 2264.30, 1.08, 1.0, { origin: "960px 540px" });
 
-    /* ===== sc012 · B-roll Grace Hopper server (vertical whip ↑), ends on footage ===== */
-    whip("sc011", "sc012", S(2264.30), { dir: -1, vertical: true });
+    /* ===== sc012 · B-roll Grace Hopper server (whip →), ends on footage ===== */
+    whip("sc011", "sc012", S(2264.30), { dir: 1 });
     push("sc012", 2264.30, 2267.959, 1.0, 1.07, { origin: "980px 520px" });
 
     FX.mount(tl, DURATION);
