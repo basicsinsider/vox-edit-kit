@@ -1,0 +1,641 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8" /></head>
+<body>
+<template>
+  <style>
+    #root { position: absolute; inset: 0; overflow: hidden; background: var(--night); }
+    .n20-scene { position: absolute; inset: 0; overflow: hidden; visibility: hidden; opacity: 0; }
+    .n20-shot { position: absolute; inset: 0; overflow: hidden; transform-origin: 50% 50%; background: var(--night); }
+    .n20-paper { background: var(--paper); }
+    .n20-abs { position: absolute; }
+    .n20-vw { position: absolute; inset: 0; transform-origin: 50% 50%; }
+    .n20-p1, .n20-p2 { position: absolute; inset: 0; background-size: cover; background-position: center; pointer-events: none; }
+    .n20-p2 { opacity: 0.9; mix-blend-mode: multiply; }
+    .n20-mk { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; pointer-events: none; }
+    .n20-w { display: inline-block; white-space: pre; opacity: 0; }
+    .n20-ink { color: var(--ink); }
+    .n20-nc { text-transform: none; }
+    .n20-credit { position: absolute; right: 30px; bottom: 20px; font-size: 13px; letter-spacing: 0.08em; color: rgba(240,239,232,0.66); z-index: 5; }
+    .n20-credit.ink { color: rgba(20,24,27,0.66); }
+    .n20-ic { position: absolute; -webkit-mask-size: contain; mask-size: contain; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; -webkit-mask-position: center; mask-position: center; }
+    .n20-plate { position: absolute; inset: 0; overflow: hidden; }
+    .n20-plate img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    .n20-plate .fr { filter: blur(14px); -webkit-mask-image: radial-gradient(ellipse 70% 68% at 50% 50%, rgba(0,0,0,0) 55%, #000 100%); mask-image: radial-gradient(ellipse 70% 68% at 50% 50%, rgba(0,0,0,0) 55%, #000 100%); }
+    #nvs20-flash { position: absolute; inset: 0; background: #f4f3ec; opacity: 0; pointer-events: none; z-index: 7; }
+    #nvs20-grain, #nvs20-dust, #nvs20-vig { z-index: 8; }
+
+    /* sc001 podcast plate */
+    #nvs20-sc001-scrim { position: absolute; inset: 0; background: radial-gradient(ellipse 60% 55% at 0% 100%, rgba(8,10,12,0.92) 0%, rgba(8,10,12,0.6) 45%, rgba(8,10,12,0) 100%); }
+    #nvs20-sc001-rule { position: absolute; left: 96px; top: 800px; width: 140px; height: 5px; background: var(--volt); transform-origin: 0 50%; }
+    #nvs20-sc001-nm { left: 96px; top: 826px; font-size: 74px; line-height: 1; color: var(--bone); white-space: nowrap; }
+    #nvs20-sc001-ceo { left: 100px; top: 918px; font-size: 30px; color: var(--volt-light); white-space: nowrap; }
+
+    /* sc002 wafer pies (callback nvs02-sc004, varied) */
+    #nvs20-sc002-title { left: 96px; top: 96px; width: 1100px; font-size: 64px; line-height: 1.05; color: var(--bone); }
+    .n20-wf { position: absolute; border-radius: 50%; overflow: hidden; box-shadow: 0 30px 70px rgba(0,0,0,0.65); }
+    .n20-wf img { position: absolute; inset: -4%; width: 108%; height: 108%; filter: grayscale(1) brightness(0.55) contrast(1.15); }
+    .n20-wf svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+    .n20-wf::after { content: ""; position: absolute; inset: 0; border-radius: 50%; box-shadow: inset 0 0 0 3px rgba(240,239,232,0.35); }
+    .n20-pv { position: absolute; text-align: center; line-height: 1; white-space: nowrap; }
+    .n20-pl { position: absolute; text-align: center; font-size: 28px; color: var(--ash-light); white-space: nowrap; }
+
+    /* sc003 diagram */
+    #nvs20-sc003-ban { position: absolute; left: 150px; top: 420px; width: 360px; height: 220px; background: var(--ice-dark); box-shadow: 0 18px 40px rgba(20,24,27,0.3); }
+    #nvs20-sc003-ban::after { content: ""; position: absolute; inset: 0; background: url('assets/textures/paper_cream_01.jpg') center / cover; mix-blend-mode: multiply; opacity: 0.55; }
+    #nvs20-sc003-banlab { left: 150px; top: 664px; width: 360px; text-align: center; font-size: 34px; color: var(--ice-dark); }
+    #nvs20-sc003-cn { position: absolute; left: 640px; top: 230px; width: 560px; height: 560px; border-radius: 50%; background: var(--red); transform-origin: 50% 50%; }
+    #nvs20-sc003-cn::after { content: ""; position: absolute; inset: 0; border-radius: 50%; background: url('assets/textures/paper_stained_01_hires.jpg') center / cover; mix-blend-mode: multiply; opacity: 0.6; }
+    #nvs20-sc003-cnl { left: 640px; top: 470px; width: 560px; text-align: center; font-size: 84px; color: var(--bone); }
+    #nvs20-sc003-jh { position: absolute; left: 1250px; top: 170px; width: 640px; filter: grayscale(1) contrast(1.15) brightness(1.05); -webkit-mask-image: linear-gradient(180deg, #000 78%, rgba(0,0,0,0) 100%); mask-image: linear-gradient(180deg, #000 78%, rgba(0,0,0,0) 100%); }
+    #nvs20-sc003-nv { position: absolute; left: 1344px; top: 900px; width: 420px; height: 78px; background: var(--ink); }
+
+    /* sc004 collage */
+    .n20-pan { position: absolute; overflow: hidden; border: 10px solid #e9e7de; box-shadow: 0 30px 60px rgba(0,0,0,0.6); }
+    .n20-pan img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+
+    /* sc005 phones */
+    #nvs20-sc005-glow { position: absolute; left: 1060px; top: 140px; width: 640px; height: 760px; background: radial-gradient(ellipse 50% 50% at 50% 50%, rgba(134,194,50,0.22), rgba(134,194,50,0) 70%); opacity: 0; }
+    .n20-ph { position: absolute; filter: drop-shadow(0 30px 40px rgba(0,0,0,0.7)); }
+    .n20-pn { position: absolute; width: 520px; text-align: center; font-size: 72px; line-height: 1; color: var(--bone); white-space: nowrap; }
+    .n20-py { position: absolute; width: 520px; text-align: center; font-size: 26px; color: var(--ash-light); }
+    .n20-pw { position: absolute; width: 56px; transform-origin: 50% 100%; background: var(--volt); }
+    .n20-pw::after { content: ""; position: absolute; inset: 0; background: url('assets/textures/grain_02_norm.jpg') center / cover; mix-blend-mode: overlay; opacity: 0.6; }
+    .n20-eq { position: absolute; width: 110px; height: 18px; background: var(--bone); border-radius: 3px; }
+
+    /* sc006 conveyor */
+    .n20-row { position: absolute; left: 0; height: 160px; width: 6000px; }
+    .n20-it { position: absolute; top: 0; width: 240px; height: 160px; }
+    .n20-it img { position: absolute; left: 0; top: 14px; width: 220px; filter: grayscale(0.4) drop-shadow(0 10px 14px rgba(0,0,0,0.6)); }
+    .n20-it .n20-ic { left: 50px; top: 10px; width: 140px; height: 140px; background: var(--ash-light); opacity: 0; }
+    .n20-belt { position: absolute; left: 0; width: 1920px; height: 6px; background: rgba(195,199,200,0.18); }
+    #nvs20-sc006-wash { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(126,21,30,0.55) 0%, rgba(126,21,30,0.28) 55%, rgba(126,21,30,0.1) 100%); opacity: 0; }
+    #nvs20-sc006-tag { left: 96px; top: 84px; font-size: 76px; color: var(--bone); white-space: nowrap; }
+    #nvs20-sc006-cn { left: 96px; top: 84px; font-size: 110px; color: var(--red-light); letter-spacing: 0.03em; }
+    #nvs20-sc006-top { position: absolute; left: 0; top: 0; width: 1920px; height: 230px; background: linear-gradient(180deg, rgba(13,16,18,0.92), rgba(13,16,18,0)); }
+
+    /* sc007 waffle (ref ast_0b23d2c7a06c4bb3) */
+    #nvs20-sc007-ghost { position: absolute; left: 1250px; top: 420px; width: 640px; opacity: 0.1; filter: grayscale(1) brightness(1.4); mix-blend-mode: multiply; }
+    #nvs20-sc007-tick { position: absolute; left: 420px; top: 108px; width: 4px; height: 128px; background: var(--ink); }
+    #nvs20-sc007-tbar { position: absolute; left: 420px; top: 186px; width: 1080px; height: 3px; background: var(--ink); transform-origin: 0 50%; }
+    #nvs20-sc007-title { left: 448px; top: 112px; font-size: 58px; line-height: 1; white-space: nowrap; }
+    #nvs20-sc007-src { left: 450px; top: 204px; font-size: 22px; color: var(--ink-soft); }
+    .n20-sq { position: absolute; width: 50px; height: 50px; background: #9aa0a2; }
+    .n20-sq::after { content: ""; position: absolute; inset: 0; background: url('assets/textures/paper_stained_01_hires.jpg') center / 400px auto; mix-blend-mode: multiply; opacity: 0.7; }
+    .n20-sq .r { position: absolute; inset: 0; background: var(--red); opacity: 0; }
+    .n20-box { position: absolute; width: 250px; height: 120px; box-shadow: 0 14px 30px rgba(20,24,27,0.25); }
+    .n20-box .v { position: absolute; left: 0; top: 18px; width: 250px; text-align: center; font-size: 84px; line-height: 1; }
+
+    /* sc008 CCP */
+    #nvs20-sc008-flag { position: absolute; left: -200px; top: -150px; width: 2400px; filter: brightness(0.38) saturate(0.8) blur(3px); transform: rotate(-4deg); }
+    #nvs20-sc008-shade { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(13,16,18,0.15) 0%, rgba(13,16,18,0.55) 50%, rgba(13,16,18,0.85) 100%); }
+    #nvs20-sc008-xi { position: absolute; left: 60px; bottom: 0; height: 1000px; filter: grayscale(1) contrast(1.1) brightness(0.95); }
+    #nvs20-sc008-tag { left: 96px; top: 96px; font-size: 30px; color: var(--bone); white-space: nowrap; }
+    #nvs20-sc008-card { position: absolute; left: 864px; top: 170px; width: 960px; height: 196px; overflow: hidden; background: #fff; box-shadow: 0 30px 70px rgba(0,0,0,0.6); }
+    #nvs20-sc008-card img { position: absolute; left: -48px; top: -26px; width: 1089px; }
+    #nvs20-sc008-cred { left: 864px; top: 384px; font-size: 22px; color: var(--ash-light); }
+    #nvs20-sc008-chipglow { position: absolute; left: 960px; top: 470px; width: 800px; height: 520px; background: radial-gradient(ellipse 50% 50% at 50% 50%, rgba(134,194,50,0.25), rgba(134,194,50,0) 70%); opacity: 0; }
+    #nvs20-sc008-chip { position: absolute; left: 1020px; top: 540px; width: 700px; filter: drop-shadow(0 0 24px rgba(134,194,50,0.4)) drop-shadow(0 26px 36px rgba(0,0,0,0.7)); }
+
+    /* sc009 staircase */
+    .n20-sl { position: absolute; font-size: 26px; white-space: nowrap; }
+    .n20-slip { position: absolute; width: 64px; height: 44px; background: #fbfaf5; box-shadow: 0 4px 10px rgba(20,24,27,0.3); }
+    .n20-slip::before { content: ""; position: absolute; left: 10px; top: 10px; width: 44px; height: 4px; background: var(--ink-soft); box-shadow: 0 10px 0 var(--ink-soft), 0 20px 0 rgba(74,81,86,0.6); }
+  </style>
+
+  <div id="root" data-composition-id="nvs20" data-vo-start="1991.333" data-duration="111.667" data-width="1920" data-height="1080">
+    <svg id="nvs20-defs" width="0" height="0" style="position:absolute"></svg>
+
+    <!-- sc001 · 1991.33–1997.69 · Jensen Huang on the Dwarkesh podcast -->
+    <div class="n20-scene" id="nvs20-sc001"><div class="n20-shot" id="nvs20-sc001-shot">
+      <div class="n20-vw" id="nvs20-sc001-vw" style="transform-origin:700px 420px">
+        <div class="n20-plate" id="nvs20-sc001-pl">
+          <img src="assets/nvidia/shared/people/huang_9.jpg" alt="" style="filter:saturate(0.55) contrast(1.05) brightness(0.92)" />
+          <img class="fr" src="assets/nvidia/shared/people/huang_9.jpg" alt="" style="filter:blur(14px) saturate(0.4) brightness(0.8)" />
+        </div>
+      </div>
+      <div id="nvs20-sc001-scrim"></div>
+      <div id="nvs20-sc001-rule"></div>
+      <div class="n20-abs t-display" id="nvs20-sc001-nm"><span class="n20-w">JENSEN HUANG</span></div>
+      <div class="n20-abs t-label" id="nvs20-sc001-ceo"><span class="n20-w">NVIDIA </span><span class="n20-w">CEO</span></div>
+      <div class="n20-credit t-label">Frame: Dwarkesh Podcast, 15 Apr 2026 (fair use)</div>
+    </div></div>
+
+    <!-- sc002 · 1997.69–2015.80 · wafer pies: 60 % now, 17 % before 2022 -->
+    <div class="n20-scene" id="nvs20-sc002"><div class="n20-shot" id="nvs20-sc002-shot" style="background:radial-gradient(ellipse 80% 80% at 60% 55%, #182024 0%, #0c0f11 75%)">
+      <div class="n20-vw" id="nvs20-sc002-vw" style="transform-origin:1240px 600px">
+        <div class="n20-wf" id="nvs20-sc002-wa" style="left:940px;top:300px;width:600px;height:600px">
+          <img src="assets/nvidia/shared/hardware/wafer_300mm_dies.jpg" alt="" />
+          <svg viewBox="0 0 600 600"><path id="nvs20-sc002-sa" d="" fill="#dc2f3c" fill-opacity="0.78" stroke="#f6a4a9" stroke-width="4"/></svg>
+        </div>
+        <div class="n20-wf" id="nvs20-sc002-wb" style="left:300px;top:450px;width:360px;height:360px;opacity:0">
+          <img src="assets/nvidia/shared/hardware/wafer_300mm_dies.jpg" alt="" />
+          <svg viewBox="0 0 600 600"><path id="nvs20-sc002-sb" d="" fill="#dc2f3c" fill-opacity="0.78" stroke="#f6a4a9" stroke-width="6"/></svg>
+        </div>
+        <svg id="nvs20-sc002-svg" class="n20-mk" viewBox="0 0 1920 1080"></svg>
+        <div class="n20-abs t-display n20-pv" id="nvs20-sc002-va" style="left:1600px;top:500px;width:300px;font-size:150px;color:var(--yellow);opacity:0">60%</div>
+        <div class="n20-abs t-display n20-pv" id="nvs20-sc002-vb" style="left:330px;top:300px;width:300px;font-size:110px;color:var(--bone);opacity:0">17%</div>
+        <div class="n20-abs t-label n20-pl" id="nvs20-sc002-la" style="left:1040px;top:930px;width:400px"><span class="n20-w">Now</span></div>
+        <div class="n20-abs t-label n20-pl" id="nvs20-sc002-lb" style="left:280px;top:840px;width:400px"><span class="n20-w">Before </span><span class="n20-w">2022</span></div>
+      </div>
+      <div class="n20-abs t-serif" id="nvs20-sc002-title"><span class="n20-w">China's share of the world's <span class="t-serif-i" style="color:var(--red-light)">chips</span></span></div>
+      <div class="n20-credit t-label">Wafer photo: Peellden, CC BY-SA 3.0</div>
+    </div></div>
+
+    <!-- sc003 · 2015.80–2022.04 · the ban made China a big player — NVIDIA's argument? -->
+    <div class="n20-scene" id="nvs20-sc003"><div class="n20-shot n20-paper" id="nvs20-sc003-shot">
+      <div class="n20-p1" style="background-image:url('assets/textures/paper_cream_02.jpg')"></div>
+      <div class="n20-p2" style="background-image:url('assets/textures/paper_stained_01_hires.jpg'); opacity:0.45"></div>
+      <div class="n20-vw" id="nvs20-sc003-vw" style="transform-origin:900px 540px">
+        <div id="nvs20-sc003-ban"><div class="n20-ic" id="nvs20-sc003-banic" style="left:110px;top:40px;width:140px;height:140px;background:var(--bone);-webkit-mask-image:url('assets/nvidia/shared/icons/ban.svg');mask-image:url('assets/nvidia/shared/icons/ban.svg')"></div></div>
+        <div class="n20-abs t-label" id="nvs20-sc003-banlab"><span class="n20-w">Chip </span><span class="n20-w">ban</span></div>
+        <div id="nvs20-sc003-cn"></div>
+        <div class="n20-abs t-display" id="nvs20-sc003-cnl"><span class="n20-w">CHINA</span></div>
+        <img id="nvs20-sc003-jh" src="assets/nvidia/shared/people/huang_cut_2.png" alt="" />
+        <div id="nvs20-sc003-nv"><div class="n20-ic" style="left:40px;top:14px;width:340px;height:50px;background:var(--volt);-webkit-mask-image:url('assets/nvidia/shared/logos/nvidia_wordmark.svg');mask-image:url('assets/nvidia/shared/logos/nvidia_wordmark.svg')"></div></div>
+        <svg id="nvs20-sc003-svg" class="n20-mk" viewBox="0 0 1920 1080"></svg>
+      </div>
+      <div class="n20-credit t-label ink">Photo: Anders Eidesvik, CC BY-SA 4.0</div>
+    </div></div>
+
+    <!-- sc004 · 2022.04–2026.68 · the chip industry as a whole (Vox layered collage) -->
+    <div class="n20-scene" id="nvs20-sc004"><div class="n20-shot" id="nvs20-sc004-shot" style="background:#121516">
+      <div class="n20-p1" style="background-image:url('assets/textures/newsprint_01.jpg'); opacity:0.12; mix-blend-mode:screen"></div>
+      <div class="n20-vw" id="nvs20-sc004-vw" style="transform-origin:960px 540px">
+        <div class="n20-pan" id="nvs20-sc004-a" style="left:150px;top:170px;width:820px;height:540px"><img src="assets/nvidia/shared/places/tsmc_fab14b.jpg" alt="" /></div>
+        <div class="n20-pan" id="nvs20-sc004-b" style="left:1010px;top:120px;width:760px;height:500px"><img src="assets/nvidia/shared/hardware/wafer_cleanroom_worker.jpg" alt="" /></div>
+        <div class="n20-pan" id="nvs20-sc004-c" style="left:640px;top:520px;width:700px;height:460px"><img src="assets/nvidia/shared/hardware/gpu_die_ad102_closeup.jpg" alt="" style="object-position:50% 30%" /></div>
+      </div>
+      <div class="n20-credit t-label">Photos: TSMC Fab 14B (Commons) · US DOE (PD) · AD102 die (Commons)</div>
+    </div></div>
+
+    <!-- sc005 · 2026.68–2040.28 · iPhone 1 vs iPhone 18 -->
+    <div class="n20-scene" id="nvs20-sc005"><div class="n20-shot" id="nvs20-sc005-shot" style="background:radial-gradient(ellipse 85% 80% at 50% 45%, #1a2125 0%, #0c0f11 75%)">
+      <div class="n20-vw" id="nvs20-sc005-vw" style="transform-origin:960px 500px">
+        <div id="nvs20-sc005-glow"></div>
+        <div id="nvs20-sc005-p1w" style="position:absolute;left:340px;top:130px;width:440px;height:660px">
+          <img class="n20-ph" id="nvs20-sc005-p1" src="assets/nvidia/shared/hardware/cutouts/iphone_original_2007_back_cutout.png" alt="" style="left:-110px;top:199px;width:660px;transform:rotate(-90deg)" />
+        </div>
+        <div id="nvs20-sc005-p2w" style="position:absolute;left:1160px;top:110px;width:400px;height:700px">
+          <img class="n20-ph" id="nvs20-sc005-p2" src="assets/nvidia/shared/hardware/cutouts/iphone18pro_cutout.png" alt="" style="left:6px;top:0;height:700px" />
+        </div>
+        <div class="n20-pw" id="nvs20-sc005-b1" style="left:830px;top:730px;height:60px"></div>
+        <div class="n20-pw" id="nvs20-sc005-b2" style="left:1620px;top:190px;height:600px"></div>
+        <div class="n20-ic" id="nvs20-sc005-z1" style="left:830px;top:660px;width:56px;height:56px;background:var(--volt-light);-webkit-mask-image:url('assets/nvidia/shared/icons/power_bolt.svg');mask-image:url('assets/nvidia/shared/icons/power_bolt.svg');opacity:0"></div>
+        <div class="n20-ic" id="nvs20-sc005-z2" style="left:1620px;top:120px;width:56px;height:56px;background:var(--volt-light);-webkit-mask-image:url('assets/nvidia/shared/icons/power_bolt.svg');mask-image:url('assets/nvidia/shared/icons/power_bolt.svg');opacity:0"></div>
+        <div class="n20-eq" id="nvs20-sc005-e1" style="left:905px;top:438px;opacity:0"></div>
+        <div class="n20-eq" id="nvs20-sc005-e2" style="left:905px;top:472px;opacity:0"></div>
+        <div class="n20-abs t-display n20-pn" id="nvs20-sc005-n1" style="left:300px;top:840px"><span class="n20-w">iPhone 1</span></div>
+        <div class="n20-abs t-label n20-py" id="nvs20-sc005-y1" style="left:300px;top:926px;opacity:0">2007</div>
+        <div class="n20-abs t-display n20-pn" id="nvs20-sc005-n2" style="left:1100px;top:840px"><span class="n20-w">iPhone 18</span></div>
+        <div class="n20-abs t-label n20-py" id="nvs20-sc005-y2" style="left:1100px;top:926px;opacity:0">2026</div>
+      </div>
+      <div class="n20-credit t-label">iPhone (2007): Yutaka Tsutano, CC BY 2.0 · iPhone 18 Pro © Apple (fair use)</div>
+    </div></div>
+
+    <!-- sc006 · 2040.28–2059.32 · lots of iPhone 1s → chips → China; nobody wants them -->
+    <div class="n20-scene" id="nvs20-sc006"><div class="n20-shot" id="nvs20-sc006-shot" style="background:radial-gradient(ellipse 90% 80% at 50% 60%, #161b1e 0%, #0b0d0f 80%)">
+      <div class="n20-vw" id="nvs20-sc006-vw" style="transform-origin:960px 620px">
+        <div id="nvs20-sc006-wash"></div>
+        <div class="n20-belt" style="top:458px"></div><div class="n20-belt" style="top:678px"></div><div class="n20-belt" style="top:898px"></div>
+        <div class="n20-row" id="nvs20-sc006-r0" style="top:300px"></div>
+        <div class="n20-row" id="nvs20-sc006-r1" style="top:520px"></div>
+        <div class="n20-row" id="nvs20-sc006-r2" style="top:740px"></div>
+      </div>
+      <div id="nvs20-sc006-top"></div>
+      <div class="n20-abs t-display n20-nc" id="nvs20-sc006-tag"><span class="n20-w">iPhone 1</span></div>
+      <div class="n20-abs t-display" id="nvs20-sc006-cn"><span class="n20-w">CHINA</span></div>
+      <svg id="nvs20-sc006-svg" class="n20-mk" viewBox="0 0 1920 1080"></svg>
+    </div></div>
+
+    <!-- sc007 · 2059.32–2077.03 · waffle: 60 % of chips → 10 % of computing power (ref ast_0b23d2c7a06c4bb3) -->
+    <div class="n20-scene" id="nvs20-sc007"><div class="n20-shot n20-paper" id="nvs20-sc007-shot">
+      <div class="n20-p1" style="background-image:url('assets/textures/paper_graph_01_hires.jpg'); opacity:0.55"></div>
+      <div class="n20-p2" style="background-image:url('assets/textures/paper_cream_01.jpg'); opacity:0.6"></div>
+      <div class="n20-vw" id="nvs20-sc007-vw" style="transform-origin:960px 560px">
+        <img id="nvs20-sc007-ghost" src="assets/nvidia/shared/hardware/cutouts/h100_sxm_cutout.png" alt="" />
+        <div id="nvs20-sc007-tick"></div>
+        <div id="nvs20-sc007-tbar"></div>
+        <div class="n20-abs t-display n20-ink" id="nvs20-sc007-title"><span class="n20-w">China's share of the world's </span><span id="nvs20-sc007-slot" style="position:relative;display:inline-block;width:480px;height:60px;vertical-align:top"><span id="nvs20-sc007-s1" class="n20-w" style="position:absolute;left:0;top:0;color:var(--red-dark)">chips</span><span id="nvs20-sc007-s2" class="n20-w" style="position:absolute;left:0;top:0;color:var(--red-dark)">computing power</span></span></div>
+        <div class="n20-abs t-label" id="nvs20-sc007-src" style="opacity:0">Computing power: Epoch AI, Oct 2026</div>
+        <div id="nvs20-sc007-grid"></div>
+        <svg id="nvs20-sc007-svg" class="n20-mk" viewBox="0 0 1920 1080"></svg>
+        <div class="n20-box" id="nvs20-sc007-b60" style="left:1340px;top:300px;background:var(--red);opacity:0"><div class="v t-display" style="color:var(--bone)">60%</div></div>
+        <div class="n20-box" id="nvs20-sc007-b10" style="left:1340px;top:740px;background:var(--yellow);opacity:0"><div class="v t-display n20-ink" id="nvs20-sc007-v10">10%</div></div>
+      </div>
+    </div></div>
+
+    <!-- sc008 · 2077.03–2090.71 · the CCP's view: allowed to buy NVIDIA chips, not buying -->
+    <div class="n20-scene" id="nvs20-sc008"><div class="n20-shot" id="nvs20-sc008-shot">
+      <div class="n20-vw" id="nvs20-sc008-vw" style="transform-origin:960px 540px">
+        <img id="nvs20-sc008-flag" src="assets/nvidia/shared/logos/flag_china.svg" alt="" />
+        <div id="nvs20-sc008-shade"></div>
+        <img id="nvs20-sc008-xi" src="assets/nvidia/shared/people/xi_cut.png" alt="" />
+        <div id="nvs20-sc008-chipglow"></div>
+        <img id="nvs20-sc008-chip" src="assets/nvidia/shared/hardware/cutouts/h100_sxm_cutout.png" alt="" />
+        <div id="nvs20-sc008-card"><img src="assets/nvidia/shared/news/s03_register_h200_2025.jpg" alt="" /></div>
+        <div class="n20-abs t-label" id="nvs20-sc008-cred" style="opacity:0">The Register · 9 Dec 2025</div>
+        <svg id="nvs20-sc008-svg" class="n20-mk" viewBox="0 0 1920 1080"></svg>
+      </div>
+      <div class="n20-abs t-label" id="nvs20-sc008-tag"><span class="n20-w">Xi Jinping · CCP</span></div>
+      <div class="n20-credit t-label">Xi: Simon Dawson / No 10, CC BY 4.0 · headline © The Register (fair use)</div>
+    </div></div>
+
+    <!-- sc009 · 2090.71–2103.00 · orders to Huawei → up the value chain -->
+    <div class="n20-scene" id="nvs20-sc009"><div class="n20-shot n20-paper" id="nvs20-sc009-shot">
+      <div class="n20-p1" style="background-image:url('assets/textures/paper_lined_01_hires.jpg'); background-position: calc(50% - 200px) 50%"></div>
+      <div class="n20-p2" style="background-image:url('assets/textures/paper_cream_02.jpg'); opacity:0.55"></div>
+      <div class="n20-vw" id="nvs20-sc009-vw" style="transform-origin:1500px 300px">
+        <svg id="nvs20-sc009-svg" class="n20-mk" viewBox="0 0 1920 1080"></svg>
+        <div id="nvs20-sc009-objs"></div>
+        <div class="n20-abs t-label n20-sl n20-ink" id="nvs20-sc009-ai" style="left:150px;top:300px;width:420px;text-align:center"><span class="n20-w">AI </span><span class="n20-w">companies</span></div>
+        <div class="n20-abs t-label n20-sl n20-ink" id="nvs20-sc009-vc" style="left:1480px;top:960px"><span class="n20-w">Value </span><span class="n20-w">chain</span></div>
+        <div class="n20-abs t-label n20-sl" id="nvs20-sc009-ng" style="left:1240px;top:110px;width:500px;text-align:right;color:var(--red-dark)"><span class="n20-w">Next </span><span class="n20-w">generation</span></div>
+      </div>
+    </div></div>
+
+    <div id="nvs20-flash"></div>
+    <div id="nvs20-grain" class="tx tx-grain" style="background-image:url('assets/textures/grain_01_norm.jpg')"></div>
+    <div id="nvs20-dust" class="tx tx-dust" style="background-image:url('assets/textures/dust_02.jpg')"></div>
+    <div id="nvs20-vig" class="vignette"></div>
+    <audio id="nvs20-vo" class="temp-vo" src="vo_nv.mp3" data-start="0" data-duration="111.667" data-media-start="1991.333" data-volume="1"></audio>
+  </div>
+
+  <script>
+  (function () {
+    const SEG = "nvs20", SEG_START = 1991.3333, SEG_END = 2103.0, DURATION = 111.667;
+    const T = (s) => +(s - SEG_START).toFixed(3);   // TEXT cues (audited): literal master word start − 0.06
+    const S = (s) => +(s - SEG_START).toFixed(3);   // STRUCTURAL cues
+    const tl = gsap.timeline({ paused: true });
+    const $ = (id) => document.getElementById(SEG + "-" + id);
+    const NS = "http://www.w3.org/2000/svg";
+    const defs = $("defs");
+    const E = FX.ease;
+    const C = (e, d) => FX.choppy(e, d, 12);
+    const INK = "#14181b", BONE = "#f0efe8", ASH = "#888e92", ASHL = "#c3c7c8", VOLT = "#86c232", VOLTL = "#c9ec8f", VOLTD = "#3f6410",
+          RED = "#dc2f3c", REDL = "#f6a4a9", REDD = "#7e151e", ICE = "#2a9fc9", ICED = "#115973", ICEL = "#9fdcf0", YEL = "#f5d033";
+
+    // ---------- scenes ----------
+    const SC = [
+      ["sc001", 1991.3333, 1997.69, "night"], ["sc002", 1997.69, 2015.80, "night"], ["sc003", 2015.80, 2022.04, "paper"],
+      ["sc004", 2022.04, 2026.68, "night"], ["sc005", 2026.68, 2040.28, "night"], ["sc006", 2040.28, 2059.32, "night"],
+      ["sc007", 2059.32, 2077.03, "paper"], ["sc008", 2077.03, 2090.71, "night"], ["sc009", 2090.71, 2103.00, "paper"],
+    ];
+    const GROUND = { paper: [0.32, 0.16, 0.26], night: [1, 0.42, 0.36] };
+    const EARLY = { sc003: 0.45, sc007: 0.45, sc009: 0.45 };   // slides: incoming scene visible during the slide
+    function ground(kind, t) { const v = GROUND[kind]; tl.set([$("vig"), $("dust"), $("grain")], { opacity: (i) => v[i] }, t); }
+    SC.forEach((s, i) => {
+      const el = $(s[0]), a = s[1] - (EARLY[s[0]] || 0);
+      if (i === 0) gsap.set(el, { autoAlpha: 1 });
+      else tl.fromTo(el, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.001, immediateRender: false }, S(a) - 0.002);
+      if (s[2] < SEG_END) tl.set(el, { autoAlpha: 0 }, S(s[2]) + 0.05);
+    });
+    gsap.set([$("vig"), $("dust"), $("grain")], { opacity: (i) => GROUND.night[i] });
+    SC.forEach((s, i) => { if (i > 0) ground(s[3], S(s[1]) - 0.002); });
+
+    // ---------- helpers ----------
+    const rise = (el, t, o) => { o = o || {}; const d = o.dur || 0.6;
+      tl.fromTo(el, { opacity: 0, y: o.y == null ? 16 : o.y }, { opacity: 1, y: 0, duration: d, ease: C(E.out, d), immediateRender: true }, t); };
+    const pop = (el, t, o) => { o = o || {}; const d = o.dur || 0.8;
+      tl.fromTo(el, { opacity: 0, scale: o.from == null ? 0.6 : o.from }, { opacity: 1, scale: 1, duration: d, ease: C(E.out, d), immediateRender: true }, t); };
+    const W = (id) => Array.from($(id).querySelectorAll(".n20-w"));
+    function words(id, cues, o) { const ws = W(id); cues.forEach((c, i) => rise(ws[i], c, o)); }
+    function pen(svg, t, pts, o) {
+      o = Object.assign({ color: INK, width: 6, dur: 0.6, seed: 3, blend: "normal" }, o);
+      const p = FX.markup.pen(tl, svg, t, { points: pts, color: o.color, width: o.width, dur: o.dur, filter: o.filter || PEN, blend: o.blend, seed: o.seed, ease: o.ease || "sine.inOut" });
+      gsap.set(p, { opacity: 0 }); tl.set(p, { opacity: 1 }, t);
+      return p;
+    }
+    const whipN = { n: 0 };
+    function whip(a, b, t, o) {
+      o = Object.assign({ dir: 1, vertical: false, flash: false, dur: 0.32 }, o);
+      const k = ++whipN.n, ba = FX.whipDefs(defs, SEG + "-wa" + k), bb = FX.whipDefs(defs, SEG + "-wb" + k), h = o.dur / 2;
+      const A = $(a + "-shot"), B = $(b + "-shot");
+      tl.set(A, { filter: "url(#" + SEG + "-wa" + k + ")" }, t - h - 0.01); tl.set(A, { filter: "none" }, t + 0.06);
+      tl.set(B, { filter: "url(#" + SEG + "-wb" + k + ")" }, t - 0.001); tl.set(B, { filter: "none" }, t + h + 0.02);
+      FX.whip(tl, A, B, t, { dir: o.dir, vertical: o.vertical, dur: o.dur, blurA: ba, blurB: bb });
+      if (o.flash) tl.fromTo($("flash"), { opacity: 0 }, { opacity: 0.85, duration: 0.08, yoyo: true, repeat: 1, ease: "power2.in", immediateRender: false }, t - 0.08);
+    }
+    function slide(a, b, t, o) {
+      o = Object.assign({ axis: "x", from: 1, d: 0.45 }, o);
+      const A = $(a + "-shot"), B = $(b + "-shot"), dist = (o.axis === "x" ? 1980 : 1140) * o.from;
+      tl.fromTo(B, { [o.axis]: dist, boxShadow: "0 0 80px rgba(0,0,0,0.5)" }, { [o.axis]: 0, duration: o.d, ease: C(E.inOut, o.d), immediateRender: false }, t - o.d);
+      tl.set(B, { boxShadow: "none" }, t);
+      tl.fromTo(A, { [o.axis]: 0 }, { [o.axis]: -dist * 0.12, duration: o.d, ease: E.in, immediateRender: false }, t - o.d);
+    }
+    function push(id, a, b, s0, s1, o) {
+      o = o || {};
+      const vw = $(id + "-vw");
+      if (o.origin) gsap.set(vw, { transformOrigin: o.origin });
+      gsap.set(vw, { scale: s0 });
+      tl.fromTo(vw, { scale: s0 }, { scale: s1, duration: b - a, ease: o.ease || "none", immediateRender: false }, S(a));
+    }
+    function icon(parent, name, x, y, size, color, o) {
+      const d = document.createElement("div"); d.className = "n20-ic";
+      d.style.cssText = "left:" + x + "px;top:" + y + "px;width:" + size + "px;height:" + size + "px;background:" + color +
+        ";-webkit-mask-image:url('assets/nvidia/shared/icons/" + name + ".svg');mask-image:url('assets/nvidia/shared/icons/" + name + ".svg');" + ((o && o.css) || "");
+      parent.appendChild(d); return d;
+    }
+    // pie sector path (0..1 fraction from 12 o'clock, clockwise) in a 600×600 box
+    function sector(f) {
+      if (f <= 0.0005) return "";
+      if (f >= 0.9995) return "M300 0 A300 300 0 1 1 299.9 0 Z";
+      const a = f * Math.PI * 2, x = 300 + 300 * Math.sin(a), y = 300 - 300 * Math.cos(a);
+      return "M300 300 L300 0 A300 300 0 " + (f > 0.5 ? 1 : 0) + " 1 " + x.toFixed(2) + " " + y.toFixed(2) + " Z";
+    }
+
+    FX.grain($("grain"), 2001);
+    FX.dust($("dust"), 2002, 2);
+    const PEN = FX.markupDefs(defs, SEG + "-pen", { boil: 4 });
+    const MARK = FX.markupDefs(defs, SEG + "-mark", { boil: 12 });
+    defs.setAttribute("viewBox", "0 0 1 1");
+    FX.tintDefs(defs, SEG + "-tint", "#1d2124", "#e6e3d8");
+
+    /* ===== sc001 · podcast plate, focus pull on "podcast" (1991.33–1997.69) ===== */
+    (function () {
+      const pl = $("sc001-pl");
+      const f = { r: 9 }; const ap = () => (pl.style.filter = "blur(" + f.r.toFixed(2) + "px)");
+      gsap.set(pl, { filter: "blur(9px)" });
+      tl.fromTo(f, { r: 9 }, { r: 0, duration: 0.9, ease: "sine.inOut", immediateRender: false, onUpdate: ap }, S(1994.55));
+      FX.focusHunt(tl, pl, S(1995.50), { dur: 0.6, a: 2, b: 3 });
+      push("sc001", 1991.3333, 1997.69, 1.0, 1.07, { ease: E.cam });
+      tl.fromTo($("sc001-rule"), { scaleX: 0 }, { scaleX: 1, duration: 0.6, ease: C(E.out, 0.6), immediateRender: true }, S(1995.53));
+    })();
+    words("sc001-nm", [T(1995.53)], { dur: 0.7, y: 16 });
+    words("sc001-ceo", [T(1995.53), T(1996.17)], { dur: 0.5, y: 10 });
+
+    /* ===== sc002 · wafer pies 60 % → 17 % (light-flash whip) ===== */
+    whip("sc001", "sc002", S(1997.69), { dir: 1, flash: true });
+    (function () {
+      const sa = $("sc002-sa"), sb = $("sc002-sb"), svg = $("sc002-svg");
+      const pa = { f: 0 }, pb = { f: 0 };
+      tl.fromTo($("sc002-wa"), { rotation: -20, scale: 0.9, opacity: 0 }, { rotation: 0, scale: 1, opacity: 1, duration: 1.0, ease: C(E.out, 1.0), immediateRender: true }, S(1997.72));
+      tl.fromTo(pa, { f: 0 }, { f: 0.6, duration: 1.3, ease: C(E.out, 1.3), immediateRender: true, onUpdate: () => sa.setAttribute("d", sector(pa.f)) }, S(1999.21));
+      rise($("sc002-va"), T(1999.21), { dur: 0.4, y: 10 });
+      FX.text.count(tl, $("sc002-va"), T(1999.21), 0, 60, 1.3, (v) => Math.round(v) + "%");
+      // "scary number" → slow push; "60%." again → pen ring around the number
+      const ring = FX.markup.circle(tl, svg, S(2003.69), { cx: 1750, cy: 575, rx: 190, ry: 110, rot: -5, color: REDL, width: 9, filter: MARK, dur: 0.6, seed: 4 });
+      gsap.set(ring, { opacity: 0 }); tl.set(ring, { opacity: 1 }, S(2003.69));
+      tl.to(ring, { opacity: 0, duration: 0.4, ease: E.in }, S(2005.0));
+      // pull back: camera eases out and the "now" wafer settles right; the "before 2022" wafer arrives left
+      const vw = $("sc002-vw");
+      gsap.set(vw, { scale: 1.0, x: 0 });
+      tl.fromTo(vw, { scale: 1.0 }, { scale: 1.05, duration: 3.0, ease: E.cam, immediateRender: false }, S(2001.7));
+      tl.to(vw, { scale: 0.96, x: 40, duration: 1.6, ease: E.cam }, S(2005.2));
+      tl.fromTo($("sc002-wb"), { opacity: 0, x: -80 }, { opacity: 1, x: 0, duration: 1.0, ease: C(E.out, 1.0), immediateRender: true }, S(2010.17));
+      tl.fromTo(pb, { f: 0 }, { f: 0.17, duration: 0.9, ease: C(E.out, 0.9), immediateRender: true, onUpdate: () => sb.setAttribute("d", sector(pb.f)) }, S(2012.73));
+      rise($("sc002-vb"), T(2012.73), { dur: 0.4, y: 10 });
+      FX.text.count(tl, $("sc002-vb"), T(2012.73), 0, 17, 0.9, (v) => Math.round(v) + "%");
+      // growth arrow 17 → 60 ("So it seems like")
+      const ar = FX.markup.arrow(tl, svg, S(2014.40), { x1: 680, y1: 420, x2: 920, y2: 380, bend: 70, head: 30, color: BONE, width: 7, filter: MARK, dur: 0.5 });
+      ar.forEach((p) => { gsap.set(p, { opacity: 0 }); tl.set(p, { opacity: 1 }, S(2014.40)); });
+      tl.to(vw, { scale: 1.02, duration: 0.8, ease: E.cam }, S(2015.0));
+    })();
+    words("sc002-title", [T(1997.69)], { dur: 0.7, y: 12 });
+    words("sc002-la", [T(1998.25)], { dur: 0.5, y: 8 });
+    words("sc002-lb", [T(2010.17), T(2010.49)], { dur: 0.5, y: 8 });
+
+    /* ===== sc003 · ban → China big player → NVIDIA's argument? (paper slide) ===== */
+    slide("sc002", "sc003", S(2015.80), { axis: "x", from: 1 });
+    (function () {
+      const svg = $("sc003-svg");
+      pop($("sc003-ban"), S(2016.30), { dur: 0.7, from: 0.85 });
+      const cn = $("sc003-cn");
+      gsap.set(cn, { scale: 0.32, opacity: 0 });
+      tl.fromTo(cn, { scale: 0.32, opacity: 0 }, { scale: 0.42, opacity: 1, duration: 0.6, ease: C(E.out, 0.6), immediateRender: false }, S(2017.42));
+      tl.to(cn, { scale: 1, duration: 1.2, ease: C(E.out, 1.2) }, S(2018.06));
+      pen(svg, S(2016.95), [[520, 532], [580, 526], [640, 530]], { color: ICED, width: 7, dur: 0.5, seed: 5 });
+      pen(svg, S(2017.30), [[618, 508], [646, 530], [616, 554]], { color: ICED, width: 7, dur: 0.2, seed: 6 });
+      // Jensen + NVIDIA slide in on "NVIDIA" (2020.52)
+      tl.fromTo($("sc003-jh"), { x: 260, opacity: 0 }, { x: 0, opacity: 1, duration: 0.9, ease: C(E.out, 0.9), immediateRender: true }, S(2020.40));
+      tl.fromTo($("sc003-nv"), { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: 0.6, ease: C(E.out, 0.6), immediateRender: true }, S(2020.55));
+      // tentative check + "?" on "argument" (2021.24)
+      pen(svg, S(2021.22), [[1180, 250], [1215, 300], [1290, 170]], { color: VOLTD, width: 10, dur: 0.35, seed: 7 });
+      pen(svg, S(2021.50), [[1312, 168], [1330, 140], [1360, 150], [1356, 186], [1336, 206], [1334, 236]], { color: VOLTD, width: 8, dur: 0.35, seed: 8 });
+      pen(svg, S(2021.82), [[1333, 262], [1336, 266]], { color: VOLTD, width: 11, dur: 0.06, seed: 9 });
+      push("sc003", 2015.35, 2022.04, 1.0, 1.04, { ease: E.cam });
+    })();
+    words("sc003-banlab", [T(2016.30), T(2016.62)], { dur: 0.5, y: 8 });
+    words("sc003-cnl", [T(2017.42)], { dur: 0.5, y: 10 });
+
+    /* ===== sc004 · the chip industry as a whole (whip ←) ===== */
+    whip("sc003", "sc004", S(2022.04), { dir: -1 });
+    (function () {
+      const vw = $("sc004-vw");
+      [["a", -2.5, 2022.10], ["b", 2, 2022.40], ["c", -1.2, 2023.05]].forEach((p, i) => {
+        const el = $("sc004-" + p[0]);
+        el.querySelector("img").style.filter = "url(#" + SEG + "-tint)";
+        tl.fromTo(el, { opacity: 0, y: 70, rotation: p[1] * 2.2 }, { opacity: 1, y: 0, rotation: p[1], duration: 1.0, ease: C(E.out, 1.0), immediateRender: true }, S(p[2]));
+        tl.fromTo(el, { x: 0 }, { x: (i - 1) * 24, duration: 4.6, ease: "none", immediateRender: false }, S(2022.04));
+      });
+      // camera starts close on the fab panel and pulls back to the whole industry ("as a whole")
+      gsap.set(vw, { scale: 1.5, x: 300, y: 120 });
+      tl.fromTo(vw, { scale: 1.5, x: 300, y: 120 }, { scale: 1.0, x: 0, y: 0, duration: 3.6, ease: E.cam, immediateRender: false }, S(2022.04));
+      tl.to(vw, { scale: 1.12, duration: 0.5, ease: E.in }, S(2026.18));   // cut on action
+    })();
+
+    /* ===== sc005 · iPhone 1 vs iPhone 18 (hard cut) ===== */
+    (function () {
+      const p1 = $("sc005-p1w"), p2 = $("sc005-p2w");
+      gsap.set([p1, p2], { opacity: 0 });
+      tl.fromTo(p1, { opacity: 0, y: 60 }, { opacity: 1, y: 0, duration: 1.0, ease: C(E.out, 1.0), immediateRender: false }, S(2027.58));
+      tl.fromTo(p2, { opacity: 0, y: 60 }, { opacity: 1, y: 0, duration: 1.0, ease: C(E.out, 1.0), immediateRender: false }, S(2028.54));
+      tl.fromTo($("sc005-y1"), { opacity: 0 }, { opacity: 1, duration: 0.5, ease: C(E.out, 0.5), immediateRender: true }, S(2028.10));
+      tl.fromTo($("sc005-y2"), { opacity: 0 }, { opacity: 1, duration: 0.5, ease: C(E.out, 0.5), immediateRender: true }, S(2029.10));
+      // "iPhone 18 is clearly…" → glow under the 18
+      tl.fromTo($("sc005-glow"), { opacity: 0 }, { opacity: 1, duration: 1.2, ease: E.cam, immediateRender: true }, S(2031.42));
+      // "much, much stronger" → power bars
+      const b1 = $("sc005-b1"), b2 = $("sc005-b2");
+      gsap.set([b1, b2], { scaleY: 0 });
+      tl.fromTo(b1, { scaleY: 0 }, { scaleY: 1, duration: 0.6, ease: C(E.out, 0.6), immediateRender: false }, S(2033.42));
+      tl.fromTo(b2, { scaleY: 0 }, { scaleY: 1, duration: 1.4, ease: C(E.out, 1.4), immediateRender: false }, S(2033.82));
+      pop($("sc005-z1"), S(2033.70), { dur: 0.5 });
+      tl.fromTo($("sc005-z2"), { opacity: 0, y: 600 }, { opacity: 1, y: 0, duration: 1.4, ease: C(E.out, 1.4), immediateRender: true }, S(2033.82));
+      // "but technically speaking, they're both iPhones" → bars retract, phones come together, equals sign
+      tl.to([b1, b2], { scaleY: 0, duration: 0.6, ease: C(E.in, 0.6) }, S(2037.20));
+      tl.to([$("sc005-z1"), $("sc005-z2"), $("sc005-glow")], { opacity: 0, duration: 0.5, ease: E.in }, S(2037.20));
+      tl.to(p1, { x: 80, duration: 1.2, ease: C(E.inOut, 1.2) }, S(2037.80));
+      tl.to(p2, { x: -80, duration: 1.2, ease: C(E.inOut, 1.2) }, S(2037.80));
+      tl.to([$("sc005-n1"), $("sc005-y1")], { x: 80, duration: 1.2, ease: C(E.inOut, 1.2) }, S(2037.80));
+      tl.to([$("sc005-n2"), $("sc005-y2")], { x: -80, duration: 1.2, ease: C(E.inOut, 1.2) }, S(2037.80));
+      tl.fromTo($("sc005-e1"), { opacity: 0, scaleX: 0 }, { opacity: 1, scaleX: 1, duration: 0.4, ease: C(E.out, 0.4), immediateRender: true }, S(2038.86));
+      tl.fromTo($("sc005-e2"), { opacity: 0, scaleX: 0 }, { opacity: 1, scaleX: 1, duration: 0.4, ease: C(E.out, 0.4), immediateRender: true }, S(2038.98));
+      push("sc005", 2026.68, 2040.28, 1.0, 1.05, { ease: E.cam });
+    })();
+    words("sc005-n1", [T(2027.58)], { dur: 0.6, y: 12 });
+    words("sc005-n2", [T(2028.54)], { dur: 0.6, y: 12 });
+
+    /* ===== sc006 · the iPhone-1 production line → chips → China (vertical whip) ===== */
+    whip("sc005", "sc006", S(2040.28), { dir: 1, vertical: true });
+    (function () {
+      const rows = [$("sc006-r0"), $("sc006-r1"), $("sc006-r2")];
+      const items = [];
+      rows.forEach((r, ri) => {
+        for (let k = 0; k < 22; k++) {
+          const it = document.createElement("div"); it.className = "n20-it"; it.style.left = (k * 270 + ri * 90) + "px";
+          const im = document.createElement("img"); im.src = "assets/nvidia/shared/hardware/cutouts/iphone_original_2007_back_cutout.png"; im.alt = "";
+          it.appendChild(im);
+          const ic = icon(it, "chip", 50, 10, 140, ASHL);
+          r.appendChild(it); items.push({ im, ic, ri, k });
+        }
+        // the line runs left → right, then stalls on "doesn't really want" (2056.44)
+        gsap.set(r, { x: -3000 });
+        tl.fromTo(r, { x: -3000 }, { x: -3000 + 1500 + ri * 120, duration: 2056.40 - 2040.28, ease: "none", immediateRender: false }, S(2040.28));
+        tl.to(r, { x: "+=110", duration: 1.4, ease: "power2.out" }, S(2056.40));
+      });
+      // more rows on "producing a lot of iPhones"
+      gsap.set(rows[0], { opacity: 0 }); gsap.set(rows[2], { opacity: 0 });
+      tl.fromTo(rows[0], { opacity: 0 }, { opacity: 1, duration: 0.5, ease: C(E.out, 0.5), immediateRender: false }, S(2043.82));
+      tl.fromTo(rows[2], { opacity: 0 }, { opacity: 1, duration: 0.5, ease: C(E.out, 0.5), immediateRender: false }, S(2044.30));
+      // "chips are kind of like iPhones" → every phone becomes a chip (staggered wipe left→right)
+      items.forEach((o) => {
+        const t = S(2049.05) + (o.k % 11) * 0.05 + o.ri * 0.06;
+        tl.to(o.im, { opacity: 0, scale: 0.7, duration: 0.35, ease: C(E.in, 0.35) }, t);
+        tl.fromTo(o.ic, { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.5, ease: C(E.out, 0.5), immediateRender: false }, t + 0.15);
+      });
+      tl.to($("sc006-tag"), { opacity: 0, duration: 0.4, ease: E.in }, S(2048.9));
+      // "China" → red wash, chips tint red-light
+      tl.fromTo($("sc006-wash"), { opacity: 0 }, { opacity: 1, duration: 0.6, ease: C(E.out, 0.6), immediateRender: true }, S(2052.94));
+      tl.to(items.map((o) => o.ic), { backgroundColor: REDL, duration: 0.6, ease: C(E.out, 0.6) }, S(2053.10));
+      // "everyone doesn't really want…" → the pile dims and sags
+      tl.to(rows, { opacity: 0.35, y: 26, duration: 1.4, ease: C(E.inOut, 1.4) }, S(2056.50));
+      tl.to($("sc006-wash"), { opacity: 0.45, duration: 1.4, ease: E.cam }, S(2056.50));
+      push("sc006", 2040.28, 2059.32, 1.06, 1.0, { ease: E.cam });
+    })();
+    words("sc006-tag", [T(2045.66)], { dur: 0.6, y: 12 });
+    words("sc006-cn", [T(2052.94)], { dur: 0.6, y: 12 });
+
+    /* ===== sc007 · waffle: chips 60 % → computing power 10 % (slide ↑) ===== */
+    slide("sc006", "sc007", S(2059.32), { axis: "y", from: 1 });
+    (function () {
+      const g = $("sc007-grid"), svg = $("sc007-svg");
+      const sq = [];
+      for (let r = 0; r < 10; r++) for (let c = 0; c < 10; c++) {
+        const d = document.createElement("div"); d.className = "n20-sq";
+        d.style.left = (640 + c * 62) + "px"; d.style.top = (280 + r * 62) + "px";
+        const rr = document.createElement("div"); rr.className = "r"; d.appendChild(rr);
+        g.appendChild(d); sq.push({ d, rr, r, c });
+      }
+      // build the grid in diagonal waves (12 fps)
+      sq.forEach((o) => { gsap.set(o.d, { opacity: 0 });
+        tl.fromTo(o.d, { opacity: 0, scale: 0.4 }, { opacity: 1, scale: 1, duration: 0.4, ease: C(E.out, 0.4), immediateRender: false }, S(2059.40) + (o.r + o.c) * 0.045); });
+      tl.fromTo($("sc007-tick"), { scaleY: 0 }, { scaleY: 1, duration: 0.5, ease: C(E.out, 0.5), immediateRender: true }, S(2059.50));
+      tl.fromTo($("sc007-tbar"), { scaleX: 0 }, { scaleX: 1, duration: 0.8, ease: C(E.out, 0.8), immediateRender: true }, S(2059.60));
+      // order: bottom row first, right to left (as the reference fills)
+      const order = sq.slice().sort((a, b) => (b.r - a.r) || (b.c - a.c));
+      // "number of chips" → 60 squares red + red 60 % box
+      order.slice(0, 60).forEach((o, i) => tl.fromTo(o.rr, { opacity: 0 }, { opacity: 1, duration: 0.01, immediateRender: false }, S(2062.62) + Math.floor(i / 5) * (1 / 12)));
+      const b60 = $("sc007-b60");
+      tl.fromTo(b60, { opacity: 0, x: 30 }, { opacity: 1, x: 0, duration: 0.6, ease: C(E.out, 0.6), immediateRender: true }, S(2063.40));
+      const l60 = pen(svg, S(2063.30), [[1268, 590], [1300, 420], [1338, 362]], { color: INK, width: 4, dur: 0.4, seed: 11 });
+      // "power of the chips" → every square flips back to neutral
+      sq.forEach((o) => {
+        const t = S(2064.14) + o.c * 0.04;
+        tl.to(o.d, { scaleY: 0, duration: 0.17, ease: C(E.in, 0.17) }, t);
+        tl.set(o.rr, { opacity: 0 }, t + 0.17);
+        tl.to(o.d, { scaleY: 1, duration: 0.2, ease: C(E.out, 0.2) }, t + 0.17);
+      });
+      tl.to([b60, l60], { opacity: 0.35, duration: 0.5, ease: E.in }, S(2064.30));
+      // title word swap chips → computing power
+      tl.to($("sc007-s1"), { opacity: 0, y: -14, duration: 0.3, ease: E.in }, S(2065.50));
+      // "10% of the computing power" → 10 squares red + yellow box
+      order.slice(0, 10).forEach((o, i) => tl.fromTo(o.rr, { opacity: 0 }, { opacity: 1, duration: 0.01, immediateRender: false }, S(2071.50) + Math.floor(i / 2) * (1 / 12)));
+      const b10 = $("sc007-b10");
+      tl.fromTo(b10, { opacity: 0, x: 30 }, { opacity: 1, x: 0, duration: 0.6, ease: C(E.out, 0.6), immediateRender: true }, T(2071.50));
+      FX.text.count(tl, $("sc007-v10"), T(2071.50), 0, 10, 0.8, (v) => Math.round(v) + "%");
+      pen(svg, S(2071.70), [[1268, 868], [1300, 830], [1338, 806]], { color: INK, width: 4, dur: 0.4, seed: 12 });
+      tl.fromTo($("sc007-src"), { opacity: 0 }, { opacity: 1, duration: 0.5, ease: C(E.out, 0.5), immediateRender: true }, S(2072.20));
+      // "Not as scary…" → strike the old 60 %
+      pen(svg, S(2074.25), [[1326, 382], [1460, 356], [1604, 330]], { color: REDD, width: 9, dur: 0.45, seed: 13, filter: MARK });
+      push("sc007", 2058.87, 2077.03, 1.0, 1.05, { ease: E.cam });
+      tl.to($("sc007-vw"), { scale: 1.16, duration: 0.5, ease: E.in }, S(2076.53));   // push into the whip
+    })();
+    words("sc007-title", [T(2062.22)], { dur: 0.6, y: 10 });
+    rise($("sc007-s1"), T(2062.62), { dur: 0.5, y: 10 });
+    rise($("sc007-s2"), T(2065.74), { dur: 0.6, y: 12 });
+
+    /* ===== sc008 · the CCP: allowed to buy, not buying (whip ←) ===== */
+    whip("sc007", "sc008", S(2077.03), { dir: -1 });
+    (function () {
+      const svg = $("sc008-svg");
+      tl.fromTo($("sc008-xi"), { x: -60, opacity: 0 }, { x: 0, opacity: 1, duration: 1.0, ease: C(E.out, 1.0), immediateRender: true }, S(2077.10));
+      tl.fromTo($("sc008-flag"), { x: 0 }, { x: -60, duration: 13.7, ease: "none", immediateRender: true }, S(2077.03));
+      // "permission … legally they can buy" → the real headline
+      const card = $("sc008-card");
+      tl.fromTo(card, { opacity: 0, y: -40, rotation: 2 }, { opacity: 1, y: 0, rotation: -1, duration: 0.8, ease: C(E.out, 0.8), immediateRender: true }, S(2083.35));
+      tl.fromTo($("sc008-cred"), { opacity: 0 }, { opacity: 1, duration: 0.5, ease: C(E.out, 0.5), immediateRender: true }, S(2083.70));
+      pen(svg, S(2084.71), [[1190, 268], [1330, 266], [1466, 270], [1585, 265]], { color: VOLTL, width: 6, dur: 0.7, seed: 21, filter: MARK });
+      // "NVIDIA chips that are more powerful" → the chip slides in
+      tl.fromTo($("sc008-chip"), { opacity: 0, y: 60 }, { opacity: 1, y: 0, duration: 1.0, ease: C(E.out, 1.0), immediateRender: true }, S(2085.93));
+      tl.fromTo($("sc008-chipglow"), { opacity: 0 }, { opacity: 1, duration: 1.0, ease: E.cam, immediateRender: true }, S(2087.30));
+      // "they're not really buying them" → red cross on the chip
+      FX.markup.cross(tl, svg, S(2089.37), { x: 1370, y: 712, s: 150, color: REDL, width: 16, filter: MARK, dur: 0.22 }).forEach((p) => { gsap.set(p, { opacity: 0 }); tl.set(p, { opacity: 1 }, S(2089.37)); });
+      tl.to($("sc008-chipglow"), { opacity: 0, duration: 0.5, ease: E.in }, S(2089.40));
+      tl.to($("sc008-chip"), { filter: "grayscale(1) brightness(0.55) drop-shadow(0 26px 36px rgba(0,0,0,0.7))", duration: 0.5, ease: E.in }, S(2089.45));
+      push("sc008", 2077.03, 2090.71, 1.0, 1.05, { ease: E.cam });
+    })();
+    words("sc008-tag", [T(2077.61)], { dur: 0.6, y: 10 });
+
+    /* ===== sc009 · orders to Huawei → up the value chain (paper slide from the left) ===== */
+    slide("sc008", "sc009", S(2090.71), { axis: "x", from: -1 });
+    (function () {
+      const svg = $("sc009-svg"), ob = $("sc009-objs");
+      // three AI companies (data-center icons)
+      const cos = [0, 1, 2].map((i) => icon(ob, "datacenter", 170 + i * 130, 170, 110, INK));
+      cos.forEach((c, i) => pop(c, S(2091.35) + i * 0.12, { dur: 0.6 }));
+      // stairs: 5 steps from (300, 900) to (1700, 300)
+      const st = [[300, 900], [580, 900], [580, 780], [860, 780], [860, 660], [1140, 660], [1140, 540], [1420, 540], [1420, 420], [1720, 420]];
+      const jig = st.map((p, i) => [p[0] + (i % 2 ? 2 : -2), p[1] + (i % 3 ? 1 : -2)]);
+      pen(svg, S(2095.30), jig, { color: INK, width: 7, dur: 1.1, seed: 31 });
+      // value-chain arrow under the stairs
+      FX.markup.arrow(tl, svg, S(2095.80), { x1: 760, y1: 990, x2: 1760, y2: 560, bend: 30, head: 30, color: ICED, width: 5, filter: PEN, dur: 0.7 })
+        .forEach((p) => { gsap.set(p, { opacity: 0 }); tl.set(p, { opacity: 1 }, S(2095.80)); });
+      // Huawei mark on the first step
+      const hw = document.createElement("div"); hw.style.cssText = "position:absolute;left:370px;top:770px;width:130px;height:130px;";
+      hw.innerHTML = '<div class="n20-ic" style="left:0;top:0;width:130px;height:130px;background:#dc2f3c;-webkit-mask-image:url(\'assets/nvidia/shared/logos/huawei.svg\');mask-image:url(\'assets/nvidia/shared/logos/huawei.svg\')"></div>';
+      ob.appendChild(hw);
+      const hwW = document.createElement("div"); hwW.className = "n20-ic"; hwW.style.cssText = "left:330px;top:920px;width:210px;height:34px;background:#14181b;-webkit-mask-image:url('assets/nvidia/shared/logos/huawei_wordmark.svg');mask-image:url('assets/nvidia/shared/logos/huawei_wordmark.svg')";
+      ob.appendChild(hwW);
+      pop(hw, S(2093.45), { dur: 0.7 });
+      tl.fromTo(hwW, { opacity: 0 }, { opacity: 1, duration: 0.5, ease: C(E.out, 0.5), immediateRender: true }, S(2093.55));
+      // order slips fly from the companies into Huawei ("put more orders with Huawei")
+      for (let i = 0; i < 6; i++) {
+        const s = document.createElement("div"); s.className = "n20-slip"; s.style.left = (190 + (i % 3) * 130) + "px"; s.style.top = "220px"; ob.appendChild(s);
+        gsap.set(s, { opacity: 0 });
+        const t = S(2092.75) + i * 0.16;
+        tl.set(s, { opacity: 1 }, t);
+        tl.fromTo(s, { x: 0, y: 0, rotation: -8 + i * 3 }, { x: 405 - (190 + (i % 3) * 130), y: 600, rotation: 10, duration: 0.9, ease: C(E.inOut, 0.9), immediateRender: false }, t);
+        tl.to(s, { opacity: 0, scale: 0.5, duration: 0.2, ease: E.in }, t + 0.9);
+      }
+      tl.to(hw, { scale: 1.12, duration: 0.25, yoyo: true, repeat: 1, ease: C(E.out, 0.25) }, S(2094.30));
+      // Huawei climbs, one step per hop (12 fps)
+      const hops = [2095.75, 2096.80, 2097.75, 2099.05, 2101.20];
+      hops.forEach((h, i) => {
+        tl.to(hw, { x: (i + 1) * 280 - (i === 4 ? 20 : 0), y: -(i + 1) * 120, duration: 0.6, ease: C(E.inOut, 0.6) }, S(h));
+        tl.to(hw, { y: "-=50", duration: 0.3, yoyo: true, repeat: 1, ease: C("sine.out", 0.3) }, S(h));
+      });
+      tl.to(hwW, { opacity: 0, duration: 0.4, ease: E.in }, S(2095.75));
+      // factory on step 4 ("factories")
+      const fac = icon(ob, "factory", 1200, 420, 110, INK);
+      pop(fac, S(2097.83), { dur: 0.7 });
+      // chips grow per step ("next generation of chips")
+      [[620, 820, 40], [900, 692, 52], [1180, 572, 64], [1460, 448, 82]].forEach((c, i) => {
+        const ch = icon(ob, "chip", c[0] + 160, c[1] - c[2] + 60 - 60, c[2], RED);
+        ch.style.top = (c[1] - c[2] - 8) + "px";
+        pop(ch, S(2099.40) + i * 0.18, { dur: 0.6 });
+      });
+      push("sc009", 2090.26, 2102.40, 1.0, 1.04, { ease: E.cam });
+      tl.to($("sc009-vw"), { scale: 1.2, y: 60, duration: 0.6, ease: E.in }, S(2102.40));   // push up the stairs (cut on action)
+    })();
+    words("sc009-ai", [T(2091.61), T(2091.93)], { dur: 0.5, y: 8 });
+    words("sc009-vc", [T(2095.77), T(2096.17)], { dur: 0.5, y: 8 });
+    words("sc009-ng", [T(2099.05), T(2099.37)], { dur: 0.5, y: 8 });
+
+    FX.mount(tl, DURATION);
+    window.__timelines = window.__timelines || {};
+    window.__timelines[SEG] = tl;
+  })();
+  </script>
+</template>
+</body>
+</html>

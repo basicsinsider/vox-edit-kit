@@ -1,0 +1,712 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8" /></head>
+<body>
+<template>
+  <style>
+    #root { position: absolute; inset: 0; overflow: hidden; background: var(--night); }
+    .n14-scene { position: absolute; inset: 0; overflow: hidden; visibility: hidden; opacity: 0; }
+    .n14-shot { position: absolute; inset: 0; overflow: hidden; transform-origin: 50% 50%; background: var(--night); }
+    .n14-paper { background: var(--paper); }
+    .n14-hall { position: absolute; inset: -40px;
+      background: radial-gradient(ellipse 72% 62% at 50% 44%, color-mix(in srgb, var(--ash-dark) 50%, var(--night)) 0%, var(--night) 72%); }
+    .n14-vw { position: absolute; inset: 0; transform-origin: 50% 50%; }
+    .n14-cam { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 0 0; }
+    .n14-abs { position: absolute; }
+    .n14-p1, .n14-p2 { position: absolute; inset: 0; background-size: cover; background-position: center; pointer-events: none; }
+    .n14-p2 { mix-blend-mode: multiply; }
+    .n14-svg { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; pointer-events: none; }
+    .n14-w { display: inline-block; white-space: pre; opacity: 0; }
+    .n14-ink { color: var(--ink); }
+    .n14-ico { position: absolute; -webkit-mask-size: contain; mask-size: contain; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+      -webkit-mask-position: center; mask-position: center; }
+    .n14-logo { position: absolute; object-fit: contain; }
+    .n14-credit { position: absolute; right: 30px; bottom: 20px; font-size: 13px; letter-spacing: 0.08em; color: rgba(240,239,232,0.62); z-index: 5; }
+    .n14-credit.ink { color: rgba(20,24,27,0.66); }
+    #nvs14-flash { position: absolute; inset: 0; background: var(--bone); opacity: 0; pointer-events: none; z-index: 7; }
+    #nvs14-grain, #nvs14-dust, #nvs14-vig { z-index: 8; }
+
+    /* desk cards (sc001 / sc011) */
+    .n14-card { position: absolute; top: 280px; width: 400px; height: 520px; border-radius: 10px; box-shadow: 0 18px 36px rgba(20,24,27,0.32); }
+    .n14-back { position: absolute; inset: 0; border-radius: 10px; background:
+      repeating-linear-gradient(45deg, rgba(20,24,27,0.16) 0 3px, transparent 3px 22px), var(--paper-2); border: 14px solid #cfccc0; box-sizing: border-box; }
+    .n14-front { position: absolute; inset: 0; border-radius: 10px; background: #f3f1ea; }
+    .n14-tape { position: absolute; left: -40px; top: 210px; width: 480px; height: 92px; background: var(--ink);
+      clip-path: polygon(0 6%, 3% 0, 97% 4%, 100% 0, 99% 94%, 96% 100%, 2% 96%, 0 100%); box-shadow: 0 6px 10px rgba(0,0,0,0.25); }
+
+    /* sc002 x-ray */
+    .n14-xr { position: absolute; inset: 0; background: radial-gradient(ellipse 80% 70% at 50% 50%, #142027 0%, #090d10 75%); }
+    .n14-scan { position: absolute; inset: 0; background: repeating-linear-gradient(0deg, rgba(159,220,240,0.04) 0 2px, transparent 2px 5px); }
+
+    /* sc005 board */
+    .n14-board { position: absolute; inset: 0; background: radial-gradient(ellipse 85% 75% at 45% 45%, #262c30 0%, #15191c 70%, #0e1113 100%); }
+    .n14-id { position: absolute; width: 230px; height: 230px; background: #e9e6dc; box-shadow: 0 16px 30px rgba(0,0,0,0.55); }
+    .n14-tag { position: absolute; background: #d9cfb8; color: var(--ink); font-size: 24px; padding: 12px 22px 8px; white-space: nowrap; box-shadow: 0 8px 14px rgba(0,0,0,0.45);
+      clip-path: polygon(0 8%, 4% 0, 30% 6%, 62% 0, 96% 5%, 100% 0, 98% 92%, 100% 100%, 70% 95%, 35% 100%, 3% 94%, 0 100%); }
+    .n14-pin { position: absolute; width: 22px; height: 22px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #f0efe8 0%, #9aa0a3 45%, #3b4144 100%);
+      box-shadow: 0 4px 6px rgba(0,0,0,0.6); }
+
+    /* sc006 map */
+    .n14-base { position: absolute; left: 0; top: 0; }
+    .n14-fill { position: absolute; left: 0; top: 0; -webkit-mask-size: 100% 100%; mask-size: 100% 100%; }
+    .n14-maplab { position: absolute; white-space: nowrap; }
+
+    /* sc007 print */
+    .n14-print { position: absolute; background: #f6f4ee; padding: 18px; box-shadow: 0 24px 48px rgba(20,24,27,0.35); }
+    .n14-print img { display: block; width: 100%; height: 100%; object-fit: cover; filter: saturate(0.85) contrast(1.05); }
+    .n14-strip { position: absolute; background: var(--ink); box-shadow: 0 10px 16px rgba(0,0,0,0.35);
+      clip-path: polygon(0 5%, 2% 0, 98% 4%, 100% 0, 99% 95%, 97% 100%, 1% 96%, 0 100%); }
+
+    /* sc009 article */
+    .n14-dots { position: absolute; inset: 0; background-image: radial-gradient(circle, rgba(20,24,27,0.30) 0 2px, transparent 2.6px); background-size: 64px 64px; background-position: 32px 30px; }
+    .n14-art { position: absolute; box-shadow: 0 14px 30px rgba(20,24,27,0.22); }
+    .n14-art img { display: block; width: 100%; height: 100%; }
+    .n14-date { position: absolute; background: var(--red-dark); color: var(--bone); font-size: 34px; padding: 10px 26px 8px; }
+
+    /* sc010 chips */
+    .n14-ghost { position: absolute; width: 80px; height: 80px; border: 3px dashed var(--volt-light); border-radius: 10px; box-sizing: border-box; opacity: 0; }
+  </style>
+
+  <div id="root" data-composition-id="nvs14" data-vo-start="1356.292" data-duration="89.25" data-width="1920" data-height="1080">
+    <svg id="nvs14-defs" width="0" height="0" style="position:absolute"></svg>
+
+    <!-- sc001 · 1356.29–1361.70 · factors nobody talks about publicly: three sealed face-down cards (paper desk) -->
+    <div class="n14-scene" id="nvs14-sc001"><div class="n14-shot n14-paper" id="nvs14-sc001-shot">
+      <div class="n14-p1" style="background-image:url('assets/textures/paper_stained_01_hires.jpg')"></div>
+      <div class="n14-p2" style="background-image:url('assets/textures/paper_fiber_01.jpg'); opacity:0.35"></div>
+      <div class="n14-vw" id="nvs14-sc001-vw"><div id="nvs14-sc001-cards"></div></div>
+    </div></div>
+
+    <!-- sc002 · 1361.70–1364.00 · "smuggling": airport x-ray reveals GPU cards in a suitcase (night) -->
+    <div class="n14-scene" id="nvs14-sc002"><div class="n14-shot" id="nvs14-sc002-shot">
+      <div class="n14-xr"></div>
+      <div class="n14-vw" id="nvs14-sc002-vw">
+        <div class="n14-abs" id="nvs14-sc002-in" style="left:0;top:0;width:1920px;height:1080px">
+          <svg class="n14-svg" id="nvs14-sc002-svg" viewBox="0 0 1920 1080"></svg>
+          <div id="nvs14-sc002-cards"></div>
+        </div>
+        <div class="n14-abs" id="nvs14-sc002-bar" style="left:0;top:180px;width:10px;height:720px;background:var(--ice-light);box-shadow:0 0 30px 10px rgba(159,220,240,0.45)"></div>
+        <svg class="n14-svg" viewBox="0 0 1920 1080">
+          <path d="M120 150 L120 110 L170 110 M1750 110 L1800 110 L1800 150 M120 930 L120 970 L170 970 M1750 970 L1800 970 L1800 930" fill="none" stroke="var(--ash)" stroke-width="3" opacity="0.7" />
+        </svg>
+      </div>
+      <div class="n14-scan"></div>
+    </div></div>
+
+    <!-- sc003 · 1364.00–1372.79 · claimed 1/20 vs American companies; the part under the water (night "iceberg") -->
+    <div class="n14-scene" id="nvs14-sc003"><div class="n14-shot" id="nvs14-sc003-shot">
+      <div class="n14-hall"></div>
+      <div class="n14-cam" id="nvs14-sc003-cam" style="height:1900px">
+        <div class="n14-abs" style="left:-200px;top:760px;width:2320px;height:1300px;background:linear-gradient(180deg, rgba(17,89,115,0.55) 0%, rgba(17,89,115,0.18) 45%, rgba(13,16,18,0) 100%)"></div>
+        <div class="n14-abs" id="nvs14-sc003-ice" style="left:330px;top:300px;width:520px;height:460px;background:var(--ice);transform-origin:50% 100%"></div>
+        <div class="n14-abs" id="nvs14-sc003-iceU" style="left:330px;top:760px;width:520px;height:560px;background:var(--ice-dark);opacity:0.7;transform-origin:50% 0%"></div>
+        <div class="n14-abs" id="nvs14-sc003-tip" style="left:1180px;top:690px;width:150px;height:70px;background:var(--red);transform-origin:50% 100%"></div>
+        <svg class="n14-svg" id="nvs14-sc003-svg" viewBox="0 0 1920 1900" style="height:1900px"></svg>
+        <div class="n14-abs t-label" id="nvs14-sc003-lcn" style="left:1060px;width:390px;top:560px;text-align:center;font-size:40px;color:var(--red-light)"><span class="n14-w">CHINESE </span><span class="n14-w">COMPANIES</span></div>
+        <div class="n14-abs t-display clean" id="nvs14-sc003-f" style="left:1370px;top:600px;font-size:120px;line-height:1"><span class="n14-w">1/20</span></div>
+        <div class="n14-abs t-label" id="nvs14-sc003-lus" style="left:250px;width:680px;top:226px;text-align:center;font-size:40px;color:var(--ice-light)"><span class="n14-w">AMERICAN </span><span class="n14-w">COMPANIES</span></div>
+        <div class="n14-abs t-display" id="nvs14-sc003-q" style="left:1105px;width:300px;top:1110px;text-align:center;font-size:300px;line-height:1;color:var(--red-light);opacity:0">?</div>
+      </div>
+    </div></div>
+
+    <!-- sc004 · 1372.79–1379.99 · you don't publicly say you have it illegally: podium, hidden card, empty bubble (paper) -->
+    <div class="n14-scene" id="nvs14-sc004"><div class="n14-shot n14-paper" id="nvs14-sc004-shot">
+      <div class="n14-p1" style="background-image:url('assets/textures/paper_cream_02.jpg')"></div>
+      <div class="n14-p2" style="background-image:url('assets/textures/newsprint_01.jpg'); opacity:0.22"></div>
+      <div class="n14-vw" id="nvs14-sc004-vw">
+        <div class="n14-ico" id="nvs14-sc004-gpu" style="left:470px;top:760px;width:330px;height:220px;background:var(--volt-dark);-webkit-mask-image:url('assets/nvidia/shared/icons/gpu_card.svg');mask-image:url('assets/nvidia/shared/icons/gpu_card.svg')"></div>
+        <svg class="n14-svg" id="nvs14-sc004-pod" viewBox="0 0 1920 1080"></svg>
+        <svg class="n14-svg" id="nvs14-sc004-svg" viewBox="0 0 1920 1080"></svg>
+      </div>
+    </div></div>
+
+    <!-- sc005 · 1379.99–1388.95 · Chinese AI companies earn revenue in America: ID-card board (night; ref ast_716e2cc68e364ca5) -->
+    <div class="n14-scene" id="nvs14-sc005"><div class="n14-shot" id="nvs14-sc005-shot">
+      <div class="n14-board"></div>
+      <div class="n14-p1" style="background-image:url('assets/textures/scratches_01.jpg'); mix-blend-mode:screen; opacity:0.16"></div>
+      <div class="n14-vw" id="nvs14-sc005-vw">
+        <svg class="n14-svg" id="nvs14-sc005-svg" viewBox="0 0 1920 1080" style="z-index:3"></svg>
+        <div id="nvs14-sc005-cards"></div>
+        <div class="n14-tag t-label" id="nvs14-sc005-hd" style="left:150px;top:96px;font-size:30px;z-index:2"><span class="n14-w">CHINESE </span><span class="n14-w">AI </span><span class="n14-w">COMPANIES</span></div>
+        <div class="n14-tag t-label" id="nvs14-sc005-rev" style="left:1170px;top:520px;z-index:4"><span class="n14-w">REVENUE</span></div>
+        <div class="n14-abs" id="nvs14-sc005-us" style="left:1460px;top:330px;width:330px;height:250px;background:#e9e6dc;box-shadow:0 16px 30px rgba(0,0,0,0.55);z-index:2">
+          <img class="n14-logo" src="assets/nvidia/shared/logos/flag_us.svg" alt="" style="left:20px;top:20px;width:290px;height:180px;object-fit:fill;filter:saturate(0.55)" />
+        </div>
+        <div class="n14-tag t-label" id="nvs14-sc005-am" style="left:1530px;top:560px;z-index:4"><span class="n14-w">AMERICA</span></div>
+      </div>
+      <div class="n14-credit t-label">Logos © their owners, fair use</div>
+    </div></div>
+
+    <!-- sc006 · 1388.95–1398.47 · US consumer market; Chinese models want to sell there (night Pacific map) -->
+    <div class="n14-scene" id="nvs14-sc006" style="background:#0b0e12"><div class="n14-shot" id="nvs14-sc006-shot" style="background:#0b0e12">
+      <div class="n14-cam" id="nvs14-sc006-cam" style="width:5689px;height:2776px">
+        <img class="n14-base" src="assets/nvidia/nvs14/derived/pacific_us_night.jpg" alt="" style="width:5689px;height:2776px;filter:brightness(1.2) contrast(1.05)" />
+        <div class="n14-fill" id="nvs14-sc006-cn" style="width:5689px;height:2776px;background:var(--red);opacity:0;-webkit-mask-image:url('assets/nvidia/nvs14/derived/pu_china.svg');mask-image:url('assets/nvidia/nvs14/derived/pu_china.svg')"></div>
+        <div class="n14-fill" id="nvs14-sc006-us" style="width:5689px;height:2776px;background:var(--ice);opacity:0;-webkit-mask-image:url('assets/nvidia/nvs14/derived/pu_usa.svg');mask-image:url('assets/nvidia/nvs14/derived/pu_usa.svg')"></div>
+        <div class="n14-fill" id="nvs14-sc006-usd" style="width:5689px;height:2776px;background-image:radial-gradient(circle, rgba(240,239,232,1) 0 3.4px, rgba(240,239,232,0) 5px);background-size:22px 22px;mix-blend-mode:screen;opacity:0;-webkit-mask-image:url('assets/nvidia/nvs14/derived/pu_usa.svg');mask-image:url('assets/nvidia/nvs14/derived/pu_usa.svg')"></div>
+        <svg id="nvs14-sc006-svg" class="n14-base" width="5689" height="2776" viewBox="0 0 5689 2776" style="overflow:visible"></svg>
+      </div>
+      <div class="n14-maplab t-display clean" id="nvs14-sc006-lus" style="font-size:54px;color:var(--bone)"><span class="n14-w">UNITED </span><span class="n14-w">STATES</span></div>
+      <div class="n14-maplab t-display clean" id="nvs14-sc006-lcn" style="font-size:54px;color:var(--bone)"><span class="n14-w">CHINA</span></div>
+      <div class="n14-credit t-label">Relief: AWS Terrain Tiles (PD) · borders: Natural Earth (PD)</div>
+    </div></div>
+
+    <!-- sc007 · 1398.47–1404.95 · can't admit smuggled chips: H100 print taped over (paper) -->
+    <div class="n14-scene" id="nvs14-sc007"><div class="n14-shot n14-paper" id="nvs14-sc007-shot">
+      <div class="n14-p1" style="background-image:url('assets/textures/paper_cream_01.jpg')"></div>
+      <div class="n14-p2" style="background-image:url('assets/textures/paper_fiber_01.jpg'); opacity:0.4"></div>
+      <div class="n14-vw" id="nvs14-sc007-vw">
+        <div class="n14-print" id="nvs14-sc007-pr" style="left:340px;top:150px;width:1204px;height:677px;transform:rotate(-1.4deg)">
+          <img src="assets/nvidia/shared/hardware/h100_sxm_board_2.jpg" alt="" />
+        </div>
+        <div class="n14-strip" id="nvs14-sc007-s1" style="left:300px;top:390px;width:1320px;height:150px;transform-origin:0% 50%"></div>
+        <div class="n14-strip" id="nvs14-sc007-s2" style="left:330px;top:600px;width:1300px;height:120px;transform-origin:100% 50%"></div>
+        <svg class="n14-svg" id="nvs14-sc007-svg" viewBox="0 0 1920 1080"></svg>
+      </div>
+      <div class="n14-credit t-label ink">Image: NVIDIA (H100), fair use</div>
+    </div></div>
+
+    <!-- sc008 · 1404.95–1408.95 · DeepSeek's groundbreaking model came out (night) -->
+    <div class="n14-scene" id="nvs14-sc008"><div class="n14-shot" id="nvs14-sc008-shot">
+      <div class="n14-hall"></div>
+      <div class="n14-vw" id="nvs14-sc008-vw">
+        <svg class="n14-svg" id="nvs14-sc008-svg" viewBox="0 0 1920 1080"></svg>
+        <div class="n14-abs" id="nvs14-sc008-tile" style="left:780px;top:250px;width:360px;height:360px;border-radius:72px;background:var(--bone);box-shadow:0 30px 60px rgba(0,0,0,0.55)">
+          <div class="n14-ico" style="left:50px;top:60px;width:260px;height:240px;background:var(--red);-webkit-mask-image:url('assets/nvidia/shared/logos/deepseek.svg');mask-image:url('assets/nvidia/shared/logos/deepseek.svg')"></div>
+        </div>
+        <div class="n14-abs t-label clean" id="nvs14-sc008-tag" style="left:560px;width:800px;top:690px;text-align:center;font-size:36px;text-transform:none"><span class="n14-w">DeepSeek-R1 · Jan 2025</span></div>
+      </div>
+      <div class="n14-credit t-label">Logo © DeepSeek, fair use</div>
+    </div></div>
+
+    <!-- sc009 · 1408.95–1415.43 · experts: DeepSeek used more NVIDIA chips — real Sherwood News article (paper; ref ast_4b76d56ab5214313) -->
+    <div class="n14-scene" id="nvs14-sc009"><div class="n14-shot n14-paper" id="nvs14-sc009-shot">
+      <div class="n14-p1" style="background-image:url('assets/textures/paper_cream_02.jpg')"></div>
+      <div class="n14-dots"></div>
+      <div class="n14-p2" style="background-image:url('assets/textures/paper_stained_01.jpg'); opacity:0.35"></div>
+      <div class="n14-vw" id="nvs14-sc009-vw">
+        <div class="n14-date t-serif" id="nvs14-sc009-date" style="left:150px;top:110px">Jan 29, 2025</div>
+        <div class="n14-art" id="nvs14-sc009-head" style="left:150px;top:200px;width:1440px;height:384px">
+          <img src="assets/nvidia/nvs14/derived/sherwood_head.jpg" alt="" />
+          <div class="n14-abs" id="nvs14-sc009-hl" style="left:605px;top:298px;width:806px;height:40px;background:var(--yellow);mix-blend-mode:multiply;opacity:0.9;transform-origin:0 50%"></div>
+        </div>
+        <div class="n14-art" id="nvs14-sc009-ph" style="left:1240px;top:630px;width:480px;height:360px;box-shadow:0 0 0 7px var(--red), 0 18px 34px rgba(20,24,27,0.35)">
+          <img src="assets/nvidia/nvs14/derived/sherwood_photo.jpg" alt="" />
+        </div>
+        <svg class="n14-svg" id="nvs14-sc009-svg" viewBox="0 0 1920 1080"></svg>
+      </div>
+      <div class="n14-credit t-label ink">Sherwood News, 29 Jan 2025 · photo VCG/Getty Images · fair use</div>
+    </div></div>
+
+    <!-- sc010 · 1415.43–1424.46 · not as many as US companies, but more than admitted: chip stacks (night isotype) -->
+    <div class="n14-scene" id="nvs14-sc010"><div class="n14-shot" id="nvs14-sc010-shot">
+      <div class="n14-hall"></div>
+      <div class="n14-vw" id="nvs14-sc010-vw">
+        <svg class="n14-svg" id="nvs14-sc010-svg" viewBox="0 0 1920 1080"></svg>
+        <div id="nvs14-sc010-chips"></div>
+        <div class="n14-abs t-label" id="nvs14-sc010-lds" style="left:240px;width:420px;top:930px;text-align:center;font-size:32px;color:var(--red-light)"><span class="n14-w">DEEPSEEK</span></div>
+        <div class="n14-abs t-label" id="nvs14-sc010-lus" style="left:900px;width:860px;top:930px;text-align:center;font-size:32px;color:var(--ice-light)"><span class="n14-w">AMERICAN </span><span class="n14-w">COMPANIES</span></div>
+        <div class="n14-abs t-label clean" id="nvs14-sc010-adm" style="left:640px;top:828px;font-size:28px"><span class="n14-w">ADMITTED</span></div>
+        <div class="n14-abs t-display" id="nvs14-sc010-q" style="left:300px;width:300px;top:330px;text-align:center;font-size:200px;line-height:1;color:var(--red-light);opacity:0">?</div>
+      </div>
+    </div></div>
+
+    <!-- sc011 · 1424.46–1428.56 · caveats again; another factor: the desk callback, card 2 flips (paper) -->
+    <div class="n14-scene" id="nvs14-sc011"><div class="n14-shot n14-paper" id="nvs14-sc011-shot">
+      <div class="n14-p1" style="background-image:url('assets/textures/paper_stained_01_hires.jpg')"></div>
+      <div class="n14-p2" style="background-image:url('assets/textures/paper_fiber_01.jpg'); opacity:0.35"></div>
+      <div class="n14-vw" id="nvs14-sc011-vw"><div id="nvs14-sc011-cards"></div>
+        <svg class="n14-svg" id="nvs14-sc011-svg" viewBox="0 0 1920 1080"></svg></div>
+    </div></div>
+
+    <!-- sc012 · 1428.56–1445.54 · "this chart": Epoch AI US-vs-China frontier staircase (paper graph; ref ast_d3d145bc2ebb47ad) -->
+    <div class="n14-scene" id="nvs14-sc012"><div class="n14-shot n14-paper" id="nvs14-sc012-shot">
+      <div class="n14-cam" id="nvs14-sc012-cam">
+        <div class="n14-p1" style="background-image:url('assets/textures/paper_graph_01_hires.jpg')"></div>
+        <div class="n14-p2" style="background-image:url('assets/textures/paper_cream_01.jpg'); opacity:0.55"></div>
+        <svg class="n14-svg" id="nvs14-sc012-svg" viewBox="0 0 1920 1080"></svg>
+        <div class="n14-abs t-display n14-ink" id="nvs14-sc012-tt" style="left:250px;top:112px;font-size:60px;white-space:nowrap">Top AI models, US vs China</div>
+        <div class="n14-abs t-label" id="nvs14-sc012-src" style="left:252px;top:196px;font-size:24px;color:var(--ink-soft);white-space:nowrap">Data: Epoch AI · Epoch Capabilities Index (ECI) · CC BY</div>
+        <div class="n14-abs t-label" id="nvs14-sc012-ya" style="left:120px;top:610px;width:200px;text-align:center;font-size:22px;color:var(--ink-soft);transform:rotate(-90deg)">CAPABILITY (ECI)</div>
+        <div id="nvs14-sc012-labs"></div>
+        <div class="n14-abs t-label" id="nvs14-sc012-leg" style="left:300px;top:340px;font-size:24px;line-height:1.7;color:var(--ink)">
+          <div id="nvs14-sc012-legus"><span style="display:inline-block;width:20px;height:20px;background:var(--ice-dark);margin-right:14px;vertical-align:-2px"></span>UNITED STATES</div>
+          <div id="nvs14-sc012-legcn"><span style="display:inline-block;width:20px;height:20px;background:var(--red);margin-right:14px;vertical-align:-2px"></span>CHINA</div>
+        </div>
+      </div>
+    </div></div>
+
+    <div id="nvs14-flash"></div>
+    <div id="nvs14-grain" class="tx tx-grain" style="background-image:url('assets/textures/grain_01_norm.jpg')"></div>
+    <div id="nvs14-dust" class="tx tx-dust" style="background-image:url('assets/textures/dust_02.jpg')"></div>
+    <div id="nvs14-vig" class="vignette"></div>
+    <audio id="nvs14-vo" class="temp-vo" src="vo_nv.mp3" data-start="0" data-duration="89.25" data-media-start="1356.292" data-volume="1"></audio>
+  </div>
+
+  <script>
+  (function () {
+    const SEG = "nvs14", SEG_START = 1356.292, SEG_END = 1445.542, DURATION = 89.25;
+    const T = (s) => +(s - SEG_START).toFixed(3);   // TEXT cues (audited): master word start − 0.06
+    const S = (s) => +(s - SEG_START).toFixed(3);   // STRUCTURAL cues
+    const tl = gsap.timeline({ paused: true });
+    const $ = (id) => document.getElementById(SEG + "-" + id);
+    const NS = "http://www.w3.org/2000/svg";
+    const defs = $("defs");
+    const E = FX.ease;
+    const C = (e, d) => FX.choppy(e, d, 12);
+    const LIN = (x) => x;
+    const INK = "#14181b", BONE = "#f0efe8", RED = "#dc2f3c", REDD = "#7e151e", REDL = "#f6a4a9", ICE = "#2a9fc9", ICED = "#115973", ICEL = "#9fdcf0", VOLT = "#86c232", VOLTD = "#3f6410", VOLTL = "#c9ec8f", ASH = "#888e92";
+    const ICO = (n) => "url('assets/nvidia/shared/icons/" + n + ".svg')";
+
+    // ---------- scenes ----------
+    const SC = [
+      ["sc001", 1356.292, 1361.70, "paper"], ["sc002", 1361.70, 1364.00, "night"], ["sc003", 1364.00, 1372.79, "night"],
+      ["sc004", 1372.79, 1379.99, "paper"], ["sc005", 1379.99, 1388.95, "night"], ["sc006", 1388.95, 1398.47, "night"],
+      ["sc007", 1398.47, 1404.95, "paper"], ["sc008", 1404.95, 1408.95, "night"], ["sc009", 1408.95, 1415.43, "paper"],
+      ["sc010", 1415.43, 1424.46, "night"], ["sc011", 1424.46, 1428.56, "paper"], ["sc012", 1428.56, 1445.542, "paper"],
+    ];
+    const GROUND = { paper: [0.3, 0.14, 0.22], night: [0.9, 0.42, 0.4] };
+    const EARLY = { sc004: 0.45, sc009: 0.45, sc011: 0.45 };   // slides: incoming scene visible during the slide
+    function ground(kind, t) { const v = GROUND[kind]; tl.set([$("grain"), $("dust"), $("vig")], { opacity: (i) => v[i] }, t); }
+    SC.forEach((s, i) => {
+      const el = $(s[0]), a = s[1] - (EARLY[s[0]] || 0);
+      if (i === 0) gsap.set(el, { autoAlpha: 1 });
+      else tl.set(el, { autoAlpha: 1 }, S(a) - 0.002);
+      if (s[2] < SEG_END) tl.set(el, { autoAlpha: 0 }, S(s[2]) + 0.05);
+    });
+    gsap.set([$("grain"), $("dust"), $("vig")], { opacity: (i) => GROUND.paper[i] });
+    SC.forEach((s, i) => { if (i > 0) ground(s[3], S(s[1])); });
+
+    // ---------- helpers ----------
+    const rise = (el, t, o) => { o = o || {}; const d = o.dur || 0.5;
+      tl.fromTo(el, { opacity: 0, y: o.y == null ? 14 : o.y }, { opacity: 1, y: 0, duration: d, ease: C(E.out, d), immediateRender: true }, t); };
+    const pop = (el, t, o) => { o = o || {}; const n = o.n || 2;
+      tl.fromTo(el, { opacity: 0, scale: o.from == null ? 1.25 : o.from }, { opacity: o.to == null ? 1 : o.to, scale: 1, duration: n / 12, ease: "steps(" + n + ")", immediateRender: true }, t); };
+    const W = (id) => Array.from($(id).querySelectorAll(".n14-w"));
+    function words(id, cues, o) { const ws = W(id); cues.forEach((c, i) => rise(ws[i], c, o)); }
+    function el(parent, tag, attrs) { const n = document.createElementNS(NS, tag); for (const k in attrs) n.setAttribute(k, attrs[k]); parent.appendChild(n); return n; }
+    function div(parent, cls, css, html) { const d = document.createElement("div"); if (cls) d.className = cls; d.style.cssText = css || ""; if (html) d.innerHTML = html; parent.appendChild(d); return d; }
+    function ink(parent, d, t, dur, o) {
+      o = o || {};
+      const p = el(parent, "path", { d: d, fill: "none", stroke: o.color || INK, "stroke-width": o.width || 5, "stroke-linecap": "round", "stroke-linejoin": "round" });
+      if (o.opacity != null) p.setAttribute("opacity", o.opacity);
+      const len = o.len || p.getTotalLength() || 1;
+      p.setAttribute("stroke-dasharray", len + " " + len); p.setAttribute("stroke-dashoffset", len);
+      tl.fromTo(p, { attr: { "stroke-dashoffset": len } }, { attr: { "stroke-dashoffset": 0 }, duration: dur, ease: o.ease || C(E.out, dur), immediateRender: true }, t);
+      gsap.set(p, { opacity: 0 }); tl.set(p, { opacity: o.opacity == null ? 1 : o.opacity }, t);
+      return p;
+    }
+    function shown(p, t) { (Array.isArray(p) ? p : [p]).forEach((q) => { gsap.set(q, { opacity: 0 }); tl.set(q, { opacity: 1 }, t); }); return p; }
+    const whipN = { n: 0 };
+    function whip(a, b, t, o) {
+      o = Object.assign({ dir: 1, vertical: false, flash: false, dur: 0.32 }, o);
+      const k = ++whipN.n, ba = FX.whipDefs(defs, SEG + "-wa" + k), bb = FX.whipDefs(defs, SEG + "-wb" + k), h = o.dur / 2;
+      const A = $(a + "-shot"), B = $(b + "-shot");
+      tl.set(A, { filter: "url(#" + SEG + "-wa" + k + ")" }, t - h - 0.01); tl.set(A, { filter: "none" }, t + 0.06);
+      tl.set(B, { filter: "url(#" + SEG + "-wb" + k + ")" }, t - 0.001); tl.set(B, { filter: "none" }, t + h + 0.02);
+      FX.whip(tl, A, B, t, { dir: o.dir, vertical: o.vertical, dur: o.dur, blurA: ba, blurB: bb });
+      if (o.flash) tl.fromTo($("flash"), { opacity: 0 }, { opacity: 0.85, duration: 0.08, yoyo: true, repeat: 1, ease: "power2.in", immediateRender: false }, t - 0.08);
+    }
+    function slide(a, b, t, o) {
+      o = Object.assign({ axis: "y", from: 1, d: 0.45 }, o);
+      const A = $(a + "-shot"), B = $(b + "-shot"), dist = (o.axis === "x" ? 1980 : 1140) * o.from;
+      tl.fromTo(B, { [o.axis]: dist, boxShadow: "0 0 80px rgba(0,0,0,0.5)" }, { [o.axis]: 0, duration: o.d, ease: C(E.inOut, o.d), immediateRender: false }, t - o.d);
+      tl.set(B, { boxShadow: "none" }, t);
+      tl.fromTo(A, { [o.axis]: 0 }, { [o.axis]: -dist * 0.12, duration: o.d, ease: E.in, immediateRender: false }, t - o.d);
+    }
+    function push(id, a, b, s0, s1, o) {
+      o = o || {};
+      const vw = $(id + "-vw");
+      if (o.origin) gsap.set(vw, { transformOrigin: o.origin });
+      gsap.set(vw, { scale: s0 });
+      tl.fromTo(vw, { scale: s0 }, { scale: s1, duration: b - a, ease: o.ease || "none", immediateRender: false }, S(a));
+    }
+    const PEN = FX.markupDefs(defs, SEG + "-pen", { boil: 4 });
+    defs.setAttribute("viewBox", "0 0 1 1");
+    FX.grain($("grain"), 1401);
+    FX.dust($("dust"), 1402, 2);
+
+    // desk of three cards (sc001 + sc011 callback)
+    const CX = [290, 760, 1230], CR = [-3, 1.5, -1.2];
+    const SUITCASE = '<svg viewBox="0 0 400 520" width="400" height="520" style="position:absolute;left:0;top:0">' +
+      '<rect x="70" y="170" width="260" height="190" rx="18" fill="none" stroke="#14181b" stroke-width="9"/>' +
+      '<path d="M160 170 L160 140 L240 140 L240 170" fill="none" stroke="#14181b" stroke-width="9" stroke-linejoin="round"/>' +
+      '<rect x="100" y="200" width="200" height="40" rx="5" fill="#86c232"/><rect x="100" y="252" width="200" height="40" rx="5" fill="#86c232"/>' +
+      '<rect x="100" y="304" width="200" height="34" rx="5" fill="#86c232" opacity="0.7"/></svg>';
+    const STAIRS = '<svg viewBox="0 0 400 520" width="400" height="520" style="position:absolute;left:0;top:0">' +
+      '<path d="M60 120 L61 420 L350 419" fill="none" stroke="#14181b" stroke-width="6" stroke-linecap="round"/>' +
+      '<path d="M70 300 L130 300 L130 250 L200 250 L200 190 L270 190 L270 150 L340 150" fill="none" stroke="#115973" stroke-width="10" stroke-linejoin="round"/>' +
+      '<path d="M90 390 L160 390 L160 320 L230 320 L230 240 L300 240 L300 200 L340 200" fill="none" stroke="#dc2f3c" stroke-width="10" stroke-linejoin="round"/></svg>';
+    function desk(box, faceUp) {
+      return CX.map((x, i) => {
+        const c = div(box, "n14-card", "left:" + x + "px;transform:rotate(" + CR[i] + "deg)");
+        const back = div(c, "n14-back", "");
+        const front = div(c, "n14-front", "", i === 0 ? SUITCASE : i === 1 ? STAIRS : "");
+        gsap.set(front, { opacity: faceUp[i] ? 1 : 0 }); gsap.set(back, { opacity: faceUp[i] ? 0 : 1 });
+        const tape = div(c, "n14-tape", "transform:rotate(" + [-4, 3, -2][i] + "deg)");
+        return { c, back, front, tape };
+      });
+    }
+
+    /* ===== sc001 · factors nobody talks about: three sealed cards ===== */
+    (function () {
+      const cs = desk($("sc001-cards"), [false, false, false]);
+      cs.forEach((o, i) => {
+        gsap.set(o.c, { opacity: 0 });
+        tl.fromTo(o.c, { opacity: 0, x: -260, y: 90, rotation: CR[i] - 8 }, { opacity: 1, x: 0, y: 0, rotation: CR[i], duration: 0.9, ease: C(E.out, 0.9), immediateRender: true }, S(1356.42) + i * 0.22);
+        gsap.set(o.tape, { opacity: 0 });
+        tl.fromTo(o.tape, { opacity: 0, scale: 1.25 }, { opacity: 1, scale: 1, duration: 2 / 12, ease: "steps(2)", immediateRender: true }, S(1358.96) + i * 0.33);
+      });
+      // "One of them": card 1 lifts toward camera, then the push into it (hard cut on action)
+      tl.to(cs[0].c, { y: -30, scale: 1.06, rotation: 0, boxShadow: "0 40px 70px rgba(20,24,27,0.45)", duration: 0.6, ease: C(E.out, 0.6) }, S(1360.80));
+      push("sc001", 1356.292, 1360.9, 1.0, 1.04, { ease: E.cam, origin: "490px 560px" });
+      tl.to($("sc001-vw"), { scale: 2.4, duration: 0.8, ease: E.in }, S(1360.9));
+    })();
+
+    /* ===== sc002 · x-ray: GPU cards in the suitcase ("smuggling") ===== */
+    (function () {
+      const svg = $("sc002-svg"), cb = $("sc002-cards");
+      // suitcase outline + handle, clothes blobs
+      el(svg, "rect", { x: 480, y: 290, width: 960, height: 560, rx: 46, fill: "rgba(159,220,240,0.06)", stroke: ICEL, "stroke-width": 7, opacity: 0.85 });
+      el(svg, "path", { d: "M840 290 L840 220 Q840 200 860 200 L1060 200 Q1080 200 1080 220 L1080 290", fill: "none", stroke: ICEL, "stroke-width": 9, opacity: 0.85 });
+      el(svg, "rect", { x: 500, y: 560, width: 920, height: 6, fill: ICEL, opacity: 0.25 });
+      [[620, 420, 120, 70], [1280, 720, 140, 80], [700, 740, 110, 60], [1300, 400, 90, 60]].forEach((b) => el(svg, "ellipse", { cx: b[0], cy: b[1], rx: b[2], ry: b[3], fill: ASH, opacity: 0.22 }));
+      [[640, 330, -4], [930, 470, 3], [690, 600, 2]].forEach((p) => {
+        div(cb, "n14-ico", "left:" + p[0] + "px;top:" + p[1] + "px;width:330px;height:220px;transform:rotate(" + p[2] + "deg);background:" + VOLT + ";-webkit-mask-image:" + ICO("gpu_card") + ";mask-image:" + ICO("gpu_card"));
+      });
+      // scan bar sweeps L→R; the inside is revealed behind it (X-ray)
+      const inn = $("sc002-in"), bar = $("sc002-bar");
+      gsap.set(inn, { clipPath: "inset(0% 100% 0% 0%)" });
+      tl.fromTo(inn, { clipPath: "inset(0% 100% 0% 0%)" }, { clipPath: "inset(0% 0% 0% 0%)", duration: 1.0, ease: C(LIN, 1.0), immediateRender: true }, S(1361.70));
+      tl.fromTo(bar, { x: 0 }, { x: 1915, duration: 1.0, ease: C(LIN, 1.0), immediateRender: true }, S(1361.70));
+      tl.to(bar, { opacity: 0, duration: 0.15 }, S(1362.70));
+      push("sc002", 1361.70, 1364.0, 1.06, 1.12, { ease: E.cam, origin: "960px 540px" });
+    })();
+
+    /* ===== sc003 · the claim (1/20) vs the part under the water (whip →) ===== */
+    whip("sc002", "sc003", S(1364.00), { dir: 1 });
+    (function () {
+      const svg = $("sc003-svg"), cam = $("sc003-cam");
+      ink(svg, "M-100 760 L2020 761", S(1364.05), 0.9, { color: ICEL, width: 4, opacity: 0.85, ease: C(E.inOut, 0.9) });
+      words("sc003-lcn", [T(1364.01), T(1364.49)], { dur: 0.45, y: 10 });
+      gsap.set($("sc003-tip"), { scaleY: 0 });
+      tl.fromTo($("sc003-tip"), { scaleY: 0 }, { scaleY: 1, duration: 0.6, ease: C(E.out, 0.6), immediateRender: true }, S(1364.6));
+      words("sc003-f", [T(1365.93)], { dur: 0.5, y: 12 });
+      words("sc003-lus", [T(1368.17), T(1368.65)], { dur: 0.45, y: 10 });
+      gsap.set([$("sc003-ice"), $("sc003-iceU")], { scaleY: 0 });
+      tl.fromTo($("sc003-ice"), { scaleY: 0 }, { scaleY: 1, duration: 1.0, ease: C(E.out, 1.0), immediateRender: true }, S(1368.2));
+      // "doesn't mean": pull back + down — below the waterline the red block goes on, much deeper
+      tl.fromTo($("sc003-iceU"), { scaleY: 0 }, { scaleY: 1, duration: 0.9, ease: C(E.out, 0.9), immediateRender: true }, S(1369.6));
+      const deep = el(svg, "path", { d: "M1180 760 L1150 1010 L1090 1340 L1150 1580 L1300 1640 L1420 1430 L1390 1120 L1330 760", fill: "rgba(220,47,60,0.16)", stroke: REDL, "stroke-width": 6, "stroke-dasharray": "22 16", "stroke-linejoin": "round" });
+      gsap.set(deep, { opacity: 0 });
+      tl.fromTo(deep, { opacity: 0 }, { opacity: 1, duration: 0.6, ease: C(E.out, 0.6), immediateRender: true }, S(1369.8));
+      pop($("sc003-q"), S(1371.15), { from: 1.4, n: 3 });
+      // second "one twentieth": a pen strike through the claim
+      const st = FX.markup.pen(tl, svg, S(1370.75), { points: [[1350, 690], [1640, 652]], jitter: 4, seed: 11, dur: 0.45, width: 9, color: REDL, filter: PEN, blend: "normal" });
+      shown(st, S(1370.75));
+      const K0 = { x: 0, y: -40, scale: 1.0 }, K1 = { x: 0, y: -50, scale: 1.02 }, K2 = { x: 420, y: 20, scale: 0.56 };
+      gsap.set(cam, K0);
+      tl.fromTo(cam, K0, Object.assign({}, K1, { duration: S(1369.45) - S(1364.0), ease: "none", immediateRender: false }), S(1364.0));
+      tl.to(cam, Object.assign({}, K2, { duration: 1.5, ease: E.cam }), S(1369.45));
+      tl.to(cam, { scale: 0.58, x: 400, y: 4, duration: S(1372.79) - S(1370.95), ease: "none" }, S(1370.95));
+    })();
+
+    /* ===== sc004 · nobody says "I have this illegally": podium, hidden card, empty bubble (paper slides up) ===== */
+    slide("sc003", "sc004", S(1372.79), { axis: "y" });
+    (function () {
+      const pod = $("sc004-pod"), svg = $("sc004-svg");
+      // podium (ink), front panel slightly lighter
+      el(pod, "path", { d: "M700 600 L1220 600 L1180 1000 L740 1000 Z", fill: INK });
+      el(pod, "path", { d: "M680 580 L1240 580 L1240 618 L680 618 Z", fill: INK });
+      el(pod, "path", { d: "M790 660 L1130 660 L1105 930 L815 930 Z", fill: "none", stroke: "#3a4247", "stroke-width": 4 });
+      // microphones (pop on "publicly say")
+      const mics = [];
+      [[850, -14], [920, -5], [1000, 6], [1070, 14]].forEach((m, i) => {
+        const g = el(pod, "g", {});
+        const x = m[0], r = m[1] * Math.PI / 180, tx = x + Math.sin(r) * 150, ty = 580 - Math.cos(r) * 150;
+        el(g, "path", { d: "M" + x + " 580 L" + tx.toFixed(1) + " " + ty.toFixed(1), stroke: INK, "stroke-width": 9, "stroke-linecap": "round" });
+        el(g, "ellipse", { cx: tx.toFixed(1), cy: (ty - 18).toFixed(1), rx: 22, ry: 32, fill: i % 2 ? "#3a4247" : INK });
+        mics.push(g);
+      });
+      mics.forEach((g, i) => { gsap.set(g, { opacity: 0 }); tl.fromTo(g, { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 3 / 12, ease: "steps(3)", immediateRender: true }, S(1376.42) + i * 0.1); });
+      // the card slides in behind the podium ("getting something illegally")
+      const gpu = $("sc004-gpu");
+      gsap.set(gpu, { opacity: 0 });
+      tl.fromTo(gpu, { opacity: 1, x: -560 }, { opacity: 1, x: 0, duration: 1.0, ease: C(E.inOut, 1.0), immediateRender: true }, S(1374.15));
+      // speech bubble that stays empty
+      const bub = el(pod, "path", { d: "M1180 250 Q1180 200 1230 200 L1560 200 Q1610 200 1610 250 L1610 360 Q1610 410 1560 410 L1300 410 L1240 470 L1250 410 L1230 410 Q1180 410 1180 360 Z", fill: "#f3f1ea", stroke: INK, "stroke-width": 6, "stroke-linejoin": "round" });
+      gsap.set(bub, { opacity: 0, transformOrigin: "1240px 470px" });
+      tl.fromTo(bub, { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 3 / 12, ease: "steps(3)", immediateRender: true }, S(1377.25));
+      [1325, 1395, 1465].forEach((x, i) => {
+        const d = el(pod, "circle", { cx: x, cy: 305, r: 16, fill: INK });
+        gsap.set(d, { opacity: 0 });
+        tl.fromTo(d, { opacity: 0.15 }, { opacity: 1, duration: 0.25, repeat: 3, yoyo: true, ease: "steps(2)", immediateRender: true }, S(1377.5) + i * 0.17);
+        tl.set(d, { opacity: 0.35 }, S(1379.4));
+      });
+      // "not supposed to have": pen circle round the hidden card
+      const ring = FX.markup.circle(tl, svg, S(1379.05), { cx: 600, cy: 870, rx: 190, ry: 120, color: REDD, width: 8, filter: PEN, dur: 0.55, seed: 5 });
+      ring.style.mixBlendMode = "multiply"; shown(ring, S(1379.05));
+      push("sc004", 1372.79, 1379.99, 1.0, 1.05, { ease: E.cam, origin: "900px 640px" });
+    })();
+
+    /* ===== sc005 · Chinese AI companies, revenue from America: ID-card board (vertical whip) ===== */
+    whip("sc004", "sc005", S(1379.99), { dir: 1, vertical: true });
+    (function () {
+      const box = $("sc005-cards"), svg = $("sc005-svg");
+      const L = [["deepseek", "DEEPSEEK", 150, 230, -2.5], ["alibaba", "ALIBABA", 450, 250, 1.8], ["bytedance", "BYTEDANCE", 750, 222, -1.2],
+                 ["baidu", "BAIDU", 300, 600, 2.2], ["tencent_wordmark", "TENCENT", 640, 615, -1.8]];
+      const pins = [];
+      L.forEach((c, i) => {
+        const g = div(box, "", "position:absolute;left:" + c[2] + "px;top:" + c[3] + "px;width:230px;height:300px;transform:rotate(" + c[4] + "deg)");
+        const id = div(g, "n14-id", "left:0;top:0");
+        const im = document.createElement("img"); im.className = "n14-logo"; im.alt = ""; im.src = "assets/nvidia/shared/logos/" + c[0] + ".svg";
+        im.style.cssText = "left:30px;top:40px;width:170px;height:150px;filter:brightness(0) invert(0.12)"; id.appendChild(im);
+        const tg = div(g, "n14-tag t-label", "left:" + (i % 2 ? 20 : 10) + "px;top:206px;font-size:24px", c[1]);
+        div(g, "n14-pin", "left:104px;top:-8px");
+        gsap.set(g, { opacity: 0 });
+        tl.fromTo(g, { opacity: 0, scale: 1.18, y: -20 }, { opacity: 1, scale: 1, y: 0, duration: 3 / 12, ease: "steps(3)", immediateRender: true }, S(1380.15) + i * 0.24);
+        pins.push([c[2] + 115, c[3] + 10]);
+      });
+      words("sc005-hd", [T(1381.77), T(1382.09), T(1382.49)], { dur: 0.35, y: 6 });
+      gsap.set($("sc005-hd"), { opacity: 0 }); tl.set($("sc005-hd"), { opacity: 1 }, T(1381.77));
+      gsap.set($("sc005-rev"), { opacity: 0 }); tl.fromTo($("sc005-rev"), { opacity: 0, scale: 1.2 }, { opacity: 1, scale: 1, duration: 2 / 12, ease: "steps(2)", immediateRender: true }, T(1384.57));
+      words("sc005-rev", [T(1384.57)], { dur: 0.3, y: 4 });
+      // the US card pins ("selling AI models"), strings run from it to every company card
+      const us = $("sc005-us");
+      gsap.set(us, { opacity: 0, rotation: 2 });
+      tl.fromTo(us, { opacity: 0, scale: 1.2, rotation: 6 }, { opacity: 1, scale: 1, rotation: 2, duration: 3 / 12, ease: "steps(3)", immediateRender: true }, S(1385.95));
+      pins.forEach((p, i) => {
+        const pth = FX.markup.pen(tl, svg, S(1386.35) + i * 0.2, { points: [[1500, 360], [1310, 545], [p[0], p[1]]], jitter: 3, seed: 20 + i, dur: 0.6, width: 4, color: "#e8dcc4", blend: "normal" });
+        shown(pth, S(1386.35) + i * 0.2);
+      });
+      gsap.set($("sc005-am"), { opacity: 0 }); tl.set($("sc005-am"), { opacity: 1 }, T(1388.01));
+      words("sc005-am", [T(1388.01)], { dur: 0.3, y: 4 });
+      push("sc005", 1379.99, 1388.5, 1.0, 1.05, { ease: E.cam, origin: "900px 520px" });
+      tl.to($("sc005-vw"), { scale: 1.5, duration: 0.45, ease: E.in }, S(1388.5));
+    })();
+
+    /* ===== sc006 · the US market; Chinese models want to sell there (hard cut on action) ===== */
+    (function () {
+      const cam = $("sc006-cam"), svg = $("sc006-svg");
+      const PXD = 22.756, X = (lon) => ((lon < 0 ? lon + 360 : lon) - 70) * PXD, Y = (lat) => (82 - lat) * PXD;
+      const LUS = { x: X(-99), y: Y(39) }, LCN = { x: X(103), y: Y(34.5) };
+      const lus = $("sc006-lus"), lcn = $("sc006-lcn");
+      const cs = { cx: 4380, cy: 1010, s: 0.95 };
+      const apply = () => {
+        const s = cs.s; let x = 960 - cs.cx * s, y = 540 - cs.cy * s;
+        x = Math.min(0, Math.max(1920 - 5689 * s, x)); y = Math.min(0, Math.max(1080 - 2776 * s, y));
+        cam.style.transform = "translate(" + x.toFixed(1) + "px," + y.toFixed(1) + "px) scale(" + s.toFixed(4) + ")";
+        lus.style.left = (LUS.x * s + x - 200).toFixed(1) + "px"; lus.style.top = (LUS.y * s + y - 30).toFixed(1) + "px";
+        lcn.style.left = (LCN.x * s + x - 90).toFixed(1) + "px"; lcn.style.top = (LCN.y * s + y - 30).toFixed(1) + "px";
+      };
+      apply();
+      tl.fromTo(cs, { cx: 4380, cy: 1010, s: 0.95 }, { cx: 4380, cy: 1010, s: 0.88, duration: S(1392.55) - S(1388.95), ease: "none", immediateRender: false, onUpdate: apply }, S(1388.95));
+      tl.to(cs, { cx: 2650, cy: 1300, s: 0.4, duration: 2.0, ease: E.cam, onUpdate: apply }, S(1392.55));
+      tl.to(cs, { cx: 2700, cy: 1300, s: 0.41, duration: S(1398.47) - S(1394.55), ease: "none", onUpdate: apply }, S(1394.55));
+      gsap.set(lus, { width: "400px", textAlign: "center" }); gsap.set(lcn, { width: "180px", textAlign: "center" });
+      // US fill + label; consumers' light dots on "massive"
+      tl.fromTo($("sc006-us"), { opacity: 0 }, { opacity: 0.4, duration: 0.6, ease: C(E.out, 0.6), immediateRender: true }, S(1389.1));
+      words("sc006-lus", [T(1389.13), T(1389.53)], { dur: 0.4, y: 8 });
+      tl.fromTo($("sc006-usd"), { opacity: 0 }, { opacity: 0.55, duration: 0.9, ease: C(E.out, 0.9), immediateRender: true }, S(1390.85));
+      // China fill on "Chinese companies", label on "China"
+      tl.fromTo($("sc006-cn"), { opacity: 0 }, { opacity: 0.5, duration: 0.6, ease: C(E.out, 0.6), immediateRender: true }, S(1393.0));
+      words("sc006-lcn", [T(1395.77)], { dur: 0.4, y: 8 });
+      // routes China → US across the Pacific with travelling "model" packets
+      const R = [[X(121.5), Y(31.2), X(-122.4), Y(37.8), -520], [X(116.4), Y(39.9), X(-118.2), Y(34.1), -380], [X(114.1), Y(22.5), X(-122.3), Y(47.6), -640]];
+      R.forEach((r, i) => {
+        const mx = (r[0] + r[2]) / 2, my = (r[1] + r[3]) / 2 + r[4];
+        const d = "M" + r[0].toFixed(0) + " " + r[1].toFixed(0) + " Q" + mx.toFixed(0) + " " + my.toFixed(0) + " " + r[2].toFixed(0) + " " + r[3].toFixed(0);
+        const p = ink(svg, d, S(1396.45) + i * 0.18, 1.3, { color: REDL, width: 9, ease: C(E.inOut, 1.3) });
+        p.setAttribute("stroke-dasharray", p.getAttribute("stroke-dasharray"));
+        const pts = []; const L = p.getTotalLength(); for (let k = 0; k <= 40; k++) { const q = p.getPointAtLength(L * k / 40); pts.push([q.x, q.y]); }
+        const pk = el(svg, "rect", { x: -22, y: -22, width: 44, height: 44, rx: 8, fill: RED, stroke: BONE, "stroke-width": 5 });
+        gsap.set(pk, { opacity: 0 });
+        const pr = { k: 0 };
+        const put = () => { const j = Math.min(40, Math.round(pr.k)); pk.setAttribute("transform", "translate(" + pts[j][0].toFixed(1) + "," + pts[j][1].toFixed(1) + ")"); };
+        put();
+        tl.set(pk, { opacity: 1 }, S(1396.45) + i * 0.18);
+        tl.fromTo(pr, { k: 0 }, { k: 40, duration: 1.3, ease: C(E.inOut, 1.3), immediateRender: false, onUpdate: put }, S(1396.45) + i * 0.18);
+        const dot = el(svg, "circle", { cx: r[2], cy: r[3], r: 26, fill: "none", stroke: REDL, "stroke-width": 7 });
+        gsap.set(dot, { opacity: 0 }); pop(dot, S(1397.8) + i * 0.18, { from: 2.0, n: 3 });
+      });
+    })();
+
+    /* ===== sc007 · can't admit smuggled chips: H100 print, tape (light-flash whip) ===== */
+    whip("sc006", "sc007", S(1398.47), { dir: -1, flash: true });
+    (function () {
+      const s1 = $("sc007-s1"), s2 = $("sc007-s2"), svg = $("sc007-svg");
+      gsap.set(s1, { opacity: 0, rotation: -5 }); gsap.set(s2, { opacity: 0, rotation: 4 });
+      tl.fromTo(s1, { opacity: 0, scale: 1.3, rotation: -9 }, { opacity: 1, scale: 1, rotation: -5, duration: 2 / 12, ease: "steps(2)", immediateRender: true }, S(1400.20));
+      tl.fromTo(s2, { opacity: 0, scale: 1.3, rotation: 8 }, { opacity: 1, scale: 1, rotation: 4, duration: 2 / 12, ease: "steps(2)", immediateRender: true }, S(1400.75));
+      // "smuggled chips": the top strip peels back from its right end
+      tl.to(s1, { rotation: -32, scaleX: 0.72, duration: 0.6, ease: C(E.inOut, 0.6) }, S(1402.5));
+      const ring = FX.markup.circle(tl, svg, S(1403.2), { cx: 945, cy: 465, rx: 165, ry: 130, color: REDD, width: 9, filter: PEN, dur: 0.55, seed: 9 });
+      ring.style.mixBlendMode = "multiply"; shown(ring, S(1403.2));
+      push("sc007", 1398.47, 1404.5, 1.0, 1.06, { ease: E.cam, origin: "945px 470px" });
+      tl.to($("sc007-vw"), { scale: 1.45, duration: 0.45, ease: E.in }, S(1404.5));
+    })();
+
+    /* ===== sc008 · DeepSeek's model came out (hard cut on action) ===== */
+    (function () {
+      const tile = $("sc008-tile");
+      gsap.set(tile, { opacity: 0 });
+      tl.fromTo(tile, { opacity: 0, y: 140, scale: 0.8 }, { opacity: 1, y: 0, scale: 1, duration: 1.0, ease: C(E.out, 1.0), immediateRender: true }, S(1405.0));
+      const on = FX.onFrame; FX.onFrame = (f) => on(FX.gate(S(1406.9), S(1409.1), f));
+      FX.radioWaves($("sc008-svg"), 960, 430, { rings: 4, max: 560, period: 1.5, width: 9, color: REDL, from: S(1406.9), to: S(1409.1) });
+      FX.onFrame = on;
+      words("sc008-tag", [T(1407.93)], { dur: 0.5, y: 10 });
+      push("sc008", 1404.95, 1408.95, 1.0, 1.06, { ease: E.cam, origin: "960px 470px" });
+    })();
+
+    /* ===== sc009 · the real article: experts doubt DeepSeek's GPU count (paper slides in from the right) ===== */
+    slide("sc008", "sc009", S(1408.95), { axis: "x" });
+    (function () {
+      const svg = $("sc009-svg");
+      gsap.set($("sc009-date"), { opacity: 0 });
+      pop($("sc009-date"), S(1409.05), { from: 1.3, n: 2 });
+      const ph = $("sc009-ph");
+      gsap.set(ph, { opacity: 0, rotation: 2.5 });
+      tl.fromTo(ph, { opacity: 0, y: 120, rotation: 8 }, { opacity: 1, y: 0, rotation: 2.5, duration: 0.9, ease: C(E.out, 0.9), immediateRender: true }, S(1409.4));
+      const hl = $("sc009-hl");
+      gsap.set(hl, { scaleX: 0 });
+      tl.fromTo(hl, { scaleX: 0 }, { scaleX: 1, duration: 1.6, ease: C(FX.bezier(0.3, 0.1, 0.6, 1), 1.6), immediateRender: true }, S(1411.55));
+      const ar = FX.markup.arrow(tl, svg, S(1413.75), { x1: 1100, y1: 640, x2: 1215, y2: 780, bend: 60, color: REDD, width: 7, filter: PEN, dur: 0.5, head: 26 });
+      ar.forEach((p) => { p.style.mixBlendMode = "multiply"; }); shown(ar, S(1413.75));
+      push("sc009", 1408.95, 1415.43, 1.0, 1.05, { ease: E.cam, origin: "1100px 470px" });
+    })();
+
+    /* ===== sc010 · fewer than US companies, more than admitted: chip stacks (whip ←) ===== */
+    whip("sc009", "sc010", S(1415.43), { dir: -1 });
+    (function () {
+      const box = $("sc010-chips"), svg = $("sc010-svg");
+      ink(svg, "M200 902 L1780 900", S(1415.5), 0.8, { color: BONE, width: 3, opacity: 0.6, ease: C(E.inOut, 0.8) });
+      const chip = (x, y) => div(box, "n14-ico", "left:" + x + "px;top:" + y + "px;width:80px;height:80px;background:" + VOLT + ";-webkit-mask-image:" + ICO("chip") + ";mask-image:" + ICO("chip"));
+      words("sc010-lds", [T(1416.25)], { dur: 0.4, y: 8 });
+      [0, 1, 2].forEach((c) => { const ch = chip(306 + c * 100, 806); gsap.set(ch, { opacity: 0 }); pop(ch, S(1416.45) + c * 0.1, { from: 1.4 }); });
+      // American companies: a tall stack, row by row
+      for (let r = 0; r < 7; r++) for (let c = 0; c < 8; c++) {
+        const ch = chip(935 + c * 100, 806 - r * 96); gsap.set(ch, { opacity: 0 });
+        pop(ch, S(1417.9) + r * 0.17 + c * 0.02, { from: 1.4 });
+      }
+      words("sc010-lus", [T(1418.65), T(1419.05)], { dur: 0.4, y: 8 });
+      // more than admitted: dashed ghost chips rise above DeepSeek's
+      for (let r = 1; r <= 4; r++) for (let c = 0; c < 3; c++) {
+        const g = div(box, "n14-ghost", "left:" + (306 + c * 100) + "px;top:" + (806 - r * 96) + "px");
+        tl.fromTo(g, { opacity: 0, scale: 1.3 }, { opacity: 0.9, scale: 1, duration: 2 / 12, ease: "steps(2)", immediateRender: true }, S(1421.55) + (r - 1) * 0.2 + c * 0.03);
+      }
+      pop($("sc010-q"), S(1422.75), { from: 1.4, n: 3 });
+      tl.set($("sc010-q"), { top: "250px" }, 0);
+      ink(svg, "M618 806 L634 808 L635 884 L619 886", S(1423.45), 0.3, { color: BONE, width: 4 });
+      words("sc010-adm", [T(1423.52)], { dur: 0.35, y: 6 });
+      push("sc010", 1415.43, 1424.46, 1.0, 1.04, { ease: E.cam, origin: "960px 640px" });
+    })();
+
+    /* ===== sc011 · caveats; another factor: card 2 flips (paper slides down) ===== */
+    slide("sc010", "sc011", S(1424.46), { axis: "y", from: -1 });
+    (function () {
+      const cs = desk($("sc011-cards"), [true, false, false]);
+      gsap.set(cs[0].tape, { opacity: 0 });
+      const svg = $("sc011-svg");
+      // "caveats": a pen asterisk beside card 1
+      [[[700, 250], [704, 330]], [[664, 270], [742, 312]], [[742, 268], [664, 314]]].forEach((pp, i) => {
+        const p = FX.markup.pen(tl, svg, S(1424.95) + i * 0.16, { points: pp, jitter: 2, seed: 30 + i, dur: 0.18, width: 8, color: INK, filter: PEN });
+        shown(p, S(1424.95) + i * 0.16);
+      });
+      // "another factor": card 2's tape tears off, the card flips face up
+      tl.to(cs[1].tape, { y: -420, x: 220, rotation: 30, opacity: 0, duration: 0.5, ease: C(E.in, 0.5) }, S(1427.2));
+      tl.to(cs[1].c, { scaleX: 0, duration: 2 / 12, ease: "steps(2)" }, S(1427.5));
+      tl.set(cs[1].back, { opacity: 0 }, S(1427.5) + 2 / 12); tl.set(cs[1].front, { opacity: 1 }, S(1427.5) + 2 / 12);
+      tl.to(cs[1].c, { scaleX: 1, duration: 2 / 12, ease: "steps(2)" }, S(1427.5) + 2 / 12);
+      push("sc011", 1424.46, 1427.95, 1.0, 1.03, { ease: E.cam, origin: "960px 560px" });
+      tl.to($("sc011-vw"), { scale: 2.3, duration: 0.6, ease: E.in }, S(1427.96));
+    })();
+
+    /* ===== sc012 · the chart (hard cut on action) ===== */
+    (function () {
+      const svg = $("sc012-svg"), cam = $("sc012-cam"), labs = $("sc012-labs");
+      // Epoch AI's published chart, points read off its pixels (display px): x → date, y → ECI
+      const US = [[187, 834], [700, 822], [759, 811], [808, 792], [824, 732], [986, 669], [1126, 579], [1291, 551], [1301, 509], [1382, 478], [1466, 459], [1555, 454], [1616, 397]];
+      const CN = [[444, 1230], [475, 1050], [556, 966], [800, 838], [996, 780], [1176, 624], [1320, 624], [1363, 587], [1447, 532], [1536, 532]];
+      const yr = (dx) => 2024 + (dx - 614) / 534, eci = (dy) => 150 - (dy - 459) / 15.46;
+      const PX = (t) => 250 + (t - 2023.1) / 2.9 * 1350, PY = (e) => 950 - (e - 96) * 10;
+      const P = (q) => [PX(yr(q[0])), PY(eci(q[1]))];
+      const us = US.map(P), cn = CN.map(P);
+      // grid + axes
+      [2024, 2025, 2026].forEach((t, i) => {
+        ink(svg, "M" + PX(t).toFixed(1) + " 330 L" + (PX(t) + 1).toFixed(1) + " 950", S(1428.75) + i * 0.08, 0.5, { width: 2, opacity: 0.3 });
+        const l = div(labs, "t-label n14-ink", "position:absolute;left:" + (PX(t) - 60).toFixed(0) + "px;width:120px;text-align:center;top:972px;font-size:26px", String(t));
+        gsap.set(l, { opacity: 0 }); tl.set(l, { opacity: 1 }, S(1429.0) + i * 0.08);
+      });
+      [100, 110, 120, 130, 140, 150].forEach((e, i) => {
+        ink(svg, "M250 " + PY(e) + " L1640 " + (PY(e) + 1), S(1428.8) + i * 0.05, 0.6, { width: 1.5, opacity: 0.3 });
+        const l = div(labs, "t-label", "position:absolute;left:150px;width:84px;text-align:right;top:" + (PY(e) - 14) + "px;font-size:22px;color:var(--ink-soft)", String(e));
+        gsap.set(l, { opacity: 0 }); tl.set(l, { opacity: 1 }, S(1429.0) + i * 0.05);
+      });
+      ink(svg, "M250 320 L251 951", S(1428.62), 0.5, { width: 3.5 });
+      ink(svg, "M250 951 L1650 949", S(1428.7), 0.7, { width: 3.5 });
+      // ruled title block (ref): rules above and below, title, source line
+      ink(svg, "M240 96 L1640 97", S(1428.6), 0.6, { width: 3 });
+      ink(svg, "M240 240 L1640 239", S(1428.7), 0.6, { width: 1.5, opacity: 0.6 });
+      gsap.set($("sc012-tt"), { clipPath: "inset(0% 100% 0% 0%)" });
+      tl.fromTo($("sc012-tt"), { clipPath: "inset(0% 100% 0% 0%)" }, { clipPath: "inset(0% 0% 0% 0%)", duration: 0.6, ease: C(E.out, 0.6), immediateRender: true }, S(1428.65));
+      rise($("sc012-src"), S(1429.2), { dur: 0.4, y: 6 });
+      rise($("sc012-ya"), S(1429.3), { dur: 0.4, y: 0 });
+      // staircases (Epoch style: flat until the next model, then up)
+      function stairs(pts, t0, dur, color, legend) {
+        let d = "M" + pts[0][0].toFixed(1) + " " + pts[0][1].toFixed(1), Ls = [0], acc = 0;
+        for (let i = 1; i < pts.length; i++) {
+          d += " L" + pts[i][0].toFixed(1) + " " + pts[i - 1][1].toFixed(1) + " L" + pts[i][0].toFixed(1) + " " + pts[i][1].toFixed(1);
+          acc += (pts[i][0] - pts[i - 1][0]) + Math.abs(pts[i][1] - pts[i - 1][1]); Ls.push(acc);
+        }
+        const p = ink(svg, d, t0, dur, { color: color, width: 7, ease: C(LIN, dur), len: acc + 2 });
+        const dots = pts.map((q, i) => {
+          const c = el(svg, "circle", { cx: q[0].toFixed(1), cy: q[1].toFixed(1), r: 10, fill: color, stroke: "#efeadd", "stroke-width": 3 });
+          gsap.set(c, { opacity: 0 }); pop(c, t0 + dur * Ls[i] / acc, { from: 1.8 }); return c;
+        });
+        gsap.set(legend, { opacity: 0 }); rise(legend, t0, { dur: 0.4, y: 6 });
+        return { p, dots };
+      }
+      const A = stairs(us, S(1430.05), 2.6, ICED, $("sc012-legus"));
+      const B = stairs(cn, S(1432.7), 2.4, RED, $("sc012-legcn"));
+      const lab = (txt, q, dx, dy, col, t) => {
+        const l = div(labs, "t-label", "position:absolute;left:" + (q[0] + dx).toFixed(0) + "px;top:" + (q[1] + dy).toFixed(0) + "px;font-size:24px;text-transform:none;letter-spacing:0.04em;white-space:nowrap;color:" + col, txt);
+        gsap.set(l, { opacity: 0 }); rise(l, t, { dur: 0.35, y: 6 }); return l;
+      };
+      const tUS = (i) => S(1430.05) + 2.6 * i / 12, tCN = (i) => S(1432.7) + 2.4 * i / 9;
+      lab("GPT-4", us[0], -10, -44, ICED, S(1430.1));
+      lab("o1", us[6], -46, -40, ICED, S(1431.9));
+      lab("GPT-5", us[10], -52, -48, ICED, S(1432.4));
+      lab("DeepSeek-R1", cn[5], 16, 14, REDD, S(1434.1));
+      lab("Qwen3 Max", cn[9], -40, 22, REDD, S(1435.1));
+      // "Chinese models": the red line comes forward (US line steps back a little)
+      tl.to([A.p].concat(A.dots), { opacity: 0.45, duration: 0.5, ease: C(E.inOut, 0.5) }, S(1436.5));
+      tl.fromTo(B.p, { attr: { "stroke-width": 7 } }, { attr: { "stroke-width": 10 }, duration: 0.5, ease: C(E.out, 0.5), immediateRender: false }, S(1436.5));
+      tl.to([A.p].concat(A.dots), { opacity: 1, duration: 0.4, ease: C(E.inOut, 0.4) }, S(1439.0));
+      // "right after American models upgrade": pen arrows from each US step to the Chinese step that follows
+      [[5, 4], [6, 5], [8, 6], [9, 8], [10, 9]].forEach((pr, i) => {
+        const a = us[pr[0]], b = cn[pr[1]];
+        const ar = FX.markup.arrow(tl, svg, S(1439.25) + i * 0.32, { x1: a[0] + 4, y1: a[1] + 16, x2: b[0] - 3, y2: b[1] - 18, bend: -26, color: INK, width: 4.5, filter: PEN, dur: 0.38, head: 15 });
+        ar.forEach((p) => { p.style.mixBlendMode = "multiply"; }); shown(ar, S(1439.25) + i * 0.32);
+      });
+      // "the trend is suspicious": one red pen circle round the pairs
+      const ring = FX.markup.circle(tl, svg, S(1442.6), { cx: 1300, cy: 500, rx: 290, ry: 150, rot: -14, color: REDD, width: 8, filter: PEN, dur: 0.7, seed: 13 });
+      ring.style.mixBlendMode = "multiply"; shown(ring, S(1442.6));
+      // camera: wide → in on the 2024–25 pairs → push in (cut on action into nvs15)
+      const cl = (v) => ({ x: Math.min(0, Math.max(1920 - 1920 * v.s, v.x)), y: Math.min(0, Math.max(1080 - 1080 * v.s, v.y)), scale: v.s });
+      const at = (px, py, s) => cl({ x: 960 - px * s, y: 540 - py * s, s: s });
+      const K0 = at(960, 540, 1.0), K1 = at(960, 540, 1.02), K2 = at(1230, 560, 1.32), K3 = at(1300, 500, 1.36), K4 = at(1300, 500, 1.9);
+      gsap.set(cam, K0);
+      tl.fromTo(cam, K0, Object.assign({}, K1, { duration: S(1435.6) - S(1428.56), ease: "none", immediateRender: false }), S(1428.56));
+      tl.to(cam, Object.assign({}, K2, { duration: 1.6, ease: E.cam }), S(1435.6));
+      tl.to(cam, Object.assign({}, K3, { duration: S(1444.95) - S(1437.2), ease: "none" }), S(1437.2));
+      tl.to(cam, Object.assign({}, K4, { duration: S(1445.542) - S(1444.95), ease: E.in }), S(1444.95));
+    })();
+
+    FX.mount(tl, DURATION);
+    window.__timelines = window.__timelines || {};
+    window.__timelines[SEG] = tl;
+  })();
+  </script>
+</template>
+</body>
+</html>
