@@ -263,3 +263,64 @@ paper_slide_wood_table (+_04), marker_circle, marker_drag, highlighter_drag_text
 Everything else is fetched only if an editor's marker needs it (`tools/audio/pd_islands.py --preflight` lists the missing files).
 SFX re-downloaded for the podcast markers, phase 2 (ids in the tables above): coins_drop_01, jet_pass_long_distant, jet_pass_overhead_01,
 phone_ring_04, typewriter_hermes_01, typewriter_hermes_03, factory_machine_room_electronics_hum, crowd_walla_indoor_large_02.
+
+### "NVIDIA" (Is the chip ban actually working?, 2026-11-17) — cue sheet `project/nvidia/music_cuesheet.json`, plan `project/nvidia/SOUND_PLAN.md`
+Key family **C minor / Eb major** (new: Ivan + the Taiwan chunks D minor / F, Paraguay E minor / G, the podcast A minor / C). Investigative-tech
+documentary: cold, pulsing, textural (Melting Glass lineage) — electronic pulses for the server hall, contemporary-classical suspense for the
+Washington paperwork, hopeful strings only for job two's ✓. Found with SearchRecordings ("pulsing synth documentary", "string ostinato suspense", "hacker", "processor", "investigation", …) +
+SearchSimilarToRecording (seeds Melting Glass, Neon Noir, Mindscape, DOX, Observatory, then 77 Cycles, Unsolved Issues, …); key measured from the LQ previews (`work/nv-sound/keys*.log`), confirmed on the WAVs (`ANALYSIS.md`,
+every track C minor, r 0.64–0.87). Fetched one at a time (`work/nv-sound/scripts/fetch_all.sh`: fetch → analyze → §10.8 checks → 48 kHz/16-bit).
+§10.8 checks (60 s stems-sum residual, full − Σ stems; pulse = onset-autocorrelation peak/median, ≈ 1–2 tempo-free):
+Flute −78 dB (clean; bass 1.1 / instruments 1.4 → the **tempo-free drone**); The Investigator −20.6 (clean); Hidden Room −6.9, Breath by
+Breath −8.3, The Northern Cliff −5.2 (borderline); 77 Cycles +1.9, Unsolved Issues −2.9, Cinema Neon −0.0, Shifting Angles +1.5, Operation
+−2.2, Gnomon +1.2, Subconscious +1.2, Pinnacle −3.1, Across −2.9 (stems mastered separately → used as layers, like Paraguay). Cinema Neon,
+Subconscious, Pinnacle: stems 6–17 LU under the full → `full` is the layer. Across is nearly tempo-free (full 2.8, bass 1.2, melody 1.3).
+Disk: stems the cue sheet doesn't use were deleted locally after the checks (cinema_neon bass/drums/instruments, subconscious bass/drums/
+melody, gnomon/breath_by_breath/the_northern_cliff/across/seventy_seven_cycles drums) — re-fetch with the ids below. 14 tracks ≈ 1.86 GB.
+
+| folder | title — artist | kosmosId | stems on disk | bpm | key (meas.) | role in NVIDIA |
+|---|---|---|---|---|---|---|
+| `flute/` | Flute — Daniella Ljungsberg (dark, drone, experimental) | a3494aff-6231-433d-82f9-2388a5b92f17 | full, bass, instruments (no melody/drums exist) | free | C minor (0.81) | DRONE glue under every join; alone for the verdicts / the iPhone memory |
+| `seventy_seven_cycles/` | 77 Cycles — Lennon Hutton (cinematic, dark, electronic, pulses) | b303cb62-f4ad-4bd6-8f45-e63df25ae6bd | full, melody, bass, instruments | 170 | C minor (0.77) | the cold-open pulse (HK mall → Shenzhen → servers); returns for "the ban works" (60 % → 80 %, DeepSeek dark) |
+| `unsolved_issues/` | Unsolved Issues — Magnus Ludvigsson (contemporary classical, dark, mystery) | d9e25a21-d72a-4fa7-9e40-7747fd064dbb | full, melody, bass, drums, instruments | 100 | C minor (0.83) | THE QUESTION theme: "Was the chip ban a mistake?" ↔ "So why do they still have this ban?" ↔ "I don't think it's working" |
+| `cinema_neon/` | Cinema Neon — Trevor Kowalski (contemporary classical, dreamy, mysterious) | 6f1c8f8d-c476-3841-9526-f69510c86577 | full, melody | 97 | C minor (0.78) | Washington-paperwork / explainer colour: what the ban is; three ways to measure; volume → yield |
+| `the_investigator/` | The Investigator — Dream Cave (classical crossover, mysterious, suspense) | 5fbbf6b4-3024-4495-9085-ce3a2a3d2275 | full, melody, bass, drums, instruments | 113 | C minor (0.80) | investigation colour: "is it fair?"; returns for the factors nobody says aloud → "Take a look at this chart" |
+| `subconscious/` | Subconscious — Nihoni (dark, dreamy, mystery, strange) | a8ad74c7-9aa8-31b2-b330-4fa023fb049a | full, instruments | 100 | C minor (0.64) | dual-use weight: uranium → bomb → Taiwan; the US government's unseen test |
+| `gnomon/` | Gnomon — Marten Moses (ambient, drone, mysterious, suspense) | fdb68343-e830-352c-a0df-5af07ad240f1 | full, melody, bass, instruments | 120 | C minor (0.86) | the "American law" pulse: scoreboard → design IP → "every chip on the planet"; returns for Huawei → Lutnick → the port |
+| `shifting_angles/` | Shifting Angles — Experia (contemporary classical, dark, restless, suspense) | a26eba24-b2b8-4896-92e5-a4e8880d3da2 | full, bass, drums, instruments (no melody exists) | 84 | C minor (0.67) | cat and mouse: THE LINE (job one); returns for distillation's cat-and-mouse |
+| `hidden_room/` | Hidden Room — Anthony Earls (ambient, electro, floating, mysterious) | 9e374078-6220-32f9-816a-ae29417eb720 | full, bass, drums, instruments (no melody exists) | 80 | C minor (0.79) | wry asides: PlayStation rule → Facebook Marketplace → $2,000; returns for iPhone 1 vs iPhone 18 |
+| `operation/` | Operation — Wendel Scherer (adventure, dark, restless, suspense) | e96002a2-65ad-33ab-bff8-0854a9a9dbbc | full, melody, bass, drums, instruments | 110 | C minor (0.77) | the caper: the big fish — co-founder arrested, hair dryer, the warehouse camera |
+| `pinnacle/` | Pinnacle — Marten Moses (ambient, drone, restless, sentimental) | 5653b460-0719-333f-bd2c-b8e9ed0f8b44 | full, melody, bass, drums, instruments | 110 | C minor (0.73) | the server hall: training → the rack → Memphis 800,000 homes → 7 % |
+| `breath_by_breath/` | Breath by Breath — Helmut Schenker (contemporary classical, hopeful, build) | 56550990-4021-4a44-85db-227b4e5ed838 | full, melody, bass, instruments | 68 | C minor (0.87) | the turn: labs share attacks → gap widening → SCOREBOARD ✓ "one to one" (its 114 s peak) |
+| `the_northern_cliff/` | The Northern Cliff — Erasmus Talbot (contemporary classical, hopeful, suspense) | 139b05c5-ecc1-4845-b93c-67b7b56c2221 | full, melody, bass, instruments | 120 | C minor (0.75) | job three: Jensen's argument → keyboard analogy → 95 % → 0 % → Huawei |
+| `across/` | Across — Harbours & Oceans (ambient, floating, suspense) | 8b6e804b-73fa-47ff-ac50-565a5f2420d8 | full, melody, bass, instruments | free-ish | C minor (0.79) | level four: Malaysia → flying with the data → the debate → "?" → outro |
+
+All WAVs gitignored — re-download with the ids above (`python3 tools/epidemic_fetch.py <id> <name> FULL MELODY BASS DRUMS INSTRUMENTS`).
+
+### SFX added for "NVIDIA" (2026-11-17) — `sfx/` (24 new, 48 kHz/16-bit; also re-downloaded from the tables above: boom_dark_cinematic_low_hit,
+boom_cinematic_deep, boom_sub_bass_clean_01, riser_reverse_cymbal_short, swell_reverse_timpani_cymbal — the cue-sheet stingers)
+
+| file | Epidemic id | Epidemic title | len | use |
+|---|---|---|---|---|
+| server_room_medium_roomtone.wav | 367d1212-26f5-4072-b0ec-2f73f1453819 | Ambience, Room Tone, Medium Sized Server Room | 114 s | SERVER HALL ambience (racks, clusters, data centers) |
+| data_server_room_hum_01.wav | a8dae759-70c5-4b72-9f43-3cb9e2b654cb | Ambience, Hitech, Data Server Room, Machine Hum 01 | 60.5 s | bigger hall: Memphis, Malaysia data centers |
+| computer_fans_power_up_down.wav | 188078f6-9b33-4b57-9c4e-5fc7b34758eb | Computers, Hard Drive, Desktop, Fans, Power Up, Down, Run, Buttons | 65.3 s | the PC aside; a server powering on |
+| electric_motor_shutdown_01.wav | 650a4b4e-0207-4b37-bda3-2f29f4a34d61 | Machines, Appliance, Electric Motor, Shut Down 01 | 3.9 s | "DeepSeek went dark", features switched off, "switch the data centers off" |
+| electrical_hum_lights.wav | db72319a-e0ff-4582-a0fb-e4b6c5fc4cb5 | Electricity, Buzz & Hum, Lights, Electrical Hum | 31.9 s | electricity: 100 homes / 800,000 homes, "China has the electricity" |
+| water_pipes_flowing_03.wav | 70ce9b3f-4363-4fc3-9ca4-8f44790266b1 | Water, Plumbing, Flowing Through Pipes Basement 03 | 77 s | liquid cooling / plumbing of the rack |
+| data_processing_digital_buttons.wav | ad74696d-7c5c-467d-9b6a-d0517ecbcc06 | User Interface, Data, Processing, Digital Buttons | 27.2 s | data/UI texture (training, model tests, fake accounts) |
+| data_processing_loading_21.wav | 5c039935-27cc-4376-acc4-998d79911ca4 | User Interface, Data, Computer, Futuristic, Data Processing, Loading 21 | 6.7 s | loading / distillation / "feed the internet to chips" |
+| ui_beep_computer_short.wav | d7890ee7-5d23-4af6-9de5-3ff571f38536 | User Interface, Beep, Computer, Digital Beep, Short | 4.5 s | single UI beeps (test scores, login) |
+| relay_flipdot_metal_01.wav / relay_flipdot_plastic_02.wav | 40aa9201-fa32-411e-85c1-9287705b739c / f3c2426d-3b02-4132-8d88-e43326f8fc64 | Mechanical, Relay, Metal / Plastic Clicking Mechanism, Flip Dot Display, Counting Board Flipping, Loop 01 / 02 | 6.6 / 6.7 s | THE SCOREBOARD rows flipping; counters |
+| marker_on_paper_writing_01.wav / marker_on_paper_stroke.wav | 9b7efd76-5da5-4416-82e4-08ca70778e56 / 5ce91f47-7c92-4a35-b723-22212be8c934 | Objects, Writing, Marker On Paper, Writing 01 / Stroke | 6.8 / 33.7 s | THE LINE being drawn; scoreboard ✗ strokes |
+| marker_notebook_tick.wav | 3bcd22f5-b580-4d38-a4bb-172ba7c66a7d | Objects, Writing, Marker On Notebook, Tick | 9.8 s | scoreboard ✓ (job two) |
+| marker_scrub_out_01.wav | fb230349-8330-4507-bcb0-5761f2c0dfb8 | Objects, Writing, Marker Pen, Scribble Scrub Out On Cardboard Sheet 01 | 7.1 s | scoreboard "?" scribble; crossing a chip off the list |
+| camera_lens_motor_zoom.wav | fbcf9bca-1219-4a94-8a2d-c8ad96cdbdc1 | Communications, Camera, Digital, Lens, Motor, Zoom In, Out | 7.8 s | the warehouse camera zooming in |
+| servo_camera_turn_on_off.wav | 6f3e3eb9-c993-424d-9045-1a912476bbd1 | Motors, Servo, Turn, On, Off Digital Camera | 5.9 s | security camera turning (CCTV monitor) |
+| barcode_checkout_scanner.wav | d0fe3002-b789-4122-a367-b3841ba88b76 | Beeps, General, Checkout Counter, Scanner, Scanning Labels | 5.0 s | swapped barcodes / auditors scanning servers |
+| hair_dryer_running.wav | c9b0f44f-0bc0-4f48-ab3d-7d45695b68fd | Machines, Appliance, Hair Dryer, Running | 16.3 s | the hair-dryer trick (labels peeled) |
+| harbor_container_terminal_01.wav | f074cd30-657c-4326-a6e9-4b28fb75d613 | Ambience, Urban, Harbor, Industrial Container Terminal 01 | 150 s | "600,000 chips are sitting on a port" |
+| ship_horn_distant_big.wav | 463af07a-e0b5-41be-9019-008d70e379e2 | Boats, Horn, Distant, Big Transatlantic Ship | 34.7 s | the port (one blast, far away) |
+| ferry_horn_medium.wav | 67be070b-563c-4380-95be-55a0302300c0 | Boats, Horn, Ship, Ferry, Medium Close | 13.4 s | "a short ferry ride…Shenzhen" |
+| street_market_walla_01.wav | 314c15a9-cc17-4110-99ce-7dae248d62a7 | Ambience, Market, Crowd, Street Market, Walla 01 | 82.9 s | the HK mall / Huaqiangbei electronics market |
+| airport_departure_lounge.wav | e6e78298-d6e0-4450-8865-c0f5fba59e5c | Ambience, Transportation, Airport, Gatwick, Departure Lounge | 22.9 s | individuals carrying chips; employees flying to Malaysia |

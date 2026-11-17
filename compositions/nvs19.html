@@ -1,0 +1,717 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8" /></head>
+<body>
+<template>
+  <style>
+    #root { position: absolute; inset: 0; overflow: hidden; background: var(--night); }
+    .n19-scene { position: absolute; inset: 0; overflow: hidden; visibility: hidden; opacity: 0; }
+    .n19-shot { position: absolute; inset: 0; overflow: hidden; transform-origin: 50% 50%; background: var(--night); }
+    .n19-paper { background: var(--paper); }
+    .n19-abs { position: absolute; }
+    .n19-full { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; object-fit: cover; }
+    .n19-vw { position: absolute; inset: 0; transform-origin: 50% 50%; }
+    .n19-p1, .n19-p2 { position: absolute; inset: 0; background-size: cover; background-position: center; pointer-events: none; }
+    .n19-p2 { opacity: 0.9; mix-blend-mode: multiply; }
+    .n19-mk { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; pointer-events: none; }
+    .n19-ink { color: var(--ink); }
+    .n19-credit { position: absolute; right: 30px; bottom: 20px; font-size: 13px; letter-spacing: 0.08em; color: rgba(240,239,232,0.66); z-index: 5; }
+    .n19-credit.ink { color: rgba(20,24,27,0.66); }
+    .n19-icon { position: absolute; -webkit-mask-size: contain; mask-size: contain; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; -webkit-mask-position: center; mask-position: center; }
+    .n19-ic-chip { -webkit-mask-image: url('assets/nvidia/shared/icons/chip.svg'); mask-image: url('assets/nvidia/shared/icons/chip.svg'); }
+    .n19-ic-factory { -webkit-mask-image: url('assets/nvidia/shared/icons/factory.svg'); mask-image: url('assets/nvidia/shared/icons/factory.svg'); }
+    .n19-ic-car { -webkit-mask-image: url('assets/nvidia/shared/icons/car.svg'); mask-image: url('assets/nvidia/shared/icons/car.svg'); }
+    #nvs19-flash { position: absolute; inset: 0; background: var(--bone); opacity: 0; pointer-events: none; z-index: 7; }
+    #nvs19-grain, #nvs19-dust, #nvs19-vig { z-index: 8; }
+
+    /* map cameras */
+    .n19-cam { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
+    .n19-base { position: absolute; left: 0; top: 0; }
+    .n19-fill { position: absolute; left: 0; top: 0; -webkit-mask-size: 100% 100%; mask-size: 100% 100%; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; }
+    .n19-pin { position: absolute; left: -15px; top: -15px; width: 30px; height: 30px; border-radius: 50%; }
+
+    /* sc001 print */
+    #nvs19-sc001-print { position: absolute; left: 404px; top: 158px; width: 1112px; height: 757px; background: #e9e6da; box-shadow: 0 30px 80px rgba(0,0,0,0.7); }
+    #nvs19-sc001-print img { position: absolute; left: 16px; top: 16px; width: 1080px; height: 725px; filter: grayscale(1) sepia(0.18) contrast(1.12) brightness(0.96); }
+
+    /* sc003 founder card */
+    #nvs19-sc003-out { position: absolute; left: 92px; top: 146px; width: 522px; height: 714px; background: var(--volt);
+      clip-path: polygon(9% 11%, 30% 1%, 69% 0%, 93% 9%, 100% 39%, 96% 71%, 100% 100%, 0% 100%, 2% 69%, 0% 37%); }
+    #nvs19-sc003-por { position: absolute; left: 118px; top: 172px; width: 470px; height: 663px; overflow: hidden;
+      clip-path: polygon(9% 11%, 30% 1%, 69% 0%, 93% 9%, 100% 39%, 96% 71%, 100% 100%, 0% 100%, 2% 69%, 0% 37%); }
+    #nvs19-sc003-por img { width: 470px; height: 663px; filter: grayscale(1) contrast(1.08); }
+    #nvs19-sc003-eng { position: absolute; left: 560px; top: 340px; width: 720px; height: 540px; box-shadow: 0 20px 44px rgba(20,24,27,0.35); background: #ebe5d3;
+      clip-path: polygon(0% 0%, 97% 1%, 99% 9%, 96% 17%, 100% 28%, 97% 40%, 99% 52%, 96% 63%, 100% 74%, 97% 86%, 99% 100%, 0% 100%); }
+    #nvs19-sc003-eng img { position: absolute; left: 0; top: 0; width: 720px; height: 540px; filter: grayscale(1) sepia(0.35) contrast(1.05) brightness(1.02); mix-blend-mode: multiply; }
+
+    /* sc004 wafer chart */
+    #nvs19-sc004-wafer { position: absolute; left: 320px; top: 160px; width: 800px; height: 800px; border-radius: 50%;
+      background: radial-gradient(circle at 42% 38%, #343b40 0%, #22282c 55%, #181c1f 100%);
+      box-shadow: 0 0 0 3px rgba(195,199,200,0.18), 0 40px 90px rgba(0,0,0,0.6), inset 0 0 40px rgba(0,0,0,0.5); }
+    #nvs19-sc004-notch { position: absolute; left: 704px; top: 944px; width: 32px; height: 32px; border-radius: 50%; background: #0f1215; }
+    .n19-die { position: absolute; width: 46px; height: 46px; background: #2b3135; border: 1px solid #3c4348; box-sizing: border-box; }
+    .n19-lit { position: absolute; width: 46px; height: 46px; background: var(--volt); box-shadow: 0 0 16px rgba(134,194,50,0.65); opacity: 0; }
+    .n19-sw { position: absolute; width: 34px; height: 34px; }
+
+    /* sc005 wafer photo */
+    #nvs19-sc005-disc { position: absolute; left: 260px; top: 100px; width: 880px; height: 880px; border-radius: 50%; overflow: hidden;
+      box-shadow: 0 0 0 2px rgba(240,239,232,0.2), 0 0 80px rgba(134,194,50,0.18), 0 40px 90px rgba(0,0,0,0.6); }
+    #nvs19-sc005-disc img { position: absolute; left: -42px; top: -53px; width: 970px; height: 970px; filter: saturate(0.85) contrast(1.08); }
+
+    /* sc006 */
+    .n19-scrim-bl { position: absolute; inset: 0; pointer-events: none;
+      background: radial-gradient(ellipse 60% 62% at 0% 100%, rgba(8,10,12,0.92) 0%, rgba(8,10,12,0.62) 45%, rgba(8,10,12,0) 100%); }
+
+    /* flywheel badges */
+    .n19-badge { position: absolute; width: 136px; height: 136px; margin: -68px 0 0 -68px; border-radius: 50%; background: var(--ink); box-shadow: 0 10px 24px rgba(20,24,27,0.25); }
+    .n19-blab { position: absolute; font-size: 26px; white-space: nowrap; line-height: 1; }
+    .n19-rbadge { position: absolute; width: 124px; height: 124px; margin: -62px 0 0 -62px; border-radius: 50%; background: var(--red-dark); box-shadow: 0 0 0 4px var(--red-light), 0 0 30px rgba(220,47,60,0.45); }
+
+    /* sc008 boxes */
+    .n19-box { position: absolute; height: 120px; width: 420px; transform-origin: 0 50%; }
+    .n19-btx { position: absolute; height: 120px; width: 420px; text-align: center; line-height: 128px; font-size: 68px; color: var(--paper); }
+
+    /* sc010 */
+    .n19-tile { position: absolute; left: 120px; width: 380px; height: 128px; background: #ecebe4; box-shadow: 0 16px 40px rgba(0,0,0,0.5); }
+    .n19-tile .acc { position: absolute; left: 0; top: 0; bottom: 0; width: 8px; background: var(--red); }
+    .n19-tile img { position: absolute; left: 40px; top: 24px; width: 310px; height: 80px; object-fit: contain; filter: brightness(0); opacity: 0.88; }
+  </style>
+
+  <div id="root" data-composition-id="nvs19" data-vo-start="1893.917" data-duration="97.417" data-width="1920" data-height="1080">
+    <svg id="nvs19-defs" width="0" height="0" style="position:absolute"></svg>
+
+    <!-- sc001 · 1893.917–1897.40 · "back in the day when the chip industry was being created" · Kilby's first IC, 1958 -->
+    <div class="n19-scene" id="nvs19-sc001"><div class="n19-shot" id="nvs19-sc001-shot" style="background:#0f1214">
+      <div class="n19-vw" id="nvs19-sc001-vw" style="transform-origin:960px 520px">
+        <img class="n19-full" src="assets/podcast/pd16/kilby_first_ic_1958_ti.jpg" alt="" style="filter:grayscale(1) blur(26px) brightness(0.32);transform:scale(1.25)" />
+        <div id="nvs19-sc001-wv" class="n19-abs" style="inset:0"><div id="nvs19-sc001-print"><img src="assets/podcast/pd16/kilby_first_ic_1958_ti.jpg" alt="" /></div></div>
+      </div>
+      <div class="n19-credit t-label">Jack Kilby’s first integrated circuit, 1958 · Texas Instruments / Computer History Museum (fair use)</div>
+    </div></div>
+
+    <!-- sc002 · 1897.40–1904.30 · Texas, not Silicon Valley or California · US night map -->
+    <div class="n19-scene" id="nvs19-sc002" style="background:#11151a"><div class="n19-shot" id="nvs19-sc002-shot" style="background:#11151a">
+      <div class="n19-cam" id="nvs19-sc002-cam" style="width:2560px;height:1504px">
+        <img class="n19-base" src="assets/nvidia/nvs19/derived/us_west_night_2560.jpg" alt="" style="width:2560px;height:1504px;filter:brightness(1.25) contrast(1.05)" />
+        <img class="n19-base" src="assets/nvidia/nvs19/derived/us_states_2560.svg" alt="" style="width:2560px;height:1504px" />
+        <div class="n19-fill" id="nvs19-sc002-tx" style="width:2560px;height:1504px;background:var(--volt);opacity:0;-webkit-mask-image:url('assets/nvidia/nvs19/derived/us_texas_2560.svg');mask-image:url('assets/nvidia/nvs19/derived/us_texas_2560.svg')"></div>
+        <div class="n19-fill" id="nvs19-sc002-ca" style="width:2560px;height:1504px;background:var(--bone);opacity:0;-webkit-mask-image:url('assets/nvidia/nvs19/derived/us_california_2560.svg');mask-image:url('assets/nvidia/nvs19/derived/us_california_2560.svg')"></div>
+        <svg id="nvs19-sc002-svg" class="n19-base" width="2560" height="1504" viewBox="0 0 2560 1504" style="overflow:visible">
+          <path id="nvs19-sc002-txo" d="M1458.5,593.8L1506.3,593.8L1546.1,593.9L1580.3,593.9L1621.0,593.9L1649.1,593.9L1649.1,747.4L1653.6,746.1L1662.0,755.9L1667.5,761.2L1674.3,762.2L1675.7,758.8L1679.5,759.0L1684.5,762.2L1687.3,761.9L1688.2,755.6L1692.3,759.5L1695.9,759.8L1695.0,761.3L1699.1,765.1L1700.3,774.7L1704.4,774.5L1704.8,775.9L1707.5,775.1L1709.6,776.1L1713.2,774.3L1717.6,777.4L1721.5,779.0L1724.4,779.3L1727.3,781.0L1732.1,781.3L1734.8,778.8L1739.7,780.3L1745.1,786.9L1749.7,785.1L1750.3,782.1L1752.8,779.4L1757.2,781.3L1760.6,781.3L1765.1,782.8L1769.0,779.6L1769.9,783.0L1768.1,785.4L1770.4,791.6L1774.7,792.3L1777.7,791.3L1779.3,792.7L1777.7,796.8L1778.8,796.8L1777.9,801.2L1779.9,801.3L1783.6,803.7L1786.3,803.1L1792.9,796.8L1795.6,792.8L1797.7,792.6L1802.0,795.5L1801.3,798.3L1803.8,800.0L1807.5,798.2L1810.2,799.4L1810.0,803.7L1811.1,805.8L1815.7,806.1L1818.2,801.8L1820.2,801.3L1823.2,802.6L1823.7,799.7L1825.9,798.4L1828.0,800.3L1828.4,804.9L1826.2,806.9L1828.9,813.2L1831.4,814.2L1833.9,812.1L1833.2,807.8L1836.2,806.3L1833.7,803.4L1836.7,804.7L1840.3,800.8L1839.6,795.9L1840.9,796.9L1844.2,795.0L1845.3,795.8L1846.7,802.2L1848.7,804.0L1850.0,801.7L1853.0,802.6L1853.9,805.5L1858.0,804.9L1859.9,799.0L1865.5,800.1L1862.8,804.1L1866.4,806.1L1869.0,805.9L1870.8,809.7L1875.5,809.3L1879.4,814.7L1879.6,816.2L1882.4,816.0L1884.0,810.4L1888.3,811.8L1891.5,810.8L1893.3,804.7L1896.5,805.2L1896.2,803.9L1899.7,804.7L1906.5,802.8L1906.7,800.7L1913.3,804.9L1915.4,802.8L1918.3,803.4L1918.1,800.3L1922.7,800.6L1928.2,797.0L1930.4,797.2L1932.0,801.3L1936.8,800.9L1936.8,801.9L1944.5,802.2L1947.5,801.7L1950.0,799.5L1951.6,794.9L1957.7,796.8L1963.0,802.6L1968.0,802.7L1969.6,806.6L1974.4,811.9L1977.1,812.3L1980.5,811.2L1984.6,816.6L1988.5,816.5L1988.7,818.1L1992.3,817.2L1996.7,822.2L1998.7,820.5L2000.6,819.9L2000.6,823.6L2003.1,825.3L2005.1,824.9L2004.7,827.4L2006.9,828.0L2008.1,826.1L2009.8,827.4L2010.6,825.4L2015.3,827.2L2017.8,824.1L2020.6,825.2L2021.7,827.3L2023.1,825.9L2026.7,827.4L2026.9,828.1L2026.9,869.4L2026.9,950.8L2028.8,951.6L2031.3,956.5L2035.4,958.6L2037.4,964.3L2040.9,968.0L2040.4,970.3L2042.2,974.1L2040.6,977.0L2041.3,980.1L2039.7,982.0L2041.0,985.4L2043.1,987.6L2046.0,988.0L2046.7,990.4L2045.4,992.2L2048.6,994.6L2048.4,996.9L2050.1,997.9L2050.9,1001.2L2049.5,1004.8L2052.2,1008.0L2053.6,1007.9L2055.0,1015.5L2059.3,1014.7L2057.9,1021.7L2059.7,1023.8L2060.2,1027.5L2057.2,1028.9L2057.0,1031.1L2059.7,1034.9L2057.6,1036.4L2057.0,1038.9L2057.9,1043.2L2055.9,1045.5L2053.8,1049.8L2053.1,1054.7L2050.4,1056.4L2049.9,1061.0L2046.7,1063.1L2046.0,1065.8L2047.6,1067.5L2048.8,1073.7L2045.9,1077.1L2044.5,1082.2L2048.1,1085.7L2048.4,1089.3L2047.2,1091.9L2049.3,1097.3L2046.5,1102.1L2048.6,1103.4L2046.0,1106.8L2042.9,1109.5L2041.3,1114.8L2038.3,1119.9L2034.4,1122.9L2034.0,1124.6L2036.0,1126.6L2039.9,1133.0L2039.9,1134.0L2029.4,1133.8L2021.0,1136.5L1991.9,1150.6L1985.5,1154.8L1983.2,1158.5L1979.8,1158.0L1984.8,1153.2L1986.9,1150.0L1989.8,1150.0L1991.9,1148.7L1993.7,1145.6L1995.7,1146.7L1998.2,1146.2L1994.8,1142.4L1982.6,1146.1L1980.7,1144.3L1984.6,1138.2L1985.5,1132.8L1985.5,1127.7L1982.7,1127.4L1981.6,1125.8L1977.7,1127.8L1975.5,1130.6L1974.6,1134.0L1971.1,1135.6L1969.8,1132.5L1965.7,1135.6L1965.2,1137.9L1967.3,1140.1L1965.0,1143.5L1967.3,1147.2L1971.9,1148.4L1970.5,1152.1L1973.0,1153.4L1973.5,1158.7L1973.0,1163.3L1971.1,1165.4L1969.1,1164.7L1964.8,1169.6L1959.8,1174.0L1959.1,1172.2L1956.1,1172.8L1955.7,1178.7L1957.0,1180.5L1960.0,1177.5L1965.9,1173.1L1966.6,1171.8L1973.9,1165.0L1977.3,1163.5L1977.3,1160.5L1983.2,1161.5L1978.7,1165.6L1964.6,1176.0L1959.1,1180.7L1958.2,1182.4L1950.9,1188.6L1941.8,1198.3L1938.4,1198.9L1922.7,1208.8L1914.7,1214.3L1902.6,1220.3L1888.7,1227.9L1881.0,1233.9L1878.0,1236.7L1874.6,1241.7L1862.5,1249.3L1857.1,1253.9L1846.4,1264.5L1839.2,1274.2L1836.7,1279.8L1833.4,1283.8L1825.9,1298.9L1820.5,1312.3L1818.0,1320.9L1815.7,1333.9L1815.2,1341.3L1815.5,1348.3L1817.3,1362.3L1820.5,1376.3L1823.2,1385.4L1826.8,1401.0L1829.3,1418.7L1827.7,1415.5L1826.6,1405.5L1823.9,1392.6L1821.4,1382.3L1815.9,1381.2L1820.0,1379.4L1818.0,1373.8L1816.6,1367.8L1814.6,1361.9L1813.8,1354.7L1814.1,1345.3L1813.8,1337.0L1816.3,1318.2L1820.0,1306.0L1824.3,1295.9L1827.5,1291.1L1829.8,1285.2L1831.6,1282.8L1831.2,1279.6L1834.2,1273.7L1838.2,1271.2L1840.3,1268.1L1844.4,1259.5L1850.8,1255.5L1852.5,1251.9L1856.2,1251.8L1864.2,1244.6L1869.4,1241.3L1874.9,1239.8L1874.0,1236.8L1876.0,1234.9L1874.0,1233.7L1870.3,1236.5L1865.8,1238.9L1863.3,1241.7L1859.4,1242.0L1858.0,1239.3L1858.0,1235.2L1853.9,1234.4L1852.5,1236.5L1852.5,1242.2L1851.4,1243.9L1852.8,1246.7L1851.9,1249.2L1847.3,1253.0L1843.4,1257.1L1841.7,1257.1L1837.5,1255.1L1836.8,1252.2L1829.6,1256.4L1825.7,1260.9L1830.5,1262.4L1835.9,1258.5L1837.8,1263.6L1836.2,1265.1L1827.5,1280.3L1824.8,1280.4L1823.4,1276.7L1818.6,1277.4L1817.7,1276.1L1810.5,1276.9L1808.0,1276.1L1806.6,1278.7L1809.3,1280.8L1812.7,1280.9L1815.2,1279.8L1814.3,1284.1L1815.9,1287.4L1819.3,1289.7L1823.2,1290.9L1818.9,1300.8L1815.9,1313.4L1813.2,1320.6L1808.6,1322.4L1807.0,1324.3L1804.5,1323.1L1807.7,1321.7L1808.4,1317.6L1806.6,1317.4L1805.2,1319.5L1798.6,1324.7L1799.5,1326.8L1805.0,1327.9L1810.7,1325.3L1812.5,1325.2L1811.3,1333.1L1812.1,1333.3L1811.1,1347.1L1809.7,1361.1L1808.8,1361.4L1811.1,1377.0L1813.0,1381.4L1813.2,1387.2L1815.2,1387.2L1820.5,1401.9L1821.6,1403.8L1819.6,1407.0L1820.5,1409.3L1820.2,1413.5L1822.1,1418.4L1826.6,1419.2L1826.8,1421.6L1829.6,1420.3L1830.0,1429.0L1824.8,1428.5L1821.8,1429.1L1821.8,1430.3L1817.1,1431.2L1815.7,1437.9L1811.1,1437.2L1809.6,1434.4L1806.1,1434.3L1804.7,1430.5L1802.2,1430.2L1798.1,1423.5L1791.1,1422.7L1788.6,1420.5L1784.7,1421.1L1783.1,1420.0L1777.9,1421.2L1777.0,1420.0L1774.0,1420.0L1773.4,1422.0L1771.0,1419.8L1766.5,1420.8L1764.7,1419.3L1763.3,1420.8L1760.1,1419.5L1758.3,1417.4L1759.0,1415.7L1755.3,1415.7L1754.7,1412.6L1751.3,1412.7L1746.5,1407.6L1744.4,1408.4L1738.7,1405.1L1734.4,1406.6L1731.5,1404.2L1728.1,1399.5L1725.7,1399.0L1725.3,1396.7L1723.5,1395.9L1719.4,1396.9L1714.6,1393.8L1711.9,1393.9L1710.1,1392.6L1707.3,1393.9L1705.3,1390.9L1706.6,1387.5L1704.4,1383.7L1701.9,1382.8L1701.1,1376.1L1699.8,1373.3L1699.1,1367.9L1697.3,1366.2L1697.1,1362.9L1695.5,1358.5L1691.6,1355.6L1692.0,1353.5L1689.1,1351.7L1687.5,1349.2L1688.6,1347.8L1686.1,1344.7L1684.1,1344.2L1683.9,1340.7L1685.3,1338.6L1684.5,1334.1L1685.5,1332.2L1684.5,1326.3L1680.9,1324.6L1681.1,1322.0L1678.4,1321.3L1680.4,1319.3L1681.6,1313.4L1680.9,1311.3L1681.8,1307.2L1678.9,1306.6L1680.0,1301.4L1677.3,1297.4L1675.7,1298.4L1674.1,1295.2L1672.0,1296.5L1670.0,1293.8L1667.7,1294.2L1663.6,1288.1L1661.6,1287.4L1660.9,1284.8L1659.1,1285.4L1656.8,1282.8L1656.8,1279.4L1655.2,1277.6L1655.8,1274.9L1652.9,1271.6L1653.3,1268.4L1649.5,1267.3L1647.9,1261.8L1645.6,1260.2L1643.8,1255.5L1635.8,1251.8L1634.9,1248.3L1633.3,1248.4L1630.4,1244.4L1630.8,1241.8L1627.0,1235.0L1627.6,1231.8L1625.6,1229.2L1627.6,1227.2L1624.9,1226.4L1622.9,1223.2L1623.8,1220.6L1620.6,1218.7L1620.8,1216.4L1617.4,1214.5L1616.5,1211.1L1617.0,1208.3L1615.1,1206.5L1614.2,1201.5L1612.9,1201.5L1610.8,1195.5L1609.0,1195.4L1607.6,1192.2L1607.9,1187.0L1606.3,1179.8L1602.1,1176.7L1599.9,1174.0L1600.5,1173.0L1598.5,1168.2L1593.3,1165.4L1592.8,1163.4L1588.9,1160.2L1584.8,1158.5L1581.9,1152.8L1581.9,1151.4L1575.9,1150.0L1574.6,1147.0L1569.3,1146.5L1570.1,1142.6L1569.6,1138.2L1568.4,1137.8L1567.1,1142.4L1565.7,1140.6L1566.2,1137.0L1562.3,1135.2L1559.3,1127.8L1557.6,1128.1L1555.5,1125.9L1552.5,1127.6L1550.9,1124.6L1549.1,1126.4L1540.7,1127.3L1536.4,1125.2L1535.0,1125.7L1531.6,1124.3L1526.6,1125.2L1523.9,1123.5L1520.0,1124.0L1519.0,1125.6L1513.1,1124.1L1510.6,1120.7L1507.7,1120.9L1503.1,1118.2L1499.9,1119.4L1497.7,1127.0L1489.9,1125.7L1487.9,1128.2L1486.3,1127.5L1481.3,1129.6L1479.7,1129.0L1477.8,1132.6L1478.3,1134.2L1475.3,1136.9L1475.3,1140.3L1473.7,1140.3L1473.3,1144.3L1470.8,1146.3L1471.0,1148.6L1469.4,1152.5L1469.9,1156.1L1468.7,1159.3L1466.5,1159.7L1465.8,1164.6L1464.7,1167.1L1466.9,1168.6L1465.8,1171.2L1461.7,1173.8L1459.4,1173.3L1457.8,1177.8L1454.0,1180.7L1452.4,1183.1L1451.5,1188.9L1448.2,1189.4L1444.4,1188.4L1441.0,1189.1L1437.8,1186.0L1431.6,1184.4L1425.5,1176.8L1420.0,1174.6L1417.8,1175.2L1412.8,1172.5L1408.7,1167.3L1405.7,1165.7L1396.8,1164.3L1392.9,1162.4L1388.6,1158.2L1386.1,1157.4L1381.8,1151.9L1381.8,1150.2L1378.6,1147.1L1373.8,1146.6L1371.1,1144.7L1370.0,1142.4L1363.1,1137.1L1361.1,1134.2L1359.5,1126.7L1356.7,1122.9L1355.1,1118.8L1352.2,1114.6L1352.2,1110.5L1350.6,1106.6L1352.0,1101.8L1351.3,1098.1L1351.7,1094.3L1350.1,1089.7L1347.6,1087.6L1347.0,1084.7L1344.0,1082.0L1343.8,1080.0L1340.8,1077.6L1341.3,1075.4L1338.3,1063.4L1336.7,1060.7L1334.0,1060.4L1331.5,1054.2L1328.0,1054.2L1324.9,1049.7L1322.2,1049.0L1321.4,1047.4L1318.0,1045.1L1315.3,1045.4L1313.7,1043.5L1306.7,1040.8L1306.7,1038.1L1296.7,1030.1L1293.7,1022.8L1291.0,1020.3L1286.8,1018.5L1284.8,1016.3L1282.7,1016.1L1282.3,1013.7L1276.8,1006.5L1272.3,1004.1L1271.4,1000.4L1268.2,998.3L1263.4,997.8L1255.4,992.5L1252.9,986.5L1250.6,984.9L1249.3,980.2L1246.4,974.2L1244.3,971.4L1239.9,968.8L1237.4,970.1L1234.9,967.3L1233.8,965.4L1230.2,964.0L1230.4,962.5L1228.1,960.8L1227.4,958.2L1229.0,957.0L1229.3,950.1L1304.6,950.1L1361.5,950.2L1413.0,950.2L1454.6,950.1L1454.6,867.7L1455.1,850.4L1455.1,840.3L1455.6,811.9L1456.0,796.1L1456.0,692.9L1456.2,663.3L1456.2,608.3L1456.0,593.8L1458.5,593.8Z" fill="none" stroke="#c9ec8f" stroke-width="3.5" stroke-linejoin="round" opacity="0" />
+        </svg>
+      </div>
+      <div class="n19-credit t-label">Relief: AWS Terrain Tiles (PD) · borders: Natural Earth (PD)</div>
+    </div></div>
+
+    <!-- sc003 · 1904.30–1910.70 · "by Texas Instruments … late 50s" · founder card (ref ast_8453bcb46af0421b) -->
+    <div class="n19-scene" id="nvs19-sc003"><div class="n19-shot n19-paper" id="nvs19-sc003-shot">
+      <div class="n19-p1" style="background-image:url('assets/textures/paper_cream_01.jpg')"></div>
+      <div class="n19-p2" style="background-image:url('assets/textures/paper_fiber_01.jpg'); opacity:0.4"></div>
+      <div class="n19-vw" id="nvs19-sc003-vw" style="transform-origin:960px 420px">
+        <div id="nvs19-sc003-eng"><img src="assets/podcast/pd16/ti_engineers_dallas_kilby.jpg" alt="" /></div>
+        <div id="nvs19-sc003-out"></div>
+        <div id="nvs19-sc003-por"><img src="assets/podcast/pd16/kilby_notebook_ti.jpg" alt="" /></div>
+        <div class="n19-abs t-label n19-ink" id="nvs19-sc003-nm" style="left:118px;top:888px;font-size:26px;white-space:nowrap">Jack Kilby</div>
+        <div class="n19-abs t-display n19-ink" id="nvs19-sc003-yr" style="left:660px;top:84px;font-size:236px;line-height:1">1958</div>
+        <div class="n19-abs" id="nvs19-sc003-rule" style="left:1240px;top:188px;width:584px;height:0;border-top:3px solid var(--ink);transform-origin:0 50%"></div>
+        <div class="n19-abs" id="nvs19-sc003-dot" style="left:1232px;top:181px;width:16px;height:16px;border-radius:50%;background:var(--ink)"></div>
+        <div class="n19-abs t-display n19-ink" id="nvs19-sc003-h1" style="left:1330px;top:390px;font-size:78px;white-space:nowrap">TEXAS</div>
+        <div class="n19-abs t-display n19-ink" id="nvs19-sc003-h2" style="left:1330px;top:470px;font-size:78px;white-space:nowrap">INSTRUMENTS</div>
+        <div class="n19-abs t-label" id="nvs19-sc003-pl" style="left:1334px;top:580px;font-size:26px;color:var(--ink-soft);white-space:nowrap">Dallas, Texas</div>
+      </div>
+      <div class="n19-credit t-label ink">Photos: Texas Instruments / Computer History Museum (fair use) · TI engineers, Dallas: James R. Biard, CC BY-SA 4.0</div>
+    </div></div>
+
+    <!-- sc004 · 1910.70–1919.90 · 10 % → 30 % · 100 made, 30 work · THE WAFER CHART -->
+    <div class="n19-scene" id="nvs19-sc004"><div class="n19-shot" id="nvs19-sc004-shot" style="background:radial-gradient(ellipse 80% 80% at 38% 50%, #1a1f23 0%, #0c0f11 75%)">
+      <div class="n19-vw" id="nvs19-sc004-vw" style="transform-origin:900px 560px">
+        <div id="nvs19-sc004-wafer"></div>
+        <div id="nvs19-sc004-notch"></div>
+        <div id="nvs19-sc004-dies"></div>
+        <div class="n19-abs t-label" id="nvs19-sc004-ti" style="left:1264px;top:236px;font-size:30px;color:var(--ash-light)">Yield</div>
+        <div class="n19-abs t-display clean" id="nvs19-sc004-pc" style="left:1250px;top:286px;font-size:220px;line-height:1">10%</div>
+        <div class="n19-abs" id="nvs19-sc004-lg1" style="left:1266px;top:620px;width:560px;height:50px">
+          <div class="n19-sw" style="left:0;top:6px;background:#2b3135;border:2px solid #59626a"></div>
+          <div class="n19-abs t-label clean" style="left:60px;top:8px;font-size:28px;white-space:nowrap">100 chips made</div>
+        </div>
+        <div class="n19-abs" id="nvs19-sc004-lg2" style="left:1266px;top:694px;width:560px;height:50px">
+          <div class="n19-sw" style="left:0;top:6px;background:var(--volt);box-shadow:0 0 12px rgba(134,194,50,0.6)"></div>
+          <div class="n19-abs t-label" style="left:60px;top:8px;font-size:28px;white-space:nowrap;color:var(--volt-light)">30 work</div>
+        </div>
+      </div>
+    </div></div>
+
+    <!-- sc005 · 1919.90–1927.30 · now 99.3 / .5 / .7 % · a modern 300 mm wafer -->
+    <div class="n19-scene" id="nvs19-sc005"><div class="n19-shot" id="nvs19-sc005-shot" style="background:radial-gradient(ellipse 80% 80% at 36% 50%, #1b2124 0%, #0b0d0f 75%)">
+      <div class="n19-vw" id="nvs19-sc005-vw" style="transform-origin:700px 540px">
+        <div id="nvs19-sc005-disc"><img src="assets/nvidia/shared/hardware/wafer_300mm_dies.jpg" alt="" /></div>
+        <div class="n19-abs t-label" id="nvs19-sc005-ti" style="left:1264px;top:300px;font-size:30px;color:var(--ash-light)">Yield</div>
+        <div class="n19-abs t-display halate yellow" id="nvs19-sc005-pc" style="left:1248px;top:350px;font-size:200px;line-height:1;white-space:nowrap">99.3%</div>
+        <div class="n19-abs" id="nvs19-sc005-mt" style="left:1266px;top:640px;width:560px;height:26px;border:2px solid rgba(240,239,232,0.35)"></div>
+        <div class="n19-abs" id="nvs19-sc005-mf" style="left:1268px;top:642px;width:556px;height:26px;background:var(--volt);transform-origin:0 50%;box-shadow:0 0 14px rgba(134,194,50,0.5)"></div>
+      </div>
+      <div class="n19-credit t-label">Wafer: Peellden / Wikimedia Commons, CC BY-SA 3.0</div>
+    </div></div>
+
+    <!-- sc006 · 1927.30–1931.54 · all coming from TSMC in Taiwan · Fab 14B -->
+    <div class="n19-scene" id="nvs19-sc006"><div class="n19-shot" id="nvs19-sc006-shot">
+      <div class="n19-vw" id="nvs19-sc006-vw" style="transform-origin:1050px 420px"><img class="n19-full" src="assets/nvidia/nvs19/derived/tsmc_fab14b_2560.jpg" alt="" style="filter:saturate(0.3) contrast(1.08) brightness(0.72)" /></div>
+      <div class="n19-scrim-bl"></div>
+      <img id="nvs19-sc006-logo" src="assets/nvidia/shared/logos/tsmc.svg" alt="" style="position:absolute;left:96px;top:742px;width:300px;height:auto;filter:brightness(0) invert(0.94);opacity:0" />
+      <div class="n19-abs" id="nvs19-sc006-tw" style="left:100px;top:912px;height:56px;opacity:0">
+        <img src="assets/nvidia/shared/logos/flag_taiwan.svg" alt="" style="position:absolute;left:0;top:6px;width:66px;height:auto" />
+        <div class="n19-abs t-display clean" style="left:88px;top:2px;font-size:52px;white-space:nowrap">TAIWAN</div>
+      </div>
+      <div class="n19-credit t-label">TSMC Fab 14B · Photo: 4300streetcar / Wikimedia Commons, CC BY 4.0</div>
+    </div></div>
+
+    <!-- sc007 · 1931.54–1954.95 · volume → below cost → yield → lower price → profit → next factory → next chips · the flywheel -->
+    <div class="n19-scene" id="nvs19-sc007"><div class="n19-shot n19-paper" id="nvs19-sc007-shot">
+      <div class="n19-p1" style="background-image:url('assets/textures/paper_graph_01_hires.jpg')"></div>
+      <div class="n19-p2" style="background-image:url('assets/textures/paper_cream_02.jpg'); opacity:0.5"></div>
+      <div class="n19-vw" id="nvs19-sc007-vw" style="transform-origin:0 0">
+        <svg id="nvs19-sc007-svg" class="n19-mk" viewBox="0 0 1920 1080"></svg>
+        <img id="nvs19-sc007-logo" src="assets/nvidia/shared/logos/tsmc.svg" alt="" style="position:absolute;left:810px;top:500px;width:300px;height:auto;filter:brightness(0);opacity:0" />
+        <div id="nvs19-sc007-nodes"></div>
+      </div>
+      <div class="n19-credit t-label ink">TSMC logo © TSMC (fair use)</div>
+    </div></div>
+
+    <!-- sc008 · 1954.95–1967.75 · chips: volume before better · other industries: better then volume -->
+    <div class="n19-scene" id="nvs19-sc008"><div class="n19-shot n19-paper" id="nvs19-sc008-shot">
+      <div class="n19-p1" style="background-image:url('assets/textures/paper_lined_01_hires.jpg');left:-200px"></div>
+      <div class="n19-p2" style="background-image:url('assets/textures/paper_cream_01.jpg'); opacity:0.55"></div>
+      <div class="n19-vw" id="nvs19-sc008-vw" style="transform-origin:960px 540px">
+        <div id="nvs19-sc008-rowA" class="n19-abs" style="inset:0">
+          <div id="nvs19-sc008-pile" class="n19-abs" style="left:150px;top:290px;width:260px;height:220px"></div>
+          <div class="n19-abs t-label n19-ink" id="nvs19-sc008-la" style="left:130px;top:520px;width:300px;text-align:center;font-size:28px">Chips</div>
+          <div class="n19-box" id="nvs19-sc008-a1" style="left:560px;top:330px;background:var(--volt-dark)"></div>
+          <div class="n19-btx t-display" id="nvs19-sc008-a1t" style="left:560px;top:330px">VOLUME</div>
+          <div class="n19-box" id="nvs19-sc008-a2" style="left:1300px;top:330px;background:var(--ink)"></div>
+          <div class="n19-btx t-display" id="nvs19-sc008-a2t" style="left:1300px;top:330px">BETTER</div>
+        </div>
+        <div class="n19-abs" id="nvs19-sc008-div" style="left:120px;top:598px;width:1680px;height:0;border-top:2px solid rgba(20,24,27,0.25);transform-origin:0 50%"></div>
+        <div id="nvs19-sc008-rowB" class="n19-abs" style="inset:0">
+          <div class="n19-icon n19-ic-car" id="nvs19-sc008-car" style="left:190px;top:660px;width:180px;height:150px;background:var(--ink)"></div>
+          <div class="n19-abs t-label n19-ink" id="nvs19-sc008-lb" style="left:80px;top:840px;width:400px;text-align:center;font-size:28px">Other industries</div>
+          <div class="n19-box" id="nvs19-sc008-b1" style="left:560px;top:690px;background:var(--ink)"></div>
+          <div class="n19-btx t-display" id="nvs19-sc008-b1t" style="left:560px;top:690px">BETTER</div>
+          <div class="n19-box" id="nvs19-sc008-b2" style="left:1300px;top:690px;background:var(--volt-dark)"></div>
+          <div class="n19-btx t-display" id="nvs19-sc008-b2t" style="left:1300px;top:690px">VOLUME</div>
+        </div>
+        <svg id="nvs19-sc008-svg" class="n19-mk" viewBox="0 0 1920 1080"></svg>
+      </div>
+    </div></div>
+
+    <!-- sc009 · 1967.75–1976.20 · Beijing helps Huawei by forcing NVIDIA chips out · China night map -->
+    <div class="n19-scene" id="nvs19-sc009" style="background:#0c1014"><div class="n19-shot" id="nvs19-sc009-shot" style="background:#0c1014">
+      <div class="n19-vw" id="nvs19-sc009-vw" style="transform-origin:1060px 900px">
+        <div class="n19-cam" id="nvs19-sc009-cam" style="width:2560px;height:1752px">
+          <img class="n19-base" src="assets/nvidia/nvs19/derived/china_night_2560.jpg" alt="" style="width:2560px;height:1752px;filter:brightness(1.12)" />
+          <div class="n19-fill" id="nvs19-sc009-cn" style="width:2560px;height:1752px;background:var(--red);opacity:0.15;-webkit-mask-image:url('assets/nvidia/nvs19/derived/china_mask_2560.svg');mask-image:url('assets/nvidia/nvs19/derived/china_mask_2560.svg')"></div>
+        </div>
+      </div>
+      <div class="n19-abs" id="nvs19-sc009-nv" style="left:96px;top:84px;width:420px;height:96px;background:rgba(10,12,14,0.82);border-left:6px solid var(--volt);opacity:0">
+        <img src="assets/nvidia/shared/logos/nvidia_wordmark.svg" alt="" style="position:absolute;left:30px;top:22px;width:340px;height:52px;object-fit:contain" />
+      </div>
+      <div class="n19-credit t-label">Relief: AWS Terrain Tiles (PD) · borders: Natural Earth (PD)</div>
+    </div></div>
+
+    <!-- sc010 · 1976.20–1981.00 · Chinese AI companies must buy from Huawei -->
+    <div class="n19-scene" id="nvs19-sc010"><div class="n19-shot" id="nvs19-sc010-shot" style="background:radial-gradient(ellipse 80% 80% at 60% 45%, #24191b 0%, #0d0f11 75%)">
+      <div class="n19-vw" id="nvs19-sc010-vw" style="transform-origin:1100px 520px">
+        <div class="n19-abs t-label" id="nvs19-sc010-hd" style="left:122px;top:150px;font-size:26px;color:var(--red-light);white-space:nowrap">Chinese AI companies</div>
+        <div class="n19-tile" id="nvs19-sc010-t0" style="top:220px"><div class="acc"></div><img src="assets/nvidia/shared/logos/deepseek_wordmark.svg" alt="" /></div>
+        <div class="n19-tile" id="nvs19-sc010-t1" style="top:392px"><div class="acc"></div><img src="assets/nvidia/shared/logos/alibaba_wordmark.svg" alt="" /></div>
+        <div class="n19-tile" id="nvs19-sc010-t2" style="top:564px"><div class="acc"></div><img src="assets/nvidia/shared/logos/tencent_wordmark.svg" alt="" /></div>
+        <div class="n19-tile" id="nvs19-sc010-t3" style="top:736px"><div class="acc"></div><img src="assets/nvidia/shared/logos/baidu.svg" alt="" /></div>
+        <div class="n19-abs" id="nvs19-sc010-ph" style="left:860px;top:150px;width:960px;height:640px;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,0.65);border:2px solid rgba(240,239,232,0.15)">
+          <img src="assets/nvidia/shared/hardware/huawei_atlas900_superpod_1.jpg" alt="" style="width:960px;height:640px;object-fit:cover;filter:saturate(0.45) contrast(1.05) brightness(0.85)" />
+        </div>
+        <div class="n19-abs" id="nvs19-sc010-hw" style="left:862px;top:830px;width:620px;height:110px">
+          <img src="assets/nvidia/shared/logos/huawei.svg" alt="" style="position:absolute;left:0;top:4px;width:100px;height:100px" />
+          <img src="assets/nvidia/shared/logos/huawei_wordmark.svg" alt="" style="position:absolute;left:128px;top:24px;height:62px;width:auto;filter:brightness(0) invert(0.94)" />
+        </div>
+        <svg id="nvs19-sc010-svg" class="n19-mk" viewBox="0 0 1920 1080"></svg>
+      </div>
+      <div class="n19-credit t-label">Huawei Atlas 900 A3 SuperPoD, WAIC 2025 · Photo: Xuthoria / Wikimedia Commons, CC BY-SA 4.0 · logos © their owners</div>
+    </div></div>
+
+    <!-- sc011 · 1981.00–1991.333 · orders → yield → learning → next generation · the flywheel in red (callback) -->
+    <div class="n19-scene" id="nvs19-sc011"><div class="n19-shot" id="nvs19-sc011-shot" style="background:radial-gradient(ellipse 70% 75% at 50% 50%, #261a1c 0%, #0d0f11 72%)">
+      <div class="n19-vw" id="nvs19-sc011-vw" style="transform-origin:960px 540px">
+        <svg id="nvs19-sc011-svg" class="n19-mk" viewBox="0 0 1920 1080"></svg>
+        <img id="nvs19-sc011-logo" src="assets/nvidia/shared/logos/huawei.svg" alt="" style="position:absolute;left:875px;top:455px;width:170px;height:170px;opacity:0;filter:drop-shadow(0 0 24px rgba(220,47,60,0.55))" />
+        <div id="nvs19-sc011-nodes"></div>
+      </div>
+    </div></div>
+
+    <div id="nvs19-flash"></div>
+    <div id="nvs19-grain" class="tx tx-grain" style="background-image:url('assets/textures/grain_01_norm.jpg')"></div>
+    <div id="nvs19-dust" class="tx tx-dust" style="background-image:url('assets/textures/dust_02.jpg')"></div>
+    <div id="nvs19-vig" class="vignette"></div>
+    <audio id="nvs19-vo" class="temp-vo" src="vo_nv.mp3" data-start="0" data-duration="97.417" data-media-start="1893.917" data-volume="1"></audio>
+  </div>
+
+  <script>
+  (function () {
+    const SEG = "nvs19", SEG_START = 1893.917, SEG_END = 1991.333, DURATION = 97.417;
+    const T = (s) => +(s - SEG_START).toFixed(3);   // TEXT cues (audited): literal master word start − 0.06
+    const S = (s) => +(s - SEG_START).toFixed(3);   // STRUCTURAL cues (cuts, camera, objects)
+    const tl = gsap.timeline({ paused: true });
+    const $ = (id) => document.getElementById(SEG + "-" + id);
+    const NS = "http://www.w3.org/2000/svg";
+    const defs = $("defs");
+    const E = FX.ease;
+    const C = (e, d) => FX.choppy(e, d, 12);
+    const INK = "#14181b", BONE = "#f0efe8", PAPER = "#e8e6dc", RED = "#dc2f3c", REDL = "#f6a4a9", REDD = "#7e151e", VOLT = "#86c232", VOLTL = "#c9ec8f", VOLTD = "#3f6410", YEL = "#f5d033";
+
+    // ---------- scenes ----------
+    const SC = [
+      ["sc001", 1893.917, 1897.400, "night"], ["sc002", 1897.400, 1904.300, "map"], ["sc003", 1904.300, 1910.700, "paper"],
+      ["sc004", 1910.700, 1919.900, "night"], ["sc005", 1919.900, 1927.300, "night"], ["sc006", 1927.300, 1931.540, "night"],
+      ["sc007", 1931.540, 1954.950, "paper"], ["sc008", 1954.950, 1967.750, "paper"], ["sc009", 1967.750, 1976.200, "map"],
+      ["sc010", 1976.200, 1981.000, "night"], ["sc011", 1981.000, 1991.333, "night"],
+    ];
+    const GROUND = { paper: [0.32, 0.16, 0.26], night: [0.9, 0.42, 0.38], map: [0.75, 0.3, 0.3] };
+    const EARLY = { sc003: 0.45, sc007: 0.45 };   // slides: incoming scene visible during the slide
+    function ground(kind, t) { const v = GROUND[kind]; tl.set([$("vig"), $("dust"), $("grain")], { opacity: (i) => v[i] }, t); }
+    SC.forEach((s, i) => {
+      const el = $(s[0]), a = s[1] - (EARLY[s[0]] || 0);
+      if (i === 0) gsap.set(el, { autoAlpha: 1 });
+      else tl.fromTo(el, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.001, immediateRender: false }, S(a) - 0.002);
+      if (s[2] < SEG_END) tl.set(el, { autoAlpha: 0 }, S(s[2]) + 0.05);
+    });
+    gsap.set([$("vig"), $("dust"), $("grain")], { opacity: (i) => GROUND.night[i] });
+    SC.forEach((s, i) => { if (i > 0) ground(s[3], S(s[1])); });
+
+    // ---------- helpers ----------
+    const rise = (el, t, o) => { o = o || {}; const d = o.dur || 0.6;
+      tl.fromTo(el, { opacity: 0, y: o.y == null ? 16 : o.y }, { opacity: 1, y: 0, duration: d, ease: C(E.out, d), immediateRender: true }, t); };
+    const pop = (el, t, o) => { o = o || {}; const d = o.dur || 0.8;
+      tl.fromTo(el, { opacity: 0, scale: o.from == null ? 0.6 : o.from }, { opacity: 1, scale: 1, duration: d, ease: C(E.out, d), immediateRender: true }, t); };
+    const stop = (el, t, o) => { o = o || {}; const n = o.n || 3;   // stop-motion pin-on (12 fps)
+      tl.fromTo(el, { opacity: 0, scale: o.from || 1.25 }, { opacity: 1, scale: 1, duration: n / 12, ease: "steps(" + n + ")", immediateRender: true }, t); };
+    function el(parent, tag, attrs) { const n = document.createElementNS(NS, tag); for (const k in attrs) n.setAttribute(k, attrs[k]); parent.appendChild(n); return n; }
+    function ink(parent, d, t, dur, o) {
+      o = o || {};
+      const p = el(parent, "path", { d: d, fill: "none", stroke: o.color || INK, "stroke-width": o.width || 5, "stroke-linecap": "round", "stroke-linejoin": "round" });
+      if (o.opacity != null) p.setAttribute("opacity", o.opacity);
+      const len = p.getTotalLength() || 1;
+      p.setAttribute("stroke-dasharray", len + " " + len); p.setAttribute("stroke-dashoffset", len);
+      tl.fromTo(p, { attr: { "stroke-dashoffset": len } }, { attr: { "stroke-dashoffset": 0 }, duration: dur, ease: o.ease || C(E.out, dur), immediateRender: true }, t);
+      return p;
+    }
+    const whipN = { n: 0 };
+    function whip(a, b, t, o) {
+      o = Object.assign({ dir: 1, vertical: false, flash: false, dur: 0.32 }, o);
+      const k = ++whipN.n, ba = FX.whipDefs(defs, SEG + "-wa" + k), bb = FX.whipDefs(defs, SEG + "-wb" + k), h = o.dur / 2;
+      const A = $(a + "-shot"), B = $(b + "-shot");
+      tl.set(A, { filter: "url(#" + SEG + "-wa" + k + ")" }, t - h - 0.01); tl.set(A, { filter: "none" }, t + 0.06);
+      tl.set(B, { filter: "url(#" + SEG + "-wb" + k + ")" }, t - 0.001); tl.set(B, { filter: "none" }, t + h + 0.02);
+      FX.whip(tl, A, B, t, { dir: o.dir, vertical: o.vertical, dur: o.dur, blurA: ba, blurB: bb });
+      if (o.flash) tl.fromTo($("flash"), { opacity: 0 }, { opacity: 0.85, duration: 0.08, yoyo: true, repeat: 1, ease: "power2.in", immediateRender: false }, t - 0.08);
+    }
+    function slide(a, b, t, o) {
+      o = Object.assign({ axis: "x", from: 1, d: 0.45 }, o);
+      const A = $(a + "-shot"), B = $(b + "-shot"), dist = (o.axis === "x" ? 1980 : 1140) * o.from;
+      tl.fromTo(B, { [o.axis]: dist, boxShadow: "0 0 80px rgba(0,0,0,0.5)" }, { [o.axis]: 0, duration: o.d, ease: C(E.inOut, o.d), immediateRender: false }, t - o.d);
+      tl.set(B, { boxShadow: "none" }, t);
+      tl.fromTo(A, { [o.axis]: 0 }, { [o.axis]: -dist * 0.12, duration: o.d, ease: E.in, immediateRender: false }, t - o.d);
+    }
+    function push(id, a, b, s0, s1, o) {
+      o = o || {};
+      const vw = $(id + "-vw");
+      if (o.origin) gsap.set(vw, { transformOrigin: o.origin });
+      gsap.set(vw, { scale: s0 });
+      tl.fromTo(vw, { scale: s0 }, { scale: s1, duration: b - a, ease: o.ease || "none", immediateRender: false }, S(a));
+    }
+    const exitPush = (id, t, s, d) => tl.to($(id + "-vw"), { scale: s, duration: d || 0.5, ease: E.in }, t);
+    const at = (px, py, s) => ({ x: 960 - px * s, y: 540 - py * s, scale: s });
+    function mapCam(cam) {
+      const marks = [];
+      const apply = (v) => { gsap.set(cam, { x: v.x, y: v.y, scale: v.scale }); const inv = "scale(" + (1 / v.scale).toFixed(4) + ")"; marks.forEach((m) => { m.style.transform = inv; }); };
+      return {
+        marks, apply,
+        move(a, b, t, dur, ease) {
+          const pr = { v: 0 }, e = ease || E.cam;
+          tl.fromTo(pr, { v: 0 }, { v: 1, duration: dur, ease: "none", immediateRender: false, onUpdate: () => { const k = e(pr.v);
+            apply({ x: a.x + (b.x - a.x) * k, y: a.y + (b.y - a.y) * k, scale: a.scale + (b.scale - a.scale) * k }); } }, t);
+        },
+        mark(x, y, inner) {
+          const o = document.createElement("div");
+          o.style.cssText = "position:absolute;left:" + x + "px;top:" + y + "px;width:0;height:0;transform-origin:0 0;";
+          o.appendChild(inner); cam.appendChild(o); marks.push(o); return inner;
+        },
+      };
+    }
+    function label(text, o) {
+      o = Object.assign({ size: 56, kind: "country", dx: 0, dy: 0 }, o);
+      const d = document.createElement("div");
+      d.className = o.kind === "place" ? "t-label" : "t-display";
+      d.textContent = text;
+      const left = o.align === "left" ? o.dx : -800 + o.dx;
+      d.style.cssText = "position:absolute;white-space:nowrap;line-height:1;left:" + left + "px;" + (o.align === "left" ? "" : "width:1600px;text-align:center;") + "top:" + (-o.size * 0.5 + o.dy) + "px;font-size:" + o.size + "px;color:" + (o.color || BONE) +
+        ";text-shadow:0 2px 4px rgba(0,0,0,0.75),0 0 14px rgba(0,0,0,0.55);" + (o.kind === "place" ? "" : "text-transform:uppercase;letter-spacing:0.04em;") + "opacity:0;";
+      return d;
+    }
+    function pinEl(color, ring) { const p = document.createElement("div"); p.className = "n19-pin"; p.style.background = color; p.style.boxShadow = "0 0 0 7px " + ring + ", 0 0 18px rgba(0,0,0,0.5)"; p.style.opacity = 0; return p; }
+
+    FX.grain($("grain"), 1901);
+    FX.dust($("dust"), 1902, 2);
+    const PEN = FX.markupDefs(defs, SEG + "-pen", { boil: 4 });
+    defs.setAttribute("viewBox", "0 0 1 1");
+
+    /* ===== sc001 · Kilby's first IC (archival print, gate weave) ===== */
+    (function () {
+      FX.weave($("sc001-wv"), { amp: 1.4, flicker: 0.04, seed: 19, from: 0, to: S(1897.6) });
+      push("sc001", 1893.917, 1897.4, 1.0, 1.07, { ease: E.cam });
+      FX.focusHunt(tl, $("sc001-print"), S(1894.1), { dur: 0.8 });
+    })();
+
+    /* ===== sc002 · US map: Texas, not Silicon Valley / California (light-flash whip) ===== */
+    whip("sc001", "sc002", S(1897.40), { dir: 1, flash: true });
+    (function () {
+      const cam = $("sc002-cam"), mc = mapCam(cam), svg = $("sc002-svg");
+      const ltx = mc.mark(1693, 1005, label("Texas", { size: 70 }));
+      const psv = mc.mark(261, 527, pinEl(BONE, "rgba(240,239,232,0.3)"));
+      const lsv = mc.mark(261, 527, label("Silicon Valley", { kind: "place", size: 26, align: "left", dx: 30, dy: 0 }));
+      const lca = mc.mark(476, 690, label("California", { size: 44 }));
+      const pdl = mc.mark(1852, 889, pinEl(VOLT, "rgba(201,236,143,0.35)"));
+      const ldl = mc.mark(1852, 889, label("Dallas", { kind: "place", size: 26, align: "left", dx: 30, dy: 0 }));
+      const a = at(1290, 745, 0.78), b = at(1270, 730, 0.8), c = at(1760, 900, 1.35);
+      mc.apply(a);
+      mc.move(a, b, S(1897.4), 5.5, (k) => k);
+      mc.move(b, c, S(1902.95), 1.6, E.cam);
+      // Texas
+      tl.fromTo($("sc002-tx"), { opacity: 0 }, { opacity: 0.42, duration: 0.6, ease: C(E.out, 0.6), immediateRender: true }, S(1900.1));
+      const txo = $("sc002-txo"), L = txo.getTotalLength();
+      gsap.set(txo, { attr: { "stroke-dasharray": L + " " + L, "stroke-dashoffset": L }, opacity: 1 });
+      tl.fromTo(txo, { attr: { "stroke-dashoffset": L } }, { attr: { "stroke-dashoffset": 0 }, duration: 1.0, ease: C(E.inOut, 1.0), immediateRender: true }, S(1900.1));
+      rise(ltx, T(1900.12), { dur: 0.6, y: 10 });
+      // not Silicon Valley, not California
+      stop(psv, S(1901.1), { n: 3, from: 1.8 });
+      rise(lsv, T(1901.16), { dur: 0.5, y: 6 });
+      tl.fromTo($("sc002-ca"), { opacity: 0 }, { opacity: 0.16, duration: 0.5, ease: C(E.out, 0.5), immediateRender: true }, S(1902.15));
+      rise(lca, T(1902.20), { dur: 0.5, y: 8 });
+      const x = FX.markup.cross(tl, svg, S(1902.62), { x: 300, y: 600, s: 120, color: BONE, width: 9, filter: PEN, dur: 0.16 });
+      gsap.set(x, { opacity: 0 }); tl.set(x, { opacity: 0.9 }, S(1902.62));
+      tl.to([lsv, lca, psv, $("sc002-ca")].concat(x), { opacity: 0, duration: 0.4 }, S(1903.2));
+      // back to Texas: Dallas
+      tl.to(ltx, { opacity: 0, duration: 0.3 }, S(1903.3));
+      stop(pdl, S(1903.85), { n: 3, from: 1.8 });
+      rise(ldl, S(1903.9), { dur: 0.4, y: 6 });
+    })();
+
+    /* ===== sc003 · founder card: Texas Instruments, Jack Kilby, 1958 (paper slides up) ===== */
+    slide("sc002", "sc003", S(1904.30), { axis: "y" });
+    (function () {
+      const h1 = $("sc003-h1"), h2 = $("sc003-h2"), pl = $("sc003-pl"), nm = $("sc003-nm"), yr = $("sc003-yr"), out = $("sc003-out"), por = $("sc003-por"), eng = $("sc003-eng");
+      gsap.set([h1, h2, pl, nm, yr, out, por, eng, $("sc003-dot")], { opacity: 0 });
+      gsap.set($("sc003-rule"), { scaleX: 0 });
+      rise(h1, T(1904.60), { dur: 0.6, y: 12 });
+      rise(h2, T(1905.24), { dur: 0.6, y: 12 });
+      stop(out, S(1905.7), { n: 3, from: 1.15 });
+      stop(por, S(1905.78), { n: 3, from: 1.15 });
+      rise(nm, S(1906.1), { dur: 0.5, y: 8 });
+      tl.fromTo(eng, { opacity: 0, y: 200, rotation: 5 }, { opacity: 1, y: 0, rotation: -2, duration: 0.9, ease: C(E.out, 0.9), immediateRender: true }, S(1906.4));
+      rise(pl, S(1907.0), { dur: 0.5, y: 6 });
+      // the timeline rule draws while he searches the decades ("60s, 70s…")
+      tl.set($("sc003-dot"), { opacity: 1 }, S(1907.85));
+      tl.fromTo($("sc003-rule"), { scaleX: 0 }, { scaleX: 1, duration: 0.9, ease: C(E.inOut, 0.9), immediateRender: true }, S(1907.85));
+      stop(yr, T(1909.80), { n: 3, from: 1.35 });
+      push("sc003", 1904.3, 1910.7, 1.0, 1.045, { ease: E.cam, origin: "960px 300px" });
+    })();
+
+    /* ===== sc004 · THE WAFER CHART: 10 % → 30 % (whip →) ===== */
+    whip("sc003", "sc004", S(1910.70), { dir: 1 });
+    (function () {
+      const box = $("sc004-dies"), lit = [];
+      const PITCH = 54, X0 = 720 - 266, Y0 = 560 - 266;
+      for (let k = 0; k < 100; k++) {
+        const x = X0 + (k % 10) * PITCH, y = Y0 + Math.floor(k / 10) * PITCH;
+        const d = document.createElement("div"); d.className = "n19-die"; d.style.left = x + "px"; d.style.top = y + "px"; box.appendChild(d);
+        const l = document.createElement("div"); l.className = "n19-lit"; l.style.left = x + "px"; l.style.top = y + "px"; box.appendChild(l); lit.push(l);
+      }
+      // deterministic order in which dies "work"
+      const r = FX.rng(1919), ord = lit.map((_, i) => i);
+      for (let i = ord.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); const t = ord[i]; ord[i] = ord[j]; ord[j] = t; }
+      gsap.set([$("sc004-ti"), $("sc004-pc"), $("sc004-lg1"), $("sc004-lg2")], { opacity: 0 });
+      rise($("sc004-ti"), T(1911.24), { dur: 0.5, y: 8 });
+      // 10 %
+      ord.slice(0, 10).forEach((i, n) => tl.fromTo(lit[i], { opacity: 0 }, { opacity: 1, duration: 1 / 12, ease: "steps(1)", immediateRender: true }, S(1912.0) + n / 24));
+      tl.set($("sc004-pc"), { opacity: 1 }, T(1911.96));
+      // 30 %
+      ord.slice(10, 30).forEach((i, n) => tl.fromTo(lit[i], { opacity: 0 }, { opacity: 1, duration: 1 / 12, ease: "steps(1)", immediateRender: false }, S(1914.8) + n / 24));
+      FX.text.count(tl, $("sc004-pc"), T(1914.76), 10, 30, 0.8, (v) => Math.round(v) + "%");
+      $("sc004-pc").textContent = "10%";
+      // 100 made: every die outline pulses
+      rise($("sc004-lg1"), T(1917.00), { dur: 0.5, y: 6 });
+      tl.fromTo(box.querySelectorAll(".n19-die"), { borderColor: "#3c4348" }, { borderColor: "#aab2b6", duration: 2 / 12, ease: "steps(2)", yoyo: true, repeat: 1, stagger: { each: 0.004, from: "start" }, immediateRender: false }, S(1917.1));
+      // only 30 work: the rest sink
+      rise($("sc004-lg2"), T(1918.20), { dur: 0.5, y: 6 });
+      tl.to(box.querySelectorAll(".n19-die"), { opacity: 0.55, duration: 3 / 12, ease: "steps(3)" }, S(1918.4));
+      push("sc004", 1910.7, 1919.45, 1.0, 1.05, { ease: E.cam });
+      exitPush("sc004", S(1919.45), 1.25, 0.45);
+    })();
+
+    /* ===== sc005 · a modern wafer: 99.3 → 99.5 → 99.7 % (hard cut on the push) ===== */
+    (function () {
+      gsap.set([$("sc005-ti"), $("sc005-pc"), $("sc005-mt")], { opacity: 0 });
+      gsap.set($("sc005-mf"), { scaleX: 0 });
+      push("sc005", 1919.9, 1922.4, 1.12, 1.0, { ease: E.cam });
+      rise($("sc005-ti"), T(1920.76), { dur: 0.5, y: 8 });
+      tl.set($("sc005-pc"), { opacity: 1 }, T(1921.56));
+      FX.text.count(tl, $("sc005-pc"), T(1921.56), 90, 99.3, 0.6, (v) => v.toFixed(1) + "%");
+      FX.text.count(tl, $("sc005-pc"), T(1923.16), 99.3, 99.5, 0.3, (v) => v.toFixed(1) + "%");
+      FX.text.count(tl, $("sc005-pc"), T(1924.04), 99.5, 99.7, 0.3, (v) => v.toFixed(1) + "%");
+      $("sc005-pc").textContent = "99.3%";
+      // "very, very high": the meter fills almost to the end
+      tl.set($("sc005-mt"), { opacity: 1 }, S(1925.6));
+      tl.fromTo($("sc005-mf"), { scaleX: 0 }, { scaleX: 0.997, duration: 0.8, ease: C(E.out, 0.8), immediateRender: true }, S(1925.65));
+      tl.to($("sc005-vw"), { scale: 1.04, duration: 4.8, ease: "none" }, S(1922.4));
+    })();
+
+    /* ===== sc006 · TSMC, Taiwan (vertical whip) ===== */
+    whip("sc005", "sc006", S(1927.30), { dir: 1, vertical: true });
+    (function () {
+      push("sc006", 1927.3, 1930.6, 1.0, 1.07, { ease: E.cam });
+      pop($("sc006-logo"), T(1928.28), { dur: 0.7, from: 0.85 });
+      rise($("sc006-tw"), T(1929.32), { dur: 0.6, y: 10 });
+      // "they are just destroying it": the push accelerates into the slide
+      tl.to($("sc006-vw"), { scale: 1.22, duration: 0.95, ease: E.in }, S(1930.6));
+    })();
+
+    /* ===== sc007 · the TSMC flywheel (paper slides in from the right) ===== */
+    slide("sc006", "sc007", S(1931.54), { axis: "x" });
+    (function () {
+      const svg = $("sc007-svg"), box = $("sc007-nodes"), vw = $("sc007-vw");
+      const CX = 960, CY = 560, R = 340, N = 7;
+      const ang = (i) => (-90 + i * 360 / N) * Math.PI / 180;
+      const P = (i, r) => [CX + (r || R) * Math.cos(ang(i)), CY + (r || R) * Math.sin(ang(i))];
+      // faint guide ring
+      el(svg, "circle", { cx: CX, cy: CY, r: R, fill: "none", stroke: "rgba(20,24,27,0.12)", "stroke-width": 2, "stroke-dasharray": "4 10" });
+      const NODES = [
+        { t: "Volume", ic: "chip", tb: S(1934.6), tl: T(1935.32), side: "top" },
+        { t: "Below cost", ic: "cost", tb: S(1937.6), tl: T(1938.20), side: "right" },
+        { t: "High yield", ic: "wafer", tb: S(1940.44), tl: T(1943.00), side: "right" },
+        { t: "Lower price", ic: "tag", tb: S(1945.0), tl: T(1945.48), side: "bottom" },
+        { t: "Profit", ic: "dollar", tb: S(1947.9), tl: T(1948.44), side: "bottom" },
+        { t: "Next factory", ic: "factory", tb: S(1949.3), tl: T(1949.72), side: "left" },
+        { t: "Next chips", ic: "chip2", tb: S(1951.6), tl: T(1952.04), side: "left" },
+      ];
+      const waferDots = [];
+      NODES.forEach((n, i) => {
+        const [x, y] = P(i);
+        const b = document.createElement("div"); b.className = "n19-badge"; b.style.left = x + "px"; b.style.top = y + "px";
+        if (n.ic === "chip" || n.ic === "chip2" || n.ic === "factory") {
+          const ic = document.createElement("div"); ic.className = "n19-icon " + (n.ic === "factory" ? "n19-ic-factory" : "n19-ic-chip");
+          ic.style.cssText = "left:30px;top:30px;width:76px;height:76px;background:" + (n.ic === "chip2" ? VOLT : PAPER); b.appendChild(ic);
+          if (n.ic === "chip2") b.style.boxShadow = "0 0 0 5px " + VOLTD + ", 0 10px 24px rgba(20,24,27,0.25)";
+        } else if (n.ic === "wafer") {
+          const w = document.createElement("div"); w.style.cssText = "position:absolute;left:22px;top:22px;width:92px;height:92px;border-radius:50%;background:#3a4146"; b.appendChild(w);
+          for (let k = 0; k < 9; k++) { const d = document.createElement("div"); d.style.cssText = "position:absolute;left:" + (40 + (k % 3) * 20) + "px;top:" + (40 + Math.floor(k / 3) * 20) + "px;width:16px;height:16px;background:" + VOLT; b.appendChild(d); waferDots.push(d); }
+        } else {
+          const s = document.createElementNS(NS, "svg"); s.setAttribute("viewBox", "0 0 136 136"); s.setAttribute("width", 136); s.setAttribute("height", 136); s.style.position = "absolute"; s.style.left = 0; s.style.top = 0;
+          const st = { fill: "none", stroke: PAPER, "stroke-width": 7, "stroke-linecap": "round", "stroke-linejoin": "round" };
+          if (n.ic === "cost") {   // dashed cost line, price bar under it, arrow down
+            el(s, "path", Object.assign({}, st, { d: "M30 52 L106 52", "stroke-dasharray": "9 8", "stroke-width": 5 }));
+            el(s, "path", { d: "M40 64 L72 64 L72 104 L40 104 Z", fill: PAPER });
+            el(s, "path", Object.assign({}, st, { d: "M92 66 L92 102 M80 90 L92 102 L104 90" }));
+          } else if (n.ic === "tag") {
+            el(s, "path", Object.assign({}, st, { d: "M36 40 L76 40 L102 68 L76 96 L36 96 Z" }));
+            el(s, "circle", { cx: 50, cy: 68, r: 6, fill: PAPER });
+            el(s, "path", Object.assign({}, st, { d: "M112 40 L112 70 M104 62 L112 70 L120 62", "stroke-width": 5 }));
+          } else {   // dollar coin stack
+            el(s, "path", Object.assign({}, st, { d: "M40 96 L96 96 M44 84 L92 84 M48 72 L88 72" }));
+            el(s, "path", Object.assign({}, st, { d: "M80 34 C70 26 52 28 52 40 C52 52 82 48 82 60 C82 70 62 72 52 64 M67 22 L67 30 M67 66 L67 70", "stroke-width": 5 }));
+          }
+          b.appendChild(s);
+        }
+        box.appendChild(b); gsap.set(b, { opacity: 0 });
+        stop(b, n.tb, { n: 3, from: 1.3 });
+        // label outside the ring
+        const l = document.createElement("div"); l.className = "n19-blab t-label n19-ink"; l.textContent = n.t;
+        if (n.side === "top") l.style.cssText += "left:" + (x - 300) + "px;width:600px;text-align:center;top:" + (y - 120) + "px";
+        if (n.side === "bottom") l.style.cssText += "left:" + (x - 300) + "px;width:600px;text-align:center;top:" + (y + 92) + "px";
+        if (n.side === "right") l.style.cssText += "left:" + (x + 92) + "px;top:" + (y - 13) + "px";
+        if (n.side === "left") l.style.cssText += "left:" + (x - 692) + "px;width:600px;text-align:right;top:" + (y - 13) + "px";
+        box.appendChild(l); gsap.set(l, { opacity: 0 });
+        rise(l, n.tl, { dur: 0.5, y: 8 });
+      });
+      // wafer dots light when he says "learn … high yield"
+      gsap.set(waferDots, { opacity: 0.2 });
+      waferDots.forEach((d, k) => tl.to(d, { opacity: 1, duration: 1 / 12, ease: "steps(1)" }, S(1941.4) + k / 12));
+      // arcs between nodes (clockwise), the last one closes the loop
+      const arc = (i, t, dur) => {
+        const a0 = ang(i) + 0.21, a1 = ang(i + 1) - 0.21;
+        const x0 = CX + R * Math.cos(a0), y0 = CY + R * Math.sin(a0), x1 = CX + R * Math.cos(a1), y1 = CY + R * Math.sin(a1);
+        ink(svg, "M" + x0.toFixed(1) + " " + y0.toFixed(1) + " A" + R + " " + R + " 0 0 1 " + x1.toFixed(1) + " " + y1.toFixed(1), t, dur, { color: INK, width: 6, ease: C(E.inOut, dur) });
+        const tx = -Math.sin(a1), ty = Math.cos(a1), nx = Math.cos(a1), ny = Math.sin(a1), h = 20;
+        const hd = "M" + (x1 - tx * h + nx * h * 0.6).toFixed(1) + " " + (y1 - ty * h + ny * h * 0.6).toFixed(1) + " L" + x1.toFixed(1) + " " + y1.toFixed(1) + " L" + (x1 - tx * h - nx * h * 0.6).toFixed(1) + " " + (y1 - ty * h - ny * h * 0.6).toFixed(1);
+        ink(svg, hd, t + dur * 0.9, 0.15, { color: INK, width: 6 });
+      };
+      [[0, 1936.6], [1, 1939.6], [2, 1944.0], [3, 1946.9], [4, 1948.75], [5, 1950.85], [6, 1952.8]].forEach((p) => arc(p[0], S(p[1]), 0.7));
+      pop($("sc007-logo"), S(1931.9), { dur: 0.9, from: 0.7 });
+      // camera: full → node → node … → full
+      const focus = (i, s) => { const [x, y] = P(i); return at(x * 0.62 + CX * 0.38, y * 0.62 + CY * 0.38, s); };
+      const full = at(CX, CY - 10, 1.0);
+      let cur = full; gsap.set(vw, full);
+      const go = (nx, t, d) => { const a = cur; tl.fromTo(vw, { x: a.x, y: a.y, scale: a.scale }, { x: nx.x, y: nx.y, scale: nx.scale, duration: d, ease: E.cam, immediateRender: false }, t); cur = nx; };
+      go(focus(0, 1.32), S(1933.7), 1.3);
+      go(focus(1, 1.32), S(1936.5), 1.3);
+      go(focus(2, 1.32), S(1939.5), 1.3);
+      go(focus(3, 1.32), S(1943.9), 1.3);
+      go(focus(4, 1.32), S(1946.8), 1.2);
+      go(focus(5, 1.32), S(1948.7), 1.1);
+      go(focus(6, 1.32), S(1950.8), 1.1);
+      go(at(CX, CY - 10, 1.0), S(1953.55), 1.4);
+    })();
+
+    /* ===== sc008 · chips: volume first · other industries: better first (whip ←) ===== */
+    whip("sc007", "sc008", S(1954.95), { dir: -1 });
+    (function () {
+      const svg = $("sc008-svg"), pile = $("sc008-pile");
+      for (let k = 0; k < 9; k++) {
+        const c = document.createElement("div"); c.className = "n19-icon n19-ic-chip";
+        c.style.cssText = "left:" + (20 + (k % 3) * 76) + "px;top:" + (150 - Math.floor(k / 3) * 70) + "px;width:66px;height:66px;background:" + VOLTD;
+        pile.appendChild(c); gsap.set(c, { opacity: 0 });
+        tl.fromTo(c, { opacity: 0, y: -30 }, { opacity: 1, y: 0, duration: 2 / 12, ease: "steps(2)", immediateRender: true }, S(1955.6) + k / 8);
+      }
+      const box = (b, t, word) => { gsap.set($(b), { scaleX: 0 }); gsap.set($(b + "t"), { opacity: 0 });
+        tl.fromTo($(b), { scaleX: 0 }, { scaleX: 1, duration: 0.35, ease: C(E.out, 0.35), immediateRender: true }, t);
+        rise($(b + "t"), t, { dur: 0.45, y: 8 }); };
+      gsap.set([$("sc008-la"), $("sc008-lb"), $("sc008-car")], { opacity: 0 });
+      gsap.set($("sc008-div"), { scaleX: 0 });
+      box("sc008-a1", T(1957.61));
+      const ar1 = FX.markup.arrow(tl, svg, S(1959.0), { x1: 1000, y1: 392, x2: 1270, y2: 388, bend: -26, head: 22, color: INK, width: 6, filter: PEN, dur: 0.6 });
+      gsap.set(ar1, { opacity: 0 }); tl.set(ar1, { opacity: 1 }, S(1959.0));
+      box("sc008-a2", T(1959.93));
+      tl.fromTo($("sc008-div"), { scaleX: 0 }, { scaleX: 1, duration: 0.7, ease: C(E.out, 0.7), immediateRender: true }, S(1961.2));
+      stop($("sc008-car"), S(1961.8), { n: 3, from: 1.2 });
+      rise($("sc008-lb"), T(1961.85), { dur: 0.5, y: 8 });
+      box("sc008-b1", T(1963.45));
+      const ar2 = FX.markup.arrow(tl, svg, S(1963.65), { x1: 1000, y1: 752, x2: 1270, y2: 748, bend: -26, head: 22, color: INK, width: 6, filter: PEN, dur: 0.4 });
+      gsap.set(ar2, { opacity: 0 }); tl.set(ar2, { opacity: 1 }, S(1963.65));
+      box("sc008-b2", T(1964.09));
+      rise($("sc008-la"), T(1964.89), { dur: 0.5, y: 8 });
+      // "you want the volume BEFORE you get better"
+      tl.to([$("sc008-rowB")].concat(ar2), { opacity: 0.3, duration: 0.4, ease: C(E.out, 0.4) }, S(1965.9));
+      const c1 = FX.markup.circle(tl, svg, S(1966.3), { cx: 770, cy: 392, rx: 262, ry: 98, color: INK, width: 6, filter: PEN, dur: 0.6, seed: 5 });
+      gsap.set(c1, { opacity: 0 }); tl.set(c1, { opacity: 1 }, S(1966.3));
+      push("sc008", 1954.95, 1967.75, 1.0, 1.05, { ease: E.cam, origin: "860px 420px" });
+    })();
+
+    /* ===== sc009 · China map: Huawei helped, NVIDIA chips forced out (light-flash whip) ===== */
+    whip("sc008", "sc009", S(1967.75), { dir: 1, flash: true });
+    (function () {
+      const cam = $("sc009-cam"), mc = mapCam(cam);
+      const lcn = mc.mark(1133, 900, label("China", { size: 80 }));
+      const phw = mc.mark(1538, 1458, pinEl(RED, "rgba(246,164,169,0.35)"));
+      const card = document.createElement("div");
+      card.style.cssText = "position:absolute;left:34px;top:-196px;width:150px;height:150px;border-radius:24px;background:#efeee7;box-shadow:0 16px 40px rgba(0,0,0,0.6);opacity:0";
+      card.innerHTML = '<img src="assets/nvidia/shared/logos/huawei.svg" alt="" style="position:absolute;left:22px;top:22px;width:106px;height:106px" />';
+      mc.mark(1538, 1458, card);
+      const a = at(1400, 1000, 0.85), b = at(1430, 990, 0.9);
+      mc.apply(a);
+      mc.move(a, b, S(1967.75), 8.0, (k) => k);
+      tl.fromTo($("sc009-cn"), { opacity: 0.15 }, { opacity: 0.45, duration: 0.8, ease: C(E.out, 0.8), immediateRender: true }, S(1968.35));
+      rise(lcn, T(1968.33), { dur: 0.7, y: 10 });
+      stop(phw, S(1970.7), { n: 3, from: 1.8 });
+      tl.fromTo(card, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.6, ease: C(E.out, 0.6), immediateRender: true }, T(1970.81));
+      tl.to(lcn, { opacity: 0.35, duration: 0.4 }, S(1972.3));
+      // NVIDIA chips across eastern China
+      const CITIES = [[1624, 678], [1809, 1067], [1547, 1096], [1172, 1097], [1351, 928], [1881, 593], [1480, 860]];
+      const toks = CITIES.map((p, i) => {
+        const t = document.createElement("div"); t.className = "n19-icon n19-ic-chip";
+        t.style.cssText = "left:-30px;top:-30px;width:60px;height:60px;background:" + VOLT + ";filter:drop-shadow(0 0 10px rgba(134,194,50,0.7));opacity:0";
+        mc.mark(p[0], p[1], t);
+        tl.fromTo(t, { opacity: 0, scale: 1.5 }, { opacity: 1, scale: 1, duration: 2 / 12, ease: "steps(2)", immediateRender: true }, S(1973.5) + i / 12);
+        // forced out: pushed east, off the map
+        tl.to(t, { x: 1700, duration: 0.8, ease: E.in }, S(1974.75) + (6 - i) * 0.05);
+        return t;
+      });
+      tl.fromTo($("sc009-nv"), { opacity: 0, x: -20 }, { opacity: 1, x: 0, duration: 0.5, ease: C(E.out, 0.5), immediateRender: true }, T(1973.45));
+      tl.to($("sc009-nv"), { opacity: 0.35, duration: 0.3 }, S(1975.4));
+      push("sc009", 1967.75, 1975.7, 1.0, 1.02, { ease: "none" });
+      exitPush("sc009", S(1975.7), 1.25, 0.5);
+    })();
+
+    /* ===== sc010 · Chinese AI companies → Huawei (hard cut on action) ===== */
+    (function () {
+      const tiles = [0, 1, 2, 3].map((k) => $("sc010-t" + k));
+      gsap.set(tiles.concat([$("sc010-hd"), $("sc010-hw")]), { opacity: 0 });
+      push("sc010", 1976.2, 1981.0, 1.06, 1.0, { ease: E.cam });
+      tl.fromTo($("sc010-ph"), { x: 60 }, { x: 0, duration: 1.2, ease: C(E.out, 1.2), immediateRender: true }, S(1976.2));
+      rise($("sc010-hd"), T(1977.45), { dur: 0.5, y: 8 });
+      tiles.forEach((t, k) => tl.fromTo(t, { opacity: 0, x: -40 }, { opacity: 1, x: 0, duration: 3 / 12, ease: "steps(3)", immediateRender: true }, S(1977.7) + k * 0.16));
+      [284, 456, 628, 800].forEach((y, k) => {
+        const ar = FX.markup.arrow(tl, $("sc010-svg"), S(1979.05) + k * 0.1, { x1: 520, y1: y, x2: 836, y2: 470, bend: (k - 1.5) * -18 + 6, head: 20, color: REDL, width: 5, filter: PEN, dur: 0.5 });
+        gsap.set(ar, { opacity: 0 }); tl.set(ar, { opacity: 0.95 }, S(1979.05) + k * 0.1);
+      });
+      rise($("sc010-hw"), T(1979.93), { dur: 0.5, y: 10 });
+    })();
+
+    /* ===== sc011 · the flywheel, in red: orders → yield → learning → next chips (vertical whip) ===== */
+    whip("sc010", "sc011", S(1981.00), { dir: -1, vertical: true });
+    (function () {
+      const svg = $("sc011-svg"), box = $("sc011-nodes");
+      const CX = 960, CY = 540, R = 310;
+      const ang = (i) => (-90 + i * 90) * Math.PI / 180;
+      el(svg, "circle", { cx: CX, cy: CY, r: R, fill: "none", stroke: "rgba(246,164,169,0.14)", "stroke-width": 2, "stroke-dasharray": "4 10" });
+      const spin = el(svg, "circle", { cx: CX, cy: CY, r: R + 70, fill: "none", stroke: "rgba(246,164,169,0.35)", "stroke-width": 3, "stroke-dasharray": "2 22", opacity: 0 });
+      const NODES = [
+        { t: "Orders", tb: S(1982.9), tl: T(1983.45), side: "top" },
+        { t: "Yield", tb: S(1985.2), tl: T(1985.77), side: "right" },
+        { t: "Learning", tb: S(1986.75), tl: T(1987.13), side: "bottom" },
+        { t: "Next chips", tb: S(1989.4), tl: T(1989.93), side: "left" },
+      ];
+      NODES.forEach((n, i) => {
+        const x = CX + R * Math.cos(ang(i)), y = CY + R * Math.sin(ang(i));
+        const b = document.createElement("div"); b.className = "n19-rbadge"; b.style.left = x + "px"; b.style.top = y + "px";
+        const s = document.createElementNS(NS, "svg"); s.setAttribute("viewBox", "0 0 124 124"); s.setAttribute("width", 124); s.setAttribute("height", 124); s.style.position = "absolute";
+        const st = { fill: "none", stroke: BONE, "stroke-width": 6, "stroke-linecap": "round", "stroke-linejoin": "round" };
+        if (i === 0) {   // order tickets
+          el(s, "path", Object.assign({}, st, { d: "M38 30 L78 30 L86 38 L86 94 L38 94 Z M48 50 L76 50 M48 64 L76 64 M48 78 L66 78" }));
+        } else if (i === 1) {   // wafer with dies
+          el(s, "circle", { cx: 62, cy: 62, r: 40, fill: "#3a2124", stroke: BONE, "stroke-width": 4 });
+          for (let k = 0; k < 9; k++) el(s, "rect", { x: 40 + (k % 3) * 16, y: 40 + Math.floor(k / 3) * 16, width: 12, height: 12, fill: BONE });
+        } else if (i === 2) {   // learning curve: steps up
+          el(s, "path", Object.assign({}, st, { d: "M28 92 L48 92 L48 74 L66 74 L66 54 L84 54 L84 34 L98 34" }));
+        } else {   // next-generation chip
+          el(s, "path", Object.assign({}, st, { d: "M40 40 L84 40 L84 84 L40 84 Z M52 52 L72 52 L72 72 L52 72 Z M50 28 L50 40 M62 28 L62 40 M74 28 L74 40 M50 84 L50 96 M62 84 L62 96 M74 84 L74 96 M28 50 L40 50 M28 62 L40 62 M28 74 L40 74 M84 50 L96 50 M84 62 L96 62 M84 74 L96 74" }));
+        }
+        b.appendChild(s); box.appendChild(b); gsap.set(b, { opacity: 0 });
+        stop(b, n.tb, { n: 3, from: 1.3 });
+        const l = document.createElement("div"); l.className = "n19-blab t-label clean"; l.textContent = n.t; l.style.fontSize = "28px";
+        if (n.side === "top") l.style.cssText += "left:" + (x - 300) + "px;width:600px;text-align:center;top:" + (y - 110) + "px";
+        if (n.side === "bottom") l.style.cssText += "left:" + (x - 300) + "px;width:600px;text-align:center;top:" + (y + 86) + "px";
+        if (n.side === "right") l.style.cssText += "left:" + (x + 88) + "px;top:" + (y - 14) + "px";
+        if (n.side === "left") l.style.cssText += "left:" + (x - 688) + "px;width:600px;text-align:right;top:" + (y - 14) + "px";
+        box.appendChild(l); gsap.set(l, { opacity: 0 });
+        rise(l, n.tl, { dur: 0.5, y: 8 });
+      });
+      const arc = (i, t, dur) => {
+        const a0 = ang(i) + 0.26, a1 = ang(i + 1) - 0.26;
+        const x0 = CX + R * Math.cos(a0), y0 = CY + R * Math.sin(a0), x1 = CX + R * Math.cos(a1), y1 = CY + R * Math.sin(a1);
+        ink(svg, "M" + x0.toFixed(1) + " " + y0.toFixed(1) + " A" + R + " " + R + " 0 0 1 " + x1.toFixed(1) + " " + y1.toFixed(1), t, dur, { color: REDL, width: 6, ease: C(E.inOut, dur) });
+        const tx = -Math.sin(a1), ty = Math.cos(a1), nx = Math.cos(a1), ny = Math.sin(a1), h = 20;
+        ink(svg, "M" + (x1 - tx * h + nx * h * 0.6).toFixed(1) + " " + (y1 - ty * h + ny * h * 0.6).toFixed(1) + " L" + x1.toFixed(1) + " " + y1.toFixed(1) + " L" + (x1 - tx * h - nx * h * 0.6).toFixed(1) + " " + (y1 - ty * h - ny * h * 0.6).toFixed(1), t + dur * 0.9, 0.15, { color: REDL, width: 6 });
+      };
+      arc(0, S(1984.2), 0.8); arc(1, S(1986.2), 0.6); arc(2, S(1988.3), 0.8); arc(3, S(1990.1), 0.6);
+      pop($("sc011-logo"), S(1981.25), { dur: 0.9, from: 0.7 });
+      // the wheel spins up once the loop is closed
+      tl.fromTo(spin, { opacity: 0 }, { opacity: 1, duration: 0.4, immediateRender: true }, S(1984.0));
+      tl.fromTo(spin, { rotation: 0 }, { rotation: 140, duration: 7.333, ease: "power2.in", immediateRender: false, svgOrigin: CX + " " + CY }, S(1984.0));
+      push("sc011", 1981.0, 1990.75, 1.0, 1.05, { ease: E.cam });
+      tl.to($("sc011-vw"), { scale: 1.3, duration: 0.583, ease: E.in }, S(1990.75));
+    })();
+
+    FX.mount(tl, DURATION);
+    window.__timelines = window.__timelines || {};
+    window.__timelines[SEG] = tl;
+  })();
+  </script>
+</template>
+</body>
+</html>

@@ -11,7 +11,7 @@ gap 20 / gap_fast 18 / ceiling 20, pause_lift_db 0. Never set them looser."""
 import json, os
 
 # per-act balance trims (dB on every layer of the act) from act_levels.py: aim −20…−24 LU re the VO while he speaks
-TRIM = {"N2": 1.0, "N3": 7.0, "N4": 1.0}
+TRIM = {"N2": 1.0, "N3": 7.0, "N4": 1.0}   # 0–300 s test 2026-11-17: N3 was −27.5 untrimmed → all four acts −23.8…−24.2 (SOUND_PLAN §5); N5–N21 after the full build
 
 DR = "flute"   # C-minor drone; its bass stem carries it (instruments stem is a faint flute air 14 LU under)
 

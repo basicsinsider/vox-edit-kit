@@ -1,0 +1,828 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8" /></head>
+<body>
+<template>
+  <style>
+    #root { position: absolute; inset: 0; overflow: hidden; background: var(--night); }
+    .n17-scene { position: absolute; inset: 0; overflow: hidden; visibility: hidden; opacity: 0; }
+    .n17-shot { position: absolute; inset: 0; overflow: hidden; transform-origin: 50% 50%; background: var(--night); }
+    .n17-paper { background: var(--paper); }
+    .n17-p1, .n17-p2 { position: absolute; inset: -40px; background-size: cover; background-position: center; pointer-events: none; }
+    .n17-p2 { opacity: 0.9; mix-blend-mode: multiply; }
+    .n17-mk { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; pointer-events: none; }
+    .n17-credit { position: absolute; right: 30px; bottom: 20px; font-size: 13px; letter-spacing: 0.08em; color: rgba(240,239,232,0.68); z-index: 5; white-space: nowrap; }
+    .n17-credit.ink { color: rgba(20,24,27,0.68); }
+    .n17-ic { position: absolute; -webkit-mask-size: contain; mask-size: contain; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+      -webkit-mask-position: center; mask-position: center; }
+    .n17-src { position: absolute; font-size: 22px; color: var(--ash-light); white-space: nowrap; padding-left: 60px; }
+    .n17-src::before { content: ""; position: absolute; left: 0; top: 9px; width: 44px; height: 3px; background: var(--ash-light); }
+    .n17-src.ink { color: var(--ink-soft); }
+    .n17-src.ink::before { background: var(--ink-soft); }
+    .n17-hlr { position: absolute; background: var(--yellow); mix-blend-mode: multiply; transform-origin: 0 50%; transform: scaleX(0); border-radius: 4px; }
+
+    /* maps */
+    .n17-mapcam { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
+    .n17-mapcam > .n17-base, .n17-mapcam > .n17-ov { position: absolute; left: 0; top: 0; }
+    .n17-ctry { position: absolute; font-size: 72px; color: var(--bone); letter-spacing: 0.06em; white-space: nowrap; text-shadow: 0 2px 14px rgba(0,0,0,0.55); }
+    .n17-city { position: absolute; font-size: 26px; color: var(--bone); white-space: nowrap; text-shadow: 0 1px 8px rgba(0,0,0,0.7); }
+    .n17-dot { position: absolute; width: 16px; height: 16px; margin: -8px 0 0 -8px; border-radius: 50%; background: var(--bone); box-shadow: 0 0 0 4px rgba(13,16,18,0.6); }
+
+    /* sc001 */
+    #nvs17-sc001-shot { background: #11151a; }
+    #nvs17-sc001-cam { width: 6383px; height: 4368px; }
+    .n17-chipic { position: absolute; left: 0; top: 0; width: 40px; height: 40px; margin: -20px 0 0 -20px; background: var(--volt);
+      -webkit-mask-image: url('assets/nvidia/shared/icons/chip.svg'); mask-image: url('assets/nvidia/shared/icons/chip.svg');
+      -webkit-mask-size: contain; mask-size: contain; filter: drop-shadow(0 0 6px rgba(134,194,50,0.7)); }
+
+    /* waffle (ref ast_0b23d2c7a06c4bb3) */
+    #nvs17-wf-cam { position: absolute; inset: 0; transform-origin: 960px 540px; }
+    #nvs17-wf-title { position: absolute; left: 420px; top: 104px; font-size: 56px; color: var(--ink); white-space: nowrap; }
+    .n17-kick { position: absolute; left: 420px; top: 196px; font-size: 24px; color: var(--ink-soft); white-space: nowrap; }
+    #nvs17-wf-grid { position: absolute; left: 420px; top: 250px; width: 654px; height: 654px; }
+    .n17-sq { position: absolute; width: 54px; height: 54px; border: 3px solid rgba(20,24,27,0.22); box-sizing: border-box; }
+    .n17-sq .f { position: absolute; inset: -3px; background: var(--volt); opacity: 0; box-shadow: inset 0 -4px 0 rgba(63,100,16,0.55); }
+    .n17-sq .f::after { content: ""; position: absolute; inset: 0; background: url('assets/textures/paper_fiber_01.jpg') center / 300px auto; mix-blend-mode: multiply; opacity: 0.5; }
+    .n17-sq .g { position: absolute; inset: -3px; border: 3px dashed var(--volt-dark); background: rgba(134,194,50,0.32); opacity: 0; }
+    #nvs17-wf-lead { position: absolute; left: 1074px; top: 577px; width: 86px; height: 3px; background: var(--ink); transform-origin: 0 50%; }
+    #nvs17-wf-box { position: absolute; left: 1160px; top: 508px; padding: 18px 28px 8px; background: var(--yellow); color: var(--ink); font-size: 120px; line-height: 1;
+      box-shadow: 0 14px 30px rgba(20,24,27,0.18); white-space: nowrap; }
+    #nvs17-wf-leg { position: absolute; left: 420px; top: 930px; font-size: 24px; color: var(--ink); white-space: nowrap; padding-left: 44px; }
+    #nvs17-wf-leg::before { content: ""; position: absolute; left: 0; top: -2px; width: 28px; height: 28px; background: var(--volt); box-shadow: inset 0 -3px 0 rgba(63,100,16,0.55); }
+
+    /* sc003 · Tom's Hardware article */
+    #nvs17-sc003-cam { position: absolute; inset: 0; transform-origin: 960px 400px; }
+    #nvs17-sc003-card { position: absolute; left: 330px; top: 150px; width: 1260px; height: 790px; overflow: hidden; background: #fff; box-shadow: 0 30px 70px rgba(0,0,0,0.55); }
+    #nvs17-sc003-card img { position: absolute; left: -40px; top: -210px; width: 1300px; height: 1600px; }
+
+    /* sc004 · Southeast Asia */
+    #nvs17-sc004-shot { background: #10141a; }
+    #nvs17-sc004-cam { width: 5428px; height: 7030px; }
+    .n17-k4 { font-size: 65px; }   /* 26 px on screen at camera scale 0.4 */
+    .n17-K4 { font-size: 180px; }  /* 72 px on screen */
+
+    /* sc006 · Huawei racks */
+    #nvs17-sc006-vw { position: absolute; inset: 0; transform-origin: 50% 50%; }
+    #nvs17-sc006-img { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; object-fit: cover; object-position: 50% 40%; }
+    #nvs17-sc006-scrim { position: absolute; inset: 0; background: radial-gradient(ellipse 46% 50% at 50% 46%, rgba(9,11,12,0.78) 0%, rgba(9,11,12,0.35) 70%, rgba(9,11,12,0.2) 100%); }
+    .n17-tag { position: absolute; left: 96px; bottom: 96px; font-size: 26px; color: var(--bone); white-space: nowrap; padding-top: 16px; }
+    .n17-tag::before { content: ""; position: absolute; left: 0; top: 0; width: 64px; height: 4px; background: var(--red-light); }
+
+    /* sc007 · Huawei HQ */
+    #nvs17-sc007-cam { position: absolute; inset: 0; transform-origin: 600px 500px; }
+    #nvs17-sc007-blk { position: absolute; left: 60px; top: 560px; width: 300px; height: 380px; background: var(--red); opacity: 0.9; }
+    #nvs17-sc007-blk::after { content: ""; position: absolute; inset: 0; background: url('assets/textures/paper_fiber_01.jpg') center / cover; mix-blend-mode: multiply; opacity: 0.55; }
+    #nvs17-sc007-card { position: absolute; left: 120px; top: 170px; width: 1040px; height: 693px; overflow: hidden; background: var(--paper-2); box-shadow: 0 22px 46px rgba(20,24,27,0.3); }
+    #nvs17-sc007-card img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: grayscale(1) contrast(1.1) brightness(1.02); }
+    #nvs17-sc007-wm { left: 1260px; top: 236px; width: 420px; height: 72px; background: var(--ink); -webkit-mask-position: 0 50%; mask-position: 0 50%; }
+    .n17-nm { position: absolute; left: 1260px; white-space: nowrap; }
+    .n17-nm .a { font-size: 54px; color: var(--ink); }
+    .n17-nm .b { font-size: 24px; color: var(--ink-soft); margin-top: 12px; }
+    #nvs17-sc007-ban .a { display: inline-block; background: var(--ice); color: var(--ink); padding: 14px 22px 6px; }
+    #nvs17-sc007-ban .b { color: var(--ice-dark); }
+    #nvs17-sc007-flag { position: absolute; left: 1260px; top: 352px; width: 100px; height: 53px; box-shadow: 0 4px 10px rgba(20,24,27,0.25); filter: saturate(0.7); }
+
+    /* sc008 · China + Huawei rings */
+    #nvs17-sc008-shot { background: #11151a; }
+    #nvs17-sc008-push { position: absolute; inset: 0; transform-origin: 1163px 819px; }
+    #nvs17-sc008-cam { width: 6383px; height: 4368px; }
+    #nvs17-sc008-badge { position: absolute; left: 1163px; top: 819px; width: 96px; height: 96px; margin: -150px 0 0 -48px; border-radius: 50%; background: var(--bone);
+      box-shadow: 0 8px 22px rgba(0,0,0,0.5); }
+    #nvs17-sc008-badge .n17-ic { left: 16px; top: 16px; width: 64px; height: 64px; background: var(--red);
+      -webkit-mask-image: url('assets/nvidia/shared/logos/huawei.svg'); mask-image: url('assets/nvidia/shared/logos/huawei.svg'); }
+
+    /* sc009 · growth chart (ref ast_06720d0b255d4d29) */
+    #nvs17-sc009-cam { position: absolute; inset: 0; transform-origin: 1200px 400px; }
+    #nvs17-sc009-title { position: absolute; left: 96px; top: 92px; font-size: 54px; color: var(--bone); white-space: nowrap; }
+    .n17-yr { position: absolute; top: 904px; width: 200px; margin-left: -100px; text-align: center; font-size: 28px; color: var(--bone); }
+    .n17-val { position: absolute; width: 520px; text-align: right; white-space: nowrap; }
+    .n17-val .a { font-size: 60px; color: var(--bone); line-height: 1; }
+    .n17-val .b { font-size: 22px; margin-top: 10px; color: var(--ash-light); }
+    #nvs17-sc009-v3 { position: absolute; left: 840px; top: 196px; width: 560px; text-align: right; white-space: nowrap; }
+    #nvs17-sc009-v3 .a { font-size: 96px; color: var(--yellow); line-height: 1; }
+    #nvs17-sc009-v3 .b { font-size: 24px; margin-top: 12px; color: var(--bone); }
+
+    /* sc010 · silhouette → Lutnick collage (ref ast_0455523fccc84f71, varied) */
+    #nvs17-sc010-rc { position: absolute; inset: 0; transform-origin: 960px 540px; }
+    .n17-blk { position: absolute; background: var(--ice); opacity: 0.92; }
+    .n17-blk::after { content: ""; position: absolute; inset: 0; background: url('assets/textures/paper_fiber_01.jpg') center / cover; mix-blend-mode: multiply; opacity: 0.55; }
+    .n17-cut { position: absolute; left: 300px; top: 210px; width: 674px; height: 872px; }
+    #nvs17-sc010-sil { filter: brightness(0) opacity(0.86); }
+    #nvs17-sc010-real { filter: grayscale(1) contrast(1.1) brightness(1.04) drop-shadow(0 18px 30px rgba(20,24,27,0.3)); }
+    #nvs17-sc010-cn { position: absolute; left: 1180px; top: 300px; width: 600px; height: 453px; opacity: 0.86; }
+    .n17-card { position: absolute; overflow: hidden; background: var(--paper-2); box-shadow: 0 18px 40px rgba(20,24,27,0.28); }
+    .n17-card img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: grayscale(1) contrast(1.05) brightness(1.1); }
+    .n17-card .tint { position: absolute; inset: 0; background: var(--ice); mix-blend-mode: multiply; opacity: 0.85; }
+    .n17-card .lift { position: absolute; inset: 0; background: var(--paper); mix-blend-mode: screen; opacity: 0.18; }
+    #nvs17-sc010-nt { left: 1180px; top: 650px; }
+    #nvs17-sc010-nt .a { font-size: 64px; }
+    #nvs17-sc010-nt .b { color: var(--ice-dark); }
+
+    /* sc011 · The Register */
+    #nvs17-sc011-cam { position: absolute; inset: 0; transform-origin: 960px 520px; }
+    #nvs17-sc011-card { position: absolute; left: 96px; top: 330px; width: 2700px; height: 680px; background: #fff; transform-origin: 0 0; box-shadow: 0 40px 90px rgba(0,0,0,0.6); }
+    #nvs17-sc011-card > img { position: absolute; left: 0; top: 0; width: 2700px; height: 680px; }
+
+    /* THE LINE extras */
+    .n17-date { position: absolute; left: 96px; font-size: 26px; color: var(--ice-dark); white-space: nowrap; }
+    .n17-ghost { position: absolute; left: 96px; right: 96px; height: 0; border-top: 4px dashed rgba(17,89,115,0.5); }
+    .n17-allow { position: absolute; left: 0; top: 84px; padding: 7px 14px 3px; font-size: 24px; letter-spacing: 0.16em; color: var(--paper); background: var(--volt-dark); white-space: nowrap; }
+
+    /* sc013 · modern TV */
+    #nvs17-sc013-shot { background: radial-gradient(ellipse 70% 60% at 50% 42%, #1b2228 0%, #0d1012 70%); }
+    #nvs17-sc013-cam { position: absolute; inset: 0; transform-origin: 960px 476px; }
+    #nvs17-sc013-glow { position: absolute; left: 260px; top: 70px; width: 1400px; height: 820px; border-radius: 40px; background: rgba(42,159,201,0.16); filter: blur(60px); }
+    #nvs17-sc013-tv { position: absolute; left: 330px; top: 110px; width: 1260px; height: 732px; border-radius: 10px; background: #050607;
+      box-shadow: 0 0 0 2px #2a2f33, 0 40px 80px rgba(0,0,0,0.7); }
+    #nvs17-sc013-scr { position: absolute; left: 16px; top: 16px; width: 1228px; height: 700px; overflow: hidden; background: #000; }
+    #nvs17-sc013-scr img { position: absolute; left: 0; top: 0; width: 100%; height: 100%; object-fit: cover; object-position: 60% 40%; filter: contrast(1.04) saturate(0.85); }
+    #nvs17-sc013-scr .gl { position: absolute; inset: 0; background: linear-gradient(118deg, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0.02) 38%, rgba(255,255,255,0) 60%); }
+    #nvs17-sc013-scr .bl { position: absolute; inset: 0; background: #000; }
+    #nvs17-sc013-stand { position: absolute; left: 860px; top: 842px; width: 200px; height: 34px; background: linear-gradient(#1a1e21, #0b0d0e); border-radius: 0 0 8px 8px; }
+    #nvs17-sc013-nt { position: absolute; left: 330px; top: 906px; white-space: nowrap; }
+    #nvs17-sc013-nt .a { font-size: 46px; color: var(--bone); }
+    .n17-role { position: absolute; left: 0; top: 60px; font-size: 22px; color: var(--ice-light); white-space: nowrap; }
+
+    /* sc014 · quote (painting-to-print, §10.7) */
+    #nvs17-sc014-cam { position: absolute; inset: 0; transform-origin: 0 0; }
+    #nvs17-sc014-pic { position: absolute; left: 96px; top: 172px; width: 640px; height: 376px; overflow: hidden; outline: 2px solid var(--ink); outline-offset: 8px; }
+    #nvs17-sc014-pic img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 60% 40%; filter: grayscale(1) contrast(1.15) brightness(1.05); mix-blend-mode: multiply; }
+    #nvs17-sc014-cap { position: absolute; left: 96px; top: 580px; width: 640px; font-size: 22px; color: var(--ink-soft); white-space: nowrap; }
+    #nvs17-sc014-rule { position: absolute; left: 800px; top: 172px; width: 3px; height: 760px; background: rgba(20,24,27,0.35); }
+    #nvs17-sc014-q { position: absolute; left: 860px; top: 150px; width: 964px; }
+    .n17-qm { position: absolute; left: -10px; top: -40px; font-size: 130px; color: var(--ice-dark); line-height: 1; }
+    .n17-ql { display: block; font-size: 50px; line-height: 1.18; color: var(--ink); white-space: nowrap; opacity: 0; padding-left: 70px; }
+    .n17-gap { display: block; height: 46px; }
+    .n17-u { position: relative; display: inline-block; }
+    .n17-u svg { position: absolute; left: -2px; bottom: -6px; width: calc(100% + 4px); height: 14px; overflow: visible; }
+    .n17-attr { display: block; margin-top: 36px; padding-left: 70px; font-size: 22px; color: var(--ink-soft); white-space: nowrap; opacity: 0; }
+    .n17-attr::before { content: ""; display: inline-block; width: 44px; height: 3px; background: var(--ice-dark); vertical-align: middle; margin-right: 16px; margin-top: -4px; }
+
+    /* sc015 · Bloomberg Law */
+    #nvs17-sc015-cam { position: absolute; inset: 0; transform-origin: 1100px 700px; }
+    #nvs17-sc015-card { position: absolute; left: 124px; top: 232px; width: 1900px; height: 700px; overflow: hidden; background: #fff; transform-origin: 0 0; box-shadow: 0 40px 90px rgba(0,0,0,0.6); }
+    #nvs17-sc015-card > img { position: absolute; left: -330px; top: -420px; width: 2400px; height: 1240px; }
+
+    #nvs17-flash { position: absolute; inset: 0; background: var(--bone); opacity: 0; pointer-events: none; z-index: 7; }
+    #nvs17-grain, #nvs17-dust, #nvs17-vig { z-index: 8; }
+  </style>
+
+  <div id="root" data-composition-id="nvs17" data-vo-start="1698.2083" data-duration="123.9583" data-width="1920" data-height="1080">
+    <svg id="nvs17-defs" width="0" height="0" style="position:absolute"></svg>
+
+    <!-- sc001 · 1698.21–1702.54 · China map, American chips flowing in -->
+    <div class="n17-scene" id="nvs17-sc001"><div class="n17-shot" id="nvs17-sc001-shot">
+      <div class="n17-mapcam" id="nvs17-sc001-cam">
+        <img class="n17-base" src="assets/maps/kit/china_night.jpg" alt="" style="width:6383px;height:4368px;filter:brightness(1.12)" />
+        <img class="n17-ov" id="nvs17-sc001-fill" src="assets/nvidia/nvs17/derived/cn_china_fill.svg" alt="" style="width:6383px;height:4368px;opacity:0.5" />
+        <img class="n17-ov" id="nvs17-sc001-edge" src="assets/nvidia/nvs17/derived/cn_china_stroke.svg" alt="" style="width:6383px;height:4368px" />
+      </div>
+      <svg class="n17-mk" id="nvs17-sc001-arcs" viewBox="0 0 1920 1080"></svg>
+      <div id="nvs17-sc001-chips"></div>
+      <div class="n17-ctry t-display" id="nvs17-sc001-cn" style="left:700px;top:560px">CHINA</div>
+      <div class="n17-credit t-label">Relief: AWS Terrain Tiles · Natural Earth (PD)</div>
+    </div></div>
+
+    <!-- waffle · shown 1702.54–1715.99 and 1726.39–1736.87 -->
+    <div class="n17-scene" id="nvs17-wf"><div class="n17-shot n17-paper" id="nvs17-wf-shot">
+      <div class="n17-p1" style="background-image:url('assets/textures/paper_graph_01_hires.jpg'); opacity:0.32; mix-blend-mode:multiply"></div>
+      <div class="n17-p2" style="background-image:url('assets/textures/paper_cream_01.jpg'); opacity:0.55"></div>
+      <div id="nvs17-wf-cam">
+        <div id="nvs17-wf-title" class="t-serif">NVIDIA’s share of China’s AI chip market</div>
+        <div class="n17-kick t-label" id="nvs17-wf-k1">Before the ban</div>
+        <div class="n17-kick t-label" id="nvs17-wf-k2">After the ban</div>
+        <div id="nvs17-wf-grid"></div>
+        <div id="nvs17-wf-lead"></div>
+        <div id="nvs17-wf-box" class="t-display">0%</div>
+        <div id="nvs17-wf-leg" class="t-label">NVIDIA</div>
+        <svg class="n17-mk" id="nvs17-wf-mk" viewBox="0 0 1920 1080"></svg>
+      </div>
+    </div></div>
+
+    <!-- sc003 · 1715.99–1720.23 · the real Tom's Hardware article -->
+    <div class="n17-scene" id="nvs17-sc003"><div class="n17-shot" id="nvs17-sc003-shot">
+      <div id="nvs17-sc003-cam">
+        <div class="n17-src t-label" id="nvs17-sc003-src" style="left:330px;top:92px">Tom’s Hardware · October 18, 2025</div>
+        <div id="nvs17-sc003-card">
+          <img src="assets/nvidia/shared/news/s13_tomshw_zero.jpg" alt="" />
+          <svg class="n17-mk" id="nvs17-sc003-mk" viewBox="0 0 1920 1080"></svg>
+        </div>
+      </div>
+      <div class="n17-credit t-label">Tom’s Hardware (fair use)</div>
+    </div></div>
+
+    <!-- sc004 · 1720.23–1726.39 · Southeast Asia → China route -->
+    <div class="n17-scene" id="nvs17-sc004"><div class="n17-shot" id="nvs17-sc004-shot">
+      <div class="n17-mapcam" id="nvs17-sc004-cam">
+        <img class="n17-base" src="assets/maps/kit/southeast_asia_night.jpg" alt="" style="width:5428px;height:7030px;filter:brightness(1.12)" />
+        <img class="n17-ov" id="nvs17-sc004-fill" src="assets/nvidia/nvs17/derived/sea_china_fill.svg" alt="" style="width:5428px;height:7030px;opacity:0" />
+        <img class="n17-ov" id="nvs17-sc004-edge" src="assets/nvidia/nvs17/derived/sea_china_stroke.svg" alt="" style="width:5428px;height:7030px;opacity:0" />
+        <img class="n17-ov" src="assets/nvidia/nvs17/derived/sea_my_sg_stroke.svg" alt="" style="width:5428px;height:7030px" />
+        <svg class="n17-ov" id="nvs17-sc004-svg" viewBox="0 0 5428 7030" style="width:5428px;height:7030px;overflow:visible"></svg>
+        <div class="n17-ctry t-display n17-K4" id="nvs17-sc004-my" style="left:1620px;top:4780px">MALAYSIA</div>
+        <div class="n17-dot" id="nvs17-sc004-sgd" style="left:1596px;top:5577px;width:40px;height:40px;margin:-20px 0 0 -20px"></div>
+        <div class="n17-city t-label n17-k4" id="nvs17-sc004-sg" style="left:1660px;top:5530px">Singapore</div>
+        <div class="n17-dot" id="nvs17-sc004-szd" style="left:3448px;top:1657px;width:40px;height:40px;margin:-20px 0 0 -20px"></div>
+        <div class="n17-ctry t-display n17-K4" id="nvs17-sc004-cn" style="left:2280px;top:1060px">CHINA</div>
+      </div>
+      <div class="n17-credit t-label">Relief: AWS Terrain Tiles · Natural Earth (PD)</div>
+    </div></div>
+
+    <!-- sc006 · 1736.87–1745.19 · who sells instead? Huawei (Atlas 900 SuperPoD) -->
+    <div class="n17-scene" id="nvs17-sc006"><div class="n17-shot" id="nvs17-sc006-shot">
+      <div id="nvs17-sc006-vw"><img id="nvs17-sc006-img" src="assets/nvidia/shared/hardware/huawei_atlas900_superpod_2.jpg" alt="" /></div>
+      <div id="nvs17-sc006-scrim"></div>
+      <div class="n17-ic" id="nvs17-sc006-nv" style="left:750px;top:330px;width:420px;height:310px;background:var(--volt);-webkit-mask-image:url('assets/nvidia/shared/logos/nvidia.svg');mask-image:url('assets/nvidia/shared/logos/nvidia.svg')"></div>
+      <div class="n17-ic" id="nvs17-sc006-hf" style="left:840px;top:290px;width:240px;height:240px;background:var(--red);-webkit-mask-image:url('assets/nvidia/shared/logos/huawei.svg');mask-image:url('assets/nvidia/shared/logos/huawei.svg')"></div>
+      <div class="n17-ic" id="nvs17-sc006-hw" style="left:690px;top:580px;width:540px;height:92px;background:var(--bone);-webkit-mask-image:url('assets/nvidia/shared/logos/huawei_wordmark.svg');mask-image:url('assets/nvidia/shared/logos/huawei_wordmark.svg')"></div>
+      <div class="n17-tag t-label" id="nvs17-sc006-tag">Huawei Atlas 900 SuperPoD</div>
+      <div class="n17-credit t-label">Photo: Xuthoria / Wikimedia Commons, CC BY-SA 4.0</div>
+    </div></div>
+
+    <!-- sc007 · 1745.19–1750.07 · Huawei HQ; U.S. Entity List -->
+    <div class="n17-scene" id="nvs17-sc007"><div class="n17-shot n17-paper" id="nvs17-sc007-shot">
+      <div class="n17-p1" style="background-image:url('assets/textures/paper_stained_01_hires.jpg'); opacity:0.5; mix-blend-mode:multiply"></div>
+      <div class="n17-p2" style="background-image:url('assets/textures/paper_cream_02.jpg'); opacity:0.5"></div>
+      <div id="nvs17-sc007-cam">
+        <div id="nvs17-sc007-blk"></div>
+        <div id="nvs17-sc007-card"><img src="assets/nvidia/shared/places/huawei_hq_bantian_1.jpg" alt="" /></div>
+      </div>
+      <div class="n17-ic" id="nvs17-sc007-wm" style="-webkit-mask-image:url('assets/nvidia/shared/logos/huawei_wordmark.svg');mask-image:url('assets/nvidia/shared/logos/huawei_wordmark.svg')"></div>
+      <div class="n17-nm" id="nvs17-sc007-pl" style="top:372px"><div class="a t-display">HUAWEI HQ</div><div class="b t-label">Shenzhen, China</div></div>
+      <img id="nvs17-sc007-flag" src="assets/nvidia/shared/logos/flag_us.svg" alt="" />
+      <div class="n17-nm" id="nvs17-sc007-ban" style="top:440px"><div class="a t-display">U.S. ENTITY LIST</div><div class="b t-label">Added May 2019</div></div>
+      <div class="n17-credit t-label ink">Photo: fading / Wikimedia Commons, CC BY-SA 3.0</div>
+    </div></div>
+
+    <!-- sc008 · 1750.07–1752.79 · inside China, Huawei is blowing up -->
+    <div class="n17-scene" id="nvs17-sc008"><div class="n17-shot" id="nvs17-sc008-shot">
+      <div id="nvs17-sc008-push">
+        <div class="n17-mapcam" id="nvs17-sc008-cam">
+          <img class="n17-base" src="assets/maps/kit/china_night.jpg" alt="" style="width:6383px;height:4368px;filter:brightness(1.12)" />
+          <img class="n17-ov" src="assets/nvidia/nvs17/derived/cn_china_fill.svg" alt="" style="width:6383px;height:4368px;opacity:0.5" />
+          <img class="n17-ov" src="assets/nvidia/nvs17/derived/cn_china_stroke.svg" alt="" style="width:6383px;height:4368px" />
+        </div>
+        <svg class="n17-mk" id="nvs17-sc008-rings" viewBox="0 0 1920 1080"></svg>
+        <div class="n17-dot" style="left:1163px;top:819px"></div>
+        <div id="nvs17-sc008-badge"><div class="n17-ic"></div></div>
+        <div class="n17-city t-label" id="nvs17-sc008-sz" style="left:1190px;top:836px">Shenzhen</div>
+        <div class="n17-ctry t-display" id="nvs17-sc008-cn" style="left:640px;top:330px">CHINA</div>
+      </div>
+      <div class="n17-credit t-label">Relief: AWS Terrain Tiles · Natural Earth (PD)</div>
+    </div></div>
+
+    <!-- sc009 · 1752.79–1771.70 · Huawei chips: 200,000 → 500,000+ → 1.5 million -->
+    <div class="n17-scene" id="nvs17-sc009"><div class="n17-shot" id="nvs17-sc009-shot">
+      <div id="nvs17-sc009-cam">
+        <svg class="n17-mk" id="nvs17-sc009-svg" viewBox="0 0 1920 1080"></svg>
+        <div id="nvs17-sc009-title" class="t-serif">Huawei AI chips per year</div>
+        <div class="n17-yr t-label" id="nvs17-sc009-y1" style="left:560px">2025</div>
+        <div class="n17-yr t-label" id="nvs17-sc009-y2" style="left:1460px">2026</div>
+        <div class="n17-val" id="nvs17-sc009-v1" style="left:0px;top:768px"><div class="a t-display" id="nvs17-sc009-n1">0</div><div class="b t-label" id="nvs17-sc009-s1" style="color:var(--ice-light)">U.S. government</div></div>
+        <div class="n17-val" id="nvs17-sc009-v2" style="left:0px;top:612px"><div class="a t-display" id="nvs17-sc009-n2">0</div><div class="b t-label" id="nvs17-sc009-s2">Private estimates</div></div>
+        <div id="nvs17-sc009-v3"><div class="a t-display halate yellow" id="nvs17-sc009-n3">1.5 MILLION</div><div class="b t-label" id="nvs17-sc009-s3">Expected</div></div>
+      </div>
+    </div></div>
+
+    <!-- sc010 · 1771.70–1783.46 · a random person → the Commerce Secretary -->
+    <div class="n17-scene" id="nvs17-sc010"><div class="n17-shot n17-paper" id="nvs17-sc010-shot">
+      <div class="n17-p1" style="background-image:url('assets/textures/paper_lined_01_hires.jpg'); opacity:0.45; mix-blend-mode:multiply; left:-240px"></div>
+      <div class="n17-p2" style="background-image:url('assets/textures/paper_cream_02.jpg'); opacity:0.5"></div>
+      <div id="nvs17-sc010-rc">
+        <div class="n17-blk" id="nvs17-sc010-b1" style="left:250px;top:150px;width:140px;height:520px"></div>
+        <div class="n17-blk" id="nvs17-sc010-b2" style="left:880px;top:520px;width:120px;height:470px"></div>
+        <div class="n17-card" id="nvs17-sc010-bld" style="left:1180px;top:196px;width:600px;height:358px"><img src="assets/nvidia/shared/places/commerce_hoover_building_2.jpg" alt="" /><div class="tint"></div><div class="lift"></div></div>
+        <img class="n17-cut" id="nvs17-sc010-sil" src="assets/nvidia/shared/people/lutnick_cut.png" alt="" />
+        <img class="n17-cut" id="nvs17-sc010-real" src="assets/nvidia/shared/people/lutnick_cut.png" alt="" />
+        <img id="nvs17-sc010-cn" src="assets/nvidia/nvs17/derived/china_shape.svg" alt="" />
+        <svg class="n17-mk" id="nvs17-sc010-mk" viewBox="0 0 1920 1080"></svg>
+        <div class="n17-nm" id="nvs17-sc010-nt"><div class="a t-display">HOWARD LUTNICK</div><div class="b t-label">U.S. Commerce Secretary</div></div>
+      </div>
+      <div class="n17-credit t-label ink">Photos: Daniel Torok / The White House (PD) · APK / Wikimedia Commons, CC BY-SA 4.0</div>
+    </div></div>
+
+    <!-- sc011 · 1783.46–1789.38 · The Register, 15 July 2025 -->
+    <div class="n17-scene" id="nvs17-sc011"><div class="n17-shot" id="nvs17-sc011-shot">
+      <div id="nvs17-sc011-cam">
+        <div class="n17-src t-label" id="nvs17-sc011-src" style="left:96px;top:260px">The Register · July 15, 2025</div>
+        <div id="nvs17-sc011-card">
+          <img src="assets/nvidia/shared/news/s03_register_h20_resume_2025.jpg" alt="" />
+          <div class="n17-hlr" id="nvs17-sc011-hl" style="left:1540px;top:362px;width:728px;height:52px"></div>
+          <svg class="n17-mk" id="nvs17-sc011-mk" viewBox="0 0 2700 680" style="width:2700px;height:680px"></svg>
+        </div>
+      </div>
+      <div class="n17-credit t-label">The Register (fair use)</div>
+    </div></div>
+
+    <!-- THE LINE · 1789.38–1801.46 -->
+    <div class="n17-scene" id="nvs17-ln"><div class="n17-shot n17-paper" id="nvs17-ln-shot">
+      <div id="nvs17-lnr"></div>
+    </div></div>
+
+    <!-- sc013 · 1801.46–1809.40 · Lutnick on CNBC (TV) -->
+    <div class="n17-scene" id="nvs17-sc013"><div class="n17-shot" id="nvs17-sc013-shot">
+      <div id="nvs17-sc013-cam">
+        <div id="nvs17-sc013-glow"></div>
+        <div id="nvs17-sc013-tv"><div id="nvs17-sc013-scr"><img src="assets/nvidia/shared/people/lutnick_2.jpg" alt="" /><div class="gl"></div><div class="bl" id="nvs17-sc013-bl"></div></div></div>
+        <div id="nvs17-sc013-stand"></div>
+      </div>
+      <div id="nvs17-sc013-nt"><div class="a t-display">HOWARD LUTNICK</div>
+        <div class="n17-role t-label" id="nvs17-sc013-r1">U.S. Commerce Secretary</div>
+        <div class="n17-role t-label" id="nvs17-sc013-r2">On CNBC · July 15, 2025</div></div>
+      <div class="n17-credit t-label">Image: CNBC (fair use)</div>
+    </div></div>
+
+    <!-- sc014 · 1809.40–1820.20 · his real words (RESEARCH §20) -->
+    <div class="n17-scene" id="nvs17-sc014"><div class="n17-shot n17-paper" id="nvs17-sc014-shot">
+      <div id="nvs17-sc014-cam">
+        <div class="n17-p1" style="background-image:url('assets/textures/paper_stained_01_hires.jpg'); opacity:0.42; mix-blend-mode:multiply"></div>
+        <div class="n17-p2" style="background-image:url('assets/textures/paper_cream_01.jpg'); opacity:0.55"></div>
+        <div id="nvs17-sc014-pic"><img src="assets/nvidia/shared/people/lutnick_2.jpg" alt="" /></div>
+        <div id="nvs17-sc014-cap" class="t-label">Howard Lutnick on CNBC</div>
+        <div id="nvs17-sc014-rule"></div>
+        <div id="nvs17-sc014-q">
+          <div class="n17-qm t-display">“</div>
+          <span class="n17-ql t-serif" id="nvs17-sc014-q1">We don’t sell them <span class="n17-u" id="nvs17-sc014-u1">our best stuff,<svg viewBox="0 0 100 10" preserveAspectRatio="none"><path pathLength="100" d="M0 6 Q20 3.5 45 6.5 T100 4.5" fill="none" stroke="#115973" stroke-width="5" stroke-linecap="round" vector-effect="non-scaling-stroke" stroke-dasharray="100 100" stroke-dashoffset="100"/></svg></span></span>
+          <span class="n17-ql t-serif" id="nvs17-sc014-q2">not our <span class="n17-u" id="nvs17-sc014-u2">second best stuff,<svg viewBox="0 0 100 10" preserveAspectRatio="none"><path pathLength="100" d="M0 5 Q30 7 55 4.5 T100 6" fill="none" stroke="#115973" stroke-width="5" stroke-linecap="round" vector-effect="non-scaling-stroke" stroke-dasharray="100 100" stroke-dashoffset="100"/></svg></span></span>
+          <span class="n17-ql t-serif" id="nvs17-sc014-q3">not even our <span class="n17-u" id="nvs17-sc014-u3">third best.”<svg viewBox="0 0 100 10" preserveAspectRatio="none"><path pathLength="100" d="M0 4.5 Q25 7 60 5 T100 6.5" fill="none" stroke="#115973" stroke-width="5" stroke-linecap="round" vector-effect="non-scaling-stroke" stroke-dasharray="100 100" stroke-dashoffset="100"/></svg></span></span>
+          <span class="n17-gap"></span>
+          <span class="n17-ql t-serif" id="nvs17-sc014-q4">“You want to sell the Chinese enough</span>
+          <span class="n17-ql t-serif" id="nvs17-sc014-q5">that their developers get <span class="hl" id="nvs17-sc014-hl" style="--hl:0">addicted</span></span>
+          <span class="n17-ql t-serif" id="nvs17-sc014-q6">to the American technology stack.”</span>
+          <span class="n17-attr t-label" id="nvs17-sc014-at">Howard Lutnick · CNBC · July 15, 2025</span>
+        </div>
+      </div>
+      <div class="n17-credit t-label ink">Image: CNBC (fair use)</div>
+    </div></div>
+
+    <!-- sc015 · 1820.20–1822.167 · Bloomberg Law, 15 July 2025 -->
+    <div class="n17-scene" id="nvs17-sc015"><div class="n17-shot" id="nvs17-sc015-shot">
+      <div id="nvs17-sc015-cam">
+        <div class="n17-src t-label" id="nvs17-sc015-src" style="left:124px;top:168px">Bloomberg Law · July 15, 2025</div>
+        <div id="nvs17-sc015-card">
+          <img src="assets/nvidia/shared/news/s14_bloomberglaw_lutnick.jpg" alt="" />
+          <div class="n17-hlr" id="nvs17-sc015-hl" style="left:1024px;top:552px;width:624px;height:42px"></div>
+        </div>
+      </div>
+      <div class="n17-credit t-label">Bloomberg Law (fair use)</div>
+    </div></div>
+
+    <div id="nvs17-flash"></div>
+    <div id="nvs17-grain" class="tx tx-grain" style="background-image:url('assets/textures/grain_01_norm.jpg')"></div>
+    <div id="nvs17-dust" class="tx tx-dust" style="background-image:url('assets/textures/dust_02.jpg')"></div>
+    <div id="nvs17-vig" class="vignette"></div>
+    <audio id="nvs17-vo" class="temp-vo" src="vo_nv.mp3" data-start="0" data-duration="123.9583" data-media-start="1698.2083" data-volume="1"></audio>
+  </div>
+
+  <script>
+  (function () {
+    const SEG = "nvs17", SEG_START = 1698.2083, SEG_END = 1822.1667, DURATION = 123.9583;
+    const T = (s) => +(s - SEG_START).toFixed(3);   // TEXT cues (audited): literal master word start − 0.06
+    const S = (s) => +(s - SEG_START).toFixed(3);   // STRUCTURAL cues (cuts, camera, objects)
+    const tl = gsap.timeline({ paused: true });
+    const $ = (id) => document.getElementById(SEG + "-" + id);
+    const NS = "http://www.w3.org/2000/svg";
+    const defs = $("defs");
+    const E = FX.ease;
+    const C = (e, d) => FX.choppy(e, d, 12);
+
+    // ---------- scenes: [key, master start, master end, ground] ----------
+    const SC = [
+      ["sc001", 1698.2083, 1702.54, "night"], ["wf", 1702.54, 1715.99, "paper"], ["sc003", 1715.99, 1720.23, "night"],
+      ["sc004", 1720.23, 1726.39, "night"], ["wf", 1726.39, 1736.87, "paper"], ["sc006", 1736.87, 1745.19, "night"],
+      ["sc007", 1745.19, 1750.07, "paper"], ["sc008", 1750.07, 1752.79, "night"], ["sc009", 1752.79, 1771.70, "night"],
+      ["sc010", 1771.70, 1783.46, "paper"], ["sc011", 1783.46, 1789.38, "night"], ["ln", 1789.38, 1801.46, "paper"],
+      ["sc013", 1801.46, 1809.40, "night"], ["sc014", 1809.40, 1820.20, "paper"], ["sc015", 1820.20, 1822.1667, "night"],
+    ];
+    const WHIP_OUT = { "sc001@1702.54": 1, "sc003@1720.23": 1, "sc004@1726.39": 1, "sc006@1745.19": 1, "sc008@1752.79": 1,
+      "sc009@1771.7": 1, "sc010@1783.46": 1, "ln@1801.46": 1, "sc014@1820.2": 1 };
+    const GROUND = { paper: [0.22, 0.14, 0.3], night: [0.4, 0.42, 0.9] };   // [vignette, dust, grain]
+    function ground(kind, t) { const v = GROUND[kind]; tl.set([$("vig"), $("dust"), $("grain")], { opacity: (i) => v[i] }, t); }
+    const seen = {};
+    SC.forEach((s, i) => {
+      const el = $(s[0]), shot = $(s[0] + "-shot");
+      if (i === 0) gsap.set(el, { autoAlpha: 1 });
+      else {
+        tl.fromTo(el, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.001, immediateRender: false }, S(s[1]) - 0.002);
+        if (seen[s[0]]) tl.set(shot, { x: 0, y: 0, scale: 1, autoAlpha: 1, filter: "none" }, S(s[1]) - 0.003);
+      }
+      seen[s[0]] = 1;
+      if (s[2] < SEG_END) tl.set(el, { autoAlpha: 0 }, S(s[2]) + (WHIP_OUT[s[0] + "@" + s[2]] ? 0.05 : -0.002));
+    });
+    gsap.set([$("vig"), $("dust"), $("grain")], { opacity: (i) => GROUND.night[i] });
+    SC.forEach((s, i) => { if (i > 0) ground(s[3], S(s[1])); });
+
+    // ---------- helpers ----------
+    const rise = (el, t, o) => { o = o || {}; const d = o.dur || 0.6;
+      gsap.set(el, { opacity: 0 });
+      tl.fromTo(el, { opacity: 0, y: o.y == null ? 16 : o.y }, { opacity: 1, y: 0, duration: d, ease: C(E.out, d), immediateRender: false }, t); };
+    const fadeOut = (el, t, d) => tl.to(el, { opacity: 0, duration: d || 0.4, ease: E.in }, t);
+    const whipN = { n: 0 };
+    function whip(a, b, t, o) {
+      o = Object.assign({ dir: 1, vertical: false, flash: false, dur: 0.32 }, o);
+      const k = ++whipN.n, ba = FX.whipDefs(defs, SEG + "-wa" + k), bb = FX.whipDefs(defs, SEG + "-wb" + k), h = o.dur / 2;
+      const A = $(a + "-shot"), B = $(b + "-shot");
+      tl.set(A, { filter: "url(#" + SEG + "-wa" + k + ")" }, t - h - 0.01); tl.set(A, { filter: "none" }, t + 0.06);
+      tl.set(B, { filter: "url(#" + SEG + "-wb" + k + ")" }, t - 0.001); tl.set(B, { filter: "none" }, t + h + 0.02);
+      FX.whip(tl, A, B, t, { dir: o.dir, vertical: o.vertical, dur: o.dur, blurA: ba, blurB: bb });
+      if (o.flash) tl.fromTo($("flash"), { opacity: 0 }, { opacity: 0.85, duration: 0.08, yoyo: true, repeat: 1, ease: "power2.in", immediateRender: false }, t - 0.08);
+    }
+    // pen markups inside a given svg, boil gated to [a, b]
+    function penDefs(svg, id, a, b) {
+      const on = FX.onFrame; FX.onFrame = (f) => on(FX.gate(a, b, f));
+      const F = FX.markupDefs(svg, id, { boil: 4 });
+      FX.onFrame = on;
+      return F;
+    }
+    function pen(svg, F, t, pts, o) {
+      o = o || {};
+      const p = FX.markup.pen(tl, svg, t, Object.assign({ points: pts, jitter: 5, seed: 7, dur: 0.7, width: 6, color: "#14181b", filter: F }, o));
+      gsap.set(p, { opacity: 0 }); tl.set(p, { opacity: 1 }, t);
+      return p;
+    }
+    function mapCam(cam, s, cx, cy) { return { scale: s, x: 960 - cx * s, y: 540 - cy * s }; }
+
+    FX.grain($("grain"), 1701);
+    FX.dust($("dust"), 1702, 2);
+
+    /* ===== sc001 · China map, chips flowing in (ref ast_d02865717c824c47) ===== */
+    (function () {
+      const cam = $("sc001-cam");
+      gsap.set(cam, mapCam(cam, 0.32, 3000, 2150));
+      tl.fromTo(cam, mapCam(cam, 0.32, 3000, 2150), Object.assign(mapCam(cam, 0.33, 3000, 2150), { duration: S(1702.7) - S(1698.21), ease: "none", immediateRender: false }), 0);
+      gsap.set($("sc001-fill"), { opacity: 0.12 });
+      tl.fromTo($("sc001-fill"), { opacity: 0.12 }, { opacity: 0.5, duration: 1.0, ease: C(E.out, 1.0), immediateRender: false }, S(1698.35));
+      rise($("sc001-cn"), T(1700.08), { dur: 0.7 });                       // "China" 1700.14
+      // chips (volt) arrive from the east along arcs into Chinese cities
+      const svg = $("sc001-arcs"), box = $("sc001-chips");
+      const arcs = [[[1990, 250], [1650, 180], [1300, 390]], [[1990, 560], [1720, 520], [1446, 702]], [[1990, 860], [1600, 900], [1236, 724]]];
+      arcs.forEach((a, i) => {
+        const [p0, p1, p2] = a, t0 = S(1700.50) + i * 0.32, d = 1.3;
+        const p = document.createElementNS(NS, "path");
+        p.setAttribute("d", `M${p0[0]} ${p0[1]} Q${p1[0]} ${p1[1]} ${p2[0]} ${p2[1]}`);
+        p.setAttribute("fill", "none"); p.setAttribute("stroke", "#c9ec8f"); p.setAttribute("stroke-width", "3"); p.setAttribute("stroke-linecap", "round");
+        p.setAttribute("pathLength", "100"); p.setAttribute("stroke-dasharray", "100 100"); p.setAttribute("stroke-dashoffset", "100"); p.setAttribute("opacity", "0");
+        svg.appendChild(p);
+        tl.set(p, { attr: { opacity: 0.85 } }, t0);
+        tl.fromTo(p, { attr: { "stroke-dashoffset": 100 } }, { attr: { "stroke-dashoffset": 0 }, duration: d, ease: C(E.inOut, d), immediateRender: false }, t0);
+        const dot = document.createElementNS(NS, "circle");
+        dot.setAttribute("cx", p2[0]); dot.setAttribute("cy", p2[1]); dot.setAttribute("r", "9"); dot.setAttribute("fill", "#c9ec8f"); dot.setAttribute("opacity", "0");
+        svg.appendChild(dot);
+        tl.set(dot, { attr: { opacity: 1 } }, t0 + d);
+        const ic = document.createElement("div"); ic.className = "n17-chipic"; box.appendChild(ic);
+        const st = { k: 0 };
+        const place = () => { const k = st.k, q = 1 - k;
+          const x = q * q * p0[0] + 2 * q * k * p1[0] + k * k * p2[0], y = q * q * p0[1] + 2 * q * k * p1[1] + k * k * p2[1];
+          ic.style.transform = `translate(${x.toFixed(1)}px, ${y.toFixed(1)}px)`; };
+        place(); gsap.set(ic, { opacity: 0 });
+        tl.set(ic, { opacity: 1 }, t0);
+        tl.fromTo(st, { k: 0 }, { k: 1, duration: d, ease: C(E.inOut, d), immediateRender: false, onUpdate: place }, t0);
+      });
+    })();
+
+    /* ===== waffle (ref ast_0b23d2c7a06c4bb3) ===== */
+    whip("sc001", "wf", S(1702.54), { dir: 1 });
+    (function () {
+      const grid = $("wf-grid"), sq = [];
+      for (let i = 0; i < 100; i++) {
+        const d = document.createElement("div"); d.className = "n17-sq";
+        d.style.left = (i % 10) * 66 + "px"; d.style.top = Math.floor(i / 10) * 66 + "px";
+        d.innerHTML = '<div class="f"></div><div class="g"></div>';
+        grid.appendChild(d); sq.push(d);
+      }
+      const fills = sq.map((d) => d.querySelector(".f")), ghosts = sq.map((d) => d.querySelector(".g"));
+      const cam = $("wf-cam"), box = $("wf-box");
+      // build in
+      rise($("wf-title"), T(1703.20), { dur: 0.8 });                      // "numbers" 1703.26
+      rise($("wf-k1"), T(1703.92), { dur: 0.5, y: 8 });                   // "Before" 1703.98
+      gsap.set(sq, { opacity: 0 });
+      tl.fromTo(sq, { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.25, stagger: { each: 0.008, from: "start" }, ease: C(E.out, 0.25), immediateRender: false }, S(1703.0));
+      rise($("wf-leg"), T(1704.88), { dur: 0.5, y: 8 });                  // "NVIDIA" 1704.94
+      // 95 squares fill volt on "95%" (12 fps steps), the count runs with them
+      gsap.set(fills, { opacity: 0 });
+      const fillT = S(1706.16), fd = 1.25, steps = Math.round(fd * 12);
+      for (let i = 0; i < 95; i++) tl.set(fills[i], { opacity: 1 }, fillT + Math.floor(i / (95 / steps)) / 12);
+      gsap.set([box, $("wf-lead")], { opacity: 0 });
+      tl.fromTo($("wf-lead"), { opacity: 0, scaleX: 0 }, { opacity: 1, scaleX: 1, duration: 0.4, ease: C(E.out, 0.4), immediateRender: false }, T(1706.16));
+      tl.fromTo(box, { opacity: 0, x: -20 }, { opacity: 1, x: 0, duration: 0.5, ease: C(E.out, 0.5), immediateRender: false }, T(1706.16));   // "95%" 1706.22
+      const cnt = { v: 0 }, fmt = () => (box.textContent = Math.round(cnt.v) + "%");
+      tl.fromTo(cnt, { v: 0 }, { v: 95, duration: fd, ease: C("none", fd), immediateRender: false, onUpdate: fmt }, fillT);
+      // "the whole thing" — slow push
+      gsap.set(cam, { scale: 1 });
+      tl.fromTo(cam, { scale: 1 }, { scale: 1.035, duration: S(1715.99) - S(1702.6), ease: "none", immediateRender: false }, S(1702.6));
+      // after the ban
+      fadeOut($("wf-k1"), S(1711.0), 0.25);
+      rise($("wf-k2"), T(1711.21), { dur: 0.5, y: 8 });                   // "After" 1711.27
+      for (let i = 0; i < 95; i++) tl.set(fills[94 - i], { opacity: 0 }, S(1714.01) + Math.floor(i / (95 / steps)) / 12);
+      tl.fromTo(cnt, { v: 95 }, { v: 0, duration: fd, ease: C("none", fd), immediateRender: false, onUpdate: fmt }, T(1714.01));   // "0%" 1714.07
+      // second window (1726.39–1736.87): closer framing, ghost (smuggled) squares flicker back, pen "?"
+      tl.set(cam, { scale: 1.1, x: 40, y: -10 }, S(1726.39) - 0.003);
+      tl.fromTo(cam, { scale: 1.1, x: 40, y: -10 }, { scale: 1.14, x: 40, y: -10, duration: S(1734.9) - S(1726.39), ease: "none", immediateRender: false }, S(1726.39));
+      const r = FX.rng(1717), pick = [];
+      while (pick.length < 17) { const k = Math.floor(r() * 100); if (pick.indexOf(k) < 0) pick.push(k); }
+      gsap.set(ghosts, { opacity: 0 });
+      pick.forEach((k, j) => {
+        const t0 = S(1729.05) + Math.floor(j * 0.6) / 12;                // "practically" 1729.11
+        tl.set(ghosts[k], { opacity: 1 }, t0); tl.set(ghosts[k], { opacity: 0.25 }, t0 + 2 / 12); tl.set(ghosts[k], { opacity: 1 }, t0 + 4 / 12);
+        tl.to(ghosts[k], { opacity: 0, duration: 0.5, ease: E.in }, S(1732.85) + j * 0.01);   // "that's what they say" 1732.87
+      });
+      const mk = $("wf-mk"), F = penDefs(mk, SEG + "-wfpen", S(1726.3), S(1737.0));
+      pen(mk, F, S(1730.20), [[1586, 492], [1606, 466], [1640, 462], [1662, 488], [1650, 520], [1622, 540], [1616, 580]], { dur: 0.6, seed: 11 });  // "I don't know" 1730.23
+      pen(mk, F, S(1730.84), [[1614, 618], [1620, 626]], { dur: 0.12, seed: 12, width: 9 });
+      // "in a way they are correct" — push onto the 0 % box
+      tl.to(cam, { scale: 1.32, x: -330, y: -20, duration: 1.4, ease: E.cam }, S(1734.90));
+    })();
+
+    /* ===== sc003 · the real article ===== */
+    (function () {
+      const cam = $("sc003-cam"), card = $("sc003-card");
+      gsap.set(card, { rotation: -0.8 });
+      gsap.set(cam, { scale: 1.0, y: 0 });
+      tl.fromTo(cam, { scale: 1.0, y: 30 }, { scale: 1.06, y: 0, duration: S(1720.23) - S(1715.99), ease: E.cam, immediateRender: false }, S(1715.99));
+      rise($("sc003-src"), T(1716.49), { dur: 0.5, y: 8 });              // "technically" 1716.55
+      const mk = $("sc003-mk"), F = penDefs(mk, SEG + "-tzpen", S(1715.9), S(1720.4));
+      pen(mk, F, S(1717.93), [[596, 170], [700, 167], [820, 171], [940, 168], [1108, 166]], { dur: 0.7, seed: 21, width: 7, color: "#dc2f3c" });   // "true" 1717.99
+      FX.focusHunt(tl, card, S(1718.63), { dur: 0.7, a: 2, b: 3 });     // "practically" 1718.63
+    })();
+
+    /* ===== sc004 · Southeast Asia → China ===== */
+    whip("sc003", "sc004", S(1720.23), { dir: -1, flash: true });
+    (function () {
+      const cam = $("sc004-cam"), svg = $("sc004-svg");
+      const A = { scale: 0.4, x: 0, y: -1600 }, B = { scale: 0.4, x: 0, y: -300 };
+      gsap.set(cam, A);
+      tl.fromTo(cam, A, Object.assign({}, B, { duration: 1.9, ease: E.cam, immediateRender: false }), S(1724.10));
+      rise($("sc004-my"), T(1722.33), { dur: 0.7 });                      // "Southeast" 1722.39
+      gsap.set([$("sc004-sgd")], { scale: 0 });
+      tl.fromTo($("sc004-sgd"), { scale: 0 }, { scale: 1, duration: 0.5, ease: C(E.out, 0.5), immediateRender: false }, S(1723.40));
+      rise($("sc004-sg"), T(1723.45), { dur: 0.5 });                      // "countries" 1723.51
+      // volt routes from Singapore and Kuala Lumpur up the South China Sea to Shenzhen
+      [["M1596 5577 C2300 4900 2700 3300 3448 1657", 0], ["M1210 5247 C1900 4700 2500 3200 3448 1657", 0.15]].forEach((r, i) => {
+        const p = document.createElementNS(NS, "path");
+        p.setAttribute("d", r[0]); p.setAttribute("fill", "none"); p.setAttribute("stroke", "#86c232"); p.setAttribute("stroke-width", i ? "10" : "16");
+        p.setAttribute("stroke-linecap", "round"); p.setAttribute("pathLength", "100"); p.setAttribute("stroke-dasharray", "100 100"); p.setAttribute("stroke-dashoffset", "100");
+        p.setAttribute("opacity", i ? "0.7" : "1"); svg.appendChild(p);
+        tl.fromTo(p, { attr: { "stroke-dashoffset": 100 } }, { attr: { "stroke-dashoffset": 0 }, duration: 1.8, ease: E.cam, immediateRender: false }, S(1724.17) + r[1]);  // "rerouted" 1724.23
+      });
+      gsap.set($("sc004-szd"), { scale: 0 });
+      tl.fromTo($("sc004-szd"), { scale: 0 }, { scale: 1, duration: 0.4, ease: C(E.out, 0.4), immediateRender: false }, S(1725.9));
+      tl.fromTo([$("sc004-fill"), $("sc004-edge")], { opacity: 0 }, { opacity: (i) => (i ? 1 : 0.5), duration: 0.6, ease: C(E.out, 0.6), immediateRender: false }, S(1725.4));
+      rise($("sc004-cn"), T(1725.61), { dur: 0.6 });                      // "China" 1725.67
+    })();
+
+    /* ===== waffle again (vertical whip in) ===== */
+    whip("sc004", "wf", S(1726.39), { vertical: true, dir: 1 });
+
+    /* ===== sc006 · Huawei racks reveal ===== */
+    (function () {
+      const img = $("sc006-img"), vw = $("sc006-vw");
+      const st = { b: 16, l: 0.42 }, f = () => (img.style.filter = `grayscale(0.55) brightness(${st.l.toFixed(3)}) blur(${st.b.toFixed(2)}px)`);
+      f();
+      tl.fromTo(st, { b: 16, l: 0.42 }, { b: 0, l: 0.78, duration: 0.6, ease: C(E.out, 0.6), immediateRender: false, onUpdate: f }, S(1743.29));   // "Huawei" 1743.35
+      gsap.set(vw, { scale: 1.06 });
+      tl.fromTo(vw, { scale: 1.06 }, { scale: 1.0, duration: S(1743.29) - S(1736.87), ease: "none", immediateRender: false }, S(1736.87));
+      tl.fromTo(vw, { scale: 1.0 }, { scale: 1.05, duration: S(1745.19) - S(1743.9), ease: "none", immediateRender: false }, S(1743.9));
+      const nv = $("sc006-nv");
+      gsap.set(nv, { opacity: 0 });
+      tl.fromTo(nv, { opacity: 0, scale: 0.92 }, { opacity: 1, scale: 1, duration: 0.7, ease: C(E.out, 0.7), immediateRender: false }, S(1737.0));
+      tl.to(nv, { opacity: 0, x: -260, duration: 0.7, ease: C(E.in, 0.7) }, S(1741.13));   // "not NVIDIA" 1741.19
+      const hf = $("sc006-hf"), hw = $("sc006-hw");
+      gsap.set([hf, hw], { opacity: 0 });
+      tl.fromTo(hf, { opacity: 0, scale: 0.7 }, { opacity: 1, scale: 1, duration: 0.8, ease: C(E.out, 0.8), immediateRender: false }, S(1743.29));
+      tl.fromTo(hw, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.7, ease: C(E.out, 0.7), immediateRender: false }, S(1743.45));
+      rise($("sc006-tag"), T(1744.09), { dur: 0.5 });                      // "I'm sure" 1744.15
+    })();
+
+    /* ===== sc007 · Huawei HQ, Entity List ===== */
+    whip("sc006", "sc007", S(1745.19), { dir: 1 });
+    (function () {
+      const card = $("sc007-card"), blk = $("sc007-blk"), cam = $("sc007-cam");
+      gsap.set(card, { rotation: -1.2 });
+      gsap.set(cam, { scale: 1 });
+      tl.fromTo(cam, { scale: 1.0 }, { scale: 1.04, duration: S(1750.07) - S(1745.19), ease: "none", immediateRender: false }, S(1745.19));
+      gsap.set(blk, { opacity: 0 });
+      tl.fromTo(blk, { opacity: 0, scaleY: 0, transformOrigin: "50% 100%" }, { opacity: 0.9, scaleY: 1, duration: 0.8, ease: C(E.out, 0.8), immediateRender: false }, S(1745.4));
+      gsap.set($("sc007-wm"), { opacity: 0 });
+      tl.fromTo($("sc007-wm"), { opacity: 0, x: 20 }, { opacity: 1, x: 0, duration: 0.6, ease: C(E.out, 0.6), immediateRender: false }, S(1745.30));
+      rise($("sc007-pl"), T(1745.13), { dur: 0.6 });                      // "Huawei" 1745.19
+      fadeOut($("sc007-pl"), S(1746.2), 0.25);
+      gsap.set($("sc007-flag"), { opacity: 0 });
+      tl.fromTo($("sc007-flag"), { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.5, ease: C(E.out, 0.5), immediateRender: false }, S(1746.49));
+      rise($("sc007-ban"), T(1746.49), { dur: 0.7 });                     // "banned" 1746.55
+    })();
+
+    /* ===== sc008 · China, Huawei rings (cut on action) ===== */
+    (function () {
+      const cam = $("sc008-cam"), push = $("sc008-push");
+      gsap.set(cam, { scale: 0.38, x: -294, y: -562 });
+      gsap.set(push, { scale: 1 });
+      tl.fromTo(push, { scale: 1.0 }, { scale: 1.05, duration: S(1752.95) - S(1750.07), ease: "none", immediateRender: false }, S(1750.07));
+      FX.radioWaves($("sc008-rings"), 1163, 819, { rings: 4, max: 1100, period: 1.5, width: 9, color: "#f6a4a9", from: S(1750.10), to: S(1752.95) });
+      gsap.set($("sc008-badge"), { opacity: 0 });
+      tl.fromTo($("sc008-badge"), { opacity: 0, y: 20, scale: 0.8 }, { opacity: 1, y: 0, scale: 1, duration: 0.5, ease: C(E.out, 0.5), immediateRender: false }, S(1750.12));
+      rise($("sc008-sz"), T(1750.49), { dur: 0.4 });                      // "inside" 1750.55
+      rise($("sc008-cn"), T(1751.13), { dur: 0.5 });                      // "China" 1751.19
+    })();
+
+    /* ===== sc009 · growth chart (ref ast_06720d0b255d4d29) ===== */
+    whip("sc008", "sc009", S(1752.79), { vertical: true, dir: -1 });
+    (function () {
+      const svg = $("sc009-svg"), cam = $("sc009-cam");
+      const mk = (tag, at) => { const e = document.createElementNS(NS, tag); Object.keys(at).forEach((k) => e.setAttribute(k, at[k])); svg.appendChild(e); return e; };
+      const BASE = 880, X1 = 560, X2 = 1460, Y = (v) => BASE - v * 680 / 1.6e6;
+      const P1 = [X1, Y(2e5)], P2 = [X1, Y(5e5)], P3 = [X2, Y(1.5e6)];
+      const axis = mk("path", { d: `M300 ${BASE} L1700 ${BASE}`, stroke: "#f0efe8", "stroke-opacity": "0.55", "stroke-width": "3", fill: "none", pathLength: "100", "stroke-dasharray": "100 100", "stroke-dashoffset": "100" });
+      tl.fromTo(axis, { attr: { "stroke-dashoffset": 100 } }, { attr: { "stroke-dashoffset": 0 }, duration: 0.9, ease: C(E.inOut, 0.9), immediateRender: false }, S(1752.95));
+      [X1, X2].forEach((x, i) => {
+        const tk = mk("path", { d: `M${x} ${BASE - 12} L${x} ${BASE + 12}`, stroke: "#f0efe8", "stroke-width": "3", opacity: "0" });
+        tl.set(tk, { attr: { opacity: 0.8 } }, i ? S(1764.33) : S(1752.89));
+      });
+      const drop = (p, t) => { const d = mk("path", { d: `M${p[0]} ${p[1] + 18} L${p[0]} ${BASE - 2}`, stroke: "#c3c7c8", "stroke-width": "2", "stroke-dasharray": "6 8", opacity: "0" });
+        tl.fromTo(d, { attr: { opacity: 0 } }, { attr: { opacity: 0.6 }, duration: 0.4, immediateRender: false }, t); };
+      const dot = (p, r, fill, stroke, t) => { const c = mk("circle", { cx: p[0], cy: p[1], r, fill, stroke, "stroke-width": "4", opacity: "0" });
+        tl.fromTo(c, { attr: { opacity: 0, r: 0 } }, { attr: { opacity: 1, r }, duration: 0.5, ease: C(E.out, 0.5), immediateRender: false }, t); return c; };
+      // fan between the two 2025 estimates and the 2026 expectation
+      const fan = mk("path", { d: `M${P1[0]} ${P1[1]} C900 ${P1[1] - 10} 1200 ${P3[1] + 160} ${P3[0]} ${P3[1]} C1200 ${P3[1] + 120} 900 ${P2[1] - 20} ${P2[0]} ${P2[1]} Z`, fill: "#dc2f3c", opacity: "0" });
+      const curve = mk("path", { d: `M${P1[0]} ${P1[1]} C900 ${P1[1] - 10} 1200 ${P3[1] + 160} ${P3[0]} ${P3[1]}`, stroke: "#dc2f3c", "stroke-width": "8", fill: "none", "stroke-linecap": "round", pathLength: "100", "stroke-dasharray": "100 100", "stroke-dashoffset": "100" });
+      const curve2 = mk("path", { d: `M${P2[0]} ${P2[1]} C900 ${P2[1] - 20} 1200 ${P3[1] + 120} ${P3[0]} ${P3[1]}`, stroke: "#f6a4a9", "stroke-width": "4", fill: "none", "stroke-dasharray": "10 12", opacity: "0" });
+      svg.insertBefore(fan, svg.firstChild);
+      // 2025 · 200,000 (U.S. government)
+      rise($("sc009-title"), T(1752.73), { dur: 0.7 });                   // "Last" 1752.79
+      rise($("sc009-y1"), T(1752.89), { dur: 0.5, y: 8 });                // "year" 1752.95
+      drop(P1, S(1754.41)); dot(P1, 14, "#9fdcf0", "#0d1012", S(1754.41));
+      const n1 = $("sc009-n1"), n2 = $("sc009-n2"), n3 = $("sc009-n3");
+      gsap.set($("sc009-v1"), { opacity: 0 }); tl.set($("sc009-v1"), { opacity: 1 }, T(1754.41));   // "200,000" 1754.47
+      gsap.set($("sc009-s1"), { opacity: 0 });
+      FX.text.count(tl, n1, T(1754.41), 0, 200000, 0.9);
+      rise($("sc009-s1"), T(1756.97), { dur: 0.5, y: 8 });                // "US" 1757.03
+      // 2025 · more than half a million (private estimates)
+      gsap.set($("sc009-v2"), { opacity: 0 });
+      tl.set($("sc009-v2"), { opacity: 1 }, T(1758.33));                   // "private" 1758.39
+      gsap.set($("sc009-n2"), { opacity: 0 });
+      tl.set(n2, { opacity: 1 }, T(1761.45));                              // "more" 1761.51
+      gsap.set($("sc009-s2"), { opacity: 0 });
+      rise($("sc009-s2"), T(1758.33), { dur: 0.5, y: 8 });
+      FX.text.count(tl, n2, T(1761.45), 0, 500000, 0.9, (v) => Math.round(v).toLocaleString("en-US") + (v >= 499999 ? "+" : ""));
+      drop(P2, S(1761.45)); dot(P2, 14, "#0d1012", "#f0efe8", S(1761.45));
+      // 2026 · 1.5 million (expected)
+      rise($("sc009-y2"), T(1764.33), { dur: 0.5, y: 8 });                // "year" 1764.39
+      tl.fromTo(curve, { attr: { "stroke-dashoffset": 100 } }, { attr: { "stroke-dashoffset": 0 }, duration: 2.0, ease: C(E.inOut, 2.0), immediateRender: false }, S(1764.6));
+      tl.fromTo(curve2, { attr: { opacity: 0 } }, { attr: { opacity: 0.8 }, duration: 0.6, immediateRender: false }, S(1766.2));
+      tl.fromTo(fan, { attr: { opacity: 0 } }, { attr: { opacity: 0.16 }, duration: 0.6, immediateRender: false }, S(1766.4));
+      drop(P3, S(1766.5)); dot(P3, 18, "#f5d033", "#0d1012", S(1766.5));
+      gsap.set($("sc009-v3"), { opacity: 0 });
+      tl.set($("sc009-v3"), { opacity: 1 }, T(1766.57));                   // "one and a half million" 1766.63
+      gsap.set($("sc009-s3"), { opacity: 0 });
+      rise($("sc009-s3"), T(1765.61), { dur: 0.5, y: 8 });                // "expected" 1765.67
+      FX.text.count(tl, n3, T(1766.57), 0, 1.5, 1.0, (v) => v.toFixed(1) + " MILLION");
+      // "scaling up very, very quickly" — the camera rides up the curve
+      gsap.set(cam, { scale: 1, x: 0, y: 0 });
+      tl.fromTo(cam, { scale: 1, x: 0, y: 0 }, { scale: 1.12, x: -40, y: 50, duration: 2.0, ease: E.cam, immediateRender: false }, S(1769.30));
+    })();
+
+    /* ===== sc010 · silhouette → Howard Lutnick (ref ast_0455523fccc84f71) ===== */
+    whip("sc009", "sc010", S(1771.70), { dir: -1, flash: true });
+    (function () {
+      const rc = $("sc010-rc"), sil = $("sc010-sil"), real = $("sc010-real"), cn = $("sc010-cn"), mk = $("sc010-mk");
+      gsap.set(rc, { scale: 1.0 });
+      tl.fromTo(rc, { scale: 1.0 }, { scale: 1.03, duration: S(1779.56) - S(1771.70), ease: "none", immediateRender: false }, S(1771.70));
+      gsap.set(sil, { opacity: 0 });
+      tl.fromTo(sil, { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.9, ease: C(E.out, 0.9), immediateRender: false }, S(1773.88));   // "random person" 1773.94
+      gsap.set(cn, { opacity: 0 });
+      tl.fromTo(cn, { opacity: 0, x: 40 }, { opacity: 0.86, x: 0, duration: 0.8, ease: C(E.out, 0.8), immediateRender: false }, S(1774.68));   // "helping" 1774.74
+      const F = penDefs(mk, SEG + "-lupen", S(1771.6), S(1783.6));
+      const link = pen(mk, F, S(1775.40), [[880, 560], [960, 540], [1040, 552], [1120, 540], [1200, 530]], { dur: 0.7, seed: 31, color: "#7e151e" });   // "China" 1775.46
+      const qm = pen(mk, F, S(1777.40), [[830, 250], [852, 222], [890, 218], [914, 244], [902, 278], [870, 298], [864, 336]], { dur: 0.6, seed: 32 });   // "maybe" 1777.46
+      const qd = pen(mk, F, S(1778.05), [[862, 372], [868, 380]], { dur: 0.12, seed: 33, width: 9 });
+      // "none other than" — the silhouette resolves into the real portrait; the collage builds
+      [link, qm, qd].forEach((p) => tl.to(p, { opacity: 0, duration: 0.3 }, S(1779.56)));
+      tl.to(cn, { opacity: 0, x: 40, duration: 0.4, ease: E.in }, S(1779.56));
+      gsap.set(real, { opacity: 0 });
+      tl.fromTo(real, { opacity: 0 }, { opacity: 1, duration: 0.6, ease: C(E.out, 0.6), immediateRender: false }, S(1779.62));   // "none" 1779.62
+      tl.to(sil, { opacity: 0, duration: 0.3 }, S(1780.1));
+      const B1 = $("sc010-b1"), B2 = $("sc010-b2"), BL = $("sc010-bld");
+      gsap.set([B1, B2, BL], { opacity: 0 });
+      tl.fromTo(B1, { opacity: 0, scaleY: 0, transformOrigin: "50% 100%" }, { opacity: 0.92, scaleY: 1, duration: 0.8, ease: C(E.out, 0.8), immediateRender: false }, S(1779.80));
+      tl.fromTo(B2, { opacity: 0, scaleY: 0, transformOrigin: "50% 0%" }, { opacity: 0.92, scaleY: 1, duration: 0.8, ease: C(E.out, 0.8), immediateRender: false }, S(1780.0));
+      tl.fromTo(BL, { opacity: 0, x: 60, rotation: 2.5 }, { opacity: 1, x: 0, rotation: 1.2, duration: 0.9, ease: C(E.out, 0.9), immediateRender: false }, S(1780.60));
+      rise($("sc010-nt"), T(1781.00), { dur: 0.8 });                      // "commerce" 1781.06
+      tl.fromTo(rc, { scale: 1.03 }, { scale: 1.06, duration: S(1783.46) - S(1779.56), ease: "none", immediateRender: false }, S(1779.56));
+    })();
+
+    /* ===== sc011 · The Register ===== */
+    whip("sc010", "sc011", S(1783.46), { dir: -1 });
+    (function () {
+      const card = $("sc011-card"), cam = $("sc011-cam"), mk = $("sc011-mk");
+      gsap.set(card, { scale: 0.64, rotation: -0.6 });
+      gsap.set(cam, { scale: 1 });
+      tl.fromTo(cam, { scale: 1.0 }, { scale: 1.08, duration: S(1789.38) - S(1783.46), ease: "none", immediateRender: false }, S(1783.46));
+      rise($("sc011-src"), T(1784.04), { dur: 0.5, y: 8 });              // "last" 1784.10
+      const F = penDefs(mk, SEG + "-rgpen", S(1783.4), S(1789.5));
+      mk.setAttribute("viewBox", "0 0 2700 680");   // markupDefs resets the viewBox (MANUAL §4.2)
+      pen(mk, F, S(1785.00), [[1405, 226], [1560, 222], [1720, 227], [1918, 222]], { dur: 0.5, seed: 41, width: 9, color: "#dc2f3c" });   // "Trump" 1785.06
+      pen(mk, F, S(1785.50), [[118, 326], [400, 322], [700, 328], [1060, 323]], { dur: 0.7, seed: 42, width: 9, color: "#dc2f3c" });
+      tl.fromTo($("sc011-hl"), { scaleX: 0 }, { scaleX: 1, duration: 0.6, ease: "sine.inOut", immediateRender: false }, S(1787.88));   // "allow" 1787.94
+    })();
+
+    /* ===== THE LINE (state = end of nvs06) ===== */
+    const ln = NV.line($("lnr"), { prefix: SEG + "-ln", lineAt: 0.62, gate: [S(1789.2), S(1801.7)], chips: [
+      { id: "a100", name: "A100", power: 0.80 }, { id: "h100", name: "H100", power: 0.92 },
+      { id: "a800", name: "A800", power: 0.555 }, { id: "h800", name: "H800", power: 0.555 },
+      { id: "h20", name: "H20", power: 0.405 }, { id: "rtx4090", name: "RTX 4090", power: 0.70 } ] });
+    // carried-over state, stamped while the layer is hidden (done long before 1789.38)
+    ln.ban(tl, "a100", S(1698.40)); ln.ban(tl, "h100", S(1698.50));
+    ln.moveLine(tl, 0.47, S(1698.60), 0.4);                                // A800/H800 banned as the line passes
+    ln.ban(tl, "rtx4090", S(1699.40));
+    (function () {
+      const cam = ln.cam;
+      // ghost of the previous line (0.47) stays where it was when the line moves up
+      const ghost = document.createElement("div"); ghost.className = "n17-ghost"; ghost.id = SEG + "-lnghost";
+      ghost.style.top = (ln.Y(0.47) - 2) + "px"; cam.insertBefore(ghost, ln.line);
+      gsap.set(ghost, { opacity: 0 }); tl.set(ghost, { opacity: 1 }, S(1789.80));
+      // date of the decision, riding with the line
+      const date = document.createElement("div"); date.className = "n17-date t-label"; date.id = SEG + "-lndate"; date.textContent = "July 2025";
+      date.style.top = (ln.Y(0.62) - 74 - 46) + "px"; ln.line.appendChild(date);
+      // H20 marked ALLOWED
+      const al = document.createElement("div"); al.className = "n17-allow t-label"; al.id = SEG + "-lnallow"; al.textContent = "Allowed";
+      ln.chip("h20").appendChild(al);
+      const lmk = document.createElementNS(NS, "svg"); lmk.setAttribute("class", "n17-mk"); lmk.setAttribute("viewBox", "0 0 1920 1080"); lmk.id = SEG + "-lnmk";
+      cam.appendChild(lmk);
+      const F = penDefs(lmk, SEG + "-lnpen", S(1789.2), S(1801.7));
+
+      tl.set(cam, { scale: 1.0, x: 0, y: 0 }, S(1789.38) - 0.003);
+      tl.fromTo(cam, { scale: 1.0, x: 0, y: 0 }, { scale: 1.008, x: 0, y: 3, duration: S(1792.90) - S(1789.38), ease: "none", immediateRender: false }, S(1789.38));
+      ln.moveLine(tl, 0.53, S(1789.80), 1.4);                              // "stronger" 1789.86 — the line goes up
+      rise(date, T(1790.44), { dur: 0.6, y: 10 });                          // "chip" 1790.50
+      gsap.set(al, { opacity: 0 });
+      tl.fromTo(al, { opacity: 0, scale: 1.5, rotation: -10 }, { opacity: 1, scale: 1, rotation: -3, duration: 0.6, ease: C(E.out, 0.6), immediateRender: false }, T(1792.36));   // "allowed." 1792.42
+      // "the strongest chip they have" — up to MOST POWERFUL and the banned chips
+      tl.to(cam, { scale: 1.5, x: 480, y: 270, duration: 1.3, ease: E.cam }, S(1793.10));
+      pen(lmk, F, S(1795.56), [[268, 122], [340, 119], [420, 124], [532, 120]], { dur: 0.5, seed: 51, width: 6 });   // "strongest" 1795.62
+      // "a little bit of a more powerful chip" — back down to H20 and the gap between the old and the new line
+      tl.to(cam, { scale: 1.5, x: -480, y: -30, duration: 1.3, ease: E.cam }, S(1797.30));
+      pen(lmk, F, S(1798.84), [[1540, 556], [1538, 540], [1542, 524], [1539, 506]], { dur: 0.45, seed: 52, width: 6 });   // "little" 1798.90
+      pen(lmk, F, S(1799.25), [[1520, 524], [1539, 500], [1560, 522]], { dur: 0.3, seed: 53, width: 6 });
+    })();
+
+    /* ===== sc013 · Lutnick on CNBC (TV) ===== */
+    whip("ln", "sc013", S(1801.46), { dir: 1 });
+    (function () {
+      const cam = $("sc013-cam");
+      tl.fromTo($("sc013-bl"), { opacity: 1 }, { opacity: 0, duration: 0.25, ease: "power2.out", immediateRender: false }, S(1801.62));
+      gsap.set(cam, { scale: 1 });
+      tl.fromTo(cam, { scale: 1.0 }, { scale: 1.03, duration: S(1807.4) - S(1801.46), ease: "none", immediateRender: false }, S(1801.46));
+      rise($("sc013-nt").querySelector(".a"), T(1803.24), { dur: 0.6 });   // "Howard" 1803.30
+      rise($("sc013-r1"), T(1803.24), { dur: 0.6, y: 8 });
+      fadeOut($("sc013-r1"), S(1806.3), 0.25);
+      rise($("sc013-r2"), T(1806.52), { dur: 0.5, y: 8 });                // "live" 1806.58
+      // "I'm gonna quote him" — push into the screen (cut on the move into the printed picture)
+      tl.fromTo(cam, { scale: 1.03 }, { scale: 1.9, duration: 2.0, ease: E.in, immediateRender: false }, S(1807.40));
+      tl.to($("sc013-nt"), { opacity: 0, duration: 0.5, ease: E.in }, S(1808.2));
+    })();
+
+    /* ===== sc014 · the real quote (painting-to-print pull-back) ===== */
+    (function () {
+      const cam = $("sc014-cam");
+      // start pushed in on the printed picture (centre 416,360) at 2.4, pull back to the page
+      const Z = { scale: 2.4, x: 960 - 416 * 2.4, y: 540 - 360 * 2.4 };
+      gsap.set(cam, Z);
+      tl.fromTo(cam, Z, { scale: 1.0, x: 0, y: 0, duration: 1.4, ease: E.cam, immediateRender: false }, S(1809.40));
+      tl.fromTo(cam, { scale: 1.0, x: 0, y: 0 }, { scale: 1.03, x: -30, y: -6, duration: S(1820.30) - S(1810.8), ease: "none", immediateRender: false }, S(1810.8));
+      const qm = $("sc014-q").querySelector(".n17-qm");
+      gsap.set(qm, { opacity: 0 });
+      tl.fromTo(qm, { opacity: 0, scale: 0.6, transformOrigin: "0% 100%" }, { opacity: 1, scale: 1, duration: 0.6, ease: C(E.out, 0.6), immediateRender: false }, S(1809.80));
+      rise($("sc014-q1"), T(1809.88));                                     // "we're" 1809.94
+      rise($("sc014-q2"), T(1811.72));                                     // "We're" 1811.78
+      rise($("sc014-q3"), T(1813.64));                                     // "or" 1813.70
+      rise($("sc014-q4"), T(1815.48));                                     // "We're" 1815.54
+      rise($("sc014-q5"), T(1817.24));                                     // "so" 1817.30
+      rise($("sc014-q6"), T(1818.44));                                     // "to" 1818.50
+      rise($("sc014-at"), T(1819.24), { y: 8 });                           // "technology" 1819.30
+      const U = [["u1", S(1811.08)], ["u2", S(1812.84)], ["u3", S(1814.36)]];   // "best" 1811.14 · "second" 1812.90 · "third" 1814.42
+      U.forEach(([k, t]) => {
+        const p = $("sc014-" + k).querySelector("path");
+        gsap.set(p, { opacity: 0 }); tl.set(p, { opacity: 1 }, t);
+        tl.fromTo(p, { attr: { "stroke-dashoffset": 100 } }, { attr: { "stroke-dashoffset": 0 }, duration: 0.6, ease: C(E.out, 0.6), immediateRender: false }, t);
+      });
+      tl.fromTo($("sc014-hl"), { "--hl": 0 }, { "--hl": 1, duration: 0.5, ease: C(E.out, 0.5), immediateRender: false }, S(1817.96));   // "addicted" 1818.02
+    })();
+
+    /* ===== sc015 · Bloomberg Law (vertical whip) ===== */
+    whip("sc014", "sc015", S(1820.20), { vertical: true, dir: 1 });
+    (function () {
+      const card = $("sc015-card"), cam = $("sc015-cam");
+      gsap.set(card, { scale: 0.88, rotation: -0.5 });
+      gsap.set(cam, { scale: 1 });
+      tl.fromTo(cam, { scale: 1.0 }, { scale: 1.12, duration: DURATION - S(1820.20), ease: "none", immediateRender: false }, S(1820.20));
+      rise($("sc015-src"), T(1820.20), { dur: 0.4, y: 8 });              // "That" 1820.26
+      tl.fromTo($("sc015-hl"), { scaleX: 0 }, { scaleX: 1, duration: 0.6, ease: "sine.inOut", immediateRender: false }, S(1820.62));   // "quote" 1820.74
+    })();
+
+    FX.mount(tl, DURATION);
+    window.__timelines = window.__timelines || {};
+    window.__timelines[SEG] = tl;
+  })();
+  </script>
+</template>
+</body>
+</html>

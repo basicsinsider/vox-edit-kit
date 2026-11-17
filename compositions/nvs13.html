@@ -1,0 +1,803 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8" /></head>
+<body>
+<template>
+  <style>
+    #root { position: absolute; inset: 0; overflow: hidden; background: var(--night); }
+    .n13-scene { position: absolute; inset: 0; overflow: hidden; visibility: hidden; opacity: 0; }
+    .n13-shot { position: absolute; inset: 0; overflow: hidden; transform-origin: 50% 50%; background: var(--night); }
+    .n13-paper { background: var(--paper); }
+    .n13-blue { background: #123f63; }
+    .n13-hall { position: absolute; inset: -40px;
+      background: radial-gradient(ellipse 72% 62% at 50% 44%, color-mix(in srgb, var(--ash-dark) 50%, var(--night)) 0%, var(--night) 72%); }
+    .n13-vw { position: absolute; inset: 0; transform-origin: 50% 50%; }
+    .n13-cam { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 0 0; }
+    .n13-abs { position: absolute; }
+    .n13-p1, .n13-p2 { position: absolute; inset: 0; background-size: cover; background-position: center; pointer-events: none; }
+    .n13-p2 { mix-blend-mode: multiply; }
+    .n13-svg { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; pointer-events: none; }
+    .n13-w { display: inline-block; white-space: pre; opacity: 0; }
+    .n13-ink { color: var(--ink); }
+    .n13-ico { position: absolute; -webkit-mask-size: contain; mask-size: contain; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+      -webkit-mask-position: center; mask-position: center; }
+    .n13-logo { position: absolute; object-fit: contain; }
+    .n13-credit { position: absolute; right: 30px; bottom: 20px; font-size: 13px; letter-spacing: 0.08em; color: rgba(240,239,232,0.62); z-index: 5; }
+    .n13-credit.ink { color: rgba(20,24,27,0.62); }
+    #nvs13-flash { position: absolute; inset: 0; background: var(--bone); opacity: 0; pointer-events: none; z-index: 7; }
+    #nvs13-grain, #nvs13-dust, #nvs13-vig { z-index: 8; }
+    /* document on the desk */
+    .n13-page { position: absolute; left: 0; top: 0; width: 2420px; height: 5200px; box-shadow: 0 40px 90px rgba(0,0,0,0.65); }
+    .n13-hlr { position: absolute; background: var(--yellow); mix-blend-mode: multiply; opacity: 0.85; transform-origin: 0 50%; border-radius: 3px; }
+    /* exam (callback to nvs12 sc009) */
+    .n13-sheet { position: absolute; background: #f2f0e8; box-shadow: 0 30px 70px rgba(0,0,0,0.6); overflow: hidden; }
+    .n13-bub { position: absolute; width: 44px; height: 44px; border: 3px solid var(--ink); border-radius: 50%; box-sizing: border-box;
+      font-size: 22px; line-height: 42px; text-align: center; color: var(--ink); }
+    .n13-fill { position: absolute; width: 34px; height: 34px; border-radius: 50%; background: var(--ink); opacity: 0; }
+    .n13-qb { position: absolute; height: 16px; border-radius: 8px; background: rgba(20,24,27,0.42); filter: blur(2px); }
+    .n13-back { position: absolute; background: #eeece4; box-shadow: 0 18px 40px rgba(0,0,0,0.55); overflow: hidden; }
+    /* bar charts */
+    .n13-vbar { position: absolute; transform-origin: 50% 100%; }
+    /* thumbnails */
+    .n13-thumb { position: absolute; overflow: hidden; box-shadow: 0 24px 50px rgba(0,0,0,0.55); border-radius: 10px; }
+    .n13-card { position: absolute; background: #f4f2eb; box-shadow: 0 18px 40px rgba(20,24,27,0.35); overflow: hidden; }
+  </style>
+
+  <div id="root" data-composition-id="nvs13" data-vo-start="1260.375" data-duration="95.917" data-width="1920" data-height="1080">
+    <svg id="nvs13-defs" width="0" height="0" style="position:absolute"></svg>
+
+    <!-- sc001 · 1260.375–1264.10 · "the US government itself recently ran" · the real NIST page on a dark desk -->
+    <div class="n13-scene" id="nvs13-sc001"><div class="n13-shot" id="nvs13-sc001-shot">
+      <div class="n13-hall"></div>
+      <div class="n13-cam" id="nvs13-sc001-cam">
+        <img class="n13-page" src="assets/nvidia/nvs13/nist_caisi_v4pro_page.jpg" alt="" />
+        <div class="n13-hlr" id="nvs13-sc001-hl" style="left:44px;top:566px;width:206px;height:44px"></div>
+      </div>
+      <div class="n13-credit t-label">nist.gov · U.S. government work</div>
+    </div></div>
+
+    <!-- sc002 · 1264.10–1268.47 · tests no one has seen: folder, face-down sheets, lock (night) -->
+    <div class="n13-scene" id="nvs13-sc002"><div class="n13-shot" id="nvs13-sc002-shot">
+      <div class="n13-hall"></div>
+      <div class="n13-vw" id="nvs13-sc002-vw">
+        <div class="n13-abs" id="nvs13-sc002-folder" style="left:510px;top:560px;width:900px;height:430px;background:#b9b4a3;box-shadow:0 30px 60px rgba(0,0,0,0.6)">
+          <div class="n13-p2" style="background-image:url('assets/textures/paper_fiber_01.jpg');opacity:0.6"></div>
+          <div class="n13-abs" style="left:40px;top:-44px;width:300px;height:50px;background:#b9b4a3;border-radius:10px 10px 0 0"></div>
+          <img class="n13-logo" src="assets/nvidia/shared/logos/commerce_dept_seal.svg" alt="" style="left:60px;top:150px;width:150px;height:150px;filter:grayscale(1) contrast(1.1);opacity:0.85" />
+        </div>
+        <div id="nvs13-sc002-sheets"></div>
+        <div class="n13-abs" id="nvs13-sc002-front" style="left:510px;top:700px;width:900px;height:290px;background:#c6c1b0;box-shadow:0 -6px 20px rgba(0,0,0,0.35)">
+          <div class="n13-p2" style="background-image:url('assets/textures/paper_fiber_01.jpg');opacity:0.6"></div>
+        </div>
+        <div class="n13-ico" id="nvs13-sc002-lock" style="left:880px;top:330px;width:160px;height:160px;background:var(--ice-light)"></div>
+      </div>
+      <div class="n13-credit t-label">Seal: U.S. Department of Commerce (public domain)</div>
+    </div></div>
+
+    <!-- sc003 · 1268.47–1277.43 · rebuild of NIST CAISI Fig 1 "Overall AI Capability" (paper graph) -->
+    <div class="n13-scene" id="nvs13-sc003"><div class="n13-shot n13-paper" id="nvs13-sc003-shot">
+      <div class="n13-cam" id="nvs13-sc003-cam">
+        <div class="n13-p1" style="background-image:url('assets/textures/paper_graph_01_hires.jpg')"></div>
+        <div class="n13-p2" style="background-image:url('assets/textures/paper_cream_01.jpg'); opacity:0.5"></div>
+        <div class="n13-abs t-display n13-ink" id="nvs13-sc003-title" style="left:300px;top:96px;font-size:64px;white-space:nowrap">OVERALL AI CAPABILITY</div>
+        <svg class="n13-svg" id="nvs13-sc003-svg" viewBox="0 0 1920 1080"></svg>
+        <div id="nvs13-sc003-ax"></div>
+        <div class="n13-abs t-label" id="nvs13-sc003-lus" style="left:330px;top:262px;font-size:26px;color:var(--ice-dark)">AMERICAN MODELS</div>
+        <div class="n13-abs t-label" id="nvs13-sc003-lcn" style="left:330px;top:306px;font-size:26px;color:var(--red-dark)"><span class="n13-w">CHINESE </span><span class="n13-w">MODELS</span></div>
+        <div class="n13-abs t-label" id="nvs13-sc003-v4" style="left:1446px;top:488px;font-size:26px;color:var(--red-dark);white-space:nowrap">DEEPSEEK V4 PRO</div>
+        <div class="n13-abs t-label" id="nvs13-sc003-sr" style="left:1446px;top:366px;font-size:26px;color:var(--red-dark);white-space:nowrap">SELF-REPORTED</div>
+      </div>
+      <div class="n13-credit t-label ink">Data: NIST CAISI, May 2026</div>
+    </div></div>
+
+    <!-- sc004 · 1277.43–1284.15 · the model doesn't know the questions: stencil misses, answers still good (night desk) -->
+    <div class="n13-scene" id="nvs13-sc004"><div class="n13-shot" id="nvs13-sc004-shot">
+      <div class="n13-hall"></div>
+      <div class="n13-vw" id="nvs13-sc004-vw">
+        <div class="n13-sheet" id="nvs13-sc004-sheet" style="left:570px;top:70px;width:780px;height:940px">
+          <div class="n13-p2" style="background-image:url('assets/textures/paper_cream_01.jpg'); opacity:0.6"></div>
+          <div class="n13-abs t-display n13-ink" style="left:60px;top:56px;font-size:84px">TEST</div>
+          <div class="n13-abs t-label" style="left:400px;top:80px;font-size:22px;color:var(--ink-soft)">NAME</div>
+          <div class="n13-abs" style="left:490px;top:104px;width:230px;height:3px;background:var(--ink-soft)"></div>
+          <div class="n13-abs" style="left:60px;top:170px;width:660px;height:4px;background:var(--ink)"></div>
+          <div id="nvs13-sc004-rows"></div>
+          <svg id="nvs13-sc004-ticks" width="780" height="940" viewBox="0 0 780 940" style="position:absolute;left:0;top:0;overflow:visible"></svg>
+          <div class="n13-abs" id="nvs13-sc004-st" style="left:360px;top:196px;width:330px;height:720px">
+            <svg id="nvs13-sc004-stsvg" width="330" height="720" viewBox="0 0 330 720" style="position:absolute;left:0;top:0"></svg>
+            <div class="n13-abs t-label" id="nvs13-sc004-stl" style="left:0;width:330px;top:678px;text-align:center;font-size:24px;color:var(--bone)"><span class="n13-w">MODEL</span></div>
+          </div>
+        </div>
+      </div>
+    </div></div>
+
+    <!-- sc005 · 1284.15–1292.23 · rebuild of NIST CAISI Fig 3: non-public vs public tests (paper) -->
+    <div class="n13-scene" id="nvs13-sc005"><div class="n13-shot n13-paper" id="nvs13-sc005-shot">
+      <div class="n13-p1" style="background-image:url('assets/textures/paper_cream_02.jpg')"></div>
+      <div class="n13-p2" style="background-image:url('assets/textures/newsprint_01.jpg'); opacity:0.25"></div>
+      <div class="n13-vw" id="nvs13-sc005-vw">
+        <div class="n13-abs t-display n13-ink" style="left:150px;top:150px;font-size:52px;white-space:nowrap">NON-PUBLIC TESTS</div>
+        <div class="n13-abs t-display n13-ink" id="nvs13-sc005-pt" style="left:1020px;top:150px;font-size:52px;white-space:nowrap"><span class="n13-w">PUBLIC </span><span class="n13-w">TESTS</span></div>
+        <div class="n13-abs t-label" id="nvs13-sc005-lg" style="left:1180px;top:84px;font-size:24px;color:var(--ink);white-space:nowrap">
+          <span style="display:inline-block;width:22px;height:22px;background:var(--red);vertical-align:-3px;margin-right:12px"></span>DEEPSEEK V4 PRO
+          <span style="display:inline-block;width:22px;height:22px;background:var(--ice-dark);vertical-align:-3px;margin:0 12px 0 40px"></span>CLAUDE OPUS 4.6</div>
+        <div id="nvs13-sc005-bars"></div>
+        <svg class="n13-svg" id="nvs13-sc005-svg" viewBox="0 0 1920 1080"></svg>
+        <div class="n13-abs t-display" id="nvs13-sc005-g1" style="left:742px;top:300px;font-size:40px"><span class="label-box"><span class="n13-w">GAP</span></span></div>
+        <div class="n13-abs t-display" id="nvs13-sc005-g2" style="left:1612px;top:300px;font-size:40px"><span class="label-box"><span class="n13-w">GAP</span></span></div>
+      </div>
+      <div class="n13-credit t-label ink">Data: NIST CAISI, May 2026 (Fig. 3) · public = benchmarks reported by DeepSeek</div>
+    </div></div>
+
+    <!-- sc006 · 1292.23–1297.40 · the other side of the argument: a balance (stained paper) -->
+    <div class="n13-scene" id="nvs13-sc006"><div class="n13-shot n13-paper" id="nvs13-sc006-shot">
+      <div class="n13-p1" style="background-image:url('assets/textures/paper_stained_01_hires.jpg')"></div>
+      <div class="n13-p2" style="background-image:url('assets/textures/paper_cream_01.jpg'); opacity:0.35"></div>
+      <div class="n13-vw" id="nvs13-sc006-vw">
+        <svg class="n13-svg" id="nvs13-sc006-base" viewBox="0 0 1920 1080"></svg>
+        <div class="n13-abs" id="nvs13-sc006-beam" style="left:440px;top:452px;width:1040px;height:16px;background:var(--ink);border-radius:8px;transform-origin:520px 8px"></div>
+        <div class="n13-abs" id="nvs13-sc006-panL" style="left:0;top:0;width:400px;height:420px"></div>
+        <div class="n13-abs" id="nvs13-sc006-panR" style="left:0;top:0;width:400px;height:420px"></div>
+      </div>
+    </div></div>
+
+    <!-- sc007 · 1297.40–1301.19 · "built to show … not as close": the chart as a blueprint -->
+    <div class="n13-scene" id="nvs13-sc007"><div class="n13-shot n13-blue" id="nvs13-sc007-shot">
+      <div class="n13-p1" style="background-image:url('assets/textures/paper_blueprint_01_hires.jpg')"></div>
+      <div class="n13-vw" id="nvs13-sc007-vw">
+        <svg class="n13-svg" id="nvs13-sc007-svg" viewBox="0 0 1920 1080"></svg>
+        <div class="n13-abs" id="nvs13-sc007-sq" style="left:-1600px;top:226px;width:1500px;height:44px;background:rgba(240,239,232,0.82);box-shadow:0 10px 24px rgba(0,0,0,0.35)">
+          <div class="n13-abs" style="left:0;top:0;width:1500px;height:44px;background:repeating-linear-gradient(90deg, rgba(20,24,27,0.75) 0 2px, transparent 2px 30px)"></div>
+        </div>
+      </div>
+    </div></div>
+
+    <!-- sc008 · 1301.19–1312.08 · the NIST key findings: contrast call-out + highlighter (night desk) -->
+    <div class="n13-scene" id="nvs13-sc008"><div class="n13-shot" id="nvs13-sc008-shot">
+      <div class="n13-hall"></div>
+      <div class="n13-cam" id="nvs13-sc008-cam">
+        <img class="n13-page" src="assets/nvidia/nvs13/nist_caisi_v4pro_page.jpg" alt="" />
+        <div class="n13-hlr" id="nvs13-sc008-h1" style="left:330px;top:2520px;width:500px;height:40px"></div>
+        <div class="n13-hlr" id="nvs13-sc008-h2" style="left:100px;top:2681px;width:1392px;height:40px"></div>
+        <svg id="nvs13-sc008-veil" width="2420" height="5200" viewBox="0 0 2420 5200" style="position:absolute;left:0;top:0;pointer-events:none"></svg>
+      </div>
+      <div class="n13-credit t-label">nist.gov · U.S. government work</div>
+    </div></div>
+
+    <!-- sc009 · 1312.08–1315.60 · "a lot of these caveats": asterisks stamped (paper) -->
+    <div class="n13-scene" id="nvs13-sc009"><div class="n13-shot n13-paper" id="nvs13-sc009-shot">
+      <div class="n13-p1" style="background-image:url('assets/textures/paper_cream_01.jpg')"></div>
+      <div class="n13-p2" style="background-image:url('assets/textures/paper_fiber_01.jpg'); opacity:0.4"></div>
+      <div class="n13-vw" id="nvs13-sc009-vw"><div id="nvs13-sc009-ast"></div></div>
+    </div></div>
+
+    <!-- sc010 · 1315.60–1319.36 · where this chip war really is: US vs China, night map -->
+    <div class="n13-scene" id="nvs13-sc010"><div class="n13-shot" id="nvs13-sc010-shot" style="background:#121a22">
+      <div class="n13-cam" id="nvs13-sc010-cam" style="width:2400px;height:1354px">
+        <img src="assets/nvidia/nvs13/derived/pacific_world_night.jpg" alt="" style="position:absolute;left:0;top:0;width:2400px;height:1354px" />
+        <img id="nvs13-sc010-cn" src="assets/nvidia/nvs13/derived/china_fill.png" alt="" style="position:absolute;left:0;top:0;width:2400px;height:1354px" />
+        <img id="nvs13-sc010-us" src="assets/nvidia/nvs13/derived/usa_fill.png" alt="" style="position:absolute;left:0;top:0;width:2400px;height:1354px" />
+        <svg id="nvs13-sc010-svg" width="2400" height="1354" viewBox="0 0 2400 1354" style="position:absolute;left:0;top:0;overflow:visible"></svg>
+      </div>
+      <div class="n13-abs t-display clean" id="nvs13-sc010-lcn" style="left:0;top:0;font-size:46px;white-space:nowrap">CHINA</div>
+      <div class="n13-abs t-display clean" id="nvs13-sc010-lus" style="left:0;top:0;font-size:46px;white-space:nowrap">UNITED STATES</div>
+      <div class="n13-ico" id="nvs13-sc010-chip" style="left:0;top:0;width:64px;height:64px;background:var(--volt)"></div>
+      <div class="n13-credit t-label">Relief: AWS Terrain Tiles (PD) · Natural Earth</div>
+    </div></div>
+
+    <!-- sc011 · 1319.36–1327.68 · "a video saying American … / Chinese models are winning": two thumbnails (night) -->
+    <div class="n13-scene" id="nvs13-sc011"><div class="n13-shot" id="nvs13-sc011-shot">
+      <div class="n13-hall"></div>
+      <div class="n13-vw" id="nvs13-sc011-vw"><div id="nvs13-sc011-row"></div></div>
+      <div class="n13-credit t-label">Logos © their owners, fair use</div>
+    </div></div>
+
+    <!-- sc012 · 1327.68–1341.36 · a wall of one-sided videos → the big picture board (paper) -->
+    <div class="n13-scene" id="nvs13-sc012"><div class="n13-shot n13-paper" id="nvs13-sc012-shot">
+      <div class="n13-cam" id="nvs13-sc012-cam" style="transform-origin:960px 540px">
+        <div class="n13-abs" style="left:-2200px;top:-1300px;width:6400px;height:4000px;background:var(--paper)">
+          <div class="n13-p1" style="background-image:url('assets/textures/paper_stained_01_hires.jpg')"></div>
+          <div class="n13-p2" style="background-image:url('assets/textures/paper_cream_02.jpg'); opacity:0.4"></div>
+        </div>
+        <svg id="nvs13-sc012-svg" width="1920" height="1080" viewBox="0 0 1920 1080" style="position:absolute;left:0;top:0;overflow:visible"></svg>
+        <div id="nvs13-sc012-board"></div>
+        <div id="nvs13-sc012-wall"></div>
+        <img id="nvs13-sc012-yt" class="n13-logo" src="assets/nvidia/shared/logos/youtube.svg" alt="" style="left:1560px;top:110px;width:150px;height:106px;filter:brightness(0);opacity:0.88" />
+        <div id="nvs13-sc012-tags"></div>
+      </div>
+      <div class="n13-credit t-label ink">Logos © their owners, fair use · figures: NIST CAISI</div>
+    </div></div>
+
+    <!-- sc013 · 1341.36–1356.292 · shouldn't the gap be much larger? scores ≈ equal, chips 5 % (night) -->
+    <div class="n13-scene" id="nvs13-sc013"><div class="n13-shot" id="nvs13-sc013-shot">
+      <div class="n13-hall"></div>
+      <div class="n13-cam" id="nvs13-sc013-cam">
+        <div class="n13-abs t-label clean" style="left:300px;top:250px;font-size:30px">TEST SCORES</div>
+        <div id="nvs13-sc013-bars"></div>
+        <svg class="n13-svg" id="nvs13-sc013-svg" viewBox="0 0 1920 1080"></svg>
+        <div class="n13-abs t-label" id="nvs13-sc013-lus" style="left:250px;top:884px;width:220px;text-align:center;font-size:24px;line-height:1.25;color:var(--ice-light)"><span class="n13-w">AMERICAN</span><br><span class="n13-w">MODELS</span></div>
+        <div class="n13-abs t-label" id="nvs13-sc013-lcn" style="left:490px;top:884px;width:220px;text-align:center;font-size:24px;line-height:1.25;color:var(--red-light)"><span class="n13-w">CHINESE</span><br><span class="n13-w">MODELS</span></div>
+        <div class="n13-abs t-label clean" id="nvs13-sc013-chips" style="left:1000px;top:250px;font-size:30px"><span class="n13-w">CHIPS</span></div>
+        <div class="n13-abs" id="nvs13-sc013-sqUS" style="left:1000px;top:380px;width:480px;height:480px;background:var(--volt);transform-origin:0 100%"></div>
+        <div class="n13-abs" id="nvs13-sc013-sqCN" style="left:1560px;top:753px;width:107px;height:107px;background:var(--volt);outline:4px solid var(--red-light);outline-offset:4px;transform-origin:0 100%"></div>
+        <div class="n13-abs t-display halate yellow" id="nvs13-sc013-5" style="left:1490px;width:250px;top:600px;text-align:center;font-size:110px;opacity:0">5%</div>
+        <div class="n13-abs t-label" id="nvs13-sc013-lau" style="left:1000px;top:884px;width:480px;text-align:center;font-size:24px;color:var(--ice-light)"><span class="n13-w">AMERICAN </span><span class="n13-w">COMPANIES</span></div>
+        <div class="n13-abs t-label" id="nvs13-sc013-lcm" style="left:1500px;top:884px;width:230px;text-align:center;font-size:24px;line-height:1.25;color:var(--red-light)"><span class="n13-w">CHINESE</span><br><span class="n13-w">MODELS</span></div>
+      </div>
+    </div></div>
+
+    <div id="nvs13-flash"></div>
+    <div id="nvs13-scan" style="position:absolute;inset:0;opacity:0;pointer-events:none;z-index:7;background:repeating-linear-gradient(0deg, rgba(240,239,232,0.0) 0 7px, rgba(240,239,232,0.28) 7px 9px)"></div>
+    <div id="nvs13-grain" class="tx tx-grain" style="background-image:url('assets/textures/grain_01_norm.jpg')"></div>
+    <div id="nvs13-dust" class="tx tx-dust" style="background-image:url('assets/textures/dust_02.jpg')"></div>
+    <div id="nvs13-vig" class="vignette"></div>
+    <audio id="nvs13-vo" class="temp-vo" src="vo_nv.mp3" data-start="0" data-duration="95.917" data-media-start="1260.375" data-volume="1"></audio>
+  </div>
+
+  <script>
+  (function () {
+    const SEG = "nvs13", SEG_START = 1260.375, SEG_END = 1356.292, DURATION = 95.917;
+    const T = (s) => +(s - SEG_START).toFixed(3);   // TEXT cues (audited): master word start − 0.06
+    const S = (s) => +(s - SEG_START).toFixed(3);   // STRUCTURAL cues
+    const tl = gsap.timeline({ paused: true });
+    const $ = (id) => document.getElementById(SEG + "-" + id);
+    const NS = "http://www.w3.org/2000/svg";
+    const defs = $("defs");
+    const E = FX.ease;
+    const C = (e, d) => FX.choppy(e, d, 12);
+    const INK = "#14181b", BONE = "#f0efe8", RED = "#dc2f3c", REDD = "#7e151e", REDL = "#f6a4a9", ICE = "#2a9fc9", ICED = "#115973", ICEL = "#9fdcf0", VOLT = "#86c232", VOLTD = "#3f6410", YEL = "#f5d033";
+    const ICO = (n) => "url('assets/nvidia/shared/icons/" + n + ".svg')";
+
+    // ---------- scenes ----------
+    const SC = [
+      ["sc001", 1260.375, 1264.10, "night"], ["sc002", 1264.10, 1268.47, "night"], ["sc003", 1268.47, 1277.43, "paper"],
+      ["sc004", 1277.43, 1284.15, "night"], ["sc005", 1284.15, 1292.23, "paper"], ["sc006", 1292.23, 1297.40, "paper"],
+      ["sc007", 1297.40, 1301.19, "night"], ["sc008", 1301.19, 1312.08, "night"], ["sc009", 1312.08, 1315.60, "paper"],
+      ["sc010", 1315.60, 1319.36, "night"], ["sc011", 1319.36, 1327.68, "night"], ["sc012", 1327.68, 1341.36, "paper"],
+      ["sc013", 1341.36, 1356.292, "night"],
+    ];
+    const GROUND = { paper: [0.3, 0.14, 0.22], night: [0.9, 0.42, 0.4] };
+    const EARLY = { sc005: 0.45, sc012: 0.45 };   // slides: incoming scene visible during the slide
+    function ground(kind, t) { const v = GROUND[kind]; tl.set([$("grain"), $("dust"), $("vig")], { opacity: (i) => v[i] }, t); }
+    SC.forEach((s, i) => {
+      const el = $(s[0]), a = s[1] - (EARLY[s[0]] || 0);
+      if (i === 0) gsap.set(el, { autoAlpha: 1 });
+      else tl.fromTo(el, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.001, immediateRender: false }, S(a) - 0.002);
+      if (s[2] < SEG_END) tl.set(el, { autoAlpha: 0 }, S(s[2]) + 0.05);
+    });
+    gsap.set([$("grain"), $("dust"), $("vig")], { opacity: (i) => GROUND.night[i] });
+    SC.forEach((s, i) => { if (i > 0) ground(s[3], S(s[1])); });
+
+    // ---------- helpers ----------
+    const rise = (el, t, o) => { o = o || {}; const d = o.dur || 0.5;
+      tl.fromTo(el, { opacity: 0, y: o.y == null ? 14 : o.y }, { opacity: 1, y: 0, duration: d, ease: C(E.out, d), immediateRender: true }, t); };
+    const pop = (el, t, o) => { o = o || {}; const n = o.n || 2;
+      tl.fromTo(el, { opacity: 0, scale: o.from == null ? 1.25 : o.from }, { opacity: o.to == null ? 1 : o.to, scale: 1, duration: n / 12, ease: "steps(" + n + ")", immediateRender: true }, t); };
+    const W = (id) => Array.from($(id).querySelectorAll(".n13-w"));
+    function words(id, cues, o) { const ws = W(id); cues.forEach((c, i) => rise(ws[i], c, o)); }
+    function el(parent, tag, attrs) { const n = document.createElementNS(NS, tag); for (const k in attrs) n.setAttribute(k, attrs[k]); parent.appendChild(n); return n; }
+    function div(parent, cls, css, html) { const d = document.createElement("div"); if (cls) d.className = cls; d.style.cssText = css || ""; if (html) d.innerHTML = html; parent.appendChild(d); return d; }
+    function img(parent, src, css) { const i = document.createElement("img"); i.src = src; i.alt = ""; i.style.cssText = "position:absolute;" + css; parent.appendChild(i); return i; }
+    function ink(parent, d, t, dur, o) {
+      o = o || {};
+      const p = el(parent, "path", { d: d, fill: "none", stroke: o.color || INK, "stroke-width": o.width || 5, "stroke-linecap": "round", "stroke-linejoin": "round" });
+      if (o.opacity != null) p.setAttribute("opacity", o.opacity);
+      const len = p.getTotalLength() || 1;
+      p.setAttribute("stroke-dasharray", len + " " + len); p.setAttribute("stroke-dashoffset", len);
+      tl.fromTo(p, { attr: { "stroke-dashoffset": len } }, { attr: { "stroke-dashoffset": 0 }, duration: dur, ease: o.ease || C(E.out, dur), immediateRender: true }, t);
+      gsap.set(p, { opacity: 0 }); tl.set(p, { opacity: o.opacity == null ? 1 : o.opacity }, t);
+      return p;
+    }
+    const whipN = { n: 0 };
+    function whip(a, b, t, o) {
+      o = Object.assign({ dir: 1, vertical: false, flash: false, dur: 0.32 }, o);
+      const k = ++whipN.n, ba = FX.whipDefs(defs, SEG + "-wa" + k), bb = FX.whipDefs(defs, SEG + "-wb" + k), h = o.dur / 2;
+      const A = $(a + "-shot"), B = $(b + "-shot");
+      tl.set(A, { filter: "url(#" + SEG + "-wa" + k + ")" }, t - h - 0.01); tl.set(A, { filter: "none" }, t + 0.06);
+      tl.set(B, { filter: "url(#" + SEG + "-wb" + k + ")" }, t - 0.001); tl.set(B, { filter: "none" }, t + h + 0.02);
+      FX.whip(tl, A, B, t, { dir: o.dir, vertical: o.vertical, dur: o.dur, blurA: ba, blurB: bb });
+      if (o.flash) tl.fromTo($("flash"), { opacity: 0 }, { opacity: 0.85, duration: 0.08, yoyo: true, repeat: 1, ease: "power2.in", immediateRender: false }, t - 0.08);
+    }
+    function slide(a, b, t, o) {
+      o = Object.assign({ axis: "y", from: 1, d: 0.45 }, o);
+      const A = $(a + "-shot"), B = $(b + "-shot"), dist = (o.axis === "x" ? 1980 : 1140) * o.from;
+      tl.fromTo(B, { [o.axis]: dist, boxShadow: "0 0 80px rgba(0,0,0,0.5)" }, { [o.axis]: 0, duration: o.d, ease: C(E.inOut, o.d), immediateRender: false }, t - o.d);
+      tl.set(B, { boxShadow: "none" }, t);
+      tl.fromTo(A, { [o.axis]: 0 }, { [o.axis]: -dist * 0.12, duration: o.d, ease: E.in, immediateRender: false }, t - o.d);
+    }
+    function push(id, a, b, s0, s1, o) {
+      o = o || {};
+      const vw = $(id + "-vw");
+      if (o.origin) gsap.set(vw, { transformOrigin: o.origin });
+      gsap.set(vw, { scale: s0 });
+      tl.fromTo(vw, { scale: s0 }, { scale: s1, duration: b - a, ease: o.ease || "none", immediateRender: false }, S(a));
+    }
+    // camera (transform-origin 0 0): frame page/map point (px,py) at the screen centre with scale s
+    const at = (px, py, s, r) => ({ x: 960 - px * s, y: 540 - py * s, scale: s, rotation: r || 0 });
+    function hl(elm, t, dur) { gsap.set(elm, { scaleX: 0 }); tl.fromTo(elm, { scaleX: 0 }, { scaleX: 1, duration: dur || 0.45, ease: "sine.inOut", immediateRender: true }, t); }
+    const PEN = FX.markupDefs(defs, SEG + "-pen", { boil: 4 });
+    defs.setAttribute("viewBox", "0 0 1 1");
+    // rough edge for highlighters (two displacement passes)
+    defs.insertAdjacentHTML("beforeend", '<filter id="' + SEG + '-hlf" x="-5%" y="-30%" width="110%" height="160%"><feTurbulence type="fractalNoise" baseFrequency="0.04 0.3" numOctaves="2" seed="4" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="6" xChannelSelector="R" yChannelSelector="G"/></filter>');
+    ["sc001-hl", "sc008-h1", "sc008-h2"].forEach((k) => { $(k).style.filter = "url(#" + SEG + "-hlf)"; });
+    FX.grain($("grain"), 1301);
+    FX.dust($("dust"), 1302, 2);
+    const ASTER = (sz, col) => '<svg viewBox="-50 -50 100 100" width="' + sz + '" height="' + sz + '"><g stroke="' + col + '" stroke-width="15" stroke-linecap="round"><path d="M0 -40 L1 40"/><path d="M-35 -20 L35 21"/><path d="M-35 21 L35 -20"/></g></svg>';
+
+    /* ===== sc001 · the real NIST page: push in, highlighter on the date ("recently") ===== */
+    (function () {
+      const cam = $("sc001-cam");
+      const K0 = at(1210, 700, 0.66, -1.6), K1 = at(560, 470, 1.02, -0.6);
+      gsap.set(cam, K0);
+      tl.fromTo(cam, K0, Object.assign({}, K1, { duration: S(1264.10) - S(1260.375), ease: E.cam, immediateRender: false }), S(1260.375));
+      hl($("sc001-hl"), S(1262.95), 0.42);
+    })();
+
+    /* ===== sc002 · its own tests, no one has seen: face-down sheets + lock (whip →) ===== */
+    whip("sc001", "sc002", S(1264.10), { dir: 1 });
+    (function () {
+      const box = $("sc002-sheets"), sheets = [];
+      const P = [[-13, -330, 40], [-4, -110, 10], [5, 110, 0], [14, 330, 30]];
+      P.forEach((p, i) => {
+        const s = div(box, "n13-back", "left:700px;top:330px;width:520px;height:640px;transform-origin:50% 100%");
+        // faint show-through of the printed side (mirrored, blurred) — the questions can't be read
+        for (let r = 0; r < 7; r++) div(s, "n13-qb", "left:" + (60 + (r * 37) % 90) + "px;top:" + (70 + r * 76) + "px;width:" + (240 + (r * 53) % 150) + "px;opacity:0.18;filter:blur(5px)");
+        div(s, "n13-p2", "background-image:url('assets/textures/paper_cream_01.jpg');opacity:0.5");
+        const sweep = div(s, "", "position:absolute;left:-300px;top:0;width:240px;height:640px;background:linear-gradient(90deg, transparent, rgba(255,255,255,0.55), transparent);transform:skewX(-14deg)");
+        gsap.set(s, { y: 360, rotation: 0, x: 0 });
+        tl.fromTo(s, { y: 360, rotation: 0, x: 0 }, { y: -p[2], rotation: p[0], x: p[1], duration: 1.0, ease: C(E.out, 1.0), immediateRender: true }, S(1264.25) + i * 0.08);
+        tl.fromTo(sweep, { x: 0 }, { x: 1100, duration: 0.7, ease: "sine.inOut", immediateRender: true }, S(1266.55) + i * 0.08);
+        tl.to(s, { y: 300, rotation: 0, x: 0, duration: 0.7, ease: C(E.inOut, 0.7) }, S(1267.45) + i * 0.05);
+        sheets.push(s);
+      });
+      const lk = $("sc002-lock");
+      lk.style.webkitMaskImage = ICO("lock"); lk.style.maskImage = ICO("lock");
+      gsap.set(lk, { opacity: 0 });
+      pop(lk, S(1265.19), { from: 1.6, n: 3 });
+      tl.to(lk, { y: 300, scale: 0.7, duration: 0.7, ease: C(E.inOut, 0.7) }, S(1267.45));
+      push("sc002", 1264.10, 1268.47, 1.0, 1.05, { ease: E.cam, origin: "960px 560px" });
+    })();
+
+    /* ===== sc003 · NIST Fig 1 rebuilt: US vs China capability, V4 Pro measured vs self-reported (flash whip ↓) ===== */
+    whip("sc002", "sc003", S(1268.47), { dir: 1, vertical: true, flash: true });
+    (function () {
+      const svg = $("sc003-svg"), ax = $("sc003-ax"), cam = $("sc003-cam");
+      const X = (m) => 300 + m * 40, Y = (e) => 900 - e * 0.5;
+      ink(svg, "M300 250 L301 901", S(1268.6), 0.5, { width: 3.5 });
+      ink(svg, "M300 901 L1500 899", S(1268.7), 0.6, { width: 3.5 });
+      [400, 800, 1200].forEach((e, i) => {
+        ink(svg, "M300 " + Y(e) + " L1500 " + (Y(e) + 1), S(1268.8) + i * 0.06, 0.5, { width: 1.5, opacity: 0.3 });
+        const l = div(ax, "t-label", "position:absolute;left:196px;width:90px;text-align:right;top:" + (Y(e) - 14) + "px;font-size:22px;color:" + INK, String(e));
+        gsap.set(l, { opacity: 0 }); tl.set(l, { opacity: 1 }, S(1268.85) + i * 0.06);
+      });
+      [["2024", 0], ["2025", 12], ["2026", 24]].forEach((q, i) => {
+        ink(svg, "M" + X(q[1]) + " 901 L" + (X(q[1]) + 1) + " 918", S(1268.9), 0.2, { width: 3 });
+        const l = div(ax, "t-label", "position:absolute;left:" + (X(q[1]) - 50) + "px;width:100px;text-align:center;top:930px;font-size:24px;color:" + INK, q[0]);
+        gsap.set(l, { opacity: 0 }); tl.set(l, { opacity: 1 }, S(1268.95) + i * 0.06);
+      });
+      const yl = div(ax, "t-label", "position:absolute;left:96px;top:560px;width:200px;text-align:center;font-size:22px;color:" + INK + ";transform:rotate(-90deg)", "ELO SCORE");
+      gsap.set(yl, { opacity: 0 }); tl.set(yl, { opacity: 0.8 }, S(1269.0));
+      gsap.set($("sc003-title"), { opacity: 0 }); rise($("sc003-title"), S(1268.6), { dur: 0.6, y: 12 });
+      // US models (NIST Fig 1 positions, read from the published figure)
+      const US = [[4.4, 25], [9.7, 49], [11.6, 392], [13.0, 427], [15.5, 542], [16.5, 579], [19.3, 814], [23.4, 955], [25.3, 998], [26.2, 1082], [27.8, 1260]];
+      const CN = [[12.7, 175], [14.2, 243], [16.0, 301], [16.9, 375], [19.7, 450], [22.2, 553], [25.0, 616]];
+      US.forEach((p, i) => { const c = el(svg, "circle", { cx: X(p[0]), cy: Y(p[1]), r: 11, fill: ICED }); gsap.set(c, { opacity: 0 }); pop(c, S(1269.25) + i / 14, { from: 1.8 }); });
+      const tu = ink(svg, "M" + X(4.6) + " " + Y(-30) + " L" + X(27.8) + " " + Y(1194), S(1269.6), 1.0, { color: ICED, width: 4, ease: C(E.inOut, 1.0) });
+      tu.setAttribute("stroke-dasharray", "16 12"); gsap.set(tu, { attr: { "stroke-dashoffset": 0 } });
+      tl.fromTo(tu, { opacity: 0 }, { opacity: 0.8, duration: 0.6, immediateRender: true }, S(1269.6));
+      gsap.set($("sc003-lus"), { opacity: 0 }); rise($("sc003-lus"), S(1269.5), { dur: 0.5, y: 8 });
+      words("sc003-lcn", [T(1270.17), T(1270.73)], { dur: 0.4, y: 8 });
+      CN.forEach((p, i) => { const c = el(svg, "circle", { cx: X(p[0]), cy: Y(p[1]), r: 11, fill: RED }); gsap.set(c, { opacity: 0 }); pop(c, S(1270.3) + i / 12, { from: 1.8 }); });
+      const tc = ink(svg, "M" + X(12.7) + " " + Y(184) + " L" + X(27.8) + " " + Y(770), S(1270.6), 1.0, { color: RED, width: 4, ease: C(E.inOut, 1.0) });
+      tc.setAttribute("stroke-dasharray", "16 12"); gsap.set(tc, { attr: { "stroke-dashoffset": 0 } });
+      tl.fromTo(tc, { opacity: 0 }, { opacity: 0.85, duration: 0.6, immediateRender: true }, S(1270.6));
+      // "good": DeepSeek V4 Pro measured at 800
+      const v4 = el(svg, "circle", { cx: X(27.8), cy: Y(800), r: 17, fill: RED }); gsap.set(v4, { opacity: 0 });
+      pop(v4, S(1271.72), { from: 2.4, n: 3 });
+      gsap.set($("sc003-v4"), { opacity: 0 }); rise($("sc003-v4"), S(1271.8), { dur: 0.4, y: 6 });
+      // "…as the Chinese companies are saying": DeepSeek's own numbers put V4 near Opus 4.6 / GPT-5.4 (NIST key finding)
+      const gh = el(svg, "circle", { cx: X(27.8), cy: Y(1040), r: 17, fill: "none", stroke: RED, "stroke-width": 4, "stroke-dasharray": "7 6" }); gsap.set(gh, { opacity: 0 });
+      pop(gh, S(1274.45), { from: 2.0, n: 3 });
+      gsap.set($("sc003-sr"), { opacity: 0 }); rise($("sc003-sr"), S(1274.5), { dur: 0.4, y: 6 });
+      const ar = FX.markup.arrow(tl, svg, S(1275.6), { x1: X(27.8) + 34, y1: Y(1040) + 16, x2: X(27.8) + 30, y2: Y(800) - 26, bend: -40, color: REDD, width: 6, filter: PEN, dur: 0.55, head: 22 });
+      ar.forEach((p) => { gsap.set(p, { opacity: 0 }); tl.set(p, { opacity: 1 }, S(1275.6)); p.style.mixBlendMode = "multiply"; });
+      // camera: wide → drift to the right end (cut on action at the end of the move)
+      const K0 = at(900, 560, 1.0), K1 = at(1000, 560, 1.03), K2 = at(1200, 560, 1.18), K3 = at(1300, 520, 1.3);
+      gsap.set(cam, K0);
+      tl.fromTo(cam, K0, Object.assign({}, K1, { duration: 3.0, ease: "none", immediateRender: false }), S(1268.47));
+      tl.to(cam, Object.assign({}, K2, { duration: 1.6, ease: E.cam }), S(1273.2));
+      FX.focusHunt(tl, cam, S(1274.85), { dur: 0.5, a: 2, b: 3 });
+      tl.to(cam, Object.assign({}, K3, { duration: 0.5, ease: E.in }), S(1276.93));
+    })();
+
+    /* ===== sc004 · the stencil no longer fits; answers still good (hard cut on action) ===== */
+    (function () {
+      const rows = $("sc004-rows"), sh = $("sc004-sheet"), tk = $("sc004-ticks");
+      const ANS = [2, 0, 3, 1, 0, 2], KEY = [1, 3, 0, 2, 1, 3], BX = 380, Y0 = 220;   // KEY = the stencil from nvs12 (sc009)
+      const fills = [], rowEls = [];
+      gsap.set(sh, { rotation: 2 });
+      tl.fromTo(sh, { y: 120, rotation: 4 }, { y: 0, rotation: 2, duration: 0.9, ease: C(E.out, 0.9), immediateRender: true }, S(1277.43));
+      for (let r = 0; r < 6; r++) {
+        const y = Y0 + r * 110;
+        const g = div(rows, "", "position:absolute;left:0;top:0");
+        div(g, "t-label n13-ink", "position:absolute;left:60px;top:" + (y + 10) + "px;font-size:26px", (r + 1) + ".");
+        div(g, "n13-qb", "left:110px;top:" + (y + 16) + "px;width:" + (180 + (r * 41) % 80) + "px");
+        div(g, "n13-qb", "left:110px;top:" + (y + 44) + "px;width:" + (120 + (r * 59) % 90) + "px");
+        for (let j = 0; j < 4; j++) {
+          div(g, "n13-bub t-label", "left:" + (BX + j * 74) + "px;top:" + y + "px", "ABCD"[j]);
+          if (j === ANS[r]) fills.push(div(g, "n13-fill", "left:" + (BX + j * 74 + 5) + "px;top:" + (y + 5) + "px"));
+        }
+        rowEls.push(g);
+      }
+      // "don't know the questions ahead of time": the question rows shuffle (12 fps)
+      const SH = [3, 5, 1, 0, 4, 2];
+      rowEls.forEach((g, r) => {
+        const dy = (SH[r] - r) * 110;
+        tl.to(g, { y: dy, duration: 0.5, ease: C(E.inOut, 0.5) }, S(1280.45) + r * 0.03);
+        tl.to(g, { y: 0, duration: 0.5, ease: C(E.inOut, 0.5) }, S(1281.25) + r * 0.03);
+      });
+      // the red MODEL stencil (holes = the answers it already knew) slides over — and misses
+      const st = $("sc004-st"), ss = $("sc004-stsvg");
+      let d = "M0 0 L330 0 L330 720 L0 720 Z";
+      KEY.forEach((a, r) => { const cx = (BX - 360) + a * 74 + 22, cy = (Y0 - 196) + r * 110 + 22, rr = 27; d += " M" + (cx - rr) + " " + cy + " a" + rr + " " + rr + " 0 1 0 " + 2 * rr + " 0 a" + rr + " " + rr + " 0 1 0 " + (-2 * rr) + " 0 Z"; });
+      el(ss, "path", { d: d, fill: RED, "fill-rule": "evenodd", opacity: 0.86 });
+      gsap.set(st, { x: 900, rotation: 6 });
+      tl.fromTo(st, { x: 900, rotation: 6 }, { x: 0, rotation: 0, duration: 0.9, ease: C(E.inOut, 0.9), immediateRender: true }, S(1278.45));
+      words("sc004-stl", [T(1279.37)], { dur: 0.35, y: 6 });
+      tl.to(st, { x: 950, rotation: 8, duration: 0.7, ease: C(E.in, 0.7) }, S(1281.95));
+      // "the answers are still good": bubbles filled, ticks
+      fills.forEach((f, i) => tl.fromTo(f, { opacity: 0, scale: 0.4 }, { opacity: 0.92, scale: 1, duration: 2 / 12, ease: "steps(2)", immediateRender: true }, S(1282.45) + i * 0.1));
+      [0, 1, 2, 4, 5].forEach((r, i) => {
+        const y = Y0 + r * 110 + 22, x = BX + 4 * 74 + 20;
+        ink(tk, "M" + x + " " + y + " L" + (x + 12) + " " + (y + 14) + " L" + (x + 36) + " " + (y - 18), S(1283.0) + i * 0.09, 0.22, { color: INK, width: 6 });
+      });
+      push("sc004", 1277.43, 1284.15, 1.0, 1.05, { ease: E.cam, origin: "960px 520px" });
+    })();
+
+    /* ===== sc005 · NIST Fig 3 rebuilt: the gap on non-public vs public tests (paper slides in from the right) ===== */
+    slide("sc004", "sc005", S(1284.15), { axis: "x" });
+    (function () {
+      const b = $("sc005-bars"), svg = $("sc005-svg");
+      const BASE = 860, H = (v) => v * 5;
+      const NP = [["ARC-AGI-2", 45.7, 62.6], ["PORTBENCH", 43.8, 60.3], ["CTF-ARCHIVE<br>DIAMOND", 31.7, 45.6]];
+      const PU = [["HLE", 37.7, 40.0], ["SWE-BENCH<br>VERIFIED", 80.6, 80.8], ["TERMINAL<br>BENCH 2.0", 67.9, 65.4]];
+      ink(svg, "M150 861 L870 859", S(1284.2), 0.5, { width: 3.5 });
+      ink(svg, "M1020 861 L1740 859", S(1288.6), 0.5, { width: 3.5 });
+      function group(G, x0, t0, gapT) {
+        G.forEach((g, i) => {
+          const x = x0 + i * 240;
+          const l = div(b, "t-label", "position:absolute;left:" + (x - 40) + "px;width:240px;text-align:center;top:880px;font-size:22px;line-height:1.2;color:" + INK, g[0]);
+          gsap.set(l, { opacity: 0 }); tl.set(l, { opacity: 1 }, t0 + i * 0.08);
+          const cn = div(b, "n13-vbar", "left:" + (x + 4) + "px;top:" + (BASE - H(g[1])) + "px;width:76px;height:" + H(g[1]) + "px;background:" + RED);
+          const us = div(b, "n13-vbar", "left:" + (x + 84) + "px;top:" + (BASE - H(g[2])) + "px;width:76px;height:" + H(g[2]) + "px;background:" + ICED);
+          [cn, us].forEach((br, j) => { gsap.set(br, { scaleY: 0 }); tl.fromTo(br, { scaleY: 0 }, { scaleY: 1, duration: 1.0, ease: C(E.out, 1.0), immediateRender: true }, t0 + i * 0.12 + j * 0.12); });
+          // gap marks: dashed level from the China bar + bracket
+          const top = BASE - H(Math.max(g[1], g[2])), low = BASE - H(Math.min(g[1], g[2]));
+          const lv = el(svg, "path", { d: "M" + (x + 4) + " " + (BASE - H(g[1])) + " L" + (x + 160) + " " + (BASE - H(g[1]) + 0.5), stroke: INK, "stroke-width": 2.5, "stroke-dasharray": "8 7", fill: "none" });
+          gsap.set(lv, { opacity: 0 }); tl.set(lv, { opacity: 0.8 }, gapT + i * 0.1);
+          if (low - top > 6) ink(svg, "M" + (x + 172) + " " + top + " L" + (x + 184) + " " + (top + 2) + " L" + (x + 186) + " " + (low - 2) + " L" + (x + 174) + " " + low, gapT + i * 0.1, 0.35, { width: 4 });
+          else ink(svg, "M" + (x + 172) + " " + (top - 4) + " L" + (x + 186) + " " + (top - 3), gapT + i * 0.1, 0.25, { width: 4 });
+        });
+      }
+      gsap.set($("sc005-lg"), { opacity: 0 }); rise($("sc005-lg"), S(1284.3), { dur: 0.5, y: 8 });
+      group(NP, 190, S(1284.3), S(1287.9));
+      gsap.set($("sc005-g1").querySelector(".label-box"), { opacity: 0 }); tl.set($("sc005-g1").querySelector(".label-box"), { opacity: 1 }, T(1284.49));
+      words("sc005-g1", [T(1284.49)], { dur: 0.3, y: 6 });
+      group(PU, 1060, S(1288.7), S(1289.9));
+      gsap.set($("sc005-g2").querySelector(".label-box"), { opacity: 0 }); tl.set($("sc005-g2").querySelector(".label-box"), { opacity: 1 }, T(1289.45));
+      words("sc005-g2", [T(1289.45)], { dur: 0.3, y: 6 });
+      words("sc005-pt", [T(1291.13), T(1291.13)], { dur: 0.35, y: 8 });
+      push("sc005", 1284.15, 1292.23, 1.0, 1.04, { ease: E.cam, origin: "960px 560px" });
+    })();
+
+    /* ===== sc006 · the other side of the argument: a balance (vertical whip ↑) ===== */
+    whip("sc005", "sc006", S(1292.23), { dir: -1, vertical: true });
+    (function () {
+      const base = $("sc006-base"), beam = $("sc006-beam"), L = $("sc006-panL"), R = $("sc006-panR");
+      ink(base, "M960 468 L880 880 L1042 879 Z", S(1292.3), 0.6, { width: 6 });
+      ink(base, "M800 880 L1122 878", S(1292.35), 0.5, { width: 6 });
+      // pans: strings + tray + card (built in pan-local px: pivot of the string at (200, 0))
+      function pan(box, card) {
+        const sv = document.createElementNS(NS, "svg"); sv.setAttribute("width", 400); sv.setAttribute("height", 420); sv.setAttribute("viewBox", "0 0 400 420");
+        sv.style.cssText = "position:absolute;left:0;top:0;overflow:visible"; box.appendChild(sv);
+        el(sv, "path", { d: "M200 0 L40 300 M200 0 L360 300", stroke: INK, "stroke-width": 3, fill: "none" });
+        el(sv, "path", { d: "M20 300 L380 301 L340 330 L60 330 Z", fill: INK });
+        el(sv, "circle", { cx: 200, cy: 0, r: 9, fill: INK });
+        box.appendChild(card);
+        return box;
+      }
+      const cL = document.createElement("div"); cL.className = "n13-card"; cL.style.cssText = "left:70px;top:60px;width:260px;height:236px";
+      img(cL, "assets/nvidia/shared/logos/commerce_dept_seal.svg", "left:16px;top:16px;width:70px;height:70px;filter:grayscale(1)");
+      [[110, 0.45, RED], [150, 0.62, ICED], [196, 0.44, RED], [236, 0.6, ICED]].forEach((q) => div(cL, "", "position:absolute;left:" + (q[0] - 10) + "px;bottom:20px;width:30px;height:" + Math.round(q[1] * 200) + "px;background:" + q[2]));
+      const lab = div(cL, "t-label", "position:absolute;left:14px;top:96px;font-size:24px;color:" + INK + ";line-height:1.2", '<span class="n13-w">U.S. </span><span class="n13-w">TEST</span>');
+      const cR = document.createElement("div"); cR.className = "n13-card"; cR.style.cssText = "left:70px;top:60px;width:260px;height:236px";
+      pan(L, cL); pan(R, cR);
+      // the "?" (pen) on the right card — drawn in a local 260×236 svg space via its own markup
+      const qsv = document.createElementNS(NS, "svg"); qsv.setAttribute("width", 260); qsv.setAttribute("height", 236); qsv.setAttribute("viewBox", "0 0 260 236");
+      qsv.style.cssText = "position:absolute;left:0;top:0;overflow:visible"; cR.appendChild(qsv);
+      const q = ink(qsv, "M92 78 C92 40 170 36 168 80 C166 112 128 110 129 150", S(1294.75), 0.55, { color: REDD, width: 12 });
+      const qd = el(qsv, "circle", { cx: 130, cy: 186, r: 9, fill: REDD }); gsap.set(qd, { opacity: 0 }); tl.set(qd, { opacity: 1 }, S(1295.3));
+      words("sc006-panL", [T(1296.57), T(1297.05)], { dur: 0.35, y: 6 });
+      // beam physics (proxy angle → beam rotation + hanging pans)
+      const st = { a: -9, dropR: -700 };
+      const upd = () => {
+        const r = st.a * Math.PI / 180, c = Math.cos(r), s = Math.sin(r);
+        const lx = 960 - 500 * c, ly = 460 - 500 * s, rx = 960 + 500 * c, ry = 460 + 500 * s;
+        gsap.set(beam, { rotation: st.a });
+        gsap.set(L, { x: lx - 200, y: ly });
+        gsap.set(R, { x: rx - 200, y: ry });
+        gsap.set(cR, { y: st.dropR });
+      };
+      upd();
+      tl.fromTo(L, { opacity: 0 }, { opacity: 1, duration: 2 / 12, ease: "steps(2)", immediateRender: true }, S(1292.4));
+      tl.fromTo(R, { opacity: 0 }, { opacity: 1, duration: 2 / 12, ease: "steps(2)", immediateRender: true }, S(1292.4));
+      tl.fromTo(beam, { opacity: 0 }, { opacity: 1, duration: 2 / 12, ease: "steps(2)", immediateRender: true }, S(1292.4));
+      tl.fromTo(st, { a: -9, dropR: -700 }, { a: -9, dropR: -700, duration: 0.01, immediateRender: true, onUpdate: upd }, S(1292.3));
+      tl.to(st, { dropR: 0, duration: 0.6, ease: C(E.in, 0.6), onUpdate: upd }, S(1293.95));
+      tl.to(st, { a: 4, duration: 0.9, ease: C(E.out, 0.9), onUpdate: upd }, S(1294.55));
+      tl.to(st, { a: -1.5, duration: 1.1, ease: C(E.inOut, 1.1), onUpdate: upd }, S(1295.45));
+      tl.to(st, { a: 3.5, duration: 0.7, ease: E.in, onUpdate: upd }, S(1296.70));
+      push("sc006", 1292.23, 1297.40, 1.0, 1.05, { ease: E.cam, origin: "960px 560px" });
+    })();
+
+    /* ===== sc007 · "built to show": the chart as a blueprint, the dimension pulled wider (hard cut on action) ===== */
+    (function () {
+      const svg = $("sc007-svg");
+      // construction lines
+      ink(svg, "M200 860 L1720 858", S(1297.45), 0.6, { color: BONE, width: 3, opacity: 0.85 });
+      ink(svg, "M260 248 L1660 249", S(1297.6), 0.7, { color: BONE, width: 1.5, opacity: 0.45 });
+      ink(svg, "M260 560 L1660 561", S(1297.65), 0.7, { color: BONE, width: 1.5, opacity: 0.45 });
+      // bar outlines: US (ice-light), China (red-light) — drawn as the T-square passes
+      ink(svg, "M640 859 L641 300 L860 299 L861 859", S(1298.0), 0.8, { color: ICEL, width: 5 });
+      const cn = ink(svg, "M1060 859 L1061 400 L1280 399 L1281 859", S(1298.15), 0.8, { color: REDL, width: 5 });
+      // the T-square rules down the sheet on "built"
+      const sq = $("sc007-sq");
+      tl.fromTo(sq, { x: 0 }, { x: 1760, duration: 0.8, ease: C(E.inOut, 0.8), immediateRender: true }, S(1297.9));
+      tl.to(sq, { y: 150, duration: 0.6, ease: C(E.inOut, 0.6) }, S(1298.75));
+      tl.to(sq, { x: 3400, duration: 0.5, ease: E.in }, S(1299.4));
+      // dimension line between the tops: extension lines + arrows
+      ink(svg, "M870 300 L1460 301", S(1299.2), 0.45, { color: BONE, width: 2, opacity: 0.7 });
+      const ext = ink(svg, "M1290 400 L1460 401", S(1299.3), 0.35, { color: BONE, width: 2, opacity: 0.7 });
+      const dim = ink(svg, "M1420 306 L1421 394", S(1299.45), 0.4, { color: BONE, width: 4 });
+      // "not as close": the China bar is ruled lower, the dimension stretches
+      const low = ink(svg, "M1060 520 L1281 521", S(1300.25), 0.4, { color: REDL, width: 5 });
+      tl.to(cn, { opacity: 0.25, duration: 0.3 }, S(1300.25));
+      tl.to(ext, { attr: { d: "M1290 520 L1460 521" }, duration: 0.4, ease: C(E.out, 0.4) }, S(1300.25));
+      tl.to(dim, { attr: { d: "M1420 306 L1421 514" }, duration: 0.4, ease: C(E.out, 0.4) }, S(1300.25));
+      tl.set(dim, { attr: { "stroke-dasharray": "none" } }, S(1299.86));
+      ink(svg, "M1404 322 L1420 304 L1437 322", S(1299.75), 0.15, { color: BONE, width: 4 });
+      const ah = ink(svg, "M1404 378 L1421 396 L1437 378", S(1299.75), 0.15, { color: BONE, width: 4 });
+      tl.to(ah, { attr: { d: "M1404 498 L1421 516 L1437 498" }, duration: 0.4, ease: C(E.out, 0.4) }, S(1300.25));
+      push("sc007", 1297.40, 1301.19, 1.0, 1.06, { ease: E.cam, origin: "1200px 520px" });
+    })();
+
+    /* ===== sc008 · NIST key findings: contrast call-out + two highlighter strokes (flash whip ←) ===== */
+    whip("sc007", "sc008", S(1301.19), { dir: -1, flash: true });
+    (function () {
+      const cam = $("sc008-cam"), veil = $("sc008-veil");
+      const V = (x, y, w, h) => el(veil, "path", { d: "M-2000 -2000 H4420 V7200 H-2000 Z M" + x + " " + y + " h" + w + " v" + h + " h" + (-w) + " Z", "fill-rule": "evenodd", fill: "rgba(13,16,18,0.62)" });
+      const v1 = V(84, 2500, 1520, 76), v2 = V(84, 2662, 1520, 76);
+      gsap.set([v1, v2], { opacity: 0 });
+      const K0 = at(820, 2620, 0.86, -1.2), K1 = at(840, 2600, 0.9, -1.0), K2 = at(760, 2540, 1.1, -0.6), K3 = at(800, 2700, 1.1, -0.4), K4 = at(820, 2720, 1.2, -0.4);
+      gsap.set(cam, K0);
+      tl.fromTo(cam, K0, Object.assign({}, K1, { duration: 2.0, ease: "none", immediateRender: false }), S(1301.19));
+      // "important to emphasize … the US government test": bullet 1 called out (hard cut at the peak of the push)
+      tl.to(cam, Object.assign({}, K2, { duration: 1.2, ease: E.cam }), S(1303.0));
+      tl.set(v1, { opacity: 1 }, S(1303.55));
+      // "…they are really good": highlighter on "most capable PRC AI model"
+      hl($("sc008-h1"), S(1308.85), 0.5);
+      // "…not as good as the public test": tilt to bullet 2
+      tl.to(cam, Object.assign({}, K3, { duration: 0.9, ease: E.cam }), S(1309.45));
+      tl.set(v1, { opacity: 0 }, S(1309.85)); tl.set(v2, { opacity: 1 }, S(1309.85));
+      hl($("sc008-h2"), S(1310.3), 0.85);
+      tl.to(cam, Object.assign({}, K4, { duration: 0.6, ease: E.in }), S(1311.48));
+    })();
+
+    /* ===== sc009 · caveats: asterisks stamped (hard cut on action) ===== */
+    (function () {
+      const box = $("sc009-ast"), r = FX.rng(13);
+      const pos = [[960, 520, 300, 0]];
+      const extra = [[430, 300], [1490, 330], [700, 790], [1260, 800], [300, 700], [1640, 690], [560, 170], [1150, 200], [1700, 180], [230, 420], [1040, 940], [1500, 960], [820, 330]];
+      extra.forEach((p, i) => pos.push([p[0], p[1], 90 + Math.round(r() * 80), i]));
+      pos.forEach((p, i) => {
+        const col = i % 5 === 3 ? REDD : (i % 5 === 1 ? ICED : INK);
+        const a = div(box, "", "position:absolute;left:" + (p[0] - p[2] / 2) + "px;top:" + (p[1] - p[2] / 2) + "px;width:" + p[2] + "px;height:" + p[2] + "px;mix-blend-mode:multiply", ASTER(p[2], col));
+        a.style.filter = "url(#" + SEG + "-pen)";
+        gsap.set(a, { opacity: 0, rotation: (r() - 0.5) * 30 });
+        const t = i === 0 ? S(1312.5) : S(1313.7) + (i - 1) * (1.5 / extra.length);
+        tl.fromTo(a, { opacity: 0, scale: 1.6 }, { opacity: 0.9, scale: 1, duration: 2 / 12, ease: "steps(2)", immediateRender: true }, t);
+      });
+      push("sc009", 1312.08, 1315.60, 1.0, 1.07, { ease: E.cam, origin: "960px 540px" });
+    })();
+
+    /* ===== sc010 · where the chip war is: US vs China (whip →) ===== */
+    whip("sc009", "sc010", S(1315.60), { dir: 1 });
+    (function () {
+      const cam = $("sc010-cam"), svg = $("sc010-svg");
+      const M = (lon, lat) => [((lon >= 62 ? lon : lon + 360) - 62) * 45.5111 * 0.22536063, (76 - lat) * 45.5111 * 0.22536063];
+      const SC0 = M(-121.96, 37.37), BJ = M(116.4, 39.9);
+      const cx = (SC0[0] + BJ[0]) / 2, cy = 150;
+      const route = el(svg, "path", { d: "M" + SC0[0] + " " + SC0[1] + " Q" + cx + " " + cy + " " + BJ[0] + " " + BJ[1], fill: "none", stroke: VOLT, "stroke-width": 5, "stroke-dasharray": "14 10", opacity: 0.95 });
+      const len = route.getTotalLength();
+      // reveal the dashed route with a clip (dash array is in use): animate a mask circle sweep via a clipPath rect
+      const cp = el(svg, "clipPath", { id: SEG + "-rc" }); const rc = el(cp, "rect", { x: 0, y: 0, width: 0, height: 1354 });
+      route.setAttribute("clip-path", "url(#" + SEG + "-rc)");
+      // the route runs US → China (right to left): sweep the clip from the right
+      tl.fromTo(rc, { attr: { x: SC0[0] + 20, width: 0 } }, { attr: { x: BJ[0] - 20, width: SC0[0] - BJ[0] + 40 }, duration: 1.4, ease: C(E.inOut, 1.4), immediateRender: true }, S(1316.3));
+      const dots = [SC0, BJ].map((p, i) => { const c = el(svg, "circle", { cx: p[0], cy: p[1], r: 9, fill: i ? REDL : ICEL }); gsap.set(c, { opacity: 0 }); pop(c, S(1316.2) + i * 1.4, { from: 2 }); return c; });
+      // fills
+      tl.fromTo($("sc010-us"), { opacity: 0 }, { opacity: 1, duration: 0.5, ease: C(E.out, 0.5), immediateRender: true }, S(1315.75));
+      tl.fromTo($("sc010-cn"), { opacity: 0 }, { opacity: 1, duration: 0.5, ease: C(E.out, 0.5), immediateRender: true }, S(1315.95));
+      // camera: whole Pacific → push to the middle of the arc
+      const K0 = { x: 960 - 1230 * 0.82, y: 540 - 560 * 0.82, scale: 0.82 }, K1 = { x: 960 - 1180 * 0.9, y: 540 - 470 * 0.9, scale: 0.9 }, K2 = { x: 960 - 1150 * 1.0, y: 540 - 440 * 1.0, scale: 1.0 };
+      gsap.set(cam, K0);
+      tl.fromTo(cam, K0, Object.assign({}, K1, { duration: S(1318.9) - S(1315.6), ease: E.cam, immediateRender: false }), S(1315.6));
+      tl.to(cam, Object.assign({}, K2, { duration: 0.46, ease: E.in }), S(1318.9));
+      // constant-size labels that follow the camera
+      const lcn = $("sc010-lcn"), lus = $("sc010-lus"), chip = $("sc010-chip");
+      chip.style.webkitMaskImage = ICO("chip"); chip.style.maskImage = ICO("chip");
+      const CNp = M(103, 31), USp = M(-99, 37.5);
+      const camS = { t: 0 };
+      const B = (u) => { const a = (1 - u) * (1 - u), b2 = 2 * u * (1 - u), c2 = u * u; return [a * SC0[0] + b2 * cx + c2 * BJ[0], a * SC0[1] + b2 * cy + c2 * BJ[1]]; };
+      const chipS = { u: 0 };
+      const place = () => {
+        const s = +gsap.getProperty(cam, "scale"), x = +gsap.getProperty(cam, "x"), y = +gsap.getProperty(cam, "y");
+        gsap.set(lcn, { x: CNp[0] * s + x - 80, y: CNp[1] * s + y - 26 });
+        gsap.set(lus, { x: USp[0] * s + x - 190, y: USp[1] * s + y - 26 });
+        const p = B(chipS.u); gsap.set(chip, { x: p[0] * s + x - 32, y: p[1] * s + y - 32 });
+      };
+      tl.fromTo(camS, { t: 0 }, { t: 1, duration: S(1319.36) - S(1315.6), ease: "none", immediateRender: true, onUpdate: place }, S(1315.6));
+      tl.fromTo(chipS, { u: 0 }, { u: 0.5, duration: 1.4, ease: C(E.inOut, 1.4), immediateRender: true, onUpdate: place }, S(1316.3));
+      gsap.set([lcn, lus, chip], { opacity: 0 });
+      rise(lus, S(1315.9), { dur: 0.5, y: 0 }); rise(lcn, S(1316.1), { dur: 0.5, y: 0 });
+      pop(chip, S(1316.3), { from: 1.6, n: 3 });
+      // "really is": the chip pulses where the two sides meet
+      tl.fromTo(chip, { scale: 1 }, { scale: 1.35, duration: 0.25, yoyo: true, repeat: 1, ease: "sine.inOut", immediateRender: false }, S(1318.1));
+    })();
+
+    /* ===== sc011 · two one-sided videos (hard cut on action) ===== */
+    (function () {
+      const row = $("sc011-row");
+      function thumb(x, flag, logos, bg, arrowCol) {
+        const th = div(row, "n13-thumb", "left:" + x + "px;top:304px;width:840px;height:472px;background:" + bg);
+        div(th, "", "position:absolute;inset:0;background:radial-gradient(ellipse 70% 80% at 30% 40%, rgba(255,255,255,0.12), transparent 70%)");
+        img(th, "assets/nvidia/shared/logos/" + flag + ".svg", "left:48px;top:60px;width:330px;height:220px;object-fit:fill;box-shadow:0 12px 30px rgba(0,0,0,0.45)");
+        logos.forEach((lg, i) => img(th, "assets/nvidia/shared/logos/" + lg + ".svg", "left:" + (60 + i * 116) + "px;top:318px;width:96px;height:78px;object-fit:contain;filter:brightness(0) invert(0.94)"));
+        const ar = document.createElementNS(NS, "svg"); ar.setAttribute("viewBox", "0 0 200 300"); ar.setAttribute("width", 250); ar.setAttribute("height", 375);
+        ar.style.cssText = "position:absolute;left:520px;top:40px;overflow:visible;transform-origin:50% 100%";
+        el(ar, "path", { d: "M100 0 L200 120 L135 120 L135 300 L65 300 L65 120 L0 120 Z", fill: arrowCol, stroke: BONE, "stroke-width": 8, "stroke-linejoin": "round" });
+        th.appendChild(ar);
+        div(th, "", "position:absolute;left:0;bottom:0;width:840px;height:8px;background:rgba(240,239,232,0.3)");
+        const pr = div(th, "", "position:absolute;left:0;bottom:0;width:840px;height:8px;background:" + BONE + ";transform-origin:0 50%");
+        return { th, ar, pr };
+      }
+      const A = thumb(540, "flag_us", ["openai", "anthropic", "google_deepmind"], "linear-gradient(135deg, #0f3a4d, #115973)", ICE);
+      const Bt = thumb(1980, "flag_china", ["deepseek", "alibaba"], "linear-gradient(135deg, #4d1015, #7e151e)", RED);
+      gsap.set(A.th, { opacity: 0 });
+      tl.fromTo(A.th, { opacity: 0, scale: 0.86, y: 40 }, { opacity: 1, scale: 1, y: 0, duration: 0.8, ease: C(E.out, 0.8), immediateRender: true }, S(1320.36));
+      [A, Bt].forEach((q, i) => {
+        gsap.set(q.ar, { scaleY: 0, opacity: 0 });
+        gsap.set(q.pr, { scaleX: 0.05 });
+        const tw = i ? S(1326.10) : S(1321.86);
+        tl.fromTo(q.ar, { scaleY: 0, opacity: 1 }, { scaleY: 1, opacity: 1, duration: 0.6, ease: C(E.out, 0.6), immediateRender: true }, tw);
+        tl.fromTo(q.pr, { scaleX: 0.05 }, { scaleX: 0.35, duration: 3.5, ease: "none", immediateRender: false }, tw - 1.2);
+      });
+      // first card steps aside, the second arrives
+      tl.to(A.th, { x: -470, scale: 0.8, duration: 0.9, ease: C(E.inOut, 0.9) }, S(1323.40));
+      tl.fromTo(Bt.th, { x: 0, scale: 0.8 }, { x: -880 - 40, scale: 0.8, duration: 0.9, ease: C(E.inOut, 0.9), immediateRender: true }, S(1324.30));
+      push("sc011", 1319.36, 1327.68, 1.0, 1.05, { ease: E.cam, origin: "960px 540px" });
+    })();
+
+    /* ===== sc012 · a wall of one-sided videos → the big picture (paper slides up) ===== */
+    slide("sc011", "sc012", S(1327.68), { axis: "y" });
+    (function () {
+      const wall = $("sc012-wall"), board = $("sc012-board"), tags = $("sc012-tags"), svg = $("sc012-svg"), cam = $("sc012-cam");
+      const usT = [], cnT = [];
+      for (let r = 0; r < 4; r++) for (let c = 0; c < 5; c++) {
+        const us = (r + c) % 2 === 0, x = 290 + c * 280, y = 200 + r * 190;
+        const th = div(wall, "n13-thumb", "left:" + x + "px;top:" + y + "px;width:250px;height:141px;border-radius:6px;background:" + (us ? "linear-gradient(135deg,#0f3a4d,#115973)" : "linear-gradient(135deg,#4d1015,#7e151e)"));
+        img(th, "assets/nvidia/shared/logos/" + (us ? "flag_us" : "flag_china") + ".svg", "left:14px;top:18px;width:120px;height:80px;object-fit:fill");
+        const sv = document.createElementNS(NS, "svg"); sv.setAttribute("viewBox", "0 0 200 300"); sv.setAttribute("width", 60); sv.setAttribute("height", 90);
+        sv.style.cssText = "position:absolute;left:168px;top:20px"; el(sv, "path", { d: "M100 0 L200 120 L135 120 L135 300 L65 300 L65 120 L0 120 Z", fill: us ? ICE : RED, stroke: BONE, "stroke-width": 10 });
+        th.appendChild(sv);
+        div(th, "", "position:absolute;left:0;bottom:0;width:" + (60 + (r * 7 + c * 13) % 120) + "px;height:5px;background:" + BONE);
+        div(th, "", "position:absolute;left:119px;top:-2px;width:14px;height:14px;border-radius:50%;background:" + INK + ";box-shadow:0 2px 3px rgba(0,0,0,0.4)");
+        gsap.set(th, { opacity: 0, rotation: ((r * 5 + c * 3) % 5 - 2) * 0.8 });
+        const t = S(1328.25) + ((r * 5 + c) % 20) * 0.075;
+        tl.fromTo(th, { opacity: 0, scale: 1.3 }, { opacity: 1, scale: 1, duration: 2 / 12, ease: "steps(2)", immediateRender: true }, t);
+        (us ? usT : cnT).push(th);
+      }
+      const yt = $("sc012-yt"); gsap.set(yt, { opacity: 0 }); pop(yt, S(1330.18), { from: 1.5, n: 3, to: 0.88 });
+      // "focus on one side of the argument": one side, then the other
+      tl.to(usT, { opacity: 0.2, duration: 0.25, ease: "steps(3)" }, S(1333.55));
+      tl.to(usT, { opacity: 1, duration: 0.25, ease: "steps(3)" }, S(1334.5));
+      tl.to(cnT, { opacity: 0.2, duration: 0.25, ease: "steps(3)" }, S(1334.5));
+      tl.to(cnT, { opacity: 1, duration: 0.25, ease: "steps(3)" }, S(1335.7));
+      // the big board around the wall (this segment's evidence): NIST page, Fig 1, Fig 3, the map
+      const cards = [
+        ["assets/nvidia/nvs13/nist_caisi_v4pro_page.jpg", -1120, -640, 1000, 1150, "0 0", "1000px auto", -2],
+        ["assets/nvidia/nvs13/nist_caisi_v4pro_fig1.png", 2040, -640, 1050, 696, "center", "contain", 1.5],
+        ["assets/nvidia/nvs13/nist_caisi_v4pro_fig3.png", 1980, 1180, 1200, 411, "center", "contain", -1],
+        ["assets/nvidia/nvs13/derived/pacific_world_night.jpg", -1180, 1160, 1050, 592, "center", "cover", 1.2],
+      ];
+      const cardEls = cards.map((cd) => {
+        const c = div(board, "n13-card", "left:" + cd[1] + "px;top:" + cd[2] + "px;width:" + cd[3] + "px;height:" + cd[4] + "px;background:#fff url('" + cd[0] + "') no-repeat;background-position:" + cd[5] + ";background-size:" + cd[6] + ";transform:rotate(" + cd[7] + "deg)");
+        div(c, "", "position:absolute;left:" + (cd[3] / 2 - 14) + "px;top:10px;width:28px;height:28px;border-radius:50%;background:" + REDD + ";box-shadow:0 4px 6px rgba(0,0,0,0.4)");
+        return c;
+      });
+      // pen strings from the wall to each card
+      const PTS = [[[290, 200], [-120, -60]], [[1640, 200], [2040, -20]], [[1640, 900], [2060, 1180]], [[290, 900], [-140, 1180]]];
+      PTS.forEach((p, i) => { const pth = FX.markup.pen(tl, svg, S(1338.3) + i * 0.15, { points: p, jitter: 6, seed: 20 + i, dur: 0.6, width: 14, color: REDD }); gsap.set(pth, { opacity: 0 }); tl.set(pth, { opacity: 0.9 }, S(1338.3) + i * 0.15); });
+      // "so many caveats": asterisk tags on the cards
+      const TG = [[-90, -560], [2100, -560], [2040, 1220], [-1100, 1240], [1720, 150], [180, 960]];
+      TG.forEach((p, i) => {
+        const tg = div(tags, "", "position:absolute;left:" + p[0] + "px;top:" + p[1] + "px;width:150px;height:150px;border-radius:50%;background:" + YEL + ";box-shadow:0 8px 16px rgba(20,24,27,0.35)", ASTER(110, INK).replace("<svg", '<svg style="position:absolute;left:20px;top:20px"'));
+        gsap.set(tg, { opacity: 0 });
+        pop(tg, S(1340.1) + i * 0.08, { from: 1.6, n: 2 });
+      });
+      // camera: slow drift on the wall → long pull back on "the big picture" → rewind push (12 fps)
+      gsap.set(cam, { scale: 1.08, x: 0, y: 0 });
+      tl.fromTo(cam, { scale: 1.08 }, { scale: 1.0, duration: S(1337.3) - S(1327.68), ease: "none", immediateRender: false }, S(1327.68));
+      tl.to(cam, { scale: 0.4, x: -16, y: 24, duration: 1.7, ease: E.cam }, S(1337.3));
+      FX.focusHunt(tl, cam, S(1339.0), { dur: 0.6, a: 2, b: 3 });
+      tl.to(cam, { scale: 0.37, x: -15, y: 22, duration: 0.6, ease: "none" }, S(1340.4));
+      // rewind (12 fps) into the next scene
+      tl.to(cam, { scale: 1.6, x: -200, y: -60, rotation: -3, duration: 0.36, ease: C(E.in, 0.36) }, S(1341.0));
+      tl.fromTo($("scan"), { opacity: 0 }, { opacity: 1, duration: 1 / 24, immediateRender: false }, S(1340.98));
+      tl.fromTo($("scan"), { y: 0 }, { y: -48, duration: 0.6, ease: "steps(7)", immediateRender: false }, S(1340.98));
+      tl.set($("scan"), { opacity: 0 }, S(1341.58));
+    })();
+
+    /* ===== sc013 · "shouldn't the gap be much larger?" scores ≈ equal vs chips 5 % (rewind) ===== */
+    (function () {
+      const b = $("sc013-bars"), svg = $("sc013-svg"), cam = $("sc013-cam");
+      const us = div(b, "n13-vbar", "left:300px;top:340px;width:120px;height:520px;background:" + ICE);
+      const cn = div(b, "n13-vbar", "left:540px;top:372px;width:120px;height:488px;background:" + RED);
+      gsap.set([us, cn], { scaleY: 0 });
+      tl.fromTo(us, { scaleY: 0 }, { scaleY: 1, duration: 1.1, ease: C(E.out, 1.1), immediateRender: true }, S(1342.3));
+      tl.fromTo(cn, { scaleY: 0 }, { scaleY: 1, duration: 1.1, ease: C(E.out, 1.1), immediateRender: true }, S(1342.45));
+      ink(svg, "M260 861 L740 859", S(1341.6), 0.5, { color: BONE, width: 3, opacity: 0.8 });
+      // "wondering": a pen question mark beside the near-equal scores
+      const q = FX.markup.pen(tl, svg, S(1343.7), { points: [[770, 380], [790, 335], [840, 320], [878, 350], [870, 400], [828, 430], [826, 482]], jitter: 4, seed: 9, dur: 0.6, width: 10, color: REDL, blend: "normal" });
+      gsap.set(q, { opacity: 0 }); tl.set(q, { opacity: 1 }, S(1343.7));
+      const qd = el(svg, "circle", { cx: 827, cy: 522, r: 8, fill: REDL }); gsap.set(qd, { opacity: 0 }); tl.set(qd, { opacity: 1 }, S(1344.35));
+      words("sc013-lus", [T(1347.94), T(1348.34)], { dur: 0.35, y: 6 });
+      words("sc013-lcn", [T(1348.82), T(1349.22)], { dur: 0.35, y: 6 });
+      // "much larger": where the China score "should" be — a dashed ghost column far lower + pen arrow
+      const gh = div(b, "", "position:absolute;left:540px;top:700px;width:120px;height:160px;border:4px dashed " + REDL + ";box-sizing:border-box");
+      gsap.set(gh, { opacity: 0 });
+      tl.fromTo(gh, { opacity: 0, y: -320 }, { opacity: 1, y: 0, duration: 0.7, ease: C(E.out, 0.7), immediateRender: true }, S(1350.3));
+      const ar = FX.markup.arrow(tl, svg, S(1350.55), { x1: 690, y1: 380, x2: 690, y2: 690, bend: -40, color: REDL, width: 6, filter: PEN, dur: 0.55, head: 24 });
+      ar.forEach((p) => { gsap.set(p, { opacity: 0 }); tl.set(p, { opacity: 1 }, S(1350.55)); });
+      // CHIPS: area-true squares (China = 5 % of the US area → side √0.05)
+      words("sc013-chips", [T(1354.02)], { dur: 0.4, y: 8 });
+      const sU = $("sc013-sqUS"), sC = $("sc013-sqCN");
+      [sU, sC].forEach((q2) => { q2.style.webkitMaskImage = "none"; });
+      sU.style.backgroundImage = "repeating-linear-gradient(0deg, rgba(13,16,18,0.18) 0 2px, transparent 2px 48px), repeating-linear-gradient(90deg, rgba(13,16,18,0.18) 0 2px, transparent 2px 48px)";
+      sC.style.backgroundImage = sU.style.backgroundImage;
+      gsap.set([sU, sC], { scale: 0 });
+      tl.fromTo(sC, { scale: 0 }, { scale: 1, duration: 0.6, ease: C(E.out, 0.6), immediateRender: true }, S(1352.1));
+      words("sc013-lcm", [T(1352.02), T(1352.42)], { dur: 0.35, y: 6 });
+      const five = $("sc013-5");
+      tl.set(five, { opacity: 1 }, T(1353.22));
+      FX.text.count(tl, five, T(1353.22), 0, 5, 0.5, (v) => Math.round(v) + "%");
+      tl.fromTo(five, { scale: 0.85 }, { scale: 1, duration: 0.7, ease: C(E.out, 0.7), immediateRender: false }, T(1353.22));
+      tl.fromTo(sU, { scale: 0 }, { scale: 1, duration: 1.0, ease: C(E.out, 1.0), immediateRender: true }, S(1354.15));
+      words("sc013-lau", [T(1354.98), T(1355.38)], { dur: 0.3, y: 6 });
+      // camera: close on the scores → pull out to reveal the chips → accelerating push (cut on action into nvs14)
+      const K0 = at(520, 560, 1.32), K1 = at(560, 580, 1.36), K2 = at(980, 560, 1.0), K3 = at(1020, 560, 1.12);
+      gsap.set(cam, K0);
+      tl.fromTo(cam, Object.assign({}, K0, { rotation: 3 }), Object.assign({}, K0, { rotation: 0, duration: 0.5, ease: C(E.out, 0.5), immediateRender: false }), S(1341.36));
+      tl.to(cam, Object.assign({}, K1, { duration: 9.5, ease: "none" }), S(1341.9));
+      tl.to(cam, Object.assign({}, K2, { duration: 1.6, ease: E.cam }), S(1351.45));
+      FX.focusHunt(tl, cam, S(1353.0), { dur: 0.5, a: 2, b: 3 });
+      tl.to(cam, Object.assign({}, K3, { duration: 0.55, ease: E.in }), S(1355.74));
+    })();
+
+    FX.mount(tl, DURATION);
+    window.__timelines = window.__timelines || {};
+    window.__timelines[SEG] = tl;
+  })();
+  </script>
+</template>
+</body>
+</html>
