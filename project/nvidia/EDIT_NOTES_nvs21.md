@@ -1,6 +1,6 @@
 # EDIT NOTES — nvs21 (master 2103.000–2182.542, 79.542 s) · job three verdict; the loophole opens
 No face cam (part 2 is audio only): edited visuals throughout, a new shot or a clear development every 3–6 s.
-Cues: text `T(word start − 0.06)`, structure `S()`. Grounds: night (photos) → night → night → footage → paper → night → map.
+Cues: text `T(word start − 0.06)`, structure `S()`. Grounds: night (photos) → night → paper → night → footage → paper → night → map.
 
 | id | master | exact words | picture — why it matches | ground / effect / ref | text + cues | in | SFX |
 |---|---|---|---|---|---|---|---|
