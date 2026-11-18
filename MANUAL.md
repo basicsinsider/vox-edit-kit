@@ -811,6 +811,15 @@ on action. Use it whenever the narrator quotes someone or introduces a historic 
   (7) NVIDIA face-cam punch-ins: `transform-origin:1000px 60px`, ≤ 1.46× or the hair crops; (8) a face-cam file that ends before the
   composition: put a still of its last frame under the `<video>` (nvs23); (9) `t-label` uppercases — brand names with lowercase
   letters need `text-transform:none`; (10) shared SVG icons use currentColor → colour them via mask-image on a coloured div.
+- 2026-11-18 — **NVIDIA 4K = Premiere package only, no 4K master** (Krish: "just the premiere pro package with the assets in 4k"):
+  23 helpers render `RES=4k PRESET=fast` per segment and upload `nvsNN_4k.mp4` straight to one shared gofile folder (guest token +
+  folderId; `project/nvidia/HELPER4K_PROMPT.md`); face-cam segments first build their native-4K face-cam window from the raw takes
+  (`tools/nv_facecam_master.py --window`, 30 fps grid — matches the raw take exactly). One more helper builds the whole clean 4K face cam
+  (`HELPER_FACECAM4K_PROMPT.md`). `tools/premiere_xml_nvidia.py`: V2 = the 23 segment files cut per scene (in = scene frame − segment
+  start frame, so a piece rendered one frame long is harmless), V1 = 4K face cam (off), 4 stereo stems, seq 2 = EDL on the three raw
+  parts (part 2 = mono 32-bit float WAV, audio only). `tools/package_premiere_nvidia.py` streams stems into the zip (low disk).
+  Lesson: **ffmpeg writing WAV to a pipe leaves the RIFF/data sizes at 0xFFFFFFFF** — write the header yourself (sizes known) and
+  check it; VO verified bit-identical by md5 of the PCM.
 - 2026-11-13 — **Podcast A-roll edit (`project/podcast/`, "TSMC vs UMC", 95:52)**: new workflow for a two-person video podcast with no
   script. Krish's rules: first 5 min a full edit, after that edited sections only where needed (41 sections, 27 % of the runtime), the
   rest stays on the speakers, cut by an EDL (226 word cuts from 5 parallel transcript analysts, `project/podcast/gen/build_edl.py`:
