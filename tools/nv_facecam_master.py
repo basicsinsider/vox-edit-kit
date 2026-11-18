@@ -4,13 +4,14 @@
   (no window)   : the whole master (for the Premiere package).
 Raw parts are downloaded from Krish's Drive into input/nvidia/ if missing (ids in project/nvidia/BRIEF.md). The EDL is
 project/nvidia/edl_frames.json (60 fps raw frame ranges on the combined timeline) + project/nvidia/parts.json.
-Usage: python3 tools/nv_facecam_master.py OUT.mp4 [--window A B] [--crf 18] [--height 2160]"""
+Usage: python3 tools/nv_facecam_master.py OUT.mp4 [--window A B] [--crf 18] [--height 2160] [--preset fast]"""
 import json, math, os, subprocess as sp, sys
 args = sys.argv[1:]; OUT = args[0]
 win = None; crf = '18'; H = 2160
 if '--window' in args: i = args.index('--window'); win = (float(args[i + 1]), float(args[i + 2]))
 if '--crf' in args: crf = args[args.index('--crf') + 1]
 if '--height' in args: H = int(args[args.index('--height') + 1])
+preset = args[args.index('--preset') + 1] if '--preset' in args else ('ultrafast' if win else 'medium')
 W = H * 16 // 9
 DRIVE = {1: '1Fx5-X_bwA6azoTCEFNML75wxW800r79o', 3: '1SiQrCt7tJDC975jQqI444kYHadyhqTg4'}
 F = json.load(open('project/nvidia/edl_frames.json')); P = {p['part']: p for p in json.load(open('project/nvidia/parts.json'))}
@@ -61,7 +62,7 @@ fc = ';'.join(chains) + ';' + ''.join(labels) + f'concat=n={len(labels)}:v=1:a=0
      f'[c]tpad=start_duration={lead:.6f}:stop_duration={max(tail, 0):.6f}:color=black,fps=30,trim=duration={LEN:.6f}[v]'
 script = OUT + '.filter.txt'; open(script, 'w').write(fc)
 cmd = ['nice', 'ffmpeg', '-v', 'error', '-y', *inputs, '-filter_complex_script', script, '-map', '[v]', '-an',
-       '-c:v', 'libx264', '-preset', 'ultrafast' if win else 'medium', '-crf', crf, '-g', '60', '-pix_fmt', 'yuv420p', '-movflags', '+faststart', OUT]
+       '-c:v', 'libx264', '-preset', preset, '-crf', crf, '-g', '60', '-pix_fmt', 'yuv420p', '-movflags', '+faststart', OUT]
 print('window', win, 'master frames', fa, fb, 'groups', [(g[0], g[1][1], g[-1][2]) for g in groups]); sys.stdout.flush()
 sp.run(cmd, check=True); os.remove(script)
 d = float(sp.check_output(['ffprobe', '-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', OUT]))
