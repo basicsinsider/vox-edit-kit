@@ -5,11 +5,15 @@
 # Usage: tools/nv_fix_join.sh /dev/shm/NVIDIA_chip_ban_4K.mp4
 set -e; cd "$(dirname "$0")/.."; OUT=$1; URL=$(git remote get-url origin)
 SEGS=$(python3 -c "import json;print(' '.join(s['seg'] for s in json.load(open('project/nvidia/segments.json'))['segments']))")
-G=/tmp/_join.git; rm -rf $G; git init -q --bare $G; git -C $G remote add origin "$URL"
+G=/dev/shm/_join.git; rm -rf $G; git init -q --bare $G; git -C $G remote add origin "$URL"
 for g in g1 g2 g3; do git -C $G fetch -q --depth 1 --filter=blob:none origin render4k/fix-$g:refs/heads/fix-$g; done
 piece() {  # $1 = SEG → its TS bytes on stdout
   if [ -e pieces/fix/$1.ts.part000 ]; then cat pieces/fix/$1.ts.part*
-  else for o in $(git -C $G ls-tree $(branch $1) pieces/fix/ | grep "$1.ts.part" | awk '{print $3}'); do git -C $G cat-file blob $o; done; fi; }
+  else  # one throwaway repo per segment in RAM (lazy blob fetches land there, not on the small root disk), removed after
+    B=$(branch $1); P=/dev/shm/_jp.git; rm -rf $P; git init -q --bare $P; git -C $P remote add origin "$URL"
+    git -C $P fetch -q --depth 1 --filter=blob:none origin render4k/$B:refs/heads/$B
+    for o in $(git -C $P ls-tree $B pieces/fix/ | grep "$1.ts.part" | awk '{print $3}'); do git -C $P cat-file blob $o; done
+    rm -rf $P; fi; }
 branch() { for g in g1 g2 g3; do git -C $G ls-tree --name-only fix-$g pieces/fix/ | grep -q "/$1.sha256" && { echo fix-$g; return; }; done; }
 want() { if [ -e pieces/fix/$1.sha256 ]; then head -1 pieces/fix/$1.sha256; else git -C $G show $(branch $1):pieces/fix/$1.sha256 | head -1; fi | cut -d' ' -f1; }
 for s in $SEGS; do [ -e pieces/fix/$s.sha256 ] || [ -n "$(branch $s)" ] || { echo "MISSING $s"; exit 1; }; done

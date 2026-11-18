@@ -15,7 +15,7 @@ drop = [(max(a, s0) - s0, min(b, s1) - s0) for a, b in cuts if a < s1 and b > s0
 removed_before = sum(min(b, s0) - a for a, b in cuts if a < s0)
 new_start = s0 - removed_before; keep = fr - sum(b - a for a, b in drop)
 url = sp.run(['git', 'remote', 'get-url', 'origin'], capture_output=True, text=True, check=True).stdout.strip()
-G = f'/tmp/_src_{SEG}.git'; sp.run(['rm', '-rf', G], check=True)
+G = f'/dev/shm/_src_{SEG}.git'; sp.run(['rm', '-rf', G], check=True)
 sp.run(['git', 'init', '-q', '--bare', G], check=True); sp.run(['git', '-C', G, 'remote', 'add', 'origin', url], check=True)
 br = None
 for b in (f'render4k/{SEG}-v2', f'render4k/{SEG}'):
@@ -23,7 +23,7 @@ for b in (f'render4k/{SEG}-v2', f'render4k/{SEG}'):
         ls = sp.run(['git', '-C', G, 'ls-tree', '-r', 'FETCH_HEAD', f'pieces/{SEG}/'], capture_output=True, text=True).stdout
         if '.part' in ls: br = b; break
 assert br, 'no 4K render branch found'
-os.makedirs('/tmp/fixsrc', exist_ok=True); src = f'/tmp/fixsrc/{SEG}.mp4'
+os.makedirs('/dev/shm/fixsrc', exist_ok=True); src = f'/dev/shm/fixsrc/{SEG}.mp4'
 with open(src, 'wb') as o:
     for l in ls.splitlines():
         m, t, oid, path = l.split(None, 3)
@@ -32,7 +32,7 @@ with open(src, 'wb') as o:
 h = hashlib.sha256(open(src, 'rb').read()).hexdigest(); assert h == want, ('sha256 mismatch', h, want)
 print(f'{SEG}: source {br} sha256 OK; master frames {s0}-{s1}; drop {drop}; keep {keep}; new start frame {new_start}', flush=True)
 sel = f'lt(n\\,{fr})' + ''.join(f'*not(between(n\\,{a}\\,{b - 1}))' for a, b in drop)
-os.makedirs('pieces/fix', exist_ok=True); out = f'/tmp/fixsrc/{SEG}.ts'
+os.makedirs('pieces/fix', exist_ok=True); out = f'/dev/shm/fixsrc/{SEG}.ts'
 sp.run(['nice', 'ffmpeg', '-v', 'error', '-y', '-i', src, '-vf', f"select='{sel}',setpts=N/{FPS}/TB", '-r', str(FPS),
         '-c:v', 'libx264', '-preset', 'medium', '-crf', '19', '-maxrate', '30M', '-bufsize', '60M', '-pix_fmt', 'yuv420p', '-g', '48', '-an',
         '-muxdelay', '0', '-muxpreload', '0', '-output_ts_offset', f'{new_start / FPS:.6f}', '-f', 'mpegts', out], check=True)
