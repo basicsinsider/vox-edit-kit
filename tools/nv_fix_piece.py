@@ -2,6 +2,8 @@
 Fetches the segment's 4K render from git (render4k/<SEG>-v2 if it exists, else render4k/<SEG>), checks its sha256, drops the
 frames inside project/nvidia/fix_cuts.json's VIDEO cuts (and the 1 spare frame some renders carry), and encodes an MPEG-TS
 piece whose timestamps start at the segment's position on the NEW (cut) timeline, so the lead can join all pieces byte by byte.
+  The first piece (new start 0) is encoded without B-frames so its first pts is exactly 0 (B-frame delay would push it +2 frames
+  and, after the MP4 mux re-bases to 0, put every later segment 2 frames ahead of the audio).
   x264 medium CRF 19 capped at 30 Mbps (VBV 60M), yuv420p, GOP 48, 3840x2160 24 fps, no audio.
 Output: pieces/fix/<SEG>.ts.partNNN (95 MB) + pieces/fix/<SEG>.sha256 (sha256 + md5 + frames line).
 Usage: python3 tools/nv_fix_piece.py <SEG>"""
@@ -34,7 +36,7 @@ print(f'{SEG}: source {br} sha256 OK; master frames {s0}-{s1}; drop {drop}; keep
 sel = f'lt(n\\,{fr})' + ''.join(f'*not(between(n\\,{a}\\,{b - 1}))' for a, b in drop)
 os.makedirs('pieces/fix', exist_ok=True); out = f'/dev/shm/fixsrc/{SEG}.ts'
 sp.run(['nice', 'ffmpeg', '-v', 'error', '-y', '-i', src, '-vf', f"select='{sel}',setpts=N/{FPS}/TB", '-r', str(FPS),
-        '-c:v', 'libx264', '-preset', 'medium', '-crf', '19', '-maxrate', '30M', '-bufsize', '60M', '-pix_fmt', 'yuv420p', '-g', '48', '-an',
+        '-c:v', 'libx264', '-preset', 'medium', '-crf', '19', '-maxrate', '30M', '-bufsize', '60M', '-pix_fmt', 'yuv420p', '-g', '48', '-an', *(['-bf', '0'] if new_start == 0 else []),
         '-muxdelay', '0', '-muxpreload', '0', '-output_ts_offset', f'{new_start / FPS:.6f}', '-f', 'mpegts', out], check=True)
 os.remove(src); sp.run(['rm', '-rf', G])
 n = int(sp.run(['ffprobe', '-v', 'error', '-count_packets', '-select_streams', 'v', '-show_entries', 'stream=nb_read_packets,width,height',

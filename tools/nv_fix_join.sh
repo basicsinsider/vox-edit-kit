@@ -24,4 +24,6 @@ sleep 5; bad=0
 for s in $SEGS; do [ "$(cat /tmp/_sha_$s)" = "$(want $s)" ] && echo "$s sha256 OK" || { echo "$s sha256 MISMATCH"; bad=1; }; done
 rm -rf $G; [ $bad = 0 ] || exit 1
 ffprobe -v error -show_entries stream=codec_type,width,height,r_frame_rate,nb_frames,duration:format=duration,size -of compact "$OUT"
+# A/V sync guard: video pts must be exactly 0, 1/24, 2/24 … (no duplicates, no gaps, first = 0) — the audio starts at 0
+ffprobe -v error -select_streams v -show_entries packet=pts_time -of csv=p=0 "$OUT" | sort -n | awk '{if(NR==1&&$1!=0)b++; if(NR>1){d=$1-p; if(d<0.0415||d>0.0418)b++}; p=$1} END{print "pts check: packets",NR,"first..last ok =",(b==0?"YES":"NO, "b" bad"),"last",p; exit b>0}'
 md5sum "$OUT"
