@@ -47,3 +47,14 @@
 | nvs23_4k.mp4 | 3218 | 1133063441 | `294a5e8995c5442edfb046db10b48875` |
 
 Helpers rendered all 23 (`render4k/nvsNN`, 8–25 min each); their gofile uploads were blocked by the helpers' own permission check, so `tools/nv4k_relay.sh` relayed each piece from git (SHA-256 verified) to gofile, md5 MATCH for all 23. 10 pieces are one frame long (unused: the XML's in/out stop at the segment length). 4K frame checked: nvs02 t=8 s = the Huang podcast card (sc003).
+
+## 4K final with Frame.io review fixes — 2026-11-18 09:30 UTC (Krish: "a 4k gofile.io link with these fixes made … just the 4k video file")
+- **https://gofile.io/d/j17zLgva** — `NVIDIA_chip_ban_4K.mp4`, 8,809,177,808 bytes, 39:45.708 (57,257 frames @ 24 fps), 3840×2160 H.264
+  (x264 medium CRF 19, max 30 Mbps) + AAC 320k. md5 `441751e953f6ef188ac613e9419cadd5` — local == gofile (MATCH).
+- Fixes (Sam's 11 comments): jobs 2/3 blurred until reached (nvs04/05/09/16, job 2 un-blurs on "Second", job 3 stays blurred in nvs16);
+  China "~1%" → "~10%" (nvs11); 19 pauses/look-aways cut (16.29 s, `project/nvidia/fix_cuts.json`, incl. look-aways ≈845.7 and ≈2306.4);
+  whole-video level ride → −14.4 LUFS-I, peak −1.2 dBFS, no compressor (owner exception, MANUAL changelog 2026-11-18).
+- Pipeline: 5 re-rendered segments + 18 cut pieces on helpers (`render4k/<seg>-v2`, `render4k/fix-g1..g3`), `tools/nv_fix_piece.py` →
+  MPEG-TS pieces on the new timeline, `tools/nv_fix_join.sh` (23/23 sha256 OK, pts check 0…2385.667 continuous).
+- Caught + fixed before delivery: the first piece's B-frame delay put every later segment 2 frames ahead of the audio — nvs01 is now
+  encoded without B-frames and the join script checks pts continuity.
