@@ -795,6 +795,18 @@ on action. Use it whenever the narrator quotes someone or introduces a historic 
 - [ ] Smooth long eases, 12 fps. [ ] Cuts on action; whips, no iris. [ ] No photo/clip used > 2× in a chunk.
 
 ## Changelog
+- 2026-11-18 — **NVIDIA review fixes (frame.io notes from Sam, delivered as one 4K file)**: (1) scoreboard rows not yet reached are
+  BLURRED — `NV.scoreboard({blur:[2,3]})` + `api.unblur(tl, n, t)` on the spoken cue ("Second job" reveals row 2); (2) ASR misheard
+  "about ten percent" as "1%" → chart and transcript fixed (re-transcribe a 3–10 s window with parakeet when a number looks odd);
+  (3) VO pauses ≥ 0.9 s trimmed to ~0.4 s (`tools/nv_fix_cuts.py` → `project/nvidia/fix_cuts.json`, 19 cuts, 16.29 s): cut position on
+  the 24 fps grid chosen by minimum visual jump; EVERY candidate checked by re-transcribing ±2–4 s with and without the cut — 5
+  "pauses" held whispered words (an RMS gate alone is NOT enough on a quiet VO); look-aways in pauses removed with a picture cut that
+  differs from the audio cut by a few frames while a graphic covers the offset; (4) sound re-placed on the cut timeline (remap
+  markers/cue sheet/transcript, `tools/nv_fix_remap.py`, place_sound unchanged); (5) **owner-approved exception to §0 for this video**:
+  Krish chose "Level it" — one slow gain ride on the whole mix (speech-gated 3 s loudness, clamp −3…+9 dB) + −14 LUFS + peak limiter
+  at −2 dBFS, NO compressor (`tools/nv_fix_mix.py`; result −14.4 LUFS-I, −1.2 dBTP). Final 4K = per-segment MPEG-TS pieces with
+  `-output_ts_offset` on the new timeline (`tools/nv_fix_piece.py`, x264 medium CRF 19 capped 30 Mbps — grain-heavy 4K hit 74 Mbps
+  uncapped), joined byte by byte by the lead and muxed with the audio.
 - 2026-11-17 — **NVIDIA edit (`project/nvidia/`, "Is the chip ban actually working?", 40:02)**: three raw parts (part 1 face cam 4K60, part 2
   AUDIO ONLY — Krish confirmed no face cam, part 3 face cam) joined on ONE raw timeline (`gen/combine.py`, each part padded to a whole
   60 fps frame, `parts.json`), Parakeet per part, EDL keep list with a PART field (`gen/edl_keep.py`), Paraguay's build_edl/render_vo,
