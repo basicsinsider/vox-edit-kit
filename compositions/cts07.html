@@ -635,12 +635,11 @@
       void mc;
       [[980, 124], [980, 591]].forEach((p, i) => { lead[i].setAttribute("x2", p[0]); lead[i].setAttribute("y2", p[1]); });
       // border (static dashes) + Arizona outline
-      const bl = el(msvg, "path", { d: P7.b_border, fill: "none", stroke: BONE, "stroke-width": 3.5, "stroke-dasharray": "14 10", opacity: 0.55 });
+      const bl = el(msvg, "path", { d: P7.b_border, fill: "none", stroke: BONE, "stroke-width": 4, "stroke-dasharray": "14 10", opacity: 0.85 });
       const az = el(msvg, "path", { d: P7.b_az, fill: "none", stroke: STEELL, "stroke-width": 3, opacity: 0 });
       const laz = $("sc008-laz").firstElementChild, lmx = $("sc008-lmx").firstElementChild, ltu = $("sc008-ltu").firstElementChild;
-      [laz, lmx, ltu].forEach(hide);
+      hide(ltu);   // ARIZONA / MEXICO are on the map from the first frame of the shot
       fadeIn($("sc008-faz"), S(610.48), 0.9, 0.5); tl.to(az, { opacity: 0.85, duration: 0.6, ease: "sine.out" }, S(610.48));
-      rise(laz, T(610.48), { dur: 0.6, y: 12 });
       gsap.set([pinDot, pinHalo], { opacity: 0 });
       tl.fromTo(pinDot, { opacity: 0, attr: { r: 22 } }, { opacity: 1, attr: { r: 10 }, duration: 3 / 12, ease: "steps(3)", immediateRender: false }, S(611.2));
       tl.fromTo(pinHalo, { opacity: 0.9, attr: { r: 12 } }, { opacity: 0, attr: { r: 46 }, duration: 1.0, ease: "power2.out", immediateRender: false }, S(611.3));
@@ -649,7 +648,6 @@
       // "the Mexican border": the border lights up, MEXICO
       tl.to(bl, { opacity: 1, attr: { "stroke-width": 6 }, duration: 0.4, ease: "power2.out" }, S(612.88));
       tl.to(bl, { attr: { "stroke-width": 4.5 }, duration: 0.8, ease: "sine.inOut" }, S(613.3));
-      rise(lmx, T(612.88), { dur: 0.6, y: 12 });
       // zoom box: Davis-Monthan AFB (JIATF-CC HQ)
       const box = $("sc008-box"), bcam = $("sc008-bcam"), bsvg = $("sc008-bsvg"), blab = $("sc008-blab");
       gsap.set(box, { opacity: 0 });
@@ -668,7 +666,9 @@
       // the official name, word by word (Sam says "intraagency": on screen the official spelling)
       const nw = [["n1", 614.08], ["n2", 614.48], ["n3", 615.44], ["n4", 615.76], ["n5", 616.16], ["n6", 616.56]];
       const times = [T(614.08), T(614.48), T(615.44), T(615.76), T(616.16), T(616.56)];
-      nw.forEach((w, i) => { const e = $("sc008-" + w[0]); hide(e); rise(e, times[i], { dur: 0.35, y: 8 }); });
+      // the whole name is laid out ghosted (balanced two lines, never a dangling half-label); each word lights on its cue
+      const nmEl = $("sc008-name"); gsap.set(nmEl, { opacity: 0 }); tl.fromTo(nmEl, { opacity: 0 }, { opacity: 1, duration: 0.3, immediateRender: false }, S(613.9));
+      nw.forEach((w, i) => { const e = $("sc008-" + w[0]); gsap.set(e, { opacity: 0 }); tl.fromTo(e, { opacity: 0 }, { opacity: 1, duration: 2 / 12, ease: "steps(2)", immediateRender: false }, times[i]); });
       // "which is a lot to say": the name squeezes into the acronym
       const nm = $("sc008-name"), acr = $("sc008-acr");
       gsap.set(nm, { transformOrigin: "0 50%" }); gsap.set(acr, { transformOrigin: "0 50%" }); hide(acr);
