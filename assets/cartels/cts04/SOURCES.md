@@ -1,0 +1,18 @@
+# assets/cartels/cts04 — SOURCES (segment editor cts04, 2026-11-22)
+All files looked at; no gore, no injured people. Copyrighted material used as fair use for documentary commentary (MANUAL §10.9),
+credited on screen. Derived files are made by `project/cartels/gen/cts04_assets.py <scratch>` from the raw downloads below.
+
+| file | subject | source URL | licence / owner | date | size |
+|---|---|---|---|---|---|
+| photos/seizure_truckbed_gabseg.jpg | the record fentanyl seizure, Sinaloa: truck bed full of blue pill bags (no people) | https://x.com/OHarfuch/status/1864174327991513282 → https://pbs.twimg.com/media/Gd7WEsyXcAAyoc_.jpg?name=orig (via api.fxtwitter.com) | © Gabinete de Seguridad / SSPC (Mexico, Omar García Harfuch's post "decomiso histórico… más de una tonelada de pastillas de fentanilo"), fair use; on screen "Photos: Gabinete de Seguridad (Mexico)" | posted 4 Dec 2024 05:06 UTC (= 3 Dec local) | 1600×1200 |
+| photos/seizure_collage_gabseg_expansion.jpg | same official photo set as a collage (truck bed, radios, pill bags in a car cab) — used for the cab crop | https://cdn-3.expansion.mx/ea/d8/14b55ad34e3b9dacc2035e01d0d8/decomiso-historico-fentanilo.jpg (article https://politica.expansion.mx/mexico/2024/12/04/autoridades-federales-hacen-decomiso-historico-de-fentanilo-en-sinaloa) | © Gabinete de Seguridad (Mexico) via Expansión, fair use | 4 Dec 2024 | 1810×1210 |
+| photos/ejecentral_guacamaya_2022_page.jpg | screenshot of the EjeCentral article "Guacamayaleaks: “Chapo Isidro” ha sido detenido cuatro veces" (Diego Jiménez) — the source of the 4 arrests 2011–2015 | https://www.ejecentral.com.mx/guacamayaleaks-chapo-isidro-ha-sido-detenido-cuatro-veces/ (headless Chrome screenshot, 2× scale) | © EjeCentral, fair use; on screen "Clipping: EjeCentral, 29 Oct 2022 (Guacamaya Leaks)" | article 29 Oct 2022, captured 22 Nov 2026 | 2800×4800 |
+| derived/eje_clip_headline.jpg, eje_clip_body.jpg | crops of the page above (headline; first two paragraphs, "capturado y detenido en cuatro ocasiones… liberado… entre 2011 y 2015") | as above | as above | | 2180×320, 1600×450 |
+| derived/fbi_poster_2012_line.jpg | crop of the FBI Ten Most Wanted poster: "Meza-Flores was originally indicted on May 2, 2012, in the United States District Court for the District of Columbia." | `assets/cartels/people/meza_fbi_poster_1.jpg` (FBI poster, people gatherer) | U.S. government work, public domain | | 1758×47 |
+| derived/guzman_booking_front.jpg | Joaquín "El Chapo" Guzmán, 2017 booking photo (front half) | `assets/cartels/people/guzman_booking_1.jpg` = Commons "Booking photo of Joaquin “El Chapo“ Guzman (side and front).jpg" https://commons.wikimedia.org/wiki/File:Booking_photo_of_Joaquin_%E2%80%9CEl_Chapo%E2%80%9C_Guzman_(side_and_front).jpg (checked with tools/find_media.py commons-html) | CC0 (Commons) | 2017 | 1000×1330 |
+| derived/seizure_hero_1600.jpg, seizure_bags_cab.jpg | crops of the two seizure photos above | as above | as above | | 1600×900, 888×1186 |
+| derived/graph_tile.jpg | seamless crop (whole grid cells, scan edges dropped) of `assets/textures/paper_graph_01_hires.jpg` | Texturelabs (see assets/textures/SOURCES.md) | Texturelabs licence | | 3924×2848 |
+
+Not downloaded / checked only: dle.rae.es "chapear" (403 from this box; definition text confirmed through a web search result quoting the DLE:
+"2. tr. Am. Cen., Cuba, Guin. y R. Dom. Limpiar la tierra de malezas y hierbas con el machete.") — typeset in Crimson Pro, credited "Diccionario de
+la lengua española (RAE)". NPR/Al Jazeera article hero images were rejected (wrong subject: Culiacán checkpoint / Tijuana border, not the seizure).
