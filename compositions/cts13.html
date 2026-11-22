@@ -1,0 +1,848 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8" /></head>
+<body>
+<template>
+  <style>
+    #root { position: absolute; inset: 0; overflow: hidden; background: var(--night); }
+    .c13-scene { position: absolute; inset: 0; overflow: hidden; visibility: hidden; opacity: 0; }
+    .c13-shot { position: absolute; inset: 0; overflow: hidden; transform-origin: 50% 50%; background: var(--night); }
+    .c13-room { position: absolute; inset: -40px;
+      background: radial-gradient(ellipse 72% 62% at 50% 44%, color-mix(in srgb, var(--ash-dark) 50%, var(--night)) 0%, var(--night) 74%); }
+    .c13-vw { position: absolute; inset: 0; transform-origin: 50% 50%; }
+    .c13-cam { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
+    .c13-abs { position: absolute; }
+    .c13-full { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    .c13-fill { position: absolute; inset: -60px; width: calc(100% + 120px); height: calc(100% + 120px); object-fit: cover;
+      filter: blur(38px) saturate(0.6) brightness(0.42); }
+    .c13-svg { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; pointer-events: none; }
+    .c13-w { display: inline-block; white-space: pre; opacity: 0; }
+    /* the cts01 phone/social card (same look as cts01 sc002) */
+    .c13-card { position: absolute; overflow: hidden; background: #0b0a09; box-shadow: 0 30px 70px rgba(0,0,0,0.7), 0 0 0 1px rgba(243,237,225,0.10); }
+    .c13-card video, .c13-card img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    .c13-grade { filter: saturate(0.62) contrast(1.06) brightness(0.9); }
+    .c13-p1, .c13-p2 { position: absolute; inset: 0; background-size: cover; background-position: center; pointer-events: none; }
+    .c13-p2 { mix-blend-mode: multiply; }
+    .c13-page { position: absolute; box-shadow: 0 26px 60px rgba(0,0,0,0.6); }
+    .c13-hlr { position: absolute; background: var(--yellow); mix-blend-mode: multiply; opacity: 0.85; transform-origin: 0 50%; border-radius: 3px; }
+    .c13-lbl { position: absolute; left: 0; top: 0; white-space: nowrap; }
+    .c13-dot { position: absolute; left: 0; top: 0; width: 18px; height: 18px; margin: -9px 0 0 -9px; border-radius: 50%; }
+    .c13-scrimb { position: absolute; left: 0; right: 0; bottom: 0; height: 320px; pointer-events: none;
+      background: linear-gradient(180deg, transparent, color-mix(in srgb, var(--night) 80%, transparent)); }
+    .c13-tline { position: absolute; inset: 0; pointer-events: none; opacity: 0;
+      background: repeating-linear-gradient(0deg, rgba(243,237,225,0.0) 0 5px, rgba(243,237,225,0.10) 5px 7px); }
+    .c13-band { position: absolute; left: 0; right: 0; height: 46px; background: rgba(243,237,225,0.22); mix-blend-mode: screen; filter: blur(2px); }
+    .c13-post { position: absolute; left: 0; top: 0; border-radius: 28px; box-shadow: 0 50px 110px rgba(0,0,0,0.7); }
+    .c13-spot { position: absolute; pointer-events: none; opacity: 0; }
+    .c13-quote { position: absolute; background: color-mix(in srgb, var(--paper) 72%, var(--bone)); box-shadow: 0 34px 80px rgba(0,0,0,0.6); overflow: hidden; }
+    .c13-ul { position: absolute; left: -2px; right: -2px; bottom: 2px; height: 5px; background: var(--ember-dark); transform-origin: 0 50%; border-radius: 3px; }
+    .c13-q { position: relative; }
+    .c13-blk { position: absolute; transform-origin: 50% 100%; }
+    .c13-tri { position: absolute; width: 0; height: 0; border-left: 11px solid transparent; border-right: 11px solid transparent; }
+    .c13-tile { position: absolute; width: 52px; height: 52px; box-sizing: border-box;
+      background-image: repeating-linear-gradient(0deg, rgba(0,0,0,0.0) 0 3px, rgba(0,0,0,0.13) 3px 4px); }
+    .c13-slot { position: absolute; width: 52px; height: 52px; box-sizing: border-box; border: 3px dashed var(--ink-soft); }
+    .c13-doc { position: absolute; overflow: hidden; background: #fff; box-shadow: 0 20px 44px rgba(29,26,22,0.38); }
+    #cts13-flash { position: absolute; inset: 0; background: var(--bone); opacity: 0; pointer-events: none; z-index: 7; }
+    #cts13-grain, #cts13-dust, #cts13-vig { z-index: 8; }
+  </style>
+
+  <div id="root" data-composition-id="cts13" data-vo-start="1192.625" data-duration="93.667" data-width="1920" data-height="1080">
+    <svg id="cts13-defs" width="0" height="0" style="position:absolute"></svg>
+
+    <!-- sc001 · 1192.625–1199.44 · "this just happened two days ago … how exactly the whole thing went down" · the front pages of Sat 21 Nov 2026 drop on a dark desk -->
+    <div class="c13-scene" id="cts13-sc001"><div class="c13-shot" id="cts13-sc001-shot">
+      <div class="c13-room"></div>
+      <div class="c13-cam" id="cts13-sc001-cam" style="width:1920px;height:1080px">
+        <img class="c13-page" id="cts13-sc001-p1" src="assets/cartels/news/front_pages/fp_2026-11-21_reforma.jpg" alt="" style="left:110px;top:70px;width:446px;height:860px" />
+        <img class="c13-page" id="cts13-sc001-p2" src="assets/cartels/news/front_pages/fp_2026-11-21_informador.jpg" alt="" style="left:1370px;top:60px;width:450px;height:870px" />
+        <img class="c13-page" id="cts13-sc001-p3" src="assets/cartels/news/front_pages/fp_2026-11-21_milenio.jpg" alt="" style="left:960px;top:118px;width:560px;height:778px" />
+        <img class="c13-page" id="cts13-sc001-p4" src="assets/cartels/news/front_pages/fp_2026-11-21_debate_culiacan.jpg" alt="" style="left:520px;top:140px;width:720px;height:772px" />
+      </div>
+      <div id="cts13-sc001-tag"></div>
+      <div id="cts13-sc001-cr"></div>
+    </div></div>
+
+    <!-- sc002 · 1199.44–1203.44 · "right after the arrest, the region went crazy" · smoke columns over Los Mochis that night -->
+    <div class="c13-scene" id="cts13-sc002"><div class="c13-shot" id="cts13-sc002-shot">
+      <video id="cts13-sc002-vf" class="c13-fill" src="assets/cartels/footage/x_losmochis_smoke_night.mp4" muted playsinline
+        data-start="6.70" data-duration="4.30" data-media-start="0.501"></video>
+      <div class="c13-vw" id="cts13-sc002-vw">
+        <div class="c13-card" id="cts13-sc002-card" style="left:693px;top:72px;width:534px;height:936px">
+          <video id="cts13-sc002-v" style="filter:saturate(0.7) contrast(1.12) brightness(1.2)" src="assets/cartels/footage/x_losmochis_smoke_night.mp4" muted playsinline
+            data-start="6.70" data-duration="4.30" data-media-start="0.5" data-color-grading='{"intensity":1,"effects":{"chromaticAberration":0.12}}'></video>
+        </div>
+      </div>
+      <div id="cts13-sc002-tag"></div>
+      <div id="cts13-sc002-cr"></div>
+    </div></div>
+
+    <!-- sc003 · 1203.44–1206.40 · "His people started burning trucks and blocking roads" · two phone clips: a burning car, a burning blockade -->
+    <div class="c13-scene" id="cts13-sc003"><div class="c13-shot" id="cts13-sc003-shot">
+      <div class="c13-room" style="background:radial-gradient(ellipse 70% 60% at 50% 50%, color-mix(in srgb, var(--ember-dark) 24%, var(--night)) 0%, var(--night) 72%)"></div>
+      <div class="c13-vw" id="cts13-sc003-vw">
+        <div class="c13-card" id="cts13-sc003-a" style="left:725px;top:120px;width:470px;height:836px">
+          <video id="cts13-sc003-va" class="c13-grade" src="assets/cartels/footage/m2_burning_car_d.mp4" muted playsinline
+            data-start="10.75" data-duration="3.20" data-media-start="6.0" data-color-grading='{"intensity":1,"effects":{"chromaticAberration":0.12}}'></video>
+        </div>
+        <div class="c13-card" id="cts13-sc003-b" style="left:990px;top:120px;width:470px;height:836px">
+          <video id="cts13-sc003-vb" class="c13-grade" src="assets/cartels/footage/m2_burning_street_c.mp4" muted playsinline
+            data-start="12.80" data-duration="1.30" data-media-start="0.6" data-color-grading='{"intensity":1,"effects":{"chromaticAberration":0.12}}'></video>
+        </div>
+      </div>
+      <div id="cts13-sc003-cr"></div>
+    </div></div>
+
+    <!-- sc004 · 1206.40–1211.44 · "across northern Sinaloa … a gas station and some other stores" · night map, northern Sinaloa in ember, blockade fires -->
+    <div class="c13-scene" id="cts13-sc004"><div class="c13-shot" id="cts13-sc004-shot" style="background:#15171c">
+      <div class="c13-cam" id="cts13-sc004-cam" style="width:4027px;height:4060px">
+        <img src="assets/maps/kit/sinaloa_night.jpg" alt="" style="position:absolute;left:0;top:0;width:4027px;height:4060px" />
+        <img id="cts13-sc004-fill" src="assets/cartels/cts13/derived/sin_north_fill.png" alt="" style="position:absolute;left:0;top:0;width:4027px;height:4060px;opacity:0" />
+        <img id="cts13-sc004-edge" src="assets/cartels/cts13/derived/sin_north_edge.png" alt="" style="position:absolute;left:0;top:0;width:4027px;height:4060px;opacity:0" />
+        <img src="assets/cartels/cts13/derived/sin_state_edge.png" alt="" style="position:absolute;left:0;top:0;width:4027px;height:4060px;opacity:0.42" />
+        <svg id="cts13-sc004-msvg" width="4027" height="4060" viewBox="0 0 4027 4060" style="position:absolute;left:0;top:0;overflow:visible"></svg>
+        <div id="cts13-sc004-icons"></div>
+      </div>
+      <svg class="c13-svg" id="cts13-sc004-svg" viewBox="0 0 1920 1080"></svg>
+      <div id="cts13-sc004-lbls"></div>
+      <div id="cts13-sc004-cr"></div>
+    </div></div>
+
+    <!-- sc005 · 1211.44–1214.48 · "That's where the baseball game you saw at the start comes from." · cts01's fan clip returns, rewinds, plays -->
+    <div class="c13-scene" id="cts13-sc005"><div class="c13-shot" id="cts13-sc005-shot">
+      <img id="cts13-sc005-fimg" class="c13-fill" src="assets/cartels/cts13/frames/fans_rw_00.jpg" alt="" />
+      <video id="cts13-sc005-vf" class="c13-fill" src="assets/cartels/footage/m1_kuroda_fans_a.mp4" muted playsinline
+        data-start="19.875" data-duration="2.70" data-media-start="0.751"></video>
+      <div class="c13-vw" id="cts13-sc005-vw">
+        <div class="c13-card" id="cts13-sc005-card" style="left:330px;top:110px;width:645px;height:860px">
+          <video id="cts13-sc005-v" class="c13-grade" src="assets/cartels/footage/m1_kuroda_fans_a.mp4" muted playsinline
+            data-start="19.875" data-duration="2.70" data-media-start="0.75" data-color-grading='{"intensity":1,"effects":{"chromaticAberration":0.12}}'></video>
+          <div id="cts13-sc005-rw" style="position:absolute;inset:0">
+            <img id="cts13-sc005-rw00" src="assets/cartels/cts13/frames/fans_rw_00.jpg" alt="" style="filter:saturate(0.62) contrast(1.06) brightness(0.9)" />
+            <img id="cts13-sc005-rw01" src="assets/cartels/cts13/frames/fans_rw_01.jpg" alt="" style="filter:saturate(0.62) contrast(1.06) brightness(0.9)" />
+            <img id="cts13-sc005-rw02" src="assets/cartels/cts13/frames/fans_rw_02.jpg" alt="" style="filter:saturate(0.62) contrast(1.06) brightness(0.9)" />
+            <img id="cts13-sc005-rw03" src="assets/cartels/cts13/frames/fans_rw_03.jpg" alt="" style="filter:saturate(0.62) contrast(1.06) brightness(0.9)" />
+            <img id="cts13-sc005-rw04" src="assets/cartels/cts13/frames/fans_rw_04.jpg" alt="" style="filter:saturate(0.62) contrast(1.06) brightness(0.9)" />
+            <img id="cts13-sc005-rw05" src="assets/cartels/cts13/frames/fans_rw_05.jpg" alt="" style="filter:saturate(0.62) contrast(1.06) brightness(0.9)" />
+            <img id="cts13-sc005-rw06" src="assets/cartels/cts13/frames/fans_rw_06.jpg" alt="" style="filter:saturate(0.62) contrast(1.06) brightness(0.9)" />
+            <img id="cts13-sc005-rw07" src="assets/cartels/cts13/frames/fans_rw_07.jpg" alt="" style="filter:saturate(0.62) contrast(1.06) brightness(0.9)" />
+            <img id="cts13-sc005-rw08" src="assets/cartels/cts13/frames/fans_rw_08.jpg" alt="" style="filter:saturate(0.62) contrast(1.06) brightness(0.9)" />
+            <img id="cts13-sc005-rw09" src="assets/cartels/cts13/frames/fans_rw_09.jpg" alt="" style="filter:saturate(0.62) contrast(1.06) brightness(0.9)" />
+            <img id="cts13-sc005-rw10" src="assets/cartels/cts13/frames/fans_rw_10.jpg" alt="" style="filter:saturate(0.62) contrast(1.06) brightness(0.9)" />
+            <img id="cts13-sc005-rw11" src="assets/cartels/cts13/frames/fans_rw_11.jpg" alt="" style="filter:saturate(0.62) contrast(1.06) brightness(0.9)" />
+          </div>
+          <div class="c13-tline" id="cts13-sc005-tl"><div class="c13-band" id="cts13-sc005-band" style="top:200px"></div></div>
+        </div>
+      </div>
+      <div id="cts13-sc005-tag"></div>
+      <div id="cts13-sc005-cr"></div>
+    </div></div>
+
+    <!-- sc006 · 1214.48–1220.40 · "A firefighter told reporters … grocery stores" · the AP report on npr.org, text contrast call-out -->
+    <div class="c13-scene" id="cts13-sc006"><div class="c13-shot" id="cts13-sc006-shot">
+      <div class="c13-room"></div>
+      <div class="c13-cam" id="cts13-sc006-cam" style="width:1920px;height:1462px">
+        <div class="c13-abs" id="cts13-sc006-wrap" style="left:0;top:0;width:1920px;height:1462px;transform-origin:676px 1110px">
+          <img class="c13-page" id="cts13-sc006-pg" src="assets/cartels/cts13/derived/npr_ap_firefighter_para.jpg" alt="" style="left:0;top:0;width:1920px;height:1462px" />
+          <div class="c13-abs" id="cts13-sc006-veil" style="left:0;top:0;width:1920px;height:1462px;background:#f4f2ee;opacity:0"></div>
+          <div class="c13-abs" id="cts13-sc006-dummy" style="left:0;top:0;width:1px;height:1px"></div>
+          <img class="c13-abs" id="cts13-sc006-key" src="assets/cartels/cts13/derived/npr_ap_firefighter_para.jpg" alt=""
+            style="left:0;top:0;width:1920px;height:1462px;clip-path:polygon(724px 1050px,1068px 1050px,1068px 1090px,1162px 1090px,1162px 1130px,640px 1130px,640px 1172px,214px 1172px,214px 1090px,724px 1090px)" />
+          <svg id="cts13-sc006-pen" width="1920" height="1462" viewBox="0 0 1920 1462" style="position:absolute;left:0;top:0;overflow:visible"></svg>
+        </div>
+      </div>
+      <div id="cts13-sc006-cr"></div>
+    </div></div>
+
+    <!-- sc007 · 1220.40–1226.08 · "reports that armed men stormed a public clinic and forced the doctors to treat their wounded" · Infobae: "Hombres armados irrumpen en clínica del IMSS en Guasave y obligan a médicos a atender heridos" -->
+    <div class="c13-scene" id="cts13-sc007"><div class="c13-shot" id="cts13-sc007-shot" style="background:var(--paper)">
+      <div class="c13-p1" style="background-image:url('assets/textures/paper_stained_01_hires.jpg')"></div>
+      <div class="c13-p2" style="background-image:url('assets/textures/paper_cream_01.jpg');opacity:0.45"></div>
+      <div class="c13-cam" id="cts13-sc007-cam" style="width:1600px;height:650px">
+        <div class="c13-page" style="left:0;top:0;width:1600px;height:650px;overflow:hidden;background:#fff;box-shadow:0 20px 60px rgba(40,30,20,0.35)">
+          <img src="assets/cartels/news/n01_infobae_imss.jpg" alt="" style="position:absolute;left:0;top:0;width:1600px;height:951px" />
+        </div>
+        <svg id="cts13-sc007-pen" width="1600" height="650" viewBox="0 0 1600 650" style="position:absolute;left:0;top:0;overflow:visible"></svg>
+      </div>
+      <div id="cts13-sc007-cr"></div>
+    </div></div>
+
+    <!-- sc008 · 1226.08–1231.52 · "while all of that was going on, El Chapo Isidro was being loaded onto an air force plane" · split: the fires | SEDENA's plane -->
+    <div class="c13-scene" id="cts13-sc008"><div class="c13-shot" id="cts13-sc008-shot">
+      <div class="c13-abs" id="cts13-sc008-L" style="left:0;top:0;width:1920px;height:1080px;overflow:hidden">
+        <video id="cts13-sc008-vl" class="c13-full c13-grade" src="assets/cartels/footage/m2_burning_trucks_b.mp4" muted playsinline style="object-position:50% 45%"
+          data-start="33.375" data-duration="5.60" data-media-start="0.0" data-color-grading='{"intensity":1,"effects":{"chromaticAberration":0.12}}'></video>
+      </div>
+      <div class="c13-abs" id="cts13-sc008-R" style="left:1920px;top:0;width:1920px;height:1080px;overflow:hidden;box-shadow:-30px 0 60px rgba(0,0,0,0.6)">
+        <video id="cts13-sc008-vr" class="c13-full" src="assets/cartels/footage/x_isidro_plane_boarding.mp4" muted playsinline style="filter:saturate(0.7) contrast(1.08) brightness(0.95)"
+          data-start="35.475" data-duration="3.60" data-media-start="4.5" data-color-grading='{"intensity":1,"effects":{"chromaticAberration":0.12}}'></video>
+      </div>
+      <div class="c13-abs" id="cts13-sc008-div" style="left:1918px;top:0;width:4px;height:1080px;background:var(--bone);opacity:0.85"></div>
+      <div id="cts13-sc008-crl"></div>
+      <div id="cts13-sc008-crr"></div>
+    </div></div>
+
+    <!-- sc009 · 1231.52–1233.92 · "to Mexico City." · night map: the Air Force flight from Sinaloa to Mexico City -->
+    <div class="c13-scene" id="cts13-sc009"><div class="c13-shot" id="cts13-sc009-shot" style="background:#12151b">
+      <div class="c13-cam" id="cts13-sc009-cam"></div>
+      <svg class="c13-svg" id="cts13-sc009-svg" viewBox="0 0 1920 1080"></svg>
+      <div id="cts13-sc009-lbls"></div>
+      <div id="cts13-sc009-cr"></div>
+    </div></div>
+
+    <!-- sc010 · 1233.92–1243.92 · "The next morning government put out this video… head down the whole time." · ★6 SEDENA's post → its 30-second video -->
+    <div class="c13-scene" id="cts13-sc010"><div class="c13-shot" id="cts13-sc010-shot">
+      <div class="c13-room" style="background:radial-gradient(ellipse 70% 62% at 50% 44%, color-mix(in srgb, var(--olive-dark) 30%, var(--night)) 0%, var(--night) 74%)"></div>
+      <div class="c13-cam" id="cts13-sc010-cam" style="width:1925px;height:2279px">
+        <img class="c13-post" id="cts13-sc010-post" src="assets/cartels/news/x_posts/x02_defensa_communique.jpg" alt="" style="width:1925px;height:2279px" />
+        <div class="c13-abs" id="cts13-sc010-vbox" style="left:63px;top:805px;width:1798px;height:1022px;overflow:hidden;border-radius:22px;opacity:0;background:#000">
+          <video id="cts13-sc010-v" class="c13-full" src="assets/cartels/footage/m6_arrest_full31s.mp4" muted playsinline style="filter:saturate(0.8) contrast(1.08) brightness(1.08)"
+            data-start="41.995" data-duration="9.45" data-media-start="0.0" data-color-grading='{"intensity":1,"effects":{"chromaticAberration":0.12}}'></video>
+          <div class="c13-spot" id="cts13-sc010-spot" style="left:0;top:0;width:1798px;height:1022px"></div>
+          <div class="c13-abs" style="left:0;right:0;bottom:0;height:260px;background:linear-gradient(180deg,transparent,rgba(10,9,8,0.82))"></div>
+          <div class="c13-abs" id="cts13-sc010-bar0" style="left:90px;width:1618px;bottom:70px;height:10px;background:rgba(243,237,225,0.28);opacity:0"></div>
+          <div class="c13-abs" id="cts13-sc010-bar1" style="left:90px;width:1618px;bottom:70px;height:10px;background:var(--yellow);transform-origin:0 50%;opacity:0"></div>
+          <div class="c13-abs t-label clean" style="left:90px;bottom:110px;font-size:27px">Video: SEDENA</div>
+          <div class="c13-abs t-display" id="cts13-sc010-30" style="right:90px;bottom:104px;font-size:96px;color:var(--yellow);opacity:0">0:30</div>
+        </div>
+      </div>
+      <div id="cts13-sc010-cr"></div>
+    </div></div>
+
+    <!-- sc011 · 1243.92–1250.08 · "the American ambassador to Mexico … a former Green Beret and CIA officer himself" · rebuild of ref ast_0455523fccc84f71 -->
+    <div class="c13-scene" id="cts13-sc011"><div class="c13-shot" id="cts13-sc011-shot" style="background:var(--paper)">
+      <div class="c13-p1" style="background-image:url('assets/textures/paper_cream_02.jpg')"></div>
+      <div class="c13-p2" style="background-image:url('assets/textures/paper_fiber_01.jpg');opacity:0.4"></div>
+      <div class="c13-vw" id="cts13-sc011-vw">
+        <div class="c13-blk" id="cts13-sc011-b1" style="left:610px;top:96px;width:150px;height:640px;background:var(--steel)"></div>
+        <div class="c13-blk" id="cts13-sc011-b2" style="left:1180px;top:380px;width:150px;height:600px;background:var(--steel-dark)"></div>
+        <div id="cts13-sc011-tris"></div>
+        <div class="c13-abs" id="cts13-sc011-por" style="left:690px;top:150px;width:560px;height:760px;overflow:hidden;box-shadow:0 26px 60px rgba(30,24,18,0.35)">
+          <img src="assets/cartels/people/johnson_2.jpg" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 18%;filter:grayscale(1) contrast(1.12) brightness(1.02)" />
+          <div class="c13-p1" style="background-image:url('assets/textures/halftone_01_norm.jpg');background-size:520px auto;mix-blend-mode:overlay;opacity:0.35"></div>
+        </div>
+        <div class="c13-abs" id="cts13-sc011-name" style="left:96px;top:150px;width:520px">
+          <div class="t-display" style="font-size:66px;line-height:0.98;color:var(--ink)"><span class="c13-w" id="cts13-sc011-n1">RONALD D.</span><br><span class="c13-w" id="cts13-sc011-n2">JOHNSON</span></div>
+          <div class="c13-abs" id="cts13-sc011-nrule" style="left:0;top:156px;width:440px;height:4px;background:var(--steel-dark);transform-origin:0 50%"></div>
+          <div class="t-label" id="cts13-sc011-role" style="position:absolute;left:0;top:180px;font-size:26px;line-height:1.35;color:var(--steel-dark)"><span class="c13-w">U.S. </span><span class="c13-w">AMBASSADOR</span><br><span class="c13-w">TO </span><span class="c13-w">MEXICO</span></div>
+        </div>
+        <div class="c13-abs" id="cts13-sc011-gb" style="left:150px;top:560px;width:420px;height:300px;background:var(--steel-dark);box-shadow:0 20px 44px rgba(30,24,18,0.35);overflow:hidden">
+          <div class="c13-p2" style="background-image:url('assets/textures/paper_fiber_01.jpg');opacity:0.5"></div>
+          <svg id="cts13-sc011-gbsvg" width="420" height="300" viewBox="0 0 420 300" style="position:absolute;left:0;top:0"></svg>
+          <div class="t-display" id="cts13-sc011-gbt" style="position:absolute;left:34px;top:150px;font-size:44px;line-height:1.02;color:var(--steel-light)"><span class="c13-w">FORMER</span><br><span class="c13-w">GREEN </span><span class="c13-w">BERET</span></div>
+        </div>
+        <div class="c13-abs" id="cts13-sc011-cia" style="left:1400px;top:230px;width:420px;height:520px;background:color-mix(in srgb, var(--paper) 60%, var(--bone));box-shadow:0 20px 44px rgba(30,24,18,0.35);overflow:hidden">
+          <img id="cts13-sc011-seal" src="assets/cartels/cts13/photos/cia_seal.png" alt="" style="position:absolute;left:80px;top:50px;width:260px;height:260px;filter:grayscale(1) contrast(1.1) sepia(0.3) hue-rotate(170deg) saturate(1.4) brightness(0.85)" />
+          <div class="t-display" id="cts13-sc011-ciat" style="position:absolute;left:0;width:420px;top:356px;text-align:center;font-size:48px;line-height:1.02;color:var(--steel-dark)"><span class="c13-w">CIA</span><br><span class="c13-w">OFFICER</span></div>
+        </div>
+      </div>
+      <div id="cts13-sc011-cr"></div>
+    </div></div>
+
+    <!-- sc012 · 1250.08–1262.09 · "posts something that was pretty telling. He says results like these…" · his real post + the real wording, word by word -->
+    <div class="c13-scene" id="cts13-sc012"><div class="c13-shot" id="cts13-sc012-shot">
+      <div class="c13-room" style="background:radial-gradient(ellipse 70% 62% at 40% 44%, color-mix(in srgb, var(--steel-dark) 34%, var(--night)) 0%, var(--night) 74%)"></div>
+      <div class="c13-vw" id="cts13-sc012-vw">
+        <div class="c13-abs" id="cts13-sc012-x" style="left:96px;top:96px;width:963px;height:400px;overflow:hidden;border-radius:14px;box-shadow:0 40px 90px rgba(0,0,0,0.7)">
+          <img src="assets/cartels/news/x_posts/x01_usambmex_johnson.jpg" alt="" style="position:absolute;left:0;top:0;width:963px;height:2346px" />
+        </div>
+        <div class="c13-quote" id="cts13-sc012-q" style="left:560px;top:360px;width:1264px;height:480px">
+          <div class="c13-p2" style="background-image:url('assets/textures/paper_cream_01.jpg');opacity:0.7"></div>
+          <div class="c13-abs" style="left:0;top:0;bottom:0;width:16px;background:var(--steel-dark)"></div>
+          <div class="t-serif" id="cts13-sc012-qt" style="position:absolute;left:76px;top:62px;right:60px;font-size:50px;line-height:1.32;color:var(--ink)">
+            <span class="c13-w c13-q">“Results </span><span class="c13-w c13-q">like </span><span class="c13-w c13-q">these </span><span class="c13-w c13-q">don’t </span><span class="c13-w c13-q">happen </span><span class="c13-w c13-q">overnight.</span><br>
+            <span class="c13-w c13-q">They </span><span class="c13-w c13-q">are </span><span class="c13-w c13-q">built </span><span class="c13-w c13-q">on </span><span class="c13-w c13-q">sustained<i class="c13-ul"></i> </span><span class="c13-w c13-q">cooperation<i class="c13-ul"></i> </span><span class="c13-w c13-q">and<i class="c13-ul"></i> </span><span class="c13-w c13-q">trust.<i class="c13-ul"></i></span><br>
+            <span class="c13-w c13-q" style="color:var(--ink-soft)">[…]</span><br>
+            <span class="c13-w c13-q">We </span><span class="c13-w c13-q">will </span><span class="c13-w c13-q">continue<i class="c13-ul"></i> </span><span class="c13-w c13-q">the<i class="c13-ul"></i> </span><span class="c13-w c13-q">hunt.”<i class="c13-ul"></i></span>
+          </div>
+          <div class="t-label" id="cts13-sc012-att" style="position:absolute;left:76px;bottom:44px;font-size:22px;color:var(--steel-dark)">Ronald D. Johnson · U.S. Ambassador to Mexico · on X, 21 Nov 2026</div>
+        </div>
+      </div>
+      <div id="cts13-sc012-cr"></div>
+    </div></div>
+
+    <!-- sc013 · 1262.09–1271.90 · "I don't think he's gonna stay in Mexico for very long. He has been charged in Washington, DC" · map Mexico City → Washington -->
+    <div class="c13-scene" id="cts13-sc013"><div class="c13-shot" id="cts13-sc013-shot" style="background:#12151b">
+      <div class="c13-cam" id="cts13-sc013-cam"></div>
+      <svg class="c13-svg" id="cts13-sc013-svg" viewBox="0 0 1920 1080"></svg>
+      <div id="cts13-sc013-lbls"></div>
+      <div id="cts13-sc013-cr"></div>
+    </div></div>
+
+    <!-- sc014 · 1271.90–1278.33 · "since 2012 … asked for him to be extradited" · his TARGET FILE returns -->
+    <div class="c13-scene" id="cts13-sc014"><div class="c13-shot" id="cts13-sc014-shot" style="background:var(--paper)">
+      <div id="cts13-sc014-file" style="position:absolute;inset:0"></div>
+    </div></div>
+
+    <!-- sc015 · 1278.33–1286.292 · "Mexico has already sent 90 some guys … special treatment" · callback to cts06's prisoner waffle (92) + slot #93 -->
+    <div class="c13-scene" id="cts13-sc015"><div class="c13-shot" id="cts13-sc015-shot" style="background:var(--paper)">
+      <div class="c13-p1" style="background-image:url('assets/textures/paper_cream_02.jpg')"></div>
+      <div class="c13-p2" style="background-image:url('assets/textures/paper_stained_01_hires.jpg');opacity:0.35"></div>
+      <div class="c13-vw" id="cts13-sc015-vw"><div id="cts13-sc015-board" class="c13-abs" style="left:0;top:0;width:1920px;height:1080px"></div>
+        <svg class="c13-svg" id="cts13-sc015-svg" viewBox="0 0 1920 1080"></svg></div>
+      <div id="cts13-sc015-cr"></div>
+    </div></div>
+
+    <div id="cts13-flash"></div>
+    <div id="cts13-grain" class="tx tx-grain" style="background-image:url('assets/textures/grain_01_norm.jpg')"></div>
+    <div id="cts13-dust" class="tx tx-dust" style="background-image:url('assets/textures/dust_02.jpg')"></div>
+    <div id="cts13-vig" class="vignette"></div>
+    <audio id="cts13-vo" class="temp-vo" src="vo_ct.mp3" data-start="0" data-duration="93.667" data-media-start="1192.625" data-volume="1"></audio>
+  </div>
+
+  <script>
+  (function () {
+    const SEG = "cts13", SEG_START = 1192.625, SEG_END = 1286.292, DURATION = 93.667;
+    const T = (s) => +(s - SEG_START).toFixed(3);   // TEXT cues (audited): master word start − 0.06
+    const S = (s) => +(s - SEG_START).toFixed(3);   // STRUCTURAL cues
+    const tl = gsap.timeline({ paused: true });
+    const $ = (id) => document.getElementById(SEG + "-" + id);
+    const NS = "http://www.w3.org/2000/svg";
+    const defs = $("defs");
+    const E = FX.ease;
+    const C = (e, d) => FX.choppy(e, d, 12);
+    const INK = "#1d1a16", BONE = "#f3ede1", EMBER = "#ec6424", EMBERD = "#8a3311", EMBERL = "#f7b48c",
+      STEEL = "#6f93b4", STEELD = "#2f4a63", STEELL = "#bcd1e4", OLIVE = "#9a9a4e", OLIVED = "#50512a", OLIVEL = "#d3d39c", YEL = "#f4cf3d";
+
+    // ---------- scenes ----------
+    const SC = [
+      ["sc001", 1192.625, 1199.44, "night"], ["sc002", 1199.44, 1203.44, "foot"], ["sc003", 1203.44, 1206.40, "foot"],
+      ["sc004", 1206.40, 1211.44, "night"], ["sc005", 1211.44, 1214.48, "foot"], ["sc006", 1214.48, 1220.40, "night"],
+      ["sc007", 1220.40, 1226.08, "paper"], ["sc008", 1226.08, 1231.52, "foot"], ["sc009", 1231.52, 1233.92, "night"],
+      ["sc010", 1233.92, 1243.92, "night"], ["sc011", 1243.92, 1250.08, "paper"], ["sc012", 1250.08, 1262.09, "night"],
+      ["sc013", 1262.09, 1271.90, "night"], ["sc014", 1271.90, 1278.33, "paper"], ["sc015", 1278.33, 1286.292, "paper"],
+    ];
+    const GROUND = { paper: [0.3, 0.14, 0.22], night: [0.9, 0.42, 0.4], foot: [0.5, 0.3, 0.35] };
+    const EARLY = { sc004: 0.45, sc007: 0.45, sc011: 0.45, sc013: 0.45, sc015: 0.45 };   // slides: incoming scene visible during the slide
+    const scEl = {};
+    SC.forEach((s) => { scEl[s[0]] = $(s[0]); });
+    function ground(kind, t) { const v = GROUND[kind]; tl.set([$("grain"), $("dust"), $("vig")], { opacity: (i) => v[i] }, t); }
+    SC.forEach((s, i) => {
+      const el = scEl[s[0]], a = s[1] - (EARLY[s[0]] || 0);
+      if (i === 0) gsap.set(el, { autoAlpha: 1 });
+      else tl.fromTo(el, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.001, immediateRender: false }, S(a) - 0.002);
+      if (s[2] < SEG_END) tl.set(el, { autoAlpha: 0 }, S(s[2]) + 0.05);
+    });
+    gsap.set([$("grain"), $("dust"), $("vig")], { opacity: (i) => GROUND.night[i] });
+    SC.forEach((s, i) => { if (i > 0) ground(s[3], S(s[1])); });
+
+    // ---------- helpers ----------
+    const rise = (el, t, o) => { o = o || {}; const d = o.dur || 0.5;
+      tl.fromTo(el, { opacity: 0, y: o.y == null ? 14 : o.y }, { opacity: 1, y: 0, duration: d, ease: C(E.out, d), immediateRender: true }, t); };
+    const pop = (el, t, o) => { o = o || {}; const n = o.n || 2;
+      tl.fromTo(el, { opacity: 0, scale: o.from == null ? 1.25 : o.from }, { opacity: o.to == null ? 1 : o.to, scale: 1, duration: n / 12, ease: "steps(" + n + ")", immediateRender: true }, t); };
+    const W = (id) => Array.from($(id).querySelectorAll(".c13-w"));
+    function words(id, cues, o) { const ws = W(id); cues.forEach((c, i) => rise(ws[i], c, o)); }
+    function el(parent, tag, attrs) { const n = document.createElementNS(NS, tag); for (const k in attrs) n.setAttribute(k, attrs[k]); parent.appendChild(n); return n; }
+    function div(parent, cls, css, html) { const d = document.createElement("div"); if (cls) d.className = cls; d.style.cssText = css || ""; if (html) d.innerHTML = html; parent.appendChild(d); return d; }
+    function img(parent, src, css) { const i = document.createElement("img"); i.src = src; i.alt = ""; i.style.cssText = "position:absolute;" + css; parent.appendChild(i); return i; }
+    function ink(parent, d, t, dur, o) {
+      o = o || {};
+      const p = el(parent, "path", { d: d, fill: "none", stroke: o.color || INK, "stroke-width": o.width || 5, "stroke-linecap": "round", "stroke-linejoin": "round" });
+      const len = p.getTotalLength() || 1;
+      p.setAttribute("stroke-dasharray", len + " " + len); p.setAttribute("stroke-dashoffset", len);
+      tl.fromTo(p, { attr: { "stroke-dashoffset": len } }, { attr: { "stroke-dashoffset": 0 }, duration: dur, ease: o.ease || C(E.out, dur), immediateRender: true }, t);
+      if (o.opacity != null) p.setAttribute("opacity", o.opacity);
+      gsap.set(p, { opacity: 0 }); tl.set(p, { opacity: o.opacity == null ? 1 : o.opacity }, t);
+      return p;
+    }
+    // dashed route drawn on: a solid route under a mask drawn on with dashoffset (mask path = same d, wide stroke)
+    let maskN = 0;
+    function dashedRoute(svg, d, t, dur, o) {
+      o = o || {};
+      const id = SEG + "-rm" + (++maskN);
+      const mk = el(svg, "mask", { id: id, maskUnits: "userSpaceOnUse", x: -5000, y: -5000, width: 20000, height: 20000 });
+      const mp = el(mk, "path", { d: d, fill: "none", stroke: "#fff", "stroke-width": (o.width || 5) * 4, "stroke-linecap": "round" });
+      const len = mp.getTotalLength() || 1;
+      mp.setAttribute("stroke-dasharray", len + " " + len); mp.setAttribute("stroke-dashoffset", len);
+      const p = el(svg, "path", { d: d, fill: "none", stroke: o.color || BONE, "stroke-width": o.width || 5, "stroke-linecap": "round",
+        "stroke-dasharray": o.dash || "14 12", mask: "url(#" + id + ")" });
+      if (o.opacity != null) p.setAttribute("opacity", o.opacity);
+      tl.fromTo(mp, { attr: { "stroke-dashoffset": len } }, { attr: { "stroke-dashoffset": 0 }, duration: dur, ease: o.ease || E.inOut, immediateRender: true }, t);
+      return { p: p, mp: mp, len: len };
+    }
+    const whipN = { n: 0 };
+    function whip(a, b, t, o) {
+      o = Object.assign({ dir: 1, vertical: false, flash: false, dur: 0.32 }, o);
+      const k = ++whipN.n, ba = FX.whipDefs(defs, SEG + "-wa" + k), bb = FX.whipDefs(defs, SEG + "-wb" + k), h = o.dur / 2;
+      const A = $(a + "-shot"), B = $(b + "-shot");
+      tl.set(A, { filter: "url(#" + SEG + "-wa" + k + ")" }, t - h - 0.01); tl.set(A, { filter: "none" }, t + 0.06);
+      tl.set(B, { filter: "url(#" + SEG + "-wb" + k + ")" }, t - 0.001); tl.set(B, { filter: "none" }, t + h + 0.02);
+      FX.whip(tl, A, B, t, { dir: o.dir, vertical: o.vertical, dur: o.dur, blurA: ba, blurB: bb });
+      if (o.flash) tl.fromTo($("flash"), { opacity: 0 }, { opacity: 0.85, duration: 0.08, yoyo: true, repeat: 1, ease: "power2.in", immediateRender: false }, t - 0.08);
+    }
+    function slide(a, b, t, o) {
+      o = Object.assign({ axis: "y", from: 1, d: 0.45 }, o);
+      const A = $(a + "-shot"), B = $(b + "-shot"), dist = (o.axis === "x" ? 1980 : 1140) * o.from;
+      tl.fromTo(B, { [o.axis]: dist, boxShadow: "0 0 80px rgba(0,0,0,0.5)" }, { [o.axis]: 0, duration: o.d, ease: C(E.inOut, o.d), immediateRender: false }, t - o.d);
+      tl.set(B, { boxShadow: "none" }, t);
+      tl.fromTo(A, { [o.axis]: 0 }, { [o.axis]: -dist * 0.12, duration: o.d, ease: E.in, immediateRender: false }, t - o.d);
+    }
+    function push(id, a, b, s0, s1, o) {
+      o = o || {};
+      const vw = $(id + "-vw");
+      if (o.origin) gsap.set(vw, { transformOrigin: o.origin });
+      gsap.set(vw, { scale: s0 });
+      tl.fromTo(vw, { scale: s0 }, { scale: s1, duration: b - a, ease: o.ease || "none", immediateRender: false }, S(a));
+    }
+    // camera (transform-origin 0 0): frame point (px,py) at the screen centre with scale s
+    const at = (px, py, s, r) => ({ x: 960 - px * s, y: 540 - py * s, scale: s, rotation: r || 0 });
+    function hl(elm, t, dur) { gsap.set(elm, { scaleX: 0 }); tl.fromTo(elm, { scaleX: 0 }, { scaleX: 1, duration: dur || 0.45, ease: "sine.inOut", immediateRender: true }, t); }
+    const PEN = FX.markupDefs(defs, SEG + "-pen", { boil: 4 });
+    defs.setAttribute("viewBox", "0 0 1 1");
+    defs.insertAdjacentHTML("beforeend", '<filter id="' + SEG + '-hlf" x="-5%" y="-30%" width="110%" height="160%"><feTurbulence type="fractalNoise" baseFrequency="0.04 0.3" numOctaves="2" seed="4" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="6" xChannelSelector="R" yChannelSelector="G"/></filter>');
+    ["sc006-dummy"].forEach((k) => { $(k).style.filter = "url(#" + SEG + "-hlf)"; });
+    Array.from($("sc012-qt").querySelectorAll(".c13-ul")).forEach((u) => { u.style.filter = "url(#" + SEG + "-hlf)"; });
+    FX.grain($("grain"), 1313);
+    FX.dust($("dust"), 1314, 2);
+    // gated per-frame work (scene windows)
+    function gated(a, b, fn) { FX.onFrame(FX.gate(S(a) - 0.5, S(b) + 0.5, fn)); }
+
+    // map camera with screen-space labels/pins (constant screen size during moves)
+    function mapCam(camEl, items) {
+      const st = { cx: 0, cy: 0, s: 1 };
+      const apply = () => {
+        gsap.set(camEl, { x: 960 - st.cx * st.s, y: 540 - st.cy * st.s, scale: st.s });
+        items.forEach((it) => {
+          const sx = 960 + (it.mx - st.cx) * st.s, sy = 540 + (it.my - st.cy) * st.s;
+          if (it.g) it.g.setAttribute("transform", "translate(" + sx.toFixed(1) + " " + sy.toFixed(1) + ")");
+          if (it.el) { it.el.style.left = (sx + (it.dx || 0)).toFixed(1) + "px"; it.el.style.top = (sy + (it.dy || 0)).toFixed(1) + "px"; }
+        });
+      };
+      return {
+        st: st, apply: apply,
+        set(k) { Object.assign(st, k); apply(); },
+      };
+    }
+
+    /* ===== sc001 · front pages of 21 Nov 2026 land on a dark desk; push to El Debate's headline ===== */
+    (function () {
+      const cam = $("sc001-cam");
+      const P = [["p1", -4.5, 0, 0], ["p2", 3.6, 0, 1], ["p3", -2.2, 1192.75, -1], ["p4", 1.4, 1194.25, 1]];
+      P.forEach((p, i) => {
+        const e = $("sc001-" + p[0]);
+        gsap.set(e, { rotation: p[1], transformOrigin: "50% 50%" });
+        if (i < 2) { tl.fromTo(e, { y: 30, rotation: p[1] - 2 }, { y: 0, rotation: p[1], duration: 0.8, ease: C(E.out, 0.8), immediateRender: false }, 0); return; }
+        gsap.set(e, { opacity: 0 });
+        tl.fromTo(e, { opacity: 1, y: -1250, x: p[3] * 120, rotation: p[1] + p[3] * 8 }, { opacity: 1, y: 0, x: 0, rotation: p[1], duration: 0.75, ease: C(E.out, 0.75), immediateRender: false }, S(p[2]));
+      });
+      // camera: slow drift, then the push onto El Debate's headline ("how exactly the whole thing went down")
+      const K0 = at(960, 520, 0.95), K1 = at(960, 505, 0.99), K2 = at(880, 375, 1.62, -1.4);
+      gsap.set(cam, K0);
+      tl.fromTo(cam, K0, Object.assign({}, K1, { duration: 4.6, ease: "none", immediateRender: false }), 0);
+      tl.to(cam, Object.assign({}, K2, { duration: 1.6, ease: E.cam }), S(1197.25));
+      FX.focusHunt(tl, cam, S(1198.85), { dur: 0.5, a: 2, b: 3 });
+      CT.credit($("sc001-cr"), "Front pages: Reforma · Milenio · El Informador · El Debate, 21 Nov 2026", { pos: "br" });
+    })();
+
+    /* ===== sc002 · smoke over Los Mochis that night (whip →) ===== */
+    whip("sc001", "sc002", S(1199.44), { dir: 1 });
+    (function () {
+      push("sc002", 1199.44, 1203.44, 1.0, 1.07, { ease: "none", origin: "960px 420px" });
+      const tag = CT.dateTag($("sc002-tag"), { prefix: SEG + "-sc002-tag", place: "Los Mochis, Sinaloa", date: "20 Nov 2026", accent: "ember" });
+      tag.in(tl, T(1201.52));
+      CT.credit($("sc002-cr"), "Video: Azucena Uresti (X)");
+    })();
+
+    /* ===== sc003 · burning / blocking: two phone clips (hard cut on action) ===== */
+    (function () {
+      const A = $("sc003-a"), B = $("sc003-b");
+      tl.fromTo(A, { y: 160, rotation: -3 }, { y: 0, rotation: -1.2, duration: 0.8, ease: C(E.out, 0.8), immediateRender: true }, S(1203.44));
+      tl.to(A, { x: -270, rotation: -2.2, duration: 0.7, ease: C(E.inOut, 0.7) }, S(1205.10));
+      gsap.set(B, { x: 900, rotation: 6, opacity: 0 });
+      tl.fromTo(B, { x: 900, rotation: 6, opacity: 1 }, { x: 0, rotation: 1.8, duration: 0.65, ease: C(E.out, 0.65), immediateRender: false }, S(1205.20));
+      push("sc003", 1203.44, 1206.40, 1.0, 1.04, { origin: "960px 540px" });
+      CT.credit($("sc003-cr"), "Video: A Discusión · Noroeste");
+    })();
+
+    /* ===== sc004 · northern Sinaloa: the blockades (SEDENA: Ahome, Guamúchil, Guasave, Navolato) + the gas station and stores (slide ↑) ===== */
+    slide("sc003", "sc004", S(1206.40), { axis: "y" });
+    (function () {
+      const cam = $("sc004-cam"), svg = $("sc004-svg"), lbls = $("sc004-lbls"), msvg = $("sc004-msvg");
+      const PL = [["AHOME", 1033.6, 2073.7, 1207.42, 26, 0], ["GUASAVE", 1928.4, 2556.7, 1207.62, 26, -16], ["GUAMÚCHIL", 2421.6, 2719.4, 1207.82, 26, 4], ["NAVOLATO", 2896.7, 3691.4, 1208.02, 26, -16]];
+      const items = [];
+      PL.forEach((p, i) => {
+        const g = el(svg, "g", {});
+        const glow = el(g, "circle", { cx: 0, cy: 0, r: 26, fill: EMBER, opacity: 0.35 });
+        const dot = el(g, "circle", { cx: 0, cy: 0, r: 11, fill: EMBER, stroke: BONE, "stroke-width": 3 });
+        const rg = el(g, "g", {});
+        FX.radioWaves(rg, 0, 0, { rings: 3, max: 70, period: 1.4, width: 4, color: EMBERL, from: S(p[3]) + 0.1, to: S(1211.6) });
+        gsap.set(g, { opacity: 0 });
+        tl.fromTo(g, { opacity: 0 }, { opacity: 1, duration: 0.001, immediateRender: false }, S(p[3]));
+        tl.fromTo([glow, dot], { attr: { r: (k) => (k === 0 ? 60 : 24) } }, { attr: { r: (k) => (k === 0 ? 26 : 11) }, duration: 3 / 12, ease: "steps(3)", immediateRender: false }, S(p[3]));
+        const lb = div(lbls, "c13-lbl t-label clean", "font-size:26px;text-transform:none;letter-spacing:0.14em", p[0]);
+        gsap.set(lb, { opacity: 0 });
+        tl.fromTo(lb, { opacity: 0 }, { opacity: 1, duration: 0.25, ease: "power1.out", immediateRender: false }, S(p[3]) + 0.08);
+        items.push({ g: g, mx: p[1], my: p[2] }, { el: lb, mx: p[1], my: p[2], dx: p[4], dy: p[5] - 14 });
+      });
+      const lS = div(lbls, "c13-lbl t-display clean", "font-size:64px;letter-spacing:0.08em", "SINALOA");
+      gsap.set(lS, { opacity: 0 });
+      rise(lS, T(1207.28), { dur: 0.6, y: 10 });
+      tl.to(lS, { opacity: 0, duration: 0.4, ease: "power1.in" }, S(1209.0));
+      items.push({ el: lS, mx: 3080, my: 3020, dx: -150, dy: -40 });
+      // Mex 15 drawn (ember-light, thin) through the blockade towns
+      const HWY = "M3610.0,4098.9L3527.6,3989.1L3518.9,3977.2L3510.9,3964.3L3492.1,3941.1L3454.7,3891.3L3364.1,3795.5L3357.6,3782.2L3346.1,3767.3L3343.0,3756.9L3338.6,3736.9L3303.1,3646.9L3298.9,3639.7L3292.5,3632.6L3269.0,3634.1L3265.2,3633.7L3263.4,3628.6L3243.6,3608.6L3236.7,3599.2L3129.7,3482.0L3125.6,3480.1L3113.5,3481.5L3110.3,3480.0L3102.6,3463.8L3101.6,3459.0L3087.5,3429.9L3072.0,3394.5L3066.4,3373.0L3060.3,3369.8L3047.8,3365.0L3042.5,3357.2L3027.2,3346.4L3019.7,3337.5L2999.4,3321.4L2993.9,3314.8L2930.0,3264.2L2910.6,3229.4L2906.0,3227.6L2888.3,3229.5L2884.8,3228.9L2815.5,3184.3L2785.4,3154.4L2768.4,3123.1L2753.0,3107.7L2749.6,3106.8L2742.6,3109.6L2738.2,3109.1L2675.6,3072.7L2643.5,3033.8L2637.2,3009.6L2633.7,3003.5L2634.7,2992.9L2634.1,2990.1L2586.7,2894.5L2527.3,2843.2L2480.8,2815.3L2432.6,2744.7L2422.1,2718.6L2420.5,2716.6L2408.2,2710.0L2400.6,2703.4L2397.6,2702.0L2361.2,2703.1L2271.1,2684.4L2241.2,2673.6L2228.5,2675.0L2221.3,2677.5L2215.6,2676.6L2190.8,2679.4L2122.3,2662.9L2028.8,2617.0L2027.0,2615.2L2015.7,2597.1L1982.1,2585.3L1966.0,2568.8L1961.0,2558.4L1958.5,2555.9L1906.2,2540.0L1466.5,2279.1L1317.8,2235.4L1315.9,2234.0L1299.2,2203.4L1199.3,2062.4L1189.1,2029.1L1192.6,2011.2L1213.4,1997.1L1230.5,1970.8L1234.4,1966.2L1240.9,1960.7L1245.4,1942.1L1244.3,1926.8L1230.2,1914.8L1225.9,1908.1L1226.1,1905.7L1232.3,1897.7L1232.7,1895.0L1222.2,1855.0L1180.2,1679.9";
+      dashedRoute(msvg, HWY, S(1206.55), 1.4, { color: EMBERL, width: 7, dash: "26 18", opacity: 0.8 });
+      // northern Sinaloa fills in ember on "northern"
+      tl.fromTo($("sc004-fill"), { opacity: 0 }, { opacity: 0.3, duration: 0.6, ease: C(E.out, 0.6), immediateRender: true }, S(1206.80));
+      tl.fromTo($("sc004-edge"), { opacity: 0 }, { opacity: 0.9, duration: 0.6, ease: C(E.out, 0.6), immediateRender: true }, S(1206.80));
+      // the gas station and the stores catch fire in Guasave (map-anchored glyphs)
+      const icons = $("sc004-icons");
+      const FLAME = '<path d="M50 4 C58 26 78 34 78 60 C78 80 64 94 50 94 C36 94 22 80 22 60 C22 46 30 38 36 30 C38 44 44 50 48 50 C44 34 44 18 50 4 Z" fill="' + EMBER + '"/><path d="M50 46 C56 58 64 62 64 74 C64 84 58 90 50 90 C42 90 36 84 36 74 C36 66 42 62 44 56 C46 64 50 66 50 66 Z" fill="' + YEL + '"/>';
+      const PUMP = '<svg viewBox="0 0 100 100" width="100" height="100"><rect x="14" y="20" width="44" height="70" rx="6" fill="' + BONE + '"/><rect x="22" y="30" width="28" height="20" rx="2" fill="#15171c"/><rect x="8" y="86" width="56" height="10" rx="3" fill="' + BONE + '"/><path d="M58 40 L74 40 L80 50 L80 76 C80 82 88 82 88 76 L88 46 L80 32" fill="none" stroke="' + BONE + '" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+      const SHOP = '<svg viewBox="0 0 100 100" width="100" height="100"><path d="M8 34 L16 12 L84 12 L92 34 Z" fill="' + BONE + '"/><path d="M8 34 Q18 44 29 34 Q40 44 50 34 Q61 44 71 34 Q82 44 92 34" fill="' + BONE + '"/><rect x="14" y="40" width="72" height="52" fill="' + BONE + '"/><rect x="24" y="52" width="24" height="40" fill="#15171c"/><rect x="56" y="52" width="22" height="20" fill="#15171c"/></svg>';
+      function glyph(html, mx, my, t, seed) {
+        const box = div(icons, "c13-abs", "left:" + (mx - 50) + "px;top:" + (my - 50) + "px;width:100px;height:100px;transform-origin:50% 100%");
+        box.innerHTML = html;
+        const fl = div(box, "c13-abs", "left:46px;top:-58px;width:64px;height:64px;transform-origin:50% 100%",
+          '<svg viewBox="0 0 100 100" width="64" height="64">' + FLAME + "</svg>");
+        gsap.set(box, { opacity: 0 });
+        pop(box, t, { from: 1.6, n: 3 });
+        gsap.set(fl, { scale: 0 });
+        tl.fromTo(fl, { scale: 0 }, { scale: 1, duration: 0.3, ease: C(E.out, 0.3), immediateRender: false }, t + 0.05);
+        const r = FX.rng(seed);
+        gated(1209.0, 1211.44, (tt) => { if (tt < t + 0.55) return; const f = Math.floor(tt * 12); gsap.set(fl, { scaleY: 0.86 + 0.24 * FX.noise1(f * 0.7, seed), scaleX: 0.92 + 0.12 * FX.noise1(f * 0.9 + 3, seed) }); });
+        return box;
+      }
+      glyph(PUMP, 1825, 2440, S(1209.44), 41);
+      glyph(SHOP, 2050, 2470, S(1210.64), 43);
+      // camera: wide on northern Sinaloa → push to Guasave ("a gas station and some other stores")
+      const mc = mapCam(cam, items);
+      mc.set({ cx: 2010, cy: 2950, s: 0.5 });
+      tl.to(mc.st, { cx: 2010, cy: 2930, s: 0.53, duration: 2.6, ease: "none", onUpdate: mc.apply }, S(1206.40));
+      tl.to(mc.st, { cx: 1950, cy: 2520, s: 1.0, duration: 1.4, ease: E.cam, onUpdate: mc.apply }, S(1209.05));
+      CT.credit($("sc004-cr"), "Blockades: SEDENA, 21 Nov 2026 · Map: AWS Terrain Tiles, OSM");
+    })();
+
+    /* ===== sc005 · the ballpark callback: cts01's fan clip rewinds, then plays (whip ↓) ===== */
+    whip("sc004", "sc005", S(1211.44), { dir: 1, vertical: true });
+    (function () {
+      const rw = $("sc005-rw"), frames = [];
+      for (let i = 0; i < 12; i++) frames.push(document.getElementById(SEG + "-sc005-rw" + (i < 10 ? "0" : "") + i));
+      frames.forEach((f, i) => { gsap.set(f, { opacity: i === 0 ? 1 : 0 }); if (i > 0) tl.set(f, { opacity: 1 }, S(1211.62) + i / 12); });
+      tl.set(rw, { opacity: 0 }, S(1212.55));
+      tl.set($("sc005-fimg"), { opacity: 0 }, S(1212.55));
+      // tracking lines + a rolling band + jitter while it rewinds
+      const tline = $("sc005-tl"), band = $("sc005-band");
+      tl.set(tline, { opacity: 1 }, S(1211.62)); tl.set(tline, { opacity: 0 }, S(1212.55));
+      tl.fromTo(band, { y: 820 }, { y: -120, duration: 0.93, ease: "steps(11)", immediateRender: false }, S(1211.62));
+      gated(1211.6, 1212.6, (t) => { if (t < S(1211.62) || t > S(1212.55)) { gsap.set(rw, { x: 0 }); return; } const f = Math.floor(t * 24); gsap.set(rw, { x: (FX.noise1(f * 1.3, 77) - 0.5) * 14 }); });
+      push("sc005", 1211.44, 1214.48, 1.0, 1.05, { ease: "none", origin: "960px 540px" });
+      const tag = CT.dateTag($("sc005-tag"), { prefix: SEG + "-sc005-tag", place: "Guasave, Sinaloa", date: "20 Nov 2026", pos: "tr" });
+      tag.in(tl, T(1212.08));
+      CT.credit($("sc005-cr"), "Video: Luis Cárdenas (X)");
+    })();
+
+    /* ===== sc006 · the AP report: firefighter Paola Sánchez, thousands sheltered in grocery stores (flash whip →) ===== */
+    whip("sc005", "sc006", S(1214.48), { dir: 1, flash: true });
+    (function () {
+      const cam = $("sc006-cam"), wrap = $("sc006-wrap"), key = $("sc006-key"), pg = $("sc006-pg");
+      gsap.set(pg, { rotation: 0 });
+      const K0 = at(700, 980, 0.98, -1.2), K1 = at(676, 1110, 1.22, -0.6);
+      gsap.set(cam, K0);
+      tl.fromTo(cam, K0, Object.assign({}, K1, { duration: 1.6, ease: E.cam, immediateRender: false }), S(1214.48));
+      tl.to(cam, Object.assign({}, at(680, 1112, 1.26, -0.4), { duration: 4.3, ease: "none" }), S(1216.1));
+      gsap.set(key, { opacity: 1 });
+      // text contrast call-out: the page fades under a paper-white veil, the key words come back through a left→right wipe
+      tl.fromTo($("sc006-veil"), { opacity: 0 }, { opacity: 0.8, duration: 1.0, ease: E.out, immediateRender: true }, S(1216.30));
+      FX.textCallout(tl, wrap, $("sc006-dummy"), key, S(1216.30), { dim: 0.2, punch: 1.08, dur: 1.0, wipe: 0.8, delay: 0.25 });
+      const pen = FX.markup.pen(tl, $("sc006-pen"), S(1217.62), { points: [[402, 1176], [636, 1173]], width: 5, color: EMBERD, filter: PEN, dur: 0.6, jitter: 3, seed: 5 });
+      gsap.set(pen, { opacity: 0 }); tl.set(pen, { opacity: 1 }, S(1217.62));
+      CT.credit($("sc006-cr"), "npr.org · The Associated Press, 21 Nov 2026", { theme: "paper" });
+    })();
+
+    /* ===== sc007 · Infobae: armed men storm an IMSS clinic in Guasave, doctors forced to treat the wounded (slide ←) ===== */
+    slide("sc006", "sc007", S(1220.40), { axis: "x" });
+    (function () {
+      const cam = $("sc007-cam"), pen = $("sc007-pen");
+      const K0 = at(800, 330, 1.02, -0.8), K1 = at(800, 360, 1.08, -0.6), K2 = at(800, 375, 1.22, 0), K3 = at(790, 380, 1.26, 0);
+      gsap.set(cam, K0);
+      tl.fromTo(cam, K0, Object.assign({}, K1, { duration: 1.6, ease: "none", immediateRender: false }), S(1219.95));
+      tl.to(cam, Object.assign({}, K2, { duration: 1.2, ease: E.cam }), S(1221.55));
+      FX.focusHunt(tl, cam, S(1222.75), { dur: 0.5, a: 2, b: 3 });
+      tl.to(cam, Object.assign({}, K3, { duration: 3.3, ease: "none" }), S(1222.75));
+      // pen underlines on the headline's two clauses, as Sam says them ("stormed a … clinic" / "forced the doctors to treat their wounded")
+      const u1 = FX.markup.pen(tl, pen, S(1222.38), { points: [[556, 376], [905, 379], [1252, 375]], width: 6, color: EMBERD, filter: PEN, dur: 0.8, jitter: 3, seed: 7 });
+      const u2 = FX.markup.pen(tl, pen, S(1223.98), { points: [[357, 441], [800, 444], [1238, 440]], width: 6, color: EMBERD, filter: PEN, dur: 0.9, jitter: 3, seed: 8 });
+      [[u1, 1222.38], [u2, 1223.98]].forEach((q) => { gsap.set(q[0], { opacity: 0 }); tl.set(q[0], { opacity: 1 }, S(q[1])); });
+      CT.credit($("sc007-cr"), "infobae.com, 21 Nov 2026", { theme: "paper" });
+    })();
+
+    /* ===== sc008 · "while all of that was going on": the fires | SEDENA's plane, then the plane takes the frame (whip →) ===== */
+    whip("sc007", "sc008", S(1226.08), { dir: 1 });
+    (function () {
+      const L = $("sc008-L"), R = $("sc008-R"), dv = $("sc008-div"), vr = $("sc008-vr"), vl = $("sc008-vl");
+      tl.fromTo(vl, { scale: 1.12 }, { scale: 1.0, duration: 5.4, ease: "none", immediateRender: true }, S(1226.08));
+      // split: the plane enters from the right on "El Chapo Isidro"
+      tl.fromTo(R, { x: 0 }, { x: -960, duration: 0.9, ease: C(E.inOut, 0.9), immediateRender: true }, S(1228.10));
+      tl.fromTo(dv, { x: 0 }, { x: -960, duration: 0.9, ease: C(E.inOut, 0.9), immediateRender: true }, S(1228.10));
+      tl.fromTo(L, { x: 0 }, { x: -480, duration: 0.9, ease: C(E.inOut, 0.9), immediateRender: true }, S(1228.10));
+      gsap.set(vr, { x: -480 });
+      // "loaded onto an air force plane": the plane panel takes the frame
+      tl.to(R, { x: -1920, duration: 0.85, ease: C(E.inOut, 0.85) }, S(1230.06));
+      tl.to(vr, { x: 0, duration: 0.85, ease: C(E.inOut, 0.85) }, S(1230.06));
+      tl.to(dv, { x: -1940, duration: 0.85, ease: C(E.inOut, 0.85) }, S(1230.06));
+      tl.to(L, { x: -1440, duration: 0.85, ease: C(E.inOut, 0.85) }, S(1230.06));
+      tl.fromTo(vr, { scale: 1.0 }, { scale: 1.08, duration: 3.5, ease: "none", immediateRender: false }, S(1228.10));
+      const cl = CT.credit($("sc008-crl"), "Video: Al Jazeera English");
+      cl.out(tl, S(1228.05));
+      const cr = CT.credit($("sc008-crr"), "Video: SEDENA", { pos: "br" });
+      cr.in(tl, S(1228.5));
+    })();
+
+    /* ===== sc009 · flight to Mexico City (hard cut on action) — built by buildFlight() below ===== */
+
+    /* ===== sc010 · ★6 SEDENA's post (9:44 AM, 21 Nov) → push into its video; 0:30; hands cuffed; head down (whip ↑) ===== */
+    whip("sc009", "sc010", S(1233.92), { dir: -1, vertical: true });
+    (function () {
+      const cam = $("sc010-cam"), vbox = $("sc010-vbox"), spot = $("sc010-spot");
+      const K0 = at(962, 1180, 0.44, -1.5), K1 = at(962, 1170, 0.47, -1.2), K2 = at(962, 1318, 0.84, 0), K3 = at(962, 1318, 0.87, 0);
+      gsap.set(cam, K0);
+      tl.fromTo(cam, K0, Object.assign({}, K1, { duration: 1.0, ease: "none", immediateRender: false }), S(1233.92));
+      tl.to(cam, Object.assign({}, K2, { duration: 1.5, ease: E.cam }), S(1234.85));
+      tl.to(cam, Object.assign({}, K3, { duration: 7.5, ease: "none" }), S(1236.35));
+      tl.fromTo(vbox, { opacity: 0 }, { opacity: 1, duration: 0.25, ease: "power1.out", immediateRender: true }, S(1234.62));
+      // the 30-second video: a bar with its length; it fills with the playhead (media 0 at 1234.62)
+      const b0 = $("sc010-bar0"), b1 = $("sc010-bar1"), t30 = $("sc010-30");
+      tl.fromTo([b0, b1], { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "power1.out", immediateRender: true }, S(1235.80));
+      gsap.set(b1, { scaleX: 0 });
+      tl.fromTo(b1, { scaleX: 1.2 / 30.79 }, { scaleX: 9.3 / 30.79, duration: S(1243.92) - S(1235.80), ease: "none", immediateRender: false }, S(1235.80));
+      gsap.set(t30, { opacity: 0 });
+      tl.fromTo(t30, { opacity: 0, scale: 1.3 }, { opacity: 1, scale: 1, duration: 3 / 12, ease: "steps(3)", immediateRender: false }, T(1235.92));
+      tl.to([t30], { opacity: 0.0, duration: 0.4, ease: "power1.in" }, S(1238.9));
+      // focal call-out: everything darkens except the cuffed hands, then the lowered head (video px 816×464 → ×2.2034)
+      const k = 1798 / 816, sp = { x: 440 * k, y: 250 * k, r: 100 * k, a: 0 };
+      const ap = () => { spot.style.background = "radial-gradient(circle at " + sp.x.toFixed(0) + "px " + sp.y.toFixed(0) + "px, rgba(16,14,12,0) " + sp.r.toFixed(0) + "px, rgba(16,14,12,0.8) " + (sp.r * 1.7).toFixed(0) + "px)"; spot.style.opacity = sp.a; };
+      ap();
+      tl.to(sp, { a: 1, duration: 0.5, ease: E.cam, onUpdate: ap }, S(1239.62));
+      tl.to(sp, { x: 432 * k, y: 120 * k, r: 105 * k, duration: 0.9, ease: E.cam, onUpdate: ap }, S(1242.30));
+      const cr10 = CT.credit($("sc010-cr"), "Post: SEDENA (@Defensamx1) on X");
+      cr10.out(tl, S(1234.80));
+    })();
+
+    /* ===== sc011 · Ambassador Ronald D. Johnson — ref ast_0455523fccc84f71: B/W portrait, steel blocks, side cards (slide ↑) ===== */
+    slide("sc010", "sc011", S(1243.92), { axis: "y" });
+    (function () {
+      const b1 = $("sc011-b1"), b2 = $("sc011-b2"), por = $("sc011-por");
+      gsap.set([b1, b2], { scaleY: 0 });
+      tl.fromTo(b1, { scaleY: 0 }, { scaleY: 1, duration: 0.9, ease: C(E.out, 0.9), immediateRender: true }, S(1243.70));
+      tl.fromTo(b2, { scaleY: 0 }, { scaleY: 1, duration: 0.9, ease: C(E.out, 0.9), immediateRender: true }, S(1243.85));
+      tl.fromTo(por, { y: 90, rotation: -2 }, { y: 0, rotation: 0, duration: 1.0, ease: C(E.out, 1.0), immediateRender: true }, S(1243.60));
+      // small triangles along the blocks (the reference's accents), popping at 12 fps
+      const tris = $("sc011-tris");
+      const TR = [[640, 70, 0], [700, 118, 1], [585, 360, 0], [600, 520, 1], [1290, 980 - 640, 1], [1350, 420, 0], [1360, 860, 1], [1300, 1000, 0]];
+      TR.forEach((q, i) => {
+        const t2 = div(tris, "c13-tri", "left:" + q[0] + "px;top:" + q[1] + "px;border-bottom:19px solid " + (q[2] ? STEELD : STEEL));
+        gsap.set(t2, { opacity: 0 }); pop(t2, S(1244.4) + i * 0.08, { from: 1.8 });
+      });
+      words("sc011-name", [T(1244.32), T(1244.32)], { dur: 0.6, y: 12 });
+      gsap.set($("sc011-nrule"), { scaleX: 0 });
+      tl.fromTo($("sc011-nrule"), { scaleX: 0 }, { scaleX: 1, duration: 0.8, ease: C(E.out, 0.8), immediateRender: false }, S(1244.6));
+      words("sc011-role", [T(1244.32), T(1244.72), T(1245.44), T(1245.60)], { dur: 0.45, y: 8 });
+      // left card: FORMER GREEN BERET (word by word), a steel chevron drawn on
+      const gb = $("sc011-gb");
+      tl.fromTo(gb, { x: -760, rotation: -6 }, { x: 0, rotation: -2.5, duration: 0.8, ease: C(E.out, 0.8), immediateRender: true }, S(1246.30));
+      const gsv = $("sc011-gbsvg");
+      ink(gsv, "M34 112 L120 52 L206 112", S(1246.70), 0.45, { color: STEELL, width: 9 });
+      ink(gsv, "M34 82 L120 22 L206 82", S(1246.82), 0.45, { color: STEEL, width: 9 });
+      words("sc011-gbt", [T(1246.96), T(1247.28), T(1247.60)], { dur: 0.4, y: 8 });
+      // right card: the CIA seal + CIA OFFICER
+      const cia = $("sc011-cia");
+      tl.fromTo(cia, { x: 560, rotation: 7 }, { x: 0, rotation: 2.2, duration: 0.8, ease: C(E.out, 0.8), immediateRender: true }, S(1247.85));
+      words("sc011-ciat", [T(1248.40), T(1248.96)], { dur: 0.4, y: 8 });
+      push("sc011", 1243.92, 1250.08, 1.0, 1.04, { ease: "none", origin: "960px 520px" });
+      CT.credit($("sc011-cr"), "Photo: U.S. Dept. of State · Seal: CIA (both public domain)", { theme: "paper" });
+    })();
+
+    /* ===== sc012 · his post (real) + the real wording, word by word as Sam reads it (whip →) ===== */
+    whip("sc011", "sc012", S(1250.08), { dir: 1 });
+    (function () {
+      const x = $("sc012-x"), q = $("sc012-q");
+      tl.fromTo(x, { y: 80, rotation: -3 }, { y: 0, rotation: -1.6, duration: 0.9, ease: C(E.out, 0.9), immediateRender: true }, S(1250.08));
+      tl.to(x, { x: -40, y: -24, opacity: 0.55, duration: 1.0, ease: C(E.inOut, 1.0) }, S(1252.30));
+      gsap.set(q, { y: 900, rotation: 3 });
+      tl.fromTo(q, { y: 900, rotation: 3 }, { y: 0, rotation: 0.8, duration: 1.0, ease: C(E.out, 1.0), immediateRender: false }, S(1251.85));
+      const cues = [T(1252.80), T(1253.28), T(1253.44), T(1253.76), T(1254.00), T(1254.32),
+        T(1255.04), T(1255.20), T(1255.20), T(1255.44), T(1255.68), T(1256.16), T(1256.88), T(1257.12),
+        S(1258.20),
+        T(1259.44), T(1259.68), T(1260.00), T(1260.24), T(1260.40)];
+      const ws = W("sc012-qt");
+      ws.forEach((w, i) => rise(w, cues[i], { dur: 0.35, y: 6 }));
+      // pen underlines under "sustained cooperation and trust" and "continue the hunt" (word by word, settles)
+      const uls = Array.from($("sc012-qt").querySelectorAll(".c13-ul"));
+      const UT = [S(1256.35), S(1256.55), S(1257.15), S(1257.35), S(1260.45), S(1260.62), S(1260.80)];
+      uls.forEach((u, i) => { gsap.set(u, { scaleX: 0 }); tl.fromTo(u, { scaleX: 0 }, { scaleX: 1, duration: 0.22, ease: "sine.inOut", immediateRender: false }, UT[i]); });
+      gsap.set($("sc012-att"), { opacity: 0 });
+      tl.fromTo($("sc012-att"), { opacity: 0 }, { opacity: 1, duration: 0.5, ease: "power1.out", immediateRender: false }, S(1252.4));
+      push("sc012", 1250.08, 1262.09, 1.0, 1.05, { ease: "none", origin: "1150px 640px" });
+      CT.credit($("sc012-cr"), "Post: @USAmbMex on X, 21 Nov 2026");
+    })();
+
+    /* ===== sc013 · Mexico City → Washington (slide ←) — built by buildNorth() below ===== */
+    slide("sc012", "sc013", S(1262.09), { axis: "x", from: -1 });
+
+    /* ===== sc014 · his TARGET FILE returns: CHARGED · Washington DC, 2012 / EXTRADITION · requested by the US (whip ↑) ===== */
+    whip("sc013", "sc014", S(1271.90), { dir: -1, vertical: true });
+    (function () {
+      const f = CT.file($("sc014-file"), { prefix: SEG + "-file", accent: "ember", photo: "assets/cartels/people/meza_fbi_photo_1.jpg",
+        name: "Fausto Isidro Meza Flores", alias: "El Chapo Isidro", kicker: "Target file", tag: "Sinaloa",
+        rows: [["Charged", "Washington DC, 2012"], ["Extradition", "Requested by the US"]], gate: [S(1271.4), S(1278.9)] });
+      f.stamp(tl, S(1271.92), "captured");
+      const r0 = f.row(tl, T(1272.33), 0, { cps: 48, lead: 0.1 });
+      const r1 = f.row(tl, T(1276.41), 1, { cps: 48, lead: 0.1 });
+      // highlighter on the CHARGED row value
+      const row0 = document.getElementById(SEG + "-file-row0");
+      row0.style.position = "relative";
+      const h = document.createElement("div"); h.className = "c13-hlr";
+      h.style.cssText = "left:186px;top:26px;width:470px;height:34px;filter:url(#" + SEG + "-hlf)";
+      row0.insertBefore(h, row0.firstChild);
+      hl(h, r0 + 0.15, 0.5);
+      f.pushIn(tl, S(1273.3), 1.07, { x: 1180, y: 640, dur: 4.5 });
+    })();
+
+    /* ===== sc015 · callback to cts06's prisoner waffle (same geometry/colours: 10 columns, 52 px tiles, 62 px pitch) (slide →) ===== */
+    slide("sc014", "sc015", S(1278.33), { axis: "x" });
+    (function () {
+      const root = $("sc015-board"), svg = $("sc015-svg"), INKS = "#57504a";
+      const GX = 200, GY = 300, P = 62;
+      const BATCH = [
+        { n: 29, from: 0, fill: EMBER, line: EMBERD, label: "Feb 2025", num: "29", row: 0, t: 1279.45 },
+        { n: 26, from: 29, fill: EMBERD, line: "#4f1b06", label: "Aug 2025", num: "26", row: 2, t: 1279.95 },
+        { n: 37, from: 55, fill: EMBERL, line: EMBERD, label: "Jan 2026", num: "37", row: 5, t: 1280.40 },
+      ];
+      const DOCS = [
+        { src: "assets/cartels/docs/d06_doj_29_transfer_2025.jpg", w: 1800, h: 1769, x: 1150, y: 236, r: 2.2 },
+        { src: "assets/cartels/docs/d07_doj_26_transfer_2025.jpg", w: 1800, h: 1972, x: 1176, y: 262, r: -1.6 },
+        { src: "assets/cartels/docs/d08_doj_37_transfer_2026.jpg", w: 1800, h: 1972, x: 1196, y: 290, r: 1.2 },
+      ];
+      // static: title block, ghost grid, the three DOJ release cards (as left by cts06)
+      div(root, "t-display", "position:absolute;left:" + GX + "px;top:132px;font-size:58px;white-space:nowrap;color:" + INK, "Cartel prisoners sent to the U.S.");
+      div(root, "", "position:absolute;left:" + (GX - 40) + "px;top:206px;width:1000px;height:3px;background:" + INK);
+      div(root, "", "position:absolute;left:" + (GX - 14) + "px;top:120px;width:3px;height:120px;background:" + INK);
+      div(root, "t-label", "position:absolute;left:" + GX + "px;top:224px;font-size:22px;white-space:nowrap;color:" + INKS, "Expelled from Mexico · source: U.S. Dept. of Justice");
+      for (let i = 0; i < 100; i++) div(root, "", "position:absolute;left:" + (GX + (i % 10) * P + 3) + "px;top:" + (GY + Math.floor(i / 10) * P + 3) + "px;width:46px;height:46px;border:2px solid rgba(29,26,22,0.16)");
+      DOCS.forEach((d) => {
+        const W = 640, sc = W / d.w, H = Math.min(d.h * sc, 700);
+        const card = div(root, "c13-doc", "left:" + d.x + "px;top:" + d.y + "px;width:" + W + "px;height:" + H + "px;transform:rotate(" + d.r + "deg)");
+        img(card, d.src, "left:0;top:0;width:" + W + "px");
+      });
+      // "Mexico has already sent …": the three batches refill at 12 fps
+      BATCH.forEach((b) => {
+        for (let k = 0; k < b.n; k++) {
+          const i = b.from + k;
+          const t = div(root, "c13-tile", "left:" + (GX + (i % 10) * P) + "px;top:" + (GY + Math.floor(i / 10) * P) + "px;background-color:" + b.fill + ";border:2px solid " + b.line);
+          gsap.set(t, { opacity: 0 });
+          tl.fromTo(t, { opacity: 0, scale: 1.4 }, { opacity: 1, scale: 1, duration: 2 / 12, ease: "steps(2)", immediateRender: true }, S(b.t) + Math.floor(k / 5) / 12);
+        }
+        const lg = div(root, "", "position:absolute;left:" + (GX + 10 * P + 40) + "px;top:" + (GY + b.row * P) + "px;white-space:nowrap");
+        div(lg, "", "position:absolute;left:0;top:6px;width:40px;height:40px;box-sizing:border-box;background:" + b.fill + ";border:2px solid " + b.line);
+        div(lg, "t-display", "position:absolute;left:58px;top:0;font-size:48px;line-height:52px;color:" + INK, b.num);
+        div(lg, "t-label", "position:absolute;left:58px;top:54px;font-size:22px;color:" + INKS, b.label);
+        gsap.set(lg, { opacity: 0 }); rise(lg, S(b.t) + 0.1, { dur: 0.45, y: 8 });
+      });
+      // total 92 (the key number, cts06's label-box) on "90 (some)"
+      const tot = div(root, "", "position:absolute;left:" + (GX + 10 * P + 40) + "px;top:" + (GY + 8 * P + 8) + "px;white-space:nowrap");
+      div(tot, "t-display", "position:absolute;left:0;top:0;font-size:64px;line-height:1", '<span class="label-box" style="color:var(--yellow)">92</span>');
+      div(tot, "t-label", "position:absolute;left:0;top:74px;font-size:22px;color:" + INKS, "Total");
+      gsap.set(tot, { opacity: 0 }); pop(tot, T(1280.81), { from: 1.5, n: 3 });
+      // "special treatment": the next open slot (#93) blinks, an ember pen circle lands on it
+      const i93 = 92, sx = GX + (i93 % 10) * P, sy = GY + Math.floor(i93 / 10) * P;
+      const sl = div(root, "c13-slot", "left:" + sx + "px;top:" + sy + "px;border-color:" + EMBERD);
+      gsap.set(sl, { opacity: 0 });
+      [0, 1, 2].forEach((k) => { tl.set(sl, { opacity: 1 }, S(1284.62) + k * 0.33); tl.set(sl, { opacity: 0.2 }, S(1284.62) + k * 0.33 + 0.17); });
+      tl.set(sl, { opacity: 1 }, S(1285.62));
+      const ci = FX.markup.circle(tl, svg, S(1284.80), { cx: sx + 26, cy: sy + 26, rx: 58, ry: 52, rot: -8, dur: 0.5, color: EMBERD, width: 6, filter: PEN, seed: 13 });
+      gsap.set(ci, { opacity: 0 }); tl.set(ci, { opacity: 1 }, S(1284.80));
+      push("sc015", 1278.33, 1286.292, 1.0, 1.035, { ease: "none", origin: "700px 640px" });
+      CT.credit($("sc015-cr"), "Data: U.S. Dept. of Justice (27 Feb 2025 · 12 Aug 2025 · 20 Jan 2026)", { theme: "paper" });
+    })();
+
+    // ===================== maps: sc009 (flight) + sc013 (north to Washington) =====================
+    // Basemaps: kit "Cartels project" maps (assets/maps/kit/README.md) — mexico_night (200 px/deg lat) for the flight,
+    // north_america_night (120 px/deg lat) for Mexico City → Washington. Same pixel space as their overlays.
+    const MEX = { src: "assets/maps/kit/mexico_night.jpg", w: 5800, h: 4400, px: (lon) => (lon + 118) * 181.26, py: (lat) => (36 - lat) * 200 };
+    const NAM = { src: "assets/maps/kit/north_america_night.jpg", w: 7131, h: 5400, px: (lon) => (lon + 125) * 106.44, py: (lat) => (50 - lat) * 120 };
+    function baseMap(camId, MAP) {
+      const cam = $(camId);
+      cam.style.width = MAP.w + "px"; cam.style.height = MAP.h + "px";
+      img(cam, MAP.src, "left:0;top:0;width:" + MAP.w + "px;height:" + MAP.h + "px");
+      const sv = document.createElementNS(NS, "svg");
+      sv.setAttribute("width", MAP.w); sv.setAttribute("height", MAP.h); sv.setAttribute("viewBox", "0 0 " + MAP.w + " " + MAP.h);
+      sv.style.cssText = "position:absolute;left:0;top:0;overflow:visible"; cam.appendChild(sv);
+      return { cam: cam, svg: sv };
+    }
+    function pin(svg, color, ring) {
+      const g = el(svg, "g", {});
+      el(g, "circle", { cx: 0, cy: 0, r: 26, fill: color, opacity: 0.3 });
+      el(g, "circle", { cx: 0, cy: 0, r: 11, fill: color, stroke: BONE, "stroke-width": 3 });
+      return g;
+    }
+    (function buildFlight() {
+      const MAP = MEX, B = baseMap("sc009-cam", MAP), svg = $("sc009-svg"), lbls = $("sc009-lbls");
+      const GU = [MAP.px(-108.467), MAP.py(25.574)], CDMX = [MAP.px(-99.133), MAP.py(19.433)];
+      const mid = [(GU[0] + CDMX[0]) / 2 + 160, (GU[1] + CDMX[1]) / 2 - 480];
+      const D = "M" + GU[0].toFixed(1) + " " + GU[1].toFixed(1) + " Q" + mid[0].toFixed(1) + " " + mid[1].toFixed(1) + " " + CDMX[0].toFixed(1) + " " + CDMX[1].toFixed(1);
+      const route = dashedRoute(B.svg, D, S(1231.60), 1.1, { color: OLIVEL, width: 7, dash: "24 16", ease: E.inOut });
+      // plane glyph riding the route
+      const plane = el(B.svg, "g", {});
+      el(plane, "path", { d: "M-16 0 L-4 -2 L6 -14 L10 -14 L4 -2 L14 -1 L18 -6 L21 -6 L19 0 L21 6 L18 6 L14 1 L4 2 L10 14 L6 14 L-4 2 L-16 0 Z", fill: BONE, transform: "scale(1.0)" });
+      const pathEl = route.mp, L = route.len, pts = [];
+      for (let i = 0; i <= 60; i++) { const p = pathEl.getPointAtLength(L * i / 60); pts.push([p.x, p.y]); }
+      const pr = { k: 0 };
+      const placePlane = () => { const i = Math.min(59, Math.floor(pr.k * 60)), a = pts[i], b = pts[i + 1], f = pr.k * 60 - i;
+        const x = a[0] + (b[0] - a[0]) * f, y = a[1] + (b[1] - a[1]) * f, ang = Math.atan2(b[1] - a[1], b[0] - a[0]) * 180 / Math.PI;
+        plane.setAttribute("transform", "translate(" + x.toFixed(1) + " " + y.toFixed(1) + ") rotate(" + ang.toFixed(1) + ") scale(2.2)"); };
+      placePlane();
+      gsap.set(plane, { opacity: 0 }); tl.set(plane, { opacity: 1 }, S(1231.60));
+      tl.to(pr, { k: 1, duration: 1.1, ease: E.inOut, onUpdate: placePlane }, S(1231.60));
+      const gS = pin(svg, EMBER), gC = pin(svg, OLIVE);
+      gsap.set(gC, { opacity: 0 }); pop(gC, S(1232.55), { from: 2.2, n: 3 });
+      const lS = div(lbls, "c13-lbl t-display clean", "font-size:40px;letter-spacing:0.08em", "SINALOA");
+      const lC = div(lbls, "c13-lbl t-display clean", "font-size:52px;letter-spacing:0.06em", "MEXICO CITY");
+      gsap.set(lC, { opacity: 0 }); rise(lC, T(1232.08), { dur: 0.5, y: 8 });
+      const items = [{ g: gS, mx: GU[0], my: GU[1] }, { g: gC, mx: CDMX[0], my: CDMX[1] }, { el: lS, mx: GU[0], my: GU[1], dx: -250, dy: 26 }, { el: lC, mx: CDMX[0], my: CDMX[1], dx: -420, dy: 20 }];
+      const mc = mapCam(B.cam, items);
+      mc.set({ cx: 2560, cy: 2690, s: 0.63 });
+      tl.to(mc.st, { cx: 2590, cy: 2710, s: 0.6, duration: 2.4, ease: "none", onUpdate: mc.apply }, S(1231.52));
+      CT.credit($("sc009-cr"), "Flight: SEDENA · Map: AWS Terrain Tiles, Natural Earth");
+    })();
+    (function buildNorth() {
+      const MAP = NAM, B = baseMap("sc013-cam", MAP), svg = $("sc013-svg"), lbls = $("sc013-lbls");
+      const CDMX = [MAP.px(-99.133), MAP.py(19.433)], DC = [MAP.px(-77.037), MAP.py(38.907)];
+      const gC = pin(svg, OLIVE), gD = pin(svg, STEEL);
+      // his FBI photo as a token at Mexico City ("this guy")
+      const tok = div(lbls, "c13-lbl", "width:120px;height:120px;border-radius:50%;overflow:hidden;box-shadow:0 0 0 5px " + OLIVEL + ", 0 14px 30px rgba(0,0,0,0.6)");
+      img(tok, "assets/cartels/people/meza_fbi_photo_1.jpg", "inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 30%;filter:grayscale(0.7) contrast(1.05)");
+      gsap.set(tok, { opacity: 0 }); pop(tok, S(1265.85), { from: 1.6, n: 3 });
+      const lC = div(lbls, "c13-lbl t-display clean", "font-size:44px;letter-spacing:0.06em", "MEXICO CITY");
+      const lM = div(lbls, "c13-lbl t-display clean", "font-size:72px;letter-spacing:0.1em;opacity:0.9", "MEXICO");
+      const lU = div(lbls, "c13-lbl t-display clean", "font-size:72px;letter-spacing:0.1em;opacity:0.9", "UNITED STATES");
+      const lD = div(lbls, "c13-lbl t-display clean", "font-size:44px;letter-spacing:0.06em;color:" + STEELL, "WASHINGTON, D.C.");
+      gsap.set([lU, lD, gD], { opacity: 0 });
+      rise(lU, S(1268.3), { dur: 0.7, y: 10 });
+      gsap.set(lM, { opacity: 0 }); rise(lM, T(1268.01), { dur: 0.6, y: 10 });
+      pop(gD, S(1270.70), { from: 2.2, n: 3 });
+      rise(lD, T(1270.73), { dur: 0.45, y: 8 });
+      const mid = [(CDMX[0] + DC[0]) / 2 - 550, (CDMX[1] + DC[1]) / 2 - 150];
+      const D = "M" + CDMX[0].toFixed(1) + " " + CDMX[1].toFixed(1) + " Q" + mid[0].toFixed(1) + " " + mid[1].toFixed(1) + " " + DC[0].toFixed(1) + " " + DC[1].toFixed(1);
+      dashedRoute(B.svg, D, S(1268.40), 2.3, { color: STEELL, width: 8, dash: "24 18", ease: E.inOut });
+      const items = [{ g: gC, mx: CDMX[0], my: CDMX[1] }, { g: gD, mx: DC[0], my: DC[1] },
+        { el: tok, mx: CDMX[0], my: CDMX[1], dx: -140, dy: -150 }, { el: lC, mx: CDMX[0], my: CDMX[1], dx: 30, dy: -20 },
+        { el: lM, mx: MAP.px(-104.5), my: MAP.py(24.5), dx: -150, dy: -40 }, { el: lU, mx: MAP.px(-100.5), my: MAP.py(36.0), dx: -280, dy: -40 },
+        { el: lD, mx: DC[0], my: DC[1], dx: -470, dy: 22 }];
+      const mc = mapCam(B.cam, items);
+      mc.set({ cx: CDMX[0], cy: CDMX[1] - 100, s: 0.8 });
+      tl.to(mc.st, { cx: CDMX[0] + 20, cy: CDMX[1] - 150, s: 0.74, duration: 5.6, ease: "none", onUpdate: mc.apply }, S(1262.09));
+      tl.to(mc.st, { cx: (CDMX[0] + DC[0]) / 2 - 120, cy: 2640, s: 0.33, duration: 2.6, ease: E.cam, onUpdate: mc.apply }, S(1267.80));
+      tl.to(mc.st, { cx: (CDMX[0] + DC[0]) / 2 - 100, cy: 2620, s: 0.34, duration: 1.6, ease: "none", onUpdate: mc.apply }, S(1270.40));
+      CT.credit($("sc013-cr"), "Map: AWS Terrain Tiles · Natural Earth");
+    })();
+
+    FX.mount(tl, DURATION);
+    window.__timelines = window.__timelines || {};
+    window.__timelines[SEG] = tl;
+  })();
+  </script>
+</template>
+</body>
+</html>

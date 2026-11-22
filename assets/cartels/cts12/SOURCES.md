@@ -1,0 +1,12 @@
+# assets/cartels/cts12 — derived files for segment cts12 (made by `project/cartels/gen/cts12_assets.py`)
+| file | what | source | licence / credit | size |
+|---|---|---|---|---|
+| derived/sinaloa_relief_net.jpg | crop of the kit relief, northern Sinaloa (kit px x 900–3700, y 1400–3900) | `assets/maps/kit/sinaloa_relief.jpg` | AWS Terrain Tiles (PD) / Natural Earth (PD) | 2800×2500 |
+| derived/na_night_flight.jpg + na_flight_paths.json | crop of the kit North-America night map (kit px − (0,1000)) + US–Mexico border path in the same px | `assets/maps/kit/north_america_night.jpg`, `north_america_overlay.svg` | NASA Black Marble (PD) / Natural Earth (PD) | 4000×3400 |
+| derived/infobae_apec_head.jpg | headline + dek of Infobae, 20 Nov 2026, "Trump lanzó reclamo a Sheinbaum … los cárteles controlan México" (crop of the shared screenshot) | `assets/cartels/news/n09_infobae_apec_trump.jpg` ← https://www.infobae.com/mexico/2026/11/20/eeuu-esta-por-cerrar-acuerdo-comercial-con-mexico-pero-aun-preocupan-los-carteles-de-droga-dice-trump-tras-reunion-con-sheinbaum-en-apec/ | © Infobae, fair use (MANUAL §10.9) | 2480×510 |
+| derived/eluniversal_fes_photo.jpg | the article photo of Mexican special-forces soldiers (helmets, Zócalo) | `assets/cartels/news/n01_eluniversal_lobos.jpg` ← https://www.eluniversal.com.mx/nacion/murcielagos-y-lobos-cazaron-al-chapo-isidro-asi-son-los-cuerpos-de-fuerzas-especiales/ | © El Universal (photo as published), fair use; on-screen "Photo: El Universal" | 2200×704 |
+| derived/sedena_house_5_6.jpg, sedena_house_3_4.jpg | stills at 5.6 s / 3.4 s of SEDENA's official arrest video (inside the house: bare white walls; detainee seen from behind, cuffed) | `assets/cartels/footage/m6_arrest_full31s.mp4` ← https://x.com/Defensamx1/status/2124076470960095696 | SEDENA (Mexican government), fair use; "Video: SEDENA" | 816×464 |
+Shared files used as is: `assets/cartels/people/trump_sheinbaum_apec_1.jpg` = Commons "President Donald J. Trump participates in a pull-aside
+meeting with President Claudia Sheinbaum of Mexico (55661766212).jpg" (White House photo, CC0/PD — matched by pixel diff 1.3/255 on
+2026-11-22; credit "Photo: The White House"); `people/meza_fbi_photo_1.jpg` (FBI poster portrait, PD); `footage/x_guardia_armored_convoy.mp4`;
+`maps/kit/aerial_guasave_z16.jpg` (Esri, credited on screen).

@@ -39,3 +39,8 @@ Strike dot positions are illustrative (credit says "Strike locations approximate
 - `world_overlay.svg` country paths: the 49th-parallel border is one 1270-px segment — a "> 400 px jump" antimeridian filter drops the
   whole lower-48 ring; use > 4000 px and filter by bbox instead.
 - When a helper builds DOM with `div(null, …)` make sure it doesn't `appendChild` on null (froze the whole timeline after scene 1).
+
+## Lead QA fixes (round 1)
+- sc003: grey boat outline grid visible from the first frame; filled boats ember-dark (drug boats) at 12 fps from "more than 70"; 70+ at T(669.95) ("70" 670.01), holds to the cut.
+- sc004: UNITED STATES / MEXICO / CUBA / COLOMBIA / VENEZUELA labelled from 674.3 (staggered pops), camera drifts toward Venezuela, VENEZUELA pulses on "Venezuela".
+- sc013: quote on a solid charcoal panel (Crimson Pro italic 47 px, 2 lines); exit is now a paper slide (no whip blur over the quote).

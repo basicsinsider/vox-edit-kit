@@ -263,9 +263,9 @@
         </div>
         <div class="c8-abs t-label" id="cts08-sc013-two" style="left:60px;top:250px;font-size:24px;color:var(--ash-light);white-space:nowrap">+2 DAYS</div>
       </div>
-      <div class="c8-abs" id="cts08-sc013-q" style="left:1130px;top:300px;width:700px">
-        <div class="t-serif-i" style="font-size:52px;line-height:1.18;color:var(--bone)">“We’ve also taken down one of the most sinister cartel kingpins of all.”</div>
-        <div class="c8-abs" style="left:0;top:-36px;width:80px;height:5px;background:var(--steel)"></div>
+      <div class="c8-abs" id="cts08-sc013-q" style="left:1090px;top:250px;width:740px;padding:56px 44px 44px 44px;box-sizing:border-box;background:rgba(16,14,12,0.94);box-shadow:0 0 0 2px rgba(111,147,180,0.35)">
+        <div class="t-serif-i" style="font-size:47px;line-height:1.2;color:var(--bone)">“We’ve also taken down one of the most sinister cartel kingpins of all.”</div>
+        <div class="c8-abs" style="left:44px;top:30px;width:80px;height:5px;background:var(--steel)"></div>
         <div class="t-label" style="font-size:22px;color:var(--steel-light);margin-top:30px;line-height:1.5">DONALD TRUMP<br/>STATE OF THE UNION · 24 FEB 2026</div>
       </div>
       <div id="cts08-sc013-cr"></div>
@@ -316,7 +316,7 @@
       ["sc013", 741.740, 751.580, "night"], ["sc014", 751.580, 760.700, "paper"], ["sc015", 760.700, 768.458, "night"],
     ];
     const GROUND = { paper: [0.3, 0.14, 0.22], night: [0.9, 0.42, 0.4], foot: [0.5, 0.3, 0.35] };
-    const EARLY = { sc003: 0.5, sc009: 0.5, sc011: 0.5 };   // slides: incoming scene visible during the slide
+    const EARLY = { sc003: 0.5, sc009: 0.5, sc011: 0.5, sc014: 0.5 };   // slides: incoming scene visible during the slide
     function ground(kind, t) { const v = GROUND[kind]; tl.set([$("grain"), $("dust"), $("vig")], { opacity: (i) => v[i] }, t); }
     SC.forEach((s, i) => {
       const el = $(s[0]), a = s[1] - (EARLY[s[0]] || 0);
@@ -492,10 +492,10 @@
       const grid = $("sc003-grid"), boats = [];
       const BOAT = '<svg viewBox="0 0 64 30" width="64" height="30"><path d="M2 14 L52 14 L62 6 L58 22 Q56 27 50 27 L10 27 Q5 27 3 22 Z" fill="currentColor"/><path d="M18 14 L22 5 L38 5 L40 14 Z" fill="currentColor" opacity="0.75"/></svg>';
       for (let r = 0; r < 7; r++) for (let c = 0; c < 10; c++) {
-        const b = div(grid, "c8-abs", "left:" + (100 + c * 92) + "px;top:" + (290 + r * 78) + "px;width:64px;height:30px;color:" + STEELD, BOAT);
+        div(grid, "c8-abs", "left:" + (100 + c * 92) + "px;top:" + (290 + r * 78) + "px;width:64px;height:30px;color:rgba(29,26,22,0.30)", BOAT);
+        const b = div(grid, "c8-abs", "left:" + (100 + c * 92) + "px;top:" + (290 + r * 78) + "px;width:64px;height:30px;color:" + EMBERD, BOAT);
         boats.push(b);
       }
-      const ghost = boats.map((b) => { const g = div(grid, "c8-abs", b.style.cssText + ";color:rgba(29,26,22,0.13)", BOAT); return g; });
       gsap.set(boats, { opacity: 0 });
       boats.forEach((b, i) => pop(b, S(669.75) + Math.floor(i / 6) / 12, { from: 1.4, n: 2 }));
       // 70+ (yellow highlighter behind the ink key number)
@@ -515,7 +515,7 @@
     whip("sc003", "sc004", S(674.17), { dir: 1, vertical: true, flash: true });
     (function () {
       const m = mapScene("sc004", { fills: ["venezuela", "usa"] });
-      const K0 = m.K(-70, 19, 0.92), K1 = m.K(-69.5, 17.5, 0.98), K2 = m.K(-67.6, 12.6, 1.3), K3 = m.K(-67.8, 12.2, 1.34), K4 = m.K(-70.5, 25.6, 0.62), K5 = m.K(-73.0, 37.0, 0.95);
+      const K0 = m.K(-70, 19, 0.92), K1 = m.K(-68.0, 15.5, 1.02), K2 = m.K(-67.6, 12.6, 1.3), K3 = m.K(-67.8, 12.2, 1.34), K4 = m.K(-70.5, 25.6, 0.62), K5 = m.K(-73.0, 37.0, 0.95);
       m.start(K0);
       m.to(S(674.17), K1, 2.3, "none");
       m.to(S(676.5), K2, 2.6, E.cam);          // "goes up to another level" → push down to Caracas
@@ -533,8 +533,14 @@
       const ccs = m.city("CARACAS", -66.9146, 10.5061, BONE, "l");
       hideAll([ccs]); pop(ccs, T(679.55), { from: 1.3, n: 2 });
       m.fill("venezuela", S(680.9), 1, 0.8);
-      const lv = m.label("VENEZUELA", -65.6, 7.2, "t-display clean", "font-size:46px;color:var(--bone);transform:translate(-50%,-50%)");
-      hideAll([lv]); rise(lv, T(680.91), { dur: 0.6, y: 10 });
+      // countries in frame, labelled from the first beat; the camera drifts toward Venezuela
+      const LB = [["UNITED STATES", -82.6, 28.4, 0], ["MEXICO", -90.2, 18.6, 1], ["CUBA", -78.6, 22.6, 2], ["COLOMBIA", -74.4, 8.4, 3]].map((q) => {
+        const e = m.label(q[0], q[1], q[2], "t-display clean", "font-size:36px;color:var(--ash-light);transform:translate(-50%,-50%)");
+        hideAll([e]); rise(e, S(674.3) + q[3] * 0.25, { dur: 0.6, y: 8 }); return e; });
+      tl.to(LB, { opacity: 0, duration: 0.5, ease: E.in }, S(677.0));
+      const lv = m.label("VENEZUELA", -66.0, 8.2, "t-display clean", "font-size:46px;color:var(--bone);transform:translate(-50%,-50%)");
+      hideAll([lv]); rise(lv, S(674.55), { dur: 0.6, y: 10 });
+      tl.fromTo(lv, { scale: 1 }, { scale: 1.12, duration: 0.25, yoyo: true, repeat: 1, ease: "power2.out", immediateRender: false }, S(680.95));
       tl.to(lv, { opacity: 0, duration: 0.35 }, S(684.0));
       // zoom box on Caracas (Esri z12), leader lines from the pin
       const zb = $("sc004-zoom"), zl = $("sc004-zl");
@@ -838,7 +844,7 @@
     })();
 
     /* ===== sc014 · depending on who you ask: big part / small part → an important part (whip ←) ===== */
-    whip("sc013", "sc014", S(751.58), { dir: -1 });
+    slide("sc013", "sc014", S(751.58), { axis: "y", d: 0.5 });
     (function () {
       push("sc014", 751.58, 760.8, 1.03, 1.0, { origin: "960px 560px", ease: E.cam });
       const sc = scale("sc014-sc", "b", 8);

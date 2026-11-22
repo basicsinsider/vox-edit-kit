@@ -1,0 +1,27 @@
+# assets/cartels/logos — SOURCES (gatherer A, 2026-11-22)
+
+Contact sheet: `_sheet.jpg`. SVG preferred; PNG >= 1000 px transparent. US government seals are public domain.
+`media-use resolve --type logo` returned "no provider could resolve" for FBI (tested 2026-11-22) -> Commons fallback.
+
+| file | subject | source URL | licence / credit | author | date | size |
+|---|---|---|---|---|---|---|
+| fbi_seal.svg | Seal of the Federal Bureau of Investigation | https://commons.wikimedia.org/wiki/File:Seal_of_the_Federal_Bureau_of_Investigation.svg | Public domain (US Gov) | FBI | — | SVG |
+| cia_seal.svg | Seal of the Central Intelligence Agency | https://commons.wikimedia.org/wiki/File:Seal_of_the_Central_Intelligence_Agency.svg | Public domain (US Gov) | CIA | 1950 | SVG (510x510) |
+| treasury_seal.svg | Seal of the US Department of the Treasury (use for OFAC with the words "Office of Foreign Assets Control") | https://commons.wikimedia.org/wiki/File:Seal_of_the_United_States_Department_of_the_Treasury.svg | Public domain (US Gov) | US Treasury | 1968 | SVG |
+| doj_seal.svg | Seal of the US Department of Justice | https://commons.wikimedia.org/wiki/File:Seal_of_the_United_States_Department_of_Justice.svg | Public domain (US Gov) | DOJ | — | SVG |
+| dow_seal_2025.svg | Seal of the US Department of War (2025 rename) | https://commons.wikimedia.org/wiki/File:Seal_of_the_United_States_Department_of_War_(2025).svg | Public domain (US Gov) | Dept of War | 2025-09-06 | SVG |
+| dow_logo_2025.svg | "Department of War" horizontal logo (2025) | https://commons.wikimedia.org/wiki/File:United_States_Department_of_War_Logo_(2025).svg | Public domain (US Gov) | Dept of War | 2025-09-06 | SVG |
+| dod_seal.svg | Seal of the US Department of Defense (pre-rename) | https://commons.wikimedia.org/wiki/File:Seal_of_the_United_States_Department_of_Defense.svg | Public domain (US Gov) | DoD | — | SVG |
+| defensa_sedena_logo.png | SEDENA brand "Defensa — Secretaría de la Defensa Nacional" with national seal (transparent, cut from the official gob.mx/defensa banner; luminance key) | https://www.gob.mx/cms/uploads/identity/image/46611/background_REDUCIDODEFENSA.jpg (page https://www.gob.mx/defensa) | © Gobierno de México, fair use (official emblem) | SEDENA | 2024–26 | 815x208 |
+| guardia_nacional_gn_logo.png | Guardia Nacional round emblem + "GN GUARDIA NACIONAL" (transparent, from the gob.mx/guardianacional banner) | https://www.gob.mx/cms/uploads/identity/image/47184/background_bann03.jpg | © Gobierno de México, fair use | Guardia Nacional | 2024–26 | 379x180 |
+| seguridad_sspc_gabinete_logo.png | "Seguridad — Secretaría de Seguridad y Protección Ciudadana" with national seal — the brand the Gabinete de Seguridad posts use (transparent, from gob.mx/sspc banner) | https://www.gob.mx/cms/uploads/identity/image/49267/background_sspc_Mesa_de_trabajo_1.jpg | © Gobierno de México, fair use | SSPC | 2024–26 | 1086x210 |
+| fgr_logo_small.png | FGR — Fiscalía General de la República logo with national seal (grey, SMALL; on white) | https://www.gob.mx/cms/uploads/identity/image/25846/logo_Web2019-01-Logo.png | © FGR, fair use | FGR | 2019 | 207x85 |
+| chihuahua_gobierno_estado_logo_small.png | Gobierno del Estado de Chihuahua logo (state shield + "MÁS CHIHUAHUA más de lo bueno / GOBIERNO DEL ESTADO", blue, transparent, SMALL — rebuild in vector if used large) | https://www.chihuahua.gob.mx/themes/custom/barrio_chihuahua_jsp/images/logo.png | © Gobierno del Estado de Chihuahua, fair use | | 2021–27 admin | 426x123 |
+| state_seal.svg | Seal of the US Department of State | https://commons.wikimedia.org/wiki/File:Seal_of_the_United_States_Department_of_State.svg | Public domain (US Gov) | State Dept | — | SVG |
+| semar_logo.svg | SEMAR — "Secretaría de Marina, Armada de México" emblem (anchor/eagle on tricolour band, black box) | https://commons.wikimedia.org/wiki/File:LOGO_Marina_Armada_de_Mexico_NEGRO.svg | Public domain (per Commons) | SEMAR | 2010 | SVG |
+| guardia_nacional_logo.svg | Guardia Nacional round emblem "GUARDIA NACIONAL — JUSTICIA Y PAZ" | https://commons.wikimedia.org/wiki/File:Logo_de_la_Guardia_Nacional_(México).svg | Public domain (per Commons) | Guardia Nacional | 2021 | SVG |
+| narcos_logo.png | Netflix "NARCOS" title logo (transparent) | https://commons.wikimedia.org/wiki/File:Narcos-logo-png-transparent.png | listed CC BY-SA 4.0 on Commons; it is Netflix's trademark — treat as © Netflix, fair use | Netflix | 2015 | 2400x679 |
+| defensa_logo_2024.png | official "Defensa — Secretaría de la Defensa Nacional" logo (2024 brand), transparent, LARGE — prefer over defensa_sedena_logo.png | https://commons.wikimedia.org/wiki/File:Defensa_Logo_(2024).png | Mexican Gov emblem (Commons: per file page), fair use | SEDENA | 2024 | 2920x727 |
+| fgr_logo.png | FGR — Fiscalía General de la República logo with national seal (grey), larger | https://commons.wikimedia.org/wiki/File:Logo_de_la_FGR_México.png | CC BY-SA 4.0 (Commons) / FGR emblem, fair use | FGR | 2022 | 1269x562 |
+| ofac_logo.jpg | US Treasury Office of Foreign Assets Control (OFAC) logo (small) | https://commons.wikimedia.org/wiki/File:Logo_of_the_U.S._Office_of_Foreign_Assets_Control_(OFAC).jpg | Public domain | US Treasury | 2014 | 259x327 |
+| fuerzas_especiales_ejercito_escudo.svg | Cuerpo de Fuerzas Especiales del Ejército Mexicano shield ("Murciélagos") | https://commons.wikimedia.org/wiki/File:Escudo_del_Cuerpo_de_Fuerzas_Especiales_del_Ejército_Mexicano.svg | CC BY-SA 3.0 — credit per Commons file page | | 2016 | SVG |

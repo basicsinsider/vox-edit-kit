@@ -43,6 +43,6 @@ crop(O + "zuany_jauregui_fge.jpg", (905, 0, 1525, 766), "file_jauregui.jpg")
 import subprocess
 F = "assets/cartels/footage/"
 for src, t, out in [("x_chihuahua_narcolab_b.mp4", 3.0, "still_lab_b.jpg"), ("x_chihuahua_narcolab_a.mp4", 6.0, "still_lab_a1.jpg"),
-                    ("x_chihuahua_narcolab_a.mp4", 11.0, "still_lab_a2.jpg"), ("m5_sub_chepe_canyon.mp4", 7.9, "still_canyon_end.jpg")]:
+                    ("x_chihuahua_narcolab_a.mp4", 11.0, "still_lab_a2.jpg"), ("m5_sub_chepe_canyon.mp4", 7.25, "still_canyon_end.jpg")]:
     subprocess.run(["ffmpeg", "-v", "error", "-y", "-ss", str(t), "-i", F + src, "-frames:v", "1", "-q:v", "3", O + out], check=True)
     print(out)

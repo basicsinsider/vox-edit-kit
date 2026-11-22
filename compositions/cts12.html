@@ -1,0 +1,764 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8" /></head>
+<body>
+<template>
+  <style>
+    #root { position: absolute; inset: 0; overflow: hidden; background: var(--night); }
+    .c12-scene { position: absolute; inset: 0; overflow: hidden; visibility: hidden; opacity: 0; }
+    .c12-shot { position: absolute; inset: 0; overflow: hidden; transform-origin: 50% 50%; background: var(--night); }
+    .c12-abs { position: absolute; }
+    .c12-full { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    .c12-fill { position: absolute; inset: -60px; width: calc(100% + 120px); height: calc(100% + 120px); object-fit: cover;
+      filter: blur(38px) saturate(0.5) brightness(0.4); }
+    .c12-svg { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; pointer-events: none; }
+    .c12-cam { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
+    .c12-p1, .c12-p2 { position: absolute; inset: 0; background-size: cover; background-position: center; pointer-events: none; }
+    .c12-p2 { mix-blend-mode: multiply; }
+    .c12-desk { position: absolute; inset: 0; background: radial-gradient(ellipse 80% 75% at 50% 48%, transparent 55%, rgba(60,40,20,0.35) 100%); pointer-events: none; }
+    .c12-card { position: absolute; overflow: hidden; background: #0b0a09; box-shadow: 0 30px 70px rgba(0,0,0,0.7), 0 0 0 1px rgba(243,237,225,0.10); }
+    .c12-card video, .c12-card img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    .c12-veil { position: absolute; inset: 0; opacity: 0; pointer-events: none; }
+    .c12-lbl { position: absolute; white-space: nowrap; }
+    .c12-scrimb { position: absolute; left: 0; right: 0; bottom: 0; height: 380px; pointer-events: none;
+      background: linear-gradient(180deg, transparent, rgba(16,14,12,0.85)); }
+    .c12-scrimt { position: absolute; left: 0; right: 0; top: 0; height: 660px; pointer-events: none;
+      background: linear-gradient(0deg, transparent, rgba(16,14,12,0.94) 45%); }
+    #cts12-flash { position: absolute; inset: 0; background: var(--bone); opacity: 0; pointer-events: none; z-index: 7; }
+    #cts12-grain, #cts12-dust, #cts12-vig { z-index: 8; }
+    /* 3D net (ref ast_3c804bab5fc04bfb) */
+    .c12-stage { position: absolute; inset: 0; perspective: 1500px; perspective-origin: 50% 38%; }
+    .c12-tilt { position: absolute; inset: 0; transform-style: preserve-3d; }
+    .c12-map { position: absolute; left: -440px; top: -710px; width: 2800px; height: 2500px; transform-style: preserve-3d; }
+    .c12-ncard { position: absolute; background: var(--bone); box-shadow: 0 18px 40px rgba(0,0,0,0.55); }
+    .c12-ncard .ph { position: absolute; left: 14px; top: 14px; right: 14px; overflow: hidden; background: #2a2622; }
+    .c12-ncard .ph img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 30%; }
+    .c12-ncard .bar { position: absolute; left: 0; right: 0; top: 0; height: 10px; }
+    .c12-sil { position: absolute; inset: 0; width: 100%; height: 100%; }
+    .c12-npin { position: absolute; width: 26px; height: 26px; margin: -13px 0 0 -13px; border-radius: 50%; }
+    .c12-nst { position: absolute; left: 50%; top: 40%; width: 0; height: 0; opacity: 0; }
+    .c12-nst span { position: absolute; transform: translate(-50%, -50%) rotate(-12deg); padding: 6px 14px 2px; border: 6px solid currentColor;
+      font-size: 44px; line-height: 1; white-space: nowrap; letter-spacing: 0.06em; background: rgba(20,18,16,0.55); }
+    /* board cards (paper) */
+    .c12-bcard { position: absolute; background: var(--bone); box-shadow: 0 22px 50px rgba(40,28,16,0.38); }
+    .c12-bcard .ph { position: absolute; overflow: hidden; background: #3a332b; }
+    .c12-stamp { position: absolute; opacity: 0; padding: 10px 22px 4px; border: 8px solid currentColor; line-height: 1; white-space: nowrap;
+      letter-spacing: 0.06em; mix-blend-mode: multiply; }
+    /* flight */
+    .c12-plane { position: absolute; left: 0; top: 0; width: 64px; height: 64px; margin: -32px 0 0 -32px; }
+    /* money cards */
+    .c12-mc { position: absolute; width: 420px; height: 560px; transform-style: preserve-3d; }
+    .c12-mc .f, .c12-mc .b { position: absolute; inset: 0; backface-visibility: hidden; box-shadow: 0 22px 50px rgba(40,28,16,0.38); }
+    .c12-mc .f { background: var(--bone); }
+    .c12-mc .b { background: var(--ember-dark); transform: rotateY(180deg); }
+    /* calendar */
+    .c12-cal { position: absolute; left: 330px; top: 108px; width: 1260px; height: 870px; background: #f6f0e2; box-shadow: 0 30px 70px rgba(40,28,16,0.35); }
+    .c12-cell { position: absolute; width: 180px; height: 104px; border-top: 2px solid rgba(29,26,22,0.35); }
+    .c12-cell .n { position: absolute; left: 14px; top: 8px; font-size: 50px; line-height: 1; }
+    /* unit title cards (ref ast_e1ede4fafbd84a66) */
+    .c12-bar { position: absolute; background: #1b1916; clip-path: polygon(0% 6%, 3% 0%, 22% 4%, 41% 0%, 63% 3%, 84% 0%, 100% 5%, 99% 52%, 100% 96%, 78% 100%, 55% 96%, 33% 100%, 12% 97%, 0% 100%, 1% 48%); }
+    .c12-bar .w { position: absolute; left: 0; right: 0; text-align: center; color: var(--bone); line-height: 1; white-space: nowrap; }
+    .c12-tape { position: absolute; background: var(--olive-light); padding: 10px 20px 6px; box-shadow: 0 6px 14px rgba(40,28,16,0.25); white-space: nowrap; }
+    /* arrest cards */
+    .c12-acard { position: absolute; width: 640px; height: 330px; background: #f4eee2; box-shadow: 0 26px 60px rgba(40,28,16,0.4); }
+    .c12-acard .strip { position: absolute; left: 0; top: 0; bottom: 0; width: 18px; background: var(--olive); }
+    .c12-acard .ph { position: absolute; left: 44px; top: 34px; width: 210px; height: 262px; background: #3a332b; overflow: hidden; }
+  </style>
+
+  <div id="root" data-composition-id="cts12" data-vo-start="1078.417" data-duration="114.208" data-width="1920" data-height="1080">
+    <svg id="cts12-defs" width="0" height="0" style="position:absolute"></svg>
+
+    <!-- NET · sc001 1078.417–1090.300 + sc006 1114.050–1116.900 · 3D relief of northern Sinaloa, pins → portrait cards, the olive net -->
+    <div class="c12-scene" id="cts12-net"><div class="c12-shot" id="cts12-net-shot" style="background:#1d242c">
+      <div class="c12-abs" style="inset:0;background:radial-gradient(ellipse 90% 70% at 50% 30%, #2b333b 0%, #141a20 75%)"></div>
+      <div class="c12-stage"><div class="c12-tilt" id="cts12-net-tilt">
+        <div class="c12-map" id="cts12-net-map">
+          <img src="assets/cartels/cts12/derived/sinaloa_relief_net.jpg" alt="" style="position:absolute;left:0;top:0;width:2800px;height:2500px;filter:brightness(0.62) contrast(1.12) sepia(0.15)" />
+          <svg id="cts12-net-svg" width="2800" height="2500" viewBox="0 0 2800 2500" style="position:absolute;left:0;top:0;overflow:visible"></svg>
+          <div id="cts12-net-cards" style="position:absolute;left:0;top:0;width:2800px;height:2500px;transform-style:preserve-3d"></div>
+        </div>
+      </div></div>
+      <div class="c12-abs" style="left:0;right:0;top:0;height:300px;background:linear-gradient(180deg, rgba(20,26,32,0.9), transparent)"></div>
+      <div class="c12-lbl t-display clean" id="cts12-net-lsin" style="left:96px;top:72px;font-size:46px;letter-spacing:0.08em">SINALOA</div>
+      <div class="c12-lbl t-label clean" id="cts12-net-lsub" style="left:98px;top:132px;font-size:24px;color:var(--bone);opacity:0.8;text-transform:none;letter-spacing:0.1em">Northern Sinaloa</div>
+      <!-- Pichón overlay (flat, screen space) -->
+      <div class="c12-abs" id="cts12-net-pich" style="left:1180px;top:250px;width:640px;padding:26px 30px;background:rgba(18,20,24,0.78);box-shadow:0 20px 50px rgba(0,0,0,0.5)">
+        <div class="t-label clean" id="cts12-net-pmar" style="font-size:24px;color:var(--olive-light);margin-bottom:18px;text-transform:none;letter-spacing:0.1em">Secretaría de Marina · Mexico's Navy</div>
+        <div class="t-label clean" id="cts12-net-pn" style="font-size:30px;text-transform:none;letter-spacing:0.08em">Pedro Inzunza Coronel</div>
+        <div class="t-serif-i clean" id="cts12-net-pa" style="font-size:52px;line-height:1.15">“El Pichón”</div>
+        <div class="t-label clean" id="cts12-net-pd" style="font-size:24px;margin-top:16px;color:var(--bone);opacity:0.85">30 Nov 2025</div>
+      </div>
+      <div id="cts12-net-cr"></div>
+    </div></div>
+
+    <!-- sc002 · 1090.300–1095.400 · father arrested · paper case board, ember string, olive ARRESTED -->
+    <div class="c12-scene" id="cts12-sc002"><div class="c12-shot" id="cts12-sc002-shot" style="background:var(--paper)">
+      <div class="c12-abs" id="cts12-sc002-vw" style="inset:0">
+        <div class="c12-p1" style="background-image:url('assets/textures/paper_stained_01_hires.jpg')"></div>
+        <div class="c12-p2" style="background-image:url('assets/textures/paper_cream_01.jpg');opacity:0.55"></div>
+        <div class="c12-desk"></div>
+        <svg class="c12-svg" id="cts12-sc002-svg" viewBox="0 0 1920 1080"></svg>
+        <div class="c12-bcard" id="cts12-sc002-a" style="left:250px;top:200px;width:470px;height:600px">
+          <div class="ph" style="left:20px;top:20px;width:430px;height:430px"><svg class="c12-sil" viewBox="0 0 200 200"><circle cx="100" cy="78" r="36" fill="#6c6156"/><path d="M34 200 C34 140 64 120 100 120 C136 120 166 140 166 200 Z" fill="#6c6156"/></svg></div>
+          <div class="c12-abs t-label" style="left:24px;top:470px;font-size:26px;color:var(--ink);text-transform:none;letter-spacing:0.06em">Pedro Inzunza Coronel</div>
+          <div class="c12-abs t-serif-i" style="left:24px;top:508px;font-size:46px;color:var(--ink)">“El Pichón”</div>
+          <div class="c12-stamp t-display" style="left:120px;top:190px;font-size:62px;color:#2b2622;opacity:0.9;transform:rotate(-11deg)">KILLED</div>
+        </div>
+        <div class="c12-bcard" id="cts12-sc002-b" style="left:1200px;top:220px;width:470px;height:600px">
+          <div class="ph" style="left:20px;top:20px;width:430px;height:430px"><svg class="c12-sil" viewBox="0 0 200 200"><circle cx="100" cy="78" r="36" fill="#6c6156"/><path d="M34 200 C34 140 64 120 100 120 C136 120 166 140 166 200 Z" fill="#6c6156"/></svg></div>
+          <div class="c12-abs t-label" style="left:24px;top:470px;font-size:26px;color:var(--ink);text-transform:none;letter-spacing:0.06em">Pedro Inzunza Noriega</div>
+          <div class="c12-abs t-serif-i" style="left:24px;top:508px;font-size:46px;color:var(--ink)">“El Sagitario”</div>
+          <div class="c12-stamp t-display" id="cts12-sc002-st" style="left:62px;top:180px;font-size:62px;color:var(--olive-dark)">ARRESTED</div>
+        </div>
+        <div class="c12-lbl t-label" id="cts12-sc002-dt" style="left:1200px;top:850px;width:470px;text-align:center;font-size:24px;color:var(--olive-dark)">31 Dec 2025 · Culiacán</div>
+        <div class="c12-lbl t-label" id="cts12-sc002-fa" style="left:830px;top:452px;width:260px;text-align:center;font-size:26px;color:var(--ember-dark)">Father</div>
+      </div>
+    </div></div>
+
+    <!-- sc003 · 1095.400–1100.000 · January: on a plane to the United States · North-America night map, arc + plane -->
+    <div class="c12-scene" id="cts12-sc003"><div class="c12-shot" id="cts12-sc003-shot" style="background:#10161d">
+      <div class="c12-cam" id="cts12-sc003-cam" style="width:4000px;height:3400px">
+        <img src="assets/cartels/cts12/derived/na_night_flight.jpg" alt="" style="position:absolute;left:0;top:0;width:4000px;height:3400px;filter:brightness(1.05)" />
+        <svg id="cts12-sc003-svg" width="4000" height="3400" viewBox="0 0 4000 3400" style="position:absolute;left:0;top:0;overflow:visible"></svg>
+      </div>
+      <div class="c12-lbl t-display clean" id="cts12-sc003-lmx" style="left:0;top:0;font-size:44px;letter-spacing:0.08em;color:var(--olive-light)">MEXICO</div>
+      <div class="c12-lbl t-display clean" id="cts12-sc003-lus" style="left:0;top:0;font-size:44px;letter-spacing:0.08em;color:var(--steel-light)">UNITED STATES</div>
+      <div class="c12-lbl t-label clean" id="cts12-sc003-lmc" style="left:0;top:0;font-size:24px">MEXICO CITY</div>
+      <div class="c12-lbl t-label clean" id="cts12-sc003-lsd" style="left:0;top:0;font-size:24px">SAN DIEGO</div>
+      <div class="c12-abs" id="cts12-sc003-plw" style="left:0;top:0"><svg class="c12-plane" id="cts12-sc003-pl" viewBox="-32 -32 64 64"><path d="M30 0 L8 -4 L-6 -26 L-12 -26 L-4 -4 L-20 -3 L-26 -12 L-30 -12 L-26 0 L-30 12 L-26 12 L-20 3 L-4 4 L-12 26 L-6 26 L8 4 Z" fill="#f3ede1" stroke="#141312" stroke-width="2"/></svg>
+        <div class="c12-lbl t-serif-i clean" id="cts12-sc003-chip" style="left:40px;top:-58px;font-size:34px">“El Sagitario”</div></div>
+      <div id="cts12-sc003-tag"></div>
+      <div id="cts12-sc003-cr"></div>
+    </div></div>
+
+    <!-- sc004 · 1100.000–1103.750 · money people picked off one at a time · lined paper, three anonymous cards flip -->
+    <div class="c12-scene" id="cts12-sc004"><div class="c12-shot" id="cts12-sc004-shot" style="background:var(--paper)">
+      <div class="c12-abs" id="cts12-sc004-vw" style="inset:0">
+        <div class="c12-p1" style="background-image:url('assets/textures/paper_lined_01_hires.jpg');left:-200px"></div>
+        <div class="c12-p2" style="background-image:url('assets/textures/paper_cream_01.jpg');opacity:0.5"></div>
+        <div class="c12-desk"></div>
+        <div class="c12-abs" style="inset:0;perspective:1600px">
+          <div class="c12-mc" id="cts12-sc004-m0" style="left:180px;top:250px"></div>
+          <div class="c12-mc" id="cts12-sc004-m1" style="left:750px;top:230px"></div>
+          <div class="c12-mc" id="cts12-sc004-m2" style="left:1320px;top:250px"></div>
+        </div>
+      </div>
+    </div></div>
+
+    <!-- sc005 · 1103.750–1114.050 · Chuy Peñuelas, number two, $5M US reward, killed by the Navy · CT.file (ember, no photo) -->
+    <div class="c12-scene" id="cts12-sc005"><div class="c12-shot" id="cts12-sc005-shot" style="background:var(--paper)">
+      <div id="cts12-sc005-file" style="position:absolute;inset:0"></div>
+    </div></div>
+
+    <!-- sc007 · 1116.900–1134.980 · Trump + Sheinbaum at APEC, Infobae headline (ref ast_50e87a4cab8146d1) -->
+    <div class="c12-scene" id="cts12-sc007"><div class="c12-shot" id="cts12-sc007-shot">
+      <div class="c12-cam" id="cts12-sc007-cam" style="width:1920px;height:1280px">
+        <img src="assets/cartels/people/trump_sheinbaum_apec_1.jpg" alt="" style="position:absolute;left:0;top:0;width:1920px;height:1280px;filter:saturate(0.45) contrast(1.08) brightness(0.88)" />
+      </div>
+      <div class="c12-scrimb" id="cts12-sc007-sb"></div>
+      <div class="c12-scrimt" id="cts12-sc007-st" style="opacity:0"></div>
+      <div class="c12-lbl t-label clean" id="cts12-sc007-ns" style="left:300px;top:930px;font-size:28px;text-transform:none;letter-spacing:0.1em">Claudia Sheinbaum</div>
+      <div class="c12-lbl t-label clean" id="cts12-sc007-nt" style="left:1300px;top:930px;font-size:28px;text-transform:none;letter-spacing:0.1em">Donald Trump</div>
+      <div class="c12-abs" id="cts12-sc007-art" style="left:210px;top:96px;width:1500px;height:290px;overflow:hidden;background:#fff;box-shadow:0 30px 70px rgba(0,0,0,0.6)">
+        <img src="assets/cartels/cts12/derived/infobae_apec_head.jpg" alt="" style="position:absolute;left:0;top:-26px;width:1500px;height:308px" />
+        <svg class="c12-svg" id="cts12-sc007-asvg" viewBox="0 0 1920 1080"></svg>
+      </div>
+      <div class="c12-abs" id="cts12-sc007-tr" style="left:210px;top:412px;width:1500px">
+        <div class="t-label clean" style="font-size:22px;color:var(--bone);opacity:0.8;margin-bottom:10px">Infobae · 20 Nov 2026 · translated</div>
+        <div class="t-serif-i clean" style="font-size:40px;line-height:1.2">“…reaffirmed his accusation that the cartels control Mexico”</div>
+      </div>
+      <div id="cts12-sc007-tag"></div>
+      <div id="cts12-sc007-cr"></div>
+    </div></div>
+
+    <!-- sc008 · 1134.980–1144.150 · Friday 20 Nov = Día de la Revolución · typeset calendar page + pen circle -->
+    <div class="c12-scene" id="cts12-sc008"><div class="c12-shot" id="cts12-sc008-shot" style="background:var(--paper)">
+      <div class="c12-abs" id="cts12-sc008-vw" style="inset:0">
+        <div class="c12-p1" style="background-image:url('assets/textures/paper_stained_01_hires.jpg')"></div>
+        <div class="c12-p2" style="background-image:url('assets/textures/paper_cream_01.jpg');opacity:0.55"></div>
+        <div class="c12-desk"></div>
+        <div class="c12-cal" id="cts12-sc008-cal">
+          <div class="c12-p2" style="background-image:url('assets/textures/paper_cream_02.jpg');opacity:0.5"></div>
+          <div class="c12-lbl t-display" style="left:60px;top:46px;font-size:84px;color:var(--ink);letter-spacing:0.04em">NOVIEMBRE</div>
+          <div class="c12-lbl t-display" style="right:60px;top:46px;font-size:84px;color:var(--olive-dark)">2026</div>
+          <div id="cts12-sc008-grid"></div>
+          <div class="c12-abs" id="cts12-sc008-wash" style="left:0;top:0;width:180px;height:104px;background:var(--olive);opacity:0;mix-blend-mode:multiply"></div>
+          <div class="c12-tape t-label" id="cts12-sc008-rev" style="left:0;top:0;font-size:22px;color:var(--ink)">DÍA DE LA REVOLUCIÓN</div>
+          <svg class="c12-svg" id="cts12-sc008-svg" viewBox="0 0 1920 1080"></svg>
+        </div>
+      </div>
+    </div></div>
+
+    <!-- sc009 · 1144.150–1147.000 · special forces start moving in · SEDENA armored convoy at night -->
+    <div class="c12-scene" id="cts12-sc009"><div class="c12-shot" id="cts12-sc009-shot">
+      <video id="cts12-sc009-vf" class="c12-fill" src="assets/cartels/footage/x_guardia_armored_convoy.mp4" muted playsinline
+        data-start="65.68" data-duration="3.2" data-media-start="1.0"></video>
+      <div class="c12-abs" id="cts12-sc009-vw" style="inset:0">
+        <div class="c12-card" style="left:240px;top:130px;width:1440px;height:819px">
+          <video id="cts12-sc009-v" src="assets/cartels/footage/x_guardia_armored_convoy.mp4" muted playsinline style="filter:saturate(0.7) contrast(1.08)"
+            data-start="65.68" data-duration="3.2" data-media-start="1.0" data-color-grading='{"intensity":1,"effects":{"chromaticAberration":0.12}}'></video>
+        </div>
+      </div>
+      <div id="cts12-sc009-cr"></div>
+    </div></div>
+
+    <!-- sc010 · 1147.000–1150.350 · the units had pretty cool names · El Universal photo of special forces -->
+    <div class="c12-scene" id="cts12-sc010"><div class="c12-shot" id="cts12-sc010-shot">
+      <img class="c12-fill" src="assets/cartels/cts12/derived/eluniversal_fes_photo.jpg" alt="" />
+      <div class="c12-abs" id="cts12-sc010-vw" style="left:0;top:233px;width:1920px;height:614px;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,0.7)">
+        <img id="cts12-sc010-img" src="assets/cartels/cts12/derived/eluniversal_fes_photo.jpg" alt="" style="position:absolute;left:0;top:0;width:1920px;height:614px;object-fit:cover;filter:saturate(0.55) contrast(1.06) brightness(0.92);transform-origin:52% 50%" />
+      </div>
+      <div id="cts12-sc010-cr"></div>
+    </div></div>
+
+    <!-- sc011 · 1150.350–1159.900 · LOBOS / MURCIÉLAGOS title cards (ref ast_e1ede4fafbd84a66) -->
+    <div class="c12-scene" id="cts12-sc011"><div class="c12-shot" id="cts12-sc011-shot" style="background:var(--paper)">
+      <div class="c12-abs" id="cts12-sc011-vw" style="inset:0">
+        <div class="c12-p1" style="background-image:url('assets/textures/paper_cream_01.jpg')"></div>
+        <div class="c12-p2" style="background-image:url('assets/textures/paper_stained_01_hires.jpg');opacity:0.6"></div>
+        <div class="c12-abs" style="left:-60px;right:-60px;top:640px;height:520px;background:var(--olive);opacity:0.82;mix-blend-mode:multiply;clip-path:polygon(0% 8%, 14% 2%, 31% 9%, 52% 1%, 70% 7%, 88% 0%, 100% 6%, 100% 100%, 0% 100%)"></div>
+        <div class="c12-abs" style="inset:0;background-image:url('assets/textures/halftone_01_norm.jpg');background-size:900px auto;opacity:0.18;mix-blend-mode:multiply"></div>
+        <div class="c12-desk"></div>
+        <div class="c12-lbl t-label" id="cts12-sc011-l1" style="left:216px;top:150px;font-size:28px;color:var(--ink);letter-spacing:0.14em">National Guard · Special Forces</div>
+        <div class="c12-bar" id="cts12-sc011-b1" style="left:200px;top:204px;width:760px;height:230px"><div class="w t-display" style="top:38px;font-size:170px;letter-spacing:0.06em">LOBOS</div></div>
+        <div class="c12-tape t-label" id="cts12-sc011-t1" style="left:870px;top:404px;font-size:30px;color:var(--ink);transform:rotate(-4deg)">WOLVES</div>
+        <div class="c12-lbl t-label" id="cts12-sc011-l2" style="left:640px;top:530px;font-size:28px;color:var(--ink);letter-spacing:0.14em">Army · Special Forces</div>
+        <div class="c12-bar" id="cts12-sc011-b2" style="left:624px;top:584px;width:1100px;height:230px"><div class="w t-display" style="top:38px;font-size:150px;letter-spacing:0.04em">MURCIÉLAGOS</div></div>
+        <div class="c12-tape t-label" id="cts12-sc011-t2" style="left:1580px;top:790px;font-size:30px;color:var(--ink);transform:rotate(3deg)">BATS</div>
+      </div>
+    </div></div>
+
+    <!-- sc012 · 1159.900–1180.000 · technology pins him down, several directions, ring round the house, gunfire · Guasave aerial, night grade -->
+    <div class="c12-scene" id="cts12-sc012"><div class="c12-shot" id="cts12-sc012-shot" style="background:#0d0f10">
+      <div class="c12-cam" id="cts12-sc012-cam" style="width:3584px;height:3072px">
+        <img src="assets/maps/kit/aerial_guasave_z16.jpg" alt="" style="position:absolute;left:0;top:0;width:3584px;height:3072px;filter:saturate(0.25) brightness(0.48) contrast(1.2) sepia(0.2) hue-rotate(160deg)" />
+        <svg id="cts12-sc012-svg" width="3584" height="3072" viewBox="0 0 3584 3072" style="position:absolute;left:0;top:0;overflow:visible"></svg>
+      </div>
+      <div class="c12-abs" style="inset:0;background:radial-gradient(ellipse 75% 70% at 50% 50%, transparent 50%, rgba(8,10,12,0.6) 100%)"></div>
+      <div class="c12-lbl t-display clean" id="cts12-sc012-lgu" style="left:0;top:0;font-size:46px;letter-spacing:0.08em">GUASAVE</div>
+      <div id="cts12-sc012-cr"></div>
+      <div id="cts12-sc012-cr2"></div>
+    </div></div>
+
+    <!-- sc013 · 1180.000–1185.990 · arrested with his new number two and his money man · CT.file CAPTURED + two olive cards -->
+    <div class="c12-scene" id="cts12-sc013"><div class="c12-shot" id="cts12-sc013-shot" style="background:var(--paper)">
+      <div id="cts12-sc013-file" style="position:absolute;inset:0"></div>
+      <div class="c12-acard" id="cts12-sc013-c1" style="left:1180px;top:150px">
+        <div class="strip"></div>
+        <div class="ph"><svg class="c12-sil" viewBox="0 0 200 250"><circle cx="100" cy="92" r="40" fill="#6c6156"/><path d="M28 250 C28 180 62 154 100 154 C138 154 172 180 172 250 Z" fill="#6c6156"/></svg></div>
+        <div class="c12-abs t-label" style="left:282px;top:40px;width:330px;font-size:23px;color:var(--olive-dark)">New number two</div>
+        <div class="c12-abs t-display" style="left:282px;top:84px;width:340px;font-size:36px;line-height:1.08;color:var(--ink)">GERMÁN ROLANDO GÁLVEZ MEZA</div>
+        <div class="c12-abs t-serif-i" style="left:282px;top:220px;font-size:42px;color:var(--ink)">“El Serafín”</div>
+      </div>
+      <div class="c12-acard" id="cts12-sc013-c2" style="left:1180px;top:540px">
+        <div class="strip"></div>
+        <div class="ph"><svg class="c12-sil" viewBox="0 0 200 250"><circle cx="100" cy="92" r="40" fill="#6c6156"/><path d="M28 250 C28 180 62 154 100 154 C138 154 172 180 172 250 Z" fill="#6c6156"/></svg></div>
+        <div class="c12-abs t-label" style="left:282px;top:40px;width:330px;font-size:23px;color:var(--olive-dark)">Financial operator</div>
+        <div class="c12-abs t-display" style="left:282px;top:84px;width:340px;font-size:44px;line-height:1.08;color:var(--ink)">JOSÉ “N”</div>
+        <div class="c12-abs t-label" style="left:282px;top:236px;width:330px;font-size:22px;color:var(--ink);opacity:0.75;text-transform:none;letter-spacing:0.06em">Full name not released</div>
+      </div>
+    </div></div>
+
+    <!-- sc014 · 1185.990–1192.625 · the plain house with white walls · SEDENA video still inside the house, focal call-out -->
+    <div class="c12-scene" id="cts12-sc014"><div class="c12-shot" id="cts12-sc014-shot">
+      <img class="c12-fill" src="assets/cartels/cts12/derived/sedena_house_5_6.jpg" alt="" />
+      <div class="c12-abs" id="cts12-sc014-vw" style="inset:0">
+        <div class="c12-card" id="cts12-sc014-card" style="left:310px;top:150px;width:1300px;height:739px">
+          <img src="assets/cartels/cts12/derived/sedena_house_5_6.jpg" alt="" style="filter:saturate(0.6) contrast(1.12) brightness(1.4) blur(0.5px)" />
+          <div class="c12-abs" style="inset:0;background-image:url('assets/textures/grain_02_norm.jpg');background-size:cover;mix-blend-mode:overlay;opacity:0.35"></div>
+          <div class="c12-veil" id="cts12-sc014-veil"></div>
+        </div>
+      </div>
+      <div id="cts12-sc014-tag"></div>
+      <div id="cts12-sc014-cr"></div>
+    </div></div>
+
+    <div id="cts12-flash"></div>
+    <div id="cts12-grain" class="tx tx-grain" style="background-image:url('assets/textures/grain_01_norm.jpg')"></div>
+    <div id="cts12-dust" class="tx tx-dust" style="background-image:url('assets/textures/dust_02.jpg')"></div>
+    <div id="cts12-vig" class="vignette"></div>
+    <audio id="cts12-vo" class="temp-vo" src="vo_ct.mp3" data-start="0" data-duration="114.208" data-media-start="1078.417" data-volume="1"></audio>
+  </div>
+
+  <script>
+  (function () {
+    const SEG = "cts12", SEG_START = 1078.4167, SEG_END = 1192.625, DURATION = 114.208;
+    const T = (s) => +(s - SEG_START).toFixed(3);   // TEXT cues (audited): master word start − 0.06
+    const S = (s) => +(s - SEG_START).toFixed(3);   // STRUCTURAL cues
+    const tl = gsap.timeline({ paused: true });
+    const $ = (id) => document.getElementById(SEG + "-" + id);
+    const NS = "http://www.w3.org/2000/svg";
+    const defs = $("defs");
+    const E = FX.ease;
+    const C = (e, d) => FX.choppy(e, d, 12);
+    const EMBER = "#ec6424", EMBERL = "#f7b48c", EMBERD = "#8a3311", STEEL = "#6f93b4", STEELL = "#bcd1e4",
+      OLIVE = "#9a9a4e", OLIVEL = "#d3d39c", OLIVED = "#50512a", BONE = "#f3ede1", INK = "#1d1a16";
+    const BORDER = "M2965.6,1884.1L2951.8,1884.7L2951.8,1886.7L2949.5,1888.6L2947.2,1889.4L2945.3,1888.0L2943.0,1889.8L2942.6,1892.6L2943.4,1897.7L2940.3,1898.5L2938.8,1896.1L2938.0,1896.1L2937.3,1897.9L2935.0,1897.5L2932.7,1893.0L2926.9,1891.8L2920.0,1885.5L2917.0,1884.1L2913.9,1878.8L2910.1,1876.4L2898.6,1875.2L2897.4,1874.8L2897.0,1873.0L2895.1,1872.4L2880.2,1873.2L2872.5,1872.4L2866.8,1875.0L2864.9,1871.5L2862.9,1870.9L2858.0,1872.4L2854.1,1872.1L2841.9,1866.7L2837.6,1860.8L2833.8,1860.4L2834.6,1856.7L2828.1,1853.9L2825.4,1852.9L2823.5,1855.1L2821.6,1852.3L2815.0,1850.3L2812.0,1848.4L2805.8,1851.1L2804.3,1850.7L2800.9,1847.8L2798.9,1847.4L2800.1,1845.2L2799.3,1844.2L2795.1,1843.6L2795.5,1841.6L2788.6,1835.3L2785.9,1836.1L2784.8,1835.3L2783.2,1836.3L2781.3,1835.3L2778.6,1835.9L2774.8,1832.8L2773.3,1834.7L2772.5,1832.6L2771.4,1832.0L2766.4,1832.8L2764.5,1831.2L2758.3,1831.0L2756.0,1829.2L2756.4,1826.4L2757.9,1823.5L2757.6,1821.9L2755.3,1816.8L2749.9,1815.2L2748.0,1804.5L2741.1,1780.8L2731.5,1769.0L2726.5,1764.6L2725.0,1758.5L2722.3,1757.9L2718.5,1753.2L2720.8,1748.1L2719.2,1745.1L2721.5,1735.2L2720.4,1730.7L2717.7,1726.7L2716.2,1726.1L2715.8,1724.2L2712.0,1722.6L2714.6,1719.4L2716.9,1710.2L2716.6,1702.1L2716.2,1701.1L2713.1,1699.9L2713.5,1691.2L2712.7,1689.4L2710.4,1687.3L2705.8,1685.3L2704.7,1682.9L2702.4,1682.7L2698.9,1684.1L2696.6,1680.9L2692.8,1680.9L2689.7,1677.0L2688.6,1673.4L2685.1,1671.7L2681.7,1667.5L2678.6,1666.9L2678.6,1666.1L2675.6,1663.4L2675.6,1658.6L2672.5,1654.9L2674.0,1651.7L2668.3,1646.4L2667.5,1644.6L2668.7,1643.0L2663.3,1640.9L2661.8,1639.1L2659.5,1633.9L2659.9,1631.8L2656.0,1628.6L2654.9,1623.5L2653.0,1621.5L2640.7,1615.8L2639.9,1615.2L2639.2,1610.8L2635.3,1609.9L2633.4,1608.7L2630.7,1604.5L2631.5,1600.2L2626.5,1593.5L2625.4,1585.0L2623.1,1582.6L2623.4,1580.4L2626.5,1578.7L2620.0,1575.5L2618.5,1571.9L2618.8,1568.8L2617.3,1566.8L2613.5,1564.8L2613.5,1562.7L2609.7,1557.7L2605.8,1543.5L2604.3,1540.4L2603.1,1539.2L2600.8,1538.8L2600.8,1535.6L2598.5,1534.4L2597.8,1532.1L2595.1,1529.9L2593.2,1524.4L2593.9,1521.8L2593.6,1519.4L2591.6,1514.7L2589.7,1506.0L2586.3,1505.2L2585.5,1503.8L2579.8,1499.1L2579.0,1497.5L2579.8,1495.1L2576.3,1489.2L2569.0,1485.1L2563.7,1479.7L2553.7,1474.4L2552.2,1472.0L2550.6,1464.9L2540.3,1461.4L2537.2,1459.8L2534.2,1456.6L2530.7,1455.1L2530.3,1453.5L2531.5,1449.9L2531.1,1446.8L2529.6,1445.2L2526.9,1445.6L2522.7,1448.7L2521.5,1448.2L2522.7,1442.0L2518.8,1441.6L2516.5,1439.9L2511.2,1429.6L2511.6,1426.6L2507.0,1427.4L2504.3,1424.9L2498.9,1428.2L2496.6,1427.4L2498.1,1423.7L2496.2,1421.5L2495.5,1424.3L2494.3,1425.6L2487.4,1427.0L2470.2,1424.5L2468.6,1422.5L2466.7,1423.3L2460.2,1422.5L2455.6,1424.3L2451.0,1421.9L2449.5,1423.3L2446.4,1422.7L2436.5,1423.7L2426.5,1418.5L2421.1,1417.4L2420.7,1415.2L2418.8,1415.6L2416.1,1413.2L2413.8,1412.8L2411.9,1415.6L2408.5,1417.0L2407.7,1422.7L2405.0,1426.8L2393.2,1425.8L2390.1,1429.0L2388.6,1429.0L2387.8,1427.4L2382.0,1430.4L2376.3,1430.6L2374.4,1431.6L2374.0,1434.9L2367.1,1447.6L2365.2,1448.9L2365.6,1450.9L2364.4,1451.3L2365.2,1453.1L2363.3,1454.7L2360.2,1463.4L2358.7,1465.7L2358.7,1468.7L2359.4,1470.1L2358.3,1473.8L2359.0,1476.0L2356.0,1476.8L2354.1,1478.8L2352.5,1488.4L2356.7,1492.4L2352.5,1493.6L2347.2,1498.1L2344.9,1496.9L2343.0,1498.7L2339.1,1506.0L2333.0,1509.8L2331.8,1513.1L2330.7,1513.1L2328.8,1520.4L2326.1,1521.8L2316.1,1519.6L2309.6,1519.8L2308.1,1518.8L2308.9,1516.3L2306.6,1517.1L2305.4,1515.1L2302.0,1517.1L2300.4,1516.5L2296.6,1513.1L2290.8,1510.3L2283.2,1501.5L2279.3,1501.5L2270.1,1499.1L2259.8,1492.4L2259.0,1491.8L2259.8,1489.2L2258.3,1486.9L2242.9,1484.9L2229.1,1479.2L2224.2,1473.8L2218.0,1469.9L2214.6,1466.1L2212.7,1461.8L2208.5,1459.0L2206.9,1456.8L2201.2,1456.1L2199.3,1457.2L2198.1,1455.5L2188.5,1449.7L2185.5,1445.0L2180.1,1441.6L2178.6,1439.9L2178.2,1435.7L2175.5,1430.6L2174.4,1425.6L2169.4,1420.1L2167.5,1413.4L2162.5,1405.7L2162.9,1402.9L2160.6,1393.3L2162.5,1386.6L2162.9,1376.9L2159.0,1370.6L2155.6,1368.2L2151.4,1359.7L2148.7,1357.9L2148.3,1354.4L2146.0,1352.8L2144.1,1350.0L2144.5,1347.3L2142.9,1343.3L2143.7,1340.2L2141.8,1338.6L2141.0,1333.8L2135.6,1326.7L2130.7,1325.5L2128.0,1318.8L2125.7,1317.1L2119.6,1314.9L2114.6,1309.0L2113.8,1309.9L2111.5,1308.2L2111.1,1306.2L2108.1,1305.4L2106.9,1303.8L2104.2,1302.8L2102.3,1304.2L2099.2,1301.7L2090.1,1297.9L2084.7,1291.6L2075.9,1285.1L2072.4,1281.1L2069.7,1279.7L2065.9,1271.4L2060.2,1267.5L2057.9,1264.7L2047.1,1258.4L2045.2,1254.7L2037.2,1245.4L2029.9,1240.8L2028.7,1237.7L2026.4,1235.5L2021.8,1232.4L2017.2,1231.4L2011.9,1228.6L2007.3,1227.4L2000.0,1222.7L1997.7,1217.7L1992.0,1210.4L1989.3,1202.3L1984.3,1193.9L1980.8,1190.5L1976.6,1188.9L1972.0,1189.5L1969.7,1188.9L1967.4,1187.1L1786.6,1186.7L1786.6,1240.8L1489.6,1240.8L1480.0,1238.9L1436.3,1222.9L1083.8,1100.1L1086.5,1091.0L1085.3,1088.6L1087.6,1084.7L1092.2,1079.7L1093.8,1074.4L838.2,1096.3";
+
+    // ---------- scenes (windows in master seconds) ----------
+    const SC = [
+      ["net", [[1078.4167, 1090.30], [1114.05, 1116.90]], "night"],
+      ["sc002", [[1090.30, 1095.40]], "paper"], ["sc003", [[1095.40, 1100.00]], "night"],
+      ["sc004", [[1100.00, 1103.75]], "paper"], ["sc005", [[1103.75, 1114.05]], "paper"],
+      ["sc007", [[1116.90, 1134.98]], "photo"], ["sc008", [[1134.98, 1144.15]], "paper"],
+      ["sc009", [[1144.15, 1147.00]], "photo"], ["sc010", [[1147.00, 1150.35]], "photo"],
+      ["sc011", [[1150.35, 1159.90]], "paper"], ["sc012", [[1159.90, 1180.00]], "night"],
+      ["sc013", [[1180.00, 1185.99]], "paper"], ["sc014", [[1185.99, SEG_END]], "photo"],
+    ];
+    const GROUND = { paper: [0.3, 0.14, 0.22], night: [0.9, 0.42, 0.4], photo: [0.5, 0.3, 0.35] };
+    const EARLY = { sc003: 0.45, sc005: 0.45, sc008: 0.45, sc011: 0.45 };   // slides: incoming scene visible during the slide
+    const wins = [];
+    SC.forEach((s) => s[1].forEach((w) => wins.push([s[0], w[0], w[1], s[2]])));
+    wins.forEach((w) => {
+      const elx = $(w[0]), a = w[1] - (EARLY[w[0]] || 0);
+      if (w[1] <= SEG_START + 0.001) gsap.set(elx, { autoAlpha: 1 });
+      else tl.fromTo(elx, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.001, immediateRender: false }, S(a) - 0.002);
+      if (w[2] < SEG_END - 0.01) tl.set(elx, { autoAlpha: 0 }, S(w[2]) + 0.06);
+    });
+    gsap.set([$("grain"), $("dust"), $("vig")], { opacity: (i) => GROUND.night[i] });
+    wins.slice().sort((a, b) => a[1] - b[1]).forEach((w) => { if (w[1] > SEG_START + 0.001) { const v = GROUND[w[3]]; tl.set([$("grain"), $("dust"), $("vig")], { opacity: (k) => v[k] }, S(w[1])); } });
+
+    // ---------- helpers ----------
+    const rise = (elm, t, o) => { o = o || {}; const d = o.dur || 0.5;
+      gsap.set(elm, { opacity: 0 });
+      tl.fromTo(elm, { opacity: 0, y: o.y == null ? 14 : o.y }, { opacity: 1, y: 0, duration: d, ease: C(E.out, d), immediateRender: false }, t); };
+    function el(parent, tag, attrs) { const n = document.createElementNS(NS, tag); for (const k in attrs) n.setAttribute(k, attrs[k]); parent.appendChild(n); return n; }
+    function ink(parent, d, t, dur, o) {
+      o = o || {};
+      const p = el(parent, "path", { d: d, fill: "none", stroke: o.color || BONE, "stroke-width": o.width || 5, "stroke-linecap": "round", "stroke-linejoin": "round" });
+      if (o.dash) p.setAttribute("data-dash", o.dash);
+      if (o.filter) p.setAttribute("filter", o.filter);
+      const len = o.len || p.getTotalLength() || 1;
+      p.setAttribute("stroke-dasharray", len + " " + len); p.setAttribute("stroke-dashoffset", len);
+      tl.fromTo(p, { attr: { "stroke-dashoffset": len } }, { attr: { "stroke-dashoffset": 0 }, duration: dur, ease: o.ease || C(E.out, dur), immediateRender: true }, t);
+      gsap.set(p, { opacity: 0 }); tl.set(p, { opacity: o.opacity == null ? 1 : o.opacity }, t);
+      return p;
+    }
+    function circ(parent, cx, cy, r, t, dur, o) {   // circle drawn on from the top, clockwise
+      o = o || {};
+      const d = "M" + cx + " " + (cy - r) + " A" + r + " " + r + " 0 1 1 " + (cx - 0.1) + " " + (cy - r) + " Z";
+      return ink(parent, d, t, dur, Object.assign({ len: 2 * Math.PI * r + 2 }, o));
+    }
+    const whipN = { n: 0 };
+    function whip(a, b, t, o) {
+      o = Object.assign({ dir: 1, vertical: false, flash: false, dur: 0.32 }, o);
+      const k = ++whipN.n, ba = FX.whipDefs(defs, SEG + "-wa" + k), bb = FX.whipDefs(defs, SEG + "-wb" + k), h = o.dur / 2;
+      const A = $(a + "-shot"), B = $(b + "-shot");
+      tl.set(A, { filter: "url(#" + SEG + "-wa" + k + ")" }, t - h - 0.01); tl.set(A, { filter: "none" }, t + 0.06);
+      tl.set(B, { filter: "url(#" + SEG + "-wb" + k + ")" }, t - 0.001); tl.set(B, { filter: "none" }, t + h + 0.02);
+      FX.whip(tl, A, B, t, { dir: o.dir, vertical: o.vertical, dur: o.dur, blurA: ba, blurB: bb });
+      if (o.flash) tl.fromTo($("flash"), { opacity: 0 }, { opacity: 0.85, duration: 0.08, yoyo: true, repeat: 1, ease: "power2.in", immediateRender: false }, t - 0.08);
+    }
+    function slide(a, b, t, o) {
+      o = Object.assign({ axis: "y", from: 1, d: 0.45 }, o);
+      const A = $(a + "-shot"), B = $(b + "-shot"), dist = (o.axis === "x" ? 1980 : 1140) * o.from;
+      tl.fromTo(B, { [o.axis]: dist, boxShadow: "0 0 80px rgba(0,0,0,0.6)" }, { [o.axis]: 0, duration: o.d, ease: C(E.inOut, o.d), immediateRender: false }, t - o.d);
+      tl.set(B, { boxShadow: "none" }, t);
+      tl.fromTo(A, { [o.axis]: 0 }, { [o.axis]: -dist * 0.12, duration: o.d, ease: E.in, immediateRender: false }, t - o.d);
+      tl.set(A, { [o.axis]: 0 }, t + 0.1);
+    }
+    const at = (px, py, s, sx, sy) => ({ x: (sx == null ? 960 : sx) - px * s, y: (sy == null ? 540 : sy) - py * s, scale: s });
+    function follow(lbl, cam, px, py, dx, dy, t0, t1) {
+      const upd = () => {
+        const tr = gsap.getProperty(cam, "x"), ty = gsap.getProperty(cam, "y"), s = gsap.getProperty(cam, "scale");
+        gsap.set(lbl, { x: tr + px * s + dx, y: ty + py * s + dy });
+      };
+      const st = { p: 0 };
+      tl.fromTo(st, { p: 0 }, { p: 1, duration: t1 - t0, ease: "none", immediateRender: false, onUpdate: upd }, t0);
+      return upd;
+    }
+    function stampIn(elm, t) {   // rubber stamp slam (3 frames) + settle
+      tl.fromTo(elm, { opacity: 0, scale: 1.9 }, { opacity: 0.92, scale: 1, duration: 0.125, ease: "power2.in", immediateRender: false }, t);
+    }
+    const PEN = FX.markupDefs(defs, SEG + "-pen", { boil: 4 });
+    defs.setAttribute("viewBox", "0 0 1 1");
+    FX.grain($("grain"), 1201);
+    FX.dust($("dust"), 1202, 2);
+    const SIL = '<svg class="c12-sil" viewBox="0 0 200 200"><circle cx="100" cy="80" r="34" fill="#6c6156"/><path d="M36 200 C36 142 66 122 100 122 C134 122 164 142 164 200 Z" fill="#6c6156"/></svg>';
+
+    /* ===== NET (sc001 + sc006) · 3D relief, cards on the network, olive net ring ===== */
+    (function () {
+      const tilt = $("net-tilt"), map = $("net-map"), svg = $("net-svg"), host = $("net-cards");
+      CT.credit($("net-cr"), "Relief: AWS Terrain Tiles · Photo: FBI");
+      const TILT = 52, G = [1028, 1157];   // Guasave in crop px
+      gsap.set(tilt, { rotationX: TILT, z: -520, transformOrigin: "50% 50%" });
+      const pan = (px, py) => ({ x: 1400 - px, y: 1250 - py });
+      gsap.set(map, pan(G[0], G[1] - 60));
+      // network members on a circle round Guasave (diagram, not locations — only Guasave is pinned)
+      const R0 = 620;
+      const M = [
+        { k: "pich", a: 292, col: EMBER }, { k: "sag", a: 238, col: EMBER }, { k: "chuy", a: 340, col: EMBER },
+        { k: "mon1", a: 196, col: EMBER, money: true }, { k: "mon2", a: 28, col: EMBER, money: true },
+      ];
+      M.forEach((m) => { m.x = G[0] + R0 * Math.cos(m.a * Math.PI / 180); m.y = G[1] + R0 * Math.sin(m.a * Math.PI / 180) * 1.0; });
+      // ground: strings from each member to Isidro, pins
+      const strings = M.map((m, i) => ink(svg, "M" + m.x.toFixed(0) + " " + m.y.toFixed(0) + " Q" + ((m.x + G[0]) / 2 + 40).toFixed(0) + " " + ((m.y + G[1]) / 2 - 30).toFixed(0) + " " + G[0] + " " + G[1], S(1079.3) + i * 0.12, 0.8, { color: EMBERL, width: 7, opacity: 0.85 }));
+      M.forEach((m) => { const c = el(svg, "circle", { cx: m.x, cy: m.y, r: 16, fill: EMBERL, stroke: "#141312", "stroke-width": 5 }); m.dot = c; gsap.set(c, { opacity: 0 }); });
+      const gpin = el(svg, "circle", { cx: G[0], cy: G[1], r: 24, fill: BONE, stroke: "#141312", "stroke-width": 7 });
+      const ghalo = el(svg, "circle", { cx: G[0], cy: G[1], r: 70, fill: "none", stroke: BONE, "stroke-width": 5, opacity: 0.5 });
+      // cards (stand upright on the tilted ground)
+      function card(x, y, w, h, inner, id) {
+        const d = document.createElement("div");
+        d.className = "c12-ncard"; d.id = SEG + "-n-" + id;
+        Object.assign(d.style, { left: (x - w / 2) + "px", top: (y - h - 26) + "px", width: w + "px", height: h + "px" });
+        d.innerHTML = inner; host.appendChild(d);
+        gsap.set(d, { rotationX: -TILT, transformOrigin: "50% 100%" });
+        return d;
+      }
+      const iso = card(G[0], G[1], 400, 520, '<div class="bar" style="background:var(--ember)"></div><div class="ph" style="height:400px"><img src="assets/cartels/people/meza_fbi_photo_1.jpg" style="filter:grayscale(1) contrast(1.1) sepia(0.25)"/></div>' +
+        '<div class="t-display" id="cts12-n-isoname" style="position:absolute;left:0;right:0;top:432px;text-align:center;font-size:40px;color:var(--ink);letter-spacing:0.03em">EL CHAPO ISIDRO</div>', "iso");
+      M.forEach((m) => {
+        const inner = '<div class="bar" style="background:var(--ember)"></div><div class="ph" style="height:262px">' + SIL + '</div>' +
+          (m.money ? '<div class="t-label" style="position:absolute;left:0;right:0;top:290px;text-align:center;font-size:30px;color:var(--ember-dark)">$ · $ · $</div>' : "") +
+          '<div class="c12-nst t-display" id="cts12-nst-' + m.k + '"><span></span></div>';
+        m.card = card(m.x, m.y, 290, 340, inner, m.k);
+      });
+      // build: cards pop up on their stalks at 12 fps; ring = the net
+      gsap.set([iso].concat(M.map((m) => m.card)), { scaleY: 0, opacity: 0 });
+      tl.fromTo(iso, { scaleY: 0, opacity: 1 }, { scaleY: 1, opacity: 1, duration: 0.7, ease: C(E.out, 0.7), immediateRender: false }, S(1078.6));
+      M.forEach((m, i) => {
+        tl.fromTo(m.card, { scaleY: 0, opacity: 1 }, { scaleY: 1, opacity: 1, duration: 0.6, ease: C(E.out, 0.6), immediateRender: false }, S(1079.2) + i * 0.16);
+        tl.set(m.dot, { opacity: 1 }, S(1079.2) + i * 0.16);
+      });
+      gsap.set(ghalo, { opacity: 0 }); tl.fromTo(ghalo, { opacity: 0.7, attr: { r: 40 } }, { opacity: 0, attr: { r: 200 }, duration: 1.2, repeat: 2, ease: "none", immediateRender: false }, S(1078.6));
+      const nm = $("n-isoname"); gsap.set(nm, { opacity: 0 });
+      tl.fromTo(nm, { opacity: 0 }, { opacity: 1, duration: 0.25, ease: "steps(3)", immediateRender: false }, T(1082.76));
+      // the net: olive ring drawn round the whole network, then tightens a notch
+      const ring = circ(svg, G[0], G[1], 880, S(1081.25), 1.2, { color: OLIVEL, width: 14, ease: C(E.inOut, 1.2) });
+      ring.setAttribute("stroke-dasharray", "60 28");
+      const ringR = { r: 880 };
+      const setRing = () => ring.setAttribute("d", "M" + G[0] + " " + (G[1] - ringR.r) + " A" + ringR.r + " " + ringR.r + " 0 1 1 " + (G[0] - 0.1) + " " + (G[1] - ringR.r) + " Z");
+      // dashed ring: reveal with opacity steps instead of dashoffset (dasharray is the pattern)
+      tl.set(ring, { attr: { "stroke-dashoffset": 0 } }, S(1081.25));
+      gsap.set(ring, { opacity: 0 });
+      tl.fromTo(ring, { opacity: 0 }, { opacity: 1, duration: 0.5, ease: "steps(4)", immediateRender: false }, S(1081.25));
+      tl.fromTo(ringR, { r: 980 }, { r: 860, duration: 2.0, ease: C(E.out, 2.0), immediateRender: false, onUpdate: setRing }, S(1081.25));
+      // camera: slow push in on the network, then fly to El Pichón's card up in the sierra
+      tl.fromTo(tilt, { z: -520 }, { z: -330, duration: 6.3, ease: E.cam, immediateRender: false }, 0);
+      const P = M[0];
+      tl.to(map, Object.assign(pan(P.x + 260, P.y - 40), { duration: 1.8, ease: E.cam }), S(1084.85));
+      tl.to(tilt, { z: 330, duration: 1.8, ease: E.cam }, S(1084.85));
+      FX.focusHunt(tl, $("net-shot"), S(1086.65), { dur: 0.6, a: 2, b: 3 });
+      // overlay for El Pichón
+      const ov = ["net-pmar", "net-pn", "net-pa", "net-pd"].map($);
+      gsap.set(ov, { opacity: 0 });
+      gsap.set($("net-pich"), { opacity: 0 });
+      tl.fromTo($("net-pich"), { opacity: 0 }, { opacity: 1, duration: 0.3, immediateRender: false }, S(1085.60));
+      tl.to($("net-pich"), { opacity: 0, duration: 0.25 }, S(1090.05));
+      rise($("net-pmar"), T(1085.72), { dur: 0.5 });
+      rise($("net-pn"), T(1087.32), { dur: 0.5 }); rise($("net-pa"), T(1087.32) + 0.1, { dur: 0.5 });
+      rise($("net-pd"), T(1087.32) + 0.3, { dur: 0.5 });
+      const stP = $("nst-pich"), spP = stP.querySelector("span");
+      spP.textContent = "KILLED"; spP.style.color = BONE;
+      stampIn(stP, T(1086.84));
+      tl.to(ov.concat([$("net-lsin"), $("net-lsub")]), { opacity: 0, duration: 0.25 }, S(1090.05));
+      // the other members' fates (set while the scene is off screen, for the sc006 callback)
+      const setSt = (k, txt, col, t) => { const e = $("nst-" + k), sp = e.querySelector("span"); sp.textContent = txt; sp.style.color = col; tl.set(e, { opacity: 0.92 }, t); };
+      // NB the span text is fixed per card (one stamp each)
+      setSt("sag", "ARRESTED", OLIVEL, S(1100.0)); setSt("chuy", "KILLED", BONE, S(1113.0));
+      ["mon1", "mon2"].forEach((k) => setSt(k, "GONE", BONE, S(1103.3)));
+      $("nst-sag").querySelector("span").style.fontSize = "36px";
+      // sc006 callback (1114.05–1116.90): reset camera wide, cards drop away one by one, the net tightens round Isidro
+      tl.set($("net-shot"), { x: 0, y: 0, scale: 1, filter: "none" }, S(1113.9));
+      tl.set(map, pan(G[0], G[1] - 60), S(1114.0));
+      tl.set(tilt, { z: -260 }, S(1114.0));
+      tl.set([$("net-lsin"), $("net-lsub")], { opacity: 1 }, S(1114.0));
+      tl.set(ringR, { r: 860 }, S(1114.0)); tl.call(setRing, null, S(1114.0));
+      tl.fromTo(tilt, { z: -260 }, { z: 60, duration: 2.8, ease: E.cam, immediateRender: false }, S(1114.05));
+      [P, M[3], M[1], M[4], M[2]].forEach((m, i) => {
+        const t = S(1114.35) + i * 0.28;
+        tl.to(m.card, { scaleY: 0, duration: 0.25, ease: "steps(3)" }, t);
+        tl.to(strings[M.indexOf(m)], { opacity: 0, duration: 0.17, ease: "steps(2)" }, t);
+        tl.to(m.dot, { opacity: 0, duration: 0.17, ease: "steps(2)" }, t);
+      });
+      tl.to(ringR, { r: 330, duration: 1.6, ease: C(E.inOut, 1.6), onUpdate: setRing }, S(1114.6));
+    })();
+
+    /* ===== sc002 · father arrested (paper board) ===== */
+    whip("net", "sc002", S(1090.30), { dir: 1 });
+    (function () {
+      const vw = $("sc002-vw"), svg = $("sc002-svg");
+      gsap.set(vw, { transformOrigin: "1435px 470px" });
+      tl.fromTo(vw, { scale: 1.0 }, { scale: 1.07, duration: 5.2, ease: E.cam, immediateRender: false }, S(1090.30));
+      gsap.set($("sc002-a"), { rotation: -2.5 });
+      gsap.set($("sc002-a").querySelector(".c12-stamp"), { opacity: 0.88 });
+      const b = $("sc002-b");
+      gsap.set(b, { opacity: 0 });
+      tl.fromTo(b, { opacity: 0, y: -60, rotation: 6, scale: 1.08 }, { opacity: 1, y: 0, rotation: 2, scale: 1, duration: 0.8, ease: C(E.out, 0.8), immediateRender: false }, T(1091.32) - 0.35);
+      stampIn($("sc002-st"), T(1091.32) + 0.5);
+      gsap.set($("sc002-st"), { rotation: -11 });
+      rise($("sc002-dt"), T(1091.90));
+      // ember string: son → father, with a pin at each end
+      ink(svg, "M700 410 Q960 500 1220 430", S(1091.85), 0.7, { color: EMBERD, width: 6 });
+      [[700, 410], [1220, 430]].forEach((p, i) => { const c = el(svg, "circle", { cx: p[0], cy: p[1], r: 13, fill: EMBER, stroke: "#5a2510", "stroke-width": 3 }); gsap.set(c, { opacity: 0 }); tl.set(c, { opacity: 1 }, S(1091.85) + i * 0.6); });
+      rise($("sc002-fa"), T(1092.04));
+    })();
+
+    /* ===== sc003 · January: the father on a plane to the United States ===== */
+    slide("sc002", "sc003", S(1095.40), { axis: "y" });
+    (function () {
+      const cam = $("sc003-cam"), svg = $("sc003-svg");
+      CT.credit($("sc003-cr"), "Map: NASA Black Marble · Natural Earth");
+      const MX = [2753, 2668], SD = [834, 1074];
+      const K0 = at(2300, 2150, 0.66), K1 = at(1700, 1760, 0.48);
+      gsap.set(cam, K0);
+      tl.fromTo(cam, K0, Object.assign({}, K1, { duration: 4.6, ease: E.cam, immediateRender: false }), S(1095.0));
+      const bd = el(svg, "path", { d: BORDER, fill: "none", stroke: STEELL, "stroke-width": 6, "stroke-dasharray": "22 14", opacity: 0.8 });
+      // labels follow the camera (constant screen size)
+      const L = [["sc003-lmx", 2280, 2110, -100, -20], ["sc003-lus", 1500, 880, -170, -40], ["sc003-lmc", MX[0], MX[1], 26, -14], ["sc003-lsd", SD[0], SD[1], 22, 26]];
+      L.forEach((l) => { gsap.set($(l[0]), { opacity: 0 }); follow($(l[0]), cam, l[1], l[2], l[3], l[4], S(1095.0), S(1100.1)); });
+      tl.fromTo([$("sc003-lmx"), $("sc003-lmc")], { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "steps(3)", immediateRender: false }, S(1095.45));
+      tl.fromTo([$("sc003-lus"), $("sc003-lsd")], { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "steps(3)", immediateRender: false }, S(1098.9));
+      [MX, SD].forEach((p, i) => { const c = el(svg, "circle", { cx: p[0], cy: p[1], r: 20, fill: i ? STEELL : OLIVEL, stroke: "#141312", "stroke-width": 6 }); gsap.set(c, { opacity: 0 }); tl.set(c, { opacity: 1 }, S(1095.45) + i * 3.4); });
+      const cx = (MX[0] + SD[0]) / 2 + 260, cy = (MX[1] + SD[1]) / 2 - 360;
+      const arc = ink(svg, "M" + MX[0] + " " + MX[1] + " Q" + cx + " " + cy + " " + SD[0] + " " + SD[1], S(1097.2), 2.0, { color: STEELL, width: 9, ease: C(E.inOut, 2.0) });
+      // plane rides the arc
+      const N = 60, pts = [];
+      for (let i = 0; i <= N; i++) { const u = i / N; pts.push([(1 - u) * (1 - u) * MX[0] + 2 * u * (1 - u) * cx + u * u * SD[0], (1 - u) * (1 - u) * MX[1] + 2 * u * (1 - u) * cy + u * u * SD[1]]); }
+      const plw = $("sc003-plw"), pl = $("sc003-pl"), st = { u: 0 };
+      gsap.set(plw, { opacity: 0 });
+      const upd = () => {
+        const f = Math.min(N - 1, Math.floor(st.u * N)), p = pts[f], q = pts[f + 1], s = gsap.getProperty(cam, "scale");
+        gsap.set(plw, { x: gsap.getProperty(cam, "x") + p[0] * s, y: gsap.getProperty(cam, "y") + p[1] * s });
+        gsap.set(pl, { rotation: Math.atan2(q[1] - p[1], q[0] - p[0]) * 180 / Math.PI });
+      };
+      tl.fromTo(st, { u: 0 }, { u: 0.999, duration: 2.0, ease: C(E.inOut, 2.0), immediateRender: false, onUpdate: upd }, S(1097.2));
+      tl.fromTo(st, { u: 0.999 }, { u: 0.999, duration: 1.0, ease: "none", immediateRender: false, onUpdate: upd }, S(1099.2));
+      tl.fromTo(plw, { opacity: 0 }, { opacity: 1, duration: 0.2, immediateRender: false }, S(1097.1));
+      const tag = CT.dateTag($("sc003-tag"), { prefix: SEG + "-sc003-tag", place: "Sent to the U.S.", date: "20 Jan 2026", accent: "steel" });
+      tag.in(tl, T(1095.96));
+      tl.to([$("sc003-chip"), $("sc003-pl")], { opacity: 0, duration: 0.3 }, S(1099.25));
+    })();
+
+    /* ===== sc004 · money people picked off one at a time ===== */
+    whip("sc003", "sc004", S(1100.00), { dir: -1 });
+    (function () {
+      const vw = $("sc004-vw");
+      gsap.set(vw, { transformOrigin: "960px 540px" });
+      tl.fromTo(vw, { scale: 1.04 }, { scale: 1.0, duration: 3.8, ease: E.cam, immediateRender: false }, S(1100.0));
+      const BILL = '<svg viewBox="0 0 120 64" style="position:absolute;left:150px;top:418px;width:120px;height:64px"><rect x="3" y="3" width="114" height="58" rx="4" fill="none" stroke="#8a3311" stroke-width="5"/><circle cx="60" cy="32" r="14" fill="none" stroke="#8a3311" stroke-width="5"/></svg>';
+      [0, 1, 2].forEach((i) => {
+        const m = $("sc004-m" + i);
+        m.innerHTML = '<div class="f"><div class="c12-abs" style="left:0;right:0;top:0;height:12px;background:var(--ember)"></div>' +
+          '<div class="c12-abs" style="left:24px;top:36px;width:372px;height:360px;background:#3a332b;overflow:hidden">' + SIL + '</div>' + BILL +
+          '<div class="c12-abs t-label" style="left:0;right:0;top:500px;text-align:center;font-size:24px;color:var(--ember-dark)">Financial operator</div></div>' +
+          '<div class="b"><div class="c12-abs" style="inset:0;background-image:url(\'assets/textures/halftone_01_norm.jpg\');background-size:600px auto;opacity:0.35;mix-blend-mode:overlay"></div>' +
+          '<svg viewBox="0 0 420 560" style="position:absolute;inset:0;width:100%;height:100%"><path d="M96 150 L326 412 M330 146 L92 416" stroke="#f7b48c" stroke-width="16" stroke-linecap="round" fill="none" opacity="0.85"/></svg></div>';
+        gsap.set(m, { opacity: 0, rotation: [-3, 1.5, -1][i] });
+        tl.fromTo(m, { opacity: 0, y: -80 }, { opacity: 1, y: 0, duration: 0.5, ease: C(E.out, 0.5), immediateRender: false }, S(1099.95) + i * 0.12);
+        tl.fromTo(m, { rotationY: 0 }, { rotationY: 180, duration: 0.25, ease: "steps(3)", immediateRender: false }, S(1102.40) + i * 0.24);
+      });
+    })();
+
+    /* ===== sc005 · Chuy Peñuelas — CT.file (ember, no photo) ===== */
+    slide("sc004", "sc005", S(1103.75), { axis: "x" });
+    const chuy = CT.file($("sc005-file"), { prefix: SEG + "-chuy", ground: "paper", photo: null, name: "Jesús González Peñuelas", alias: "Chuy Peñuelas",
+      rows: [["Rank", "Number two"], ["U.S. reward", "$5,000,000"], ["Navy raid", "26 Oct 2026"]], accent: "ember", kicker: "Target file", tag: "Sinaloa",
+      gate: [S(1103.3), S(1114.1)] });
+    (function () {
+      chuy.open(tl, S(1103.20), { name: T(1105.16), alias: T(1105.16) + 0.45 });
+      chuy.row(tl, T(1105.40), 0, { lead: 0 });
+      chuy.row(tl, T(1108.12), 1, { lead: 0 });
+      // the ONE key number: yellow highlighter under the value, after it is typed
+      const rv = document.getElementById(SEG + "-chuy-rv1");
+      Object.assign(rv.style, { flex: "0 0 auto", width: "fit-content", backgroundImage: "linear-gradient(var(--yellow), var(--yellow))", backgroundRepeat: "no-repeat", backgroundPosition: "0 60%", backgroundSize: "0% 70%" });
+      tl.fromTo(rv, { backgroundSize: "0% 70%" }, { backgroundSize: "100% 70%", duration: 0.45, ease: "sine.inOut", immediateRender: false }, S(1108.70));
+      chuy.pushIn(tl, S(1109.3), 1.07, { dur: 2.2 });
+      chuy.stamp(tl, T(1111.24), "killed");
+      chuy.row(tl, T(1112.76), 2, { lead: 0 });
+    })();
+
+    whip("sc005", "net", S(1114.05), { vertical: true, dir: 1 });
+
+    /* ===== sc007 · APEC Shenzhen: Trump + Sheinbaum, the Infobae headline ===== */
+    whip("net", "sc007", S(1116.90), { dir: 1, flash: true });
+    (function () {
+      const cam = $("sc007-cam");
+      CT.credit($("sc007-cr"), "Photo: The White House");
+      const K0 = at(915, 430, 1.62), K1 = at(915, 445, 1.74), K2 = at(915, 470, 1.05, 960, 790), K3 = at(915, 330, 2.1, 960, 520);
+      gsap.set(cam, K0);
+      tl.fromTo(cam, K0, Object.assign({}, K1, { duration: 7.0, ease: "none", immediateRender: false }), S(1116.90));
+      rise($("sc007-nt"), T(1118.60)); rise($("sc007-ns"), T(1119.48));
+      const tag = CT.dateTag($("sc007-tag"), { prefix: SEG + "-sc007-tag", place: "APEC · Shenzhen", date: "18 Nov 2026" });
+      tag.in(tl, T(1122.52));
+      tag.out(tl, S(1123.75));
+      tl.to([$("sc007-nt"), $("sc007-ns")], { opacity: 0, duration: 0.3 }, S(1123.75));
+      // ref layout: photo drops to the lower band, the headline comes in above
+      tl.to(cam, Object.assign({}, K2, { duration: 1.4, ease: E.cam }), S(1123.95));
+      tl.fromTo($("sc007-st"), { opacity: 0 }, { opacity: 1, duration: 0.8, immediateRender: false }, S(1124.0));
+      const art = $("sc007-art"), tr = $("sc007-tr"), asvg = $("sc007-asvg");
+      gsap.set([art, tr], { opacity: 0 });
+      tl.fromTo(art, { opacity: 0, y: -60, rotation: -1.2 }, { opacity: 1, y: 0, rotation: -0.4, duration: 0.9, ease: C(E.out, 0.9), immediateRender: false }, S(1124.2));
+      // "trade" → ink pen under "acuerdo comercial bilateral" (crop px × 0.605, −26)
+      const dk = FX.markup.pen(tl, asvg, S(1125.50), { points: [[748, 270], [960, 266], [1130, 271]], width: 6, color: INK, filter: PEN, dur: 0.6, seed: 4 });
+      gsap.set(dk, { opacity: 0 }); tl.set(dk, { opacity: 1 }, S(1125.50));
+      // "the cartels are running Mexico" → ember pen under "cárteles controlan México"
+      const hd = FX.markup.pen(tl, asvg, S(1130.04), { points: [[24, 202], [300, 198], [645, 204]], width: 9, color: EMBER, filter: PEN, dur: 0.8, seed: 7 });
+      gsap.set(hd, { opacity: 0 }); tl.set(hd, { opacity: 1 }, S(1130.04));
+      tl.fromTo(tr, { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.6, ease: C(E.out, 0.6), immediateRender: false }, T(1130.04));
+      // "I'm guessing it came up…" → article lifts away, push in on the two of them
+      tl.to([art, tr], { y: -520, opacity: 0, duration: 0.6, ease: E.in }, S(1132.30));
+      tl.to($("sc007-st"), { opacity: 0, duration: 0.6 }, S(1132.4));
+      tl.to(cam, Object.assign({}, K3, { duration: 2.4, ease: E.cam }), S(1132.40));
+    })();
+
+    /* ===== sc008 · the calendar: Friday 20 Nov, Día de la Revolución ===== */
+    slide("sc007", "sc008", S(1134.98), { axis: "y" });
+    (function () {
+      const cal = $("sc008-cal"), grid = $("sc008-grid"), svg = $("sc008-svg"), vw = $("sc008-vw");
+      const DAYS = ["LUN", "MAR", "MIÉ", "JUE", "VIE", "SÁB", "DOM"], X0 = 0, CW = 180, Y0 = 250, RH = 104;
+      let html = "";
+      DAYS.forEach((d, i) => { html += '<div class="c12-lbl t-label" style="left:' + (X0 + i * CW) + 'px;top:' + (Y0 - 52) + 'px;width:' + CW + 'px;text-align:center;font-size:24px;color:' + (i === 6 ? "var(--ember-dark)" : "var(--ink)") + '">' + d + "</div>"; });
+      // Nov 2026: the 1st is a Sunday (20 Nov 2026 = Friday)
+      for (let n = 1; n <= 30; n++) {
+        const k = n + 5, r = Math.floor(k / 7), c = k % 7;
+        html += '<div class="c12-cell" style="left:' + (X0 + c * CW) + "px;top:" + (Y0 + r * RH) + 'px"><div class="n t-display" style="color:' + (c === 6 ? "var(--ember-dark)" : "var(--ink)") + '">' + n + "</div></div>";
+      }
+      grid.innerHTML = html;
+      const c20 = [X0 + 4 * CW, Y0 + 3 * RH];   // cell top-left in calendar px
+      gsap.set($("sc008-wash"), { x: c20[0], y: c20[1] });
+      gsap.set($("sc008-rev"), { x: c20[0] - 70, y: c20[1] + 112, rotation: -3, opacity: 0 });
+      svg.setAttribute("viewBox", "0 0 1920 1080");
+      gsap.set(cal, { rotation: -1.2 });
+      // pen circle round VIE 20 on "Friday"
+      const cc = FX.markup.circle(tl, svg, T(1135.56), { cx: c20[0] + 70, cy: c20[1] + 42, rx: 82, ry: 54, rot: -8, color: EMBERD, width: 7, filter: PEN, dur: 0.7, seed: 5 });
+      gsap.set(cc, { opacity: 0 }); tl.set(cc, { opacity: 1 }, T(1135.56));
+      // second "Friday" → underline the VIE header
+      const ul = FX.markup.pen(tl, svg, S(1139.80), { points: [[c20[0] + 40, Y0 - 16], [c20[0] + 140, Y0 - 18]], width: 6, color: EMBERD, filter: PEN, dur: 0.35, seed: 6 });
+      gsap.set(ul, { opacity: 0 }); tl.set(ul, { opacity: 1 }, S(1139.80));
+      // camera into the cell; olive wash on "national holiday"; the name of the day on "Revolution"
+      const fx = 330 + c20[0] + 90, fy = 108 + c20[1] + 52;
+      gsap.set(vw, { transformOrigin: fx + "px " + fy + "px" });
+      tl.fromTo(vw, { scale: 1.0 }, { scale: 1.06, duration: 4.0, ease: "none", immediateRender: false }, S(1134.6));
+      tl.to(vw, { scale: 1.8, x: 960 - fx, y: 480 - fy, duration: 2.4, ease: E.cam }, S(1140.30));
+      tl.fromTo($("sc008-wash"), { opacity: 0 }, { opacity: 0.42, duration: 0.5, ease: "steps(4)", immediateRender: false }, S(1140.70));
+      tl.fromTo($("sc008-rev"), { opacity: 0, y: c20[1] + 122 }, { opacity: 1, y: c20[1] + 112, duration: 0.4, ease: C(E.out, 0.4), immediateRender: false }, T(1143.13));
+    })();
+
+    /* ===== sc009 · special forces moving in (SEDENA convoy) — hard cut ===== */
+    (function () {
+      CT.credit($("sc009-cr"), "Video: SEDENA");
+      const vw = $("sc009-vw");
+      gsap.set(vw, { transformOrigin: "960px 540px" });
+      tl.fromTo(vw, { scale: 1.0 }, { scale: 1.08, duration: 3.0, ease: "none", immediateRender: false }, S(1144.15));
+    })();
+
+    /* ===== sc010 · special forces (El Universal photo) ===== */
+    whip("sc009", "sc010", S(1147.00), { dir: 1 });
+    (function () {
+      CT.credit($("sc010-cr"), "Photo: El Universal");
+      tl.fromTo($("sc010-img"), { scale: 1.0, x: 30 }, { scale: 1.12, x: -30, duration: 3.6, ease: "none", immediateRender: false }, S(1147.0));
+    })();
+
+    /* ===== sc011 · LOBOS / MURCIÉLAGOS title cards ===== */
+    slide("sc010", "sc011", S(1150.35), { axis: "x" });
+    (function () {
+      const vw = $("sc011-vw");
+      gsap.set(vw, { transformOrigin: "960px 540px" });
+      tl.fromTo(vw, { scale: 1.0, rotation: 0 }, { scale: 1.05, rotation: -0.6, duration: 9.6, ease: "none", immediateRender: false }, S(1150.35));
+      rise($("sc011-l1"), T(1150.97));
+      const bar = (b, t) => { gsap.set(b, { clipPath: "inset(0% 100% 0% 0%)" });
+        tl.fromTo(b, { clipPath: "inset(0% 100% 0% 0%)", rotation: -2 }, { clipPath: "inset(0% 0% 0% 0%)", rotation: -1, duration: 0.35, ease: C(E.out, 0.35), immediateRender: false }, t); };
+      // the bar wipes open from its left edge so the word lands on its spoken cue
+      const word = (w, t) => { gsap.set(w, { clipPath: "inset(-10% 100% -10% 0%)" });
+        tl.fromTo(w, { clipPath: "inset(-10% 100% -10% 0%)", x: -14 }, { clipPath: "inset(-10% 0% -10% 0%)", x: 0, duration: 0.3, ease: C(E.out, 0.3), immediateRender: false }, t); };
+      bar($("sc011-b1"), T(1154.01)); word($("sc011-b1").querySelector(".w"), T(1154.01));
+      const tape = (e, t, r) => { gsap.set(e, { opacity: 0 }); tl.fromTo(e, { opacity: 0, scale: 1.4, rotation: r - 6 }, { opacity: 1, scale: 1, rotation: r, duration: 0.17, ease: "steps(2)", immediateRender: false }, t); };
+      tape($("sc011-t1"), T(1154.01), -4);
+      rise($("sc011-l2"), T(1155.93));
+      bar($("sc011-b2"), T(1158.89)); word($("sc011-b2").querySelector(".w"), T(1158.89));
+      tape($("sc011-t2"), T(1158.89), 3);
+    })();
+
+    /* ===== sc012 · tactical map: pin down, several directions, the ring, gunfire, through ===== */
+    whip("sc011", "sc012", S(1159.90), { dir: -1, flash: true });
+    (function () {
+      const cam = $("sc012-cam"), svg = $("sc012-svg");
+      CT.credit($("sc012-cr"), "Imagery: Esri, Maxar, Earthstar Geographics");
+      const src = CT.credit($("sc012-cr2"), "Source: SEDENA, 21 Nov 2026", { pos: "br" });
+      if (src && src.in) src.in(tl, T(1159.85));
+      const H = [2150, 1760], GU = [1817, 1452];
+      const K0 = at(1792, 1536, 0.64), K1 = at(H[0], H[1], 1.08), K2 = at(H[0], H[1], 1.62), K3 = at(H[0], H[1], 2.05);
+      gsap.set(cam, K0);
+      tl.fromTo(cam, K0, Object.assign({}, at(1800, 1550, 0.68), { duration: 2.6, ease: "none", immediateRender: false }), S(1159.90));
+      tl.to(cam, Object.assign({}, K1, { duration: 3.0, ease: E.cam }), S(1162.5));
+      tl.to(cam, Object.assign({}, K2, { duration: 3.4, ease: E.cam }), S(1170.9));
+      tl.to(cam, Object.assign({}, K3, { duration: 4.5, ease: E.cam }), S(1175.4));
+      const lg = $("sc012-lgu");
+      follow(lg, cam, GU[0], GU[1], -110, -30, S(1159.85), S(1163.6));
+      tl.to(lg, { opacity: 0, duration: 0.3 }, S(1163.3));
+      // "technology to pin down": scan rings contract on one block, a reticle locks (no address claimed)
+      [0, 1, 2].forEach((i) => {
+        const c = el(svg, "circle", { cx: H[0], cy: H[1], r: 1100, fill: "none", stroke: STEELL, "stroke-width": 6, opacity: 0 });
+        tl.fromTo(c, { attr: { r: 1100 - i * 120 }, opacity: 0 }, { attr: { r: 90 }, opacity: 0.9, duration: 1.3, ease: C(E.in, 1.3), immediateRender: false }, S(1163.1) + i * 0.25);
+        tl.to(c, { opacity: 0, duration: 0.1 }, S(1164.45) + i * 0.25);
+      });
+      const ret = el(svg, "g", {});
+      [[0, -70, 0, -26], [0, 26, 0, 70], [-70, 0, -26, 0], [26, 0, 70, 0]].forEach((q) => el(ret, "line", { x1: H[0] + q[0], y1: H[1] + q[1], x2: H[0] + q[2], y2: H[1] + q[3], stroke: BONE, "stroke-width": 5 }));
+      el(ret, "rect", { x: H[0] - 44, y: H[1] - 44, width: 88, height: 88, fill: "none", stroke: BONE, "stroke-width": 4 });
+      gsap.set(ret, { opacity: 0 });
+      tl.fromTo(ret, { opacity: 0 }, { opacity: 1, duration: 0.33, ease: "steps(4)", immediateRender: false }, S(1164.30));
+      tl.to(ret, { opacity: 0.55, duration: 0.6 }, S(1168.4));
+      // "from several directions without being noticed": four dashed olive arrows converge
+      const dirs = [[-560, -360], [620, -300], [560, 420], [-600, 380]];
+      dirs.forEach((d, i) => {
+        const x1 = H[0] + d[0], y1 = H[1] + d[1], L = Math.hypot(d[0], d[1]), ux = d[0] / L, uy = d[1] / L;
+        const x2 = H[0] + ux * 300, y2 = H[1] + uy * 300;
+        const p = ink(svg, "M" + x1 + " " + y1 + " Q" + ((x1 + x2) / 2 + uy * 60) + " " + ((y1 + y2) / 2 - ux * 60) + " " + x2 + " " + y2, S(1169.35) + i * 0.15, 1.1, { color: OLIVEL, width: 10 });
+        const ang = Math.atan2(-uy, -ux), h = 30;
+        const hd = ink(svg, "M" + (x2 - h * Math.cos(ang - 0.5)) + " " + (y2 - h * Math.sin(ang - 0.5)) + " L" + x2 + " " + y2 + " L" + (x2 - h * Math.cos(ang + 0.5)) + " " + (y2 - h * Math.sin(ang + 0.5)), S(1170.35) + i * 0.15, 0.2, { color: OLIVEL, width: 10 });
+      });
+      // "ring around the house": outer + inner security rings (SEDENA)
+      const r1 = circ(svg, H[0], H[1], 250, S(1172.50), 0.9, { color: OLIVEL, width: 9 });
+      const r2 = circ(svg, H[0], H[1], 150, S(1172.85), 0.8, { color: OLIVE, width: 12 });
+      // "gunfire": ember muzzle flashes round the ring at 12 fps
+      const F = [[120, -40], [-90, 110], [40, 140], [-130, -60], [150, 70], [-20, -150]];
+      F.forEach((f, i) => {
+        const g = el(svg, "g", {});
+        for (let k = 0; k < 8; k++) { const a = k * Math.PI / 4, r = k % 2 ? 22 : 40; el(g, "line", { x1: H[0] + f[0], y1: H[1] + f[1], x2: H[0] + f[0] + r * Math.cos(a), y2: H[1] + f[1] + r * Math.sin(a), stroke: k % 2 ? EMBERL : EMBER, "stroke-width": 6, "stroke-linecap": "round" }); }
+        gsap.set(g, { opacity: 0 });
+        const t0 = S(1176.65) + i * 0.17;
+        tl.set(g, { opacity: 1 }, t0); tl.set(g, { opacity: 0 }, t0 + 1 / 12); tl.set(g, { opacity: 1 }, t0 + 3 / 12); tl.set(g, { opacity: 0 }, t0 + 4 / 12);
+      });
+      // "fought their way through": four short olive arrows push from the ring into the house
+      dirs.forEach((d, i) => {
+        const L = Math.hypot(d[0], d[1]), ux = d[0] / L, uy = d[1] / L;
+        ink(svg, "M" + (H[0] + ux * 250) + " " + (H[1] + uy * 250) + " L" + (H[0] + ux * 70 + 2) + " " + (H[1] + uy * 70 + 3), S(1178.72) + i * 0.08, 0.45, { color: OLIVE, width: 14 });
+      });
+      tl.to(r2, { attr: { "stroke-width": 20 }, duration: 0.25, ease: "steps(3)" }, S(1179.3));
+    })();
+
+    /* ===== sc013 · CAPTURED — CT.file finale, then the two arrested with him ===== */
+    const isid = CT.file($("sc013-file"), { prefix: SEG + "-isid", ground: "paper", photo: "assets/cartels/people/meza_fbi_photo_1.jpg", photoPos: "50% 30%",
+      name: "Fausto Isidro Meza Flores", alias: "El Chapo Isidro", rows: [["Reward", "$5,000,000"], ["List", "FBI Ten Most Wanted"]],
+      accent: "ember", kicker: "Target file", tag: "Sinaloa", gate: [S(1179.9), S(1186.1)] });
+    (function () {
+      isid.stamp(tl, T(1180.25), "captured");
+      const f = isid.file;
+      tl.to(f, { x: -330, scale: 0.84, rotation: -2.2, duration: 1.0, ease: C(E.inOut, 1.0) }, S(1181.0));
+      const c1 = $("sc013-c1"), c2 = $("sc013-c2");
+      gsap.set([c1, c2], { opacity: 0 });
+      tl.fromTo(c1, { opacity: 0, x: 120, rotation: 3 }, { opacity: 1, x: 0, rotation: 1.2, duration: 0.6, ease: C(E.out, 0.6), immediateRender: false }, T(1181.77));
+      tl.fromTo(c2, { opacity: 0, x: 120, rotation: -2 }, { opacity: 1, x: 0, rotation: -0.8, duration: 0.6, ease: C(E.out, 0.6), immediateRender: false }, T(1183.53));
+    })();
+
+    /* ===== sc014 · the plain house with white walls ===== */
+    whip("sc013", "sc014", S(1185.99), { dir: -1 });
+    (function () {
+      CT.credit($("sc014-cr"), "Video: SEDENA");
+      const vw = $("sc014-vw");
+      gsap.set(vw, { transformOrigin: "1280px 420px" });
+      tl.fromTo(vw, { scale: 1.0 }, { scale: 1.16, duration: 6.6, ease: E.cam, immediateRender: false }, S(1185.99));
+      FX.contrastCallout(tl, $("sc014-veil"), S(1190.02), { w: 1300, h: 739, ellipse: [1060, 300, 250, 360], feather: 46, color: "rgba(16,14,12,1)", strength: 0.6 });
+      const tag = CT.dateTag($("sc014-tag"), { prefix: SEG + "-sc014-tag", place: "Guasave, Sinaloa", date: "20 Nov 2026" });
+      tag.in(tl, T(1190.89));
+    })();
+
+    FX.mount(tl, DURATION);
+    window.__timelines = window.__timelines || {};
+    window.__timelines[SEG] = tl;
+  })();
+  </script>
+</template>
+</body>
+</html>
