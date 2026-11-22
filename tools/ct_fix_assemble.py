@@ -4,13 +4,15 @@ pre-roll) + project/cartels/fix1_ops.json → a frame-exact v2 picture (no audio
   its slot is trimmed at the end, a shorter one holds its last frame. Global v1 frame g → piece-local frame g - G0.
   v2 = [cts00: round(P*24) frames, padded/trimmed] + v1 frames with every `del` [t, t+del) removed and, for every `ins` at t,
   the frame before t held ins*24 times (freeze while the restored words play).
-  Each piece becomes an MPEG-TS part with -output_ts_offset = its v2 start: untouched pieces are stream-copied
-  (h264_mp4toannexb), pieces with edits are decoded → frames dropped/held in Python → x264 CRF 18 preset medium, NO B-frames
-  (-bf 0), keyint 48. The parts are byte-joined (concat: protocol) and remuxed to MP4 (+faststart).
+  Each piece becomes an MPEG-TS part with -output_ts_offset = its v2 start: decoded → frames dropped/held in Python → x264 CRF 18 preset medium, NO B-frames
+  (-bf 0), keyint 48. EVERY part is re-encoded (untouched ones too): a stream-copied MP4 → TS keeps
+  the B-frame delay (pts +2 frames, the MP4 edit list is dropped) and a negative -output_ts_offset can't pull it back (tested on cts00:
+  2 frames lost at the join). Every part must start exactly at its v2 offset (checked). The parts are byte-joined (concat: protocol) and remuxed to MP4 (+faststart).
   Checks: total frames == round(v2_len*24) and every packet pts on a strict 1/24 s step (no B-frame pts traps).
 Intermediates go to /dev/shm (deleted at the end). Disk: the output ≈ the pieces' total size.
 Usage: .venv/bin/python tools/ct_fix_assemble.py [--pieces renders/ct/pieces] [--ops project/cartels/fix1_ops.json]
-                                                 [--out renders/ct/ct_v2_picture.mp4] [--cts00 <pieces>/cts00.mp4] [--keep-parts]"""
+                                                 [--out renders/ct/ct_v2_picture.mp4] [--cts00 <pieces>/cts00.mp4] [--keep-parts]
+       --no-preroll: ignore fix1_ops.json "preroll" (test before cts00 is rendered)"""
 import json, os, sys, glob, shutil, subprocess as sp, numpy as np
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from ct_fix_remap import load_ops
@@ -23,8 +25,11 @@ SEG = json.load(open('project/cartels/segments.json'))
 V1_FRAMES = 32206   # the delivered v1 720p (segments.json length 1341.912 → assemble_cartels pads to 32206 frames)
 
 def nframes(p):
-    return int(sp.check_output(['ffprobe', '-v', 'error', '-count_packets', '-select_streams', 'v', '-show_entries',
-                                'stream=nb_read_packets', '-of', 'csv=p=0', p]).strip())
+    return int(sp.check_output(['ffprobe', '-v', 'error', '-count_packets', '-select_streams', 'v:0', '-show_entries',
+                                'stream=nb_read_packets', '-of', 'csv=p=0', p]).split()[0])
+def min_pts(p):
+    return min(float(l.strip(',')) for l in sp.check_output(['ffprobe', '-v', 'error', '-select_streams', 'v:0', '-show_entries', 'packet=pts_time',
+                                                             '-of', 'csv=p=0', p]).decode().split() if l.strip(','))
 def probe_wh(p):
     s = sp.check_output(['ffprobe', '-v', 'error', '-select_streams', 'v', '-show_entries', 'stream=width,height', '-of', 'csv=p=0', p]).decode()
     return tuple(map(int, s.strip().split(',')[:2]))
@@ -39,7 +44,7 @@ def v2_sources(ops, P_frames):
     return keep
 
 def main():
-    J, ops = load_ops(OPS); P = float(J.get('preroll', 0)); PF = round(P * FPS)
+    J, ops = load_ops(OPS); P = 0.0 if '--no-preroll' in sys.argv else float(J.get('preroll', 0)); PF = round(P * FPS)
     segs = SEG['segments']; G0 = [round(s['start'] * FPS) for s in segs] + [V1_FRAMES]
     keep = v2_sources(ops, PF); total = PF + int(keep.sum())
     os.makedirs(TMP, exist_ok=True); parts = []; pos = 0
@@ -59,10 +64,18 @@ def main():
         plan.append((s['id'], p, cnt))
     for sid, p, cnt in plan:
         ts = f'{TMP}/{sid}.ts'; off = pos / FPS; nout = int(cnt.sum())
-        untouched = len(cnt) == nout and bool((cnt == 1).all())
-        if untouched:
-            sp.run(['ffmpeg', '-v', 'error', '-y', '-i', p, '-map', '0:v:0', '-c', 'copy', '-bsf:v', 'h264_mp4toannexb',
-                    '-output_ts_offset', f'{off:.6f}', '-muxdelay', '0', '-muxpreload', '0', '-f', 'mpegts', ts], check=True)
+        # every part is re-encoded: a stream-copied MP4 → TS keeps the B-frame delay (pts +2 frames, MP4 edit list dropped) and a
+        # negative -output_ts_offset cannot pull it back (tested on cts00: 2 frames lost at the join) → no stream copy
+        untouched = False
+        if untouched:   # stream copy; B-frame trap: the TS copy ignores the MP4 edit list (pts start +2 frames) → measure, re-offset
+            shift = 0.0
+            for _ in range(2):
+                sp.run(['ffmpeg', '-v', 'error', '-y', '-i', p, '-map', '0:v:0', '-c', 'copy', '-bsf:v', 'h264_mp4toannexb',
+                        '-output_ts_offset', f'{off - shift:.6f}', '-muxdelay', '0', '-muxpreload', '0', '-f', 'mpegts', ts], check=True)
+                p0 = min_pts(ts)
+                if abs(p0 - off) < 1e-3: break
+                shift += p0 - off
+            assert abs(min_pts(ts) - off) < 1e-3, (sid, min_pts(ts), off)
         else:
             w, h = probe_wh(p); fs = w * h * 3 // 2
             dec = sp.Popen(['ffmpeg', '-v', 'error', '-i', p, '-map', '0:v:0', '-f', 'rawvideo', '-pix_fmt', 'yuv420p', '-'], stdout=sp.PIPE)
@@ -76,20 +89,21 @@ def main():
             dec.stdout.close(); dec.wait(); enc.stdin.close(); assert enc.wait() == 0 and dec.returncode == 0, sid
             assert wrote == nout
         got = nframes(ts); assert got == nout, (sid, got, nout)
+        assert abs(min_pts(ts) - off) < 1e-3, (sid, 'pts start', min_pts(ts), off)
         print(f'{sid}: v2 frames {pos}–{pos + nout - 1} ({nout}; piece {len(cnt)}, dropped {int((cnt == 0).sum())}, '
               f'held +{int(np.maximum(cnt - 1, 0).sum())}) {"copy" if untouched else "re-encoded"}', flush=True)
         parts.append(ts); pos += nout
     assert pos == total, (pos, total)
     sp.run(['ffmpeg', '-v', 'error', '-y', '-i', 'concat:' + '|'.join(parts), '-map', '0:v:0', '-c', 'copy', '-movflags', '+faststart', OUT], check=True)
     n = nframes(OUT)
-    pts = np.array([float(l) for l in sp.check_output(['ffprobe', '-v', 'error', '-select_streams', 'v', '-show_entries', 'packet=pts_time',
-                                                         '-of', 'csv=p=0', OUT]).decode().split() if l.strip()])
+    pts = np.array([float(l.strip(',')) for l in sp.check_output(['ffprobe', '-v', 'error', '-select_streams', 'v:0', '-show_entries', 'packet=pts_time',
+                                                         '-of', 'csv=p=0', OUT]).decode().split() if l.strip(',')])
     pts.sort(); dif = np.diff(pts)
-    ok_pts = bool(np.all(np.abs(dif - 1 / FPS) < 1e-3)) and abs(pts[0]) < 1e-3
+    ok_pts = bool(np.all(np.abs(dif - 1 / FPS) < 1e-3) and abs(pts[0]) < 1e-3)
     print(f'{OUT}: {n} frames, want {total} (v2 {total / FPS:.6f} s); pts start {pts[0]:.4f}, step min/max {dif.min():.5f}/{dif.max():.5f} '
           f'→ {"PTS OK" if ok_pts else "PTS PROBLEM"}')
     json.dump({'out': OUT, 'frames': n, 'want': total, 'pts_ok': ok_pts, 'preroll_frames': PF,
                'parts': [(sid, int(c.sum())) for sid, _, c in plan]}, open(OUT + '.json', 'w'), indent=1)
+    assert n == total and ok_pts, 'frame count / pts check failed: parts kept in ' + TMP
     if '--keep-parts' not in sys.argv: shutil.rmtree(TMP)
-    assert n == total and ok_pts
 if __name__ == '__main__': main()

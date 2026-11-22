@@ -806,6 +806,11 @@ on action. Use it whenever the narrator quotes someone or introduces a historic 
 - [ ] Smooth long eases, 12 fps. [ ] Cuts on action; whips, no iris. [ ] No photo/clip used > 2× in a chunk.
 
 ## Changelog
+- 2026-11-22 — Cartels fix round 1 delivered (`project/cartels/DELIVERY.md`). Lessons: (1) stream-copying an MP4 piece into MPEG-TS keeps the
+  B-frame delay (MP4 edit list dropped) → +2 frames at the join: re-encode pieces with `-bf 0` when assembling edited timelines
+  (`tools/ct_fix_assemble.py` checks pts steps); (2) Parakeet sometimes returns 0 words for a very short file — pad it; (3) a cold-open clip's raw
+  audio is far louder than the VO (−13 vs −32 LUFS): always mix the sound designer's balanced stem, never the raw clip (the first levelled mix hit
+  the limiter hard); (4) two runs of a tool sharing a fixed /dev/shm temp dir collide — give each run its own `--tmp`.
 - 2026-11-22 — §10.11 added (US vs Cartels Frame.io review): English on screen, tighter VO pacing inside sentences, owner-requested VO levelling, cold open with the clip's own sound. Fix round run as timeline ops on the v1 master (`project/cartels/fix1_ops.json`) so editors can fix visuals in parallel without retiming.
 - 2026-11-22 — **Mono VO → stereo must be `pan=stereo|c0=c0|c1=c0`, never `aformat=channel_layouts=stereo`**: ffmpeg's default mono up-mix
   scales each channel by 0.7071 (−3 dB) — a gain change on the voice (BS.1770 loudness looks identical, so `measure_mix` didn't catch it;

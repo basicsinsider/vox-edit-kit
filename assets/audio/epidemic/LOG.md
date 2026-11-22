@@ -423,3 +423,17 @@ New for Cartels (25 files; place_sound types added 2026-11-22, see SOUND_PLAN §
 | van_drive_exterior_loop.wav / truck_idle_distance.wav | 36ac1572-02ba-411e-a92a-db8ca906b4ef / 164dd4ea-49f0-4b6c-bb4b-9ad81bb49853 | Vehicles, Van, Drive, Exterior, Loop / Vehicles, Freight, Truck, Engine Idle, Slight Distance | `convoy` (dur; note "idle" → truck idling) |
 
 Not kept: banknotes_handle_02 (c7db7f57-…; 14 s of near-silence, −42 LUFS) — use `coins` / `cash_register` for money.
+
+### Cartels — fix round 1 (2026-11-22): new intro score (Sanket: "intro packaging doesn't seem good, music isn't good either")
+Intro V1–V2 of `project/cartels/music_cuesheet_v2.json` (v2 master 0–118.8 s) replaces DB Cooper / Perplexed there. Found with SearchRecordings
+("documentary trailer pulse percussion", "taiko tension dark cinematic", "cinematic percussion hits suspense", "dark synth pulse trailer build",
+"modern documentary trailer", "crime trailer tension build") + SearchSimilarToRecording (Bodyguards, Pressure Point, DB Cooper): 119 new
+previews keyed; G minor / Bb picks: Absence, Absolution, New Beginnings, Shallow, Reveal the Truth, Freefall, There Is No Sequel (dubstep — no),
+Counterfeit Proof, The Resistance, Alligator Eyes, Running Away. Checks (as above): New Beginnings Σ residual −0.7 dB / Σ +0.3 LU (stems used as
+delivered), drums pulse 21 (the percussive pulse), silent 0–21 and 114–130 s in the file; Freefall Σ residual +0.4 dB / +0.1 LU, melody stem
+−37 LUFS (active only 126–213 s), silent 90–105 s. Kept 16-bit, used stems only.
+
+| folder | title — artist | kosmosId | stems on disk (16-bit) | bpm | key (meas.) | role |
+|---|---|---|---|---|---|---|
+| `new_beginnings/` | New Beginnings — Hampus Naeselius (dark, modern, orchestral hybrid, suspense) | 307cc995-07af-4eac-9bb4-57826c021bbc | instruments, bass, drums | 90 | G minor (0.84) | v2 intro V1: low pulse under "That's a baseball game" → build 1 → dip on "one man" → groove from the hit "El Chapo Isidro" |
+| `freefall/` | Freefall — Hampus Naeselius (chasing, cinematic, classical crossover, dark) | 0ab7af95-0a8b-436d-b018-1dba9181a7e9 | instruments, bass, drums, melody | 100 | G minor (0.80) | v2 intro V2: the pattern montage (a layer per case) → its 177 s peak on the title "US vs CARTELS" → drop on the black bar |

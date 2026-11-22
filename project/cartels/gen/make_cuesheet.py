@@ -14,7 +14,8 @@ import json, os
 
 # per-act balance trims (dB on every layer of the act) from act_levels.py: aim −20…−24 LU re the VO while he speaks.
 # First pass (2026-11-22): none — set after the 0–180 s test / the phase-2 whole-length build (SOUND_PLAN §5).
-TRIM = {"C2": 3.0, "C3": 4.0,
+TRIM = {"V1": 8.0, "V2": 4.0,   # fix round 1 (v2 intro): build v2-1 V1 −28.4, V2 −25.3; v2-2 (+6/+3) V1 −25.1, V2 −23.9 → +8/+4
+        "C2": 3.0, "C3": 4.0,
         # phase 2, whole 1341.9 s build 1 (untrimmed C4–C21): C6 −27.5, C7 −26.1, C11 −26.8, C12 −27.6, C14 −25.9, C20 −25.3,
         # C9 −24.9, C4 −24.7 (C16 −28.5 = the drone-only cliff, left quiet on purpose)
         "C4": 1.5, "C6": 6.0, "C7": 4.0, "C9": 1.5, "C11": 5.0, "C12": 6.0, "C14": 4.0, "C20": 3.0}
@@ -304,3 +305,111 @@ for l in layers:
 out = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "music_cuesheet.json")
 json.dump(sheet, open(out, "w"), indent=1)
 print("wrote", os.path.normpath(out), len(layers), "layers,", len(stingers), "stingers")
+
+
+# =====================================================================================================================================
+# FIX ROUND 1 (2026-11-22) — master v2 = 4.5 s cold open (cts00, the clip's own audio) + the VO with 159 pause cuts, 1315.125 s.
+# Writes project/cartels/music_cuesheet_v2.json. The intro (v2 0–~118.8) is RE-SCORED natively in v2 seconds (Sanket: "intro packaging
+# doesn't seem good, music isn't good either, intro seems slow"; wishes in project/cartels/FIX1_INTRO_SOUND.md). Everything from Act 1
+# (C3) on is the v1 sheet mapped with Agent V's mapper (tools/ct_fix_remap.py, project/cartels/fix1_ops.json): start/end/auto/stingers/
+# marker_edits → M(t); a layer's file offset is re-anchored on its MIDPOINT so the track's builds/peaks stay on their words (the cuts
+# shorten a layer by up to ~2 s; Agent V's start-anchored copy work/fix1/music_cuesheet_v2.json drifted by that much at the far end).
+import sys as _sys
+_sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "..", "tools"))
+from ct_fix_remap import load_ops, mapper          # noqa: E402
+_J, _ops = load_ops(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "fix1_ops.json"))
+M = mapper(_ops, _J["preroll"])
+LEN2 = 31563 / 24                                  # 1315.125 s
+INTRO_CUES = {"C1", "C2"}
+
+
+def _remap(l):
+    l = dict(l)
+    s, e = l["start"], l["end"]
+    s2, e2 = round(M(s), 4), round(min(M(e), LEN2), 4)
+    mid = (s + e) / 2
+    ofs = l["offset"] + (mid - s) - (M(mid) - s2)
+    if ofs < 0:                                    # layers that enter on the file's first second keep their start anchor
+        ofs = l["offset"]
+    dur = _ana[l["track"]]["stems"][l["stem"]]["dur_s"]
+    ofs = min(ofs, dur - (e2 - s2))
+    l.update(start=s2, end=e2, offset=round(ofs, 3))
+    if l.get("auto"):
+        l["auto"] = [[round(M(t), 3), v] for t, v in l["auto"]]
+    return l
+
+
+NB, FF = "new_beginnings", "freefall"
+# NB file 131.26 s at v2 4.74 (its quiet 130–174 section = the low pulse under the narration; 171+ its groove)
+NB_OFS = 131.26 - 4.74
+# FF: file 177 (its peak) on the TITLE slap v2 114.082
+FF_OFS = 177.0 - 114.082
+DIP = [[35.0, 0], [35.75, 0], [36.9, -12], [39.6, -12], [39.93, 0]]            # "one man" → almost nothing → hit on "El Chapo Isidro"
+intro = [
+    # ================= V0 COLD OPEN INSERT 0–4.5: no music — the clip's own sound (assets/audio/cartels_v2/cold_open.wav), see `ducks`
+    # ================= V1 COLD OPEN NARRATION (v1 cts01 → v2 4.5–70.84): ballpark → gunfight → helicopters → trucks → "one man" → El Chapo Isidro → caught → "the United States"
+    L("V1", NB, "instruments", 4.74, 70.6, 4.74 + NB_OFS, -16.5, 0.6, 1.0,
+      auto=[[4.74, -2], [18.5, -2], [19.05, 0]] + DIP + [[63.2, 0], [64.5, -3], [70.6, -3]],
+      note="New Beginnings (Hampus Naeselius, dark modern orchestral hybrid, 90 bpm) enters on the VO's first word 'That's' 4.74, low "
+           "(file 136+, its quiet pulse section); build 1 from 'there's a gunfight going on' 19.05 (file 150–165 rising) through the "
+           "helicopters 22.5 and the burning trucks 28.3 to 34.4; pulled down to almost nothing under 'had come for one man' 35.75–39.6 "
+           "(target brackets 39.05) → back on the hit 'El Chapo Isidro' 39.93 = file 171.2: its groove (file 171–202, drums −1…−6) locks "
+           "in under the EL CHAPO / ISIDRO slams 40.25/40.89 → target file → FBI poster 54.4–56.7 → WANTED 59.7; thins after CAPTURED "
+           "63.2; out under the riser into 'the United States' 69.66"),
+    L("V1", NB, "bass", 19.05, 70.6, 19.05 + NB_OFS, -20.5, 2.0, 1.0, auto=DIP + [[63.2, 0], [64.5, -3], [70.6, -3]],
+      note="bass with build 1 ('gunfight going on' 19.05)"),
+    L("V1", NB, "drums", 22.5, 64.5, 22.5 + NB_OFS, -23.5, 1.5, 1.5, auto=[[22.5, -4], [34.4, 0]] + DIP[1:] + [[40.5, 1.5], [64.5, 1.5]],
+      note="percussive pulse from the helicopters 22.5 (sparse in the file there) → locked in from the hit 39.93; out after CAPTURED"),
+    glue("V1", 62.0, 82.0, -20.5, fi=3.0, fo=4.0, offset=30.0,
+         note="the suspended floor under '…with the help from the United States' 68.7–70.8 (riser lands 69.66, sub 70.14) into 'Now, if this was'"),
+    # ================= V2 THE PATTERN → TITLE (v1 68.17–117.05 → v2 70.84–117.84): "this has happened before" → El Mencho → CIA lab → boats → Maduro → board → strobe → US vs CARTELS → "working?" → DROP
+    L("V2", FF, "instruments", 70.84, 117.9, 70.84 + FF_OFS, -17, 1.5, 0.5,
+      auto=[[70.84, -1], [82.0, -1], [82.3, 0]],
+      note="Freefall (Hampus Naeselius, cinematic chase, 100 bpm — a notch faster) on 'Now, if this was one time thing' 70.84 (file "
+           "133.8, its steady 134–171 section), investigative and rhythmic; layers enter on each case of the pattern montage: bass on "
+           "El Mencho/KILLED 82.3, drums on the CIA lab 87.1, melody on the 70+ boats 93.6, drums up on Maduro 99.7; its 173–177 build = "
+           "the board → 'What is going on?' 110.1–112.3 → the strobe 113.4; its 177 s PEAK lands on the TITLE slap 'US' 114.08 (swell + "
+           "big hit) → 'vs CARTELS' 114.64 → 'is this actually working?' 116.80 (second hit); cut 117.4–117.9 = the black bar 117.84"),
+    L("V2", FF, "bass", 82.3, 117.9, 82.3 + FF_OFS, -21, 1.0, 0.5, note="bass on El Mencho / KILLED 82.3"),
+    L("V2", FF, "drums", 87.1, 117.9, 87.1 + FF_OFS, -24.5, 1.0, 0.5, auto=[[87.1, 0], [99.5, 0], [99.75, 2.5], [117.9, 2.5]],
+      note="drums on the CIA lab raid 87.1, +2.5 dB on Maduro 99.75"),
+    L("V2", FF, "melody", 93.6, 117.9, 93.6 + FF_OFS, -20, 1.5, 0.5, note="melody on the 70+ boats 93.6"),
+    # near-silence 117.84–118.3, then Act 1 (the v1 C3 layers, remapped below; Running through the Dark enters at 118.8)
+    glue("V2", 118.3, 140.0, -21.0, fi=3.0, fo=4.0, offset=136.0, note="drone back under 'To answer that…' 118.3 → Act 1"),
+]
+
+stingers_v2 = [
+    dict(file="boom_cinematic_deep", t=39.93, sync="loudest", rel_lu=-30, note="'had come for one man' → the hit on 'El Chapo Isidro' (music back in)"),
+    dict(file="riser_reverse_cymbal_short", t=69.662, sync="loudest", rel_lu=-31, note="the cold open's hook: the riser lands on 'United States'"),
+    dict(file="boom_sub_bass_clean_01", t=70.142, sync="loudest", rel_lu=-31, note="'…the United STATES' (felt)"),
+    dict(file="swell_reverse_timpani_cymbal", t=114.082, sync="loudest", rel_lu=-29, note="TITLE: the strobe's riser peaks on the 'US' slap"),
+    dict(file="boom_dark_cinematic_low_hit", t=114.082, sync="loudest", rel_lu=-29, note="TITLE 'US vs CARTELS': the big hit of the intro"),
+    dict(file="boom_cinematic_deep", t=116.802, sync="loudest", rel_lu=-30, note="'is this actually WORKING?' — the second hit, then the drop"),
+] + [dict(st, t=round(M(st["t"]), 3)) for st in stingers if st["t"] > 130.0]
+
+layers_v2 = intro + [_remap(l) for l in layers if l["cue"] not in INTRO_CUES and not (l["cue"] == "C3" and l["stem"] == "instruments")]
+_c3 = [l for l in layers if l["cue"] == "C3" and l["stem"] == "instruments"][0]
+layers_v2.append(dict(_remap(_c3), start=118.8, offset=0.0, fade_in=3.0,
+                      note="Act 1: the calm Sinaloa colour enters out of the near-silence ~118.8 (FIX1_INTRO_SOUND: 'a NEW, calmer storytelling "
+                           "bed by ~118'); quiet file opening 0–10 under 'To answer that…' → 'His name is Fausto Isidro' 124.3"))
+layers_v2.sort(key=lambda l: l["start"])
+
+sheet_v2 = dict(sheet,
+    length=LEN2,
+    doc="FIX ROUND 1 bed (master v2 = 4.5 s cold open + VO with 159 pause cuts, 1315.125 s; VO work/fix1/vo_v2_master.wav). Generated by "
+        "project/cartels/gen/make_cuesheet.py — edit there. Intro V1–V2 re-scored in v2 seconds (New Beginnings → Freefall, G minor); "
+        "C3–C21 = the v1 cues mapped through project/cartels/fix1_ops.json (midpoint-anchored offsets). 0–4.0 = insert window (the clip "
+        "audio cold_open.wav is the foreground: music/SFX/ambience muted). Binding limits unchanged.",
+    layers=layers_v2, stingers=stingers_v2,
+    ducks=[dict(start=-0.5, end=4.0, db=-60.0, ramp=0.3, sfx_db=-60.0,
+                note="cts00 cold open: the clip's own crowd/panic audio is the foreground; the whoosh at 4.10 (push into the cut) survives")],
+    marker_edits=[dict(m, t=round(M(m["t"]), 3)) for m in marker_edits] + [
+        dict(t=t, type=ty, action="drop", note="cts00 'in_clip' reference marker — the sound is in cold_open.wav")
+        for t, ty in ((0.0, "stadium_crowd"), (1.2, "gunfire_distant"), (3.5, "crowd_room"))])
+assert sheet_v2["bed_lu_under_vo"] >= 22 and sheet_v2["vo_duck"]["gap"] >= 20 and sheet_v2["pause_lift_db"] == 0
+for l in layers_v2:
+    assert 0 <= l["start"] < l["end"] <= LEN2 + 1e-6, l
+    assert l["offset"] >= 0 and l["offset"] + (l["end"] - l["start"]) <= _ana[l["track"]]["stems"][l["stem"]]["dur_s"] + 1.0, (l["cue"], l["track"], l["stem"], l["offset"])
+out2 = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "music_cuesheet_v2.json")
+json.dump(sheet_v2, open(out2, "w"), indent=1)
+print("wrote", os.path.normpath(out2), len(layers_v2), "layers,", len(stingers_v2), "stingers (v2,", LEN2, "s)")

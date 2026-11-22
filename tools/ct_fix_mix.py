@@ -9,7 +9,7 @@ range, not too much variation" — owner-approved exception to MANUAL §0 for th
   then gain to −14 LUFS-I and a peak limiter (alimiter, −2 dBFS ceiling) → AAC 320k.
   Over the pre-roll (no VO) the ride holds its value at P.
 Usage: .venv/bin/python tools/ct_fix_mix.py --vo-only            test: ride on the VO alone, print LRA / 3 s spread before → after
-       .venv/bin/python tools/ct_fix_mix.py BEDS_DIR OUT.m4a [--preroll-audio clip.wav] [--lo -4] [--hi 6]"""
+       .venv/bin/python tools/ct_fix_mix.py BEDS_DIR OUT.m4a [--preroll-audio clip.wav (default assets/cartels/footage/cold_open_audio.wav)] [--lo -4] [--hi 6]"""
 import re, sys, json, subprocess as sp, numpy as np, soundfile as sf
 sys.path.insert(0, 'tools/audio')
 SR = 48000; CEIL = -2.0; TARGET_I = -14.0
@@ -78,7 +78,7 @@ def full(BEDS, OUT):
         out = np.zeros((N, 2), np.float32); a = round(at * SR); m = min(N - a, len(y)); out[a:a + m] = y[:m]; return out
     vo = rd(VO, P); mix = vo.copy()
     for b in ('music_bed', 'sfx', 'ambience'): mix += rd(f'{BEDS}/{b}.wav')
-    if '--preroll-audio' in sys.argv: mix += rd(arg('--preroll-audio', ''))
+    if P: mix += rd(arg('--preroll-audio', 'assets/cartels/footage/cold_open_audio.wav'))   # cts00's own clip audio, unity, at 0
     t, S, I, LRA = ebur(VO, 'mix'); t = t + P
     grid, g, TARGET, mask = ride(t, S, I, NEW)
     g[grid < P] = np.interp(P, grid, g) if P else g[grid < P]

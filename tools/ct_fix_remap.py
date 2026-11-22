@@ -2,8 +2,10 @@
   work/fix1/vo_v2.wav              VO on the new timeline WITHOUT preroll (48 kHz mono float32; samples copied untouched except
                                    the joins: each `del` crossfades `xfade` s (equal power) across the join, the crossfade audio taken
                                    from the removed span so exactly `del` s go; each `ins` = raw VO src span with 6 ms fades, butt-joined)
-  work/fix1/transcript_v2.json     word times remapped (no preroll: matches vo_v2.wav)
-  work/fix1/sfx/ctsNN.sfx.json     editors' SFX markers remapped (with preroll: master v2 seconds)
+  work/fix1/vo_v2_master.wav       (preroll > 0) the same VO with P s of digital silence in front = master v2 time (for place_sound)
+  work/fix1/transcript_v2.json     word times remapped on MASTER v2 (with preroll: matches vo_v2_master.wav and the picture)
+  work/fix1/transcript_v2_vo.json  word times remapped without preroll (matches vo_v2.wav)
+  work/fix1/sfx/ctsNN.sfx.json     editors' SFX markers remapped (with preroll: master v2 seconds); cts00 (already v2) copied
   work/fix1/music_cuesheet_v2.json cue sheet: layers start/end/auto, stingers, marker_edits, ducks/bleeps remapped (with preroll), length = v2
   work/fix1/map.json               v1/v2 lengths, preroll, the ops
 Map: v2 = preroll + map(v1); map shifts every time after a `del` by -del (a time inside a deleted span lands on its start), after an
@@ -70,7 +72,7 @@ def main():
     assert abs(P * FPS - round(P * FPS)) < 1e-6, 'preroll must be whole frames'
     M0 = mapper(ops, 0.0); MP = mapper(ops, P)
     dl = sum(o.get('del', 0) for o in ops); il = sum(o.get('ins', 0) for o in ops)
-    NEW = round(V1_LEN - dl + il, 6); NEW_P = round(P + NEW, 6)
+    NEW = round(round((V1_LEN - dl + il) * FPS) / FPS, 6); NEW_P = round(P + NEW, 6)   # whole frames
     os.makedirs('work/fix1/sfx', exist_ok=True)
     x, sr = sf.read(VO1, dtype='float32'); assert sr == SR and x.ndim == 1
     y = render_vo(x, ops)
@@ -78,12 +80,17 @@ def main():
     assert len(y) == exp, (len(y), exp)
     sf.write('work/fix1/vo_v2.wav', y, SR, subtype='FLOAT')
     print(f'VO {len(x) / SR:.3f} -> {len(y) / SR:.3f} s (removed {dl:.3f}, inserted {il:.3f}); master v1 {V1_LEN} -> v2 {NEW} (+preroll {P} = {NEW_P})')
-    W = json.load(open('transcript_ct.json'))
-    for w in W: w['start'] = round(M0(w['start']), 3); w['end'] = round(max(M0(w['end']), M0(w['start'])), 3)
-    json.dump(W, open('work/fix1/transcript_v2.json', 'w'), ensure_ascii=False)
+    if P:   # master-timeline VO for place_sound / measuring: P s of digital silence + vo_v2 (samples otherwise identical)
+        sf.write('work/fix1/vo_v2_master.wav', np.concatenate([np.zeros(round(P * SR), np.float32), y]), SR, subtype='FLOAT')
+    for name, Mx in (('transcript_v2.json', MP), ('transcript_v2_vo.json', M0)):
+        W = json.load(open('transcript_ct.json'))
+        for w in W: w['start'] = round(Mx(w['start']), 3); w['end'] = round(max(Mx(w['end']), Mx(w['start'])), 3)
+        json.dump(W, open('work/fix1/' + name, 'w'), ensure_ascii=False)
     n = 0
     for f in sorted(glob.glob('compositions/cts[0-9][0-9].sfx.json')):
         m = json.load(open(f))
+        if os.path.basename(f).startswith('cts00'):   # the cold open's markers are already on v2 time (Agent A): copied as they are
+            json.dump(m, open('work/fix1/sfx/' + os.path.basename(f), 'w'), indent=1, ensure_ascii=False); continue
         for e in m:
             e['t'] = round(MP(e['t']), 4); n += 1
             if e.get('dur'): pass   # durations kept (a sustained sfx over a 0.1–0.4 s cut is harmless)

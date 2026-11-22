@@ -22,3 +22,14 @@
   3 s min 22.0 LU, p5 24.0, median 26.9, 0.4 s p1 21.3, music+SFX min 18.0 — ALL LIMITS MET.
 - 4K segments: 14 Sonnet helpers (`render4k/ctsNN`, `project/cartels/HELPER4K_PROMPT.md`) render `RES=4k` and upload ctsNN_4k.mp4 into the
   same folder (md5-checked by each helper).
+
+## 720p FIX ROUND 1 — 2026-11-22 20:00 UTC (Frame.io review: Sam Shukla, Sanket)
+- **https://gofile.io/d/EkODXDTB** — `US_vs_Cartels_720p_fix1.mp4`, 1,165,037,157 bytes, 21:55.125 (31,563 frames @ 24 fps), md5
+  `6b2d5403e68a7c3aafd9e4b32ab4fa68` — local == gofile (MATCH).
+- v2 = 4.5 s cold open (cts00, the Kuroda Park fan clip with its own sound) + VO with 159 pause/repeat cuts (−31.29 s; `project/cartels/fix1_ops.json`,
+  EDL_NOTES "Fix round 1"); 11 segments re-rendered (cts00–04, 06, 08, 09, 11–13), picture assembled frame-exact (`tools/ct_fix_assemble.py`, pts OK).
+- Sound: intro re-scored (New Beginnings + Freefall), beds rebuilt on v2 (vo_music_scan ALL LIMITS MET: 3 s min 18.8 / p5 20.9 / median 23.9 LU;
+  0.4 s p1 18.3; music+SFX min 15.0), then levelled (`tools/ct_fix_mix.py`, owner-requested): VO LRA 7.3 → 5.1 LU, speech 3 s p5–p95 spread
+  8.1 → 5.8 LU, per-minute speech medians 4.3 → 0.5 LU apart; final mix −15.0 LUFS-I, LRA 3.7 LU, true peak −1.2 dBFS.
+- Not fixable by editing (need Sam): #14 "machete" (only one take, the t is silent), #20 "he and some other CIA officers" (no words were cut; he runs
+  "he and some" together — only one take).

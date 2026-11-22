@@ -5,7 +5,7 @@ Copy of tools/nv_fix_cuts.py, extended:
     (Parakeet punctuation): sentence end -> 0.36 s, comma -> 0.28 s, mid-phrase -> 0.22 s of silence left (perceived pause
     ≈ +0.1 s of word decay). Only removals of >= 3 frames. The deletion stays >= 60 ms inside the run after the word's decay
     and >= 80 ms before the next onset. Position on the 24 fps grid = minimum visual jump on the delivered 720p
-    (frames decoded to /dev/shm/fx/v1_64.gray, 64x36 gray).
+    (frames of the delivered v1 720p decoded to work/fix1/v1_64.gray, 64x36 gray — the 720p itself has since been deleted).
   * MANUAL ops (review notes): #4 repeated "and he controls the routes," deleted silence-to-silence; #12 the over-long /s/ of
     "gets" (380 ms of sibilance in the RAW take — not an edit) shortened by 5 frames with a crossfade inside the fricative.
   * EXCLUDE: candidates the ASR window check (tools/ct_fix_check.py, Parakeet + Whisper, ±3 s with vs without) rejected.
@@ -14,15 +14,20 @@ the deleted span, so the length removed is exactly del). Picture: the same frame
 Usage: .venv/bin/python tools/ct_fix_cuts.py [--cands]   (--cands: also write work/fix1/cands.json for the check)"""
 import json, sys, numpy as np, soundfile as sf
 FPS = 24; SR = 48000
-VO = 'project/cartels/media/vo_ct.wav'; FR = '/dev/shm/fx/v1_64.gray'; V1_FRAMES = 32206
+PREROLL = 108 / FPS   # cold open cts00 (Agent A, lead 2026-11-22): 4.5 s = 108 frames, its own audio cold_open_audio.wav
+VO = 'project/cartels/media/vo_ct.wav'; FR = 'work/fix1/v1_64.gray'; V1_FRAMES = 32206
 TH = -55.0; MINRUN = 0.30; M_PRE, M_POST = 0.06, 0.08; MIN_FR = 3
 JUMP_MAX = 15.0   # a pause that sits entirely inside a fast picture move / whip / title transition is left alone (cutting
                   # 4–11 frames out of a 12-frame whip or a title-card reveal shows; 7 such pauses on v1)
 TARGET = {'end': 0.36, 'comma': 0.28, 'none': 0.22}
 # --- review-note ops (v1 seconds; t on the frame grid) ---
 MANUAL = [
-    dict(t=5545 / FPS, n=40, kind='repeat', note='#4 Sam 3:56 "cut out the repeat sentence": deletes the 1st "and he controls the routes," '
-         '(silence after "Sinaloa" 231.00–231.20 → silence after "routes," 232.60–232.85); keeps "…north of Sinaloa and he controls the routes into Sonora"'),
+    dict(t=5535 / FPS, n=50, kind='repeat', note='#4 Sam 3:56 "cut out the repeat sentence": deletes the 1st "and he controls the routes," '
+         '(from the 0.1 s dip after "Sinaloa" 230.60–230.70 → the silence before the 2nd "and" 232.59–232.88); keeps "…north of Sinaloa '
+         'and he controls the routes into Sonora". (A first try from the silence AFTER the 1st "and" left "and and" — Parakeet check.)'),
+    dict(t=14352 / FPS, n=7, kind='noise', note='#18 Sanket 9:59 "audio needs to be cleaned up here too": a 160 ms voiced mouth sound / '
+         'aborted syllable (598.06–598.22, −36 dBFS, periodic, no word for Parakeet or Whisper) in the pause "…work with anybody. ⟨x⟩ As long as…"; '
+         'removed with its decay (598.000–598.292), 0.39 s of pause left'),
     dict(t=5162 / FPS, n=5, kind='fricative', note='#12 Sanket 3:35 "gets said weirdly": raw take (no edit within 8 s) holds a 380 ms /s/ '
          '(215.00–215.38, ZCR 7 kHz); 5 frames of the steady hiss removed with a 10 ms crossfade → 170 ms /s/', xfade=0.010),
 ]
@@ -88,7 +93,7 @@ def main():
     out = dict(doc='US vs Cartels fix round 1 — VO timeline ops on master v1 (Agent V, tools/ct_fix_cuts.py). v2 time = preroll + map(v1). '
                'del: v1 [t, t+del) removed from audio AND picture (whole frames, silence only except #12 fricative); '
                'ins: raw VO span src inserted at v1 t, picture frame held. Audio joins: crossfade xfade s taken from the removed span.',
-               fps=FPS, preroll=0, v1_len=round(V1_FRAMES / FPS, 6), ops=[])
+               fps=FPS, preroll=PREROLL, v1_len=round(V1_FRAMES / FPS, 6), ops=[])
     for o in ops:
         e = dict(t=o['t'], **({'del': round(o['dele'], 6)}), frames=o['frames'], kind=o['kind'], xfade=o['xfade'], words=o['words'])
         for k in ('run', 'left', 'jump', 'note'):
