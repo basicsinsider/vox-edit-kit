@@ -97,6 +97,12 @@ def main():
             print("  FAILED:", e)
     REQ.write_text(json.dumps(items, indent=1))
     sh("git", "add", "-A")
+    # outputs may sit under a .gitignore'd folder (e.g. assets/**/_raw/*.mp4): force-add each one (and its split parts)
+    for it in items:
+        if it.get("done"):
+            o = ROOT / it["out"]
+            for f in ([o] if o.exists() else []) + sorted(o.parent.glob(o.name + ".part-*")):
+                sh("git", "add", "-f", str(f.relative_to(ROOT)))
     sh("git", "commit", "-m", f"fetch relay: {done} file(s) downloaded locally")
     sh("git", "push", "origin", branch)
     print(f"\n{done} fetched. Tell the cloud session: 'pulled — git pull origin {branch}'.")
