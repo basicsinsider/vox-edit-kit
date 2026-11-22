@@ -25,7 +25,7 @@ want = set(sys.argv[1:])
 import re as _re, glob as _glob
 for _f in sorted(_glob.glob(str(ROOT / "compositions/*.html"))):
     _src = open(_f).read()
-    _m = _re.search(r'data-composition-id="((?:seg|intro|ivs|pys|pd|c\d+s)\d+|nv[a-z]*\d*)"[^>]*data-duration="([\d.]+)"', _src)
+    _m = _re.search(r'data-composition-id="((?:seg|intro|ivs|pys|pd|c\d+s)\d+|nv[a-z]*\d*|ct[a-z]*\d*)"[^>]*data-duration="([\d.]+)"', _src)
     if _m:
         SAMPLES.append((_m.group(1), "compositions/" + _f.split("/")[-1], float(_m.group(2))))
 items = [s for s in SAMPLES if (not want or s[0] in want) and (ROOT / s[1]).exists()]

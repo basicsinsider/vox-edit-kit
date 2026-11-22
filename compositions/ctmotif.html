@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8" /></head>
+<body>
+<template>
+  <style>
+    #root { position: absolute; inset: 0; overflow: hidden; background: var(--night); }
+    .ctd-scene { position: absolute; inset: 0; overflow: hidden; visibility: hidden; opacity: 0; }
+    .ctd-shot { position: absolute; inset: 0; overflow: hidden; transform-origin: 50% 50%; background: var(--night); }
+    .ctd-photo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: saturate(0.55) contrast(1.05) brightness(0.8); }
+    .ctd-scrim { position: absolute; inset: 0;
+      background: linear-gradient(180deg, transparent 38%, color-mix(in srgb, var(--night) 70%, transparent) 100%); }
+    #ctmotif-grain, #ctmotif-dust, #ctmotif-vig { z-index: 8; }
+  </style>
+
+  <div id="root" data-composition-id="ctmotif" data-duration="26" data-width="1920" data-height="1080">
+    <svg id="ctmotif-defs" width="0" height="0" style="position:absolute"></svg>
+
+    <!-- A · 0–10.6 · THE DEAL, full frame on night: build → focus find → focus arrest → stamp → cross -->
+    <div class="ctd-scene" id="ctmotif-a"><div class="ctd-shot" id="ctmotif-a-shot">
+      <div id="ctmotif-deal"></div>
+    </div></div>
+
+    <!-- B · 10.6–13.6 · THE DEAL compact band over a photo + credit -->
+    <div class="ctd-scene" id="ctmotif-b"><div class="ctd-shot" id="ctmotif-b-shot">
+      <img class="ctd-photo" id="ctmotif-b-img" src="assets/cartels/places/tarmac_cdmx_arrival_frame_1.jpg" />
+      <div class="ctd-scrim"></div>
+      <div id="ctmotif-dealc"></div>
+      <div id="ctmotif-bcred"></div>
+    </div></div>
+
+    <!-- C · 13.6–19.6 · TARGET FILE with photo: open, photo, typed rows, CAPTURED, push in -->
+    <div class="ctd-scene" id="ctmotif-c"><div class="ctd-shot" id="ctmotif-c-shot">
+      <div id="ctmotif-f1"></div>
+    </div></div>
+
+    <!-- D · 19.6–23.0 · TARGET FILE without photo + KILLED -->
+    <div class="ctd-scene" id="ctmotif-d"><div class="ctd-shot" id="ctmotif-d-shot">
+      <div id="ctmotif-f2"></div>
+    </div></div>
+
+    <!-- E · 23.0–26 · footage with date/place tag + credit -->
+    <div class="ctd-scene" id="ctmotif-e"><div class="ctd-shot" id="ctmotif-e-shot">
+      <video id="ctmotif-e-v" class="ctd-photo" src="assets/cartels/footage/m1_kuroda_empty_field.mp4" muted playsinline
+        data-start="22.8" data-duration="3.2" data-media-start="7.0"></video>
+      <div id="ctmotif-tag"></div>
+      <div id="ctmotif-ecred"></div>
+    </div></div>
+
+    <div id="ctmotif-grain" class="tx tx-grain" style="background-image:url('assets/textures/grain_01_norm.jpg')"></div>
+    <div id="ctmotif-dust" class="tx tx-dust" style="background-image:url('assets/textures/dust_02.jpg')"></div>
+    <div id="ctmotif-vig" class="vignette"></div>
+  </div>
+
+  <script>
+  (function () {
+    const SEG = "ctmotif", DURATION = 26;
+    const S = (s) => +s.toFixed(3);   // demo: local seconds (a real segment uses T(master) for text / S(master) for structure)
+    const tl = gsap.timeline({ paused: true });
+    const $ = (id) => document.getElementById(SEG + "-" + id);
+    const defs = $("defs");
+
+    // ---------- scenes ----------
+    const SC = [["a", 0, 10.6, "night"], ["b", 10.6, 13.6, "photo"], ["c", 13.6, 19.6, "paper"], ["d", 19.6, 23.0, "paper"], ["e", 23.0, 26, "photo"]];
+    const GROUND = { paper: [0.3, 0.14, 0.22], night: [0.9, 0.42, 0.4], photo: [0.5, 0.3, 0.35] };
+    SC.forEach((s, i) => {
+      const el = $(s[0]);
+      if (i === 0) gsap.set(el, { autoAlpha: 1 });
+      else tl.fromTo(el, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.001, immediateRender: false }, S(s[1]));
+      if (s[2] < DURATION) tl.set(el, { autoAlpha: 0 }, S(s[2]) + 0.2);
+    });
+    gsap.set([$("vig"), $("dust"), $("grain")], { opacity: 0 });
+    SC.forEach((s) => { const v = GROUND[s[3]]; tl.set([$("vig"), $("dust"), $("grain")], { opacity: (i) => v[i] }, S(s[1])); });
+    const whipN = { n: 0 };
+    function whip(a, b, t, o) {
+      o = Object.assign({ dir: 1, vertical: false, dur: 0.32 }, o);
+      const k = ++whipN.n, ba = FX.whipDefs(defs, SEG + "-wa" + k), bb = FX.whipDefs(defs, SEG + "-wb" + k), h = o.dur / 2;
+      const A = $(a + "-shot"), B = $(b + "-shot");
+      tl.set(A, { filter: "url(#" + SEG + "-wa" + k + ")" }, t - h - 0.01); tl.set(A, { filter: "none" }, t + 0.06);
+      tl.set(B, { filter: "url(#" + SEG + "-wb" + k + ")" }, t - 0.001); tl.set(B, { filter: "none" }, t + h + 0.02);
+      FX.whip(tl, A, B, t, { dir: o.dir, vertical: o.vertical, dur: o.dur, blurA: ba, blurB: bb });
+    }
+    FX.grain($("grain"), 731);
+    FX.dust($("dust"), 732, 2);
+
+    /* ===== A · THE DEAL ===== */
+    const deal = CT.deal($("deal"), { prefix: SEG + "-deal", ground: "night", gate: [0, 10.9] });
+    deal.build(tl, S(0.4));
+    deal.focus(tl, S(2.7), "find");
+    deal.focus(tl, S(4.4), "arrest");
+    deal.focus(tl, S(6.0), null);
+    deal.stamp(tl, S(6.3), "Officially");
+    deal.unstamp(tl, S(7.6));
+    deal.cross(tl, S(7.9));
+    tl.fromTo($("deal"), { scale: 1 }, { scale: 1.015, duration: 10.2, ease: "none", immediateRender: false }, S(0.4));
+
+    /* ===== B · compact band over a photo ===== */
+    whip("a", "b", S(10.6), { dir: 1 });
+    tl.fromTo($("b-img"), { scale: 1.04 }, { scale: 1.1, duration: 3.4, ease: "none", immediateRender: false }, S(10.4));
+    const dealc = CT.deal($("dealc"), { prefix: SEG + "-dealc", ground: "none", compact: true, kicker: "The deal", gate: [10.3, 13.9] });
+    dealc.build(tl, S(10.75));
+    dealc.focus(tl, S(12.4), "find");
+    CT.credit($("bcred"), "Video: SEDENA");
+
+    /* ===== C · target file with photo ===== */
+    whip("b", "c", S(13.6), { dir: 1, vertical: true });
+    const f1 = CT.file($("f1"), { prefix: SEG + "-f1", accent: "steel", photo: "assets/cartels/people/meza_fbi_photo_1.jpg",
+      name: "Fausto Isidro Meza Flores", alias: "Chapo Isidro", kicker: "Target file", tag: "Sinaloa",
+      rows: [["Reward", "$5,000,000"], ["List", "FBI Ten Most Wanted"], ["Charged", "Washington DC, 2012"]], gate: [13.3, 19.9] });
+    f1.open(tl, S(13.75));
+    f1.photo(tl, S(14.2));
+    f1.row(tl, S(15.2), 0);
+    f1.row(tl, S(15.9), 1);
+    f1.row(tl, S(16.9), 2);
+    f1.stamp(tl, S(18.1), "captured");
+    f1.pushIn(tl, S(17.7), 1.07);
+
+    /* ===== D · target file without photo ===== */
+    whip("c", "d", S(19.6), { dir: -1 });
+    const f2 = CT.file($("f2"), { prefix: SEG + "-f2", accent: "ember", photo: null, tilt: 1.2,
+      name: "Nemesio Oseguera Cervantes", alias: "El Mencho", kicker: "Target file", tag: "CJNG",
+      rows: [["Place", "Tapalpa, Jalisco"], ["Date", "22 Feb 2026"]], gate: [19.3, 23.3] });
+    f2.open(tl, S(19.7));
+    f2.row(tl, S(20.6), 0);
+    f2.row(tl, S(21.2), 1);
+    f2.stamp(tl, S(22.0), "killed");
+
+    /* ===== E · date tag + credit on footage ===== */
+    whip("d", "e", S(23.0), { dir: 1 });
+    tl.fromTo($("e-v"), { scale: 1.02 }, { scale: 1.07, duration: 3.2, ease: "none", immediateRender: false }, S(22.8));
+    const tag = CT.dateTag($("tag"), { prefix: SEG + "-tag", place: "Guasave, Sinaloa", date: "20 Nov 2026" });
+    tag.in(tl, S(23.3));
+    CT.credit($("ecred"), "Video: LMP broadcast");
+
+    FX.mount(tl, DURATION);
+    window.__timelines[SEG] = tl;
+  })();
+  </script>
+</template>
+</body>
+</html>
