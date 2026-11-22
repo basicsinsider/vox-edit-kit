@@ -382,12 +382,17 @@ GAIN = {
     "card_swipe": (0.05, 0.065), "atm": (0.045, 0.06), "rubber_stamp": (0.08, 0.11), "music_box": (0.025, 0.035),
     "gavel": (0.08, 0.10), "camera_flash": (0.05, 0.07), "handcuffs": (0.05, 0.065), "stadium_crowd": (0.04, 0.055),
     "crack": (0.07, 0.09),   # ice crack (number/glass splitting)
+    # Cartels types (project/cartels/SOUND_PLAN.md §4) — Epidemic recordings, cut per event; violence only implied, far away
+    "helicopter": (0.05, 0.07), "gunfire_distant": (0.025, 0.035), "vehicle_fire": (0.05, 0.065), "walkie": (0.04, 0.055),
+    "uav_drone": (0.04, 0.055), "plane_takeoff": (0.07, 0.09), "boat_engine": (0.05, 0.07), "folder_drop": (0.07, 0.09),
+    "cell_door": (0.07, 0.09), "door_kick": (0.07, 0.09), "convoy": (0.05, 0.065),
     "bleep": (1.0, 1.0),   # not used: bleeps are placed at a fixed level re the VO (place_bleeps)
 }
 LOWTYPES = {"boom_low", "stamp_thud", "explosion_distant", "heartbeat"}
 SFX_TRIM_DB = -3.0   # this VO is quiet (speech peaks ~ -16 dBFS): trims the table so SFX sit ~20 dB under local VO peaks
 AMBTYPES = {"projector_loop", "crt_hum", "wind", "factory_hum", "crowd_room", "tube_hum", "city_night",
-            "crowd_chant", "crowd_murmur", "newsroom"}          # Paraguay: protest chants, indoor walla, newsroom
+            "crowd_chant", "crowd_murmur", "newsroom",          # Paraguay: protest chants, indoor walla, newsroom
+            "stadium_walla", "night_insects", "sea", "wind_pines"}   # Cartels: ballpark walla, rural night, open sea, Sierra pines
 
 
 def epi(name, start=0.0, dur=None):
@@ -618,6 +623,85 @@ def render_epidemic(m, i, rng):
     if ty == "burn_crackle" and (d or 0) >= 2.0:
         y = fade(epi("fire_burning_crackles", float(rng.uniform(1, 25)), d), 0.4, min(0.8, d / 3))
         return y, 0.0, f"epi:fire_burning_crackles {d:.1f}s"
+    # ---------------- Cartels types (project/cartels/SOUND_PLAN.md §4)
+    if ty == "helicopter":              # distant rotor bed under night footage; "pass/close/flyby" → mid-distance pass
+        dur = max(1.5, d or 4.0)
+        if any(k in note for k in ("pass", "close", "flyby", "fly by", "overhead")):
+            nm = "helicopter_military_passby_mid"
+        elif any(k in note for k in ("away", "leave", "leaves", "depart")):
+            nm = "helicopter_distant_fly_away"
+        else:
+            nm = ["helicopter_distant_01", "helicopter_distant_fly_away"][i % 2]
+        full = epi(nm)
+        lo, hi = {"helicopter_military_passby_mid": (0.5, 28.0), "helicopter_distant_01": (1.0, 12.0),
+                  "helicopter_distant_fly_away": (0.5, 29.0)}[nm]        # the recordings' audible spans (1 s energy)
+        if hi - lo < dur:                                                # long beds: tile the audible span
+            span = full[int(lo * SR):int(hi * SR)]
+            y = np.tile(span, (int(np.ceil(dur / (hi - lo))) + 1, 1))[:int(dur * SR)]
+        else:
+            a = float(rng.uniform(lo, hi - dur))
+            y = full[int(a * SR):int((a + dur) * SR)]
+        y = fade(y, min(1.0, dur / 3), min(1.2, dur / 3))
+        return y, 0.0, f"epi:{nm} {dur:.1f}s"
+    if ty == "gunfire_distant":         # FAR AWAY pops only (no close shots, nothing that implies injury); "burst" → a burst
+        nm = ("rifle_burst_distant_reverb" if i % 2 else "guns_automatic_big_distant") if "burst" in note \
+            else ["gunshot_distant_heavy_02", "gunshot_distant_heavy_01"][i % 2]
+        y = epi(nm)
+        o = onset(y)
+        y = fade(y[max(0, int((o - 0.02) * SR)):int((o + min(d or 2.5, 6.0)) * SR)], 0.005, 0.6)
+        return y, 0.02, f"epi:{nm}"
+    if ty == "vehicle_fire":            # a burning truck: flame roar under the crackle (dur)
+        dur = max(1.0, d or 3.0)
+        y = fade(epi("fire_flames_large_01", float(rng.uniform(1.0, max(1.1, 23.0 - dur))), dur), 0.4, min(0.8, dur / 3))
+        return y, 0.0, f"epi:fire_flames_large_01 {dur:.1f}s"
+    if ty == "walkie":                  # radio squelch / static burst (police/army radios); dur > 2 → interference excerpt
+        if (d or 0) > 2.0:
+            y = fade(epi("walkie_static_02", float(rng.uniform(0.0, max(0.1, 7.5 - d))), min(d, 7.5)), 0.02, 0.2)
+            return y, 0.0, f"epi:walkie_static_02 {min(d, 7.5):.1f}s"
+        nm = ["walkie_engage", "walkie_static_01"][i % 2]
+        y = epi(nm)
+        return fade(y, 0.0, 0.15), onset(y), f"epi:{nm}"
+    if ty == "uav_drone":               # high-altitude spy drone: a quiet small prop plane far above (dur); "hum" → electric hum
+        dur = max(1.5, d or 4.0)
+        nm = "hub_drone_electric_hum" if "hum" in note else "prop_plane_small_flyby_quiet"
+        full = epi(nm)
+        a = float(rng.uniform(2.0, max(2.1, len(full) / SR - dur - 1.0)))
+        y = fade(full[int(a * SR):int((a + dur) * SR)], min(1.2, dur / 3), min(1.5, dur / 3))
+        return y, 0.0, f"epi:{nm} {dur:.1f}s"
+    if ty == "plane_takeoff":           # distant jet take-off (prisoner flights, the Air Force plane); peaks mid-move
+        full = epi("jet_takeoff_distant")
+        lk = loudest(full)
+        span = max(d or 3.0, 2.0) + 4.0
+        a = max(0.0, lk - span / 2)
+        y = fade(full[int(a * SR):int((a + span) * SR)], 1.5, 1.5)
+        return y, (lk - a) - (d or 3.0) / 2, "epi:jet_takeoff_distant (peak mid-move)"
+    if ty == "boat_engine":             # go-fast boat passing at medium distance; peaks mid-move
+        full = epi("speedboat_pass_medium")
+        lk = loudest(full)
+        span = max(d or 3.0, 2.0) + 3.0
+        a = max(0.0, lk - span / 2)
+        y = fade(full[int(a * SR):int((a + span) * SR)], 1.0, 1.5)
+        return y, (lk - a) - (d or 3.0) / 2, "epi:speedboat_pass_medium (peak mid-move)"
+    if ty == "folder_drop":             # TARGET FILE / dossier put down on the desk
+        nm = ["paper_folder_put_down", "clip_file_put_down"][i % 2]
+        y = epi(nm, 0.0, 1.2) if nm == "paper_folder_put_down" else epi(nm)
+        return fade(y, 0.0, 0.15), onset(y), f"epi:{nm}"
+    if ty == "cell_door":               # prison / jail door slam (American prison, Brooklyn jail)
+        y = epi("prison_door_slam")
+        o = onset(y)
+        return fade(y[max(0, int((o - 0.02) * SR)):], 0.005, 0.8), 0.02, "epi:prison_door_slam"
+    if ty == "door_kick":               # the door kicked in (raids) — one short wood hit
+        y = epi("door_kick_open")
+        return y, onset(y), "epi:door_kick_open"
+    if ty == "convoy":                  # vehicles rolling past (convoys, the night drive); "idle" → distant truck idling
+        dur = max(1.5, d or 4.0)
+        nm = "truck_idle_distance" if "idle" in note else "van_drive_exterior_loop"
+        full = epi(nm)
+        a = float(rng.uniform(0.0, max(0.1, len(full) / SR - dur - 0.2)))
+        seg = full[int(a * SR):int((a + dur) * SR)]
+        if len(seg) < int(dur * SR):    # the van loop is 13.9 s: tile it for long drives
+            seg = np.tile(full, (int(np.ceil(dur * SR / len(full))) + 1, 1))[:int(dur * SR)]
+        return fade(seg, min(1.0, dur / 3), min(1.2, dur / 3)), 0.0, f"epi:{nm} {dur:.1f}s"
     return None
 
 
@@ -982,6 +1066,23 @@ def build_sfx_and_amb(markers, scenes, act, vo):
             amb[i0:i0 + k_] += g * y[:k_]
             amb_log.append(dict(t=m["t"], type=m["type"], dur=d, gain=round(float(g), 4), file=nm))
             continue
+        elif m["type"] in ("stadium_walla", "night_insects", "sea", "wind_pines") or (
+                m["type"] == "wind" and EPIDEMIC and any(k in m.get("note", "").lower() for k in ("pine", "forest", "sierra", "tapalpa"))):
+            # Cartels (SOUND_PLAN §4): felt, not heard — ballpark walla, rural Sinaloa night, open sea, wind in the Sierra pines
+            nm, rel = {"stadium_walla": ("stadium_crowd_walla", -27.0), "night_insects": ("crickets_night", -27.0),
+                       "sea": ("ocean_medium_waves_wind", -27.0)}.get(m["type"], ("wind_pine_tree", -26.0))
+            full_len = sf.info(os.path.join(AUDIO, "epidemic", "sfx", nm + ".wav")).duration
+            y = epi(nm, float(rng.uniform(0.5, max(0.6, full_len - d - 1.0))) if full_len > d + 2.0 else 0.0, d + 0.6)
+            if full_len < d + 0.6:      # loop short recordings (wind in pines 43 s, crickets 51 s) for long scenes
+                src = epi(nm)
+                y = np.tile(src, (int(np.ceil((d + 0.6) * SR / len(src))) + 1, 1))[:int((d + 0.6) * SR)]
+            g = db(VO_LUFS + rel - integrated_lufs(y)) * (db(-4) if quiet else 1.0)
+            y = fade(y, min(1.0, d / 3), min(1.5, d / 3))
+            i0 = int(m["t"] * SR)
+            k_ = min(len(y), N - i0)
+            amb[i0:i0 + k_] += g * y[:k_]
+            amb_log.append(dict(t=m["t"], type=m["type"], dur=d, gain=round(float(g), 4), file=nm))
+            continue
         elif m["type"] == "city_night" or (m["type"] == "wind" and EPIDEMIC and
                                              any(k in m.get("note", "").lower() for k in ("winter", "snow", "moscow", "cold"))):
             nm = "city_night_distant_traffic_01" if m["type"] == "city_night" else "wind_winter_08"
@@ -1107,7 +1208,20 @@ if __name__ == "__main__":
              "stadium": "stadium_crowd", "cheer": "stadium_crowd", "crowd_cheer": "stadium_crowd",
              "protest": "crowd_chant", "chant": "crowd_chant", "chants": "crowd_chant", "protest_chant": "crowd_chant",
              "murmur": "crowd_murmur", "walla": "crowd_murmur", "office": "newsroom", "newsroom_amb": "newsroom",
-             "marker_short": "marker_scratch", "crack_glass": "crack", "ice_crack": "crack", "glass_crack": "crack"}
+             "marker_short": "marker_scratch", "crack_glass": "crack", "ice_crack": "crack", "glass_crack": "crack",
+             # Cartels: likely editor spellings -> SOUND_PLAN §4 types
+             "chopper": "helicopter", "helicopters": "helicopter", "rotor": "helicopter", "heli": "helicopter",
+             "gunfire": "gunfire_distant", "gunshots": "gunfire_distant", "gunshot": "gunfire_distant", "shots": "gunfire_distant",
+             "gunfire_far": "gunfire_distant", "car_fire": "vehicle_fire", "truck_fire": "vehicle_fire", "burning_truck": "vehicle_fire",
+             "flames": "vehicle_fire", "radio_chatter": "walkie", "walkie_talkie": "walkie", "squelch": "walkie",
+             "spy_drone": "uav_drone", "uav": "uav_drone", "drone_hum": "uav_drone", "takeoff": "plane_takeoff",
+             "plane_take_off": "plane_takeoff", "jet_takeoff": "plane_takeoff", "boat": "boat_engine", "speedboat": "boat_engine",
+             "boat_pass": "boat_engine", "file_drop": "folder_drop", "folder": "folder_drop", "dossier_drop": "folder_drop",
+             "prison_door": "cell_door", "jail_door": "cell_door", "door_slam": "cell_door", "kick": "door_kick",
+             "door_kicked": "door_kick", "trucks": "convoy", "convoy_pass": "convoy", "vehicles": "convoy",
+             "stadium_murmur": "stadium_walla", "ballpark": "stadium_walla", "crowd_stadium": "stadium_walla",
+             "insects": "night_insects", "crickets": "night_insects", "night_rural": "night_insects", "ocean": "sea",
+             "waves": "sea", "sea_waves": "sea", "pine_wind": "wind_pines", "wind_pine": "wind_pines", "forest_wind": "wind_pines"}
     for m in markers:
         m["type"] = ALIAS.get(m["type"], m["type"])
         if m.get("level") in ("loud", "hero", "high"):

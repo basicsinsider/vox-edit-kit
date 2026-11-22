@@ -795,6 +795,19 @@ on action. Use it whenever the narrator quotes someone or introduces a historic 
 - [ ] Smooth long eases, 12 fps. [ ] Cuts on action; whips, no iris. [ ] No photo/clip used > 2× in a chunk.
 
 ## Changelog
+- 2026-11-22 — **US vs Cartels (`project/cartels/`, 22:22, no face cam)**: VO-only take (48 kHz mono f32, 24:46) cut by a phrase-anchored EDL
+  (`project/cartels/gen/edl_keep.py` → `build_edl.py` → `render_vo.py`: 1 ms cut grid since there is no picture; float samples copied, no
+  gain) → 22:22. The VO was a condensed improvisation of Krish's script (several script chapters not narrated) — always compare ASR vs
+  script before planning. Checks that caught real faults: re-ASR of the cut VO (`gen/vo_diff.py`) found a missed retake ("It was called the
+  joined…") and two leaked fragments at joins ("he had BEEN already been", "American PIT prison") — fix by keeping a whole 2nd take instead
+  of splicing mid-phrase. Whisper on a 7 s window confirmed a real slip ("100,000 troops") vs an ASR error. New palette `lib/palette_cartels.css`
+  (ember = cartels, steel = USA, olive = Mexican state); new motifs `lib/ct_motifs.{js,css}` (`CT.deal`, `CT.file`, `CT.dateTag`, `CT.credit`,
+  docs `project/cartels/MOTIFS.md`), auto-loaded for `ct*` by build_index/build_master. **`tools/build_index.py` only builds ids its regex
+  knows** — a new prefix (here `ct…`) must be added there or `build_index` writes an empty index and every snapshot is black. Crimson Pro has
+  no "↔" glyph (like Haskoy's missing "="). `tools/render_piece.sh` takes `SCALE=720` (render 1080p, push 720p pieces — half the git size;
+  the repo is near GitHub's size quota). Map kit: `tools/ct_maps.py` (north_america, mexico, sinaloa, chihuahua + `relief` style + `_height.png`,
+  aerials of Kuroda Park, Davis-Monthan AFB, Tapalpa, Palacio Nacional; README "Cartels project"). Every Opus agent stopped at once on the
+  account's usage limit; resuming each with SendMessage after the reset continued from where it stopped (no work lost).
 - 2026-11-18 — **NVIDIA review fixes (frame.io notes from Sam, delivered as one 4K file)**: (1) scoreboard rows not yet reached are
   BLURRED — `NV.scoreboard({blur:[2,3]})` + `api.unblur(tl, n, t)` on the spoken cue ("Second job" reveals row 2); (2) ASR misheard
   "about ten percent" as "1%" → chart and transcript fixed (re-transcribe a 3–10 s window with parakeet when a number looks odd);

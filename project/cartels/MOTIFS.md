@@ -6,6 +6,12 @@ load both (after fx.js / palette_cartels.css) for every composition whose id sta
 the API. Demo of everything: `compositions/ctmotif.html` (26 s, id `ctmotif`); stills in `project/cartels/motif_stills/` (01–08).
 Architecture copied from the NVIDIA motifs (`project/nvidia/MOTIFS.md`).
 
+Demo assets: the Meza Flores photo is `assets/cartels/people/meza_fbi_photo_1.jpg` (FBI wanted-poster portrait, 556×692 — small,
+fine for the 320×396 photo window only). As of 2026-11-22 04:40 `assets/cartels/people/` has NO SOURCES.md yet (the people
+gatherer has not written it): it must get a SOURCES line before any segment uses the photo. The demo's compact-band still
+(`tarmac_cdmx_arrival_frame_1.jpg`, credit "Video: SEDENA") and the date-tag clip (`m1_kuroda_empty_field.mp4`, logged in
+`assets/cartels/footage/SOURCES.md`) are demo placeholders.
+
 Colour code (palette_cartels.css): **ember = cartels, steel = USA, olive = Mexico's state, yellow = highlighter / key number only.**
 
 ## Rules (all motifs)
@@ -71,7 +77,7 @@ const f = CT.file($("file"), {
   ground: "paper",          // "paper" (own sand ground + desk vignette) | "none" (lay it over your own ground)
   photo: "assets/cartels/people/meza_fbi_photo_1.jpg",   // null → silhouette placeholder
   photoPos: "50% 30%",      // object-position of the photo in its 320×396 window
-  name: "Fausto Isidro Meza Flores", alias: "Chapo Isidro",   // alias null → no alias line
+  name: "Fausto Isidro Meza Flores", alias: "El Chapo Isidro",   // alias null → no alias line
   rows: [["Reward", "$5,000,000"], ["List", "FBI Ten Most Wanted"], ["Charged", "Washington DC, 2012"]],   // ≤ 4 rows, values ≤ ~24 chars
   accent: "steel",          // ember (cartel file) | steel (US target package) | olive (Mexican state)
   kicker: "Target file", tag: "Sinaloa",   // header left / right (tag null = none)

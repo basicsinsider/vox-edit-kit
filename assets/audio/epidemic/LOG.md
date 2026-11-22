@@ -331,3 +331,95 @@ card_swipe_04, whoosh_soft, whoosh_swoosh_light, whoosh_swoosh_wide, glitch_data
 ice_crack_medium_long_01, keyboard_typing_apple, keyboard_typing_17s, lens_autofocus_f4_01/_03, camera_focus_nikon_d3100,
 heartbeat_cinematic_54bpm, jet_pass_overhead_01, cash_register_kaching, factory_machine_room_electronics_hum,
 factory_hum_light_activity_01, crowd_walla_indoor_large_02 (25 files ≈ 250 MB, `tools/epidemic_sfx_fetch.py`).
+
+### "Cartels (2026-11-22)" — US vs Cartels (Searching Lessons) — cue sheet `project/cartels/music_cuesheet.json` (generator `project/cartels/gen/make_cuesheet.py`), plan `project/cartels/SOUND_PLAN.md`
+Key family **G minor / Bb major** (new: Taiwan + Ivan D minor / F, Paraguay E minor / G, podcast A minor / C, NVIDIA C minor / Eb). Crime /
+geopolitics investigation: dark drone-pulses for the night raids, sneaking investigative pulses for Sam's wry explainer, crime-scene suspense
+for the CIA in Chihuahua, a near-silent drone for the cliff crash, a chase build for the capture, a hopeful-but-unresolved ending. Latin colour
+kept subtle (Running through the Dark's acoustic/plucked lines for Sinaloa); no mariachi/"narco" parody material was considered.
+Found with SearchRecordings (30 terms: "cartel documentary", "narco tension", "nylon guitar suspense dark", "marimba suspense dark",
+"crime scene mysterious", "low strings ostinato suspense", …) + SearchSimilarToRecording (seeds Melting Glass, Desert Whispers, Neon Noir,
+Formations, The Investigator, Unsolved Issues, Where It All Happened, Crossing the Border, Tracker, then Suspension, DB Cooper, Running
+through the Dark, Honest Intentions, Symmetry, Triple Fault, Have We Met Before, Tvivel, Reflections, Mortal Separation): 943 candidates,
+630 keyed from the LQ previews (`work/sound/keys.json`; F# minor 28, G minor 27, B minor 19 usable — G minor had the best crime/suspense
+fits incl. tempo-free ones), confirmed on the WAVs (`ANALYSIS.md`: all twelve G minor r 0.72–0.94; the drone Bb major).
+Fetched one at a time (`work/sound/scripts/fetch_one.sh`: `epidemic_fetch.py <id> <name> FULL MELODY BASS DRUMS INSTRUMENTS` → analyze →
+§10.8 checks `work/sound/scripts/checks.py`), then **only the stems the cue sheet uses were kept and converted to 16-bit** (`keep16.sh`;
+a re-download is 24-bit — levels identical). DRUMS answered NOT_FOUND for The Determination (and Suspension); Running through the Dark has
+no BASS stem; every track has a MELODY stem (Zone of Deception's is silent for 120 s and in B → not used; DB Cooper's is 13 LU under → not used).
+§10.8 checks (60 s from 30 s: residual = full − Σ stems re full; Σ = stems-sum loudness re full; pulse = onset-autocorrelation peak/median of
+each stem, 0.25–2 s lags — calibrated 2026-11-22: sustained pad 2.6, noise 2.1, random swells 4.1, 120-bpm click 14.3):
+clean Σ: Symmetry −25.5 dB, Running through the Dark −9.1, The Determination −9.7; stems mastered separately (−3…+4 dB, used as layers as
+in Paraguay/NVIDIA): DB Cooper +4.0, Acrolith +0.9, Mortal Separation −2.0, What Lurks Below +0.2, Honesty Matters +1.3; stems 4.5–6.5 LU
+under the full → `full` is the layer: Perplexed (−5.1 LU), Have We Met Before (−4.8; its melody/instruments used for thinner passes),
+Timepass (−6.5), Triple Fault (−4.5; its instruments, pulse 2.1, used as a tempo-free texture). **Drone test:** Zone of Deception
+instruments 2.0 (bass 8.4 / drums 36.5 → not used) — tempo-free; preview tests rejected Suspension (instruments 10.3), Tvivel (8.9),
+The Seeds We Sow (bass 28.8); Abandoning Sendai (melody 2.2) is the spare drone.
+
+| folder | title — artist | kosmosId | stems on disk (16-bit) | bpm | key (meas.) | role in Cartels |
+|---|---|---|---|---|---|---|
+| `zone_of_deception/` | Zone of Deception — DEX 1200 (dark ambient, suspense) | 7c2c6403-bc26-4caf-af4f-f8241e992328 | instruments | 53 (free) | Bb major (0.72; Bb–C–D–F) | DRONE glue under every join; alone for the cliff crash and the net-closing breath |
+| `db_cooper/` | DB Cooper — Craft Case (ambient, angry, drone, restless) | 7a35068b-a18b-3e0c-b7fc-e86568b4991c | instruments, bass, drums | 120 | G minor (0.88) | THE NIGHT: cold open (ballpark → helicopters → "one man"); Caracas/Maduro; the aftermath + ballpark callback |
+| `perplexed/` | Perplexed — Michael Rothery (ambient, mysterious) | 6e98b43f-66b3-3a32-b963-d1bcbdfeff61 | full, bass, melody | 120 | G minor (0.94) | THE QUESTION: "Is this a war on cartels? Is this actually working?" (title) ↔ "Is this working?" (end) |
+| `running_through_the_dark/` | Running through the Dark — Roots and Recognition (acoustic, dark, main title) | 0b7bfc00-4ce1-4f43-8549-7702632ccc76 | instruments, melody | 80 | G minor (0.73) | SINALOA colour: born 1982 → "Silicon Valley" → Beltrán Leyvas; returns for the routes north → Arizona → fentanyl |
+| `symmetry/` | Symmetry — Christoffer Moe Ditlevsen, Jakob Ahlbom (dark, drama, orchestral hybrid) | c875e66e-530a-467c-8c2a-953e4d9c0590 | instruments, bass, melody | 89 | G minor (0.81) | THE WAR: 2008 split → civil war → armed wing → its peak on the 2010 Sonora ambush |
+| `have_we_met_before/` | Have We Met Before — Jon Sumner (mysterious, sneaking) | afdb3c09-1d75-390e-be28-23746624658a | full, melody, instruments | 118 | G minor (0.84) | WRY pulse: the nickname, arrested four times and walked out, the stash, FBI list; returns for the failed raids / tip-offs |
+| `timepass/` | Timepass — Marten Moses (ambient, drone, restless, sneaking) | 39140883-5c95-3f64-b506-cc41af290329 | full | 120 | G minor (0.79) | WASHINGTON: day-one order → terrorist label → armed conflict → tariffs; returns for the ambassador + extradition |
+| `triple_fault/` | Triple Fault — Robert Ruth (angry, crime scene, mysterious) | 3e9f2342-a5ad-319a-8afa-6ee9e379a9fc | full, instruments | 110 | G minor (0.81) | THE PRISONERS: 29 flown to the US → Caro Quintero / 40 years; returns for who gets the credit for El Mencho |
+| `acrolith/` | Acrolith — Anthony Earls (dark, mystery, sneaking) | ef2daa28-47f8-3d3f-b6d0-19e21f094a11 | instruments, bass | 80 | G minor (0.73) | THE DEAL / CIA: spy drones → CIA rules → task force → "Narco Hunters" → target package; returns for the CIA on Mexican raids |
+| `mortal_separation/` | Mortal Separation — Sage Oursler (crime scene, dark, mysterious) | 5931dc33-b72f-3b86-bb47-850f1265d15f | melody, bass, instruments | 90 | G minor (0.73) | CHIHUAHUA: NYT → Guillermo Zuany → visa → witnesses → why the CIA used him → visa back (the file's shape = the segment) |
+| `what_lurks_below/` | What Lurks Below — Jon Björk (crime scene, dark, sad) | cdb756f5-ef64-3849-9037-7ad63861c91a | instruments, bass | 78 | G minor (0.78) | THE APRIL OPERATION: meth lab → convoy → empty lab → night drive; after the silent cliff beat: the scandal → Zuany on the run |
+| `honesty_matters/` | Honesty Matters — Kikoru (chase, fear, suspense) | 6453b54e-d920-328c-bd31-2e6d2bbc0728 | instruments, bass, melody, drums | 101 | G minor (0.80) | THE NET CLOSES → THE CAPTURE: its 74–98 s peak = the ring around the house → "they arrested him" |
+| `the_determination/` | The Determination — Anna Dager, Hanna Ekström (contemporary classical, hopeful, mysterious) | f903f36e-815b-4cb5-84d8-f7bf6a458e91 | melody, bass, instruments | 0 (free) | G minor (0.72) | ENDING: "mostly yes" → weaker drugs → "not going away" → "slowed down just a bit" (no cadence) |
+
+Auditioned for Cartels (previews, key measured; not downloaded): Suspension (Anna Dager & Hanna Ekström, G minor 0.86 — downloaded, tested,
+deleted: instruments pulse 10.3), Abandoning Sendai (John Barzetti, G minor drone — spare glue), Tvivel, The Seeds We Sow / Planting the Seeds
+(David Celeste, G minor sad — spare ending), Reflections (Erik Fernholm, G minor build — spare ending), In Between (Jakob Ahlbom, Bb — spare
+sombre), Coldfront (G minor sad), Evil Tendencies (Farrell Wooten, G minor acoustic — spare Latin colour), Honest Intentions (Johan Glössner,
+G minor contemporary folk — spare), Trace It (Skrya, Bb), Unfoldings / Castle Bravo (Craft Case), Octavium (Robert Ruth), Soil Within
+(Max Anson), Bodyguards (Experia), Pressure Point (Wendel Scherer — too action), Ghost of the Past, Lord Gallagher, Traceless (G minor
+suspense — spares). Other families seen: F# minor (Camino Solo, Fallout, Time Traveller, Raised by Wolves), B minor (Circumstances, Public
+Tragedy, Heard Them Say), C# minor, F minor. All WAVs gitignored — re-download with the ids above.
+
+### SFX for "Cartels" (2026-11-22) — `sfx/` (Epidemic Sound; 96/192 kHz files converted to 48 kHz / 24-bit with soxr after download —
+`work/sound/scripts/to48k.sh` — place_sound reads at 48 kHz anyway; ≈ 0.65 GB for 98 files)
+Re-downloaded by the ids in the tables above (place_sound's Epidemic renders for the existing types; 73 files): whoosh_soft,
+whoosh_swoosh_light/_wide, boom_dark_cinematic_low_hit, boom_cinematic_deep, boom_sub_bass_clean_01, riser_reverse_cymbal_short,
+swell_reverse_timpani_cymbal, paper_slide_wood_table (+_04), rubber_stamp_document_01, stamp_hand_press_short, typewriter_hermes_01/_03,
+camera_focus_nikon_d3100, lens_autofocus_f4_01/_03, shutter_zenit_01/_02, shutter_canon_5d, radio_static_lost_signal_01,
+radio_am_tuning_glitchy_01, phone_vibrate_hand_01/_02, phone_vibrate_call_loop, message_text_ping_01/_02, drone_rc_motor_medium,
+drone_rc_fly_around, explosion_distant_01/_03, boom_distant_explosion_03, car_start_idle_rover, car_w108_start_idle_stop,
+car_door_close_hard, car_trunk_close, keyboard_typing_apple, keyboard_typing_17s, heartbeat_cinematic_54bpm, heartbeat_evil_fat_bass,
+glitch_data_06/_12, fire_burning_crackles, police_siren_distant, door_knock_apartment, handcuffs_click_slow, camera_flash_modern_01,
+press_paparazzi_flashes_medium, stadium_cheer_goal_01, crowd_walla_indoor_large_02, city_night_distant_traffic_01,
+city_night_rooftop_insects, office_aircon_people_quiet, office_small_group_keyboard, restaurant_crowded_distant_01, jet_pass_overhead_01,
+jet_pass_long_distant, gavel_single_01/_02, gavel_x2, cash_register_kaching, coins_drop_01, coins_handful_drop_wood,
+notification_tone_02, notification_app_general_01, app_error_01/_04, phone_ring_04, phone_pushbutton_dial_pickup, ice_crack_medium,
+ice_crack_medium_long_01, factory_hum_light_activity_01, factory_machine_room_electronics_hum.
+
+New for Cartels (25 files; place_sound types added 2026-11-22, see SOUND_PLAN §4):
+
+| file | Epidemic id | Epidemic title | use (place_sound type) |
+|---|---|---|---|
+| helicopter_distant_01.wav | b8587b67-fe38-4104-9e90-50ee17e1a47e | Aircraft, Helicopter, Distant Helicopter (16.7 s) | `helicopter` (default; audible 1–12 s) |
+| helicopter_distant_fly_away.wav | e45a3d50-2f72-467b-9ac1-22866f3dd0bb | Aircraft, Helicopter, Distant Helicopter Fly Away (34 s) | `helicopter` (alt take; note "away/leave") |
+| helicopter_military_passby_mid.wav | f9f4d9ae-25ea-4f61-86dc-ee9dae7e2c0f | Aircraft, Helicopter, Military Cougar, Passby, Mid Distant (55 s; audible 0–28 s) | `helicopter` + note "pass/close/flyby/overhead" |
+| gunshot_distant_heavy_01.wav / _02.wav | 78a332b4-f7ce-49db-b775-fe35d3507fa3 / 444fb7b6-e11e-45e7-ad4a-2fbac3f8829c | Guns, Misc, Distant Gunshot, Heavy Fire 01 / 02 | `gunfire_distant` (far pops, alternating) |
+| rifle_burst_distant_reverb.wav | ee8d4b95-fd97-4f18-8a56-8a2d996c757a | Guns, Automatic, Assault Rifle, Burst Fire, Distant, Reverberant | `gunfire_distant` + note "burst" |
+| guns_automatic_big_distant.wav | 32488a18-aa2c-40fa-a237-5159f9d0c7ed | Guns, Automatic, Big, Distant | `gunfire_distant` + note "burst" (alt) |
+| fire_flames_large_01.wav | a67d5007-1805-4f66-adc6-50073284c3a2 | Fire, Burning, Flames, Large, Movement 01 | `vehicle_fire` (burning trucks; + `fire_crackle` for the crackle) |
+| walkie_engage.wav / walkie_static_01.wav / walkie_static_02.wav | fa03eba4-11c0-43d4-83b3-4cdabacad822 / 8a6283c9-8b79-4e18-8e13-421314131f28 / 155713e0-a681-40d1-92d5-bbb3e0edd3ac | Communications, Static, (Engage, Radio,) Walkie Talkie, Radio Interference 01 / 02 | `walkie` (dur > 2 s → interference excerpt) |
+| prop_plane_small_flyby_quiet.wav | f2276d94-ebaf-496e-90f6-2826288decfa | Aircraft, Prop, Private, Small, Flyby, Quiet, Mountains | `uav_drone` (the CIA's high-altitude spy drones: a quiet prop far above) |
+| hub_drone_electric_hum.wav | dde8f8ce-01a7-481b-b0cf-6dca7477c57b | Electricity, Buzz & Hum, Hub Drone, Electric Hum | `uav_drone` + note "hum" (drone-feed / HUD screens) |
+| jet_takeoff_distant.wav | 081bb2ba-0adf-41d1-b03f-2dc690978fd5 | Aircraft, Jet, Distant, Passenger Plane, Taking Off, Accelerating On Tarmac, Airport | `plane_takeoff` (prisoner flights, the Air Force plane) |
+| stadium_crowd_walla.wav | 5991250f-a67b-4c28-823d-73b7fd69ae79 | Crowds, Sport, Stadium Crowd, Stadium Crowd Walla | `stadium_walla` (ambience: the Guasave ballpark) |
+| wind_pine_tree.wav | 406e6656-2235-47e7-83f8-f3d765060474 | Wind, Vegetation, Wind In Pine Tree | `wind_pines` / `wind` + note "pine/forest/sierra/tapalpa" (Tapalpa, the Sierra, the cliff) |
+| crickets_night.wav | 7f3d4ae0-6388-4521-8ba2-ebbcc06c64ef | Ambience, Insect, Crickets Singing at Night | `night_insects` (rural Sinaloa / Chihuahua nights) |
+| speedboat_pass_medium.wav | a635ab02-99e6-4b46-9fb4-3a028b3099a5 | Boats, Motorboat, Speedboat, V8, Pass By, Slow, Medium Distance | `boat_engine` (go-fast boats; the strike itself = `explosion_distant`) |
+| ocean_medium_waves_wind.wav | 3d49f79f-73c8-4e2a-b59a-cfef1429d686 | Water, Wave, Ocean, Medium Waves, Wind | `sea` (ambience: Caribbean / Pacific) |
+| paper_folder_put_down.wav / clip_file_put_down.wav | 203a961f-320d-468e-a5bf-6a9090614031 / b345b787-06d7-4e35-b33f-2866f3b846e7 | Objects, Office, Paper Folder, Put Down, Scuff / Office Supplies, Clip File, Put Down On Table | `folder_drop` (TARGET FILE / dossier lands; alternating) |
+| prison_door_slam.wav | d7902b85-2040-4eb0-ab7d-026bb61ef123 | Doors, Prison, Slam, Hard, Reverb, Key Jingle, Perspective | `cell_door` (American prison, Brooklyn jail) |
+| door_kick_open.wav | 47277653-cc93-4ea1-ba64-1469fed23c89 | Doors, Wood, Kick Open, Internal | `door_kick` ("kick the door in", raids) |
+| van_drive_exterior_loop.wav / truck_idle_distance.wav | 36ac1572-02ba-411e-a92a-db8ca906b4ef / 164dd4ea-49f0-4b6c-bb4b-9ad81bb49853 | Vehicles, Van, Drive, Exterior, Loop / Vehicles, Freight, Truck, Engine Idle, Slight Distance | `convoy` (dur; note "idle" → truck idling) |
+
+Not kept: banknotes_handle_02 (c7db7f57-…; 14 s of near-silence, −42 LUFS) — use `coins` / `cash_register` for money.
