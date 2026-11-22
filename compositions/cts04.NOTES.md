@@ -27,9 +27,10 @@ A hand-inked horizontal year axis (ink #1d1a16, 5 px), tick + Cooper Hewitt labe
 **Above** the axis = "UNITED STATES" lane (t-label 26 px, steel-dark): the 2012 charge — a white clipping of the FBI poster sentence with a
 yellow highlighter on "originally indicted on May 2, 2012", a steel pin on the axis + dashed steel-dark lead, label-box
 "CHARGED IN THE US · 2012" (steel-dark box, bone Haskoy 40 px). **Below** = "MEXICO" lane (olive-dark label): four pinned sand cards
-270×214 (Haskoy year 80 px, small olive-dark "ARRESTED" stamp box), slightly rotated (−2.5/2/−1.5/2.5°), 2014 twice (second "+1 MONTH");
-then a big ember-dark **RELEASED** stamp (Haskoy 42 px, 4 px border, rotated −11/−6°) slammed across each card, an ember hand-drawn
-circular arrow (↻, r 38, boiling pen filter) on each card's corner = the revolving door; a yellow label-box **4×** sits in the empty
+220×222, each in its own space (≥ 20 px apart; Haskoy year 70 px on top, small olive-dark "ARRESTED" stamp under it), slightly rotated
+(−2.5/1.5/−1.5/2°), 2014 twice side by side (second "+1 MONTH"); then an ember-dark **RELEASED** stamp (Haskoy 32 px, 4 px border, −5/−2°)
+slammed on the LOWER part of each card (years stay readable), an ember hand-drawn circular arrow (↻, r 34, boiling pen filter) on each
+card's corner = the revolving door; a yellow label-box **4×** sits in the empty
 2012–2013 gap of the Mexico lane; an ember dot with a bone ring runs along the axis and dips through every card; a black pen ellipse
 circles all four RELEASED. A thick ember line then keeps running along the Mexico lane to a "DEC 2024" ember-dark label-box.
 To echo it: reuse the same tile + card/stamp styling (classes `.c4-arr` / `.c4-stamp` in cts04.html are local — copy the CSS), or simply
@@ -48,6 +49,11 @@ listing; logged in my SOURCES.md); the FBI poster/photo are public domain.
 - Seizure date tag "Sinaloa · 3 Dec 2024" (not Ahome — the two raids' exact towns differ between reports; the post says "en Sinaloa").
 - sc011 uses a pinned label instead of CT.dateTag: the night date tag was unreadable over the white poster.
 - sc003/sc005/sc006 halate "CHAPO" is the one glow of each night scene.
+
+## Lead QA fix (2026-11-22)
+Board re-laid out (MANUAL §10.10): cards narrowed to 220 px and spread (2014 / 2014 +1 month no longer overlap), RELEASED moved to the lower
+half of each card, 4× clear in the 2012–2013 gap, camera centres nudged for the 96 px margin, the poster credit enters after the 2012 zoom
+(it overlapped the cards). Re-snapshotted 320–335 s (and 310–336 s): clean. Lint 0 errors, sync 0 flagged.
 
 ## Checks
 - lint (`npx --yes hyperframes@0.8.217 lint compositions/cts04.html`): 0 errors, 3 warnings (duplicate img discovery — the Guzmán crop is

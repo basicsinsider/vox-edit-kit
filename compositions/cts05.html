@@ -1,0 +1,704 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8" /></head>
+<body>
+<template>
+  <style>
+    #root { position: absolute; inset: 0; overflow: hidden; background: var(--night); }
+    .c5-scene { position: absolute; inset: 0; overflow: hidden; visibility: hidden; opacity: 0; }
+    .c5-shot { position: absolute; inset: 0; overflow: hidden; transform-origin: 50% 50%; background: var(--night); }
+    .c5-clear { background: transparent; }
+    .c5-paper { background: var(--paper); }
+    .c5-hall { position: absolute; inset: -40px;
+      background: radial-gradient(ellipse 72% 62% at 50% 44%, color-mix(in srgb, var(--ash-dark) 55%, var(--night)) 0%, var(--night) 74%); }
+    .c5-vw { position: absolute; inset: 0; transform-origin: 50% 50%; }
+    .c5-cam { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 0 0; }
+    .c5-abs { position: absolute; }
+    .c5-p1, .c5-p2 { position: absolute; inset: 0; background-size: cover; background-position: center; pointer-events: none; }
+    .c5-p2 { mix-blend-mode: multiply; }
+    .c5-svg { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; pointer-events: none; }
+    .c5-w { display: inline-block; white-space: pre; }
+    .c5-ink { color: var(--ink); }
+    .c5-wash { position: absolute; inset: 0; pointer-events: none; }
+    #cts05-flash { position: absolute; inset: 0; background: var(--bone); opacity: 0; pointer-events: none; z-index: 7; }
+    #cts05-grain, #cts05-dust, #cts05-vig { z-index: 8; }
+    /* sc001 timeline */
+    .c5-card { position: absolute; background: var(--paper-2); box-shadow: 0 14px 30px rgba(29,26,22,0.28); padding: 18px 24px 16px 28px; box-sizing: border-box; }
+    .c5-card .k { font-size: 24px; }
+    .c5-card .v { font-size: 46px; line-height: 1.05; margin-top: 8px; }
+    /* documents */
+    .c5-page { position: absolute; left: 0; top: 0; box-shadow: 0 40px 90px rgba(0,0,0,0.65); }
+    .c5-hlr { position: absolute; background: var(--yellow); mix-blend-mode: multiply; opacity: 0.85; transform-origin: 0 50%; border-radius: 3px; }
+    /* sc004 / sc010 grid (ref ast_ebb77f26d0fc4b3f) */
+    .c5-tile { position: absolute; width: 320px; height: 190px; box-sizing: border-box; border: 2px solid rgba(200,193,182,0.28); overflow: hidden;
+      background: rgba(243,237,225,0.045); }
+    .c5-tile .tx2 { position: absolute; inset: 0; background-image: url('assets/textures/halftone_02.png'); background-size: 420px auto; opacity: 0.10; mix-blend-mode: screen; }
+    .c5-tile .hot { position: absolute; inset: 0; background: var(--ember-dark); opacity: 0; }
+    .c5-tile .dim { position: absolute; inset: 0; background: #050404; opacity: 0; }
+    .c5-tile .no { position: absolute; left: 22px; top: 16px; font-size: 22px; color: var(--ash); }
+    .c5-tile .nm { position: absolute; left: 22px; right: 18px; bottom: 18px; font-size: 24px; line-height: 1.22; color: var(--ash-light); }
+    .c5-tile .al { position: absolute; right: 18px; top: 10px; font-size: 32px; color: var(--ember-light); opacity: 0; }
+    .c5-key { position: absolute; background: var(--yellow); color: var(--ink); text-align: center; }
+    .c5-stamp { position: absolute; border: 12px solid var(--ember); color: var(--ember); padding: 6px 34px 0; line-height: 1; border-radius: 10px; }
+    /* sc005 board */
+    .c5-tag { position: absolute; background: var(--paper-2); border-radius: 10px 10px 14px 14px; box-shadow: 0 16px 30px rgba(29,26,22,0.30); text-align: center; }
+    .c5-lbl { position: absolute; text-align: center; font-size: 26px; color: var(--ink); }
+    /* sc011 collage */
+    .c5-flag { position: absolute; overflow: hidden; box-shadow: 0 10px 26px rgba(29,26,22,0.25); }
+    .c5-flag img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: grayscale(1) contrast(0.85) brightness(1.12); }
+    .c5-flag .w { position: absolute; inset: 0; mix-blend-mode: multiply; }
+    .c5-cut { position: absolute; filter: drop-shadow(0 18px 24px rgba(29,26,22,0.35)); }
+    .c5-name { position: absolute; font-size: 24px; color: var(--bone); padding: 10px 16px 8px; white-space: nowrap; }
+    /* map-style labels on photos */
+    .c5-ml { position: absolute; white-space: nowrap; text-shadow: 0 1px 2px rgba(0,0,0,0.6), 0 0 16px rgba(0,0,0,0.55); }
+  </style>
+
+  <div id="root" data-composition-id="cts05" data-vo-start="358.208" data-duration="92.708" data-width="1920" data-height="1080">
+    <svg id="cts05-defs" width="0" height="0" style="position:absolute"></svg>
+
+    <!-- sc001 · 358.208–364.400 · "a month after Trump took the office again … the new order" · case-file timeline Jan–Feb 2025 -->
+    <div class="c5-scene" id="cts05-sc001"><div class="c5-shot c5-paper" id="cts05-sc001-shot">
+      <div class="c5-cam" id="cts05-sc001-cam">
+        <div class="c5-p1" style="background-image:url('assets/textures/paper_graph_01_hires.jpg')"></div>
+        <div class="c5-p2" style="background-image:url('assets/textures/paper_cream_01.jpg'); opacity:0.55"></div>
+        <svg class="c5-svg" id="cts05-sc001-svg" viewBox="0 0 1920 1080"></svg>
+        <div id="cts05-sc001-ax"></div>
+        <div class="c5-card" id="cts05-sc001-fbi" style="left:856px;top:318px;width:440px;white-space:nowrap;border-left:10px solid var(--ember)">
+          <div class="t-label k" style="color:var(--ember-dark)">FBI Ten Most Wanted</div>
+          <div class="t-display v c5-ink">4 FEB 2025</div>
+        </div>
+        <div class="c5-card" id="cts05-sc001-ina" style="left:500px;top:648px;width:400px;white-space:nowrap;border-left:10px solid var(--steel)">
+          <div class="t-label k" style="color:var(--steel-dark)">Inauguration</div>
+          <div class="t-display v c5-ink">20 JAN 2025</div>
+        </div>
+        <div class="c5-abs t-label" id="cts05-sc001-eo" style="left:500px;top:832px;white-space:nowrap;box-sizing:border-box;padding:14px 22px 11px;background:var(--steel-dark);color:var(--bone);font-size:24px;box-shadow:0 12px 26px rgba(29,26,22,0.3)">Executive Order 14157</div>
+      </div>
+    </div></div>
+
+    <!-- sc002 · 364.400–368.560 · "that President Trump had signed on his very first day" · Day-One signing photo -->
+    <div class="c5-scene" id="cts05-sc002"><div class="c5-shot" id="cts05-sc002-shot">
+      <div class="c5-cam" id="cts05-sc002-cam" style="width:1920px;height:1281px">
+        <img id="cts05-sc002-img" src="assets/cartels/cts05/photos/trump_day1_eo_signing.jpg" alt="" style="position:absolute;left:0;top:0;width:1920px;height:1281px" />
+      </div>
+      <div class="c5-wash" style="background:radial-gradient(ellipse 80% 70% at 60% 55%, transparent 40%, rgba(16,14,12,0.55) 100%)"></div>
+      <div id="cts05-sc002-tag"></div>
+      <div id="cts05-sc002-cr"></div>
+    </div></div>
+
+    <!-- sc003 · 368.560–372.300 · "dark cartels are now terrorist organizations." · EO 14157, Federal Register page -->
+    <div class="c5-scene" id="cts05-sc003"><div class="c5-shot" id="cts05-sc003-shot">
+      <div class="c5-hall"></div>
+      <div class="c5-cam" id="cts05-sc003-cam">
+        <img class="c5-page" src="assets/cartels/docs/d01_eo14157_p1.jpg" alt="" style="width:1700px;height:2200px" />
+        <div class="c5-hlr" id="cts05-sc003-h1" style="left:1386px;top:406px;width:266px;height:40px"></div>
+        <div class="c5-hlr" id="cts05-sc003-h2" style="left:570px;top:447px;width:350px;height:40px"></div>
+      </div>
+      <div id="cts05-sc003-cr"></div>
+    </div></div>
+
+    <!-- sc004 · 372.300–382.620 · "eight different drug trafficking groups … Sinaloa … El Mencho … terrorist organization" · ref ast_ebb77f26d0fc4b3f grid -->
+    <div class="c5-scene" id="cts05-sc004"><div class="c5-shot" id="cts05-sc004-shot">
+      <div class="c5-hall"></div>
+      <div class="c5-vw" id="cts05-sc004-vw">
+        <div class="c5-abs" id="cts05-sc004-bar" style="left:180px;top:202px;width:10px;height:62px;background:var(--steel-light)"></div>
+        <div class="c5-abs t-display" id="cts05-sc004-title" style="left:214px;top:200px;font-size:58px;color:var(--bone);white-space:nowrap">FOREIGN TERRORIST ORGANIZATIONS</div>
+        <div class="c5-abs t-label" id="cts05-sc004-sub" style="left:216px;top:280px;font-size:22px;color:var(--ash-light);white-space:nowrap">U.S. Department of State · Federal Register · 20 Feb 2025</div>
+        <div id="cts05-sc004-grid"></div>
+        <svg class="c5-svg" id="cts05-sc004-svg" viewBox="0 0 1920 1080"></svg>
+        <div class="c5-key t-display" id="cts05-sc004-key" style="left:1636px;top:517px;width:188px;height:150px;font-size:124px;line-height:162px">8</div>
+        <div class="c5-abs t-label" id="cts05-sc004-keyl" style="left:1612px;top:686px;width:236px;text-align:center;font-size:24px;color:var(--bone)">Groups</div>
+        <div class="c5-stamp t-display" id="cts05-sc004-stamp" style="left:640px;top:500px;font-size:150px">FTO</div>
+      </div>
+    </div></div>
+
+    <!-- sc005 · 382.620–416.950 · "bigger than just a label … criminal … arrest … court" / "terrorist group … anyone … money … supplies … prison" · explainer board -->
+    <div class="c5-scene" id="cts05-sc005"><div class="c5-shot c5-paper" id="cts05-sc005-shot">
+      <div class="c5-cam" id="cts05-sc005-cam">
+        <div class="c5-p1" style="background-image:url('assets/textures/paper_cream_02.jpg')"></div>
+        <div class="c5-p2" style="background-image:url('assets/textures/paper_fiber_01.jpg'); opacity:0.35"></div>
+        <svg class="c5-svg" id="cts05-sc005-svg" viewBox="0 0 1920 1080"></svg>
+        <div class="c5-abs t-display c5-ink" id="cts05-sc005-hl" style="left:180px;top:300px;width:600px;text-align:center;font-size:66px">CRIMINAL</div>
+        <div class="c5-abs t-display" id="cts05-sc005-hr" style="left:1000px;top:300px;width:880px;text-align:center;font-size:66px;color:var(--ember-dark)"><span class="c5-w">TERRORIST </span><span class="c5-w">GROUP</span></div>
+        <div class="c5-lbl t-label" id="cts05-sc005-arrest" style="left:200px;top:768px;width:200px">Arrest</div>
+        <div class="c5-lbl t-label" id="cts05-sc005-court" style="left:580px;top:768px;width:200px">Court</div>
+        <div class="c5-lbl t-label" id="cts05-sc005-money" style="left:1158px;top:934px;width:140px;text-align:left;font-size:24px;color:var(--ember-dark)">Money</div>
+        <div class="c5-lbl t-label" id="cts05-sc005-supp" style="left:1378px;top:934px;width:180px;text-align:left;font-size:24px;color:var(--ember-dark)">Supplies</div>
+        <div class="c5-lbl t-label" id="cts05-sc005-prison" style="left:992px;top:790px;width:120px;text-align:right;font-size:24px;color:var(--steel-dark)">Prison</div>
+        <div id="cts05-sc005-bars" class="c5-abs" style="left:1120px;top:706px;width:160px;height:184px"></div>
+        <div class="c5-abs" id="cts05-sc005-tagw" style="left:800px;top:0;width:320px;height:300px;transform-origin:160px 0">
+          <svg width="320" height="300" viewBox="0 0 320 300" style="position:absolute;left:0;top:0;overflow:visible">
+            <path d="M160 0 L160 118" stroke="#1d1a16" stroke-width="3" fill="none"/>
+          </svg>
+          <div class="c5-tag" style="left:40px;top:112px;width:240px;height:150px">
+            <div style="position:absolute;left:104px;top:14px;width:32px;height:32px;border-radius:50%;background:var(--paper);box-shadow:inset 0 0 0 5px #b8ad96"></div>
+            <div class="t-display c5-ink" style="position:absolute;left:0;right:0;top:54px;font-size:76px;line-height:1">FTO</div>
+          </div>
+        </div>
+      </div>
+    </div></div>
+
+    <!-- sc007 · 416.950–420.010 · "a few months later, White House goes a step further" -->
+    <div class="c5-scene" id="cts05-sc007"><div class="c5-shot" id="cts05-sc007-shot">
+      <div class="c5-cam" id="cts05-sc007-cam" style="width:1920px;height:1536px">
+        <img id="cts05-sc007-img" src="assets/cartels/cts05/photos/white_house_south.jpg" alt="" style="position:absolute;left:0;top:0;width:1920px;height:1536px" />
+      </div>
+      <div class="c5-wash" style="background:radial-gradient(ellipse 80% 70% at 50% 45%, transparent 45%, rgba(16,14,12,0.6) 100%)"></div>
+      <div id="cts05-sc007-tag"></div>
+      <div id="cts05-sc007-cr"></div>
+    </div></div>
+
+    <!-- sc008 · 420.010–425.770 · "It tells Congress that America is now in an armed conflict" · NBC News header -->
+    <div class="c5-scene" id="cts05-sc008"><div class="c5-shot" id="cts05-sc008-shot">
+      <div class="c5-hall"></div>
+      <div class="c5-cam" id="cts05-sc008-cam">
+        <img class="c5-page" src="assets/cartels/cts05/derived/nbc_header.jpg" alt="" style="width:2240px;height:1760px" />
+        <svg id="cts05-sc008-svg" width="2240" height="1760" viewBox="0 0 2240 1760" style="position:absolute;left:0;top:0;overflow:visible"></svg>
+      </div>
+      <div id="cts05-sc008-cr"></div>
+    </div></div>
+
+    <!-- sc009 · 425.770–431.690 · "legally speaking … treating cartel members the way it treated Al Qaeda" · AP report (PBS) -->
+    <div class="c5-scene" id="cts05-sc009"><div class="c5-shot c5-paper" id="cts05-sc009-shot">
+      <div class="c5-cam" id="cts05-sc009-cam">
+        <div class="c5-p1" style="background-image:url('assets/textures/paper_stained_01_hires.jpg')"></div>
+        <div class="c5-p2" style="background-image:url('assets/textures/paper_cream_01.jpg'); opacity:0.4"></div>
+        <div class="c5-abs" id="cts05-sc009-card" style="left:147px;top:196px;width:1626px;height:688px;background:#fbfaf7;box-shadow:0 24px 50px rgba(29,26,22,0.35);transform:rotate(-0.8deg)">
+          <img src="assets/cartels/cts05/derived/nbc_body_alqaeda.jpg" alt="" style="position:absolute;left:30px;top:20px;width:1566px;height:648px" />
+          <div class="c5-hlr" id="cts05-sc009-h1" style="left:52px;top:506px;width:1362px;height:44px"></div>
+          <div class="c5-hlr" id="cts05-sc009-h2" style="left:52px;top:580px;width:922px;height:44px"></div>
+        </div>
+      </div>
+      <div id="cts05-sc009-cr"></div>
+    </div></div>
+
+    <!-- sc010 · 431.690–435.300 · "They are targets now." · grid callback + crosshairs -->
+    <div class="c5-scene" id="cts05-sc010"><div class="c5-shot" id="cts05-sc010-shot">
+      <div class="c5-hall"></div>
+      <div class="c5-vw" id="cts05-sc010-vw">
+        <div class="c5-abs" style="left:180px;top:202px;width:10px;height:62px;background:var(--steel-light)"></div>
+        <div class="c5-abs t-display" style="left:214px;top:200px;font-size:58px;color:var(--bone);white-space:nowrap">FOREIGN TERRORIST ORGANIZATIONS</div>
+        <div class="c5-abs t-label" style="left:216px;top:280px;font-size:22px;color:var(--ash-light);white-space:nowrap">U.S. Department of State · Federal Register · 20 Feb 2025</div>
+        <div id="cts05-sc010-grid"></div>
+        <svg class="c5-svg" id="cts05-sc010-svg" viewBox="0 0 1920 1080"></svg>
+      </div>
+    </div></div>
+
+    <!-- sc011 · 435.300–440.030 · "the other side of this whole equation was pressure on Mexico" · ref ast_4b7fb0fe0a134429 collage -->
+    <div class="c5-scene" id="cts05-sc011"><div class="c5-shot c5-paper" id="cts05-sc011-shot">
+      <div class="c5-p1" style="background-image:url('assets/textures/paper_cream_02.jpg')"></div>
+      <div class="c5-p2" style="background-image:url('assets/textures/newsprint_01.jpg'); opacity:0.16"></div>
+      <div class="c5-vw" id="cts05-sc011-vw">
+        <svg class="c5-svg" id="cts05-sc011-poles" viewBox="0 0 1920 1080"></svg>
+        <div class="c5-flag" id="cts05-sc011-fus" style="left:300px;top:128px;width:560px;height:295px;transform-origin:100% 0">
+          <img src="assets/cartels/cts05/photos/flag_usa.png" alt="" /><div class="w" style="background:var(--steel);opacity:0.55"></div>
+        </div>
+        <div class="c5-flag" id="cts05-sc011-fmx" style="left:1060px;top:128px;width:520px;height:297px;transform-origin:0 0">
+          <img src="assets/cartels/cts05/photos/flag_mexico.png" alt="" /><div class="w" style="background:var(--olive);opacity:0.55"></div>
+        </div>
+        <div class="c5-abs t-label" id="cts05-sc011-lus" style="left:300px;top:78px;width:560px;font-size:26px;color:var(--steel-dark)">United States</div>
+        <div class="c5-abs t-label" id="cts05-sc011-lmx" style="left:1060px;top:78px;width:520px;text-align:right;font-size:26px;color:var(--olive-dark)">Mexico</div>
+        <img class="c5-cut" id="cts05-sc011-tr" src="assets/cartels/cts05/derived/trump_duo.png" alt="" style="left:40px;top:300px;width:800px;height:783px" />
+        <div class="c5-abs" id="cts05-sc011-shw" style="left:1210px;top:300px;width:620px;height:827px;transform-origin:50% 100%">
+          <img class="c5-cut" src="assets/cartels/cts05/derived/sheinbaum_duo.png" alt="" style="left:0;top:0;width:620px;height:827px" />
+        </div>
+        <svg class="c5-svg" id="cts05-sc011-svg" viewBox="0 0 1920 1080"></svg>
+        <div class="c5-name t-label" id="cts05-sc011-ntr" style="left:96px;top:880px;background:var(--steel-dark)">Donald Trump</div>
+        <div class="c5-name t-label" id="cts05-sc011-nsh" style="right:96px;top:880px;background:var(--olive-dark)">Claudia Sheinbaum</div>
+      </div>
+      <div id="cts05-sc011-cr"></div>
+    </div></div>
+
+    <!-- sc012 · 440.030–442.620 · "Liberation Day and all the tariffs we saw" · Rose Garden, 2 Apr 2025 (ONLY here) -->
+    <div class="c5-scene" id="cts05-sc012"><div class="c5-shot" id="cts05-sc012-shot">
+      <div class="c5-cam" id="cts05-sc012-cam" style="width:1920px;height:1280px">
+        <img id="cts05-sc012-img" src="assets/cartels/cts05/photos/liberation_day_chart.jpg" alt="" style="position:absolute;left:0;top:0;width:1920px;height:1280px" />
+      </div>
+      <div class="c5-wash" style="background:radial-gradient(ellipse 80% 70% at 55% 45%, transparent 45%, rgba(16,14,12,0.55) 100%)"></div>
+      <div id="cts05-sc012-tag"></div>
+      <div id="cts05-sc012-cr"></div>
+    </div></div>
+
+    <!-- sc013 · 442.620–447.450 · "everyone was focused on trade" · CBP aerial, World Trade Crossing, Laredo -->
+    <div class="c5-scene" id="cts05-sc013"><div class="c5-shot" id="cts05-sc013-shot">
+      <div class="c5-cam" id="cts05-sc013-cam" style="width:1920px;height:1280px">
+        <img id="cts05-sc013-img" src="assets/cartels/cts05/photos/laredo_trade_crossing.jpg" alt="" style="position:absolute;left:0;top:0;width:1920px;height:1280px" />
+        <svg id="cts05-sc013-svg" width="1920" height="1280" viewBox="0 0 1920 1280" style="position:absolute;left:0;top:0;overflow:visible"></svg>
+      </div>
+      <div class="c5-wash" style="background:linear-gradient(180deg, rgba(16,14,12,0.35) 0%, transparent 30%, transparent 70%, rgba(16,14,12,0.45) 100%)"></div>
+      <div class="c5-ml t-display" id="cts05-sc013-mx" style="font-size:40px;color:var(--bone)">MEXICO</div>
+      <div class="c5-ml t-display" id="cts05-sc013-us" style="font-size:40px;color:var(--bone)">UNITED STATES</div>
+      <div class="c5-ml t-serif-i" id="cts05-sc013-rg" style="font-size:34px;color:var(--steel-light);transform-origin:0 50%">Rio Grande</div>
+      <div class="c5-ml" id="cts05-sc013-lr"><span style="display:inline-block;width:16px;height:16px;border-radius:50%;background:var(--bone);box-shadow:0 0 0 4px rgba(16,14,12,0.5);vertical-align:2px;margin-right:14px"></span><span class="t-label" style="font-size:26px;color:var(--bone)">Laredo, Texas</span></div>
+      <div id="cts05-sc013-cr"></div>
+    </div></div>
+
+    <!-- sc014 · 447.450–450.917 · "another part … drugs" · the frame tears: DEA fentanyl pills -->
+    <div class="c5-scene" id="cts05-sc014"><div class="c5-shot c5-clear" id="cts05-sc014-shot">
+      <div class="c5-abs" id="cts05-sc014-edge" style="inset:0;background:var(--paper)"></div>
+      <div class="c5-abs" id="cts05-sc014-in" style="inset:0;background:var(--night);overflow:hidden">
+        <div class="c5-cam" id="cts05-sc014-cam" style="width:1920px;height:1541px">
+          <img id="cts05-sc014-img" src="assets/cartels/cts05/photos/fentanyl_rainbow_m30.jpg" alt="" style="position:absolute;left:0;top:0;width:1920px;height:1541px" />
+        </div>
+        <div class="c5-wash" style="background:radial-gradient(ellipse 75% 70% at 50% 50%, transparent 40%, rgba(16,14,12,0.6) 100%)"></div>
+        <div class="c5-abs" id="cts05-sc014-tg" style="left:1180px;top:168px">
+          <svg width="420" height="200" viewBox="0 0 420 200" style="position:absolute;left:-150px;top:30px;overflow:visible"><path id="cts05-sc014-ld" d="M150 44 L40 150" stroke="#f7b48c" stroke-width="4" fill="none"/></svg>
+          <div class="t-label" style="position:relative;background:var(--ember-dark);color:var(--bone);font-size:30px;padding:14px 22px 11px">Fentanyl</div>
+        </div>
+        <div id="cts05-sc014-cr"></div>
+      </div>
+    </div></div>
+
+    <div id="cts05-flash"></div>
+    <div id="cts05-grain" class="tx tx-grain" style="background-image:url('assets/textures/grain_01_norm.jpg')"></div>
+    <div id="cts05-dust" class="tx tx-dust" style="background-image:url('assets/textures/dust_02.jpg')"></div>
+    <div id="cts05-vig" class="vignette"></div>
+    <audio id="cts05-vo" class="temp-vo" src="vo_ct.mp3" data-start="0" data-duration="92.708" data-media-start="358.208" data-volume="1"></audio>
+  </div>
+
+  <script>
+  (function () {
+    const SEG = "cts05", SEG_START = 358.208, SEG_END = 450.917, DURATION = 92.708;
+    const T = (s) => +(s - SEG_START).toFixed(3);   // TEXT cues (audited): master word start − 0.06
+    const S = (s) => +(s - SEG_START).toFixed(3);   // STRUCTURAL cues
+    const tl = gsap.timeline({ paused: true });
+    const $ = (id) => document.getElementById(SEG + "-" + id);
+    const NS = "http://www.w3.org/2000/svg";
+    const defs = $("defs");
+    const E = FX.ease;
+    const C = (e, d) => FX.choppy(e, d, 12);
+    const INK = "#1d1a16", BONE = "#f3ede1", EMB = "#ec6424", EMBD = "#8a3311", EMBL = "#f7b48c",
+      STL = "#6f93b4", STLD = "#2f4a63", STLL = "#bcd1e4", OLV = "#9a9a4e", OLVD = "#50512a", ASH = "#918a82";
+
+    // ---------- scenes ----------
+    const SC = [
+      ["sc001", 358.208, 364.62, "paper"], ["sc002", 364.62, 368.56, "night"], ["sc003", 368.56, 372.30, "night"],
+      ["sc004", 372.30, 382.62, "night"], ["sc005", 382.62, 416.95, "paper"], ["sc007", 416.95, 420.01, "night"],
+      ["sc008", 420.01, 425.77, "night"], ["sc009", 425.77, 431.69, "paper"], ["sc010", 431.69, 435.30, "night"],
+      ["sc011", 435.30, 440.03, "paper"], ["sc012", 440.03, 442.62, "night"], ["sc013", 442.62, 447.45, "night"],
+      ["sc014", 447.45, 450.917, "night"],
+    ];
+    const GROUND = { paper: [0.3, 0.14, 0.22], night: [0.9, 0.42, 0.4] };
+    const EARLY = { sc005: 0.45, sc009: 0.45, sc011: 0.45 };   // slides: incoming scene visible during the slide
+    const LATE = { sc013: 0.62 };                               // tear: outgoing stays under the incoming until the tear is through
+    function ground(kind, t) { const v = GROUND[kind]; tl.set([$("grain"), $("dust"), $("vig")], { opacity: (i) => v[i] }, t); }
+    SC.forEach((s, i) => {
+      const el = $(s[0]), a = s[1] - (EARLY[s[0]] || 0);
+      if (i === 0) gsap.set(el, { autoAlpha: 1 });
+      else tl.fromTo(el, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.001, immediateRender: false }, S(a) - 0.002);
+      if (s[2] < SEG_END) tl.set(el, { autoAlpha: 0 }, S(s[2]) + 0.05 + (LATE[s[0]] || 0));
+    });
+    gsap.set([$("grain"), $("dust"), $("vig")], { opacity: (i) => GROUND.paper[i] });
+    SC.forEach((s, i) => { if (i > 0) ground(s[3], S(s[1])); });
+
+    // ---------- helpers ----------
+    const rise = (el, t, o) => { o = o || {}; const d = o.dur || 0.5;
+      tl.fromTo(el, { opacity: 0, y: o.y == null ? 14 : o.y }, { opacity: 1, y: 0, duration: d, ease: C(E.out, d), immediateRender: true }, t); };
+    const pop = (el, t, o) => { o = o || {}; const n = o.n || 2;
+      tl.fromTo(el, { opacity: 0, scale: o.from == null ? 1.25 : o.from }, { opacity: o.to == null ? 1 : o.to, scale: 1, duration: n / 12, ease: "steps(" + n + ")", immediateRender: true }, t); };
+    const W = (id) => Array.from($(id).querySelectorAll(".c5-w"));
+    function words(id, cues, o) { const ws = W(id); cues.forEach((c, i) => rise(ws[i], c, o)); }
+    function el(parent, tag, attrs) { const n = document.createElementNS(NS, tag); for (const k in attrs) n.setAttribute(k, attrs[k]); parent.appendChild(n); return n; }
+    function div(parent, cls, css, html) { const d = document.createElement("div"); if (cls) d.className = cls; d.style.cssText = css || ""; if (html) d.innerHTML = html; parent.appendChild(d); return d; }
+    function ink(parent, d, t, dur, o) {
+      o = o || {};
+      const p = el(parent, "path", { d: d, fill: "none", stroke: o.color || INK, "stroke-width": o.width || 5, "stroke-linecap": "round", "stroke-linejoin": "round" });
+      if (o.dash) p.setAttribute("data-dash", o.dash);
+      const len = p.getTotalLength() || 1;
+      p.setAttribute("stroke-dasharray", len + " " + len); p.setAttribute("stroke-dashoffset", len);
+      tl.fromTo(p, { attr: { "stroke-dashoffset": len } }, { attr: { "stroke-dashoffset": 0 }, duration: dur, ease: o.ease || C(E.out, dur), immediateRender: true }, t);
+      gsap.set(p, { opacity: 0 }); tl.set(p, { opacity: o.opacity == null ? 1 : o.opacity }, t);
+      return p;
+    }
+    // dashed line revealed by a growing mask-free clip (dash pattern stays)
+    function dashed(parent, d, t, dur, o) {
+      o = o || {};
+      const p = el(parent, "path", { d: d, fill: "none", stroke: o.color || INK, "stroke-width": o.width || 3, "stroke-dasharray": o.dash || "10 9", "stroke-linecap": "round" });
+      const len = p.getTotalLength() || 1;
+      // simple approach: fade + draw via a mask path of the same geometry
+      const m = el(parent, "mask", { id: o.id, maskUnits: "userSpaceOnUse", x: -200, y: -200, width: 5000, height: 3000 });
+      const mp = el(m, "path", { d: d, fill: "none", stroke: "#fff", "stroke-width": (o.width || 3) + 12, "stroke-linecap": "round" });
+      mp.setAttribute("stroke-dasharray", len + " " + len); mp.setAttribute("stroke-dashoffset", len);
+      p.setAttribute("mask", "url(#" + o.id + ")");
+      tl.fromTo(mp, { attr: { "stroke-dashoffset": len } }, { attr: { "stroke-dashoffset": 0 }, duration: dur, ease: o.ease || C(E.out, dur), immediateRender: true }, t);
+      return p;
+    }
+    const whipN = { n: 0 };
+    function whip(a, b, t, o) {
+      o = Object.assign({ dir: 1, vertical: false, flash: false, dur: 0.32 }, o);
+      const k = ++whipN.n, ba = FX.whipDefs(defs, SEG + "-wa" + k), bb = FX.whipDefs(defs, SEG + "-wb" + k), h = o.dur / 2;
+      const A = $(a + "-shot"), B = $(b + "-shot");
+      tl.set(A, { filter: "url(#" + SEG + "-wa" + k + ")" }, t - h - 0.01); tl.set(A, { filter: "none" }, t + 0.06);
+      tl.set(B, { filter: "url(#" + SEG + "-wb" + k + ")" }, t - 0.001); tl.set(B, { filter: "none" }, t + h + 0.02);
+      FX.whip(tl, A, B, t, { dir: o.dir, vertical: o.vertical, dur: o.dur, blurA: ba, blurB: bb });
+      if (o.flash) tl.fromTo($("flash"), { opacity: 0 }, { opacity: 0.85, duration: 0.08, yoyo: true, repeat: 1, ease: "power2.in", immediateRender: false }, t - 0.08);
+    }
+    function slide(a, b, t, o) {
+      o = Object.assign({ axis: "y", from: 1, d: 0.45 }, o);
+      const A = $(a + "-shot"), B = $(b + "-shot"), dist = (o.axis === "x" ? 1980 : 1140) * o.from;
+      tl.fromTo(B, { [o.axis]: dist, boxShadow: "0 0 80px rgba(0,0,0,0.5)" }, { [o.axis]: 0, duration: o.d, ease: C(E.inOut, o.d), immediateRender: false }, t - o.d);
+      tl.set(B, { boxShadow: "none" }, t);
+      tl.fromTo(A, { [o.axis]: 0 }, { [o.axis]: -dist * 0.12, duration: o.d, ease: E.in, immediateRender: false }, t - o.d);
+    }
+    // camera (transform-origin 0 0) framing an image of size W×H: point (px,py) at the screen centre, scale s, clamped to cover
+    const atw = (px, py, s, Wd, Hd, r) => ({ x: Math.min(0, Math.max(1920 - Wd * s, 960 - px * s)), y: Math.min(0, Math.max(1080 - Hd * s, 540 - py * s)), scale: s, rotation: r || 0 });
+    const atc = (px, py, s) => atw(px, py, s, 1920, 1080);
+    const at = (px, py, s, r) => ({ x: 960 - px * s, y: 540 - py * s, scale: s, rotation: r || 0 });
+    function cam(id, keys) {   // keys: [[t, K, dur, ease]] — first = start state
+      const c = $(id); gsap.set(c, keys[0][1]);
+      keys.forEach((k, i) => { if (i === 0) return; tl.fromTo(c, keys[i - 1][1], Object.assign({}, k[1], { duration: k[2], ease: k[3] || E.cam, immediateRender: false }), k[0]); });
+      return c;
+    }
+    function hl(elm, t, dur) { gsap.set(elm, { scaleX: 0 }); tl.fromTo(elm, { scaleX: 0 }, { scaleX: 1, duration: dur || 0.45, ease: "sine.inOut", immediateRender: true }, t); }
+    const PEN = FX.markupDefs(defs, SEG + "-pen", { boil: 4 });
+    defs.setAttribute("viewBox", "0 0 1 1");
+    defs.insertAdjacentHTML("beforeend",
+      '<filter id="' + SEG + '-hlf" x="-5%" y="-30%" width="110%" height="160%"><feTurbulence type="fractalNoise" baseFrequency="0.04 0.3" numOctaves="2" seed="4" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="6" xChannelSelector="R" yChannelSelector="G"/></filter>' +
+      '<filter id="' + SEG + '-rough" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="2" seed="9" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="9" xChannelSelector="R" yChannelSelector="G" result="d"/><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="1" seed="2" result="g"/><feColorMatrix in="g" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -1.3 1.55" result="gm"/><feComposite in="d" in2="gm" operator="in"/></filter>');
+    ["sc003-h1", "sc003-h2", "sc009-h1", "sc009-h2"].forEach((k) => { $(k).style.filter = "url(#" + SEG + "-hlf)"; });
+    FX.tintDefs(defs, SEG + "-tintC", "#121417", "#e6eaee");   // charcoal → cool bone (US photos)
+    FX.tintDefs(defs, SEG + "-tintW", "#141210", "#efe6d6");   // charcoal → warm bone (trade aerial)
+    $("sc002-img").style.filter = "url(#" + SEG + "-tintC) contrast(1.06)";
+    $("sc007-img").style.filter = "url(#" + SEG + "-tintC) contrast(1.05)";
+    $("sc012-img").style.filter = "saturate(0.22) contrast(1.06) brightness(0.92)";
+    $("sc013-img").style.filter = "url(#" + SEG + "-tintW) contrast(1.08) brightness(0.92)";
+    $("sc014-img").style.filter = "saturate(0.5) contrast(1.05) brightness(0.9)";
+    FX.grain($("grain"), 501);
+    FX.dust($("dust"), 502, 2);
+
+    /* ===== sc001 · timeline JAN–FEB 2025: FBI listing (4 Feb) ← bracket ← inauguration (20 Jan) + EO 14157 ===== */
+    (function () {
+      const svg = $("sc001-svg"), ax = $("sc001-ax");
+      const X = (d) => 200 + d * 1520 / 59, AY = 600;
+      el(svg, "path", { d: "M196 " + AY + " L1724 " + (AY + 1), stroke: INK, "stroke-width": 4 });
+      for (let d = 1; d < 59; d++) { if (d === 31) continue; el(svg, "path", { d: "M" + X(d) + " " + (AY - 8) + " L" + (X(d) + 0.5) + " " + (AY + 8), stroke: INK, "stroke-width": 2, opacity: 0.45 }); }
+      [[0, "JAN 2025"], [31, "FEB 2025"], [59, "MAR"]].forEach((m) => {
+        el(svg, "path", { d: "M" + X(m[0]) + " " + (AY - 22) + " L" + (X(m[0]) + 0.5) + " " + (AY + 22), stroke: INK, "stroke-width": 4 });
+        if (m[1] !== "MAR") div(ax, "t-label c5-ink", "position:absolute;left:" + (X(m[0]) + 14) + "px;top:" + (AY + 18) + "px;font-size:24px", m[1]);
+      });
+      // FBI listing pin (already on the board — continuity from cts04's "Ten Most Wanted")
+      el(svg, "path", { d: "M" + X(34) + " 470 L" + (X(34) + 0.5) + " " + AY, stroke: EMBD, "stroke-width": 3 });
+      el(svg, "circle", { cx: X(34), cy: AY, r: 13, fill: EMB, stroke: BONE, "stroke-width": 3 });
+      // "a month after": pen bracket back from 4 Feb to 20 Jan (no number on screen — it was 15 days)
+      const ar = FX.markup.arrow(tl, svg, S(359.62), { x1: X(34) - 22, y1: AY - 26, x2: X(19) + 24, y2: AY - 24, bend: 92, color: INK, width: 5, filter: PEN, dur: 0.75, head: 22 });
+      ar.forEach((p) => { gsap.set(p, { opacity: 0 }); tl.set(p, { opacity: 1 }, S(359.62)); p.style.mixBlendMode = "multiply"; });
+      // inauguration (20 Jan) on "Trump"
+      const dot = el(svg, "circle", { cx: X(19), cy: AY, r: 13, fill: STL, stroke: BONE, "stroke-width": 3 });
+      const lead = el(svg, "path", { d: "M" + X(19) + " " + AY + " L" + (X(19) + 0.5) + " 648", stroke: STLD, "stroke-width": 3 });
+      gsap.set([dot, lead], { opacity: 0 }); pop(dot, T(360.40), { from: 2.2, n: 3 }); tl.set(lead, { opacity: 1 }, T(360.40));
+      const ina = $("sc001-ina"); gsap.set(ina, { opacity: 0 });
+      tl.fromTo(ina, { opacity: 0, y: -18 }, { opacity: 1, y: 0, duration: 0.9, ease: C(E.out, 0.9), immediateRender: true }, T(360.40));
+      // the new order (EO 14157) on "order"
+      const eo = $("sc001-eo"); gsap.set(eo, { opacity: 0 });
+      tl.fromTo(eo, { opacity: 0, x: -28 }, { opacity: 1, x: 0, duration: 0.25, ease: C(E.out, 0.25), immediateRender: true }, T(363.92));
+      cam("sc001-cam", [[0, atc(1010, 560, 1.12)], [S(358.208), atc(760, 600, 1.16), 6.5, "none"]]);
+    })();
+
+    /* ===== sc002 · Day One: the signing photo, push to the pen (whip →) ===== */
+    whip("sc001", "sc002", S(364.62), { dir: 1 });
+    (function () {
+      cam("sc002-cam", [[0, atw(980, 700, 1.0, 1920, 1281)], [S(364.62), atw(1260, 760, 1.2, 1920, 1281), 4.0, E.cam]]);
+      const tag = CT.dateTag($("sc002-tag"), { prefix: SEG + "-sc002-dt", place: "Washington, DC", date: "20 Jan 2025", accent: "steel" });
+      tag.in(tl, S(366.10));
+      CT.credit($("sc002-cr"), "Photo: The White House (@VP)");
+    })();
+
+    /* ===== sc003 · EO 14157 page: push to the title, highlighter on "Foreign Terrorist Organizations" (hard cut on action) ===== */
+    (function () {
+      cam("sc003-cam", [[0, at(940, 420, 0.96, -1.4)], [S(368.56), at(1040, 452, 1.3, -0.8), 3.8, E.cam]]);
+      hl($("sc003-h1"), S(370.32), 0.42);
+      hl($("sc003-h2"), S(371.12), 0.5);
+    })();
+
+    /* ===== the 8-group grid (ref ast_ebb77f26d0fc4b3f), used in sc004 and again in sc010 ===== */
+    const GROUPS = ["Tren de Aragua", "Mara Salvatrucha (MS-13)", "Cartel de Sinaloa", "Cartel de Jalisco Nueva Generación",
+      "Cárteles Unidos", "Cartel del Noreste", "Cartel del Golfo", "La Nueva Familia Michoacana"];
+    const TX = (i) => 180 + (i % 4) * 344, TY = (i) => 390 + Math.floor(i / 4) * 214;
+    function grid(box, hot) {
+      return GROUPS.map((g, i) => {
+        const t = div(box, "c5-tile", "left:" + TX(i) + "px;top:" + TY(i) + "px");
+        div(t, "tx2");
+        const h = div(t, "hot");
+        div(t, "dim");
+        div(t, "no t-label", "", "0" + (i + 1));
+        const nm = div(t, "nm t-label", "", g);
+        if (hot && hot.indexOf(i) >= 0) { gsap.set(h, { opacity: 0.9 }); nm.style.color = BONE; t.style.borderColor = EMB; }
+        return t;
+      });
+    }
+
+    /* ===== sc004 · "eight different groups … Sinaloa … El Mencho … terrorist organization" (flash whip ↓) ===== */
+    whip("sc003", "sc004", S(372.30), { dir: 1, vertical: true, flash: true });
+    (function () {
+      const tiles = grid($("sc004-grid")), svg = $("sc004-svg");
+      // title + empty grid are there from the first frame (the whip lands on them); the tiles fill at 12 fps on "eight"
+      tiles.forEach((t, i) => { gsap.set(t, { opacity: 0.22 }); tl.fromTo(t, { opacity: 0.22, scale: 0.9 }, { opacity: 1, scale: 1, duration: 2 / 12, ease: "steps(2)", immediateRender: true }, T(373.44) + i * (2 / 12)); });
+      // key number 8 + bracket + leader (the ref's 25% callout)
+      const key = $("sc004-key"), kl = $("sc004-keyl");
+      gsap.set([key, kl], { opacity: 0 });
+      pop(key, T(373.44), { from: 1.5, n: 3 });
+      FX.text.count(tl, key, T(373.44), 1, 8, 1.3, (v) => String(Math.round(v)));
+      rise(kl, S(373.70), { dur: 0.5, y: 8 });
+      ink(svg, "M1556 392 L1572 393 L1573 792 L1557 793", S(373.6), 0.6, { color: STLL, width: 3 });
+      dashed(svg, "M1574 592 L1632 591", S(374.0), 0.3, { color: STLL, width: 3, dash: "8 7", id: SEG + "-sc004-lk" });
+      // Sinaloa (tile 3) on "Sinaloa", CJNG (tile 4) on "El Mencho"
+      const lightUp = (i, t) => {
+        const tile = tiles[i], h = tile.querySelector(".hot"), nm = tile.querySelector(".nm");
+        tl.fromTo(h, { opacity: 0 }, { opacity: 0.9, duration: 2 / 12, ease: "steps(2)", immediateRender: false }, t);
+        tl.to(nm, { color: BONE, duration: 0.01 }, t);
+        tl.to(tile, { borderColor: EMB, duration: 0.01 }, t);
+        tl.fromTo(tile, { scale: 1.08 }, { scale: 1, duration: 0.5, ease: C(E.out, 0.5), immediateRender: false }, t);
+      };
+      lightUp(2, T(375.76));
+      lightUp(3, T(378.32));
+      const al = div(tiles[3], "al t-serif-i", "", "El Mencho");
+      gsap.set(al, { opacity: 0 }); rise(al, T(378.32), { dur: 0.5, y: 8 });
+      // FTO stamp on "terrorist"
+      const st = $("sc004-stamp");
+      st.style.filter = "url(#" + SEG + "-rough)";
+      gsap.set(st, { opacity: 0, rotation: -9 });
+      tl.fromTo(st, { opacity: 0, scale: 1.7, rotation: -14 }, { opacity: 0.94, scale: 1, rotation: -9, duration: 3 / 24, ease: "power3.in", immediateRender: true }, T(380.96));
+      const vw = $("sc004-vw");
+      tl.fromTo(vw, { x: 0, y: 0 }, { keyframes: [{ x: 7, y: -5, duration: 1 / 24 }, { x: -5, y: 4, duration: 1 / 24 }, { x: 3, y: -2, duration: 1 / 24 }, { x: 0, y: 0, duration: 1 / 24 }], immediateRender: false }, T(380.96) + 3 / 24);
+      gsap.set(vw, { scale: 1.0, transformOrigin: "900px 560px" });
+      tl.fromTo(vw, { scale: 1.0 }, { scale: 1.05, duration: S(382.62) - S(372.30), ease: "none", immediateRender: false }, S(372.30));
+    })();
+
+    /* ===== sc005 · the explainer board: the label → CRIMINAL path → TERRORIST GROUP web → prison (paper slides in ←) ===== */
+    slide("sc004", "sc005", S(382.62), { axis: "x" });
+    (function () {
+      const svg = $("sc005-svg");
+      // the tag (= "the label") drops in and swings
+      const tw = $("sc005-tagw");
+      gsap.set(tw, { y: -330, rotation: 0 });
+      tl.fromTo(tw, { y: -330, rotation: 0 }, { y: 0, duration: 0.9, ease: C(E.out, 0.9), immediateRender: true }, S(382.20));
+      tl.fromTo(tw, { rotation: 0 }, { keyframes: [{ rotation: 14, duration: 0.45, ease: "sine.out" }, { rotation: -9, duration: 0.7, ease: "sine.inOut" }, { rotation: 5, duration: 0.6, ease: "sine.inOut" }, { rotation: -2, duration: 0.55, ease: "sine.inOut" }, { rotation: 0, duration: 0.5, ease: "sine.inOut" }], immediateRender: false }, S(382.95));
+      const circ = FX.markup.circle(tl, svg, S(385.12), { cx: 960, cy: 186, rx: 176, ry: 108, rot: -4, color: INK, width: 6, filter: PEN, dur: 0.7, seed: 7 });
+      gsap.set(circ, { opacity: 0 }); tl.set(circ, { opacity: 1 }, S(385.12)); circ.style.mixBlendMode = "multiply";
+      FX.markup.out(tl, circ, S(387.0), 0.5);
+      // divider
+      ink(svg, "M961 300 Q957 640 962 1000", S(385.74), 0.9, { width: 4, opacity: 0.75 });
+      // LEFT: criminal → arrest → court (US government path, steel-dark icons)
+      const hlh = $("sc005-hl"); gsap.set(hlh, { opacity: 0 }); rise(hlh, T(388.08), { dur: 0.6, y: 12 });
+      ink(svg, "M200 392 L760 394", T(388.08) + 0.2, 0.6, { width: 4 });
+      // handcuffs @ (300, 640)
+      const cuff = el(svg, "g", {});
+      ink(cuff, "M212 640 a42 42 0 1 0 84 0 a42 42 0 1 0 -84 0", T(394.40), 0.45, { color: STLD, width: 12 });
+      ink(cuff, "M324 640 a42 42 0 1 0 84 0 a42 42 0 1 0 -84 0", T(394.40) + 0.1, 0.45, { color: STLD, width: 12 });
+      ink(cuff, "M240 598 L268 597", T(394.40) + 0.2, 0.15, { color: STLD, width: 16 });
+      ink(cuff, "M352 598 L380 597", T(394.40) + 0.25, 0.15, { color: STLD, width: 16 });
+      [[300, 636], [320, 644]].forEach((q, i) => { const lk = el(cuff, "ellipse", { cx: q[0], cy: q[1], rx: 11, ry: 6, fill: "none", stroke: STLD, "stroke-width": 5 }); gsap.set(lk, { opacity: 0 }); tl.set(lk, { opacity: 1 }, T(394.40) + 0.3 + i * 0.05); });
+      const la = $("sc005-arrest"); gsap.set(la, { opacity: 0 }); rise(la, T(394.40), { dur: 0.45, y: 8 });
+      // arrow → courthouse @ (680, 640)
+      const a1 = FX.markup.arrow(tl, svg, S(395.1), { x1: 400, y1: 646, x2: 566, y2: 642, bend: -16, color: INK, width: 5, filter: PEN, dur: 0.45, head: 20 });
+      a1.forEach((p) => { gsap.set(p, { opacity: 0 }); tl.set(p, { opacity: 1 }, S(395.1)); p.style.mixBlendMode = "multiply"; });
+      ink(svg, "M600 600 L680 556 L760 600 Z", T(395.84), 0.35, { color: STLD, width: 9 });
+      [616, 653, 690, 727, 744].forEach((x, i) => { if (i < 4) ink(svg, "M" + (x + 8) + " 612 L" + (x + 8.5) + " 700", T(395.84) + 0.12 + i * 0.05, 0.25, { color: STLD, width: 9 }); });
+      ink(svg, "M590 712 L771 713", T(395.84) + 0.35, 0.3, { color: STLD, width: 10 });
+      const lc = $("sc005-court"); gsap.set(lc, { opacity: 0 }); rise(lc, T(395.84), { dur: 0.45, y: 8 });
+
+      // RIGHT: terrorist group web
+      words("sc005-hr", [T(398.16), T(398.76)], { dur: 0.5, y: 12 });
+      ink(svg, "M1020 392 L1840 394", T(398.76) + 0.2, 0.6, { width: 4, color: EMBD });
+      const NX = 1440, NY = 610;
+      const node = el(svg, "g", {});
+      el(node, "circle", { cx: NX, cy: NY, r: 74, fill: EMB });
+      [[NX - 30, NY + 8], [NX + 30, NY + 8], [NX, NY - 6]].forEach((p, i) => {
+        el(node, "circle", { cx: p[0], cy: p[1] - 22, r: i === 2 ? 15 : 13, fill: BONE });
+        el(node, "path", { d: "M" + (p[0] - 22) + " " + (p[1] + 26) + " Q" + p[0] + " " + (p[1] - 10) + " " + (p[0] + 22) + " " + (p[1] + 26) + " Z", fill: BONE });
+      });
+      gsap.set(node, { opacity: 0, transformOrigin: NX + "px " + NY + "px" });
+      tl.fromTo(node, { opacity: 0, scale: 0.4 }, { opacity: 1, scale: 1, duration: 0.6, ease: C(E.out, 0.6), immediateRender: true }, S(398.9));
+      // helpers (anyone) — G = the guy
+      const H = [[1210, 800], [1170, 520], [1440, 452], [1710, 520], [1690, 800]];
+      const helpers = H.map((p, i) => {
+        const tie = dashed(svg, "M" + (NX + (p[0] - NX) * 0.33) + " " + (NY + (p[1] - NY) * 0.33) + " L" + (p[0] - (p[0] - NX) * 0.22) + " " + (p[1] - (p[1] - NY) * 0.22), S(401.44) + i * 0.1, 0.4, { color: EMBD, width: 3, dash: "9 8", id: SEG + "-sc005-tie" + i });
+        void tie;
+        const g = el(svg, "g", {});
+        el(g, "circle", { cx: p[0], cy: p[1] - 18, r: 17, fill: INK });
+        el(g, "path", { d: "M" + (p[0] - 30) + " " + (p[1] + 30) + " Q" + p[0] + " " + (p[1] - 14) + " " + (p[0] + 30) + " " + (p[1] + 30) + " Z", fill: INK });
+        gsap.set(g, { opacity: 0, transformOrigin: p[0] + "px " + p[1] + "px" });
+        pop(g, S(401.44) + i * 0.1 + 0.3, { from: 1.6, n: 2 });
+        return g;
+      });
+      // MONEY ($) and SUPPLIES (crate) on the guy's side
+      const mon = el(svg, "g", {});
+      el(mon, "circle", { cx: 1114, cy: 946, r: 30, fill: "none", stroke: EMBD, "stroke-width": 6 });
+      const dl = el(mon, "text", { x: 1114, y: 960, "text-anchor": "middle", fill: EMBD, class: "t-display", "font-size": 40 }); dl.textContent = "$";
+      gsap.set(mon, { opacity: 0, transformOrigin: "1114px 946px" }); pop(mon, T(406.16), { from: 1.6, n: 2 });
+      const lm = $("sc005-money"); gsap.set(lm, { opacity: 0 }); rise(lm, T(406.16), { dur: 0.4, y: 6 });
+      const crt = el(svg, "g", {});
+      el(crt, "path", { d: "M1310 918 L1362 918 L1362 972 L1310 972 Z M1310 918 L1362 972 M1362 918 L1310 972", fill: "none", stroke: EMBD, "stroke-width": 6, "stroke-linejoin": "round" });
+      gsap.set(crt, { opacity: 0, transformOrigin: "1336px 945px" }); pop(crt, T(407.20), { from: 1.6, n: 2 });
+      const ls = $("sc005-supp"); gsap.set(ls, { opacity: 0 }); rise(ls, T(407.20), { dur: 0.4, y: 6 });
+      ink(svg, "M1150 912 Q1170 880 1188 852", S(406.3), 0.3, { color: EMBD, width: 3 });
+      ink(svg, "M1330 912 Q1290 880 1236 850", S(407.35), 0.3, { color: EMBD, width: 3 });
+      // "anything you can imagine": every helper pulses
+      helpers.forEach((g, i) => tl.fromTo(g, { scale: 1.3 }, { scale: 1, duration: 0.5, ease: C(E.out, 0.5), immediateRender: false }, S(408.54) + i * 0.08));
+      // PRISON: steel bars slam over the guy
+      const bars = $("sc005-bars");
+      let b = '<svg width="160" height="184" viewBox="0 0 160 184" style="position:absolute;left:0;top:0">';
+      b += '<rect x="0" y="0" width="160" height="14" rx="3" fill="' + STLD + '"/><rect x="0" y="170" width="160" height="14" rx="3" fill="' + STLD + '"/>';
+      for (let k = 0; k < 6; k++) b += '<rect x="' + (6 + k * 28) + '" y="8" width="10" height="170" rx="4" fill="' + STLD + '"/>';
+      bars.innerHTML = b + "</svg>";
+      gsap.set(bars, { opacity: 0, y: -300 });
+      tl.fromTo(bars, { opacity: 1, y: -300 }, { opacity: 1, y: 0, duration: 3 / 24, ease: "power3.in", immediateRender: false }, T(412.16) - 3 / 24);
+      tl.fromTo(bars, { y: 0 }, { keyframes: [{ y: -10, duration: 1 / 24 }, { y: 3, duration: 1 / 24 }, { y: 0, duration: 1 / 24 }], immediateRender: false }, T(412.16));
+      const lp = $("sc005-prison"); gsap.set(lp, { opacity: 0 }); rise(lp, T(412.16), { dur: 0.4, y: 6 });
+      // camera: tag → left path → right web → the guy → others → guy → whole board (cut on action into the whip)
+      cam("sc005-cam", [
+        [0, atc(960, 300, 1.45)],
+        [S(385.70), atc(600, 540, 1.18), 1.6],
+        [S(396.55), atc(1420, 640, 1.3), 1.5],
+        [S(404.40), atc(1240, 820, 1.62), 1.3],
+        [S(408.40), atc(1430, 680, 1.3), 1.1],
+        [S(410.70), atc(1230, 800, 1.55), 1.1],
+        [S(415.30), atc(960, 560, 1.0), 1.75],
+      ]);
+    })();
+
+    /* ===== sc007 · the White House (whip ←) ===== */
+    whip("sc005", "sc007", S(416.95), { dir: -1 });
+    (function () {
+      cam("sc007-cam", [[0, atw(960, 560, 1.02, 1920, 1536)], [S(416.95), atw(1010, 420, 1.28, 1920, 1536), 3.15, E.cam]]);
+      const tag = CT.dateTag($("sc007-tag"), { prefix: SEG + "-sc007-dt", place: "The White House", date: "Oct 2025", accent: "steel" });
+      tag.in(tl, S(417.55));
+      CT.credit($("sc007-cr"), "Photo: U.S. DoD");
+    })();
+
+    /* ===== sc008 · NBC News: "…'armed conflict' with cartels, administration tells Congress" — pen underlines (hard cut on action) ===== */
+    (function () {
+      const svg = $("sc008-svg");
+      cam("sc008-cam", [[0, at(1091, 650, 0.9, -1.4)], [S(420.01), at(1091, 630, 0.97, -0.8), 5.8, E.cam]]);
+      const u1 = FX.markup.pen(tl, svg, S(420.27), { points: [[164, 872], [360, 876], [556, 868]], jitter: 4, seed: 4, dur: 0.45, width: 9, color: BONE, blend: "normal", filter: PEN });
+      const u2 = FX.markup.pen(tl, svg, S(422.83), { points: [[1726, 642], [1880, 646], [2022, 639]], jitter: 4, seed: 6, dur: 0.32, width: 9, color: BONE, blend: "normal", filter: PEN });
+      const u3 = FX.markup.pen(tl, svg, S(423.17), { points: [[162, 762], [330, 766], [490, 758]], jitter: 4, seed: 8, dur: 0.38, width: 9, color: BONE, blend: "normal", filter: PEN });
+      [u1, u2, u3].forEach((p) => gsap.set(p, { opacity: 1 }));
+      CT.credit($("sc008-cr"), "NBC News · Oct 2025");
+    })();
+
+    /* ===== sc009 · AP (via PBS): "unlawful combatants" highlighted on "cartel members" (slide ↑) ===== */
+    slide("sc008", "sc009", S(425.77), { axis: "y" });
+    (function () {
+      cam("sc009-cam", [[0, atc(960, 540, 1.02)], [S(425.77), atc(900, 640, 1.13), 5.95, E.cam]]);
+      hl($("sc009-h1"), S(428.75), 0.95);
+      hl($("sc009-h2"), S(429.86), 0.95);
+      CT.credit($("sc009-cr"), "NBC News · Oct 2025", { theme: "paper" });
+    })();
+
+    /* ===== sc010 · "They are targets now": crosshairs lock onto the 8 groups (flash whip →) ===== */
+    whip("sc009", "sc010", S(431.69), { dir: 1, flash: true });
+    (function () {
+      const tiles = grid($("sc010-grid"), [2, 3]), svg = $("sc010-svg");
+      const st = div($("sc010-vw"), "c5-stamp t-display", "left:640px;top:500px;font-size:150px;opacity:0.94;transform:rotate(-9deg)", "FTO");
+      st.style.filter = "url(#" + SEG + "-rough)";
+      tiles.forEach((t, i) => {
+        const cx = TX(i) + 160, cy = TY(i) + 95;
+        const g = el(svg, "g", {});
+        el(g, "circle", { cx: cx, cy: cy, r: 58, fill: "none", stroke: STLL, "stroke-width": 4 });
+        el(g, "circle", { cx: cx, cy: cy, r: 5, fill: STLL });
+        [[0, -1], [0, 1], [-1, 0], [1, 0]].forEach((d) => el(g, "path", { d: "M" + (cx + d[0] * 44) + " " + (cy + d[1] * 44) + " L" + (cx + d[0] * 78 + (d[1] ? 0.5 : 0)) + " " + (cy + d[1] * 78 + (d[0] ? 0.5 : 0)), stroke: STLL, "stroke-width": 4 }));
+        gsap.set(g, { opacity: 0, transformOrigin: cx + "px " + cy + "px" });
+        const t0 = S(432.19) + [0, 3, 1, 5, 2, 7, 4, 6][i] * (1.5 / 12);
+        tl.fromTo(g, { opacity: 0, scale: 2.2, rotation: 45 }, { opacity: 1, scale: 1, rotation: 0, duration: 3 / 12, ease: "steps(3)", immediateRender: true }, t0);
+        tl.fromTo(t.querySelector(".dim"), { opacity: 0 }, { opacity: 0.38, duration: 2 / 12, ease: "steps(2)", immediateRender: false }, t0 + 2 / 12);
+      });
+      const vw = $("sc010-vw"); gsap.set(vw, { scale: 1.05, transformOrigin: "900px 560px" });
+      tl.fromTo(vw, { scale: 1.05 }, { scale: 1.1, duration: 3.6, ease: "none", immediateRender: false }, S(431.69));
+    })();
+
+    /* ===== sc011 · pressure on Mexico — collage rebuilt from ref ast_4b7fb0fe0a134429 (paper slides in →) ===== */
+    slide("sc010", "sc011", S(435.30), { axis: "x", from: -1 });
+    (function () {
+      const poles = $("sc011-poles"), svg = $("sc011-svg");
+      el(poles, "path", { d: "M872 96 L873 760", stroke: "#57504a", "stroke-width": 9, "stroke-linecap": "round" });
+      el(poles, "path", { d: "M1048 96 L1049 760", stroke: "#57504a", "stroke-width": 9, "stroke-linecap": "round" });
+      el(poles, "circle", { cx: 872.5, cy: 92, r: 11, fill: "#57504a" });
+      el(poles, "circle", { cx: 1048.5, cy: 92, r: 11, fill: "#57504a" });
+      const fus = $("sc011-fus"), fmx = $("sc011-fmx"), tr = $("sc011-tr"), shw = $("sc011-shw");
+      tl.fromTo(fus, { scaleX: 0.2, opacity: 0 }, { scaleX: 1, opacity: 1, duration: 1.0, ease: C(E.out, 1.0), immediateRender: true }, S(435.0));
+      tl.fromTo(fmx, { scaleX: 0.2, opacity: 0 }, { scaleX: 1, opacity: 1, duration: 1.0, ease: C(E.out, 1.0), immediateRender: true }, S(435.12));
+      tl.fromTo(tr, { x: -120, opacity: 0 }, { x: 0, opacity: 1, duration: 1.1, ease: C(E.out, 1.1), immediateRender: true }, S(435.10));
+      tl.fromTo(shw, { x: 120, opacity: 0 }, { x: 0, opacity: 1, duration: 1.1, ease: C(E.out, 1.1), immediateRender: true }, S(435.22));
+      const lus = $("sc011-lus"); gsap.set(lus, { opacity: 0 }); rise(lus, S(435.5), { dur: 0.5, y: 8 });
+      const ntr = $("sc011-ntr"), nsh = $("sc011-nsh");
+      gsap.set([ntr, nsh], { opacity: 0 }); rise(ntr, S(435.75), { dur: 0.5, y: 10 }); rise(nsh, S(435.95), { dur: 0.5, y: 10 });
+      // "pressure": a heavy steel arrow pushes across the poles into Mexico's side; her card is shoved and tilts
+      const arrow = el(svg, "path", { d: "M600 712 L1150 704 L1150 664 L1270 724 L1150 786 L1150 746 L600 752 Z", fill: STLD, stroke: INK, "stroke-width": 3, "stroke-linejoin": "round" });
+      arrow.style.filter = "url(#" + SEG + "-rough)";
+      gsap.set(arrow, { opacity: 0, scaleX: 0, transformOrigin: "600px 730px" });
+      tl.fromTo(arrow, { opacity: 1, scaleX: 0 }, { opacity: 1, scaleX: 1, duration: 0.5, ease: C(E.out, 0.5), immediateRender: false }, S(437.15));
+      tl.to(shw, { x: 46, rotation: 3.5, duration: 0.5, ease: C(E.out, 0.5) }, S(437.35));
+      tl.to(fmx, { x: 26, rotation: 1.5, duration: 0.5, ease: C(E.out, 0.5) }, S(437.38));
+      [[1300, 600, 1350, 560], [1300, 770, 1352, 790], [1310, 685, 1370, 680]].forEach((q, i) =>
+        ink(svg, "M" + q[0] + " " + q[1] + " L" + q[2] + " " + q[3], S(437.5) + i * 0.05, 0.25, { color: INK, width: 5 }));
+      const lmx = $("sc011-lmx"); gsap.set(lmx, { opacity: 0 }); rise(lmx, T(437.87), { dur: 0.5, y: 8 });
+      const vw = $("sc011-vw"); gsap.set(vw, { scale: 1.0, transformOrigin: "960px 600px" });
+      tl.fromTo(vw, { scale: 1.0 }, { scale: 1.05, duration: 4.8, ease: "none", immediateRender: false }, S(435.30));
+      CT.credit($("sc011-cr"), "Photos: The White House · Eneas / CC BY 4.0", { theme: "paper" });
+    })();
+
+    /* ===== sc012 · "Liberation Day and all the tariffs we saw" — the Rose Garden board, ONLY here (whip →) ===== */
+    whip("sc011", "sc012", S(440.03), { dir: 1 });
+    (function () {
+      cam("sc012-cam", [[0, atw(1000, 600, 1.04, 1920, 1280)], [S(440.03), atw(1060, 560, 1.28, 1920, 1280), 2.7, E.cam]]);
+      const tag = CT.dateTag($("sc012-tag"), { prefix: SEG + "-sc012-dt", place: "Rose Garden, White House", date: "2 Apr 2025", accent: "steel" });
+      tag.in(tl, S(440.30));
+      CT.credit($("sc012-cr"), "Photo: The White House / Daniel Torok");
+    })();
+
+    /* ===== sc013 · trade: the World Trade Crossing, Laredo (hard cut on action); labels keep a constant screen size ===== */
+    (function () {
+      const c = $("sc013-cam"), svg = $("sc013-svg");
+      const L = [["mx", 430, 300, -0, 0], ["us", 520, 800, 0, 0], ["rg", 640, 372, 0, 0], ["lr", 1222, 552, 0, 0]];
+      const cs = { x: 0, y: 0, s: 1 };
+      const K0 = atw(820, 520, 1.08, 1920, 1280), K1 = atw(700, 500, 1.24, 1920, 1280);
+      const place = () => {
+        c.style.transform = "translate(" + cs.x + "px," + cs.y + "px) scale(" + cs.s + ")";
+        L.forEach((q) => { const e = $("sc013-" + q[0]); const sx = cs.x + q[1] * cs.s, sy = cs.y + q[2] * cs.s;
+          if (q[0] === "lr") { e.style.left = (sx - 8) + "px"; e.style.top = (sy - 18) + "px"; }
+          else if (q[0] === "rg") { e.style.left = sx + "px"; e.style.top = sy + "px"; e.style.transform = "rotate(-11deg)"; }
+          else { e.style.left = (sx - 120) + "px"; e.style.top = (sy - 24) + "px"; } });
+      };
+      gsap.set(c, { transformOrigin: "0 0" });
+      Object.assign(cs, { x: K0.x, y: K0.y, s: K0.scale }); place();
+      tl.fromTo(cs, { x: K0.x, y: K0.y, s: K0.scale }, { x: K1.x, y: K1.y, s: K1.scale, duration: 4.9, ease: E.cam, immediateRender: true, onUpdate: place }, S(442.62));
+      ["mx", "us", "rg", "lr"].forEach((k, i) => { const e = $("sc013-" + k); gsap.set(e, { opacity: 0 }); tl.fromTo(e, { opacity: 0 }, { opacity: 1, duration: 0.5, ease: "power1.out", immediateRender: true }, S(442.8) + i * 0.15); });
+      // trucks from Mexico across the bridge into the US inspection lanes
+      const P = "M0 398 L200 412 L390 428 Q300 466 322 500 L450 536 L640 553 L1010 580";
+      const flow = el(svg, "path", { d: P, fill: "none", stroke: STLL, "stroke-width": 6, "stroke-dasharray": "18 14", "stroke-linecap": "round" });
+      const m = el(svg, "mask", { id: SEG + "-sc013-m", maskUnits: "userSpaceOnUse", x: -100, y: -100, width: 2200, height: 1500 });
+      const mp = el(m, "path", { d: P, fill: "none", stroke: "#fff", "stroke-width": 26, "stroke-linecap": "round" });
+      const len = mp.getTotalLength();
+      mp.setAttribute("stroke-dasharray", len + " " + len); mp.setAttribute("stroke-dashoffset", len);
+      flow.setAttribute("mask", "url(#" + SEG + "-sc013-m)");
+      tl.fromTo(mp, { attr: { "stroke-dashoffset": len } }, { attr: { "stroke-dashoffset": 0 }, duration: 1.4, ease: C(E.out, 1.4), immediateRender: true }, S(444.19));
+      tl.fromTo(flow, { attr: { "stroke-dashoffset": 0 } }, { attr: { "stroke-dashoffset": -160 }, duration: 3.3, ease: "none", immediateRender: true }, S(444.19));
+      const head = el(svg, "path", { d: "M984 556 L1022 581 L982 600", fill: "none", stroke: STLL, "stroke-width": 6, "stroke-linecap": "round", "stroke-linejoin": "round" });
+      gsap.set(head, { opacity: 0 }); tl.set(head, { opacity: 1 }, S(445.45));
+      CT.credit($("sc013-cr"), "Photo: U.S. Customs and Border Protection");
+    })();
+
+    /* ===== sc014 · "another part … drugs": the trade photo tears away to the DEA fentanyl photo ===== */
+    (function () {
+      const inn = $("sc014-in"), edge = $("sc014-edge");
+      const r = FX.rng(1405), N = 26, J = [];
+      for (let i = 0; i <= N; i++) J.push((r() - 0.5) * 70 + (i % 2 ? 18 : -18));
+      const st = { p: -160 };
+      const poly = (off) => { const pts = ["0px 0px"]; for (let i = 0; i <= N; i++) { const y = i * 1080 / N; pts.push((st.p + off + J[i] + y * 0.12).toFixed(1) + "px " + y.toFixed(1) + "px"); } pts.push("0px 1080px"); return "polygon(" + pts.join(",") + ")"; };
+      const upd = () => { inn.style.clipPath = poly(0); edge.style.clipPath = poly(16); };
+      upd();
+      tl.fromTo(st, { p: -160 }, { p: 2120, duration: 0.6, ease: "power2.inOut", immediateRender: true, onUpdate: upd }, S(447.45));
+      cam("sc014-cam", [[0, atw(980, 720, 1.12, 1920, 1541)], [S(447.45), atw(1060, 700, 1.24, 1920, 1541), 3.4, E.cam]]);
+      const tg = $("sc014-tg"); gsap.set(tg, { opacity: 0 });
+      tl.fromTo(tg, { opacity: 0, x: 24 }, { opacity: 1, x: 0, duration: 0.3, ease: C(E.out, 0.3), immediateRender: true }, T(450.03));
+      CT.credit($("sc014-cr"), "Photo: DEA");
+    })();
+
+    FX.mount(tl, DURATION);
+    window.__timelines = window.__timelines || {};
+    window.__timelines[SEG] = tl;
+  })();
+  </script>
+</template>
+</body>
+</html>

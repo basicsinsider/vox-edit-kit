@@ -25,7 +25,7 @@
       clip-path: polygon(0% 8%, 6% 0%, 14% 6%, 27% 1%, 41% 7%, 55% 0%, 70% 5%, 84% 0%, 100% 6%, 98% 50%, 100% 94%, 86% 100%, 71% 95%, 56% 100%, 40% 94%, 25% 100%, 11% 95%, 0% 100%, 2% 52%); }
     .c3-strip.big { padding: 16px 34px 8px; }
     .c3-strip.emb { background: var(--ember-dark); color: var(--bone); }
-    .c3-stamp { position: absolute; padding: 9px 14px 5px; border: 5px solid currentColor; font-size: 36px; line-height: 1.02; white-space: nowrap;
+    .c3-stamp { position: absolute; padding: 7px 12px 3px; border: 4px solid currentColor; font-size: 28px; line-height: 1.02; white-space: nowrap;
       text-align: center; background: rgba(240,233,218,0.82); opacity: 0.95; border-radius: 4px; box-shadow: 0 3px 8px rgba(29,26,22,0.25); }
     .c3-note { position: absolute; background: #f3ecdb; padding: 10px 16px 6px; color: var(--ink); box-shadow: 0 8px 16px rgba(29,26,22,0.35); white-space: nowrap; }
     .c3-lab { position: absolute; white-space: nowrap; }
@@ -87,7 +87,7 @@
           <div id="cts03-E-lay"></div>
         </div>
       </div>
-      <div class="c3-abs" style="left:0;top:0;width:1920px;height:420px;background:linear-gradient(180deg, #3b3026 0%, rgba(59,48,38,0.85) 30%, rgba(59,48,38,0) 100%)"></div>
+      <div class="c3-abs" style="left:0;top:0;width:1920px;height:470px;background:linear-gradient(180deg, #3b3026 0%, #3b3026 24%, rgba(59,48,38,0.8) 45%, rgba(59,48,38,0) 100%)"></div>
       <div id="cts03-E-scr"></div>
       <div id="cts03-E-cr"></div>
     </div></div>
@@ -257,9 +257,9 @@
           '<div class="c3-card" id="' + p + '-' + k + 'c" style="left:' + q.x + 'px;top:' + q.y + 'px;width:' + q.w + 'px;height:' + q.h + 'px">' +
           '<img src="assets/cartels/cts03/derived/' + q.img + '.jpg" alt="" style="left:13px;top:13px;width:' + (q.w - 26) + 'px;height:' + (q.h - 26) + 'px;filter:url(#' + SEG + '-duo)" />' +
           '<div class="c3-pin" style="left:' + (q.w / 2 - 11) + 'px;top:-6px"></div>' +
-          (k === "al" ? '<div class="c3-stamp t-display" id="' + p + '-alst" style="left:28px;top:166px;color:' + OLD + ';opacity:' + (o.stamped ? 0.95 : 0) + '">ARRESTED<br>2008</div>' : "") +
-          (k === "ar" ? '<div class="c3-stamp t-display" id="' + p + '-arst" style="left:44px;top:160px;color:' + INK + ';opacity:0">KILLED<br>2009</div>' : "") +
-          (k === "he" ? '<div class="c3-stamp t-display" id="' + p + '-hest" style="left:24px;top:166px;color:' + OLD + ';opacity:0">ARRESTED<br>2014</div>' : "") +
+          (k === "al" ? '<div class="c3-stamp t-display" id="' + p + '-alst" style="left:44px;top:206px;color:' + OLD + ';opacity:' + (o.stamped ? 0.95 : 0) + '">ARRESTED<br>2008</div>' : "") +
+          (k === "ar" ? '<div class="c3-stamp t-display" id="' + p + '-arst" style="left:62px;top:204px;color:' + INK + ';opacity:0">KILLED<br>2009</div>' : "") +
+          (k === "he" ? '<div class="c3-stamp t-display" id="' + p + '-hest" style="left:44px;top:206px;color:' + OLD + ';opacity:0">ARRESTED<br>2014</div>' : "") +
           '</div>' +
           '<div class="c3-strip t-label" id="' + p + '-' + k + 'l" style="left:' + q.lx + 'px;top:' + q.ly + 'px;font-size:28px">' + q.lab + '</div></div>';
       });
@@ -368,13 +368,16 @@
       gsap.set(L("isc"), { rotation: ISO.r });
       gsap.set(R("sin"), { rotation: -1.5 }); gsap.set(L("sin"), { rotation: -1.5 });
       // static marks (as left by A)
-      [L("svg"), R("svg")].forEach((s) => {
-        pen(s, boxD, null, 0, { color: EMBD, width: 7, filter: PEN });
-        arrowD(1190, 320, 1362, 320, -26, 24).concat(arrowD(1362, 344, 1190, 344, -26, 24), suspD, gaveD)
-          .forEach((d) => pen(s, d, null, 0, { color: EMBD, filter: PEN }));
-        pen(s, "M1246 150 C1244 118 1300 112 1300 146 C1300 170 1274 172 1274 196", null, 0, { color: EMBD, width: 7, filter: PEN });
-        const dd = el(s, "circle", { cx: 1274, cy: 216, r: 6, fill: EMBD }); dd.style.mixBlendMode = "multiply";
+      const staticL = [];
+      [L("svg"), R("svg")].forEach((s, si) => {
+        const bx = pen(s, boxD, null, 0, { color: EMBD, width: 7, filter: PEN });
+        const ms = arrowD(1190, 320, 1362, 320, -26, 24).concat(arrowD(1362, 344, 1190, 344, -26, 24), suspD, gaveD)
+          .map((d) => pen(s, d, null, 0, { color: EMBD, filter: PEN }));
+        ms.push(pen(s, "M1246 150 C1244 118 1300 112 1300 146 C1300 170 1274 172 1274 196", null, 0, { color: EMBD, width: 7, filter: PEN }));
+        const dd = el(s, "circle", { cx: 1274, cy: 216, r: 6, fill: EMBD }); dd.style.mixBlendMode = "multiply"; ms.push(dd); ms.push(bx);
+        if (si === 0) ms.forEach((m) => staticL.push(m));
       });
+      tl.set(staticL, { opacity: 0 }, S(211.6));
       // the tear: jagged clip polygons (board coords; the halves are 1920×1080 boxes, polygons may run outside)
       const ys = []; for (let y = -420; y <= 1500; y += 24) ys.push(y);
       const edge = ys.map((y) => [tearX(y), y]);
@@ -408,12 +411,12 @@
       tl.to(clash, { opacity: 0, duration: 0.4, ease: "power1.in" }, S(188.35));
       // the right half (El Chapo's side) leaves; push to Isidro
       tl.to(RH, { x: 1500, rotation: 6, duration: 0.9, ease: C(E.in, 0.9) }, S(188.45));
-      const K4 = at(900, 560, 0.92), K5 = at(ISO.x + 107 - 150, ISO.y + 160, 1.45, 0);
+      const K5 = at(ISO.x + 107 - 150, ISO.y + 140, 1.45, 0);
       camTo(cam, at(980, 540, 0.92), K5, S(188.55), 1.6);
       pen(document.getElementById(pl + "-iss"), ellD(107, 122, 152, 168, -5, 9), S(190.02), 0.65, { color: EMBD, width: 7, filter: PEN, ease: "power1.inOut" });
       const n1 = L("n1");
       tl.fromTo(n1, { opacity: 0, scale: 1.2, rotation: 8 }, { opacity: 1, scale: 1, rotation: 4, duration: 3 / 12, ease: "steps(3)", immediateRender: true }, T(191.43));
-      camTo(cam, K5, at(ISO.x + 107 - 150 + 20, ISO.y + 160, 1.5, 0), S(190.2), 3.0, "none");
+      camTo(cam, K5, at(ISO.x + 107 - 150 + 20, ISO.y + 140, 1.5, 0), S(190.2), 3.0, "none");
       CT.credit($("C-cr"), "Photos: El Universal · Expansión · Vanguardia · FBI", { theme: "paper", pos: "br" });
 
       // ----- second window (211.65–228.61): AGE 28 → one of the big bosses → the brothers fall one by one → Isidro survives -----
@@ -440,9 +443,9 @@
       const ISC = { x: 1004 + 120, y: 140 + 170 };
       camTo(cam, at(780, 400, 1.02), at(ISC.x - 60, ISC.y + 40, 1.4), S(224.20), 1.8);
       // "keeps going and builds his own thing": an ember pen arrow off the board, then the push-through into the map
-      const kg = arrowD(1300, 300, 1480, 170, 30, 28);
-      const LS = L("svg");
-      pen(LS, kg[0], S(226.30), 0.5, { color: EMBD, width: 8, filter: PEN2 }); pen(LS, kg[1], S(226.75), 0.14, { color: EMBD, width: 8, filter: PEN2 });
+      const kg = arrowD(236, 90, 380, -40, 30, 26);
+      const LS = document.getElementById(pl + "-iss");
+      pen(LS, kg[0], S(226.30), 0.5, { color: EMB, width: 8, filter: PEN2, blend: "normal" }); pen(LS, kg[1], S(226.75), 0.14, { color: EMB, width: 8, filter: PEN2, blend: "normal" });
       camTo(cam, at(ISC.x - 60, ISC.y + 40, 1.4), at(ISC.x, ISC.y, 3.4), S(227.75), 0.86, E.in);
     })();
 
@@ -512,14 +515,14 @@
       const rule = div(lay, "c3-abs", "left:940px;top:610px;width:620px;height:10px;background:" + EMB + ";transform-origin:0 50%");
       tl.fromTo(yr, { opacity: 0, y: -60, filter: "blur(10px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.6, ease: C(E.out, 0.6), immediateRender: true }, T(202.31));
       tl.fromTo(rule, { scaleX: 0 }, { scaleX: 1, duration: 0.8, ease: C(E.out, 0.8), immediateRender: true }, S(202.70));
-      const sn = lab("SONORA", 420, 980, "font-size:120px;color:" + BONE + ";letter-spacing:0.08em", "t-display clean");
+      const sn = lab("SONORA", 520, 760, "font-size:120px;color:" + BONE + ";letter-spacing:0.08em", "t-display clean");
       rise(sn, T(205.35), { dur: 0.6, y: 20 });
       const tt = lab("TUBUTAMA", tb[0] + 34, tb[1] - 60, "font-size:44px;color:" + BONE);
       rise(tt, S(205.95), { dur: 0.45, y: 10 });
       const k1 = lab('<span id="' + SEG + '-E-a">20</span><span id="' + SEG + '-E-b">–30</span> <span id="' + SEG + '-E-c">KILLED</span>', tb[0] + 34, tb[1] + 6, "font-size:56px;color:" + EMBL);
       rise($("E-a"), T(207.35), { dur: 0.4, y: 8 }); rise($("E-b"), T(207.99), { dur: 0.4, y: 8 }); rise($("E-c"), T(210.15), { dur: 0.4, y: 8 });
       // camera: the plane is tilted like a table, drifts and pushes toward the site
-      const P0 = { rotationX: 50, rotationZ: -7, scale: 1.25, x: 0, y: 40 }, P1 = { rotationX: 46, rotationZ: -3, scale: 1.55, x: 140, y: 120 };
+      const P0 = { rotationX: 50, rotationZ: -7, scale: 1.25, x: 0, y: 40 }, P1 = { rotationX: 46, rotationZ: -3, scale: 1.5, x: -60, y: 100 };
       gsap.set(pl, P0);
       tl.fromTo(pl, P0, Object.assign({}, P1, { duration: 9.5, ease: "sine.inOut", immediateRender: false }), S(202.13));
       CT.credit($("E-cr"), "Imagery: Esri, Maxar, Earthstar Geographics");

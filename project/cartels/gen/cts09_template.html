@@ -16,7 +16,7 @@
     .c9-p2 { mix-blend-mode: multiply; }
     .c9-hall { position: absolute; inset: -60px;
       background: radial-gradient(ellipse 70% 62% at 50% 46%, color-mix(in srgb, var(--ash-dark) 62%, var(--night)) 0%, var(--night) 78%); }
-    .c9-desk { position: absolute; inset: -700px; background: #1c1814; }
+    .c9-desk { position: absolute; inset: -1000px; background: #1c1814; }
     .c9-page { position: absolute; left: 0; top: 0; box-shadow: 0 34px 80px rgba(0,0,0,0.55); }
     .c9-hlr { position: absolute; background: var(--yellow); mix-blend-mode: multiply; opacity: 0.82; transform-origin: 0 50%; border-radius: 3px; }
     .c9-lab { position: absolute; white-space: nowrap; transform-origin: 0 50%; }
@@ -337,7 +337,7 @@
       '<filter id="' + SEG + '-hlf" x="-5%" y="-30%" width="110%" height="160%"><feTurbulence type="fractalNoise" baseFrequency="0.04 0.3" numOctaves="2" seed="4" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="6" xChannelSelector="R" yChannelSelector="G"/></filter>' +
       '<filter id="' + SEG + '-glow" x="-20%" y="-20%" width="140%" height="140%" color-interpolation-filters="sRGB"><feGaussianBlur stdDeviation="9"/></filter>' +
       '<filter id="' + SEG + '-glow2" x="-20%" y="-20%" width="140%" height="140%" color-interpolation-filters="sRGB"><feGaussianBlur stdDeviation="22"/></filter>' +
-      '<filter id="' + SEG + '-sink" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="7" result="n"/><feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -1.4 1.15" result="a"/><feComposite in="SourceGraphic" in2="a" operator="in"/></filter>');
+      '<filter id="' + SEG + '-sink" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="7" result="n"/><feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -0.8 1.3" result="a"/><feComposite in="SourceGraphic" in2="a" operator="in"/></filter>');
     document.querySelectorAll("#" + SEG + "-sc002-h1, #" + SEG + "-sc008-h1, #" + SEG + "-sc008-h2, #root .c9-hlr").forEach((k) => { k.style.filter = "url(#" + SEG + "-hlf)"; });
     FX.grain($("grain"), 909);
     FX.dust($("dust"), 910, 2);
@@ -573,7 +573,7 @@
     slide("sc007", "sc008", S(818.9), { axis: "x", d: 0.5 });
     (function () {
       const c = $("sc008-cam");
-      cam(c, [[S(818.4), 760, 650, 1.32, -1.2], [S(825.4), 640, 735, 1.62, -0.4]]);
+      cam(c, [[S(818.4), 700, 640, 1.3, -1.2], [S(825.4), 645, 730, 1.42, -0.4]]);
       hl($("sc008-h1"), S(818.95), 0.45);
       hl($("sc008-h2"), S(819.70), 1.0);
       const pen = $("sc008-pen");
@@ -587,6 +587,11 @@
     (function () {
       const bd = $("bd"), top = $("bd-top"), str = $("bd-str"), pen = $("bd-pen");
       pen.setAttribute("viewBox", "0 0 1920 1080");
+      // witness-protection folder BACK (first child = under every card)
+      const wpb = div(bd, "c9-abs", "left:1850px;top:250px;width:520px;height:400px");
+      div(wpb, "c9-abs", "left:0;top:46px;width:520px;height:354px;background:" + STEELD + ";box-shadow:0 22px 44px rgba(0,0,0,0.6)");
+      const wtab = div(wpb, "c9-abs", "left:20px;top:0;width:470px;height:60px;background:" + STEELD + ";border-radius:10px 10px 0 0");
+      const wtx = div(wtab, "c9-abs t-label", "left:20px;top:18px;font-size:24px;color:" + STEELL, "U.S. Witness Protection");
       // Zuany polaroid
       const z = div(bd, "c9-pol", "left:810px;top:84px;width:300px;height:362px");
       const zp = div(z, "ph", "height:268px");
@@ -627,12 +632,9 @@
         papers.push(p);
       }
       // steel witness-protection folder
-      const wp = div(top, "c9-abs", "left:1300px;top:300px;width:520px;height:400px");
-      div(wp, "c9-abs", "left:0;top:46px;width:520px;height:354px;background:" + STEELD + ";box-shadow:0 22px 44px rgba(0,0,0,0.6)");
-      const wtab = div(wp, "c9-abs", "left:20px;top:0;width:470px;height:60px;background:" + STEELD + ";border-radius:10px 10px 0 0");
-      const wtx = div(wtab, "c9-abs t-label", "left:20px;top:18px;font-size:24px;color:" + STEELL, "U.S. Witness Protection");
-      const wfront = div(wp, "c9-abs", "left:0;top:170px;width:520px;height:230px;background:" + STEEL + ";box-shadow:0 -8px 20px rgba(0,0,0,0.35)");
-      div(wfront, "c9-p1", "background-image:url('assets/textures/halftone_01_norm.jpg');mix-blend-mode:overlay;opacity:0.5");
+      const wp = div(top, "c9-abs", "left:1850px;top:250px;width:520px;height:400px");
+      const wfront = div(wp, "c9-abs", "left:0;top:190px;width:520px;height:210px;background:" + STEELD + ";box-shadow:0 -10px 24px rgba(0,0,0,0.45);border-top:3px solid " + STEEL);
+      div(wfront, "c9-p1", "background-image:url('assets/textures/halftone_01_norm.jpg');mix-blend-mode:overlay;opacity:0.55");
 
       // --- timing ---
       // 825.27 board with Zuany's photo (reputation)
@@ -651,7 +653,6 @@
         draw(p, S(831.2) + i * 0.1, 0.7);
         return p;
       });
-      void strings;
       // the 2022 murders: note card, two badges, the year
       tl.fromTo(note, { opacity: 0, y: 60, rotation: 6 }, { opacity: 1, y: 0, rotation: 2, duration: 1.0, ease: C(E.out, 1.0), immediateRender: true }, S(832.9));
       pop(nPin, S(833.7));
@@ -666,21 +667,20 @@
       });
       // the witness who was told Zuany ordered him killed → witness protection
       const w3 = wit[2];
-      FX.markup.circle(tl, pen, S(842.62), { cx: 1640, cy: 270, rx: 180, ry: 200, rot: 4, color: EMBER, width: 7, dur: 0.8, filter: PEN });
+      const circ = FX.markup.circle(tl, pen, S(842.62), { cx: 1640, cy: 270, rx: 180, ry: 200, rot: 4, color: EMBER, width: 7, dur: 0.8, filter: PEN });
       const extra = stroke(str, "M1640 134 Q1300 40 960 100", { color: EMBER, width: 6 });
       draw(extra, S(841.7), 0.8);
-      tl.fromTo(wp, { opacity: 0, x: 700 }, { opacity: 1, x: 0, duration: 1.1, ease: C(E.out, 1.1), immediateRender: true }, S(843.9));
+      [wpb, wp].forEach((e) => tl.fromTo(e, { opacity: 0, x: 500 }, { opacity: 1, x: 0, duration: 1.1, ease: C(E.out, 1.1), immediateRender: true }, S(843.9)));
       gsap.set(wtx, { opacity: 0 }); tl.set(wtx, { opacity: 1 }, T(845.34));
-      tl.to([w3.c], { x: -80, y: 290, rotation: 0, scale: 0.92, duration: 0.9, ease: C(E.inOut, 0.9) }, S(845.9));
+      FX.markup.out(tl, circ, S(845.4), 0.4);
+      [extra, strings[2]].forEach((p) => tl.to(p, { attr: { "stroke-dashoffset": -p.getTotalLength() }, duration: 0.4, ease: "sine.in" }, S(845.45)));
       tl.to([w3.pin], { opacity: 0, duration: 0.1 }, S(845.85));
-      // the card disappears behind the folder front: move the card under the folder layer
-      tl.set(w3.c, { zIndex: 1 }, S(845.9));
-      tl.to(w3.c, { opacity: 0, duration: 0.2 }, S(846.75));
+      tl.to([w3.c], { x: 445, y: 200, rotation: 1.5, duration: 1.0, ease: C(E.inOut, 1.0) }, S(845.9));
       // camera
       cam($("sc009-cam"), [
         [S(825.1), 960, 380, 1.32], [S(829.8), 960, 400, 1.2], [S(830.6), 960, 520, 0.98], [S(832.6), 960, 540, 1.0],
         [S(834.2), 780, 690, 1.3], [S(836.0), 820, 700, 1.26], [S(837.2), 1150, 760, 1.25], [S(839.3), 1160, 740, 1.2],
-        [S(841.2), 1500, 300, 1.32], [S(843.6), 1520, 330, 1.3], [S(845.2), 1460, 470, 1.18], [S(847.7), 1460, 480, 1.22],
+        [S(841.2), 1500, 300, 1.32], [S(843.6), 1520, 330, 1.3], [S(845.3), 1780, 460, 1.12], [S(847.7), 1800, 470, 1.15],
       ]);
     })();
 
@@ -717,7 +717,7 @@
           rows.push({ ic: ic, x: x + 76, y: 150 + y + 42 });
         }
         gsap.set(card, { rotation: ci ? 1.2 : -1.2 });
-        tl.fromTo(card, { opacity: 0, y: 120 }, { opacity: 1, y: 0, duration: 1.0, ease: C(E.out, 1.0), immediateRender: true }, S(851.45) + ci * 0.15);
+        tl.fromTo(card, { opacity: 0, y: 120 }, { opacity: 1, y: 0, duration: 1.0, ease: C(E.out, 1.0), immediateRender: true }, S(850.85) + ci * 0.15);
         rowsOf.push(rows);
       });
       // CIA: every row ticked ("almost anyone")

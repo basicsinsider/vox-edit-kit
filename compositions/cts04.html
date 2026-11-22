@@ -25,7 +25,7 @@
       box-shadow: 0 4px 6px rgba(0,0,0,0.45); }
     .c4-clip { position: absolute; background: #fbf8f1; box-shadow: 0 16px 34px rgba(29,26,22,0.32); overflow: hidden; }
     .c4-clip img { position: absolute; left: 0; top: 0; display: block; }
-    .c4-arr { position: absolute; width: 270px; height: 214px; background: #f3ecdc; box-shadow: 0 14px 30px rgba(29,26,22,0.35); }
+    .c4-arr { position: absolute; width: 220px; height: 222px; background: #f3ecdc; box-shadow: 0 14px 30px rgba(29,26,22,0.35); }
     .c4-stamp { position: absolute; padding: 6px 12px 3px; border: 4px solid currentColor; font-size: 30px; line-height: 1; white-space: nowrap; }
     .c4-photo { position: absolute; object-fit: cover; }
     #cts04-flash { position: absolute; inset: 0; background: var(--bone); opacity: 0; pointer-events: none; z-index: 7; }
@@ -461,32 +461,32 @@
       rise(lUS, T(321.91), { dur: 0.45, y: 8 });
       rise(lMX, T(323.75), { dur: 0.45, y: 8 });
       // --- four arrests (Mexico lane, below the axis): cards drop on the years
-      const A = [[2011, X(2011), T(304.55), -2.5, null, 0], [2014, X(2014) - 120, T(306.63), 2, null, 0],
-                 [2014, X(2014) + 70, T(307.99), -1.5, "+1 month", 22], [2015, X(2015) + 60, T(309.83), 2.5, null, 0]];
+      const A = [[2011, X(2011), T(304.55), -2.5, null, 0], [2014, X(2014) - 125, T(306.63), 1.5, null, 0],
+                 [2014, X(2014) + 118, T(307.99), -1.5, "+1 month", 0], [2015, X(2015) + 145, T(309.83), 2, null, 0]];
       const REL = [];
       A.forEach((a, i) => {
         const top = AY + 64 + a[5];
-        const c = div(lay, "c4-arr", "left:" + (a[1] - 135) + "px;top:" + top + "px");
+        const c = div(lay, "c4-arr", "left:" + (a[1] - 110) + "px;top:" + top + "px");
         div(c, "c4-p2", "background-image:url('assets/textures/paper_fiber_01.jpg');opacity:0.5");
-        div(c, "c4-pin", "left:124px;top:-8px");
-        if (a[4]) div(c, "c4-abs t-label", "left:0;width:270px;text-align:center;top:22px;font-size:22px;color:" + INKS, a[4]);
-        div(c, "c4-abs t-display c4-ink", "left:0;width:270px;text-align:center;top:" + (a[4] ? 56 : 40) + "px;font-size:" + (a[4] ? 70 : 80) + "px", String(a[0]));
-        const st = div(c, "c4-stamp t-display", "left:52px;top:148px;font-size:24px;border-width:3px;color:" + OLD, "ARRESTED");
+        div(c, "c4-pin", "left:99px;top:-8px");
+        if (a[4]) div(c, "c4-abs t-label", "left:0;width:220px;text-align:center;top:16px;font-size:22px;color:" + INKS, a[4]);
+        div(c, "c4-abs t-display c4-ink", "left:0;width:220px;text-align:center;top:" + (a[4] ? 44 : 30) + "px;font-size:" + (a[4] ? 62 : 70) + "px", String(a[0]));
+        const st = div(c, "c4-stamp t-display", "left:46px;top:" + (a[4] ? 110 : 104) + "px;font-size:22px;border-width:3px;color:" + OLD, "ARRESTED");
         gsap.set(st, { rotation: -4 });
         gsap.set(c, { rotation: a[3], transformOrigin: "50% 0%" });
         tl.fromTo(c, { y: -260, opacity: 0, rotation: a[3] - 8 }, { y: 0, opacity: 1, rotation: a[3], duration: 0.6, ease: C(E.out, 0.6), immediateRender: true }, a[2]);
         // RELEASED (ember) slammed across each card on "walked out … every single time"
         REL.push([a, i, top]);
         // the revolving door: a circular arrow on each card's corner
-        const cx = a[1] + 112, cy = top + 4, rr = 38, a0 = -40 * Math.PI / 180, a1 = 250 * Math.PI / 180;
+        const cx = a[1] + 96, cy = top + 4, rr = 34, a0 = -40 * Math.PI / 180, a1 = 250 * Math.PI / 180;
         const P = (q) => (cx + rr * Math.cos(q)).toFixed(1) + " " + (cy + rr * Math.sin(q)).toFixed(1);
         ink(svg, "M" + P(a0) + " A" + rr + " " + rr + " 0 1 1 " + P(a1), S(312.80) + i * 0.25, 0.4, { color: EMB, width: 6, filter: MK, blend: "multiply" });
         const hx = cx + rr * Math.cos(a1), hy = cy + rr * Math.sin(a1);
         ink(svg, "M" + (hx - 15).toFixed(1) + " " + (hy - 9).toFixed(1) + " L" + hx.toFixed(1) + " " + hy.toFixed(1) + " L" + (hx + 4).toFixed(1) + " " + (hy - 17).toFixed(1), S(313.15) + i * 0.25, 0.16, { color: EMB, width: 6, filter: MK, blend: "multiply" });
       });
       REL.forEach((q) => { const a = q[0], i = q[1], top = q[2];   // stamps above every card
-        const r = div(lay, "c4-stamp t-display", "left:" + (a[1] - 126) + "px;top:" + (top + 82) + "px;font-size:42px;color:" + EMBD + ";background:rgba(243,236,220,0.72)", "RELEASED");
-        stampIn(r, (i === 0 ? T(312.63) : S(312.63) + i * 0.25), -11 + (i % 2) * 5); });
+        const r = div(lay, "c4-stamp t-display", "left:" + (a[1] - 104) + "px;top:" + (top + 158) + "px;font-size:32px;color:" + EMBD + ";background:rgba(243,236,220,0.72)", "RELEASED");
+        stampIn(r, (i === 0 ? T(312.63) : S(312.63) + i * 0.25), -5 + (i % 2) * 3); });
       // "all four times": the key number, in the empty 2012–2013 gap of the Mexico lane
       const four = div(lay, "c4-abs t-display", "left:" + (X(2012) - 20) + "px;top:" + (AY + 86) + "px;font-size:150px;white-space:nowrap",
         '<span class="label-box" style="background:var(--yellow);color:var(--ink);padding:0.08em 0.18em 0.02em">4×</span>');
@@ -521,7 +521,7 @@
         onUpdate: () => { const q = pts[Math.min(N, Math.round(pr.k))]; runner.setAttribute("cx", q[0]); runner.setAttribute("cy", q[1]); } }, S(326.70));
       tl.to(runner, { opacity: 0, duration: 0.3 }, S(329.35));
       // "figure out why in your own head": pen ellipse round the four RELEASED stamps
-      const circ = FX.markup.circle(tl, svg, S(330.40), { cx: 1050, cy: AY + 178, rx: 850, ry: 150, rot: -1.5, color: INK, width: 6, filter: MK, dur: 0.8 });
+      const circ = FX.markup.circle(tl, svg, S(330.40), { cx: 1060, cy: AY + 196, rx: 860, ry: 158, rot: -1.5, color: INK, width: 6, filter: MK, dur: 0.8 });
       circ.style.mixBlendMode = "multiply"; gsap.set(circ, { opacity: 0 }); tl.set(circ, { opacity: 1 }, S(330.40));
       // "for years he kept operating": an ember line keeps running along the Mexico lane 2015 → 2024
       const XD = X(2024) + 280;
@@ -535,22 +535,22 @@
       ink(svg, "M" + XD + " " + (AY + 150) + " L" + (XD + 2) + " " + (AY + 296), S(335.25), 0.3, { color: EMBD, width: 4 });
       // --- camera
       const K = [
-        [298.21, at(900, 430, 0.98, -0.6)], [299.60, at(860, 500, 1.1, -0.4)], [303.25, at(988, 1000, 1.0, 0)],
-        [311.10, at(1000, 990, 1.01, 0)], [315.25, at(740, 790, 1.3, 0)], [319.95, at(988, 960, 0.98, 0)],
-        [326.50, at(990, 990, 1.0, 0)], [329.40, at(1050, 1150, 0.97, 0)], [332.30, at(XD - 80, 1100, 1.0, 0)],
+        [298.21, at(900, 430, 0.98, -0.6)], [299.60, at(860, 500, 1.1, -0.4)], [303.25, at(1000, 1000, 0.99, 0)],
+        [311.10, at(1008, 990, 1.0, 0)], [315.25, at(740, 790, 1.3, 0)], [319.95, at(988, 960, 0.98, 0)],
+        [326.50, at(1005, 990, 0.99, 0)], [329.40, at(1050, 1150, 0.97, 0)], [332.30, at(XD - 80, 1100, 1.0, 0)],
       ];
       const DUR = [1.3, 1.0, 1.3, 1.1, 1.8, 1.6, 2.6, 1.0, 2.9];
       gsap.set(cam, K[0][1]);
       for (let i = 1; i < K.length; i++) tl.to(cam, Object.assign({}, K[i][1], { duration: DUR[i], ease: E.cam }), S(K[i][0]));
       // slow drifts between the moves
-      tl.to(cam, Object.assign({}, at(995, 1005, 1.015, 0), { duration: 4.5, ease: "none" }), S(304.80));
+      tl.to(cam, Object.assign({}, at(1005, 1005, 1.0, 0), { duration: 4.5, ease: "none" }), S(304.80));
       tl.to(cam, Object.assign({}, at(990, 970, 0.97, 0), { duration: 3.5, ease: "none" }), S(322.0));
       tl.to(cam, Object.assign({}, at(1050, 1160, 0.99, 0), { duration: 1.6, ease: "none" }), S(330.6));
       tl.to(cam, Object.assign({}, at(XD - 60, 1100, 1.03, 0), { duration: 1.0, ease: "none" }), S(335.35));
       const cr1 = CT.credit($("sc007-cr1"), "Clipping: EjeCentral, 29 Oct 2022 (Guacamaya Leaks)", { theme: "paper", pos: "br" });
       cr1.out(tl, S(315.0));
       const cr2 = CT.credit($("sc007-cr2"), "FBI wanted poster (public domain)", { theme: "paper", pos: "br" });
-      cr2.in(tl, S(317.0)); cr2.out(tl, S(326.4));
+      cr2.in(tl, S(321.2)); cr2.out(tl, S(326.4));
     })();
 
     /* ===== sc008 · the stash: Vox layered real photos (whip ←) ===== */
