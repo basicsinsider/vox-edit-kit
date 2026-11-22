@@ -38,3 +38,8 @@ tilted plane and the card (a plain host div flattens them back onto the ground);
 element it flattens the whole 3D scene (cards lay down again); apply it to the shot wrapper outside the perspective root; (c) a scene shown
 twice through `FX.whip` keeps the outgoing whip's x offset — reset the shot (`x:0, y:0, scale:1, filter:none`) before its second window;
 (d) the APEC photo in `people/` is the Commons White House file (CC0) — `people/SOURCES.md` was still missing when I built this.
+
+## Fix round 1 (2026-11-22)
+- #17 (v1 18:57 ≈ 1137 s → sc007 1116.90–1134.98): the Spanish Infobae headline is replaced by the English source of the same fact: Al Jazeera, 21 Nov 2026 ("…said on Friday that Washington was working with Sheinbaum ‘because the cartels are running Mexico.’") = `assets/cartels/cts12/derived/aljazeera_cartels_running.jpg` (logo + paragraph crop of `news/n01_aljazeera_whois_k2.jpg`). It now drops in on "But Trump also publicly said" (S 1127.9; photo-to-lower-band move at 1127.3) and the highlighter sweeps Trump's quote on "cartels are running Mexico" (1130.04). The "trade" pen and the translated line are gone (no English trade line in the source). sfx.json: whoosh moved 1123.95→1127.3, trade marker removed, hero = highlighter_swipe.
+- #21 (v1 19:00 ≈ 1140.75 s → sc008): calendar in English — NOVEMBER 2026, weekday initials M T W T F S S, tape "REVOLUTION DAY (Día de la Revolución)".
+- Sweep: Pichón card label → "Mexico's Navy (Secretaría de Marina)". LOBOS/MURCIÉLAGOS already carry WOLVES/BATS glosses.

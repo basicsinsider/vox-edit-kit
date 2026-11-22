@@ -12,6 +12,11 @@ credited on screen. Derived files are made by `project/cartels/gen/cts04_assets.
 | derived/guzman_booking_front.jpg | Joaquín "El Chapo" Guzmán, 2017 booking photo (front half) | `assets/cartels/people/guzman_booking_1.jpg` = Commons "Booking photo of Joaquin “El Chapo“ Guzman (side and front).jpg" https://commons.wikimedia.org/wiki/File:Booking_photo_of_Joaquin_%E2%80%9CEl_Chapo%E2%80%9C_Guzman_(side_and_front).jpg (checked with tools/find_media.py commons-html) | CC0 (Commons) | 2017 | 1000×1330 |
 | derived/seizure_hero_1600.jpg, seizure_bags_cab.jpg | crops of the two seizure photos above | as above | as above | | 1600×900, 888×1186 |
 | derived/graph_tile.jpg | seamless crop (whole grid cells, scan edges dropped) of `assets/textures/paper_graph_01_hires.jpg` | Texturelabs (see assets/textures/SOURCES.md) | Texturelabs licence | | 3924×2848 |
+| photos/borderlandbeat_2022_page.jpg | FIX ROUND 1 (#8/#16, English on screen): headless-Chrome screenshot (3× scale) of the English article "'El Chapo Isidro' Arrested Four Times In Sinaloa" by "Ivan" for Borderland Beat (Guacamaya Leaks / Sedena documents; "arrested on four occasions between 2011 and 2015 … but has been released") — replaces the Spanish EjeCentral clipping on the board | https://www.borderlandbeat.com/2022/12/el-chapo-isidro-arrested-four-times-in.html (public blog, no login/paywall) | © Borderland Beat, fair use; on screen "Clipping: Borderland Beat, 4 Dec 2022 (Guacamaya Leaks)" | article 4 Dec 2022, captured 22 Nov 2026 | 4200×5100 |
+| derived/bb_clip_headline.jpg, bb_clip_body.jpg | crops (1262,838,2320,1020) headline + byline and (1255,2420,2575,2760) first paragraph of the page above | as above | as above | | 1058×182, 1320×340 |
+
+FIX ROUND 1: the EjeCentral files above are no longer used on screen (kept for the record). sc004/sc006 CHAPEAR definition now in English
+("To clear the land of weeds and brush with a machete."), the DLE Spanish small underneath, credit "… (DLE) · translated".
 
 Not downloaded / checked only: dle.rae.es "chapear" (403 from this box; definition text confirmed through a web search result quoting the DLE:
 "2. tr. Am. Cen., Cuba, Guin. y R. Dom. Limpiar la tierra de malezas y hierbas con el machete.") — typeset in Crimson Pro, credited "Diccionario de

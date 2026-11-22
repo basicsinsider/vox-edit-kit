@@ -37,3 +37,9 @@ Gotchas for the lead / MANUAL:
 - `FX.textCallout` dims the page by opacity — on a white web page over a dark desk that turns the page grey; a paper-white veil between the page and the
   key-word copy (pass a dummy `dimEl`) gives the Vox look.
 - `work/cts13` sandbox needs `vo_ct.mp3` / `transcript_ct.json` symlinks (make_sandbox.sh doesn't link them yet).
+
+## Fix round 1 (2026-11-22, English on screen)
+- sc001 (1192.63–1199.44): each 21 Nov front page (Reforma, El Informador, Milenio, El Debate) carries an English translation card of its headline (pages are wrapper divs now; same ids/moves). Credit "· headlines translated".
+- sc007 (1220.40–1226.08): Infobae IMSS clinic headline → English card ("Armed men storm an IMSS clinic in Guasave and force doctors to treat the wounded" + dek + gloss "IMSS · Mexican Social Security Institute") over the small original; ember underlines on the two clauses at the old cues (1222.38 / 1223.98). No English source of the clinic story in the captures.
+- sc010 (1233.92–1243.92): the @Defensamx1 post text is covered by a "Translated from Spanish" card (its first Spanish line stays visible above as the original); credit "· translated". The ambassador's post (sc012) is English already.
+- No timing changes; sfx unchanged.

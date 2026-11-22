@@ -44,3 +44,6 @@ Strike dot positions are illustrative (credit says "Strike locations approximate
 - sc003: grey boat outline grid visible from the first frame; filled boats ember-dark (drug boats) at 12 fps from "more than 70"; 70+ at T(669.95) ("70" 670.01), holds to the cut.
 - sc004: UNITED STATES / MEXICO / CUBA / COLOMBIA / VENEZUELA labelled from 674.3 (staggered pops), camera drifts toward Venezuela, VENEZUELA pulses on "Venezuela".
 - sc013: quote on a solid charcoal panel (Crimson Pro italic 47 px, 2 lines); exit is now a paper slide (no whip blur over the quote).
+
+## Fix round 1 (2026-11-22, English on screen)
+- sc011 (717.42–729.90, v1 ≈ 11:57–12:10): the three 23 Feb front pages keep their originals; English translation cards (paper, Haskoy/Crimson Pro) sit on each page under its headline — Reforma “‘Mencho’ killed; terror erupts”, Milenio “Hunted down”, La Jornada “Mexican Army operation with US intelligence support / El Mencho taken down” (the olive/steel underlines now play on the English kicker too, same cues 722.45 / 727.1). Credit + “· translated”. Pages became wrapper divs (same ids/rotations). No timing changes, sfx unchanged.

@@ -43,6 +43,12 @@
     .c8-scrimB { position: absolute; inset: 0; background: linear-gradient(180deg, transparent 55%, rgba(16,14,12,0.8) 100%); }
     .c8-quote { position: absolute; color: var(--bone); }
     .c8-bust { position: absolute; -webkit-mask-size: contain; mask-size: contain; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; -webkit-mask-position: center bottom; mask-position: center bottom; }
+    /* fix round 1 — English translation cards on the Spanish front pages (MANUAL §10.11.1) */
+    .c8-xc { position: absolute; background: #f6f0e2; color: var(--ink); padding: 18px 26px 20px; box-shadow: 0 16px 34px rgba(40,28,14,0.45); }
+    .c8-xc .xh { font-size: 64px; line-height: 1.0; }
+    .c8-xc .xi { font-size: 46px; line-height: 1.12; font-style: italic; }
+    .c8-xc .xk { font-size: 24px; letter-spacing: 0.14em; opacity: 0.7; margin-top: 12px; }
+    .c8-xul { background-repeat: no-repeat; background-position: 0 100%; background-size: 0% 7px; padding-bottom: 3px; }
     #cts08-flash { position: absolute; inset: 0; background: var(--bone); opacity: 0; pointer-events: none; z-index: 7; }
     #cts08-grain, #cts08-dust, #cts08-vig { z-index: 8; }
   </style>
@@ -225,14 +231,21 @@
           <div class="c8-p1" style="background-image:url('assets/textures/paper_stained_01_hires.jpg')"></div>
           <div class="c8-p2" style="background-image:url('assets/textures/paper_cream_02.jpg');opacity:0.4"></div>
         </div>
-        <img class="c8-page" id="cts08-sc011-uni" src="assets/cartels/news/front_pages/fp_2026-02-23_reforma.jpg" alt="" style="left:260px;top:180px;width:880px;height:1698px" />
-        <img class="c8-page" id="cts08-sc011-mil" src="assets/cartels/news/front_pages/fp_2026-02-23_milenio.jpg" alt="" style="left:2040px;top:230px;width:900px;height:1239px" />
+        <div class="c8-page" id="cts08-sc011-uni" style="left:260px;top:180px;width:880px;height:1698px"><img src="assets/cartels/news/front_pages/fp_2026-02-23_reforma.jpg" alt="" style="position:absolute;left:0;top:0;width:100%;height:100%" />
+          <div class="c8-xc" style="left:18px;top:548px;width:560px;transform:rotate(0.8deg)"><div class="xh t-display">“‘Mencho’ killed; terror erupts”</div><div class="xk t-label">Reforma · translated</div></div></div>
+        <div class="c8-page" id="cts08-sc011-mil" style="left:2040px;top:230px;width:900px;height:1239px"><img src="assets/cartels/news/front_pages/fp_2026-02-23_milenio.jpg" alt="" style="position:absolute;left:0;top:0;width:100%;height:100%" />
+          <div class="c8-xc" style="left:96px;top:930px;width:460px;transform:rotate(-0.8deg)"><div class="xh t-display">“Hunted down”</div><div class="xk t-label">Milenio · translated</div></div></div>
         <div class="c8-abs" id="cts08-sc011-jor" style="left:1120px;top:250px;width:960px;height:1335px">
           <img class="c8-page" src="assets/cartels/news/front_pages/fp_2026-02-23_jornada.jpg" alt="" style="left:0;top:0;width:960px;height:1335px" />
           <svg class="c8-svg" id="cts08-sc011-svg" width="960" height="1335" viewBox="0 0 960 1335"></svg>
+          <div class="c8-xc" style="left:14px;top:398px;width:932px;box-sizing:border-box;transform:rotate(0.4deg)">
+            <div class="xi t-serif"><span class="c8-xul" id="cts08-sc011-x1" style="background-image:linear-gradient(var(--olive-dark),var(--olive-dark))">“Mexican Army operation</span> <span class="c8-xul" id="cts08-sc011-x2" style="background-image:linear-gradient(var(--steel-dark),var(--steel-dark))">with US intelligence support</span></div>
+            <div class="xh t-display" style="margin-top:10px">El Mencho taken down”</div>
+            <div class="xk t-label">La Jornada · translated</div>
+          </div>
         </div>
       </div>
-      <div class="c8-abs" style="left:78px;bottom:58px;width:900px;height:50px;background:color-mix(in srgb, var(--paper) 94%, transparent);box-shadow:0 6px 18px rgba(40,28,14,0.25)"></div>
+      <div class="c8-abs" style="left:78px;bottom:58px;width:1080px;height:50px;background:color-mix(in srgb, var(--paper) 94%, transparent);box-shadow:0 6px 18px rgba(40,28,14,0.25)"></div>
       <div id="cts08-sc011-cr"></div>
     </div></div>
 
@@ -731,7 +744,9 @@
       const u1 = FX.markup.pen(tl, svg, S(722.45), { points: [[16, 276], [180, 278], [330, 275], [486, 277]], color: OLIVED, width: 10, dur: 0.9, filter: "url(#" + SEG + "-pen)", seed: 7 });
       const u2 = FX.markup.pen(tl, svg, S(727.1), { points: [[498, 277], [660, 279], [800, 275], [940, 278]], color: STEELD, width: 10, dur: 0.9, filter: "url(#" + SEG + "-pen)", seed: 8 });
       [u1, u2].forEach((u, i) => { gsap.set(u, { opacity: 0 }); tl.set(u, { opacity: 1 }, i ? S(727.1) : S(722.45)); });
-      CT.credit($("sc011-cr"), "Front pages, 23 Feb 2026: Reforma, La Jornada, Milenio", { theme: "paper" });
+      // fix round 1: the same underlines on the English translation of the kicker
+      [["sc011-x1", 722.45], ["sc011-x2", 727.1]].forEach(([id, t0]) => tl.fromTo($(id), { backgroundSize: "0% 7px" }, { backgroundSize: "100% 7px", duration: 0.9, ease: "sine.inOut", immediateRender: true }, S(t0)));
+      CT.credit($("sc011-cr"), "Front pages, 23 Feb 2026: Reforma, La Jornada, Milenio · translated", { theme: "paper" });
     })();
 
     /* ===== the balance scale (ref ast_0659daaead12498d): Mexico (olive) vs United States (steel) ===== */

@@ -23,3 +23,5 @@ The visa is a stylised graphic (no number, no seal, no real fields — grey bars
 | cts09-sc015 | 877.720–884.360 | "And on top of that, he was in a tough spot with his visa, which made him very cooperative with the United States." | the visa card with its CANCELLED stamp on the desk, push in; the steel "America finds" half of the deal slides in and the card is drawn toward it | night desk / prop | MOTIFS (steel half) | — | slide ← | paper slide |
 | cts09-sc016 | 884.360–889.600 | "According officials who talked to the New York Times, once he started helping, his US visa just" | El Universal paragraph on the NYT report: highlighter on "testimonios de nueve funcionarios", "Zuany acompañó a agentes de la CIA", "recuperó su visa" | paper / document + highlighter | — | (document text) | whip ↓ | highlighter ×3 |
 | cts09-sc017 | 889.600–891.500 | "came back automatically." | the visa again: CANCELLED lifts off, steel REINSTATED stamp | night desk / stamp | — | REINSTATED T(890.22) | hard cut | stamp |
+
+**Fix round 1 (2026-11-22):** English on screen — see `compositions/cts09.NOTES.md` § Fix round 1 (translation cards / English source; cues unchanged).

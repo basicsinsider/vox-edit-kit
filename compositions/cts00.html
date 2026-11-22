@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8" /></head>
+<body>
+<template>
+  <style>
+    #root { position: absolute; inset: 0; overflow: hidden; background: var(--night); }
+    .c0-shot { position: absolute; inset: 0; overflow: hidden; transform-origin: 50% 50%; background: var(--night); }
+    .c0-fill { position: absolute; inset: -60px; width: calc(100% + 120px); height: calc(100% + 120px); object-fit: cover;
+      filter: blur(40px) saturate(0.55) brightness(0.4); }
+    .c0-vw { position: absolute; inset: 0; transform-origin: 50% 50%; }
+    .c0-phone { position: absolute; left: 700px; top: 92px; width: 684px; height: 896px; border-radius: 40px; background: #0b0a09;
+      box-shadow: 0 0 0 2px rgba(243,237,225,0.16), 0 40px 100px rgba(0,0,0,0.75); }
+    .c0-scr { position: absolute; left: 12px; top: 12px; right: 12px; bottom: 12px; border-radius: 30px; overflow: hidden; background: #000; }
+    .c0-scr video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    .c0-glare { position: absolute; inset: 0; pointer-events: none;
+      background: linear-gradient(118deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0) 36%, rgba(255,255,255,0) 72%, rgba(255,255,255,0.03) 100%); }
+    #cts00-grain, #cts00-dust, #cts00-vig { z-index: 8; }
+  </style>
+
+  <div id="root" data-composition-id="cts00" data-vo-start="0" data-duration="4.5" data-width="1920" data-height="1080">
+    <svg id="cts00-defs" width="0" height="0" style="position:absolute"></svg>
+
+    <!-- sc001 · 0.000–4.500 (108 frames, PRE-ROLL before the VO) · the real fan video from the Kuroda Park stands WITH its own sound
+         (crowd yelling, shots far off): fans duck behind the rail, jump the seats, crouch. Phone frame on a blurred fill. No VO. -->
+    <div class="c0-shot" id="cts00-sc001-shot">
+      <video id="cts00-sc001-vf" class="c0-fill" src="assets/cartels/cts00/cold_open_fans.mp4" muted playsinline
+        data-start="0" data-duration="4.6" data-media-start="0"></video>
+      <div class="c0-vw" id="cts00-sc001-vw">
+        <div class="c0-phone" id="cts00-sc001-phone"><div class="c0-scr">
+          <video id="cts00-sc001-v" src="assets/cartels/cts00/cold_open_fans.mp4" muted playsinline style="filter:saturate(0.7) contrast(1.06)"
+            data-start="0" data-duration="4.6" data-media-start="0" data-color-grading='{"intensity":1,"effects":{"chromaticAberration":0.12}}'></video>
+          <div class="c0-glare"></div>
+        </div></div>
+      </div>
+      <div id="cts00-sc001-tag"></div>
+      <div id="cts00-sc001-cr"></div>
+    </div>
+
+    <div id="cts00-grain" class="tx tx-grain" style="background-image:url('assets/textures/grain_01_norm.jpg')"></div>
+    <div id="cts00-dust" class="tx tx-dust" style="background-image:url('assets/textures/dust_02.jpg')"></div>
+    <div id="cts00-vig" class="vignette"></div>
+    <!-- preview only: the clip's own sound (stripped at assembly like every temp-vo; the sound designer places cold_open_audio.wav) -->
+    <audio id="cts00-nat" class="temp-vo" src="assets/cartels/footage/cold_open_audio.wav" data-start="0" data-duration="4.5" data-media-start="0" data-volume="1"></audio>
+  </div>
+
+  <script>
+  (function () {
+    const SEG = "cts00", DURATION = 4.5;   // P = 4.5 s = 108 frames @ 24 fps; the VO (cts01) starts after it
+    const S = (s) => +s.toFixed(3);       // STRUCTURAL cues (no text cues in this composition: no VO under it)
+    const tl = gsap.timeline({ paused: true });
+    const $ = (id) => document.getElementById(SEG + "-" + id);
+    const E = FX.ease;
+    const C = (e, d) => FX.choppy(e, d, 12);
+    gsap.set([$("grain"), $("dust"), $("vig")], { opacity: (i) => [0.5, 0.3, 0.35][i] });
+    FX.grain($("grain"), 1);
+    FX.dust($("dust"), 2, 2);
+
+    // phone: on screen from frame 0 (hard open on the panic), slow push + drift
+    const ph = $("sc001-phone"), vw = $("sc001-vw");
+    gsap.set(ph, { rotation: -1.4 });
+    tl.fromTo(ph, { rotation: -1.4, y: 14 }, { rotation: 0.4, y: 0, duration: 4.2, ease: "none", immediateRender: true }, 0);
+    gsap.set(vw, { transformOrigin: "1042px 520px" });
+    tl.fromTo(vw, { scale: 1.0 }, { scale: 1.07, duration: S(4.1), ease: "none", immediateRender: true }, 0);
+    // cut on action: the phone camera swings away (source 4.25–4.6) — push hard into the frame so the cut to cts01's monitor hits mid-motion
+    tl.to(vw, { scale: 1.32, duration: S(0.4), ease: E.in }, S(4.1));
+    tl.fromTo(ph, { filter: "blur(0px)" }, { filter: "blur(6px)", duration: S(0.4), ease: "power2.in", immediateRender: false }, S(4.1));
+
+    const tag = CT.dateTag($("sc001-tag"), { prefix: SEG + "-sc001-tag", place: "Guasave, Sinaloa", date: "20 Nov 2026" });
+    tag.in(tl, S(0.35));
+    CT.credit($("sc001-cr"), "Video: Luis Cárdenas (X)");
+
+    FX.mount(tl, DURATION);
+    window.__timelines = window.__timelines || {};
+    window.__timelines[SEG] = tl;
+  })();
+  </script>
+</template>
+</body>
+</html>
