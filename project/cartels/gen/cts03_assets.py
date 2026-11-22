@@ -64,7 +64,7 @@ def main():
     a = np.asarray(im).astype(np.float32) / 255.0
     lum = a.mean(axis=2, keepdims=True)
     # dark slate grade (ref ast_c0cbc155: cool grey terrain, glowing route): lift shadows a bit, pull highlights down
-    dark = np.array([0.055, 0.07, 0.08]); light = np.array([0.66, 0.70, 0.71])
+    dark = np.array([0.045, 0.055, 0.065]); light = np.array([0.50, 0.54, 0.56])
     g = dark + (light - dark) * np.clip((lum - 0.12) / 0.86, 0, 1) ** 1.45
     land = lum[..., 0] > 0.30                     # relief land is pale; sea is dark slate
     sea = np.array([0.055, 0.075, 0.095])

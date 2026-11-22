@@ -544,7 +544,7 @@
       // northern Sinaloa = his territory (ember), revealed south → north on "the north of Sinaloa"
       svg.insertAdjacentHTML("beforeend", '<defs><clipPath id="' + SEG + '-nsclip"><rect id="' + SEG + '-nsr" x="1400" y="2300" width="700" height="0"/></clipPath></defs>');
       const ns = el(svg, "g", { "clip-path": "url(#" + SEG + "-nsclip)" });
-      el(ns, "path", Object.assign({ d: P["rg-northern_sinaloa"], fill: EMB, "fill-opacity": 0.5, stroke: EMBL, "stroke-width": 2.4, "fill-rule": "nonzero", filter: "url(#" + SEG + "-fillrough)" }, nss));
+      el(ns, "path", Object.assign({ d: P["rg-northern_sinaloa"], fill: EMB, "fill-opacity": 0.36, stroke: EMBL, "stroke-width": 3, "fill-rule": "nonzero", filter: "url(#" + SEG + "-fillrough)" }, nss));
       tl.fromTo($("nsr"), { attr: { y: 2300, height: 0 } }, { attr: { y: 1700, height: 600 }, duration: 1.2, ease: C(E.out, 1.2), immediateRender: true }, S(229.62));
       // the sea route (boat), dashed ember-light, revealed by a mask
       const bpts = MAP.boat, bd0 = "M" + bpts.map((q) => q[0] + " " + q[1]).join(" L");
@@ -555,7 +555,7 @@
       bmp.setAttribute("stroke-dasharray", bl + " " + bl); bmp.setAttribute("stroke-dashoffset", bl);
       tl.fromTo(bmp, { attr: { "stroke-dashoffset": bl } }, { attr: { "stroke-dashoffset": 0 }, duration: 1.7, ease: C(E.inOut, 1.7), immediateRender: true }, S(235.50));
       // the highway: Mex 15 north (Culiacán → Nogales), glowing ember line drawn northward
-      const hg = path(P["hwy-mex15-north"], { stroke: EMB, "stroke-width": 16, opacity: 0.55, filter: "url(#" + SEG + "-glow)", "stroke-linecap": "round", "stroke-linejoin": "round" });
+      const hg = path(P["hwy-mex15-north"], { stroke: EMB, "stroke-width": 22, opacity: 0.7, filter: "url(#" + SEG + "-glow)", "stroke-linecap": "round", "stroke-linejoin": "round" });
       const hc = path(P["hwy-mex15-north"], { stroke: "#ffd9c2", "stroke-width": 4.5, "stroke-linecap": "round", "stroke-linejoin": "round" });
       const hl = hc.getTotalLength();
       [hg, hc].forEach((p) => { p.setAttribute("stroke-dasharray", hl + " " + hl); p.setAttribute("stroke-dashoffset", hl);
@@ -579,12 +579,12 @@
       tl.to(bt, { opacity: 0, duration: 0.4 }, S(237.6));
       // flow particles ("everything starts flowing through his routes")
       const parts = [];
-      [[HS, 26], [BS, 16]].forEach((rt) => { for (let i = 0; i < rt[1]; i++) { const c = el(svg, "circle", { r: 5, fill: "#ffd2b4" }); c.style.filter = "drop-shadow(0 0 6px " + EMB + ")"; gsap.set(c, { opacity: 0 }); parts.push([c, rt[0], i / rt[1]]); } });
+      [[HS, 26], [BS, 16]].forEach((rt) => { for (let i = 0; i < rt[1]; i++) { const c = el(svg, "circle", { r: 8, fill: "#ffe3cf" }); c.style.filter = "drop-shadow(0 0 6px " + EMB + ")"; gsap.set(c, { opacity: 0 }); parts.push([c, rt[0], i / rt[1]]); } });
       const fp = { k: 0 };
       tl.set(parts.map((q) => q[0]), { opacity: 0.95 }, S(245.80));
       tl.fromTo(fp, { k: 0 }, { k: 2.6, duration: 2.52, ease: "none", immediateRender: false, onUpdate: () => {
         parts.forEach((q) => { const pts = q[1], n = pts.length - 1, ph = (q[2] + fp.k * (n > 300 ? 0.55 : 0.75)) % 1, pt = pts[Math.floor(ph * n)];
-          q[0].setAttribute("cx", pt[0]); q[0].setAttribute("cy", pt[1]); q[0].setAttribute("r", (5 / cam.s).toFixed(2)); }); } }, S(245.80));
+          q[0].setAttribute("cx", pt[0]); q[0].setAttribute("cy", pt[1]); q[0].setAttribute("r", (7 / cam.s).toFixed(2)); }); } }, S(245.80));
 
       // screen-space labels that follow the camera at a constant size
       const LAB = [];
@@ -618,10 +618,10 @@
       // keyframes (fromTo chains are implicit: tweens run in order on the same proxy)
       tl.fromTo(cam, { cx: 1700, cy: 2020, s: 2.4 }, { cx: 1700, cy: 2010, s: 1.9, duration: 1.6, ease: E.out, immediateRender: false, onUpdate: apply }, S(228.61));
       key(S(231.85), 2.2, { cx: 1500, cy: 1660, s: 1.1 });
-      key(S(234.20), 1.9, { cx: 1460, cy: 1500, s: 0.82 });
+      key(S(234.20), 1.9, { cx: 1460, cy: 1487, s: 0.8 });
       key(S(238.40), 2.3, { cx: 1290, cy: 1010, s: 1.3 });
-      key(S(242.10), 1.7, { cx: 1480, cy: 1490, s: 0.82 });
-      key(S(244.0), 4.3, { cx: 1480, cy: 1470, s: 0.86 }, "none");
+      key(S(242.10), 1.7, { cx: 1480, cy: 1487, s: 0.8 });
+      key(S(244.0), 4.3, { cx: 1500, cy: 1487, s: 0.8 }, "none");
       // label timing
       const show = (e, t, d) => { gsap.set(e, { opacity: 0 }); tl.fromTo(e, { opacity: 0 }, { opacity: 1, duration: d || 0.35, ease: C(E.out, d || 0.35), immediateRender: true }, t); };
       const hide = (e, t) => tl.to(e, { opacity: 0, duration: 0.35, ease: "power1.in" }, t);
@@ -637,7 +637,7 @@
       const chips = $("F-chips");
       const drugs = [["COCAINE", T(242.02)], ["METH", T(242.82)], ["HEROIN", T(243.30)], ["FENTANYL", T(244.66)]];
       drugs.forEach((d, i) => {
-        const c = div(chips, "c3-chip", "top:" + (300 + i * 96) + "px", '<i></i><div class="c3-hlr" id="' + SEG + '-F-hl' + i + '" style="left:36px;top:16px;width:180px;height:40px;opacity:0"></div><span class="t-label">' + d[0] + "</span>");
+        const c = div(chips, "c3-chip", "top:" + (300 + i * 96) + "px", '<i></i><div class="c3-hlr" id="' + SEG + '-F-hl' + i + '" style="left:36px;top:16px;width:204px;height:40px;opacity:0"></div><span class="t-label">' + d[0] + "</span>");
         tl.fromTo(c, { opacity: 0, x: 80 }, { opacity: 1, x: 0, duration: 0.5, ease: C(E.out, 0.5), immediateRender: true }, d[1]);
       });
       const hlf = $("F-hl3"); hlf.style.filter = "url(#" + SEG + "-hlf)";
