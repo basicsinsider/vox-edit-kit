@@ -1,7 +1,7 @@
 """Write a Final Cut Pro 7 XML (xmeml v4) that Premiere Pro imports (File > Import): the US vs Cartels edit as two sequences.
 (Adapted from tools/premiere_xml_nvidia.py; no face cam in this video.)
   1. "US vs Cartels — final edit" W x H 24p, 32206 frames (1341.917 s):
-       V1 = the 14 rendered segment files (Media/Video/Segments/ctsNN.mp4), cut into one clip per scene (names = segment·scene·words)
+       V1 = the 14 rendered segment files (Media/Video/Segments/ctsNN_4k.mp4 at 3840x2160, ctsNN.mp4 otherwise), cut into one clip per scene (names = segment·scene·words)
             + a sequence marker per scene. No master render needed: the timeline IS the edit.
        A1/A2 = VO · A3/A4 = music bed · A5/A6 = SFX · A7/A8 = ambience   (stems sum to the delivered mix at 0 dB)
   2. "US vs Cartels — VO edit on the raw take (reference)": the EDL as audio clips on Krish's original "us vs cartels.wav"
@@ -65,12 +65,13 @@ for k, s in enumerate(SEGS):
     fid = f'file-{seg}'
     for j, (fr, n, w) in enumerate(pts):
         end = pts[j + 1][0] if j + 1 < len(pts) else seg1
-        fd = file_xml(fid, f'{seg}.mp4', f'Video/Segments/{seg}.mp4', 24, seg1 - seg0 + 1, W, H)
+        fn = f'{seg}_4k.mp4' if W == 3840 else f'{seg}.mp4'
+        fd = file_xml(fid, fn, f'Video/Segments/{fn}', 24, seg1 - seg0 + 1, W, H)
         v1.append(clip(f'{n} · {w[:60]}', 24, fr, end, fr - seg0, end - seg0, fd))
     starts += pts
 
 # --- sequence 1: final edit ---
-stems = [('file-vo', 'VO.wav', 'VO', 16), ('file-music', 'Music_bed.wav', 'Music bed', 24),
+stems = [('file-vo', 'VO.wav', 'VO', 32), ('file-music', 'Music_bed.wav', 'Music bed', 24),
          ('file-sfx', 'SFX.wav', 'SFX', 24), ('file-amb', 'Ambience.wav', 'Ambience', 24)]
 at = []
 for fid, fn, label, depth in stems:

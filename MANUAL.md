@@ -795,6 +795,13 @@ on action. Use it whenever the narrator quotes someone or introduces a historic 
 - [ ] Smooth long eases, 12 fps. [ ] Cuts on action; whips, no iris. [ ] No photo/clip used > 2× in a chunk.
 
 ## Changelog
+- 2026-11-22 — **Mono VO → stereo must be `pan=stereo|c0=c0|c1=c0`, never `aformat=channel_layouts=stereo`**: ffmpeg's default mono up-mix
+  scales each channel by 0.7071 (−3 dB) — a gain change on the voice (BS.1770 loudness looks identical, so `measure_mix` didn't catch it;
+  a sample compare did). Found while packaging Cartels for Premiere: the first Cartels 720p had the VO 3 dB low per channel → re-muxed as
+  `US_vs_Cartels_720p_v2.mp4`. `final_mix.sh`, `final_mix_ivan.sh`, `final_mix_paraguay.sh`, `mix_paraguay_audio.sh`, `mix_nvidia_audio.sh`
+  still use `aformat` — harmless only when the VO is already stereo; check `ffprobe … channels` before reusing them on a mono VO.
+  Cartels Premiere package: `tools/premiere_xml_cartels.py` (3840x2160 timeline on ctsNN_4k.mp4 segments, 180 scene clips + markers, stems,
+  raw-take EDL as reference) + `tools/package_premiere_cartels.py` (built in /dev/shm — the root disk had 3 GB free; VO kept 32-bit float).
 - 2026-11-22 — **US vs Cartels (`project/cartels/`, 22:22, no face cam)**: VO-only take (48 kHz mono f32, 24:46) cut by a phrase-anchored EDL
   (`project/cartels/gen/edl_keep.py` → `build_edl.py` → `render_vo.py`: 1 ms cut grid since there is no picture; float samples copied, no
   gain) → 22:22. The VO was a condensed improvisation of Krish's script (several script chapters not narrated) — always compare ASR vs
