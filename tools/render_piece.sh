@@ -3,6 +3,7 @@
 #   tools/render_piece.sh <chunk> <len_s> <segment>      e.g. tools/render_piece.sh c4 601.44 c4s01
 #   DRY=1 tools/render_piece.sh …   → prepare everything, skip the render (setup test)
 #   DROP="1872-1951,2349-2356" → remove those LOCAL frames [a,b) in the transcode (word/dead-air cuts; audio is cut to match by final_mix_ivan.sh CUT)
+#   SCALE=720 tools/render_piece.sh …  → render 1080p, transcode the piece to 1280×720 (lanczos) — smaller pieces for 720p deliveries
 #   RES=4k PRESET=fast tools/render_piece.sh …  → 3840×2160 (Chrome DPR 2; compositions unchanged), faster transcode for 4K
 # Output: pieces/<segment>/<segment>.mp4.partNN + .sha256 (x264 medium CRF 18, no audio) — commit + push them; the lead
 # fetches, joins (cat parts), concats the segments, mixes and delivers. Never kill the render.
@@ -36,6 +37,7 @@ mkdir -p renders/pieces; t0=$(date +%s)
 [ -s "renders/pieces/$s.draft.mp4" ] || { log "RENDER FAILED: $(tail -c 300 work/r_$s/render.log)"; exit 1; }
 t1=$(date +%s); log "$s: rendered in $((t1-t0))s"
 VF=""; if [ -n "$DROP" ]; then EX=$(echo "$DROP" | tr ',' '\n' | awk -F- '{printf "%sbetween(n\\,%s\\,%s)", (NR>1?"+":""), $1, $2-1}'); VF="-vf select=not($EX),setpts=N/24/TB"; log "$s: dropping frames $DROP"; fi
+if [ -n "$SCALE" ]; then SC="scale=-2:${SCALE}:flags=lanczos"; if [ -n "$VF" ]; then VF="${VF},${SC}"; else VF="-vf $SC"; fi; log "$s: scaling to ${SCALE}p"; fi
 ffmpeg -v error -y -i "renders/pieces/$s.draft.mp4" $VF -c:v libx264 -preset ${PRESET:-medium} -crf ${CRF:-18} -pix_fmt yuv420p -an -movflags +faststart "renders/pieces/$s.mp4"
 rm -f "renders/pieces/$s.draft.mp4"; log "$s: transcoded in $(( $(date +%s)-t1 ))s ($(du -h renders/pieces/$s.mp4 | cut -f1))"
 mkdir -p "pieces/$s"; (cd renders/pieces && sha256sum "$s.mp4") > "pieces/$s/$s.mp4.sha256"

@@ -141,3 +141,50 @@ R913110 / R1867188), plus `<g id="borders"> #b-hk_mainland_border` (dashed: Shen
 Rivers/lakes there are still NE (coarse). Known limits: Esri clouds over E Shenzhen/Sha Tau Kok (on the border line, upper right) and a
 few over Sai Kung; sea in `pearl_river_delta_sat*` is one calm tone (as the other close-ups). `southeast_asia`/`china` sat are Esri
 z8/z7 (≈ native) — soft beyond a 2× push; use `pearl_river_delta_*` for HK/Shenzhen.
+
+## Cartels project (2026-11-22)
+Built by `tools/ct_maps.py` (wrapper around `map_kit.py`, which is unchanged — NVIDIA pattern). Preview: `_preview_cartels.jpg`.
+Palette (`lib/palette_cartels.css`): fill cartel territory ember, the US steel, the Mexican state olive — via the overlay ids below.
+**New style `relief`** (all four regions): pale-grey shaded land on a dark slate sea, strong hillshade = the "3D relief, one region
+highlighted" look (inspo ast_d02865717c824c47 / ast_e93e1bd1813e40ef): tilt the plate in CSS 3D, fill one `#st-*`/`#rg-*` path in ember
+(+ halftone/glow). `<region>_height.png` = 8-bit heightmap in the same pixels (value = metres / 4000 × 255, sea 0) for displacement/parallax.
+
+| file | what | size | formula (lon/lat → px) |
+|---|---|---|---|
+| `north_america_{atlas,night,relief,sat,satdesat}.jpg` + `.json` + `_overlay.svg` + `_landmask.png` + `_height.png` | 125–58°W × 5–50°N: US, Mexico, Central America, Caribbean, Colombia/Venezuela coast (Caracas, Bogotá at the S edge) — boats Caribbean/Pacific, Caracas → New York, routes north | 7131×5400 (106 px/deg lon, 120 lat) | `x = (lon + 125) * 106.44 ; y = (50 - lat) * 120` (k = cos 27.5°) |
+| `mexico_{…}` (same set) | 118–86°W × 14–36°N: all Mexico + US border states, Gulf of California, Sierra Madre Occidental | 5800×4400 (181/200) | `x = (lon + 118) * 181.26 ; y = (36 - lat) * 200` (k = cos 25°) |
+| `sinaloa_{…}` | 110–106.8°W × 24.5–27.4°N: Culiacán → Navolato → Guamúchil → Guasave → Los Mochis/Ahome/Topolobampo → El Fuerte → Navojoa (Sonora), coast + lagoons, Mex 15, Sierra foothills; ≈ 80 m/px | 4027×4060 (1258/1400) | `x = (lon + 110) * 1258.32 ; y = (27.4 - lat) * 1400` (k = cos 26°) |
+| `chihuahua_{…}` | 109.3–103°W × 25.4–32.4°N: Chihuahua state, Sierra Tarahumara (Creel, Guachochi), Chihuahua city, Cuauhtémoc, Parral, Ciudad Juárez/El Paso, Las Cruces, the NM/TX line; N Sinaloa corner | 3857×4900 (612/700) | `x = (lon + 109.3) * 612.22 ; y = (32.4 - lat) * 700` (k = cos 29°) |
+| `aerial_guasave_kuroda_park_z18.jpg` | Kuroda Park stadium (ex-Estadio Carranza Limón), Guasave, + Mex 15 (the 4-lane along the top) — pin `kuroda_park` 1341,1166; OSM stadium outline in json `outlines_px` | 2816×2304, 0.54 m/px | Web Mercator, formula in json |
+| `aerial_guasave_z16.jpg` | all of Guasave town + Río Sinaloa + fields; pins `guasave` 1818,1452, `kuroda_park` 1423,1059 | 3584×3072, 2.2 m/px | same |
+| `aerial_tucson_davis_monthan_z16.jpg` | Davis-Monthan AFB (JIATF-CC HQ): runway, apron, AMARG "boneyard" (rows of stored aircraft, E half); pins `davis_monthan_afb` 1360,2058 (airfield), `davis_monthan_afb_area` 4545,2541; base outline (OSM) in json. The JIATF-CC building is NOT located — frame the base | 5888×5120, 2.0 m/px | same |
+| `aerial_tapalpa_z16.jpg` | Tapalpa, Jalisco: town (pin 2689,1667), pine-forested hills, El Nogal reservoir (SW). Region only — the raid site is not pinned | 4864×3840, 2.2 m/px | same |
+| `aerial_cdmx_palacio_nacional_z18.jpg` | Zócalo + Palacio Nacional (OSM outline in json); pins `palacio_nacional` 1232,842, `zocalo` 870,828 | 2304×1792, 0.56 m/px | same |
+
+**Overlay ids** (all JSONs list them under `ids`): `#c-mexico #c-united_states_of_america #c-guatemala #c-cuba #c-venezuela #c-colombia …`;
+Mexican states `#st-sinaloa #st-sonora #st-chihuahua #st-durango #st-jalisco #st-michoacan #st-baja_california #st-ciudad_de_mexico …` (32;
+NE's "Distrito Federal" renamed); US states `#us-arizona #us-texas #us-new_mexico #us-california …` (NB: `us` / older kit maps use `#st-` for
+US states — here `#st-` = Mexico); `#b-us_mexico` (border line, dashed); highways `#hwy-mex15` (Mexico City → Guadalajara → Mazatlán →
+Culiacán → Guasave → Los Mochis → Navojoa → Obregón → Hermosillo → Nogales, 2359 km, drawn S→N so dashoffset draws northward),
+`#hwy-mex15-north` (Culiacán → Nogales, 965 km), `#hwy-mex45` (Chihuahua city → Ciudad Juárez, 371 km; mexico + chihuahua only);
+regions `#rg-northern_sinaloa` (sinaloa: union of the Ahome, El Fuerte, Choix, Guasave and Sinaloa municipios — "the north of Sinaloa"),
+`#rg-sierra_madre_occidental` (mexico), `#rg-sierra_tarahumara` (chihuahua); municipios `#mun-guasave #mun-ahome #mun-el_fuerte #mun-choix
+#mun-sinaloa #mun-salvador_alvarado #mun-angostura #mun-culiacan #mun-navojoa` (sinaloa), `#mun-morelos_chih #mun-guachochi` (chihuahua).
+Places (`#p-*` = json `places`): guasave, kuroda_park, culiacan, los_mochis, ahome, guamuchil, navolato, topolobampo, el_fuerte, mazatlan, navojoa,
+ciudad_obregon, hermosillo, guaymas, nogales_sonora, nogales_arizona, tubutama, chihuahua_city, ciudad_juarez, el_paso, las_cruces, guachochi,
+creel, parral, cuauhtemoc_chih, tucson, davis_monthan_afb, phoenix, san_diego, tijuana, mexico_city, palacio_nacional, guadalajara, tapalpa,
+puerto_vallarta, morelia, monterrey, havana, caracas, bogota, maracaibo, panama_city, Central-American capitals, Caribbean capitals, doral, plus
+the kit's US cities (new_york, washington_dc, miami, houston …).
+
+Accuracy / limits: Mex 15 and Mex 45 follow OSM to ~10 m (checked on the sinaloa/chihuahua sat crops). OSM's Mex 15 relation has holes:
+Sinaloa/Sonora were filled with the real ref-15/15D ways (crawl), but two ~9 km straight bridges remain near Morelia and Tepic and a few
+<1 km joins (invisible except on a city close-up). Close-up states/countries are OSM clipped to the landmask (OSM country polygons reach
+12 nm out to sea — never fill them unclipped). `#rg-sierra_*` are DEM-derived approximations (say "Sierra Tarahumara", don't claim a boundary).
+The April 2026 lab/crash: sources split (FGR: El Pinal, Morelos municipality; Reuters caption: Guachochi) — no pin; use `#rg-sierra_tarahumara`
+or the two `#mun-*`. Isidro's birthplace is disputed (FBI: Navojoa) — no "born here" pin. JIATF-CC: pin Tucson/the base, no distance label.
+Grey-canvas masks (sinaloa, chihuahua) show reservoirs and some intermittent desert lakes (Laguna de Guzmán, Bustillos) as water. The
+`*_height.png` is 8-bit (≈16 m steps) — fine for displacement, not for measuring. `north_america` z8 imagery is downsampled 1.7× (like `us_*`);
+sharp at 1080p after a 2× push on a ≥ 3500 px-wide crop (checked: 640 px crops at full res of every plate).
+Rebuild: `MK_CACHE=work/mapC/tiles .venv/bin/python tools/map_tiles.py fetch terr|esri <z> …` (+ `gray` z12/z11 for sinaloa/chihuahua, see
+`ct_maps.gray_land`), vectors in `work/mapC/vec`, OSM JSONs in `work/mapC/osm` (kept; tiles deleted), then `.venv/bin/python tools/ct_maps.py
+<region>` / `ct_maps.py aerial`. Needs scikit-image in the venv (`uv pip install --python .venv/bin/python scikit-image`, installed 2026-11-22).
