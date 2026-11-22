@@ -786,6 +786,17 @@ on action. Use it whenever the narrator quotes someone or introduces a historic 
 3. **Contrast.** Everything must be clearly visible: light text only on dark areas (soft scrim under it on busy photos), ink only on
    paper; thin accent lines/text on night use the light shade of the accent. Check every text frame at 100 % in a snapshot.
 
+### 10.11 Fix-round rules from the US vs Cartels review (Krish / Sam / Sanket, 2026-11-22) — BINDING for every edit
+1. **English on screen.** No untranslated foreign-language article, screenshot, front page, calendar, document or UI. Prefer an
+   English-language source of the same fact; if a foreign original must stay (an official post, a front page), overlay a clean English
+   translation in house style with the original visible small underneath and a "translated" credit. Proper names stay, with an English gloss.
+2. **VO pacing.** Treat every VO as raw: besides retakes/false starts, cut dead space INSIDE sentences too (a natural breath, ~0.35–0.45 s),
+   and listen-check every join (re-transcribe each cut window) — no word fragments, no clipped consonants.
+3. **VO levelling is allowed when the owner asks for it** (Sam: "raise it when it's low, lower it when it's high … within a range, not one
+   level"): one slow speech-gated gain ride on the whole mix + loudness target + peak limiter, no EQ/compressor (NVIDIA `nv_fix_mix.py`,
+   Cartels `ct_fix_mix.py`); report the VO's short-term range before/after. Without that request the VO stays untouched (§0).
+4. **Cold opens start on the real clip with its own sound** (crowd, panic) before the narration when the story opens on an event clip.
+
 ## 9. QA checklist
 - [ ] VO identical to source (same level; no processing). [ ] Every text cue within 0–120 ms before its word.
 - [ ] Only the three fonts. [ ] Palette only; West=vermilion/East=navy. [ ] ≤ 2 accents per frame.
@@ -795,6 +806,7 @@ on action. Use it whenever the narrator quotes someone or introduces a historic 
 - [ ] Smooth long eases, 12 fps. [ ] Cuts on action; whips, no iris. [ ] No photo/clip used > 2× in a chunk.
 
 ## Changelog
+- 2026-11-22 — §10.11 added (US vs Cartels Frame.io review): English on screen, tighter VO pacing inside sentences, owner-requested VO levelling, cold open with the clip's own sound. Fix round run as timeline ops on the v1 master (`project/cartels/fix1_ops.json`) so editors can fix visuals in parallel without retiming.
 - 2026-11-22 — **Mono VO → stereo must be `pan=stereo|c0=c0|c1=c0`, never `aformat=channel_layouts=stereo`**: ffmpeg's default mono up-mix
   scales each channel by 0.7071 (−3 dB) — a gain change on the voice (BS.1770 loudness looks identical, so `measure_mix` didn't catch it;
   a sample compare did). Found while packaging Cartels for Premiere: the first Cartels 720p had the VO 3 dB low per channel → re-muxed as
