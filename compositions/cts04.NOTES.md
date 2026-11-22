@@ -68,3 +68,11 @@ half of each card, 4× clear in the 2012–2013 gap, camera centres nudged for t
 - `paper_graph_01_hires.jpg` tiled with `background-repeat` shows a dark scan corner/edge as a stray line across the board — use a crop to
   whole grid cells (cts04 `graph_tile.jpg`).
 - A camera framing at scale s on a photo plate must keep `y ≤ 0` (py ≥ 540/s) or a band of ground shows at the top (sc009 first pass).
+
+## Fix round 1 (2026-11-22, Agent B) — English on screen
+- #8/#16 (v1 05:02 ≈ 302 s, sc007 board): the Spanish EjeCentral clipping is replaced by the English Borderland Beat article (4 Dec 2022,
+  "'El Chapo Isidro' Arrested Four Times In Sinaloa", same Guacamaya-Leaks fact): `cts04/derived/bb_clip_headline.jpg` (1200×206) +
+  `bb_clip_body.jpg` (1200×309, top 386), highlighter on "arrested on four occasions" (same cue T(301.19)); credit updated.
+- sc004 (≈ 280–285 s) and sc006 (≈ 293–298 s) CHAPEAR cards: CHAPEAR stays; the definition is now English ("To clear the land of weeds and
+  brush with a machete.", highlighter on "with a machete"), grammar line in English, the DLE Spanish small underneath, credit "· translated".
+  Cues unchanged. Other scenes checked: English only (Gabinete de Seguridad = proper name in the credit).

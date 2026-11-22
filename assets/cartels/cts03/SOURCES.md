@@ -18,3 +18,10 @@ All files looked at before use. News photos = © owner, fair use (MANUAL §10.9)
 | derived/treasury_page.jpg | crop (400,0,3440,2700) of assets/cartels/docs/d10_treasury_ofac_2013_full.jpg — Treasury press release tg1824 "Treasury Designates Additional Sinaloa-Based Drug Trafficking Organization", 17 Jan 2013. Key bboxes (crop px): date 640–835 × 1012–1042; "announced the designation" 1799,1198,402×44; "of the Meza Flores Drug Trafficking Organization" 639,1255,698×44; "OFAC is designating … the leader of the Meza Flores" 639,2327,1573×44 | https://home.treasury.gov/news/press-releases/tg1824 | US Gov work (public domain) | U.S. Department of the Treasury | 2013-01-17 | 3040×2700 |
 Map vectors for the scenes (Sonora/Sinaloa/Arizona/border/Mex 15 north from the kit overlays, northern Sinaloa region transformed from
 `sinaloa_overlay.svg`, boat waypoints checked against `mexico_landmask.png`) → `project/cartels/gen/cts03_mapdata.json` (inlined by build_cts03.py).
+
+FIX ROUND 1 (#11, whole-head circle portraits, made by `project/cartels/gen/cts03_circles.py`, 480×480; margins where the photo is tighter
+than the square = edge-extended + blurred copy of the same photo, background only):
+| derived/circ_arturo.jpg | square crop (12,0,136,124) of people/arturo_beltranleyva_1.jpg (PGR wanted photo, en.wikipedia, fair use) | — | as source | — | — | 480×480 |
+| derived/circ_alfredo.jpg | crop (670,0,1210,560) of photos/src_eluniversal_alfredo_2008.jpg in a 600-px square | — | as source | — | — | 480×480 |
+| derived/circ_hector.jpg | crop (16,0,300,400) of people/hector_beltranleyva_mugshot_3.jpg (PGR booking photo) in a 430-px square | — | as source | — | — | 480×480 |
+| derived/circ_isidro.jpg | crop (0,0,1515,1900) of people/meza_fbi_photo_hires_2.jpg (FBI) in a 1960-px square | — | US Gov (FBI) | FBI | — | 480×480 |

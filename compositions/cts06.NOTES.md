@@ -74,3 +74,10 @@ photo of the Feb 2025 plane boarding of the 29 → the DOJ release + the waffle.
   blurred (masked blur copy with a sharp ellipse on the date) until the word.
 - An SVG drawn under DOM cards hides markups that overlap the cards (cts04's ↻ arrows) — give the svg `z-index` above the cards.
 - `at()` camera helper with rotation compensation (centres a page point correctly at any rotation) — in cts06.html, worth adding to fx.js.
+
+## Fix round 1 (2026-11-22, Agent B)
+- #10 (v1 08:00 ≈ 480 s, sc004): Sam misspoke "100,000 troops" — a printed correction slip (paper card, bottom-right, over legs/grass
+  only): "10,000 TROOPS*" with a yellow highlighter on 10,000, slides up on "100,000" T(479.20); note "* Correction: 10,000 — not 100,000"
+  (Crimson Pro italic) on "troops" T(480.00); holds to the cut at 482.70. Audio untouched. sfx: paper_slide 479.2 + highlighter_swipe 479.5.
+- sc006 label "Guardia Nacional" → "Guardia Nacional · National Guard" (English gloss). English sweep: the Altiplano prison sign in the
+  sc013 SSPC clip is small and glossed by the date tag "Altiplano Federal Prison, State of Mexico"; everything else English.

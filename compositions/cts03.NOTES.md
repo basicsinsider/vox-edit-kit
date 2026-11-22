@@ -39,3 +39,10 @@ Substitutions: Héctor's photo is a 730-px composite (used ≤ 230 px wide, duot
 - Constant-size map labels on a 2D camera: drive the camera from a proxy `{cx,cy,s}` with `onUpdate` and position screen-space labels
   in the same function (`vector-effect: non-scaling-stroke` keeps line widths constant).
 - `tools/audio/place_sound.py` aliases `card` → card_swipe; use `paper_slide` for cards/chips.
+
+## Fix round 1 (2026-11-22, Agent B)
+- #11 (v1 03:19 ≈ 199.5 s, scene D org chart): the four circle portraits (Arturo, Alfredo, Héctor + Isidro's node) now use square
+  whole-head crops `assets/cartels/cts03/derived/circ_*.jpg` (generator `project/cartels/gen/cts03_circles.py`; where the source is
+  tighter than the circle the margin is an edge-extended, blurred copy of the same photo). Arturo = people/arturo_beltranleyva_1 (the
+  Expansión photo is too tight), Héctor = people/hector_beltranleyva_mugshot_3, Isidro = people/meza_fbi_photo_hires_2. Images fill the
+  circle (no top offset). The rectangular board cards keep their id_* crops. English sweep: no Spanish text found in cts03.

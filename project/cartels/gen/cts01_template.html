@@ -588,13 +588,12 @@
       const face = $("sc009-face");
       tl.fromTo(face, { y: 70, opacity: 0, filter: "blur(10px)" }, { y: 0, opacity: 1, filter: "blur(0px)", duration: 1.0, ease: C(E.out, 1.0), immediateRender: true }, S(36.18));
       const ws = W("sc009-t1").concat(W("sc009-t2"));
-      // fix1 hook: each word SLAMS in at 12 fps (scale 1.45 → 1, 3 steps) with a frame shake; ISIDRO gets a second flash
+      // fix1 hook: each word SLAMS in at 12 fps (scale 1.25 → 1, 3 steps) with a frame shake; ISIDRO gets a second flash
       [T(36.18), T(36.50), T(37.14)].forEach((c, i) => {
         gsap.set(ws[i], { opacity: 0 });
-        tl.fromTo(ws[i], { opacity: 0, scale: 1.45 }, { opacity: 1, scale: 1, duration: 3 / 12, ease: "steps(3)", immediateRender: false }, c);
+        tl.fromTo(ws[i], { opacity: 0, scale: 1.25 }, { opacity: 1, scale: 1, duration: 3 / 12, ease: "steps(3)", immediateRender: false }, c);
       });
-      const sh = $("sc009-title");
-      const SHK = [[10, -6], [-8, 5], [4, -2], [0, 0]];   // 12 fps frame shake (plain sets: keyframes inside fromTo misplaced the 3D plane)
+      const sh = $("sc009-title"), SHK = [[10, -6], [-8, 5], [4, -2], [0, 0]];   // 12 fps frame shake
       [S(36.50) + 0.25, S(37.14) + 0.25].forEach((t0) => SHK.forEach((q, k) => tl.set(sh, { x: q[0], y: q[1] }, t0 + k / 12)));
       tl.fromTo($("flash"), { opacity: 0 }, { opacity: 0.35, duration: 0.05, yoyo: true, repeat: 1, ease: "power2.in", immediateRender: false }, S(37.14) + 0.2);
       const tg = $("sc009-tag"); gsap.set(tg, { opacity: 0 });

@@ -47,6 +47,10 @@
     .c2-tt-chip { position: relative; margin: 0 8px; padding: 6px 22px 14px; background: var(--bone); color: var(--ink); line-height: 1; white-space: nowrap; }
     .c2-tt-tape { position: absolute; height: 30px; background: rgba(243,237,225,0.78); box-shadow: 0 2px 6px rgba(0,0,0,0.18); }
     .c2-tt-blk { position: absolute; }
+    /* fix1: Tapalpa insert + trailer strobe before the title */
+    .c2-strobe { position: absolute; inset: 0; background: #0d0b0a; visibility: hidden; }
+    .c2-strobe img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; visibility: hidden;
+      filter: grayscale(1) contrast(1.35) brightness(0.95); }
     /* polaroid table */
     .c2-pol { position: absolute; background: #ece6d8; padding: 20px 20px 78px; box-shadow: 0 24px 44px rgba(0,0,0,0.6), 0 3px 6px rgba(0,0,0,0.4); }
     .c2-pol img { display: block; width: 360px; height: 270px; object-fit: cover; filter: grayscale(0.7) sepia(0.45) contrast(1.05) brightness(0.95); }
@@ -86,6 +90,17 @@
         <div id="cts02-bd-pins2"></div>
         <div class="c2-lamp"></div>
       </div>
+    </div></div>
+
+    <!-- tapalpa · fix1 insert (80.90–82.62) "…killed in a raid by the Mexican army" · Tapalpa, Jalisco (true place of the raid, not the
+         exact cabin — SOURCES) · hard cuts in and out of El Mencho's file -->
+    <div class="c2-scene" id="cts02-tap"><div class="c2-shot" id="cts02-tap-shot">
+      <div class="c2-vw" id="cts02-tap-vw">
+        <video id="cts02-tap-v" class="c2-media" src="assets/cartels/footage/m3_tapalpa_aerial_a.mp4" muted playsinline
+          data-start="12.733" data-duration="1.85" data-media-start="5.6" style="filter:saturate(0.6) contrast(1.08) brightness(0.82)"></video>
+      </div>
+      <div id="cts02-tap-tag"></div>
+      <div id="cts02-tap-cr"></div>
     </div></div>
 
     <!-- lab · sc003 (85.38–92.03) · the raided lab in the Chihuahua pines -->
@@ -141,6 +156,17 @@
       <div id="cts02-ven-cr1"></div>
       <div id="cts02-ven-cr2"></div>
     </div></div>
+
+    <!-- strobe · fix1 trailer build (112.625–113.25): 2-frame flashes of the night and the cases, accelerating into the TITLE -->
+    <div class="c2-strobe" id="cts02-strobe">
+      <img id="cts02-sb0" src="assets/cartels/cts02/derived/strobe_fire.jpg" alt="" style="object-position:72% 40%" />
+      <img id="cts02-sb1" src="assets/cartels/cts02/derived/strobe_street.jpg" alt="" style="object-position:50% 50%" />
+      <img id="cts02-sb2" src="assets/cartels/people/mencho_mugshot_2.jpg" alt="" style="object-position:86% 30%" />
+      <img id="cts02-sb3" src="assets/cartels/cts02/derived/print_narcolab.jpg" alt="" />
+      <img id="cts02-sb4" src="assets/cartels/cts02/derived/print_boat.jpg" alt="" />
+      <img id="cts02-sb5" src="assets/cartels/cts02/derived/print_maduro.jpg" alt="" style="filter:grayscale(1) contrast(1.3) brightness(1.7)" />
+      <img id="cts02-sb6" src="assets/cartels/cts02/derived/strobe_arrest.jpg" alt="" />
+    </div>
 
     <!-- title · sc007 (113.25–117.05) · TITLE CARD "US vs CARTELS" (self-contained block, reused by cts14) -->
     <div class="c2-scene" id="cts02-title"><div class="c2-shot" id="cts02-title-shot">
@@ -381,10 +407,16 @@
     // empty pins waiting for the next cases ("this has happened before")
     [[710, 1930], [1940, 2150], [3220, 1960]].forEach((p) => pin(pinsB, p[0], p[1], EMBERD));
     (function () {
-      const K0 = at(1100, 828, 1.0), K1 = at(1700, 1420, 0.46), K2 = at(2100, 1500, 0.5), K3 = at(2860, 968, 1.0), K4 = at(2900, 1000, 1.06);
+      // fix1 (denser intro): hold → fast pull-back → 12 fps punch on "very, very" → whip down to the earlier cases on "this has happened
+      // before" → El Mencho's file (a new move every ~2 s)
+      const K0 = at(1100, 828, 1.0), K0b = at(1100, 828, 1.04), K1 = at(1700, 1420, 0.46), K1b = at(1500, 1250, 0.56),
+        K2 = at(1955, 1850, 0.55), K2b = at(1960, 1850, 0.57), K3 = at(2860, 968, 1.0), K4 = at(2900, 1000, 1.06);
       gsap.set(bcam, K0);
-      cam(bcam, K0, K1, S(68.55), 5.0);
-      tl.to(bcam, Object.assign({}, K2, { duration: 1.6, ease: E.inOut }), S(73.95));
+      cam(bcam, K0, K0b, 0, S(68.85), "none");
+      tl.to(bcam, Object.assign({}, K1, { duration: 1.7, ease: E.cam }), S(68.85));
+      tl.to(bcam, Object.assign({}, K1b, { duration: 3 / 12, ease: "steps(3)" }), S(71.93));
+      tl.to(bcam, Object.assign({}, K2, { duration: 0.55, ease: E.inOut }), S(73.85));
+      tl.to(bcam, Object.assign({}, K2b, { duration: 1.1, ease: "none" }), S(74.4));
       tl.to(bcam, Object.assign({}, K3, { duration: 1.25, ease: E.inOut }), S(75.55));
       tl.to(bcam, Object.assign({}, K4, { duration: S(85.38) - S(76.8), ease: "none" }), S(76.8));
       FX.focusHunt(tl, bcam, S(76.8), { dur: 0.5, a: 2, b: 3 });
@@ -399,6 +431,17 @@
     const thB = ink(bsvg, "M2290 1300 Q2150 1420 1985 1400", S(83.4), 1.1, { color: STEEL, width: 7, ease: C(E.inOut, 1.1) });
     const steelPinB = pin(pinsB, 2290, 1300, STEEL, false);
     gsap.set(steelPinB, { opacity: 0 }); pop(steelPinB, S(83.3), { from: 1.6 });
+
+    /* ===== tapalpa · fix1 insert 80.90–82.62 (hard cuts) ===== */
+    (function () {
+      const sc = $("tap");
+      tl.fromTo(sc, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.001, immediateRender: false }, S(80.90) - 0.002);
+      tl.set(sc, { autoAlpha: 0 }, S(82.62));
+      tl.fromTo($("tap-vw"), { scale: 1.05 }, { scale: 1.14, duration: 1.75, ease: "none", immediateRender: false }, S(80.90));
+      const tag = CT.dateTag($("tap-tag"), { prefix: SEG + "-taptag", place: "Tapalpa, Jalisco", date: "22 Feb 2026" });
+      tag.in(tl, S(80.95));
+      CT.credit($("tap-cr"), "Video: Infobae", { pos: "br" });
+    })();
 
     /* ===== lab · sc003 (85.38–92.03) · light-flash whip in ===== */
     whip("board", "lab", S(85.38), { dir: 1, flash: true });
@@ -503,19 +546,38 @@
       ink(bsvg, "M" + (qx - 6) + " " + (qy + 300) + " L" + (qx + 10) + " " + (qy + 318), S(112.3), 0.12, { color: INK, width: 42, filter: PEN, blend: "multiply" });
     })();
 
+    /* ===== strobe · fix1 trailer build 112.625–113.25: [image, frames] — board frames show through between flashes ===== */
+    (function () {
+      const sb = $("strobe"), Q = [[0, 2], [-1, 1], [1, 2], [-1, 1], [2, 2], [3, 2], [4, 2], [5, 1], [6, 2]];
+      let t = S(112.625);
+      tl.set(sb, { visibility: "visible" }, t - 0.002);
+      Q.forEach((q, k) => {
+        const im = q[0] < 0 ? null : $("sb" + q[0]);
+        if (im) { tl.set(im, { visibility: "visible", scale: 1.04 + k * 0.012 }, t); tl.set(im, { visibility: "hidden" }, t + q[1] / 24); }
+        else { tl.set(sb, { visibility: "hidden" }, t); tl.set(sb, { visibility: "visible" }, t + q[1] / 24); }
+        t += q[1] / 24;
+      });
+      tl.set(sb, { visibility: "hidden" }, S(113.25));
+      tl.fromTo($("flash"), { opacity: 0 }, { opacity: 0.7, duration: 0.04, yoyo: true, repeat: 1, ease: "power2.in", immediateRender: false }, S(113.21));
+    })();
+
     /* ===== title · sc007 (113.25–117.05) · hard cut on "war" ===== */
     const TT = makeTitle($("tt"), { prefix: SEG + "-tt", seed: 11, items: [
       { text: "US", kind: "bar", size: 200, dy: -26 }, { text: "vs", kind: "chip", size: 92, dy: 30 }, { text: "CARTELS", kind: "bar", size: 200, dy: 14 }] });
     TT.ground(tl, S(113.25));
     TT.build(tl, [T(113.29), T(113.85), T(113.85) + 0.08]);
     TT.push(tl, S(113.25), S(116.55), 1.05);
+    // fix1: the title HITS again on "working?" — 12 fps punch of the type row + flash, then the push-through
+    tl.fromTo($("tt-row"), { scale: 1 }, { scale: 1.07, duration: 2 / 12, ease: "steps(2)", immediateRender: false }, S(116.01));
+    tl.fromTo($("flash"), { opacity: 0 }, { opacity: 0.4, duration: 0.05, yoyo: true, repeat: 1, ease: "power2.in", immediateRender: false }, S(116.01));
     TT.through(tl, S(116.55), 0.5);
 
     /* ===== tarmac · sc008 (117.05–122.86) · out of the black bar ===== */
     (function () {
       const vw = $("tarmac-vw");
-      tl.fromTo($("tarmac-dk"), { opacity: 1 }, { opacity: 0, duration: 0.7, ease: "power1.out", immediateRender: true }, S(117.05));
-      tl.fromTo(vw, { scale: 1.0 }, { scale: 1.16, duration: 5.9, ease: E.cam, immediateRender: false }, S(117.05));
+      // fix1: faster out of the black (0.3 s, was 0.7) and framed 1.2+ so SEDENA's Spanish watermark (top-left) stays out of frame
+      tl.fromTo($("tarmac-dk"), { opacity: 1 }, { opacity: 0, duration: 0.3, ease: "power1.out", immediateRender: true }, S(117.05));
+      tl.fromTo(vw, { scale: 1.2 }, { scale: 1.32, duration: 5.9, ease: E.cam, immediateRender: true }, S(117.05));
       tl.fromTo($("tarmac-sep"), { opacity: 0 }, { opacity: 1, duration: 1.0, ease: "sine.inOut", immediateRender: true }, S(120.9));
       CT.credit($("tarmac-cr"), "Photo: SEDENA");
     })();
