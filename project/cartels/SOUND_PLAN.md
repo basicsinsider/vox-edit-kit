@@ -145,7 +145,8 @@ gap_fast 18 / ceiling 20 / margin 0.7 / 3 passes / max −30 dB, `pause_lift_db`
 −20…−24 LU re VO while he speaks (quieter is the accepted side, NVIDIA landed −23.7…−25.1). The generator also asserts that every layer reads
 inside its file.
 
-Trims (`TRIM`): C2 +3, C3 +4 dB — Perplexed's and Running through the Dark's quiet openings measured −26.3 / −26.9 LU re VO on the first test.
+**Phase 2 (2026-11-22): final trims and whole-length numbers are in `SOUND_REPORT.md`** (acts −23.3…−26.3, whole −25.2, ALL LIMITS MET).
+Phase-1 trims (`TRIM`): C2 +3, C3 +4 dB — Perplexed's and Running through the Dark's quiet openings measured −26.3 / −26.9 LU re VO on the first test.
 As on NVIDIA each +dB buys only ≈ 0.25–0.5 LU (global normalisation + the duck). Phase 2 must re-run `act_levels.py` on the whole-length build
 and trim C4–C21; watch C18–C20 (VO −34…−35 LUFS: the duck follows the quiet voice, the music will read quiet in LUFS but right in LU).
 

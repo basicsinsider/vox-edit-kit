@@ -808,6 +808,10 @@ on action. Use it whenever the narrator quotes someone or introduces a historic 
   the repo is near GitHub's size quota). Map kit: `tools/ct_maps.py` (north_america, mexico, sinaloa, chihuahua + `relief` style + `_height.png`,
   aerials of Kuroda Park, Davis-Monthan AFB, Tapalpa, Palacio Nacional; README "Cartels project"). Every Opus agent stopped at once on the
   account's usage limit; resuming each with SendMessage after the reset continued from where it stopped (no work lost).
+  Delivered 2026-11-22: 720p on gofile (14 Sonnet helpers, `SCALE=720` pieces, `tools/assemble_cartels.py`, `tools/mix_cartels_audio.sh`).
+  Lead QA caught real faults again (overlapping cards, unlabelled maps, an unreadable quote, a false "ALL IN 2026" label, DEA numbers seen
+  only in search snippets, words shown faintly before they're spoken, captures made by getting around a site's bot check — removed). A
+  date-tag "clip" was only its wipe caught mid-reveal: re-snapshot 1 s later before fixing a motif.
 - 2026-11-18 — **NVIDIA review fixes (frame.io notes from Sam, delivered as one 4K file)**: (1) scoreboard rows not yet reached are
   BLURRED — `NV.scoreboard({blur:[2,3]})` + `api.unblur(tl, n, t)` on the spoken cue ("Second job" reveals row 2); (2) ASR misheard
   "about ten percent" as "1%" → chart and transcript fixed (re-transcribe a 3–10 s window with parakeet when a number looks odd);

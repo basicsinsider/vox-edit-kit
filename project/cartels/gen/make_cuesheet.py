@@ -14,7 +14,15 @@ import json, os
 
 # per-act balance trims (dB on every layer of the act) from act_levels.py: aim −20…−24 LU re the VO while he speaks.
 # First pass (2026-11-22): none — set after the 0–180 s test / the phase-2 whole-length build (SOUND_PLAN §5).
-TRIM = {"C2": 3.0, "C3": 4.0}   # 0–180 s test 2026-11-22, untrimmed: C1 −24.2, C2 −26.3, C3 −26.9 LU re VO (quiet file openings)
+TRIM = {"C2": 3.0, "C3": 4.0,
+        # phase 2, whole 1341.9 s build 1 (untrimmed C4–C21): C6 −27.5, C7 −26.1, C11 −26.8, C12 −27.6, C14 −25.9, C20 −25.3,
+        # C9 −24.9, C4 −24.7 (C16 −28.5 = the drone-only cliff, left quiet on purpose)
+        "C4": 1.5, "C6": 6.0, "C7": 4.0, "C9": 1.5, "C11": 5.0, "C12": 6.0, "C14": 4.0, "C20": 3.0}
+# build 2 (with the above): −23.0…−26.4, whole −25.1 (global normalisation + duck eat most of each +dB) → build 3: the quietest
+# up again, the two loudest (C5 −23.4, C19 −23.0, duck-limited) down to free normalisation headroom
+for _k, _v in {"C2": 1.5, "C3": 1.5, "C6": 1.5, "C8": 2.0, "C9": 1.0, "C11": 1.5, "C12": 2.5, "C13": 1.0, "C14": 1.0, "C21": 1.5,
+               "C5": -1.0, "C19": -1.5}.items():
+    TRIM[_k] = TRIM.get(_k, 0.0) + _v   # 0–180 s test 2026-11-22, untrimmed: C1 −24.2, C2 −26.3, C3 −26.9 LU re VO (quiet file openings)
 
 DR = "zone_of_deception"   # Bb-major drone (instruments stem); its peaks sit at 75–80, 84–90, 117–131, 164–172, 210–215 s
 _GLUE_OFS = [30.0, 136.0, 179.0, 36.0, 140.0, 182.0, 44.0, 186.0]   # steady/quiet windows of the drone file
@@ -267,7 +275,10 @@ stingers = [
          note="THE QUESTION returns: 'Is this WORKING?'"),
 ]
 
-marker_edits = []   # phase 2: fix editors' markers here ({t, type, action: drop|retype, to, note})
+# phase 2: fix editors' markers here ({t, type, action: drop|retype, to, note}); type = the name AFTER place_sound's aliases
+marker_edits = [dict(t=t, type="card_swipe", action="retype", to="card_flip",
+                     note="cts12 editor wrote 'card' (alias → card_swipe = credit-card swipe, not on this box): a mugshot card on the board")
+                for t in (1091.32, 1181.77, 1183.53)]
 
 sheet = dict(
     length=LEN,
