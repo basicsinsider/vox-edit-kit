@@ -54,3 +54,20 @@ the Mexico-wide `mexico_*` map was not needed (the Sinaloa crop covers every pla
   the clip edge forms a >400 px jump, so an antimeridian "jump" filter drops the whole state (keep it off for regional kits).
   Push-through scale origins computed from `offsetLeft` at build time are unreliable (fonts not yet loaded): end the move with a black
   cover fade instead.
+
+## Fix round 1 (2026-11-22, Agent A) — FIXES_ROUND1 #7 (intro packaging) + English on screen
+Timeline v1 unchanged (DUR 90.75, every text cue on its v1 word).
+- Board opening (68.17–75.6), a move every ~2 s: hold+push → fast pull-back 68.85 (1.7 s) → 12 fps punch-in on "very, very" 71.93 →
+  whip-pan down to the earlier cases (prints) on "this has happened before" 73.85 → El Mencho's file 75.55 (as before).
+- NEW Tapalpa insert 80.90–82.62 ("killed in a raid by the Mexican army"): hard cut to the Infobae aerial (m3_tapalpa_aerial_a media
+  5.6–7.45; true place, not the exact cabin), CT.dateTag TAPALPA, JALISCO · 22 FEB 2026, credit Infobae; hard cut back to the file
+  (RAID row already typed, INTEL types on 82.65 as before). This clip is used twice in the video (also cts08) — within the rule.
+- NEW trailer strobe 112.625–113.25 ("Is this a war…"): 2-frame B/W flashes (fire, burning street, El Mencho, lab, boat, Maduro, the
+  arrest) with 1-frame board gaps, flash on 113.21 → TITLE slam 113.29 (unchanged cues).
+- Title beat: second hit on "working?" (116.01: 12 fps punch of the type row + flash) before the push-through; out of black faster
+  (0.3 s, was 0.7) into the tarmac photo.
+- ENGLISH: the tarmac photo now starts at scale 1.2 (→ 1.32) so SEDENA's Spanish watermark ("Defensa · Secretaría de la Defensa
+  Nacional", top-left) is out of frame. Rest of cts02 checked: board/prints/polaroid captions are English or place names; the lab credit
+  "Fiscalía de Chihuahua" is a proper name; soldiers' vest lettering (EJÉRCITO / GUARDIA NACIONAL) is incidental unit names.
+- Checks: lint 0 errors / 6 warnings; sync_audit 0 flagged; headless dump DUR 90.750, seek 0→90.75 no errors; snapshots looked at:
+  0.4, 2.5, 4.0, 6.0, 12.68/12.78, 14.40/14.50, 17.3, 44.48–45.13 (strobe + title cut), 47.95, 48.95, 49.6.

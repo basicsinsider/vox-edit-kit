@@ -64,6 +64,11 @@ The AJE file 6.5–12 s re-uses this video (vertical crop, upscaled, captioned) 
 | x_prisoner_transfer_convoy.mp4 | armored prison-transfer trucks leaving Altiplano for the airport (37 prisoners sent to the US) | https://x.com/OHarfuch/status/2013677895063945397 | Omar García Harfuch / Gabinete de Seguridad | 2026-01-20 18:19 | 640×364 (max) | 0.0–15.0 | Jan 2026 transfer |
 | x_maduro_stairs_stewart.mp4 | night aerial: Maduro walked down the plane stairs by federal agents at Stewart ANG Base, NY | https://rpp.pe/mundo/actualidad/imagenes-de-la-llegada-de-nicolas-maduro-a-nueva-york-para-ser-juzgado-video-noticia-1670186 (file https://f.rpp-noticias.io/2026/01/03/8234c2-e52b-4571-a430-666b91da0ded-hd-web-1_1826210.mp4) | RPP (pool aerial) | 2026-01-03 | 1280×720 | 34.0–48.0 | clean, no chyron (CBS NY version has a chyron) |
 
+## Fix round 1 (2026-11-22, Agent A) — cold open WITH its own sound
+| file | shows | source (exact URL) | account / outlet | posted (UTC) | orig. res | in–out | notes |
+|---|---|---|---|---|---|---|---|
+| cold_open_audio.wav | the ORIGINAL sound of the Luis Cárdenas fan video 1 (crowd yelling, panic, shots far off) | https://x.com/LuisCardenasMx/status/2123987739414855983 (video 1 of 3; fxtwitter `tweet.media.videos[0].url` = video.twimg.com/amplify_video/2123987679226314752 576x768) | Luis Cárdenas (journalist), fan video | 2026-11-21 03:51 | AAC 44.1 kHz stereo | 0.0–4.5 | for the cts00 pre-roll. 48 kHz stereo PCM 24-bit, exactly 216000 samples (= 4.5 s = 108 frames), soxr resample only — **no gain, no fades** (natural level: −13.1 LUFS-I, peak −0.8 dBFS, LRA 1.8). Picture twin: `assets/cartels/cts00/cold_open_fans.mp4` (same 0.0 in-point). No gore. |
+
 ## Not used / rejected
 - @cesargutipri video 1 and @MLopezSanMartin 2124017195696992666: "El Chapo Isidro" captive/surrender video (blindfold-blurred face) — rejected (detainee video, not needed).
 - CNN Spanish package (2438319, 1920×1080) opens with an "Imágenes perturbadoras" warning; its usable shots are pillar-boxed social clips already covered — rejected.

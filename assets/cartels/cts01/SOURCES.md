@@ -21,3 +21,9 @@ Shared assets used by cts01 (logged by their gatherers, except where noted):
   - `assets/cartels/people/guzman_2017_1.jpg` — Joaquín Guzmán Loera at his extradition to the US, 19 Jan 2017 (US DOJ handout, PD; Commons).
   - `assets/cartels/news/x_posts/x02_defensa_communique.jpg` — screenshot of the real @Defensamx1 post, 21 Nov 2026 9:44 AM
     (https://x.com/Defensamx1/status/2124076470960095696), © SEDENA, fair use; text verified against `news/x_json/Defensamx1_2124076470960095696.json`.
+
+## Fix round 1 (2026-11-22, Agent A)
+- `derived/fans_cont_slow.mp4` — the Luis Cárdenas fan video 1 (https://x.com/LuisCardenasMx/status/2123987739414855983, original
+  with audio re-fetched via api.fxtwitter.com) source 4.5–10.4 s at 0.67× (setpts 1.5), 24 fps, no audio: sc002 continues the clip from
+  where the cts00 pre-roll cuts (no repeated frames); the old man ducking behind the rail lands on "ducking". 
+- sc011p uses `assets/cartels/people/meza_fbi_poster_1.jpg` (FBI, public domain) full-frame (REWARD line highlighted).

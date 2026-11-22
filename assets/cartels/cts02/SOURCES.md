@@ -15,3 +15,9 @@ All files looked at. Photos: Wikimedia Commons thumbnails (1280 px) via `tools/c
 | derived/caribbean_night.jpg | crop of kit `americas_night.jpg` (lon −110…−45, lat 47…2; X=(lon+110)·45.5111, Y=(47−lat)·45.5111) | `project/cartels/gen/cts02_assets.py` | AWS Terrain Tiles (PD) · Natural Earth (PD) | — | 2958×2048 |
 | derived/print_narcolab.jpg / print_boat.jpg / print_maduro.jpg | stills (6.0 s / 2.0 s / 5.0 s) of shared footage x_chihuahua_narcolab_a / x_boat_strike_secwar / x_maduro_stairs_stewart | see `assets/cartels/footage/SOURCES.md` | © owners, fair use | — | small |
 Note: the photos are modern (2010s–2020s) — they are shown as "this area" (northern Sinaloa), never labelled 1990s.
+
+## Fix round 1 (2026-11-22, Agent A) — trailer strobe stills (2-frame flashes before the title)
+- `derived/strobe_fire.jpg` — frame at 2.0 s of `assets/cartels/footage/m2_burning_trucks_b.mp4` (Al Jazeera English, credits X @zoomnewsmx).
+- `derived/strobe_street.jpg` — frame at 3.0 s of `assets/cartels/footage/m2_burning_street_c.mp4` (Noroeste via Luis Cárdenas).
+- `derived/strobe_arrest.jpg` — frame at 3.0 s of `assets/cartels/footage/m6_arrest_a.mp4` (SEDENA @Defensamx1 arrest video).
+- Tapalpa insert uses `assets/cartels/footage/m3_tapalpa_aerial_a.mp4` (Infobae) media 5.6–7.45 s (true place, not the exact cabin).
