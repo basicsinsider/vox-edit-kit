@@ -60,6 +60,8 @@
             <div class="c9-lab t-display c9-state" id="cts09-sc001-ltx">TEXAS</div>
             <div class="c9-lab t-display c9-state" id="cts09-sc001-lnm">NEW MEXICO</div>
             <div class="c9-lab t-label c9-city" id="cts09-sc001-lep">El Paso</div>
+            <div class="c9-lab t-display c9-state" id="cts09-sc001-lmx" style="font-size:58px;letter-spacing:0.14em">MEXICO</div>
+            <div class="c9-lab t-display c9-state" id="cts09-sc001-lus" style="font-size:58px;letter-spacing:0.14em">UNITED STATES</div>
           </div>
         </div>
       </div>
@@ -439,8 +441,9 @@
       pop(pin, S(780.17));
       FX.radioWaves(ov, 2087, 846, { rings: 3, max: 120, period: 1.4, width: 4, color: BONE, from: S(780.2), to: S(781.7) });
       // labels (constant screen size: counter-scaled by the camera)
-      const L = [["lch", 1835, 1430, T(772.80)], ["ltx", 2440, 860, T(774.56)], ["lnm", 1830, 560, T(775.20)], ["lep", 1900, 838, T(780.17)]];
-      const labs = L.map((l) => { const e = $("sc001-" + l[0]); gsap.set(e, { left: l[1], top: l[2], opacity: 0 }); rise(e, l[3], { y: 10 }); return e; });
+      const L = [["lch", 1835, 1430, T(772.80)], ["lmx", 2860, 1640, T(772.80)], ["lus", 2600, 560, T(772.80)], ["ltx", 2440, 860, T(774.56)], ["lnm", 1830, 560, T(775.20)], ["lep", 1900, 838, T(780.17)]];
+      const labs = L.map((l) => { const e = $("sc001-" + l[0]); gsap.set(e, { left: l[1], top: l[2], opacity: 0 }); rise(e, l[3], { y: 10, dur: 0.35 }); return e; });
+      tl.to($("sc001-lmx"), { opacity: 0, duration: 0.4, ease: E.in }, S(775.0)); tl.to($("sc001-lus"), { opacity: 0, duration: 0.5, ease: E.in }, S(776.3));
       // camera (proxy so the labels can counter-scale)
       const K = [[0, 2280, 1280, 0.46], [S(772.5), 2240, 1290, 0.52], [S(776.1), 2220, 1230, 0.62], [S(778.6), 2160, 1090, 0.8], [S(781.6), 2130, 1000, 1.0]];
       const st = { x: K[0][1], y: K[0][2], s: K[0][3] };
@@ -548,7 +551,7 @@
       tl.to([$("sc006-lc"), $("sc006-ls")], { opacity: 0, duration: 0.5, ease: E.in }, S(807.2));
       // out on operations: the pairs travel south-west into the sierra (Sierra Tarahumara) with trails + pulses
       const fx = $("sc006-fx");
-      const dest = [[520, 720], [760, 860], [1010, 700]];
+      const dest = [[520, 720], [760, 860], [1220, 830]];
       for (let i = 0; i < 3; i++) {
         const x0 = 300 + i * 260 + 60, y0 = 240, [x1, y1] = dest[i];
         const tr = stroke(fx, "M" + x0 + " " + (y0 + 60) + " Q" + ((x0 + x1) / 2 + 60) + " " + ((y0 + y1) / 2 - 40) + " " + x1 + " " + y1, { color: BONE, width: 4, opacity: 0.7 });
