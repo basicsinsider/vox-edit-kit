@@ -25,3 +25,10 @@ Contact sheet: `_sheet.jpg`. SVG preferred; PNG >= 1000 px transparent. US gover
 | fgr_logo.png | FGR — Fiscalía General de la República logo with national seal (grey), larger | https://commons.wikimedia.org/wiki/File:Logo_de_la_FGR_México.png | CC BY-SA 4.0 (Commons) / FGR emblem, fair use | FGR | 2022 | 1269x562 |
 | ofac_logo.jpg | US Treasury Office of Foreign Assets Control (OFAC) logo (small) | https://commons.wikimedia.org/wiki/File:Logo_of_the_U.S._Office_of_Foreign_Assets_Control_(OFAC).jpg | Public domain | US Treasury | 2014 | 259x327 |
 | fuerzas_especiales_ejercito_escudo.svg | Cuerpo de Fuerzas Especiales del Ejército Mexicano shield ("Murciélagos") | https://commons.wikimedia.org/wiki/File:Escudo_del_Cuerpo_de_Fuerzas_Especiales_del_Ejército_Mexicano.svg | CC BY-SA 3.0 — credit per Commons file page | | 2016 | SVG |
+| dea_seal.svg | Seal of the US Drug Enforcement Administration | https://commons.wikimedia.org/wiki/File:US-DrugEnforcementAdministration-Seal.svg | Public domain (US Gov) | DEA | — | SVG |
+| northcom_seal.svg | Seal of US Northern Command (USNORTHCOM — JIATF-CC's parent command) | https://commons.wikimedia.org/wiki/File:Seal_of_the_United_States_Northern_Command.svg | Public domain (US Gov) | USNORTHCOM | — | SVG |
+
+## NEEDS RELAY / missing
+- SOUTHCOM: https://commons.wikimedia.org/wiki/File:Seal_of_the_United_States_Southern_Command.svg (Commons 429)
+- Chihuahua state logo exists only small (426 px PNG) — rebuild in vector or relay a large copy from chihuahua.gob.mx; FGR large = fgr_logo.png (1269 px).
+- Gabinete de Seguridad has no separate logo: its posts use the "Seguridad" SSPC brand + Gobierno de México seal → seguridad_sspc_gabinete_logo.png.

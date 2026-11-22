@@ -67,3 +67,8 @@ News photos: "© owner, fair use" (MANUAL §10.9). Detainee faces are blurred/ba
 | guasave_church_2.jpg | Guasave church (twin towers) | https://commons.wikimedia.org/wiki/File:Iglesias_Guasave_(18678139318).jpg | "No restrictions" (Flickr Commons) | | 2015 | 738x491 |
 | dc_federal_courthouse_1.jpg | E. Barrett Prettyman US Courthouse, Washington DC (where Meza Flores was indicted) | https://commons.wikimedia.org/wiki/File:E._Barrett_Prettyman_Federal_Courthouse,_DC.jpg | Public domain | | 2008-09-15 | 1920x1717 |
 | dc_federal_courthouse_2.jpg | same courthouse, front with "E. BARRETT PRETTYMAN UNITED STATES COURT HOUSE" lettering | https://commons.wikimedia.org/wiki/File:E_Barrett_Prettyman_court_house_front_Washington_DC_2026-07-31_11-10-38.jpg | CC BY 4.0 — credit per Commons file page | | 2026-07-31 | 1920x1080 |
+
+## NEEDS RELAY / still missing
+- Commons (429): File:Aerial_view_of_CIA_headquarters,_Langley,_Virginia_14271v.jpg ; File:During_the_2026_APEC_Shenzhen_Summit,_the_new_Air_Force_One_with_the_livery_of_US_President_Donald_Trump_landed_at_Shenzhen_Bao_'an_International_Airport.png (CC0)
+- Not found: SEDENA headquarters building (Lomas de Sotelo); Sierra Tarahumara dirt road (copper_canyon_1 is the nearest true substitute); Guasave grocery-store shelter / gas-station fire photos (only AJE clip frames); Kuroda Park exterior; prisoner-boarding photos for Feb 2025 (29) and Aug 2025 (26) transfers (have Jan 2026 + the Feb 2025 mugshot grid); Mexican Navy (SEMAR) in Sinaloa; boat-strike stills (SOUTHCOM "Lethal Kinetic Strike" videos are on Commons as .webm — footage gatherer).
+- DVIDS (dvidshub.net) is behind a WAF from this box; *.mil sites 403.
