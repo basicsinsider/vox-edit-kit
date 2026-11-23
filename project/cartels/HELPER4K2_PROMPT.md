@@ -11,3 +11,8 @@ SEG is in your prompt. No creative decisions; never edit compositions, lib, tool
 5. Do NOT commit, push or upload yet. Reply with: render + transcode time, frames, file size, sha256 (pieces/<SEG>/<SEG>.mp4.sha256), number of
    parts, last 5 log lines — then end your turn. The lead will send the hand-off instruction (git branch or upload) as a follow-up message.
 If any step fails twice, stop and report the exact error.
+
+## Hand-off (decided by the lead, 2026-11-23 00:25 UTC — Krish: "do whatever needs to happen")
+6. When step 4 is green: `git add -f pieces/<SEG>/ && git commit -qm "4K piece <SEG>" && git push origin HEAD:refs/heads/render4k/<SEG>`
+   (retry network errors up to 4× with backoff; a "size quota" warning is fine). If the push is REJECTED, report the exact error and stop.
+7. Reply: frames, sha256, number of parts, push result (last 3 lines). Then you are done.
