@@ -21,19 +21,19 @@ def fetch(s):
     if os.path.exists(p + '.ok'): return p
     while sp.run(['git', 'ls-remote', '--exit-code', URL, f'refs/heads/render4k/{s}'], capture_output=True).returncode:
         log(s, 'waiting for branch'); time.sleep(60)
-    G = f'/dev/shm/g_{s}'
-    for k in range(4):
-        sp.run(['rm', '-rf', G]); sp.run(['git', 'init', '-q', '--bare', G], check=True)
-        if sp.run(['git', f'--git-dir={G}', 'fetch', '-q', '--depth', '1', URL, f'refs/heads/render4k/{s}']).returncode == 0: break
+    G = f'/dev/shm/g_{s}'   # blob-less bare clone: only the piece's blobs are downloaded, lazily (a plain depth-1 fetch pulls the whole
+    for k in range(4):       # repo snapshot — several GB into /dev/shm — and got the encoder OOM-killed on 2026-11-23)
+        sp.run(['rm', '-rf', G])
+        if sp.run(['git', 'clone', '-q', '--bare', '--depth', '1', '--filter=blob:none', '--branch', f'render4k/{s}', URL, G]).returncode == 0: break
         time.sleep(10 * 2 ** k)
-    names = sorted(n for n in sp.check_output(['git', f'--git-dir={G}', 'ls-tree', '--name-only', 'FETCH_HEAD', f'pieces/{s}/']).decode().split() if '.part' in n)
-    h = hashlib.sha256()
+    names = sorted(n for n in sp.check_output(['git', f'--git-dir={G}', 'ls-tree', '--name-only', 'HEAD', f'pieces/{s}/']).decode().split() if '.part' in n)
     with open(p, 'wb') as o:
         for n in names:
-            b = sp.check_output(['git', f'--git-dir={G}', 'cat-file', '-p', f'FETCH_HEAD:{n}']); h.update(b); o.write(b)
-    want = sp.check_output(['git', f'--git-dir={G}', 'cat-file', '-p', f'FETCH_HEAD:pieces/{s}/{s}.mp4.sha256']).decode().split()[0]
-    sp.run(['rm', '-rf', G]); assert h.hexdigest() == want, (s, 'SHA MISMATCH')
-    open(p + '.ok', 'w').close(); log(s, f'fetched {os.path.getsize(p) / 1e6:.0f} MB, {len(names)} parts, sha OK'); return p
+            sp.run(['git', f'--git-dir={G}', 'cat-file', '-p', f'HEAD:{n}'], stdout=o, check=True); o.flush()
+    want = sp.check_output(['git', f'--git-dir={G}', 'cat-file', '-p', f'HEAD:pieces/{s}/{s}.mp4.sha256']).decode().split()[0]
+    sp.run(['rm', '-rf', G]); got = sp.check_output(['sha256sum', p]).decode().split()[0]
+    assert got == want, (s, 'SHA MISMATCH', got, want)
+    open(p + '.ok', 'w').close(); log(s, f'fetched {os.path.getsize(p) / 1e6:.0f} MB, sha OK'); return p
 
 J, ops = load_ops('project/cartels/fix1_ops.json'); PF = round(float(J['preroll']) * FPS)
 keep = np.ones(V1_FRAMES, np.int32)
@@ -57,9 +57,12 @@ def frames(p):
         yield fr
     d.wait()
 # pre-roll
-c = list(frames(C00)); assert len(c) >= PF or len(c) > 0
-for k in range(PF): enc.stdin.write(c[min(k, len(c) - 1)]); wrote += 1
-del c; log('cts00 pre-roll', PF)
+last = None
+for k, fr in enumerate(frames(C00)):
+    if k >= PF: break
+    enc.stdin.write(fr); wrote += 1; last = fr
+while wrote < PF: enc.stdin.write(last); wrote += 1
+log('cts00 pre-roll', PF)
 # replacement readers
 rd = {f: frames(f) for _, _, f in REPL}; rpos = {f: a for a, _, f in REPL}
 def repl(g):

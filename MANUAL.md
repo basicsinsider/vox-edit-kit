@@ -806,6 +806,16 @@ on action. Use it whenever the narrator quotes someone or introduces a historic 
 - [ ] Smooth long eases, 12 fps. [ ] Cuts on action; whips, no iris. [ ] No photo/clip used > 2× in a chunk.
 
 ## Changelog
+- 2026-11-23 — **Owner's 3D renders into a finished edit** (Cartels final 4K, `project/cartels/FINAL4K.md`): if a render carries our VO,
+  align it by FFT cross-correlation of its audio against the VO (1 s chunks show where the animator nudged pauses) and re-time it frame
+  by frame onto the master grid (`tools/ct_conform_3d.py`); silent renders are timed by picture cues on the words. Splice at assembly
+  (`--replace FILE:G0`), not in the compositions, and remove SFX cued to the replaced visuals. **Lessons:** (1) 4K HyperFrames capture
+  on the lead's 4-core box runs ~0.65 fps — 4K must be rendered on helpers; (2) put the hand-off (git push) in the helper's FIRST prompt:
+  a later lead message is a peer request and may be refused; (3) fetching a helper branch with plain `--depth 1` pulls the whole repo
+  snapshot — use `git clone --bare --depth 1 --filter=blob:none` and `cat-file` the parts (the plain fetch filled /dev/shm and the
+  encoder was OOM-killed; the bash cgroup limit is ~14.3 GB INCLUDING /dev/shm); (4) 4K pieces run ~50–70 Mbps: build the master in ONE
+  pass (`tools/ct_final4k_stream.py`: pieces → ops → one x264 encode muxed with the audio, no TS parts, no faststart rewrite) so the RAM
+  disk only ever holds the final + one piece.
 - 2026-11-22 — Cartels fix round 1 delivered (`project/cartels/DELIVERY.md`). Lessons: (1) stream-copying an MP4 piece into MPEG-TS keeps the
   B-frame delay (MP4 edit list dropped) → +2 frames at the join: re-encode pieces with `-bf 0` when assembling edited timelines
   (`tools/ct_fix_assemble.py` checks pts steps); (2) Parakeet sometimes returns 0 words for a very short file — pad it; (3) a cold-open clip's raw
