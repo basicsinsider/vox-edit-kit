@@ -39,3 +39,11 @@ https://gofile.io/d/zHJr7qI4 · `US_vs_Cartels_4K_final.mp4` · 3840×2160 24 fp
 21:55.125 (31,563 frames, frame count checked) · 8,464,202,956 bytes · md5 410fe176d444f19c15730a63a5952c37 = gofile md5 (MATCH).
 Audio: fix-1 levelled mix rebuilt with the SFX under the 3D renders removed: −15.0 LUFS-I, LRA 3.7 LU, peak −1.6 dBFS, music limits ALL MET.
 Picture = fix-1 edit + R1 (v2 35.75–47.33 s) + R4 (v2 117.88–198.96 s, contains R2/R3).
+
+## Final Premiere Pro package (4K, 2026-11-23) — matches the final 4K
+https://gofile.io/d/2q18VCUA · `US_vs_Cartels_Premiere_FINAL.zip` (3,449,941,264 bytes, md5 54be449725f0a1f3f45a90bee0c36a15 MATCH, zip test OK,
+926 files) + cts00_4k.mp4 … cts14_4k.mp4 (15 files, every md5 MATCH — see work/final4k/upload_premiere.sh log in the session).
+XML (tools/premiere_xml_cartels_final.py): seq 1 = v2 timeline 31,563 frames, V1 326 clips (scenes + fix-1 cuts, coverage checked: every frame
+exactly once), V2 13 clips of the 3D renders, 181 markers, 12 audio tracks (VO, cold-open audio, music, SFX, ambience + muted levelled mix);
+seq 2 = raw-take VO edit minus the fix-1 cuts (207 pieces, 1310.53 s vs VO 1310.62 s, 60 fps grid). Not tested inside Premiere itself (no
+Premiere here): XML parsed, all file ids defined, all media paths present in the zip or in the folder.
