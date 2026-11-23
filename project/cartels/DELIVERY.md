@@ -33,3 +33,9 @@
   8.1 → 5.8 LU, per-minute speech medians 4.3 → 0.5 LU apart; final mix −15.0 LUFS-I, LRA 3.7 LU, true peak −1.2 dBFS.
 - Not fixable by editing (need Sam): #14 "machete" (only one take, the t is silent), #20 "he and some other CIA officers" (no words were cut; he runs
   "he and some" together — only one take).
+
+## Final 4K (2026-11-23) — with Krish's 3D renders (project/cartels/FINAL4K.md)
+https://gofile.io/d/zHJr7qI4 · `US_vs_Cartels_4K_final.mp4` · 3840×2160 24 fps H.264 (x264 faster CRF 21, ~51 Mbps) + AAC 320k stereo ·
+21:55.125 (31,563 frames, frame count checked) · 8,464,202,956 bytes · md5 410fe176d444f19c15730a63a5952c37 = gofile md5 (MATCH).
+Audio: fix-1 levelled mix rebuilt with the SFX under the 3D renders removed: −15.0 LUFS-I, LRA 3.7 LU, peak −1.6 dBFS, music limits ALL MET.
+Picture = fix-1 edit + R1 (v2 35.75–47.33 s) + R4 (v2 117.88–198.96 s, contains R2/R3).
